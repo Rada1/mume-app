@@ -36,10 +36,11 @@ const MessageItem = React.memo(({
 }) => {
     const content = useMemo(() => processMessageHtml(msg.html, msg.id, msg.isRoomName, msg.type), [msg.html, msg.id, msg.isRoomName, msg.type, processMessageHtml]);
     const isRecent = Date.now() - msg.timestamp < 2000;
+    const isDimmed = inCombat && !msg.isCombat && !msg.isUrgent;
 
     return (
         <div
-            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${msg.isComm ? ' is-comm' : ''}${inCombat && !msg.isCombat && !msg.isRoomName ? ' combat-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) ? ' recent-entry' : ''}`}
+            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${msg.isComm ? ' is-comm' : ''}${isDimmed ? ' combat-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isDimmed ? ' recent-entry' : ''}`}
         >
             {msg.type === 'user' ? (
                 <span>{msg.textRaw}</span>

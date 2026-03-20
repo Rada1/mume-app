@@ -49,22 +49,40 @@ export const useGameProviderState = () => {
     const [inCombat, _setInCombat] = useState(false);
     const inCombatRef = useRef(false);
     const combatTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    // After a force-clear (flee/slay), treat any setInCombat(false) as forced
+    // for a short window. This prevents stale GMCP packets from re-enabling
+    // combat and then the normal latch delaying exit by 3 seconds.
+    const forceClearUntilRef = useRef(0);
 
     const setInCombat = useCallback((val: boolean, force: boolean = false) => {
-        if (val || force) {
-            // Resuming combat or forced clear — cancel any pending exit latch
+        // Upgrade to forced clear if within the force-clear window
+        if (!val && !force && Date.now() < forceClearUntilRef.current) {
+            force = true;
+        }
+
+        if (val) {
             if (combatTimeoutRef.current) {
                 clearTimeout(combatTimeoutRef.current);
                 combatTimeoutRef.current = null;
             }
-            _setInCombat(val);
+            // Re-engaging in combat cancels any active force-clear window
+            forceClearUntilRef.current = 0;
+            _setInCombat(true);
+        } else if (force) {
+            // Forced clear (flee/slay) — immediately exit combat
+            if (combatTimeoutRef.current) {
+                clearTimeout(combatTimeoutRef.current);
+                combatTimeoutRef.current = null;
+            }
+            _setInCombat(false);
+            forceClearUntilRef.current = Date.now() + 2000;
         } else if (!combatTimeoutRef.current) {
             // Start the exit latch only if one isn't already running.
             // This prevents repeated no-opponent prompt calls from resetting the clock.
             combatTimeoutRef.current = setTimeout(() => {
                 _setInCombat(false);
                 combatTimeoutRef.current = null;
-            }, 3000);
+            }, 6000);
         }
     }, []);
 

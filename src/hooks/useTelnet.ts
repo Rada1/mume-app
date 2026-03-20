@@ -139,15 +139,16 @@ export function useTelnet(options: TelnetOptions) {
 
         if (remaining) {
             const cleanPrompt = remaining.replace(/\x1b\[[0-9;]*m/g, '').trim();
-            // Robust check using the same logic as the parser
-            const isLikelyPrompt = 
-                /^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(])\s*)*[>:])\s*$/.test(cleanPrompt) ||
-                (cleanPrompt.includes('HP:') && cleanPrompt.includes('MA:') && cleanPrompt.includes('>'));
+            // Any incomplete buffer ending with '>' is a prompt — always parse it.
+            // The parser returns early if no vitals/opponent are found, so false
+            // positives are harmless. Previously this check was too strict and
+            // missed prompts like "*(- a fallow deer:Hurt>" (no HP:/MA: tokens),
+            // causing opponent health to never be extracted.
+            const isLikelyPrompt = cleanPrompt.endsWith('>') || cleanPrompt.endsWith(':');
 
             if (isLikelyPrompt) {
-                // Stabilize captured state
                 processLine(remaining);
-                
+
                 if (handlers.detectLighting) handlers.detectLighting(cleanPrompt);
                 if (handlers.flushMessages) handlers.flushMessages();
             }

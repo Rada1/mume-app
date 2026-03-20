@@ -244,51 +244,21 @@
     }
 }
 
-/* Combat slide-in animations with slashing tilt */
-@keyframes combat-slash-from-left {
-    0% {
-        opacity: 0;
-        transform: translateX(-80px) scale(1.05);
-        filter: blur(4px);
-    }
-    40% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 1;
-        transform: translateX(0) scale(1);
-        filter: blur(0);
-    }
+/* Combat message entry — opacity-only to avoid virtualizer jitter
+   (translateX/scale caused layout shifts when measured elements changed size) */
+@keyframes combat-enter {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
-@keyframes combat-slash-from-right {
-    0% {
-        opacity: 0;
-        transform: translateX(80px) scale(1.05);
-        filter: blur(4px);
-    }
-    40% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 1;
-        transform: translateX(0) scale(1);
-        filter: blur(0);
-    }
-}
-
-
-.message.combat-player.recent-entry {
-    animation: combat-slash-from-left 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.message.combat-player.recent-entry,
+.message.combat-opponent.recent-entry {
+    animation: combat-enter 0.2s ease-out forwards;
 }
 
 .message.combat-opponent {
     text-align: left;
     justify-content: flex-start;
-}
-
-.message.combat-opponent.recent-entry {
-    animation: combat-slash-from-right 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Basic grouping for combat message alignment if needed */
@@ -301,12 +271,15 @@
 .message.combat-dim {
     opacity: 0.25 !important;
     filter: grayscale(0.5) blur(0.2px);
-    transition: opacity 1.2s ease-in-out, filter 1.2s ease-in-out;
+    /* No transition — prevents virtualizer remount flash (element would
+       briefly appear at full opacity then transition down to 0.25).
+       The base .message opacity transition handles the smooth un-dim
+       when combat ends. */
+    transition: none !important;
 }
 
 .message-log.combat-mode .message:not(.combat-dim) {
     opacity: 1;
-    transition: opacity 1.2s ease-in-out;
 }
 
 .message.user {
@@ -324,11 +297,6 @@
     color: #3b82f6;
     font-style: italic;
     margin: 10px 0;
-}
-
-.spell-incant {
-    color: var(--ansi-bright-cyan);
-    font-weight: bold;
 }
 
 .message.error {

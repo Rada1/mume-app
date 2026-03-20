@@ -29,6 +29,7 @@ export interface Message {
     stackCount?: number; // How many copies of this message are stacked
     stackId?: string; // Identifier for the type of stack (e.g. "arrival:a black wolf:south")
     isComm?: boolean; // True if this is a communication message (says, tells, etc.)
+    isUrgent?: boolean; // True if this is a critical non-combat message (arrive/leave/spell)
     replyTarget?: string; // Sender name for comm messages — enables the inline reply button
     replyCommand?: string; // Channel command for the reply button (e.g. 'tell', 'say', 'narrate')
     isRoomName?: boolean; // True if this line is a room title/name

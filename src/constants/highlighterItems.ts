@@ -16,5 +16,5 @@ export const exitDirections = [
 ];
 
 export const magicKeywords = [
-    'incantation'
+
 ];

@@ -31,10 +31,10 @@ export function useMessageLog(
 
     const isCombatLine = useCallback((textLower: string): boolean => {
         const combatVerbs = [
-            'hit', 'miss', 'wound', 'slay', 'kill', 'scratch', 'bruise', 'maul', 'decimate',
-            'devastate', 'obliterate', 'massacre', 'mutilate', 'eviscerate', 'pierce',
-            'cleave', 'stab', 'slash', 'pound', 'crush', 'smite', 'shoot', 'blast', 'burn',
-            'freeze', 'choke', 'strike'
+            'hit', 'miss', 'wound', 'kill', 'maul', 'pierce',
+            'cleave', 'stab', 'slash', 'pound', 'crush', 'smite', 'shoot', 'burn',
+            'strike', 'shoot', 'backstab', 'charge', 'kick', 'bash', 'shatter', 'bite', 'sting',
+            'shocked', 'stunned', 'blinded', 'silenced', 'hurt', 'die'
         ];
         return combatVerbs.some(v => textLower.includes(` ${v}s `) || textLower.includes(` ${v} `) || textLower.includes(`${v}s you`) || textLower.includes(`${v} you`)) ||
             ((textLower.includes('dodge') || textLower.includes('parry') || textLower.includes('flee')) && inCombatRef.current);
@@ -169,7 +169,18 @@ export function useMessageLog(
 
         addMessageRef.current = addMessage;
 
-        const dimmedInCombat = inCombatRef.current && !isCombat;
+        const isArriveLeave = ARRIVE_REGEX.test(textOnly) || 
+                             LEAVE_REGEX.test(textOnly) ||
+                             textLower.includes('arrives from') ||
+                             textLower.includes('has arrived from') ||
+                             textLower.includes(' leaves ') ||
+                             textLower.includes(' leave ');
+
+        const isUrgent = isArriveLeave ||
+            textLower.includes('strange incantations') ||
+            textLower.includes('utters the words');
+            
+        const dimmedInCombat = inCombatRef.current && !isCombat && !isUrgent;
         let stackId = '';
         let subject = '', actionText = '', direction = '';
 
@@ -208,16 +219,15 @@ export function useMessageLog(
             return;
         }
 
-        let html = ansiConvert.toHtml(text);
-        if (textLower.includes('strange incantations') || textLower.includes('utters the words')) html = `<span class="spell-incant">${html}</span>`;
+        const html = ansiConvert.toHtml(text);
 
-        const msg: Message = { id: mid || Math.random().toString(36).substring(7), html, textRaw: text, type, timestamp: Date.now(), isCombat, combatSide, dimmedInCombat, stackId: stackId || undefined, stackCount: 1, isComm, replyTarget, replyCommand, isRoomName: isActuallyRoomName, shopItem, practiceSkill, practiceHeader };
-        
+        const msg: Message = { id: mid || Math.random().toString(36).substring(7), html, textRaw: text, type, timestamp: Date.now(), isCombat, combatSide, dimmedInCombat, isUrgent, stackId: stackId || undefined, stackCount: 1, isComm, replyTarget, replyCommand, isRoomName: isActuallyRoomName, shopItem, practiceSkill, practiceHeader };
+
         if (isCombat) {
             // Haptic feedback for combat
             try {
                 if (window.navigator?.vibrate) window.navigator.vibrate(15);
-            } catch (e) {}
+            } catch (e) { }
         }
 
         lastMessageRef.current = msg;

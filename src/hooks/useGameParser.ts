@@ -369,9 +369,14 @@ export function useGameParser(deps: UseGameParserDeps) {
             }
 
             // 3. Opponent Health/Name
-            // Pattern: *Name* (x):Status or Name :Status
-            // Examples: *a Dwarf*:Fine>, a bee :Hurt>, *a Dwarf* (x):Wounded>
-            const oppMatch = promptPart.match(/(?:\*([^*]+)\*|(?:\s+|^)([^:* \t]+?))\s*(?:\(x\))?[:](\w+)\s*>/);
+            // Strip known parts (vitals, buffer, prompt symbols) then match name:Status>
+            // Handles both *name*:Status> and bare multi-word name:Status>
+            // Examples: *(- a fallow deer:Hurt>, )( R HP:Fine *a Dwarf*:Wounded>, *a Dwarf* (x):Fine>
+            const oppPart = promptPart
+                .replace(/\b(?:HP|MA|MV|SP|Move|Mana)\s*:\s*\w+/gi, '') // Remove vital statuses
+                .replace(/\([^:)]+:\w+\)/g, '')                         // Remove buffer (Name:Status)
+                .replace(/^[\*\)\!\(\[\]oO\.f%\~+WU:=O\#\?\s\-]+/, ''); // Remove leading prompt symbols
+            const oppMatch = oppPart.match(/(?:\*([^*]+)\*|(.+?))\s*(?:\(x\))?\s*:(\w+)\s*>$/);
             if (oppMatch) {
                 const name = (oppMatch[1] || oppMatch[2] || "").trim();
                 const status = findStatus(oppMatch[3]);
@@ -443,6 +448,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (/you (?:have )?sl(?:ay|ew|ain)\b/i.test(lower) ||
                 /\bis dead!\s*r\.?i\.?p/i.test(lower) ||
                 /^you flee\b/i.test(lower) ||
+                /\bflees\s/i.test(lower) ||
                 /you stop fighting/i.test(lower)) {
                 setInCombat(false, true);
                 setOpponentHealthStatus(null);
