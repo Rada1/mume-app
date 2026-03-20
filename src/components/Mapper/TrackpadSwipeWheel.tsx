@@ -43,7 +43,7 @@ export const TrackpadSwipeWheel: React.FC<TrackpadSwipeWheelProps> = ({ active, 
                 {DIRECTIONS.map(({ dir, icon }) => (
                     <div 
                         key={dir} 
-                        className={`wheel-slice ${dir} ${currentDir === dir ? 'selected' : ''}`}
+                        className={`wheel-slice ${dir} ${(currentDir === dir || (dir === 'nw' && currentDir === 'u') || (dir === 'se' && currentDir === 'd')) ? 'selected' : ''}`}
                         style={{ display: icon ? 'flex' : 'none' }}
                     >
                         <div className="direction-icon">{icon}</div>

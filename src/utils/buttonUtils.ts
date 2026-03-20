@@ -76,7 +76,8 @@ export const getButtonCommand = (
     if (!dir && joystickState?.currentDir) {
         const joyToSwipe: Record<string, SwipeDirection> = {
             n: 'up', s: 'down', e: 'right', w: 'left',
-            ne: 'ne', nw: 'nw', se: 'se', sw: 'sw'
+            ne: 'ne', nw: 'nw', se: 'se', sw: 'sw',
+            u: 'nw', d: 'se'
         };
         dir = joyToSwipe[joystickState.currentDir];
     }
