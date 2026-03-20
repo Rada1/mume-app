@@ -86,7 +86,10 @@ export function useShopHandler() {
         return null;
     };
 
-    const finalizeShop = (addMessage?: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any) => void) => {
+    const finalizeShop = (
+        addMessage?: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any) => void,
+        setPopoverState?: (state: any) => void
+    ) => {
         if (!isShopListingActiveRef.current) return null;
 
         const items = [...currentItems.current];
@@ -99,7 +102,15 @@ export function useShopHandler() {
             setShopItems(items);
         }
 
-        if (addMessage && items.length > 0) {
+        if (setPopoverState && items.length > 0) {
+            setPopoverState({
+                type: 'shop-card',
+                x: window.innerWidth / 2 - 150,
+                y: window.innerHeight / 2 - 200,
+                setId: 'shop',
+                shopItems: items
+            });
+        } else if (addMessage && items.length > 0) {
             const header = logBuffer.current[0] ?? '';
             setTimeout(() => {
                 if (header) addMessage('game', header, undefined, `shop-hdr-${Date.now()}`);

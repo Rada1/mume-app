@@ -5,7 +5,7 @@
 
 import { RefObject } from 'react';
 import { CustomButton, InlineCategoryConfig, MessageType } from '../types';
-import { pluralizeMumeSubject } from './gameUtils';
+import { pluralizeMumeSubject, extractMumeKeyword } from './gameUtils';
 import { getCategoryForName, getGlowColorForCategory } from './categorizationUtils';
 import {
     statusKeywords,
@@ -292,7 +292,7 @@ export const applyColorTaggedObjects = (html: string, mid: string, inlineCategor
         const name = displayName.toLowerCase();
         const keywordBase = name.replace(/^(a|an|some)\s+/, '').replace(/^pair\s+of\s+/, '');
         const keyword = keywordBase.replace(/\s+/g, '-');
-        const finalContext = keyword;
+        const finalContext = extractMumeKeyword(displayName);
 
         const category = getCategoryForName(displayName, inlineCategories);
         const finalCmd = cmd;

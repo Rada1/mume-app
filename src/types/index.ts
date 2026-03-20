@@ -36,6 +36,10 @@ export interface Message {
     shopItem?: ShopItem; // Optional structured shop item data
     practiceSkill?: PracticeSkill; // Optional structured practice skill data
     practiceHeader?: { sessionsLeft: number }; // Optional practice header data
+    commSender?: string; // Structured sender for bubbles
+    commAction?: string; // Structured action (says, tells, etc.)
+    commText?: string; // Structured message text
+    commColor?: string;
 }
 
 export interface ShopItem {
@@ -62,6 +66,7 @@ export interface PracticeSkill {
 export interface PracticeData {
     sessionsLeft: number;
     skills: PracticeSkill[];
+    isAtGuildmaster?: boolean;
 }
 
 export interface Quest {
@@ -195,7 +200,7 @@ export interface PopoverState {
     x: number;
     y: number;
     sourceHeight?: number;
-    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target' | 'container';
+    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target' | 'container' | 'shop-card' | 'practice-card';
     setId: string;
     context?: string;
     containerItems?: DrawerLine[];
@@ -209,6 +214,8 @@ export interface PopoverState {
     spellCommand?: string; // e.g. "cast 'teleport'"
     isContainer?: boolean;
     parentNoun?: string;
+    shopItems?: ShopItem[];
+    practiceData?: PracticeData;
 }
 
 export interface PopoverManagerProps {
@@ -239,6 +246,7 @@ export interface PopoverManagerProps {
     setMendingTarget?: (val: string | null) => void;
     setIsItemsDrawerOpen?: (open: boolean) => void;
     refreshLogHighlights?: () => void;
+    practice?: any;
 }
 
 

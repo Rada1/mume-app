@@ -5,6 +5,7 @@ export function usePracticeHandler(
     setAbilities: (val: Record<string, number> | ((prev: Record<string, number>) => Record<string, number>)) => void
 ) {
     const isPracticeActiveRef = useRef(false);
+    const isAtGuildmasterRef = useRef(false);
     // Set when a silent/system practice command is issued (e.g. on initial connect).
     // Survives intermediate prompt-triggered finalizations so the response is always suppressed.
     const silentSyncPendingRef = useRef(false);
@@ -38,10 +39,12 @@ export function usePracticeHandler(
             const count = parseInt(sessionMatch[1]);
             console.log(`[PracticeHandler] DETECTED SESSIONS: ${count} from line: "${text}"`);
             setIsPracticeActive(true);
+            isAtGuildmasterRef.current = false; // Reset for new capture
             parsedSkillsRef.current = []; // Fresh start for this capture
             setPracticeData(prev => ({
                 sessionsLeft: count,
-                skills: prev?.skills || [] // Keep old skills until finalize
+                skills: prev?.skills || [], // Keep old skills until finalize
+                isAtGuildmaster: false
             }));
             return { sessionsLeft: count };
         }
@@ -63,38 +66,51 @@ export function usePracticeHandler(
                 // Detect sessions column: matches "N/N" or "N/ N" pattern (e.g. "2/10", "0/ 9")
                 const sessionPattern = /^\d+\/\s*\d+$/;
                 const hasSessionsCol = parts.length >= 3 && sessionPattern.test(parts[1].trim());
+                
+                if (hasSessionsCol) {
+                    (isAtGuildmasterRef as any).current = true;
+                }
 
                 const sessionsStr = hasSessionsCol ? parts[1].trim().replace(/\s+/g, '') : '';
                 const knowledgeStr = (hasSessionsCol ? parts[2] : parts[1])?.trim() || '';
                 const difficulty    = (hasSessionsCol ? parts[3] : parts[2])?.trim() || '';
-                let skillClass      = (hasSessionsCol ? parts[4] : parts[3])?.trim() || 'General';
+                let skillClass      = (hasSessionsCol ? parts[4] : parts[3])?.trim() || 'Ranger';
                 // Multi-word values (e.g. "Easy to improve") are advice, not a class name
-                if (!skillClass || skillClass.toLowerCase() === 'none' || skillClass.includes(' ')) skillClass = 'General';
+                if (!skillClass || skillClass.toLowerCase() === 'none' || skillClass.includes(' ')) skillClass = 'Ranger';
 
                 const knowledgeMap: Record<string, string> = {
                     'awful': '15%', 'bad': '30%', 'poor': '45%', 'average': '60%', 'fair': '70%', 'good': '80%', 'very good': '90%', 'excellent': '98%', 'superb': '100%',
                 };
 
-                const knowledge = knowledgeMap[knowledgeStr.toLowerCase()] || (knowledgeStr.includes('%') ? knowledgeStr : knowledgeStr + '%');
-                const proficiency = parseInt(knowledge) || 0;
+                const mappedPercentage = knowledgeMap[knowledgeStr.toLowerCase()];
+                // Keep percentage if numeric, otherwise keep word
+                const knowledge = knowledgeStr.includes('%') ? knowledgeStr : knowledgeStr;
+                const proficiency = mappedPercentage ? parseInt(mappedPercentage) : (parseInt(knowledgeStr) || 0);
 
                 // Heuristic for skills if the class column is missing or ambiguous
                 const skillNameLower = name.toLowerCase();
-                const warriorSkills = ['bash', 'kick', 'rescue', 'slashing weapons', 'stabbing weapons', 'two-handed weapons', 'cleaving weapons', 'concussion weapons', 'parry', 'endurance', 'shield parry'];
-                const rangerSkills = ['tracking', 'scout', 'herblore', 'skin', 'wilderness'];
-                
-                if (skillClass === 'General') {
+                const warriorSkills = ['bash', 'kick', 'rescue', 'slashing', 'stabbing', 'two-handed', 'cleaving', 'concussion', 'parry', 'endurance', 'shield parry'];
+                const mageSkills = ['magic', 'spell', 'meditate', 'staff'];
+                const clericSkills = ['pray', 'bless', 'healing', 'percieve'];
+                const thiefSkills = ['hide', 'sneak', 'steal', 'backstab', 'pick lock', 'search', 'climb', 'trap'];
+
+                // If it came in as Ranger (our default) or missing, try more specific heuristics
+                if (skillClass === 'Ranger' || !skillClass) {
                     if (warriorSkills.some(s => skillNameLower.includes(s))) skillClass = 'Warrior';
-                    else if (rangerSkills.some(s => skillNameLower.includes(s))) skillClass = 'Ranger';
+                    else if (mageSkills.some(s => skillNameLower.includes(s))) skillClass = 'Mage';
+                    else if (clericSkills.some(s => skillNameLower.includes(s))) skillClass = 'Cleric';
+                    else if (thiefSkills.some(s => skillNameLower.includes(s))) skillClass = 'Thief';
+                    // Defaults to Ranger if none of the above
+                    else skillClass = 'Ranger';
                 }
 
                 // Accept any line that has a sessions column OR a recognisable knowledge value
-                if (hasSessionsCol || proficiency > 0 || knowledgeStr.includes('%')) {
+                if (hasSessionsCol || proficiency > 0 || knowledgeStr.includes('%') || mappedPercentage) {
                     const skill: PracticeSkill = {
-                        name, sessions: sessionsStr, knowledge: knowledge.replace('%', ''), proficiency, difficulty, advice: '', skillClass
+                        name, sessions: sessionsStr, knowledge, proficiency, difficulty, advice: '', skillClass
                     };
 
-                    console.log(`[PracticeHandler] Parsed skill: "${skill.name}" | Sessions: ${skill.sessions} | Knowledge: ${skill.knowledge}% | Difficulty: ${skill.difficulty} | Class: ${skill.skillClass}`);
+                    console.log(`[PracticeHandler] Parsed skill: "${skill.name}" | Sessions: ${skill.sessions} | Knowledge: ${skill.knowledge} | Difficulty: ${skill.difficulty} | Class: ${skill.skillClass} (GM: ${isAtGuildmasterRef.current})`);
                     parsedSkillsRef.current.push(skill);
                     return skill;
                 } else {
@@ -104,29 +120,30 @@ export function usePracticeHandler(
         }
 
         // 4. Update Message
+        // Regex robustly handles prepended prompts (e.g. "*[ CW HP:Hurt>You took...") and captures:
+        // 1. Sessions taken, 2. Max sessions for skill (remaining), 3. New knowledge %
         const updateMatch = text.match(/You took (\d+) out of (\d+) sessions?.*knowledge is now (\d+)%/i);
         if (updateMatch) {
             const [_, taken, remaining, newKnowledge] = updateMatch;
             const skillName = lastPracticedSkillRef.current;
+            console.log(`[PracticeHandler] DETECTED UPDATE: ${taken}/${remaining} sessions, ${newKnowledge}% knowledge for skill: ${skillName}`);
             if (skillName) {
                 setPracticeData(prev => {
                     if (!prev) return prev;
-                    const normalizedName = skillName.trim().toLowerCase();
-                    const newSkills = prev.skills.map(s => {
-                        if (s.name.toLowerCase() === normalizedName) {
-                            const sessionMatch = s.sessions.match(/(\d+)\/(\d+)/);
-                            let newSessions = s.sessions;
-                            if (sessionMatch) {
-                                const [__, _, max] = sessionMatch;
-                                newSessions = `${taken}/${max}`;
-                            }
-                            return { ...s, knowledge: newKnowledge + '%', proficiency: parseInt(newKnowledge), sessions: newSessions };
-                        }
-                        return s;
-                    });
-                    setAbilities(prevAbils => ({ ...prevAbils, [normalizedName]: parseInt(newKnowledge) }));
-                    return { ...prev, sessionsLeft: parseInt(remaining), skills: newSkills };
+                    
+                    const skills = prev.skills.map(s => 
+                        s.name.toLowerCase() === skillName.toLowerCase() 
+                            ? { ...s, sessions: `${taken}/${remaining}`, knowledge: newKnowledge + '%', proficiency: parseInt(newKnowledge) }
+                            : s
+                    );
+
+                    // Decrement total sessions left (each 'practice' call spends 1 session)
+                    const sessionsLeft = Math.max(0, prev.sessionsLeft - 1);
+                    
+                    return { ...prev, skills, sessionsLeft };
                 });
+                const normalizedName = skillName.trim().toLowerCase();
+                setAbilities(prevAbils => ({ ...prevAbils, [normalizedName]: parseInt(newKnowledge) }));
             }
             return false;
         }
@@ -134,7 +151,10 @@ export function usePracticeHandler(
         return false;
     }, [setIsPracticeActive, setAbilities]);
 
-    const finalizePractice = useCallback((addMessage?: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean) => void) => {
+    const finalizePractice = useCallback((
+        addMessage?: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean) => void,
+        setPopoverState?: (state: any) => void
+    ) => {
         const skillsToSet = [...parsedSkillsRef.current];
         const logBuffer = [...practiceLogBufferRef.current];
 
@@ -149,10 +169,12 @@ export function usePracticeHandler(
 
             setPracticeData(prev => prev ? {
                 ...prev,
-                skills: skillsToSet
+                skills: skillsToSet,
+                isAtGuildmaster: isAtGuildmasterRef.current
             } : {
                 sessionsLeft: 0,
-                skills: skillsToSet
+                skills: skillsToSet,
+                isAtGuildmaster: isAtGuildmasterRef.current
             });
 
             setAbilities(prev => {
@@ -163,7 +185,17 @@ export function usePracticeHandler(
                 return next;
             });
 
-            if (addMessage && logBuffer.length > 0) {
+            if (setPopoverState && skillsToSet.length > 0) {
+                const headerMsg = logBuffer.find(m => m.type === 'header' && m.data && typeof m.data === 'object' && 'sessionsLeft' in m.data);
+                const sessionsLeft = headerMsg ? (headerMsg.data as any).sessionsLeft : 0;
+                setPopoverState({
+                    type: 'practice-card',
+                    x: window.innerWidth / 2 - 150,
+                    y: window.innerHeight / 2 - 200,
+                    setId: 'practice',
+                    practiceData: { sessionsLeft, skills: skillsToSet, isAtGuildmaster: isAtGuildmasterRef.current }
+                });
+            } else if (addMessage && logBuffer.length > 0) {
                 setTimeout(() => {
                     const now = Date.now();
 

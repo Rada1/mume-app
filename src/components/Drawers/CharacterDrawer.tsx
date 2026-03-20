@@ -231,26 +231,38 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                     </div>
                                 </div>
 
-                                <div className="stat-section info-section-glass" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                                <div className="stat-section info-section-glass" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
                                     <div className="progress-container">
                                         <div className="progress-labels">
-                                            <span>XP</span>
-                                            <span>{Math.floor((info.xp / (info.xpMax || 1)) * 100)}%</span>
+                                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                                                <span style={{ color: 'var(--accent)', fontWeight: '800' }}>XP</span>
+                                                <span style={{ fontSize: '0.9rem', color: '#fff' }}>{formatNumber(info.xp)}</span>
+                                            </div>
+                                            <span style={{ fontSize: '0.8rem', opacity: 0.9, fontWeight: '800' }}>{Math.floor((info.xp / (info.xpMax || 1)) * 100)}%</span>
                                         </div>
                                         <div className="progress-bar-bg">
                                             <div className="progress-bar-fill xp" style={{ width: `${Math.min(100, (info.xp / (info.xpMax || 1)) * 100)}%` }} />
                                         </div>
-                                        <div className="needed-label">+{formatNumber(Math.max(0, info.xpMax - info.xp))}</div>
+                                        <div className="progress-footer">
+                                            <span className="total-label">Target: {formatNumber(info.xpMax)}</span>
+                                            <span className="needed-label">Needed: +{formatNumber(Math.max(0, info.xpMax - info.xp))}</span>
+                                        </div>
                                     </div>
                                     <div className="progress-container">
                                         <div className="progress-labels">
-                                            <span>TP</span>
-                                            <span>{Math.floor((info.tp / (info.tpMax || 1)) * 100)}%</span>
+                                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                                                <span style={{ color: '#60a5fa', fontWeight: '800' }}>TP</span>
+                                                <span style={{ fontSize: '0.9rem', color: '#fff' }}>{formatNumber(info.tp)}</span>
+                                            </div>
+                                            <span style={{ fontSize: '0.8rem', opacity: 0.9, fontWeight: '800' }}>{Math.floor((info.tp / (info.tpMax || 1)) * 100)}%</span>
                                         </div>
                                         <div className="progress-bar-bg">
                                             <div className="progress-bar-fill tp" style={{ width: `${Math.min(100, (info.tp / (info.tpMax || 1)) * 100)}%` }} />
                                         </div>
-                                        <div className="needed-label">+{formatNumber(Math.max(0, info.tpMax - info.tp))}</div>
+                                        <div className="progress-footer">
+                                            <span className="total-label">Target: {formatNumber(info.tpMax)}</span>
+                                            <span className="needed-label">Needed: +{formatNumber(Math.max(0, info.tpMax - info.tp))}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

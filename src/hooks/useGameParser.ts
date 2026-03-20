@@ -10,8 +10,8 @@ import { useQuestsHandler } from './useQuestsHandler';
 export interface UseGameParserDeps {
     isItemsOpen: boolean; isCharacterOpen: boolean; isStatsOpen: boolean; isPlayersOpen: boolean; mapperRef: React.RefObject<any>;
     btn: { buttonsRef: React.RefObject<any[]>; setButtons: React.Dispatch<React.SetStateAction<any[]>>; buttonTimers: React.RefObject<Record<string, ReturnType<typeof setTimeout>>>; setActiveSet: (setId: string) => void; };
-    addMessage: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean, replyTarget?: string, replyCommand?: string) => void;
-    pendingGmcpCommRef?: React.MutableRefObject<{ sender: string; chan: string } | null>;
+    addMessage: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string) => void;
+    pendingGmcpCommRef?: React.MutableRefObject<{ sender: string; chan: string; msg?: string } | null>;
     playSound: (buffer: AudioBuffer) => void; triggerHaptic: (ms: number) => void;
     setWeather: (val: any) => void; setIsFoggy: (val: boolean) => void;
     setStats: (val: GameStats | ((prev: GameStats) => GameStats)) => void;
@@ -86,6 +86,8 @@ export function useGameParser(deps: UseGameParserDeps) {
     const tempEqRef = useRef<DrawerLine[]>([]);
     const tempInvRef = useRef<DrawerLine[]>([]);
     const shopPagerSeenRef = useRef(false);
+    const ignoredCommBufferRef = useRef<string | null>(null);
+    const lastCommSenderRef = useRef<string | null>(null);
 
     const finalizeCapture = useCallback((targetStage?: CaptureStage) => {
         const currentStage = captureStage.current as CaptureStage;
@@ -107,11 +109,14 @@ export function useGameParser(deps: UseGameParserDeps) {
                 // Don't flush practice lines to the log if the character drawer is open
                 // (isDrawerCapture or isSilentCapture indicate drawer-triggered or character-open context)
                 const suppressPracticeLog = isDrawerCapture.current > 0 || isSilentCapture.current > 0 || deps.practice.silentSyncPendingRef.current;
-                deps.practice.finalizePractice(suppressPracticeLog ? undefined : addMessage);
+                deps.practice.finalizePractice(
+                    suppressPracticeLog ? undefined : addMessage, 
+                    suppressPracticeLog ? undefined : setPopoverState
+                );
                 deps.practice.setIsPracticeActive(false);
                 deps.practice.setIsUiRequested(false);
             } else if (currentStage === 'shop') {
-                deps.shop.finalizeShop(addMessage);
+                deps.shop.finalizeShop(addMessage, setPopoverState);
             } else if (currentStage === 'quest') {
                 finalizeQuests();
             } else if (currentStage === 'eq') {
@@ -126,11 +131,10 @@ export function useGameParser(deps: UseGameParserDeps) {
             isDrawerCapture.current = 0;
             // Decrement silent capture instead of resetting to 0 to support multiple concurrent background commands
             if (isSilentCapture.current > 0) isSilentCapture.current--;
-            containerStackRef.current = [];
             return true;
         }
         return false;
-    }, [addDiagnosticLog, setEqLines, setInventoryLines, captureStage, isDrawerCapture, isSilentCapture, deps.practice, deps.shop, addMessage]);
+    }, [addDiagnosticLog, setEqLines, setInventoryLines, captureStage, isDrawerCapture, isSilentCapture, deps.practice, deps.shop, addMessage, setPopoverState]);
 
     const processLine = useCallback((line: string) => {
 
@@ -140,6 +144,11 @@ export function useGameParser(deps: UseGameParserDeps) {
         // Perform ANSI stripping ONCE here and reuse the result everywhere.
         let textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '').trim();
         let lower = textOnly.toLowerCase();
+        
+        // Always check for practice updates/sessions if not actively in a practice capture listing
+        if (captureStage.current !== 'practice' && textOnly.trim().length > 0) {
+            deps.practice.parsePracticeLine(textOnly);
+        }
         
         // Strip prompt prefix for detection
         let content = textOnly.replace(/^([^\r\n>]{0,120}>)\s*/, '');
@@ -376,10 +385,14 @@ export function useGameParser(deps: UseGameParserDeps) {
                 .replace(/\b(?:HP|MA|MV|SP|Move|Mana)\s*:\s*\w+/gi, '') // Remove vital statuses
                 .replace(/\([^:)]+:\w+\)/g, '')                         // Remove buffer (Name:Status)
                 .replace(/^[\*\)\!\(\[\]oO\.f%\~+WU:=O\#\?\s\-]+/, ''); // Remove leading prompt symbols
-            const oppMatch = oppPart.match(/(?:\*([^*]+)\*|(.+?))\s*(?:\(x\))?\s*:(\w+)\s*>$/);
+            // Try asterisked name anywhere (prompt flags like "CWRS" may precede the asterisks)
+            const asteriskOppMatch = oppPart.match(/\*([^*]+)\*\s*(?:\(x\))?\s*:(\w+)\s*>$/);
+            // For bare names, also strip remaining all-uppercase flag tokens (e.g. "CWRS ", "R ")
+            const strippedOppPart = oppPart.replace(/^(?:[A-Z]+\s+)+/, '');
+            const oppMatch = asteriskOppMatch ?? strippedOppPart.match(/(.+?)\s*(?:\(x\))?\s*:(\w+)\s*>$/);
             if (oppMatch) {
-                const name = (oppMatch[1] || oppMatch[2] || "").trim();
-                const status = findStatus(oppMatch[3]);
+                const name = (oppMatch[1] || "").trim();
+                const status = findStatus(oppMatch[2]);
                 const isVitalPrefix = /^(hp|m|v|t|e|w|move|mana|tired)$/i.test(name);
                 
                 if (status && !isVitalPrefix) {
@@ -405,9 +418,13 @@ export function useGameParser(deps: UseGameParserDeps) {
             content = attachedText;
             contentLower = content.toLowerCase();
 
-            // Strip the actual prompt part from the cleanLine
-            const ansiStripRegex = /^((?:\x1b\[[0-9;]*m)*?((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-])\s*)*[>])\s*)/ ;
-            cleanLine = cleanLine.replace(ansiStripRegex, '').trim();
+            // Strip everything up to and including '>' (prompt end) from cleanLine.
+            // The simple [^>]*> approach works because MUME prompt chars never contain '>'.
+            cleanLine = cleanLine.replace(/^(?:\x1b\[[0-9;]*m)*[^>]*>/, '').trim();
+            // Also sync textOnly/lower so room detection and all downstream checks
+            // see only the content after the prompt, not the full prompt+content string.
+            textOnly = attachedText;
+            lower = attachedText.toLowerCase();
             }
 
             // Global Status Parser for MUME (updates OB/DB/PB/Armour in real-time)
@@ -935,8 +952,15 @@ export function useGameParser(deps: UseGameParserDeps) {
         // Drawer-aware hiding: hide when the relevant drawer is open, regardless of how the command was triggered.
         // This prevents double-showing data that's already displayed in the drawer UI.
         let isDrawerHiding = false;
-        // Always suppress MUME pager navigation lines from the message log
-        if (textOnly.includes('*** Return:') || textOnly.includes('*** [Hit Return to continue]')) isDrawerHiding = true;
+        // Always suppress MUME pager navigation lines from the message log and auto-advance them.
+        // Paginators are always hidden (shouldShow will be false), so always sending a return is
+        // correct — the user can never interact with a paginator they cannot see. This also handles
+        // the case where the paginator fires BEFORE the shop/practice header arrives (e.g. when
+        // MUME sends the MORE prompt at the very start of a long "list" response).
+        if (textOnly.includes('*** Return:') || textOnly.includes('*** [Hit Return to continue]')) {
+            isDrawerHiding = true;
+            deps.executeCommandRef.current?.('', true, true);
+        }
         const currentStage = captureStage.current as any;
         if (currentStage !== 'none') {
             if (currentStage === 'inv' && deps.isItemsOpen) isDrawerHiding = true;
@@ -970,7 +994,10 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
         // Always determine msgType for state-updating list entries, even if not showing in main log
-        let msgType: MessageType = 'game';
+        // When a prompt prefix has only a short indicator char attached (e.g. 'o', 'c' — light/terrain hints),
+        // mark it 'prompt' so flushMessages can move it to the end of the display batch.
+        // Real content after a prompt (room names, game text) stays 'game'.
+        let msgType: MessageType = (textPMatch && attachedText.length <= 2) ? 'prompt' : 'game';
         if (captureStage.current === 'who' && textOnly !== 'who:' && lower !== 'allies' && lower !== 'minions' && !textOnly.startsWith('---')) {
             msgType = 'who-list';
         } else if (captureStage.current === 'where' && !textOnly.startsWith('Player') && !textOnly.startsWith('Who') && !textOnly.startsWith('---')) {
@@ -1030,29 +1057,107 @@ export function useGameParser(deps: UseGameParserDeps) {
         const gmcpComm = pendingGmcpCommRef?.current ?? null;
         if (gmcpComm) pendingGmcpCommRef!.current = null;
 
+        // --- Multi-line Comm Suppression ---
+        // If we have an ignoredCommBuffer, it means we used a full GMCP message
+        // and need to suppress the subsequent wrapped text lines from the server.
+        if (ignoredCommBufferRef.current && !gmcpComm) {
+            const cleanLine = textOnly.trim();
+            const currentBuffer = ignoredCommBufferRef.current.trim();
+            
+            // If the current line is a substring of what's left in the buffer, skip it
+            if (currentBuffer.startsWith(cleanLine) || cleanLine.startsWith(currentBuffer.substring(0, Math.min(10, currentBuffer.length)))) {
+                // If it's a very short line or matches the start, we assume it's a continuation
+                // We don't want to over-suppress, so we only do this for lines that don't look like new commands
+                if (cleanLine.length > 0) {
+                    ignoredCommBufferRef.current = currentBuffer.substring(cleanLine.length).trim();
+                    if (ignoredCommBufferRef.current.length === 0) {
+                        ignoredCommBufferRef.current = null;
+                    }
+                    return; // Suppress this line from the log
+                }
+            } else {
+                // Buffer doesn't match, clear it (something else happened)
+                ignoredCommBufferRef.current = null;
+            }
+        }
+
         let replyTarget: string | undefined;
         let replyCommand: string | undefined;
+        let commSender: string | undefined;
+        let commAction: string | undefined;
+        let commText: string | undefined;
+        let commColor: string | undefined;
+
+        // Try to extract the first color from the ANSI-encoded raw line
+        const colorNames = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
+        const ansiMatches = Array.from(line.matchAll(/\x1b\[([\d;]+)m/g));
+        for (const match of ansiMatches) {
+            const codes = match[1].split(';').map(n => parseInt(n, 10));
+            let isBright = codes.includes(1);
+            for (const code of codes) {
+                if (code >= 30 && code <= 37) {
+                    commColor = isBright ? `var(--ansi-bright-${colorNames[code - 30]})` : `var(--ansi-${colorNames[code - 30]})`;
+                    break;
+                }
+                if (code >= 90 && code <= 97) {
+                    commColor = `var(--ansi-bright-${colorNames[code - 90]})`;
+                    break;
+                }
+            }
+            if (commColor) break;
+        }
+
         if (gmcpComm) {
             replyTarget = gmcpComm.sender || undefined;
             const chanMap: Record<string, string> = { tell: 'tell', say: 'say', narrate: 'narrate', shout: 'shout', exclaim: 'exclaim', sing: 'sing', whisper: 'whisper', pray: 'pray', ask: 'ask', yell: 'yell' };
             replyCommand = chanMap[gmcpComm.chan.toLowerCase()] ?? gmcpComm.chan.toLowerCase();
+            commSender = replyTarget;
+            commAction = replyCommand;
+            
+            if (gmcpComm.msg) {
+                commText = gmcpComm.msg;
+                // Store the remaining text to suppress future wrapped lines
+                const prefixMatch = textOnly.match(/^(.*?)\s+(?:says|tells|narrates|yells|shouts|exclaims|sings|whispers|prays|asks)(?:.*?),\s*/i);
+                const lineContentText = prefixMatch ? textOnly.substring(prefixMatch[0].length) : textOnly;
+                
+                if (commText.length > lineContentText.length) {
+                    ignoredCommBufferRef.current = commText.substring(lineContentText.length).trim();
+                }
+            } else {
+                // Heuristic fallback to extract the message body from the full text line
+                const prefixMatch = textOnly.match(/^(.*?)\s+(?:says|tells|narrates|yells|shouts|exclaims|sings|whispers|prays|asks)(?:.*?),\s*/i);
+                if (prefixMatch) {
+                    commText = textOnly.substring(prefixMatch[0].length);
+                } else {
+                    commText = textOnly;
+                }
+            }
         } else {
-            // Text fallback (no GMCP): detect common comm patterns
+            // Text fallback (no GMCP): detect common comm patterns and split into parts
             const commPatterns: [RegExp, string, boolean][] = [
-                [/^(.+?)\s+tells? you /i, 'tell', true],
-                [/^(.+?)\s+says?(?:,)? /i, 'say', true],
-                [/^(.+?)\s+narrates?(?:,)? /i, 'narrate', true],
-                [/^(.+?)\s+yells?(?:,)? /i, 'yell', true],
-                [/^(.+?)\s+shouts?(?:,)? /i, 'shout', true],
-                [/^(.+?)\s+exclaims?(?:,)? /i, 'exclaim', true],
-                [/^(.+?)\s+sings?(?:,)? /i, 'sing', true],
-                [/^(.+?)\s+whispers?(?:,)? /i, 'whisper', true],
-                [/^(.+?)\s+prays?(?:,)? /i, 'pray', true],
-                [/^(.+?)\s+asks?(?: you)?(?:,)? /i, 'ask', true],
+                [/^(.+?)\s+(tells? you)\s+(.*)$/i, 'tell', true],
+                [/^(.+?)\s+(says?)(?:,)?\s+(.*)$/i, 'say', true],
+                [/^(.+?)\s+(narrates?)(?:,)?\s+(.*)$/i, 'narrate', true],
+                [/^(.+?)\s+(yells?)(?:,)?\s+(.*)$/i, 'yell', true],
+                [/^(.+?)\s+(shouts?)(?:,)?\s+(.*)$/i, 'shout', true],
+                [/^(.+?)\s+(exclaims?)(?:,)?\s+(.*)$/i, 'exclaim', true],
+                [/^(.+?)\s+(sings?)(?:,)?\s+(.*)$/i, 'sing', true],
+                [/^(.+?)\s+(whispers?)(?:,)?\s+(.*)$/i, 'whisper', true],
+                [/^(.+?)\s+(prays?)(?:,)?\s+(.*)$/i, 'pray', true],
+                [/^(.+?)\s+(asks?)(?:\s+you)?(?:,)?\s+(.*)$/i, 'ask', true],
             ];
             for (const [re, cmd, hasSender] of commPatterns) {
-                const m = content.match(re);
-                if (m) { replyCommand = cmd; if (hasSender) replyTarget = m[1]; break; }
+                const m = textOnly.match(re);
+                if (m) { 
+                    replyCommand = cmd; 
+                    if (hasSender) {
+                        replyTarget = m[1];
+                        commSender = m[1];
+                        commAction = m[2];
+                        commText = m[3];
+                    }
+                    break; 
+                }
             }
         }
         if (replyCommand) msgType = 'comm';
@@ -1060,7 +1165,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (shouldShow) {
             let finalRawText = cleanLine;
             if (isRoomName && !finalRawText.endsWith('\x1b[0m')) finalRawText += '\x1b[0m';
-            addMessage(msgType, finalRawText, undefined, `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`, isRoomName, { textOnly, lower }, undefined, undefined, undefined, false, replyTarget, replyCommand);
+            addMessage(msgType, finalRawText, undefined, `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`, isRoomName, { textOnly, lower }, undefined, undefined, undefined, false, replyTarget, replyCommand, commSender, commAction, commText, commColor);
         }
 
         if (isEndPrompt) finalizeCapture();

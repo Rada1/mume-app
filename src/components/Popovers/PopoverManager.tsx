@@ -6,12 +6,13 @@ import { RecipientSelectPopover } from './RecipientSelectPopover';
 import { TeleportSavePopover, TeleportSelectPopover, TeleportManagePopover } from './TeleportPopovers';
 import ShopSearchPopover from './ShopSearchPopover';
 import { ContainerPopover } from './ContainerPopover';
+import { FloatingGroupCard } from '../FloatingGroupCard';
 import { getHierarchyChain } from '../../utils/buttonHierarchyUtils';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
 
 export const PopoverManager: React.FC<PopoverManagerProps> = ({
     popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, setSettings, inlineCategories, setInlineCategories, favorites, setFavorites, parley, setParley, whoList,
-    isMendingMode, setIsMendingMode, setMendingTarget, setIsItemsDrawerOpen, refreshLogHighlights
+    isMendingMode, setIsMendingMode, setMendingTarget, setIsItemsDrawerOpen, refreshLogHighlights, practice
 }) => {
 
     useLayoutEffect(() => {
@@ -203,6 +204,22 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                 }}
                 triggerHaptic={triggerHaptic}
                 themeColor={themeColor}
+            />
+        );
+    }
+
+    if (popoverState.type === 'shop-card' || popoverState.type === 'practice-card') {
+        const isPractice = popoverState.type === 'practice-card';
+        return (
+            <FloatingGroupCard
+                type={isPractice ? 'practice' : 'shop'}
+                shopItems={popoverState.shopItems}
+                practiceData={isPractice ? (practice?.practiceData || popoverState.practiceData) : undefined}
+                onClose={() => setPopoverState(null)}
+                executeCommand={executeCommand}
+                practice={practice}
+                setPopoverState={setPopoverState}
+                popoverRef={popoverRef}
             />
         );
     }

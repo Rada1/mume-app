@@ -327,9 +327,25 @@ const InputArea: React.FC<InputAreaProps> = ({
 
                     {parley.active && (() => {
                         const isTargetless = TARGETLESS_COMMANDS.includes(parley.command);
+                        
+                        const PARLEY_COLORS: Record<string, string> = {
+                            tell: '#22c55e',    // green
+                            whisper: '#22c55e', // also green often
+                            say: '#06b6d4',     // cyan
+                            yell: '#a855f7',    // purple
+                            shout: '#ef4444',   // red often? User didn't ask but good to have
+                            narrate: '#eab308', // yellow
+                            sing: '#f472b6'     // pink?
+                        };
+                        const commandColor = PARLEY_COLORS[parley.command.toLowerCase()] || 'inherit';
+
                         return (
                             <div className="parley-indicator-container">
-                                <div className="parley-indicator parley-command" onClick={handleParleyCommandClick}>
+                                <div 
+                                    className="parley-indicator parley-command" 
+                                    onClick={handleParleyCommandClick}
+                                    style={{ color: commandColor, borderColor: commandColor !== 'inherit' ? commandColor : undefined }}
+                                >
                                     {parley.command}
                                 </div>
                                 <div

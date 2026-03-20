@@ -269,7 +269,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             if (startPosRef.current) {
                 startActiveDrag(startPosRef.current.x, startPosRef.current.y);
             }
-        }, 800);
+        }, 400);
     };
 
     const swipePos = React.useRef<{ x: number, y: number } | null>(null);

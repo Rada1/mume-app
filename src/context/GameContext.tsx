@@ -112,7 +112,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [removeNpcFn, setRemoveNpcFn] = useState<(data: any) => void>();
     const [opponentChangeFn, setOpponentChangeFn] = useState<(name: string | null) => void>();
     const [commFn, setCommFn] = useState<(sender: string, chan: string, msg: string) => void>();
-    const pendingGmcpCommRef = useRef<{ sender: string; chan: string } | null>(null);
+    const pendingGmcpCommRef = useRef<{ sender: string; chan: string; msg?: string } | null>(null);
     const [groupAddFn, setGroupAddFn] = useState<(data: any) => void>();
     const [groupUpdateFn, setGroupUpdateFn] = useState<(data: any) => void>();
     const [groupRemoveFn, setGroupRemoveFn] = useState<(id: number) => void>();
@@ -332,7 +332,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             onCharInfo: gmcpHandlers.onCharInfo,
             onPositionChange: gmcpHandlers.onPositionChange,
             onOpponentChange: (name) => { opponentChangeFn?.(name); v.setOpponentName(name); },
-            onComm: (sender, chan, msg) => { pendingGmcpCommRef.current = { sender, chan }; commFn?.(sender, chan, msg); },
+            onComm: (sender, chan, msg) => { pendingGmcpCommRef.current = { sender, chan, msg }; commFn?.(sender, chan, msg); },
             onGroupAdd: (data) => { gmcpHandlers.onGroupAdd(data); groupAddFn?.(data); },
             onGroupUpdate: (data) => { gmcpHandlers.onGroupUpdate(data); groupUpdateFn?.(data); },
             onGroupRemove: (id) => { gmcpHandlers.onGroupRemove(id); groupRemoveFn?.(id); },

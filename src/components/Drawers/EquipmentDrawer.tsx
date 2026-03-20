@@ -198,11 +198,15 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
 
             // Glow target: only specific drop targets, never the broad mainLog container
             const glowTarget = logRecipient || targetItem || inputArea || sectionTarget || null;
-            if (glowTarget !== lastGlowTargetRef.current) {
+            // For section containers, glow the header drop zone rather than the whole section div
+            const glowElement = (glowTarget === sectionTarget && sectionTarget)
+                ? (sectionTarget.querySelector('.drawer-section-drop-zone') as HTMLElement | null) ?? sectionTarget
+                : glowTarget;
+            if (glowElement !== lastGlowTargetRef.current) {
                 if (lastGlowTargetRef.current) lastGlowTargetRef.current.classList.remove('drop-hover-active');
-                lastGlowTargetRef.current = glowTarget;
-                if (glowTarget && (!sectionTarget || glowTarget !== sectionTarget)) {
-                    glowTarget.classList.add('drop-hover-active');
+                lastGlowTargetRef.current = glowElement;
+                if (glowElement) {
+                    glowElement.classList.add('drop-hover-active');
                 }
             }
 
@@ -476,7 +480,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             if (startPosRef.current) {
                 startActiveDrag(startPosRef.current.x, startPosRef.current.y);
             }
-        }, 800);
+        }, 400);
     };
 
 

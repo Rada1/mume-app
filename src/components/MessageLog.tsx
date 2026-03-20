@@ -7,6 +7,7 @@ import PracticeSkillCard from './PracticeSkillCard';
 import PracticeHeaderCard from './PracticeHeaderCard';
 import PracticeClassHeaderCard from './PracticeClassHeaderCard';
 import PracticeColumnHeaderCard from './PracticeColumnHeaderCard';
+import { TypingText } from './TypingText';
 
 import { useBaseGame, useVitals, useLog } from '../context/GameContext';
 
@@ -47,7 +48,10 @@ const MessageItem = React.memo(({
             ) : msg.type === 'prompt' ? (
                 <span>{msg.textRaw}</span>
             ) : msg.type === 'shop-item' && msg.shopItem ? (
-                <ShopItemCard item={msg.shopItem} executeCommand={executeCommand} />
+                <div className="content-row">
+                    <ShopItemCard item={msg.shopItem} executeCommand={executeCommand} />
+                    <ReplyButton msg={msg} setParley={setParley} />
+                </div>
             ) : msg.type === 'practice-skill' && msg.practiceSkill ? (
                 <PracticeSkillCard skill={msg.practiceSkill} />
             ) : msg.type === 'practice-header' && msg.practiceHeader ? (
@@ -56,24 +60,44 @@ const MessageItem = React.memo(({
                 <PracticeColumnHeaderCard sessionsLeft={msg.practiceHeader?.sessionsLeft} />
             ) : msg.type === 'practice-class-header' ? (
                 <PracticeClassHeaderCard label={msg.textRaw} />
+            ) : msg.type === 'comm' && msg.commSender ? (
+                <div className="comm-bubble-wrapper">
+                    <div className="comm-sender-line" style={{ color: msg.commColor }}>
+                        <span className="comm-sender">{msg.commSender}</span>
+                        <span className="comm-action"> {msg.commAction}:</span>
+                    </div>
+                    <div className="comm-content-row">
+                        <div className="comm-bubble" style={{ color: msg.commColor }}>
+                            <TypingText text={msg.commText || ''} />
+                        </div>
+                        <ReplyButton msg={msg} setParley={setParley} />
+                    </div>
+                </div>
             ) : (
-                <div className="message-content" dangerouslySetInnerHTML={{ __html: content }} />
-            )}
-            {msg.replyCommand && (
-                <button
-                    className="reply-btn"
-                    title={msg.replyTarget ? `Reply to ${msg.replyTarget}` : `Reply on ${msg.replyCommand}`}
-                    onClick={() => {
-                        const directed = msg.replyCommand === 'tell' || msg.replyCommand === 'whisper';
-                        setParley({ active: true, command: msg.replyCommand!, target: directed ? (msg.replyTarget ?? null) : null });
-                    }}
-                >
-                    ↩
-                </button>
+                <div className="content-row">
+                    <div className="message-content" dangerouslySetInnerHTML={{ __html: content }} />
+                    <ReplyButton msg={msg} setParley={setParley} />
+                </div>
             )}
         </div>
     );
 });
+
+const ReplyButton = ({ msg, setParley }: { msg: Message, setParley: (p: any) => void }) => {
+    if (!msg.replyCommand) return null;
+    return (
+        <button
+            className="reply-btn"
+            title={msg.replyTarget ? `Reply to ${msg.replyTarget}` : `Reply on ${msg.replyCommand}`}
+            onClick={() => {
+                const directed = msg.replyCommand === 'tell' || msg.replyCommand === 'whisper';
+                setParley({ active: true, command: msg.replyCommand!, target: directed ? (msg.replyTarget ?? null) : null });
+            }}
+        >
+            <div className="reply-btn-icon">↩</div>
+        </button>
+    );
+};
 
 const MessageLog: React.FC<MessageLogProps> = ({
     onLogClick,

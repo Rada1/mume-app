@@ -92,6 +92,8 @@
 
 /* Intelligent Dimming Base */
 .message-content {
+    flex: 1;
+    min-width: 0;
     opacity: 1; /* Container must be 1 to allow children to be 1 */
     color: var(--text-dim); /* Dim raw text nodes by default */
     transition: color 0.2s ease;
@@ -204,17 +206,71 @@
     color: #c084fc !important; /* Soft Purple/Lavender */
 }
 
-.message.is-comm .message-content {
-    opacity: 1 !important;
-    filter: brightness(1.25) contrast(1.1);
-    font-weight: 500;
+/* Comms Bubble Styles */
+.comm-bubble-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 4px 0 8px 0;
+    /* Remove width: 100% so it can sit next to the reply button */
+    /* width: auto lets it wrap around the bubble */
+    width: fit-content;
+    max-width: calc(100% - 32px);
 }
 
-.message.is-comm .message-content span.comm-content {
-    color: #ffffff !important;
-    font-weight: 700;
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+.comm-content-row, .content-row {
+    display: flex;
+    align-items: flex-end; /* Align with the last line of text/bubble */
+    gap: 4px;
+    width: 100%;
 }
+
+.comm-sender-line {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    padding-left: 4px;
+}
+
+.comm-sender {
+    font-weight: bold;
+    font-style: italic;
+}
+
+.comm-action {
+    font-style: italic;
+}
+
+.comm-bubble {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px 12px 12px 2px;
+    padding: 3px 8px;
+    color: #fff;
+    max-width: 85%;
+    align-self: flex-start;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
+    position: relative;
+    line-height: 1.5;
+    word-break: break-word;
+    font-family: var(--font-main);
+    font-size: 1em;
+}
+
+.comm-bubble::before {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: -6px;
+    width: 10px;
+    height: 10px;
+    background: inherit;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    clip-path: polygon(100% 0, 0% 100%, 100% 100%);
+}
+
 
 .keyword-highlight.exit-dir {
     color: #22c55e !important; /* Success Green */
@@ -596,9 +652,10 @@
 .message {
     position: relative;
     display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
+    align-items: center; /* Center vertically relative to content */
+    flex-wrap: nowrap;
+    gap: 4px; /* Bring it closer */
+    width: 100%;
 }
 
 .reply-btn {
@@ -606,17 +663,26 @@
     border: 1px solid rgba(255, 255, 255, 0.15);
     color: #ffffff;
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    /* Use fixed scaled height to match one line of text */
+    width: 1.5em;
+    height: 1.5em;
+    aspect-ratio: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
     padding: 0;
-    margin-top: 0;
+    margin: 0;
     flex-shrink: 0;
     opacity: 0.6;
+}
+
+.reply-btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9em;
 }
 
 .reply-btn:hover {

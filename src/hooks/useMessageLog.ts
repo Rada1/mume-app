@@ -25,6 +25,8 @@ export function useMessageLog(
     const lastMessageRef = useRef<Message | null>(null);
     const messageBufferRef = useRef<Message[]>([]);
     const flushTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const pendingUserCommandRef = useRef<Message | null>(null);
+    const pendingUserCommandTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const roomLineBufferRef = useRef<{ subject: string, action: string, original: string }[]>([]);
     const roomBufferTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -42,11 +44,26 @@ export function useMessageLog(
 
 
     const flushMessages = useCallback(() => {
-        if (messageBufferRef.current.length === 0) return;
+        const hasPendingUser = pendingUserCommandRef.current !== null;
+        if (messageBufferRef.current.length === 0 && !hasPendingUser) return;
         const pending = [...messageBufferRef.current];
         messageBufferRef.current = [];
+        // Append pending user command at the END so it appears after server data
+        if (pendingUserCommandRef.current) {
+            pending.push(pendingUserCommandRef.current);
+            pendingUserCommandRef.current = null;
+            if (pendingUserCommandTimeoutRef.current) {
+                clearTimeout(pendingUserCommandTimeoutRef.current);
+                pendingUserCommandTimeoutRef.current = null;
+            }
+        }
+        // Move 'prompt' type messages to the end — server sends prompt before room info,
+        // but we want it displayed after all room content in the same packet.
+        const nonPrompts = pending.filter(m => m.type !== 'prompt');
+        const prompts = pending.filter(m => m.type === 'prompt');
+        const ordered = nonPrompts.length > 0 ? [...nonPrompts, ...prompts] : pending;
         setMessages(prev => {
-            const nextMessages = [...prev, ...pending];
+            const nextMessages = [...prev, ...ordered];
             return nextMessages.length >= 500 ? nextMessages.slice(nextMessages.length - 500) : nextMessages;
         });
         flushTimeoutRef.current = null;
@@ -119,7 +136,11 @@ export function useMessageLog(
         practiceHeader?: any,
         skipBrevity: boolean = false,
         replyTarget?: string,
-        replyCommand?: string
+        replyCommand?: string,
+        commSender?: string,
+        commAction?: string,
+        commText?: string,
+        commColor?: string
     ) => {
         const textOnly = precalculated?.textOnly || text.replace(/\x1b\[[0-9;]*m/g, '').trim();
         const textLower = precalculated?.lower || textOnly.toLowerCase();
@@ -221,7 +242,30 @@ export function useMessageLog(
 
         const html = ansiConvert.toHtml(text);
 
-        const msg: Message = { id: mid || Math.random().toString(36).substring(7), html, textRaw: text, type, timestamp: Date.now(), isCombat, combatSide, dimmedInCombat, isUrgent, stackId: stackId || undefined, stackCount: 1, isComm, replyTarget, replyCommand, isRoomName: isActuallyRoomName, shopItem, practiceSkill, practiceHeader };
+        const msg: Message = { 
+            id: mid || Math.random().toString(36).substring(7), 
+            html, 
+            textRaw: text, 
+            type, 
+            timestamp: Date.now(), 
+            isCombat, 
+            combatSide, 
+            dimmedInCombat, 
+            isUrgent, 
+            stackId: stackId || undefined, 
+            stackCount: 1, 
+            isComm, 
+            replyTarget, 
+            replyCommand, 
+            isRoomName: isActuallyRoomName, 
+            shopItem, 
+            practiceSkill, 
+            practiceHeader,
+            commSender,
+            commAction,
+            commText,
+            commColor
+        };
 
         if (isCombat) {
             // Haptic feedback for combat
@@ -230,19 +274,27 @@ export function useMessageLog(
             } catch (e) { }
         }
 
-        lastMessageRef.current = msg;
-        messageBufferRef.current.push(msg);
-
-        // If it's a user command, flush immediately for zero latency feel.
         if (type === 'user') {
-            if (flushTimeoutRef.current) {
-                clearTimeout(flushTimeoutRef.current);
-                flushTimeoutRef.current = null;
+            // Defer user command display until after the next batch of server data,
+            // so the room info appears first and the command appears at the end of the packet.
+            if (pendingUserCommandRef.current) {
+                // Flush any prior pending command (with buffered data) before queuing a new one
+                if (pendingUserCommandTimeoutRef.current) {
+                    clearTimeout(pendingUserCommandTimeoutRef.current);
+                    pendingUserCommandTimeoutRef.current = null;
+                }
+                flushMessages();
             }
-            flushMessages();
-        } else if (!flushTimeoutRef.current) {
+            pendingUserCommandRef.current = msg;
+            // Fallback: flush after 300ms if no server data arrives
+            pendingUserCommandTimeoutRef.current = setTimeout(flushMessages, 300);
+        } else {
+            lastMessageRef.current = msg;
+            messageBufferRef.current.push(msg);
             // Batch at ~20fps (50ms) to reduce React render thrashing on the main thread
-            flushTimeoutRef.current = setTimeout(flushMessages, 50);
+            if (!flushTimeoutRef.current) {
+                flushTimeoutRef.current = setTimeout(flushMessages, 50);
+            }
         }
     }, [isCombatLine, inCombatRef, setMessages, flushMessages, isMobileBrevityMode, roomContext, flushRoomBuffer]);
 

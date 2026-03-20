@@ -1,4 +1,39 @@
 /**
+ * Extracts the MUME interaction keyword from an item's display name.
+ * Only the core noun (not adjectives or material prefixes) is a valid keyword.
+ *
+ * Examples:
+ *   "a leather backpack"   → "backpack"
+ *   "a gleaming longsword" → "longsword"
+ *   "some iron rations"    → "rations"
+ *   "a pair of boots"      → "boots"
+ *   "a flask of water"     → "flask"
+ *   "a piece of bread"     → "bread"
+ */
+export const extractMumeKeyword = (label: string): string => {
+    let name = label.replace(/\x1b\[[0-9;]*m/g, '').replace(/<[^>]*>/g, '').trim().toLowerCase();
+
+    // Strip leading articles
+    name = name.replace(/^(a|an|the|some)\s+/, '');
+
+    // Handle "X of Y" patterns
+    const ofMatch = name.match(/^(.+?)\s+of\s+(.+)$/);
+    if (ofMatch) {
+        const before = ofMatch[1].trim();
+        const after  = ofMatch[2].trim();
+        // Compound quantifiers → keyword is what comes AFTER "of"
+        const isQuantifier = /^(pair|set|piece|bundle|pile|handful|bit|slice|loaf|lump|chunk|portion)$/.test(before);
+        const source = isQuantifier ? after : before;
+        const words = source.split(/\s+/);
+        return words[words.length - 1];
+    }
+
+    // No "of" pattern: the last word is the primary keyword
+    const words = name.split(/\s+/).filter(Boolean);
+    return words[words.length - 1] || name;
+};
+
+/**
  * Extracts a meaningful noun from a game item/player description.
  * Useful for drawer interactive buttons.
  */
@@ -9,13 +44,20 @@ export const extractNoun = (text: string): string => {
     clean = clean.replace(/<[^>]*>/g, '').replace(/\([^)]*\)/g, '').replace(/\[[^\]]*\]/g, '').trim();
     clean = clean.replace(/[.,:;!]+$/, '');
     
-    // Filter out articles and quantity words
+    // Filter out articles, quantity words, and common descriptive adjectives
     const filterRegex = /^(a|an|the|of|in|on|at|to|some|several|many|numerous|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)$/i;
-    const words = clean.split(/[\s,.-]+/).filter(w => w.length > 1 && !filterRegex.test(w));
+    const adjs = ["huge", "awesome", "ugly", "strong", "pack", "tall", "short", "large", "small", "tiny", "fierce", "old", "young", "mean", "scary", "dirty", "clean", "bright", "dark", "heavy", "light", "metallic", "runic", "steel", "iron", "wooden", "leather", "black", "white", "red", "green", "blue", "yellow", "gray", "grey", "golden", "silver"];
+    
+    const words = clean.split(/[\s,.-]+/).filter(w => 
+        w.length > 1 && 
+        !filterRegex.test(w) &&
+        !adjs.includes(w.toLowerCase())
+    );
     
     if (words.length === 0) return '';
     
-    let noun = words[words.length - 1].toLowerCase().replace(/[.,:;!?"'()[\]{}<>*#~]/g, '');
+    // Join all remaining words with hyphens (e.g. "mother eagle" -> "mother-eagle")
+    let noun = words.join('-').toLowerCase().replace(/[.,:;!?"'()[\]{}<>*#~]/g, '');
     
     // Basic singularization for MUME interaction (flagons -> flagon, etc.)
     if (noun.endsWith('ies')) return noun.slice(0, -3) + 'y';
@@ -41,8 +83,6 @@ export const simplifyDescription = (text: string): string => {
     clean = clean.replace(/\s*\([^)]*\)\s*/g, ' ').trim();
     clean = clean.replace(/[.,:;!]+$/, '');
 
-    const lower = clean.toLowerCase();
-    
     // Find articles
     const articleMatch = clean.match(/^(A|An|The|Some)\b/i);
     const article = articleMatch ? articleMatch[0] : '';
@@ -261,8 +301,12 @@ export const sanitizeGameTarget = (target: string | null | undefined): string | 
     }
 
     // Aggressively strip punctuation from entities (e.g. "Maelton, the village elder" -> "Maelton the village elder")
-    clean = clean.replace(/[.,:;!?"'()[\]{}<>*#~]/g, ' ').replace(/\s+/g, ' ').trim();
+    clean = clean.replace(/[.,:;!?"'()[\]{}<>*#~]/g, ' ').trim();
     
-    return clean;
+    // Strip leading articles
+    clean = clean.replace(/^(a|an|the|some)\s+/i, '');
+
+    // Replace internal spaces with hyphens for multi-word targets (e.g. "mother eagle" -> "mother-eagle")
+    return clean.replace(/\s+/g, '-');
 };
 

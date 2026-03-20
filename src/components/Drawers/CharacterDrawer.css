@@ -244,12 +244,23 @@
 .progress-bar-fill.xp { background: var(--accent); }
 .progress-bar-fill.tp { background: #60a5fa; }
 
+.progress-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+}
+
+.total-label {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 600;
+}
+
 .needed-label {
-    font-size: 0.6rem;
-    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.6);
     text-align: right;
-    font-weight: 700;
-    margin-top: 2px;
+    font-weight: 800;
 }
 
 .description-box, .whois-box {
