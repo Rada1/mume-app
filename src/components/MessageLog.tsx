@@ -7,7 +7,19 @@ import PracticeSkillCard from './PracticeSkillCard';
 import PracticeHeaderCard from './PracticeHeaderCard';
 import PracticeClassHeaderCard from './PracticeClassHeaderCard';
 import PracticeColumnHeaderCard from './PracticeColumnHeaderCard';
-import { TypingText } from './TypingText';
+const ReplyButton = ({ msg, setParley, onReply }: { msg: Message, setParley: (p: any) => void, onReply: (e: React.MouseEvent) => void }) => {
+    if (!msg.replyCommand) return null;
+
+    return (
+        <button
+            className="reply-btn"
+            title={msg.replyTarget ? `Reply to ${msg.replyTarget}` : `Reply on ${msg.replyCommand}`}
+            onClick={onReply}
+        >
+            <div className="reply-btn-icon">↩</div>
+        </button>
+    );
+};
 
 import { useBaseGame, useVitals, useLog } from '../context/GameContext';
 
@@ -84,7 +96,7 @@ const MessageItem = React.memo(({
                 <PracticeColumnHeaderCard sessionsLeft={msg.practiceHeader?.sessionsLeft} />
             ) : msg.type === 'practice-class-header' ? (
                 <PracticeClassHeaderCard label={msg.textRaw} />
-            ) : msg.type === 'comm' && msg.commSender ? (
+            ) : (msg.type === 'comm' || msg.isComm) && msg.commSender ? (
                 <div className="comm-bubble-wrapper">
                     <div className="comm-sender-line" style={{ color: msg.commColor }}>
                         <span className="comm-sender">{msg.commSender}</span>
@@ -96,34 +108,28 @@ const MessageItem = React.memo(({
                             style={{ color: msg.commColor, cursor: 'pointer' }}
                             onClick={triggerParley}
                         >
-                            <TypingText text={msg.commText || ''} />
+                            <span>{msg.commText}</span>
                         </div>
                         <ReplyButton msg={msg} setParley={setParley} onReply={triggerParley} />
                     </div>
                 </div>
             ) : (
                 <div className="content-row">
-                    <div className="message-content" dangerouslySetInnerHTML={{ __html: content }} />
-                    <ReplyButton msg={msg} setParley={setParley} onReply={triggerParley} />
+                    {msg.isCombat ? (
+                        <div className="combat-bubble">
+                            <div className="message-content" dangerouslySetInnerHTML={{ __html: content }} />
+                        </div>
+                    ) : (
+                        <>
+                            <div className="message-content" dangerouslySetInnerHTML={{ __html: content }} />
+                            <ReplyButton msg={msg} setParley={setParley} onReply={triggerParley} />
+                        </>
+                    )}
                 </div>
             )}
         </div>
     );
 });
-
-const ReplyButton = ({ msg, setParley, onReply }: { msg: Message, setParley: (p: any) => void, onReply: (e: React.MouseEvent) => void }) => {
-    if (!msg.replyCommand) return null;
-
-    return (
-        <button
-            className="reply-btn"
-            title={msg.replyTarget ? `Reply to ${msg.replyTarget}` : `Reply on ${msg.replyCommand}`}
-            onClick={onReply}
-        >
-            <div className="reply-btn-icon">↩</div>
-        </button>
-    );
-};
 
 const MessageLog: React.FC<MessageLogProps> = ({
     onLogClick,
@@ -170,14 +176,19 @@ const MessageLog: React.FC<MessageLogProps> = ({
         estimateSize: useCallback((index: number) => {
             const msg = messagesRef.current[index];
             if (!msg) return 24;
+            const isComm = msg.type === 'comm' || msg.isComm;
+            if (isComm && msg.commSender) return 64; 
             if (msg.type === 'shop-item') return 120;
-            if (msg.type === 'practice-skill') return 36;
+            if (msg.type === 'practice-skill') return 84;
             if (msg.type === 'practice-header') return 52;
             if (msg.type === 'practice-class-header') return 32;
-            if (msg.type === 'practice-column-header') return 56;
-            if (msg.textRaw.length > 200) return 60;
-            if (msg.textRaw.length > 100) return 40;
-            return 24;
+            if (msg.type === 'practice-column-header') return 80;
+            
+            const charCount = (msg.textRaw || msg.commText || '').length;
+            const lineCount = Math.max(1, Math.ceil(charCount / 35));
+            let h = lineCount * 22 + (isComm ? 32 : 4);
+            if (msg.isCombat) h += 10;
+            return h;
         }, []),
         overscan: 5,
     });
@@ -196,12 +207,13 @@ const MessageLog: React.FC<MessageLogProps> = ({
         if (isNewMessage) {
             if (viewport.isLockedToBottomRef.current || lastMsg?.type === 'user') {
                 viewport.isLockedToBottomRef.current = true;
-                if (!isThrottled || lastMsg?.type === 'user') {
-                    lastScrollCallRef.current = now;
-                    requestAnimationFrame(() => {
-                        viewport.scrollToBottom(true, lastMsg?.type === 'user', 'NewMessage');
-                    });
-                }
+                // No throttle on new-message scrolls — each batch (flushed every 50ms) must
+                // trigger its own scroll. Throttling here caused missed scrolls when an
+                // in-place message update fired within 16ms of the batch.
+                lastScrollCallRef.current = now;
+                requestAnimationFrame(() => {
+                    viewport.scrollToBottom(true, lastMsg?.type === 'user', 'NewMessage');
+                });
             }
         } else if (viewport.isLockedToBottomRef.current && !isThrottled) {
             lastScrollCallRef.current = now;
@@ -231,8 +243,9 @@ const MessageLog: React.FC<MessageLogProps> = ({
     // Re-scroll when virtualizer re-measures items and totalSize changes.
     // This catches the race where scrollToBottom fired based on estimated sizes,
     // then the virtualizer measured actual sizes (different), shifting us off-bottom.
+    // useLayoutEffect (not useEffect) fires BEFORE paint so the correction is invisible.
     const totalSize = virtualizer.getTotalSize();
-    React.useEffect(() => {
+    React.useLayoutEffect(() => {
         if (viewport.isLockedToBottomRef.current) {
             viewport.scrollToBottom(true, true, 'VirtualizerResize');
         }

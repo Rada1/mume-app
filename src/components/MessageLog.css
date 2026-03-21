@@ -85,9 +85,9 @@
     image-rendering: pixelated;
     -webkit-font-smoothing: subpixel-antialiased;
 
-    /* Fallback for browsers without animation-timeline */
-    transform-origin: 50% 0%;
-    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    /* Removed transitions to prevent ghosting/lag during spam */
+    transition: none !important;
+    transform: none !important;
 }
 
 /* Intelligent Dimming Base */
@@ -276,8 +276,9 @@
 }
 
 .message.recent-entry {
-    animation: smooth-enter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
 }
 
 @keyframes smooth-enter {
@@ -300,8 +301,10 @@
 }
 
 .message.combat-player.recent-entry,
-.message.combat-opponent.recent-entry {
-    animation: combat-enter 0.2s ease-out forwards;
+.message.combat-opponent.recent-entry,
+.message.combat-groupmate.recent-entry {
+    animation: none !important;
+    opacity: 1 !important;
 }
 
 .message.combat-opponent {
@@ -317,13 +320,49 @@
 }
 
 .message.combat-dim {
-    opacity: 0.25 !important;
-    filter: grayscale(0.5) blur(0.2px);
-    /* No transition — prevents virtualizer remount flash (element would
-       briefly appear at full opacity then transition down to 0.25).
-       The base .message opacity transition handles the smooth un-dim
-       when combat ends. */
+    opacity: 0.3 !important;
+    /* No transition — prevents virtualizer remount flash */
     transition: none !important;
+}
+
+.combat-bubble {
+    position: relative;
+    padding: 2px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Rhombus shape: skew the container and un-skew the text */
+    transform: skewX(-15deg) translateZ(0); /* Hardware acceleration hint */
+    will-change: transform; /* Promote to GPU layer for scroll performance */
+    transition: none !important; /* Never animate during scroll */
+    display: inline-block;
+    max-width: 95%;
+    margin: 1px 0;
+}
+
+.combat-bubble .message-content {
+    transform: skewX(15deg);
+}
+
+.combat-player .combat-bubble {
+    border-left: 3px solid rgba(74, 222, 128, 0.6); /* Soft green for player */
+    background: linear-gradient(90deg, rgba(74, 222, 128, 0.05), transparent);
+}
+
+.combat-opponent .combat-bubble {
+    border-left: 3px solid rgba(248, 113, 113, 0.6); /* Soft red for opponent */
+    background: linear-gradient(90deg, rgba(248, 113, 113, 0.05), transparent);
+    margin-left: 8px; /* Subtle offset to create a dueling flow */
+}
+
+.combat-groupmate .combat-bubble {
+    border-left: 3px solid rgba(125, 211, 252, 0.8); /* Light blue for groupmates */
+    background: linear-gradient(90deg, rgba(125, 211, 252, 0.1), transparent);
+    margin-left: 4px;
+}
+
+.combat-bubble:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .message-log.combat-mode .message:not(.combat-dim) {

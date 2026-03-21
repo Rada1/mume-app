@@ -103,9 +103,13 @@ export function useViewport(
                 } else {
                     container.scrollTop = dynamicTarget;
                     scrollAnimationRef.current = null;
-                    // Don't clear isAutoScrollingRef immediately — let the 500ms timeout
-                    // handle it so handleScroll doesn't falsely detect user scroll-away
-                    // before the virtualizer finishes re-measuring items.
+                    // Start post-animation cooldown from HERE (when animation actually ends),
+                    // not from animation start — the old 150ms timeout fired mid-animation
+                    // and never cleared isAutoScrollingRef, causing it to get stuck true.
+                    if (autoScrollTimeoutRef.current) clearTimeout(autoScrollTimeoutRef.current);
+                    autoScrollTimeoutRef.current = setTimeout(() => {
+                        isAutoScrollingRef.current = false;
+                    }, 100);
                 }
             };
 
@@ -121,12 +125,6 @@ export function useViewport(
         }
 
         console.log(`[useViewport] scrollToBottom source=${source} force=${force} target=${targetScroll} current=${currentScroll}`);
-        if (autoScrollTimeoutRef.current) clearTimeout(autoScrollTimeoutRef.current);
-        autoScrollTimeoutRef.current = setTimeout(() => {
-            if (!scrollAnimationRef.current) {
-                isAutoScrollingRef.current = false;
-            }
-        }, 150);
     }, [disableSmoothScroll, isImmersionMode]);
 
     useEffect(() => {

@@ -113,21 +113,30 @@
 }
 
 /* HP: Solid Red across all chunks */
+.modern-vitals-row.hp .threshold-chunk {
+    filter: drop-shadow(0 0 4px rgba(238, 34, 34, 0.45));
+}
 .modern-vitals-row.hp .vitals-block.filled { 
     background: #ee2222; 
-    box-shadow: 0 0 8px rgba(238, 34, 34, 0.4);
+    box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3), 0 0 10px rgba(238, 34, 34, 0.6);
 }
 
 /* Mana: Solid Purple across all chunks */
+.modern-vitals-row.mana .threshold-chunk {
+    filter: drop-shadow(0 0 4px rgba(153, 51, 255, 0.45));
+}
 .modern-vitals-row.mana .vitals-block.filled { 
     background: #9933ff; 
-    box-shadow: 0 0 8px rgba(153, 51, 255, 0.4);
+    box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3), 0 0 10px rgba(153, 51, 255, 0.6);
 }
 
 /* Move: Solid Green across all chunks */
+.modern-vitals-row.move .threshold-chunk {
+    filter: drop-shadow(0 0 4px rgba(34, 255, 85, 0.45));
+}
 .modern-vitals-row.move .vitals-block.filled { 
     background: #22ff55; 
-    box-shadow: 0 0 8px rgba(34, 255, 85, 0.4);
+    box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3), 0 0 10px rgba(34, 255, 85, 0.6);
 }
 
 /* Override landscape width if needed when docked */

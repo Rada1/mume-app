@@ -64,28 +64,47 @@ const CombatOverlay: React.FC = () => {
 
     return (
         <div className={`combat-overlay ${isVisible ? 'active' : ''}`}>
-            <div className="combat-header">
-                <span>{characterName || 'You'}</span>
-                {bufferName && <span className="buffer-label">(Buff: {bufferName})</span>}
-                <span className="combat-vs">vs.</span>
-                <span>{opponentName || '???'}</span>
-            </div>
-
             <div className="combat-body">
-                {/* Player & Buffer Side */}
-                <div className="combat-side player">
-                    <HealthQuads status={playerHealthStatus} />
+                {/* Left Side: Player & Allies (Tanks/Buffers) */}
+                <div className="combat-side left-allies">
+                    <div className="combatant-block">
+                        <span className="combatant-name">{characterName || 'You'}</span>
+                        <HealthQuads status={playerHealthStatus || 'Healthy'} />
+                    </div>
+                    
                     {bufferName && bufferHealthStatus && (
-                        <div className="buffer-indicator">
-                            <span className="buffer-name">{bufferName}</span>
+                        <div className="combatant-block ally">
+                            <span className="combatant-name">
+                                {bufferName} <span className="role-tag">Tank</span>
+                            </span>
                             <HealthQuads status={bufferHealthStatus} />
                         </div>
                     )}
                 </div>
 
-                {/* Opponent Side */}
-                <div className="combat-side opponent">
-                    <HealthQuads status={opponentHealthStatus} />
+                <div className="combat-vs-divider">
+                    <div className="vs-line" />
+                    <span className="vs-text">VS</span>
+                    <div className="vs-line" />
+                </div>
+
+                {/* Right Side: Opponents */}
+                <div className="combat-side right-enemies">
+                    {opponentHealthStatus ? (
+                        <div className="combatant-block enemy">
+                            <span className="combatant-name">{opponentName || '???'}</span>
+                            <HealthQuads status={opponentHealthStatus} />
+                        </div>
+                    ) : (
+                        <div className="combatant-block enemy hidden">
+                            <span className="combatant-name">Scanning...</span>
+                            <div className="health-quads empty">
+                                {[...Array(5)].map((_, i) => (
+                                    <div key={i} className="health-quad empty" />
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

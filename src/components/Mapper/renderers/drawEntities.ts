@@ -316,6 +316,68 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
         const py = ry * GRID_SIZE + GRID_SIZE / 2 + offsetY;
         const alpha = Math.max(0, 1 - Math.abs(rz - currentZ));
 
+        // --- Off-Screen Indicators ---
+        // If the group member is off-camera, draw a directional arrow at the edge of the map
+        const viewX1 = camera.x, viewY1 = camera.y;
+        const viewW = ctx.canvas.width / (rCtx.dpr * camera.zoom);
+        const viewH = ctx.canvas.height / (rCtx.dpr * camera.zoom);
+        const viewX2 = viewX1 + viewW, viewY2 = viewY1 + viewH;
+
+        const isOffScreen = px < viewX1 || px > viewX2 || py < viewY1 || py > viewY2;
+        if (isOffScreen && alpha > 0.1) {
+            ctx.save();
+            ctx.setTransform(1, 0, 0, 1, 0, 0); // Use screen coordinates for the indicator
+
+            // Calculate direction vector from camera center to member
+            const centerX = viewX1 + viewW / 2;
+            const centerY = viewY1 + viewH / 2;
+            const dx = px - centerX;
+            const dy = py - centerY;
+            const angleToMember = Math.atan2(dy, dx);
+
+            // Determine intersection with the screen edge
+            const aspect = viewW / viewH;
+            const tanAngle = Math.abs(Math.tan(angleToMember));
+            let edgeX, edgeY;
+
+            if (tanAngle < 1 / aspect) {
+                // Intersects Left or Right edge
+                edgeX = Math.sign(dx) * (viewW / 2 - 10);
+                edgeY = edgeX * Math.tan(angleToMember);
+            } else {
+                // Intersects Top or Bottom edge
+                edgeY = Math.sign(dy) * (viewH / 2 - 10);
+                edgeX = edgeY / Math.tan(angleToMember);
+            }
+
+            // Convert to screen pixels
+            const screenX = (viewW / 2 + edgeX) * rCtx.dpr * camera.zoom;
+            const screenY = (viewH / 2 + edgeY) * rCtx.dpr * camera.zoom;
+
+            ctx.translate(screenX, screenY);
+            ctx.rotate(angleToMember);
+
+            // Draw arrow (scaled up from 8/-6/-2 to 12/-9/-3)
+            ctx.fillStyle = color.core;
+            ctx.globalAlpha = 0.85 * alpha;
+            ctx.beginPath();
+            ctx.moveTo(12, 0);   // Tip
+            ctx.lineTo(-9, -9);  // Back-left
+            ctx.lineTo(-3, 0);   // Back-center (indent)
+            ctx.lineTo(-9, 9);   // Back-right
+            ctx.closePath();
+            ctx.fill();
+
+            // Subtle glow
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = color.core;
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        if (isOffScreen) return;
+
         // --- Trail (Draw toward the offset point using individual member color) ---
         const memberTrail = trails.get(memberKey) ?? [];
         memberTrail.forEach(t => {

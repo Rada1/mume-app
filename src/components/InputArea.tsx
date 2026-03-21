@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { MessageCircle, Reply } from 'lucide-react';
+import { MessageCircle, Reply, Repeat } from 'lucide-react';
 import { SpatButtons } from './SpatButtons';
 import { SpatButton, PopoverState } from '../types';
 import { useUI, useBaseGame, useVitals, useGame } from '../context/GameContext';
@@ -428,17 +428,29 @@ const InputArea: React.FC<InputAreaProps> = ({
                     <button type="submit" style={{ display: 'none' }}>Send</button>
                 </form>
 
-                {shouldShowSpat && (
-                    <SpatButtons
-                        spatButtons={spatButtons}
-                        isMobile={!!isMobile}
-                        isKeyboardOpen={isKeyboardOpen}
-                        setActiveSet={setActiveSet}
-                        executeCommand={executeCommand}
-                        setSpatButtons={setSpatButtons}
-                        setPopoverState={setPopoverState}
-                    />
-                )}
+                <div className="input-actions-container">
+                    {shouldShowSpat && (
+                        <SpatButtons
+                            spatButtons={spatButtons}
+                            isMobile={!!isMobile}
+                            isKeyboardOpen={isKeyboardOpen}
+                            setActiveSet={setActiveSet}
+                            executeCommand={executeCommand}
+                            setSpatButtons={setSpatButtons}
+                            setPopoverState={setPopoverState}
+                        />
+                    )}
+
+                    <button
+                        type="button"
+                        className="msg-repeat-btn"
+                        onClick={() => executeCommand('!', false, false, true)}
+                        onPointerDown={(e) => e.stopPropagation()}
+                        title="Repeat Last Command (!)"
+                    >
+                        <Repeat size={18} />
+                    </button>
+                </div>
             </div>
 
             <div className="input-vitals-dock" style={{ position: 'relative' }}>

@@ -127,6 +127,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [groupUpdateFn, setGroupUpdateFn] = useState<(data: any) => void>();
     const [groupRemoveFn, setGroupRemoveFn] = useState<(id: number) => void>();
     const [groupSetFn, setGroupSetFn] = useState<(data: any[]) => void>();
+    const lastCommIdBySenderRef = useRef<Map<string, string>>(new Map());
 
     const inCombatHookRef = useRef(false);
     useEffect(() => { inCombatHookRef.current = inCombat; }, [inCombat]);
@@ -141,7 +142,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const { messages, setMessages, addMessage, flushMessages, isCombatLine } = useMessageLog(
         inCombatHookRef,
         s.isMobileBrevityMode,
-        roomContext
+        roomContext,
+        lastCommIdBySenderRef
     );
     const addSystemMessage = useCallback((text: string) => addMessage('system', text, undefined, undefined, undefined, { textOnly: text, lower: text.toLowerCase() }, undefined, undefined, undefined, true), [addMessage]);
 
@@ -182,7 +184,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setMood: s.setMood,
         spellSpeed: s.spellSpeed,
         setSpellSpeed: s.setSpellSpeed,
-        alertness: s.alertness,
+        alertness,
         setAlertness: s.setAlertness,
         setDetectLighting: (fn) => { /* internal use */ }
     });
@@ -325,7 +327,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         mumeEditState: s.mumeEditState,
         setMumeEditState: s.setMumeEditState,
         triggerXpTicker: v.triggerXpTicker,
-        pendingGmcpCommRef
+        pendingGmcpCommRef,
+        lastCommIdBySenderRef,
+        groupMembers: s.groupMembers
     });
 
     const { processLine } = parser;
@@ -427,6 +431,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // Auto-login session tracking
     const autoLoginSessionRef = useRef({ nameSent: false, passwordSent: false, lastStatus: '' });
+    const telnetSendCommandRef = useRef(telnet.sendCommand);
+    useEffect(() => { telnetSendCommandRef.current = telnet.sendCommand; }, [telnet.sendCommand]);
 
     useEffect(() => {
         // Reset session tracking when we start a new connection
@@ -444,7 +450,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             if (lower.includes("by what name do you wish to be known?") || lower.includes("what is your name?") || lower.includes("character's name")) {
                 autoLoginSessionRef.current.nameSent = true;
                 addSystemMessage(`Auto-login: Sending name: ${settings.loginName}`);
-                executeCommand(settings.loginName, true, true);
+                telnetSendCommandRef.current(settings.loginName);
             }
         }
 
@@ -453,10 +459,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             if (lower.includes("password:")) {
                 autoLoginSessionRef.current.passwordSent = true;
                 addSystemMessage(`Auto-login: Sending password...`);
-                executeCommand(settings.loginPassword, true, true);
+                telnetSendCommandRef.current(settings.loginPassword);
             }
         }
-    }, [v.activePrompt, s.status, settings.loginName, settings.loginPassword, executeCommand, addSystemMessage]);
+    }, [v.activePrompt, s.status, settings.loginName, settings.loginPassword, addSystemMessage]);
 
     // Practice sync on character detection
     const lastSyncedCharRef = useRef<string | null>(null);
@@ -497,6 +503,40 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             });
         }
     }, [s.status, s.hasSeenOnboarding, s.isNoviceMode, addSystemMessage]);
+
+    // Group Combat Assist Trigger:
+    // When any groupmate is fighting, show a single 'Assist' spit button.
+    const isAssistActiveRef = useRef<boolean>(false);
+    useEffect(() => {
+        const checkStr = (val: any) => typeof val === 'string' && (val.toLowerCase().includes('fight') || val.toLowerCase().includes('combat'));
+        
+        const isAnyoneFighting = s.groupMembers.some(m => 
+            checkStr(m.position) || checkStr((m as any).pos) || checkStr((m as any).status) || checkStr((m as any).state) || (m as any).fighting || (m as any).combat
+        );
+        
+        if (!isAnyoneFighting) {
+            isAssistActiveRef.current = false;
+            return;
+        }
+
+        const hasExistingAssist = spatButtons.some(sb => sb.btnId === 'auto-assist-generic');
+        if (!hasExistingAssist && !isAssistActiveRef.current) {
+            isAssistActiveRef.current = true;
+            
+            triggerSpitManual({
+                id: `auto-assist-generic`,
+                label: `Assist`,
+                command: `assist`,
+                style: { backgroundColor: 'rgba(220, 38, 38, 0.8)' }, // Red combat glow
+                trigger: { 
+                    enabled: true,
+                    duration: 15, // Button lasts 15s or until clicked
+                    spit: true 
+                }
+            });
+        }
+    }, [s.groupMembers, triggerSpitManual, addSystemMessage, spatButtons]);
+
 
     // Handle keyboard-triggered visibility for buttons
     useEffect(() => {

@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, User, Activity, BookOpen, Coins, ChevronRight, RefreshCw, ScrollText, Edit3, HelpCircle, Save, RotateCcw } from 'lucide-react';
 import { useGame, useVitals } from '../../context/GameContext';
 import { PracticeSkill } from '../../types';
+import PracticeColumnHeaderCard from '../PracticeColumnHeaderCard';
+import PracticeClassHeaderCard from '../PracticeClassHeaderCard';
+import PracticeSkillCard from '../PracticeSkillCard';
 import './CharacterDrawer.css';
 
 interface CharacterDrawerProps {
@@ -335,48 +338,36 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                         </div>
                     ) : activeTab === 'practice' ? (
                         <div className="practice-tab">
-                            <div className="practice-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', padding: '0 5px' }}>
-                                <div className="sessions-badge" style={{ background: 'rgba(74, 222, 128, 0.1)', color: 'var(--accent)', padding: '4px 12px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: '800' }}>
-                                    {practiceData?.sessionsLeft ?? 0} Sessions
-                                </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
                                 <button className="refresh-button" onClick={() => executeCommand('practice')} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#fff', padding: '4px 10px', borderRadius: '8px', fontSize: '0.7rem', fontWeight: '700' }}>
                                     Refresh
                                 </button>
                             </div>
-                            
-                            <div className="skills-list">
-                                {practiceData?.skills && practiceData.skills.length > 0 ? (
-                                    Object.entries(
-                                        (practiceData.skills as PracticeSkill[]).reduce((acc, skill) => {
+                            {practiceData?.skills && practiceData.skills.length > 0 ? (
+                                <>
+                                    <PracticeColumnHeaderCard />
+                                    {Object.entries(
+                                        practiceData.skills.reduce((acc: Record<string, PracticeSkill[]>, skill: PracticeSkill) => {
                                             const category = skill.skillClass || 'Known';
                                             if (!acc[category]) acc[category] = [];
                                             acc[category].push(skill);
                                             return acc;
-                                        }, {} as Record<string, PracticeSkill[]>)
+                                        }, {})
                                     ).map(([category, skills]) => (
-                                        <div key={category} className="skill-group">
-                                            <div className="skill-group-header">{category}</div>
-                                            {(skills as PracticeSkill[]).map((skill, idx) => (
-                                                <div key={idx} className="skill-item">
-                                                    <div className="skill-info" style={{ flex: 1 }}>
-                                                        <div className="skill-name" style={{ fontSize: '0.85rem', fontWeight: '800', color: '#fff' }}>{skill.name}</div>
-                                                        <div className="skill-advice" style={{ fontSize: '0.7rem', opacity: 0.5 }}>{skill.advice}</div>
-                                                    </div>
-                                                    <div className="skill-stats" style={{ textAlign: 'right' }}>
-                                                        <div className="skill-knowledge" style={{ fontSize: '0.9rem', fontWeight: '900', color: 'var(--accent)' }}>{skill.knowledge}%</div>
-                                                        <div className="skill-difficulty" style={{ fontSize: '0.6rem', opacity: 0.3 }}>Diff: {skill.difficulty}</div>
-                                                    </div>
-                                                </div>
+                                        <React.Fragment key={category}>
+                                            <PracticeClassHeaderCard label={category} />
+                                            {skills.map((skill, idx) => (
+                                                <PracticeSkillCard key={idx} skill={skill} />
                                             ))}
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
-                                        <BookOpen size={32} style={{ marginBottom: '10px' }} />
-                                        <p style={{ fontSize: '0.8rem' }}>No practice data available.</p>
-                                    </div>
-                                )}
-                            </div>
+                                        </React.Fragment>
+                                    ))}
+                                </>
+                            ) : (
+                                <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
+                                    <BookOpen size={32} style={{ marginBottom: '10px' }} />
+                                    <p style={{ fontSize: '0.8rem' }}>No practice data available.</p>
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <div className="quests-tab">

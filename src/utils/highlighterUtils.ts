@@ -53,7 +53,8 @@ export const buildHighlighterCandidates = (
     roomItems: string[],
     discoveredItems: string[],
     inlineCategories: InlineCategoryConfig[],
-    type?: MessageType
+    type?: MessageType,
+    textOnly: string = ''
 ): Candidate[] => {
     const candidates: Candidate[] = [];
     const pcNamesSet = new Set([...roomPlayers].filter(name => name !== characterName));
@@ -248,6 +249,47 @@ export const buildHighlighterCandidates = (
             priority: 20,
             replacer: (m) => `<span class="keyword-highlight magic-word">${m}</span>`,
             length: magic.length
+        });
+    });
+
+    // 11. State Transitions (Locked, Closed, Latched)
+    // We use contextual noun extraction from the full textOnly to handle split tags.
+    const stateCounts: Record<string, number> = {};
+    ['locked', 'closed', 'latched'].forEach(stateWord => {
+        candidates.push({
+            pattern: `\\b${stateWord}\\b`,
+            isRegex: true,
+            priority: 15,
+            replacer: (m) => {
+                const count = (stateCounts[stateWord] || 0) + 1;
+                stateCounts[stateWord] = count;
+                
+                // Find the Nth occurrence of this word in textOnly (case insensitive search)
+                let pos = -1;
+                const lowerText = textOnly.toLowerCase();
+                for (let i = 0; i < count; i++) {
+                    pos = lowerText.indexOf(stateWord, pos + 1);
+                }
+                
+                if (pos === -1) return m;
+                
+                // Look back up to 45 chars for a noun: "The gate seems to be ", "door is ", "gate (", "chest: "
+                const lookback = textOnly.substring(Math.max(0, pos - 45), pos);
+                // Matches "the noun is|was|seems|appears...", "noun (", or "noun: "
+                const nounRegex = /(?:the\s+)?([A-Za-z-]+(?:\s+[A-Za-z-]+){0,3})(?:\s+(?:is|was|seems|appears|remains)(?:\s+to\s+be)?|\s*[:\-(/])\s*$/i;
+                const nounMatch = lookback.match(nounRegex);
+                const noun = nounMatch ? nounMatch[1].trim() : 'it'; // Default to "it" if no noun found
+                const keyword = extractMumeKeyword(noun);
+                
+                let cmd = '';
+                if (stateWord === 'locked') cmd = `unlock ${keyword}`;
+                else if (stateWord === 'closed') cmd = `open ${keyword}`;
+                else if (stateWord === 'latched') cmd = `unlock ${keyword}`;
+                
+                const glowColor = '#facc15';
+                return `<span class="inline-btn state-toggle-btn" data-mid="${mid}" data-action="command" data-cmd="${esc(cmd)}" data-context="${esc(stateWord)}" style="--glow-color: ${glowColor}; color: ${glowColor}; font-weight: 800">${m}</span>`;
+            },
+            length: stateWord.length
         });
     });
 

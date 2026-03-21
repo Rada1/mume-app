@@ -1,15 +1,11 @@
 import React from 'react';
 import { useBaseGame } from '../context/GameContext';
 import { PracticeSkill } from '../types';
+import { Plus } from 'lucide-react';
 
 interface PracticeSkillCardProps {
     skill: PracticeSkill;
 }
-
-const COL_SESS  = '100px';
-const COL_BTN   = '40px';
-const COL_KNOW  = '110px';
-const GRID_TEMPLATE = `1fr ${COL_SESS} ${COL_BTN} ${COL_KNOW}`;
 
 const PracticeSkillCard: React.FC<PracticeSkillCardProps> = ({ skill: initialSkill }) => {
     const { practice, executeCommand, triggerHaptic } = useBaseGame();
@@ -24,59 +20,113 @@ const PracticeSkillCard: React.FC<PracticeSkillCardProps> = ({ skill: initialSki
         executeCommand(`practice ${currentSkill.name}`, false, true);
     };
 
-    const knowledge = currentSkill.knowledge.endsWith('%')
-        ? currentSkill.knowledge
-        : `${currentSkill.knowledge}%`;
+    const proficiency = Math.min(100, currentSkill.proficiency || 0);
+    const isMaxed = proficiency >= 100;
 
     return (
-        <div style={{
-            display: 'grid',
-            gridTemplateColumns: GRID_TEMPLATE,
-            alignItems: 'center',
-            fontFamily: 'var(--font-main)',
-            fontSize: 'inherit',
-            lineHeight: '1.4',
-            padding: '4px 0',
-            width: '100%',
-            maxWidth: '500px',
-            color: 'var(--text-dim)',
+        <div className={`practice-skill-card ${isMaxed ? 'maxed' : ''}`} style={{
+            background: 'rgba(255, 255, 255, 0.03)',
+            border: '1px solid rgba(255, 255, 255, 0.06)',
+            borderRadius: '12px',
+            padding: '12px 16px',
+            marginBottom: '10px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+            transition: 'all 0.2s ease',
+            position: 'relative',
+            overflow: 'hidden'
         }}>
-            <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {currentSkill.name}
-            </span>
-            <span style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', opacity: currentSkill.sessions ? 1 : 0.3 }}>
-                {currentSkill.sessions || '-'}
-            </span>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-                {currentSkill.sessions && currentSkill.proficiency < 100 ? (
-                    <button
-                        onClick={handlePractice}
-                        style={{
-                            width: '20px',
-                            height: '20px',
-                            background: 'transparent',
-                            border: '1px solid rgba(168, 85, 247, 0.5)',
-                            borderRadius: '3px',
-                            cursor: 'pointer',
-                            color: '#a855f7',
-                            fontFamily: 'var(--font-main)',
-                            fontSize: '12px',
-                            lineHeight: '1',
-                            padding: '0',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                        }}
-                    >
-                        +
-                    </button>
-                ) : null}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ 
+                    fontWeight: 'bold', 
+                    fontSize: '0.95rem', 
+                    color: '#fff',
+                    letterSpacing: '0.5px'
+                }}>
+                    {currentSkill.name}
+                </span>
+                
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    {currentSkill.sessions && (
+                        <span style={{ 
+                            fontSize: '0.75rem', 
+                            color: 'rgba(255,255,255,0.4)', 
+                            fontWeight: '600' 
+                        }}>
+                             {currentSkill.sessions} <span style={{fontSize: '0.65rem', opacity: 0.6}}>SESS</span>
+                        </span>
+                    )}
+
+                    {!isMaxed && currentSkill.sessions && (
+                        <button
+                            onClick={handlePractice}
+                            className="practice-action-btn"
+                            style={{
+                                background: 'var(--accent)',
+                                color: '#000',
+                                border: 'none',
+                                borderRadius: '8px',
+                                width: '28px',
+                                height: '28px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                boxShadow: '0 0 10px rgba(184, 134, 11, 0.3)'
+                            }}
+                        >
+                            <Plus size={16} strokeWidth={3} />
+                        </button>
+                    )}
+                </div>
             </div>
-            <span style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                {knowledge}
-            </span>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ 
+                    flex: 1, 
+                    height: '6px', 
+                    background: 'rgba(255,255,255,0.05)', 
+                    borderRadius: '3px',
+                    overflow: 'hidden'
+                }}>
+                    <div style={{ 
+                        width: `${proficiency}%`, 
+                        height: '100%', 
+                        background: isMaxed ? '#4ade80' : 'var(--accent)',
+                        boxShadow: isMaxed ? '0 0 10px rgba(74, 222, 128, 0.3)' : '0 0 10px rgba(184, 134, 11, 0.3)',
+                        transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+                    }} />
+                </div>
+                <span style={{ 
+                    fontSize: '0.8rem', 
+                    fontWeight: '800', 
+                    color: isMaxed ? '#4ade80' : 'var(--accent)',
+                    minWidth: '40px',
+                    textAlign: 'right'
+                }}>
+                    {proficiency}%
+                </span>
+            </div>
+            
+            {currentSkill.difficulty && (
+                <div style={{ 
+                    position: 'absolute', 
+                    right: '0', 
+                    bottom: '0', 
+                    padding: '2px 8px', 
+                    fontSize: '0.55rem', 
+                    textTransform: 'uppercase', 
+                    fontWeight: '800', 
+                    opacity: 0.2,
+                    letterSpacing: '1px'
+                }}>
+                    {currentSkill.difficulty}
+                </div>
+            )}
         </div>
     );
 };
 
 export default React.memo(PracticeSkillCard);
+

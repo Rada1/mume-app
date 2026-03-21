@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { InteractionDeps } from '../useInteractionHandlers';
 import { CustomButton } from '../../types';
 import { sanitizeGameTarget } from '../../utils/gameUtils';
@@ -6,7 +6,8 @@ import { sanitizeGameTarget } from '../../utils/gameUtils';
 export const useButtonClicks = (deps: InteractionDeps) => {
     const {
         executeCommand, setInput, setTarget, addMessage, triggerHaptic, btn, joystick, target,
-        popoverState, setPopoverState, setCommandPreview, wasDraggingRef, viewport, setParley, parley
+        popoverState, setPopoverState, setCommandPreview, wasDraggingRef, viewport, setParley, parley,
+        keywordOverrides
     } = deps;
 
     const handleButtonClick = useCallback((button: CustomButton, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => {
@@ -33,22 +34,29 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             }
         }
 
-        let finalContext = sanitizeGameTarget(context) || context;
+        const effectiveContext = (context && keywordOverrides[context]) ? keywordOverrides[context] : context;
+        let finalContext = sanitizeGameTarget(effectiveContext) || effectiveContext || '';
         let detectedParent = parentNoun;
 
-        // If no explicit parentNoun, try to detect it from the context (e.g. loaf.backpack)
+        // If no explicit parentNoun, try to detect it from the context (e.g. food.2.backpack or 2.boots.backpack)
         if (!detectedParent && finalContext && finalContext.includes('.')) {
             const parts = finalContext.split('.');
+            // If it ends with a known container noun (e.g. .backpack), that's the parent.
             const lastPart = parts[parts.length - 1];
-            // MUME indices are numeric (e.g. food.2). Only treat as parent container if it's a noun.
             if (isNaN(parseInt(lastPart))) {
                 detectedParent = lastPart;
             }
         }
 
+        // If we found a parent container in the context string, strip it to get the item target
         if (detectedParent && finalContext && finalContext.endsWith(`.${detectedParent}`)) {
             finalContext = finalContext.slice(0, -(detectedParent.length + 1));
         }
+
+        // MUME Duplicate Handling:
+        // finalContext might be '2.boots' or 'food.2'. 
+        // We want to keep '2.boots' as is. If it's 'food.2', sanitizeGameTarget might have 
+        // messed with it, but here we prioritize the keyword if available.
 
         let cmd = button.command;
         if (finalContext) { cmd = cmd.includes('%n') ? cmd.replace(/%n/g, finalContext) : cmd; }
@@ -171,9 +179,9 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         } else {
             // Prepend 'get' if item is in a container, unless the command is already a get/look/take
             const isAlreadyGet = /^(get|look|take|buy|sell|mend)\b/i.test(finalCmd);
-            if (detectedParent && context && !isAlreadyGet) {
-                const itemNoun = finalContext || context.split('.')[0];
-                executeCommand(`get ${itemNoun} ${detectedParent}`, true, true, false, false, { fromUi: true });
+            if (detectedParent && finalContext && !isAlreadyGet) {
+                // For nested items, finalContext (e.g. '2.boots') is the exact target
+                executeCommand(`get ${finalContext} ${detectedParent}`, true, true, false, false, { fromUi: true });
             }
 
             // EXPLICITLY pass shouldFocus: false to avoid unintentional keyboard pop on mobile
@@ -200,7 +208,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             }
         }
         if (button.trigger?.enabled && button.trigger.autoHide && button.display === 'floating') btn.setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));
-    }, [btn, popoverState, setPopoverState, triggerHaptic, joystick, target, executeCommand, setInput, setTarget, addMessage, setCommandPreview, wasDraggingRef, viewport, setParley, parley]);
+    }, [btn, popoverState, setPopoverState, triggerHaptic, joystick, target, executeCommand, setInput, setTarget, addMessage, setCommandPreview, wasDraggingRef, viewport, setParley, parley, keywordOverrides]);
 
     return { handleButtonClick };
 };

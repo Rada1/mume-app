@@ -636,7 +636,11 @@ export const useLogTaps = (deps: InteractionDeps) => {
                     const dropCtx = dropBtn.getAttribute('data-drop-context');
                     const dropParent = dropBtn.getAttribute('data-drop-parent');
                     const rawDraggedContext = targetEl?.getAttribute('data-context');
-                    const noun = sanitizeGameTarget(rawDraggedContext) || rawDraggedContext;
+                    
+                    // Priority: use raw context if it contains a MUME index (e.g. 2.boots)
+                    const noun = (rawDraggedContext && /^\d+\./.test(rawDraggedContext)) 
+                        ? rawDraggedContext 
+                        : (sanitizeGameTarget(rawDraggedContext) || rawDraggedContext);
 
                     if (dropCmd && dropCtx && noun) {
                         triggerHaptic(80);
@@ -659,7 +663,10 @@ export const useLogTaps = (deps: InteractionDeps) => {
                     const rawRecipientName = recipient.getAttribute('data-context') || recipient.getAttribute('data-player-name');
                     const recipientName = sanitizeGameTarget(rawRecipientName) || rawRecipientName;
                     const rawDraggedContext = targetEl?.getAttribute('data-context');
-                    const draggedContext = sanitizeGameTarget(rawDraggedContext) || rawDraggedContext;
+                    const draggedContext = (rawDraggedContext && /^\d+\./.test(rawDraggedContext))
+                        ? rawDraggedContext
+                        : (sanitizeGameTarget(rawDraggedContext) || rawDraggedContext);
+
                     if (draggedContext && recipientName) {
                         const category = recipient.getAttribute('data-category');
                         if (category === 'inline-shopkeeper' && popoverState?.setId !== 'inline-shopkeeper-drop') {
@@ -683,7 +690,9 @@ export const useLogTaps = (deps: InteractionDeps) => {
                     const roomContainer = targetUnderPointer?.closest('.inline-btn:not(.dragging)');
                     const roomContainerContext = roomContainer?.getAttribute('data-context') || roomContainer?.textContent?.trim();
                     const rawDraggedContext2 = targetEl?.getAttribute('data-context');
-                    const draggedContext = sanitizeGameTarget(rawDraggedContext2) || rawDraggedContext2;
+                    const draggedContext = (rawDraggedContext2 && /^\d+\./.test(rawDraggedContext2))
+                        ? rawDraggedContext2
+                        : (sanitizeGameTarget(rawDraggedContext2) || rawDraggedContext2);
 
                     if (roomContainer && roomContainerContext && isItemContainer(roomContainerContext) && draggedContext) {
                         triggerHaptic(60);

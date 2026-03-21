@@ -10,8 +10,9 @@ import { useQuestsHandler } from './useQuestsHandler';
 export interface UseGameParserDeps {
     isItemsOpen: boolean; isCharacterOpen: boolean; isStatsOpen: boolean; isPlayersOpen: boolean; mapperRef: React.RefObject<any>;
     btn: { buttonsRef: React.RefObject<any[]>; setButtons: React.Dispatch<React.SetStateAction<any[]>>; buttonTimers: React.RefObject<Record<string, ReturnType<typeof setTimeout>>>; setActiveSet: (setId: string) => void; };
-    addMessage: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string) => void;
+    addMessage: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, combatSide?: 'player' | 'opponent' | 'groupmate') => void;
     pendingGmcpCommRef?: React.MutableRefObject<{ sender: string; chan: string; msg?: string } | null>;
+    lastCommIdBySenderRef?: React.MutableRefObject<Map<string, string>>;
     playSound: (buffer: AudioBuffer) => void; triggerHaptic: (ms: number) => void;
     setWeather: (val: any) => void; setIsFoggy: (val: boolean) => void;
     setStats: (val: GameStats | ((prev: GameStats) => GameStats)) => void;
@@ -60,7 +61,11 @@ export interface UseGameParserDeps {
     setMumeEditState: React.Dispatch<React.SetStateAction<{ isOpen: boolean; title: string; text: string; key: string }>>;
     shop: ReturnType<typeof useShopHandler>;
     triggerXpTicker?: () => void;
+    groupMembers: import('../types').GroupMember[];
 }
+
+const COMBAT_VERBS_STR = ['hit', 'miss', 'wound', 'kill', 'maul', 'pierce', 'cleave', 'stab', 'slash', 'pound', 'crush', 'smite', 'strike', 'backstab', 'charge', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shocked', 'stunned', 'blinded', 'silenced', 'hurt', 'die', 'fighting', 'incantations', 'recovered'].join('|');
+const COMBAT_REGEX = new RegExp(`(?: )(${COMBAT_VERBS_STR})s?(?: )|(${COMBAT_VERBS_STR})s? you`);
 
 export function useGameParser(deps: UseGameParserDeps) {
     const { mapperRef, btn, addMessage, playSound, triggerHaptic, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, inCombatRef, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, executeCommandRef, setInventoryLines, setStatsLines, setEqLines, setWhoList, setWhereList, captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, roomNameRef, showDebugEchoes, addDiagnosticLog, popoverState, setPopoverState, setDiscoveredItems, setPlayerHealthStatus, setOpponentHealthStatus,    setOpponentName,
@@ -73,7 +78,9 @@ export function useGameParser(deps: UseGameParserDeps) {
     setMumeEditState,
     isPlayersOpen,
     triggerXpTicker,
-    pendingGmcpCommRef
+    pendingGmcpCommRef,
+    lastCommIdBySenderRef,
+    groupMembers
 } = deps;
 
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef });
@@ -275,6 +282,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: info');
             (captureStage as any).current = 'info';
+            setCharacterInfo(prev => ({ ...prev, description: '' }));
             if (deps.isCharacterOpen) isSilentCapture.current = 1;
         }
         else if (lower.includes('whois information for') || lower.startsWith('whois:') || lower.startsWith('whois status:')) {
@@ -286,8 +294,6 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (deps.isCharacterOpen) isSilentCapture.current = 1;
         }
         else if ((deps.characterInfo.name && lower.includes(deps.characterInfo.name.toLowerCase()) && lower.includes(' is a ')) || lower.includes('described as:') || (lower.startsWith('description') && lower.includes(':'))) {
-            // Heuristic: if it also looks like an 'info' start but was not caught above, it might be description.
-            // But 'look self' often has more details.
             if (captureStage.current === 'description') return;
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: description');
@@ -295,6 +301,31 @@ export function useGameParser(deps: UseGameParserDeps) {
             setCharacterInfo(prev => ({ ...prev, description: '' }));
             if (deps.isCharacterOpen) isSilentCapture.current = 1;
         }
+
+        const combatInfo = (() => {
+            if (captureStage.current !== 'none') return { isMatch: false };
+            const isMatch = COMBAT_REGEX.test(lower) || ((lower.includes('dodge') || lower.includes('parry') || lower.includes('flee')) && inCombatRef.current);
+            
+            if (!isMatch) return { isMatch: false };
+
+            // Determine side
+            let side: 'player' | 'opponent' | 'groupmate' | undefined = undefined;
+            if (lower.startsWith('you ') || lower.startsWith('your ')) {
+                side = 'player';
+            } else {
+                // Check if any group member name starts the line
+                const groupNameMatch = groupMembers.find(m => m.name && lower.startsWith(m.name.toLowerCase() + ' '));
+                if (groupNameMatch) {
+                    side = 'groupmate';
+                } else {
+                    side = 'opponent';
+                }
+            }
+            return { isMatch: true, side };
+        })();
+
+        const isCombatMatch = combatInfo.isMatch;
+
         console.log(`[Parser] Processing: "${textOnly}" | lower: "${lower}"`);
 
         if (lower.includes('type %e on an empty line to save') || 
@@ -374,47 +405,79 @@ export function useGameParser(deps: UseGameParserDeps) {
                 setPlayerHealthStatus('Healthy');
             }
 
-            // 2. Buffer Health/Name
-            const bufferMatch = promptPart.match(/\(([^:]+):(\w+)\)/); // Heuristic for (Name:Status)
-            if (bufferMatch) {
-                setBufferName(bufferMatch[1]);
-                setBufferHealthStatus(findStatus(bufferMatch[2]));
-            } else if (!promptPart.includes('Buff:')) {
-                // We keep GMCP source for name if parser doesn't find it, but clear status if missing from prompt
-                setBufferHealthStatus(null);
+            // 2 & 3. Combatants (Opponents and Tanks/Buffers)
+            const combatantsPart = promptPart
+                .replace(/\b(?:HP|MA|MV|SP|Move|Mana)\s*:\s*\w+/gi, '') // Remove vital statuses
+                .replace(/^[\*\)\!\(\[\]oO\.f%\~+WU:=O\#\?\s\-]+/, '') // Remove leading prompt symbols
+                .replace(/>$/, '');
+
+            const pairs: {name: string, status: CombatHealthStatus | null, isParen: boolean}[] = [];
+            const regex = /([^:]+?)\s*:\s*(\w+)/g;
+            let m;
+            while ((m = regex.exec(combatantsPart)) !== null) {
+                let name = m[1].trim();
+                const status = findStatus(m[2]);
+                
+                // Clean up name flags and formatting
+                name = name.replace(/^(?:[A-Z]+\s+)+/, ''); // strip flags like CW, R
+                name = name.replace(/\s*\(x\)$/, '').trim();
+                
+                let isParen = false;
+                if (name.startsWith('(')) {
+                    isParen = true;
+                    name = name.replace(/^\(/, '');
+                }
+                
+                // Cleanup trailing/leading parenthesis artifacts from multiple matches (e.g. ") a wolverine")
+                name = name.replace(/^[\)\s]+/, '').replace(/[\(\)\s]+$/, '').trim();
+                
+                if (name.startsWith('*') && name.endsWith('*')) {
+                    name = name.substring(1, name.length-1);
+                }
+                
+                const isVitalPrefix = /^(hp|m|v|t|e|w|move|mana|tired)$/i.test(name);
+                if (status && !isVitalPrefix && name.length > 0) {
+                    pairs.push({ name, status, isParen });
+                }
             }
 
-            // 3. Opponent Health/Name
-            // Strip known parts (vitals, buffer, prompt symbols) then match name:Status>
-            // Handles both *name*:Status> and bare multi-word name:Status>
-            // Examples: *(- a fallow deer:Hurt>, )( R HP:Fine *a Dwarf*:Wounded>, *a Dwarf* (x):Fine>
-            const oppPart = promptPart
-                .replace(/\b(?:HP|MA|MV|SP|Move|Mana)\s*:\s*\w+/gi, '') // Remove vital statuses
-                .replace(/\([^:)]+:\w+\)/g, '')                         // Remove buffer (Name:Status)
-                .replace(/^[\*\)\!\(\[\]oO\.f%\~+WU:=O\#\?\s\-]+/, ''); // Remove leading prompt symbols
-            // Try asterisked name anywhere (prompt flags like "CWRS" may precede the asterisks)
-            const asteriskOppMatch = oppPart.match(/\*([^*]+)\*\s*(?:\(x\))?\s*:(\w+)\s*>$/);
-            // For bare names, also strip remaining all-uppercase flag tokens (e.g. "CWRS ", "R ")
-            const strippedOppPart = oppPart.replace(/^(?:[A-Z]+\s+)+/, '');
-            const oppMatch = asteriskOppMatch ?? strippedOppPart.match(/(.+?)\s*(?:\(x\))?\s*:(\w+)\s*>$/);
-            if (oppMatch) {
-                const name = (oppMatch[1] || "").trim();
-                const status = findStatus(oppMatch[2]);
-                const isVitalPrefix = /^(hp|m|v|t|e|w|move|mana|tired)$/i.test(name);
-                
-                if (status && !isVitalPrefix) {
-                    setOpponentName(name);
-                    setOpponentHealthStatus(status);
-                    setInCombat(true);
-                } else {
-                    setOpponentHealthStatus(null);
-                    setOpponentName(null);
-                    setInCombat(false); // No valid opponent — start the 5s latch
+            let oppName: string | null = null;
+            let oppStatus: CombatHealthStatus | null = null;
+            let buffName: string | null = null;
+            let buffStatus: CombatHealthStatus | null = null;
+
+            pairs.forEach(p => {
+                if (p.isParen) {
+                    // Explicitly parenthesized entity is a Buffer/Tank
+                    buffName = p.name;
+                    buffStatus = p.status;
+                } else if (!oppName) {
+                    // First unparenthesized entity is the Opponent
+                    oppName = p.name;
+                    oppStatus = p.status;
+                } else if (!buffName) {
+                    // Second unparenthesized entity is usually the Tank
+                    buffName = p.name;
+                    buffStatus = p.status;
                 }
+            });
+
+            if (oppName && oppStatus) {
+                setOpponentName(oppName);
+                setOpponentHealthStatus(oppStatus);
+                setInCombat(true);
             } else {
                 setOpponentHealthStatus(null);
                 setOpponentName(null);
-                setInCombat(false); // No opponent in prompt — start the 5s latch
+                setInCombat(false);
+            }
+
+            if (buffName && buffStatus) {
+                setBufferName(buffName);
+                setBufferHealthStatus(buffStatus);
+            } else if (!promptPart.includes('Buff:')) {
+                setBufferName(null);
+                setBufferHealthStatus(null);
             }
 
 
@@ -958,7 +1021,7 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         trackAction(); processTriggers(textOnly);
 
-        const isImportantMessage = /hits you|receive your share|is dead|tells you|say,|group:|mood:|alertness:|spell speed:|following/i.test(lower);
+        const isImportantMessage = /hits you|receive your share|is dead|tells you|say,|group:|following/i.test(lower);
         
         // Drawer-aware hiding: hide when the relevant drawer is open, regardless of how the command was triggered.
         // This prevents double-showing data that's already displayed in the drawer UI.
@@ -1123,7 +1186,10 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         if (gmcpComm) {
             replyTarget = gmcpComm.sender || undefined;
-            const chanMap: Record<string, string> = { tell: 'tell', say: 'say', narrate: 'narrate', shout: 'shout', exclaim: 'exclaim', sing: 'sing', whisper: 'whisper', pray: 'pray', ask: 'ask', yell: 'yell' };
+            const chanMap: Record<string, string> = { 
+                tell: 'tell', say: 'say', asks: 'say', exclaims: 'say', ask: 'say', exclaim: 'say',
+                narrate: 'narrate', shout: 'shout', yell: 'yell', sing: 'sing', whisper: 'whisper', pray: 'pray' 
+            };
             replyCommand = chanMap[gmcpComm.chan.toLowerCase()] ?? gmcpComm.chan.toLowerCase();
             commSender = replyTarget;
             commAction = replyCommand;
@@ -1149,7 +1215,12 @@ export function useGameParser(deps: UseGameParserDeps) {
         } else {
             // Text fallback (no GMCP): detect common comm patterns and split into parts
             const commPatterns: [RegExp, string, boolean][] = [
-                [/^(.+?)\s+(tells? you|says?|narrates?|yell?s|shouts?|exclaims?|sings?|whispers?|prays?|asks?(?:\s+you)?)(?:[:,\s]+)(.*)$/i, 'tell', true],
+                [/^(.+?)\s+(tells? you|tells?|whispers?)(?:[:,\s]+)(.*)$/i, 'tell', true],
+                [/^(.+?)\s+(says?|asks?(?:\s+you)?|exclaims?)(?:[:,\s]+)(.*)$/i, 'say', true],
+                [/^(.+?)\s+(narrates?)(?:[:,\s]+)(.*)$/i, 'narrate', true],
+                [/^(.+?)\s+(shouts?|yells?)(?:[:,\s]+)(.*)$/i, 'shout', true],
+                [/^(.+?)\s+(sings?)(?:[:,\s]+)(.*)$/i, 'sing', true],
+                [/^(.+?)\s+(prays?)(?:[:,\s]+)(.*)$/i, 'pray', true],
             ];
             for (const [re, cmd, hasSender] of commPatterns) {
                 const m = textOnly.match(re);
@@ -1189,19 +1260,28 @@ export function useGameParser(deps: UseGameParserDeps) {
             }
         }
         if (replyCommand) msgType = 'comm';
+        
+        let targetMid: string | undefined = undefined;
+        if (msgType === 'comm-continue') {
+            const senderKey = commSender || lastCommMsgIdRef.current?.split(':')[1] || 'last';
+            targetMid = lastCommIdBySenderRef?.current.get(senderKey) || lastCommMsgIdRef.current || undefined;
+        }
 
         if (shouldShow) {
             let finalRawText = cleanLine;
             if (isRoomName && !finalRawText.endsWith('\x1b[0m')) finalRawText += '\x1b[0m';
             
-            const mid = msgType === 'comm-continue' ? lastCommMsgIdRef.current! : `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`;
+            const currentMid = msgType === 'comm-continue' ? targetMid! : `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`;
             
             if (msgType === 'comm' || replyCommand) {
-                lastCommMsgIdRef.current = mid;
+                lastCommMsgIdRef.current = currentMid;
                 lastCommTimeRef.current = Date.now();
+                if (commSender && lastCommIdBySenderRef) {
+                    lastCommIdBySenderRef.current.set(commSender, currentMid);
+                }
             }
 
-            addMessage(msgType, finalRawText, undefined, mid, isRoomName, { textOnly, lower }, undefined, undefined, undefined, false, replyTarget, replyCommand, commSender, commAction, commText, commColor);
+            addMessage(msgType, finalRawText, isCombatMatch, currentMid, isRoomName, { textOnly, lower }, undefined, undefined, undefined, false, replyTarget, replyCommand, commSender, commAction, commText, commColor, combatInfo.side);
         }
 
         if (isEndPrompt) finalizeCapture();

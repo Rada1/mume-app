@@ -12,14 +12,14 @@ interface SpatButtonsProps {
     setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
 }
 
-const SpatButtonItem: React.FC<{
+const SpatButtonItem = React.memo(({ sb, activeDir, onPointerDown, onPointerMove, onPointerUp, onPointerCancel }: {
     sb: SpatButton;
     activeDir: string | null;
-    onPointerDown: (e: React.PointerEvent) => void;
-    onPointerMove: (e: React.PointerEvent) => void;
-    onPointerUp: (e: React.PointerEvent) => void;
-    onPointerCancel: (e: React.PointerEvent) => void;
-}> = ({ sb, activeDir, onPointerDown, onPointerMove, onPointerUp, onPointerCancel }) => {
+    onPointerDown: (e: React.PointerEvent, id: string) => void;
+    onPointerMove: (e: React.PointerEvent, id: string) => void;
+    onPointerUp: (e: React.PointerEvent, sb: SpatButton) => void;
+    onPointerCancel: (e: React.PointerEvent, id: string) => void;
+}) => {
     const elRef = useRef<HTMLDivElement>(null);
     const [spitDistance, setSpitDistance] = useState(0);
     const [isFlying, setIsFlying] = useState(true);
@@ -49,10 +49,10 @@ const SpatButtonItem: React.FC<{
                 '--accent': sb.color,
                 pointerEvents: 'auto'
             } as any}
-            onPointerDown={(e) => { e.stopPropagation(); onPointerDown(e); }}
-            onPointerMove={(e) => { e.stopPropagation(); onPointerMove(e); }}
-            onPointerUp={(e) => { e.stopPropagation(); onPointerUp(e); }}
-            onPointerCancel={(e) => { e.stopPropagation(); onPointerCancel(e); }}
+            onPointerDown={(e) => { e.stopPropagation(); onPointerDown(e, sb.id); }}
+            onPointerMove={(e) => { e.stopPropagation(); onPointerMove(e, sb.id); }}
+            onPointerUp={(e) => { e.stopPropagation(); onPointerUp(e, sb); }}
+            onPointerCancel={(e) => { e.stopPropagation(); onPointerCancel(e, sb.id); }}
             onTouchStart={(e) => { if (e.cancelable) e.preventDefault(); }}
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
         >
@@ -85,9 +85,9 @@ const SpatButtonItem: React.FC<{
             )}
         </div>
     );
-};
+});
 
-export const SpatButtons: React.FC<SpatButtonsProps> = ({
+export const SpatButtons: React.FC<SpatButtonsProps> = React.memo(({
     spatButtons,
     isMobile,
     isKeyboardOpen,
@@ -247,12 +247,12 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
                     key={sb.id}
                     sb={sb}
                     activeDir={activeDirMap[sb.id] || null}
-                    onPointerDown={(e) => handlePointerDown(e, sb.id)}
-                    onPointerMove={(e) => handlePointerMove(e, sb.id)}
-                    onPointerUp={(e) => handlePointerUp(e, sb)}
-                    onPointerCancel={(e) => handlePointerCancel(e, sb.id)}
+                    onPointerDown={handlePointerDown}
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
+                    onPointerCancel={handlePointerCancel}
                 />
             ))}
         </div>
     );
-};
+});

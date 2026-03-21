@@ -4,13 +4,21 @@ interface TypingTextProps {
     text: string;
     speed?: number; // ms per character
     onComplete?: () => void;
+    skip?: boolean;
 }
 
-export const TypingText: React.FC<TypingTextProps> = ({ text, speed = 4, onComplete }) => {
-    const [displayedText, setDisplayedText] = useState('');
-    const [index, setIndex] = useState(0);
+export const TypingText: React.FC<TypingTextProps> = ({ text, speed = 4, onComplete, skip }) => {
+    const [displayedText, setDisplayedText] = useState(skip ? text : '');
+    const [index, setIndex] = useState(skip ? text.length : 0);
 
     useEffect(() => {
+        if (skip) {
+            setDisplayedText(text);
+            setIndex(text.length);
+            // We don't necessarily need to call onComplete here as it's meant for the animation end
+            return;
+        }
+
         if (index < text.length) {
             const timeout = setTimeout(() => {
                 const charsPerStep = 2; // Process 2 characters at once for extra speed
@@ -22,7 +30,7 @@ export const TypingText: React.FC<TypingTextProps> = ({ text, speed = 4, onCompl
         } else if (onComplete) {
             onComplete();
         }
-    }, [index, text, speed, onComplete]);
+    }, [index, text, speed, onComplete, skip]);
 
     return <span>{displayedText}</span>;
 };

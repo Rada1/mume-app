@@ -24,7 +24,7 @@ export interface Message {
     type: MessageType;
     timestamp: number;
     isCombat?: boolean; // True if this line is combat-related
-    combatSide?: 'player' | 'opponent'; // Who is acting in this combat line
+    combatSide?: 'player' | 'opponent' | 'groupmate'; // Who is acting in this combat line
     dimmedInCombat?: boolean; // True if this non-combat line arrived during a fight (permanently dim)
     stackCount?: number; // How many copies of this message are stacked
     stackId?: string; // Identifier for the type of stack (e.g. "arrival:a black wolf:south")

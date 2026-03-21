@@ -16,10 +16,13 @@ export const NPC_LINE_REGEX = /^((?:A|An|The|Some)?\s*[\w\s,-]+?)\s+(\w+s)\b\s*(
 // Hook
 // ---------------------------------------------------------------------------
 
+let lastVibrateTime = 0;
+
 export function useMessageLog(
     inCombatRef: React.RefObject<boolean>,
     isMobileBrevityMode: boolean,
-    roomContext: { players: string[], npcs: string[], items: string[], roomName?: string | null }
+    roomContext: { players: string[], npcs: string[], items: string[], roomName?: string | null },
+    lastCommIdBySenderRef: React.MutableRefObject<Map<string, string>>
 ) {
     const [messages, setMessages] = useState<Message[]>([]);
     const lastMessageRef = useRef<Message | null>(null);
@@ -30,18 +33,6 @@ export function useMessageLog(
 
     const roomLineBufferRef = useRef<{ subject: string, action: string, original: string }[]>([]);
     const roomBufferTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-    const isCombatLine = useCallback((textLower: string): boolean => {
-        const combatVerbs = [
-            'hit', 'miss', 'wound', 'kill', 'maul', 'pierce',
-            'cleave', 'stab', 'slash', 'pound', 'crush', 'smite', 'shoot', 'burn',
-            'strike', 'shoot', 'backstab', 'charge', 'kick', 'bash', 'shatter', 'bite', 'sting',
-            'shocked', 'stunned', 'blinded', 'silenced', 'hurt', 'die'
-        ];
-        return combatVerbs.some(v => textLower.includes(` ${v}s `) || textLower.includes(` ${v} `) || textLower.includes(`${v}s you`) || textLower.includes(`${v} you`)) ||
-            ((textLower.includes('dodge') || textLower.includes('parry') || textLower.includes('flee')) && inCombatRef.current);
-    }, [inCombatRef]);
-
 
     const flushMessages = useCallback(() => {
         const hasPendingUser = pendingUserCommandRef.current !== null;
@@ -120,7 +111,7 @@ export function useMessageLog(
         if (finalPara) {
             const finalParagraph = finalPara.charAt(0).toUpperCase() + finalPara.slice(1);
             const msgText = `\x1b[1;37m${finalParagraph.replace(/\s+/g, ' ')}\x1b[0m`;
-            addMessageRef.current?.('game', msgText, false, undefined, false, { textOnly: finalParagraph, lower: finalParagraph.toLowerCase() }, undefined, undefined, undefined, true);
+            addMessageRef.current?.('game', msgText, false, undefined, false, { textOnly: finalParagraph, lower: finalParagraph.toLowerCase() }, undefined, undefined, undefined, true, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
         }
     }, []);
 
@@ -140,14 +131,16 @@ export function useMessageLog(
         commSender?: string,
         commAction?: string,
         commText?: string,
-        commColor?: string
+        commColor?: string,
+        providedCombatSide?: 'player' | 'opponent' | 'groupmate'
     ) => {
         const textOnly = precalculated?.textOnly || text.replace(/\x1b\[[0-9;]*m/g, '').trim();
         const textLower = precalculated?.lower || textOnly.toLowerCase();
 
-        const isCombat = combatOverride ?? (type === 'game' ? isCombatLine(textLower) : false);
+        // If combatOverride is provided directly (from parser), use it only if we're in combat mode
+        const isCombat = !!combatOverride && inCombatRef.current;
         const combatSide = isCombat
-            ? ((textLower.startsWith('you ') || textLower.startsWith('your ')) ? 'player' : 'opponent')
+            ? (providedCombatSide || ((textLower.startsWith('you ') || textLower.startsWith('your ')) ? 'player' : 'opponent'))
             : undefined;
 
         const isComm = type === 'comm' || !!replyCommand;
@@ -190,17 +183,17 @@ export function useMessageLog(
 
         addMessageRef.current = addMessage;
 
-        const isArriveLeave = ARRIVE_REGEX.test(textOnly) || 
-                             LEAVE_REGEX.test(textOnly) ||
-                             textLower.includes('arrives from') ||
-                             textLower.includes('has arrived from') ||
-                             textLower.includes(' leaves ') ||
-                             textLower.includes(' leave ');
+        const isArriveLeave = ARRIVE_REGEX.test(textOnly) ||
+            LEAVE_REGEX.test(textOnly) ||
+            textLower.includes('arrives from') ||
+            textLower.includes('has arrived from') ||
+            textLower.includes(' leaves ') ||
+            textLower.includes(' leave ');
 
         const isUrgent = isArriveLeave ||
             textLower.includes('strange incantations') ||
             textLower.includes('utters the words');
-            
+
         const dimmedInCombat = inCombatRef.current && !isCombat && !isUrgent;
         let stackId = '';
         let subject = '', actionText = '', direction = '';
@@ -218,29 +211,39 @@ export function useMessageLog(
         }
 
         const lastMsg = lastMessageRef.current;
-        if (type === 'comm-continue' && lastMsg && lastMsg.type === 'comm') {
+        const targetMid = mid;
+        const canContinue = type === 'comm-continue' && lastMsg && (lastMsg.type === 'comm' || lastMsg.isComm) &&
+            (!commSender || lastMsg.commSender === commSender);
+
+        if (canContinue) {
             const currentMsgText = lastMsg.commText || '';
-            const needsSpace = currentMsgText.length > 0 && 
-                               !currentMsgText.endsWith('-') && 
-                               !currentMsgText.endsWith(' ') && 
-                               !/^[.,!?;'"]/.test(commText || '');
-            
-            const updatedMsg: Message = { 
-                ...lastMsg, 
+            const needsSpace = currentMsgText.length > 0 &&
+                !currentMsgText.endsWith('-') &&
+                !currentMsgText.endsWith(' ') &&
+                !/^[.,!?;'"]/.test(commText || '');
+
+            const updatedMsg: Message = {
+                ...lastMsg,
                 commText: currentMsgText + (needsSpace ? ' ' : '') + (commText || ''),
-                timestamp: Date.now() 
+                timestamp: Date.now()
             };
-            const mid = lastMsg.id;
+
+            // If we have a specific targetMid, use it to find and update the correct message
+            const actualId = targetMid || lastMsg.id;
             lastMessageRef.current = updatedMsg;
             if (messageBufferRef.current.length > 0) {
-                const idx = messageBufferRef.current.findIndex(m => m.id === mid);
+                const idx = messageBufferRef.current.findIndex(m => m.id === actualId);
                 if (idx !== -1) messageBufferRef.current[idx] = updatedMsg;
                 else messageBufferRef.current.push(updatedMsg);
             } else {
-                setMessages(prev => prev.map(m => m.id === mid ? updatedMsg : m));
+                setMessages(prev => prev.map(m => m.id === actualId ? updatedMsg : m));
             }
             return;
         }
+
+        // If this is NOT a communication continuation, and the last message WAS a comm, 
+        // we MUST ensure we don't accidentally carry over ghost comm properties from a previous logic branch.
+        // This prevents the 'duplicate message' bug where a new message inherits the last comm's text.
 
         if (stackId && lastMsg && lastMsg.stackId === stackId && lastMsg.type === type && !isActuallyRoomName) {
             let newCount = (lastMsg.stackCount || 1) + 1;
@@ -266,24 +269,24 @@ export function useMessageLog(
 
         const html = ansiConvert.toHtml(text);
 
-        const msg: Message = { 
-            id: mid || Math.random().toString(36).substring(7), 
-            html, 
-            textRaw: text, 
-            type, 
-            timestamp: Date.now(), 
-            isCombat, 
-            combatSide, 
-            dimmedInCombat, 
-            isUrgent, 
-            stackId: stackId || undefined, 
-            stackCount: 1, 
-            isComm, 
-            replyTarget, 
-            replyCommand, 
-            isRoomName: isActuallyRoomName, 
-            shopItem, 
-            practiceSkill, 
+        const msg: Message = {
+            id: mid || Math.random().toString(36).substring(7),
+            html,
+            textRaw: text,
+            type,
+            timestamp: Date.now(),
+            isCombat,
+            combatSide,
+            dimmedInCombat,
+            isUrgent,
+            stackId: stackId || undefined,
+            stackCount: 1,
+            isComm,
+            replyTarget,
+            replyCommand,
+            isRoomName: isActuallyRoomName,
+            shopItem,
+            practiceSkill,
             practiceHeader,
             commSender,
             commAction,
@@ -292,9 +295,13 @@ export function useMessageLog(
         };
 
         if (isCombat) {
-            // Haptic feedback for combat
+            // Throttled haptic feedback for combat to avoid browser API spam
             try {
-                if (window.navigator?.vibrate) window.navigator.vibrate(15);
+                const now = Date.now();
+                if (window.navigator?.vibrate && now - lastVibrateTime > 150) {
+                    window.navigator.vibrate(15);
+                    lastVibrateTime = now;
+                }
             } catch (e) { }
         }
 
@@ -320,7 +327,7 @@ export function useMessageLog(
                 flushTimeoutRef.current = setTimeout(flushMessages, 50);
             }
         }
-    }, [isCombatLine, inCombatRef, setMessages, flushMessages, isMobileBrevityMode, roomContext, flushRoomBuffer]);
+    }, [inCombatRef, setMessages, flushMessages, isMobileBrevityMode, roomContext, flushRoomBuffer]);
 
-    return { messages, setMessages, addMessage, flushMessages, isCombatLine };
+    return { messages, setMessages, addMessage, flushMessages };
 }

@@ -97,8 +97,8 @@ export const useMessageHighlighter = (
      * Main entry point for processing a message's HTML and applying highlights.
      */
     const processMessageHtml = useCallback((originalHtml: string, mid: string, isRoomName: boolean, type?: MessageType) => {
-        // --- 1. Rule: No highlighted words in room names or room descriptions ---
-        if (isRoomName || type === 'room-description' || !isHighlighterEnabled) {
+        // --- 1. Rule: No highlighted words in room names ---
+        if (isRoomName || !isHighlighterEnabled) {
             return originalHtml;
         }
 
@@ -127,6 +127,13 @@ export const useMessageHighlighter = (
         // --- 0. Color-tagged object detection (runs first so highlightDepth protects these spans) ---
         newHtml = applyColorTaggedObjects(newHtml, mid, inlineCategories, target, type);
 
+        const textOnly = targetHtml
+            .replace(/<[^>]+>/g, '')
+            .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+            .replace(/&#x([0-9A-Fa-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+            .replace(/&#([0-9]+);/g, (_, d) => String.fromCodePoint(parseInt(d, 10)))
+            .normalize('NFC');
+
         // --- 3. Specialized List Highlighting (WHO/WHERE) ---
         if (type === 'who-list' || type === 'where-list') {
             // Strip MUME XML-style markup tags that ansi-to-html encodes as HTML entities,
@@ -134,14 +141,6 @@ export const useMessageHighlighter = (
             // Also strip bracket-style markers like [AW] that appear as plain text.
             newHtml = newHtml.replace(/&lt;\/?[A-Za-z]+&gt;\s*/g, '').replace(/\[[A-Za-z]+\]\s*/g, '');
 
-            // ansi-to-html (escapeXML:true) encodes non-ASCII chars as &#xHH; — decode them so
-            // names like Éorenel (encoded as &#xC9;orenel) are correctly identified.
-            const textOnly = targetHtml
-                .replace(/<[^>]+>/g, '')
-                .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-                .replace(/&#x([0-9A-Fa-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
-                .replace(/&#([0-9]+);/g, (_, d) => String.fromCodePoint(parseInt(d, 10)))
-                .normalize('NFC');
             let cleanText = textOnly.trim();
             let lastLength = 0;
             while (cleanText.length !== lastLength) {
@@ -171,7 +170,7 @@ export const useMessageHighlighter = (
             // Build and sort candidates using utility
             const candidates = buildHighlighterCandidates(
                 mid, target, buttonsRef, roomPlayers, roomNpcs, characterName, 
-                roomItems, discoveredItems, inlineCategories, type
+                roomItems, discoveredItems, inlineCategories, type, textOnly
             );
 
             candidates
