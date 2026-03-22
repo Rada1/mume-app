@@ -45,6 +45,11 @@ interface MapCanvasProps {
     clientPredictionsRef?: React.MutableRefObject<Array<{ toId: string, toX: number, toY: number, toZ: number }>>;
     groupMembers?: import('../../types').GroupMember[];
     serverIdIndexRef?: React.MutableRefObject<Record<string, string>>;
+    roomPlayers?: import('../../types').GmcpOccupant[];
+    roomNpcs?: import('../../types').GmcpOccupant[];
+    inlineCategories?: import('../../types').InlineCategoryConfig[];
+    opponentName?: string | null;
+    opponentId?: string | null;
 }
 
 export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
@@ -59,7 +64,8 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
-        baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef
+        baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
+        roomPlayers, roomNpcs, inlineCategories, opponentName, opponentId
     } = props;
 
     const { drawMap } = useMapperRenderer({
@@ -68,7 +74,8 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath,
-        baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef
+        baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
+        roomPlayers, roomNpcs, inlineCategories, opponentName, opponentId
     });
 
     useMapAnimation({

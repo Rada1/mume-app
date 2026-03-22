@@ -47,18 +47,18 @@ export const buildHighlighterCandidates = (
     mid: string,
     target: string | null,
     buttonsRef: RefObject<CustomButton[]>,
-    roomPlayers: string[],
-    roomNpcs: string[],
+    roomPlayers: import('../types').GmcpOccupant[],
+    roomNpcs: import('../types').GmcpOccupant[],
     characterName: string | null,
-    roomItems: string[],
+    roomItems: import('../types').GmcpOccupant[],
     discoveredItems: string[],
     inlineCategories: InlineCategoryConfig[],
     type?: MessageType,
     textOnly: string = ''
 ): Candidate[] => {
     const candidates: Candidate[] = [];
-    const pcNamesSet = new Set([...roomPlayers].filter(name => name !== characterName));
-    const npcNamesSet = new Set(roomNpcs);
+    const pcNamesSet = new Set(roomPlayers.map(p => typeof p === 'string' ? p : p.name).filter((name): name is string => !!name && name !== characterName));
+    const npcNamesSet = new Set(roomNpcs.map(p => typeof p === 'string' ? p : p.name).filter((name): name is string => !!name));
 
     // 1. Active Target
     if (target && type !== 'who-list' && type !== 'where-list') {
@@ -121,33 +121,35 @@ export const buildHighlighterCandidates = (
     });
 
     // 4. NPCs
-    const npcNames = new Set(roomNpcs);
-    const pSet = new Set(Array.from(pcNamesSet).map(p => (p as string).toLowerCase()));
+    const npcOccupants = roomNpcs;
+    const pSet = new Set(Array.from(pcNamesSet).map(p => p.toLowerCase()));
     if (characterName) pSet.add(characterName.toLowerCase());
 
-    npcNames.forEach(originalName => {
+    npcOccupants.forEach(occupant => {
+        const originalName = typeof occupant === 'string' ? occupant : occupant.name;
+        if (!originalName) return;
         const lowerName = originalName.toLowerCase();
         if (pSet.has(lowerName)) return;
 
         const stripped = originalName.replace(/^(A|An|The)\s+/i, '');
         const patterns = [originalName, stripped, pluralizeMumeSubject(originalName), pluralizeMumeSubject(stripped)].filter(Boolean);
 
-                patterns.forEach(p => {
-                    const category = getCategoryForName(originalName, inlineCategories);
-                    const glowColor = getGlowColorForCategory(category || 'inlinenpc', inlineCategories);
-                    const command = 'inlinenpc';
-                    const context = extractMumeKeyword(originalName);
+        patterns.forEach(p => {
+            const category = getCategoryForName(originalName, inlineCategories);
+            const glowColor = getGlowColorForCategory(category || 'inlinenpc', inlineCategories);
+            const command = 'inlinenpc';
+            const context = extractMumeKeyword(originalName);
 
-                    candidates.push({
-                        pattern: p,
-                        priority: 5,
-                        replacer: (m, _match) => {
-                            const { glow, classExtra } = getTargetAwareStyles(m, originalName, glowColor, target);
-                            return `<span class="inline-btn auto-npc npc-highlighter${classExtra}" draggable="true" data-id="auto-npc-${esc(originalName)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(context)}" data-category="${esc(category || '')}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}">${m.replace(/,/g, '')}</span>`;
-                        },
-                        length: p.length
-                    });
-                });
+            candidates.push({
+                pattern: p,
+                priority: 5,
+                replacer: (m, _match) => {
+                    const { glow, classExtra } = getTargetAwareStyles(m, originalName, glowColor, target);
+                    return `<span class="inline-btn auto-npc npc-highlighter${classExtra}" draggable="true" data-id="auto-npc-${esc(originalName)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(context)}" data-category="${esc(category || '')}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}">${m.replace(/,/g, '')}</span>`;
+                },
+                length: p.length
+            });
+        });
     });
 
     // 4.5. Corpses (Recategorized as Objects)
@@ -162,7 +164,8 @@ export const buildHighlighterCandidates = (
     });
 
     // 5. Items (Room + Discovered)
-    const allItems = Array.from(new Set([...roomItems, ...discoveredItems]));
+    const itemNames = roomItems.map(i => typeof i === 'string' ? i : i.name).filter((n): n is string => !!n);
+    const allItems = Array.from(new Set([...itemNames, ...discoveredItems]));
     allItems.forEach(name => {
         const category = getCategoryForName(name, inlineCategories);
         const glowColor = getGlowColorForCategory(category || 'inline-obj-room', inlineCategories);

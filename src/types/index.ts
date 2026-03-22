@@ -40,6 +40,7 @@ export interface Message {
     commAction?: string; // Structured action (says, tells, etc.)
     commText?: string; // Structured message text
     commColor?: string;
+    batchId?: number;
 }
 
 export interface ShopItem {
@@ -435,6 +436,7 @@ export interface GmcpUpdateExits {
     exits: Record<string, GmcpExitInfo | number | false>;
 }
 export interface GmcpOccupant {
+    id?: string | number;
     name?: string;
     short?: string;
     shortdesc?: string;

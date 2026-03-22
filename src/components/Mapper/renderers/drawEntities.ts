@@ -1,10 +1,104 @@
 import { RenderContext, getSeed } from './rendererUtils';
 import { GRID_SIZE, DIRS } from '../mapperUtils';
 import { getMemberColor } from '../../../utils/groupUtils';
+import { getGlowColorForCategory, getCategoryForName } from '../../../utils/categorizationUtils';
 
 
 export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: number, gY2: number) => {
     return; // Gridlines disabled for a cleaner look
+};
+
+// --- Room Occupants (NPCs / Non-group Players) ---
+
+/**
+ * Draws small colored orbs for NPCs and players in the current room that are not in your group.
+ * They are positioned in a petal layout around the player's primary orb.
+ */
+export const drawRoomOccupants = (
+    rCtx: RenderContext,
+    playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>
+) => {
+    const { ctx, currentZ, now, roomPlayers, roomNpcs, groupMembers, camera, inlineCategories, opponentId, opponentName } = rCtx;
+    const playerPos = playerPosRef.current;
+    if (!playerPos || Math.abs(playerPos.z - currentZ) >= 1.0) return;
+
+    const px = playerPos.x * GRID_SIZE + GRID_SIZE / 2;
+    const py = playerPos.y * GRID_SIZE + GRID_SIZE / 2;
+
+    // 1. Gather group member names to avoid double-drawing
+    const groupMemberNames = new Set(groupMembers?.map(m => m.name.toLowerCase()));
+    
+    // 2. Prepare all occupants
+    const occupants: { name: string, color: string, id?: string | number }[] = [];
+    
+    // Players (non-group)
+    (roomPlayers || []).forEach(p => {
+        const name = typeof p === 'string' ? p : p.name;
+        if (!name) return;
+        const lower = name.toLowerCase();
+        if (groupMemberNames.has(lower)) return;
+        occupants.push({ name, color: 'rgba(125, 211, 252, 1)', id: typeof p === 'string' ? undefined : p.id });
+    });
+
+    // NPCs
+    (roomNpcs || []).forEach(n => {
+        const name = typeof n === 'string' ? n : n.name;
+        if (!name) return;
+        const category = getCategoryForName(name, inlineCategories || []);
+        const color = getGlowColorForCategory(category || 'inlinenpc', inlineCategories || []);
+        occupants.push({ name, color, id: typeof n === 'string' ? undefined : n.id });
+    });
+
+    if (occupants.length === 0) return;
+
+    // 4. Draw petal layout
+    const count = occupants.length;
+    const PETAL_RADIUS = 18.0 / (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
+    const pulse = (Math.sin(now / 400) + 1) / 2;
+
+    occupants.forEach((occ, index) => {
+        const angle = (index / count) * Math.PI * 2;
+        const ox = Math.cos(angle) * PETAL_RADIUS;
+        const oy = Math.sin(angle) * PETAL_RADIUS;
+
+        const orbX = px + ox;
+        const orbY = py + oy;
+
+        ctx.save();
+        ctx.globalAlpha = 0.85;
+        ctx.fillStyle = occ.color;
+        
+        ctx.beginPath();
+        ctx.arc(orbX, orbY, 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.shadowBlur = 4 + pulse * 4;
+        ctx.shadowColor = occ.color;
+        ctx.fill();
+        ctx.restore();
+
+        // 5. Opponent Tether Line
+        let isOpponent = false;
+        if (opponentId !== undefined && opponentId !== null && occ.id !== undefined && occ.id !== null) {
+            isOpponent = String(opponentId) === String(occ.id);
+        } else if (opponentName) {
+            const oppNameLower = opponentName.toLowerCase();
+            const occNameLower = occ.name.toLowerCase();
+            isOpponent = oppNameLower === occNameLower || oppNameLower.includes(occNameLower) || occNameLower.includes(oppNameLower);
+        }
+
+        if (isOpponent) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(239, 68, 68, 0.8)';
+            ctx.lineWidth = 2.0 / (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
+            ctx.setLineDash([4, 4]);
+            ctx.moveTo(px, py);
+            ctx.lineTo(orbX, orbY);
+            ctx.stroke();
+            ctx.restore();
+        }
+    });
 };
 
 export const drawEntities = (
@@ -214,6 +308,9 @@ export const drawEntities = (
             }
         }
     }
+
+    // 5. Room Occupants (NPCs & Non-group Players)
+    drawRoomOccupants(rCtx, playerPosRef);
 };
 
 // --- Group Member Orbs ---

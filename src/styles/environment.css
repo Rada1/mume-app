@@ -256,8 +256,9 @@
     pointer-events: none;
 }
 
+/* Redundant with global combat grayscale in index.css */
 .combat-grayscale-filter.active {
-    backdrop-filter: grayscale(1.0) contrast(1.2) blur(0.3px);
+    display: none;
 }
 
 .combat-vignette {

@@ -209,6 +209,25 @@ const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: number, s:
     }
 };
 
+const getSourceDirection = (vnum: string, rCtx: RenderContext): string | null => {
+    const rData = rCtx.preloaded[vnum];
+    if (!rData || !rData[4]) return null;
+    const myExploredAt = rCtx.firstExploredAtRef.current[vnum] || Infinity;
+    let sourceDir: string | null = null;
+    let latestNeighborExploredAt = -1;
+    for (const [dir, exit] of Object.entries(rData[4] as Record<string, any>)) {
+        const neighborVnum = String(exit.target);
+        const neighborExploredAt = rCtx.firstExploredAtRef.current[neighborVnum];
+        if (neighborExploredAt && neighborExploredAt < myExploredAt) {
+            if (neighborExploredAt > latestNeighborExploredAt) {
+                latestNeighborExploredAt = neighborExploredAt;
+                sourceDir = dir;
+            }
+        }
+    }
+    return sourceDir;
+};
+
 export const drawTerrains = (
     rCtx: RenderContext,
     bX1: number, bY1: number, bX2: number, bY2: number,
@@ -276,18 +295,33 @@ export const drawTerrains = (
         for (let i = 0; i < rooms.length; i++) {
             const r = rooms[i];
             let alphaMul = 1.0;
-            if (r.vnum && rCtx.firstExploredAtRef.current[r.vnum]) {
-                const elapsed = rCtx.now - rCtx.firstExploredAtRef.current[r.vnum];
-                const animDur = 800;
+            const exploredAt = r.vnum ? rCtx.firstExploredAtRef.current[r.vnum] : 0;
+            if (exploredAt) {
+                const elapsed = rCtx.now - exploredAt;
+                const animDur = 100;
                 if (elapsed < animDur) {
                     alphaMul = elapsed / animDur;
                     rCtx.triggerRender?.(); // Keep animating
+                    
+                    const sourceDir = getSourceDirection(r.vnum, rCtx);
+                    if (sourceDir) {
+                        ctx.save();
+                        ctx.globalAlpha = 0.5;
+                        if (sourceDir === 'n') ctx.fillRect(r.x, r.y, s, s * alphaMul);
+                        else if (sourceDir === 's') ctx.fillRect(r.x, r.y + s * (1 - alphaMul), s, s * alphaMul);
+                        else if (sourceDir === 'w') ctx.fillRect(r.x, r.y, s * alphaMul, s);
+                        else if (sourceDir === 'e') ctx.fillRect(r.x + s * (1 - alphaMul), r.y, s * alphaMul, s);
+                        else { ctx.globalAlpha = 0.5 * alphaMul; ctx.fillRect(r.x, r.y, s, s); }
+                        ctx.restore();
+                        continue;
+                    }
                 }
             }
             ctx.globalAlpha = 0.5 * alphaMul;
             ctx.fillRect(r.x, r.y, s, s);
         }
     }
+    ctx.restore();
 
     // 2. Draw Peek Gradients (Gradual fade)
     for (const color in peekBatches) {
@@ -298,6 +332,26 @@ export const drawTerrains = (
             const ghostExits = rData ? rData[4] : null;
 
             for (const dir of r.peekDirs) {
+                let peekAlphaMul = 0;
+                const animDur = 100;
+                const startDelay = 100;
+
+                if (ghostExits && ghostExits[dir]) {
+                    const neighborVnum = String(ghostExits[dir].target);
+                    const exploredAt = rCtx.firstExploredAtRef.current[neighborVnum];
+                    if (exploredAt) {
+                        const elapsed = rCtx.now - exploredAt;
+                        if (elapsed > startDelay) {
+                            peekAlphaMul = Math.min(1.0, (elapsed - startDelay) / animDur);
+                            if (elapsed < startDelay + animDur) rCtx.triggerRender?.();
+                        } else {
+                            rCtx.triggerRender?.(); // Wait for delay
+                        }
+                    }
+                }
+
+                if (peekAlphaMul <= 0) continue;
+
                 let grad;
                 if (dir === 'n') grad = ctx.createLinearGradient(r.x, r.y, r.x, r.y + s * 0.7);
                 else if (dir === 's') grad = ctx.createLinearGradient(r.x, r.y + s, r.x, r.y + s * 0.3);
@@ -305,20 +359,6 @@ export const drawTerrains = (
                 else if (dir === 'w') grad = ctx.createLinearGradient(r.x, r.y, r.x + s * 0.7, r.y);
 
                 if (grad) {
-                    let peekAlphaMul = 1.0;
-                    if (ghostExits && ghostExits[dir]) {
-                        const neighborVnum = String(ghostExits[dir].target);
-                        const exploredAt = rCtx.firstExploredAtRef.current[neighborVnum];
-                        if (exploredAt) {
-                            const elapsed = rCtx.now - exploredAt;
-                            const animDur = 800;
-                            if (elapsed < animDur) {
-                                peekAlphaMul = elapsed / animDur;
-                                rCtx.triggerRender?.();
-                            }
-                        }
-                    }
-
                     ctx.save();
                     grad.addColorStop(0, color);
                     grad.addColorStop(1, 'rgba(0,0,0,0)');
@@ -340,12 +380,25 @@ export const drawTerrains = (
             const variant = Math.floor((Math.abs(Math.sin(gridX * 12.9898 + gridY * 78.233) * 43758.5453) % 1) * 6);
             
             ctx.save();
-            if (r.vnum && rCtx.firstExploredAtRef.current[r.vnum]) {
-                const elapsed = rCtx.now - rCtx.firstExploredAtRef.current[r.vnum];
-                const animDur = 800;
+            const exploredAt = r.vnum ? rCtx.firstExploredAtRef.current[r.vnum] : 0;
+            if (exploredAt) {
+                const elapsed = rCtx.now - exploredAt;
+                const animDur = 100;
                 if (elapsed < animDur) {
-                    ctx.globalAlpha = elapsed / animDur;
+                    const alphaMul = elapsed / animDur;
+                    ctx.globalAlpha = alphaMul;
                     rCtx.triggerRender?.();
+                    
+                    const sourceDir = getSourceDirection(r.vnum, rCtx);
+                    if (sourceDir) {
+                        ctx.beginPath();
+                        if (sourceDir === 'n') ctx.rect(r.x, r.y, s, s * alphaMul);
+                        else if (sourceDir === 's') ctx.rect(r.x, r.y + s * (1 - alphaMul), s, s * alphaMul);
+                        else if (sourceDir === 'w') ctx.rect(r.x, r.y, s * alphaMul, s);
+                        else if (sourceDir === 'e') ctx.rect(r.x + s * (1 - alphaMul), r.y, s * alphaMul, s);
+                        else ctx.rect(r.x, r.y, s, s);
+                        ctx.clip();
+                    }
                 }
             }
             drawTerrainIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant);

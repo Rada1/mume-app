@@ -319,54 +319,60 @@
     max-width: 100%;
 }
 
-.message.combat-dim {
-    opacity: 0.3 !important;
-    /* No transition — prevents virtualizer remount flash */
-    transition: none !important;
+.message.old-batch-dim {
+    opacity: 0.65;
+    transition: opacity 0.5s ease;
 }
 
+/* Simplify combat bubbles into clean rows with participant indicators */
 .combat-bubble {
     position: relative;
-    padding: 2px 14px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    /* Rhombus shape: skew the container and un-skew the text */
-    transform: skewX(-15deg) translateZ(0); /* Hardware acceleration hint */
-    will-change: transform; /* Promote to GPU layer for scroll performance */
-    transition: none !important; /* Never animate during scroll */
-    display: inline-block;
-    max-width: 95%;
-    margin: 1px 0;
+    padding: 2px 0 2px 10px !important;
+    background: transparent !important;
+    border: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+    margin: 1px 0 !important;
+    display: block !important;
 }
 
 .combat-bubble .message-content {
-    transform: skewX(15deg);
+    transform: none !important;
 }
 
 .combat-player .combat-bubble {
-    border-left: 3px solid rgba(74, 222, 128, 0.6); /* Soft green for player */
-    background: linear-gradient(90deg, rgba(74, 222, 128, 0.05), transparent);
+    border-left: 3px solid rgba(74, 222, 128, 0.7) !important;
 }
 
 .combat-opponent .combat-bubble {
-    border-left: 3px solid rgba(248, 113, 113, 0.6); /* Soft red for opponent */
-    background: linear-gradient(90deg, rgba(248, 113, 113, 0.05), transparent);
-    margin-left: 8px; /* Subtle offset to create a dueling flow */
+    border-left: 3px solid rgba(248, 113, 113, 0.7) !important;
+    margin-left: 0 !important;
 }
 
 .combat-groupmate .combat-bubble {
-    border-left: 3px solid rgba(125, 211, 252, 0.8); /* Light blue for groupmates */
-    background: linear-gradient(90deg, rgba(125, 211, 252, 0.1), transparent);
+    border-left: 3px solid rgba(96, 165, 250, 0.7) !important;
+}
+
+.combat-opponent .combat-bubble {
+    border-left: 4px solid rgba(248, 113, 113, 0.9); /* Stronger red for opponent */
+    background: linear-gradient(90deg, rgba(248, 113, 113, 0.07), transparent);
+    margin-left: 8px; /* Subtle offset to create a dueling flow */
+    transform: skewX(15deg) translateZ(0); /* Mirror skew for opponent */
+}
+
+.combat-opponent .combat-bubble .message-content {
+    transform: skewX(-15deg);
+}
+
+.combat-groupmate .combat-bubble {
+    border-left: 4px solid rgba(125, 211, 252, 1.0); /* Full light blue for groupmates */
+    background: linear-gradient(90deg, rgba(125, 211, 252, 0.15), transparent);
     margin-left: 4px;
 }
 
 .combat-bubble:hover {
     background: rgba(255, 255, 255, 0.06);
     border-color: rgba(255, 255, 255, 0.2);
-}
-
-.message-log.combat-mode .message:not(.combat-dim) {
-    opacity: 1;
 }
 
 .message.user {

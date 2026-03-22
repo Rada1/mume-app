@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useRef, useCallback, useMemo } from 'react';
 import {
-    PopoverState, CustomButton, TeleportTarget
+    PopoverState, CustomButton, TeleportTarget, GmcpOccupant
 } from '../types';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useMessageLog } from '../hooks/useMessageLog';
@@ -221,6 +221,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setMumeEditState: s.setMumeEditState,
         setWhoList: s.setWhoList,
         setWhereList: s.setWhereList,
+        opponentId: v.opponentId,
+        setOpponentId: v.setOpponentId,
         detectLighting: env.detectLighting
     });
 
@@ -355,10 +357,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             onRoomPlayers: (data) => { gmcpHandlers.onRoomPlayers(data); roomPlayersFn?.(data); },
             onRoomNpcs: (data) => { gmcpHandlers.onRoomNpcs(data); roomNpcsFn?.(data); },
             onRoomItems: (data) => { gmcpHandlers.onRoomItems(data); roomItemsFn?.(data); },
-            onAddPlayer: (data) => { gmcpHandlers.onAddPlayer(data); addPlayerFn?.(data); },
-            onAddNpc: (data) => { gmcpHandlers.onAddNpc(data); addNpcFn?.(data); },
-            onRemovePlayer: (data) => { gmcpHandlers.onRemovePlayer(data); removePlayerFn?.(data); },
-            onRemoveNpc: (data) => { gmcpHandlers.onRemoveNpc(data); removeNpcFn?.(data); },
+            onAddPlayer: (data: string | GmcpOccupant) => { gmcpHandlers.onAddPlayer(data); addPlayerFn?.(data); },
+            onAddNpc: (data: string | GmcpOccupant) => { gmcpHandlers.onAddNpc(data); addNpcFn?.(data); },
+            onRemovePlayer: (data: string | GmcpOccupant) => { gmcpHandlers.onRemovePlayer(data); removePlayerFn?.(data); },
+            onRemoveNpc: (data: string | GmcpOccupant) => { gmcpHandlers.onRemoveNpc(data); removeNpcFn?.(data); },
             onCharNameChange: gmcpHandlers.onCharNameChange,
             onCharInfo: gmcpHandlers.onCharInfo,
             onPositionChange: gmcpHandlers.onPositionChange,
@@ -600,6 +602,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         onRemovePlayer: removePlayerFn, setOnRemovePlayer: setRemovePlayerFn,
         onRemoveNpc: removeNpcFn, setOnRemoveNpc: setRemoveNpcFn,
         onOpponentChange: opponentChangeFn, setOnOpponentChange: setOpponentChangeFn,
+        opponentId: v.opponentId, setOpponentId: v.setOpponentId,
         onGroupAdd: groupAddFn, setOnGroupAdd: setGroupAddFn,
         onGroupUpdate: groupUpdateFn, setOnGroupUpdate: setGroupUpdateFn,
         onGroupRemove: groupRemoveFn, setOnGroupRemove: setGroupRemoveFn,

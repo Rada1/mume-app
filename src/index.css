@@ -143,8 +143,46 @@
 }
 
 /* Landscape: Move pods left to clear room for the right-side vertical button cluster */
-.is-landscape .input-area {
-    padding-right: 75px !important;
+.is-landscape .modals-layer {
+    padding-right: 0 !important;
+}
+
+/* --- Global Combat Dimming --- */
+
+.app-container {
+    transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.background-layer,
+.atmospheric-layer,
+.hud-clusters-absolute-layer,
+.input-area,
+.header,
+.joystick-cluster,
+.xbox-cluster,
+.custom-buttons-layer {
+    transition: filter 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.app-container.in-combat .background-layer,
+.app-container.in-combat .atmospheric-layer,
+.app-container.in-combat .hud-clusters-absolute-layer,
+.app-container.in-combat .header,
+.app-container.in-combat .input-area,
+.app-container.in-combat .joystick-cluster,
+.app-container.in-combat .xbox-cluster,
+.app-container.in-combat .custom-buttons-layer {
+    filter: brightness(0.35) saturate(0.7);
+}
+
+.app-container.in-combat {
+    background-color: rgba(0, 0, 0, 0.75) !important;
+}
+
+/* Ensure the message log container stays focused and bright */
+.app-container.in-combat .message-log-container {
+    filter: none !important;
+    z-index: 10;
 }
 
 .input-main-container {
@@ -351,4 +389,53 @@
 .input-vitals-dock .modern-vitals-container {
     padding: 0;
     width: auto; /* Shrink to fit! */
+}
+
+/* --- Global Combat Dimming --- */
+
+.app-container {
+    transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.background-layer,
+.environment-root,
+.hud-clusters-absolute-layer,
+.mobile-bottom-gutter,
+.mapper-cluster,
+.mapper-container,
+.input-area,
+.header,
+.joystick-cluster,
+.xbox-cluster,
+.custom-buttons-layer {
+    transition: filter 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.app-container.in-combat .background-layer,
+.app-container.in-combat .environment-root,
+.app-container.in-combat .hud-clusters-absolute-layer,
+.app-container.in-combat .mobile-bottom-gutter,
+.app-container.in-combat .mapper-cluster,
+.app-container.in-combat .mapper-container,
+.app-container.in-combat .header,
+.app-container.in-combat .input-area,
+.app-container.in-combat .joystick-cluster,
+.app-container.in-combat .xbox-cluster,
+.app-container.in-combat .custom-buttons-layer {
+    filter: grayscale(100%);
+}
+
+/* Ensure the message log container allows filters for children */
+.app-container.in-combat .message-log-container {
+    z-index: 10;
+}
+
+/* Grayscale non-combat messages in the log */
+.app-container.in-combat .message:not(.is-combat) {
+    filter: grayscale(100%) opacity(0.8);
+    transition: filter 0.8s ease, opacity 0.8s ease;
+}
+
+.app-container.in-combat .message.is-combat {
+    filter: none !important;
 }

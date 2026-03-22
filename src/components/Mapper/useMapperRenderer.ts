@@ -38,6 +38,11 @@ interface RendererProps {
     clientPredictionsRef?: MutableRefObject<Array<{ toId: string, toX: number, toY: number, toZ: number }>>;
     groupMembers?: import('../../types').GroupMember[];
     serverIdIndexRef?: MutableRefObject<Record<string, string>>;
+    roomPlayers?: import('../../types').GmcpOccupant[];
+    roomNpcs?: import('../../types').GmcpOccupant[];
+    inlineCategories?: import('../../types').InlineCategoryConfig[];
+    opponentName?: string | null;
+    opponentId?: string | null;
 }
 
 export const useMapperRenderer = ({
@@ -47,6 +52,7 @@ export const useMapperRenderer = ({
     preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, exploredRef, exploredMarkers, renderVersion,
     unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath,
     triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
+    roomPlayers, roomNpcs, inlineCategories, opponentName, opponentId,
     showOrganicTerrain = true
 }: RendererProps) => {
 
@@ -223,7 +229,7 @@ export const useMapperRenderer = ({
                 ctx: offCtx, dpr, canvasWidth: cacheW, canvasHeight: cacheH, camera: { ...camera, x: buildCamX, y: buildCamY }, isDarkMode, isMobile,
                 imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers, unveilMap,
                 allRooms, roomAtCoord, visitedAtCoord, preloaded, firstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef,
-                triggerRender
+                triggerRender, roomPlayers, roomNpcs, inlineCategories, opponentName, opponentId
             };
 
             drawGrid(rCtx, gX1, gY1, gX2, gY2);
@@ -275,7 +281,7 @@ export const useMapperRenderer = ({
             imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers, unveilMap,
             allRooms, roomAtCoord: (cache as any).roomAtCoord, visitedAtCoord: (cache as any).visitedAtCoord, 
             preloaded: preloadedCoordsRef.current, firstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef, clientPredictionsRef,
-            groupMembers, serverIdIndexRef
+            groupMembers, serverIdIndexRef, roomPlayers, roomNpcs, inlineCategories, opponentName
         };
 
         drawGroupMembers(rCtx);
@@ -285,7 +291,7 @@ export const useMapperRenderer = ({
         ctx.restore();
         drawMarquee(rCtx, marquee);
 
-    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, renderVersion, firstExploredAtRef, groupMembers, serverIdIndexRef]);
+    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, renderVersion, firstExploredAtRef, groupMembers, serverIdIndexRef, roomPlayers, roomNpcs, inlineCategories, opponentName]);
 
     return { drawMap };
 };

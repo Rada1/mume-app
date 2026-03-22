@@ -13,10 +13,10 @@ import { getGlowColorForCategory } from '../utils/categorizationUtils';
 export const useMessageHighlighter = (
     target: string | null,
     buttonsRef: RefObject<CustomButton[]>,
-    roomPlayers: string[],
-    roomNpcs: string[],
+    roomPlayers: import('../types').GmcpOccupant[],
+    roomNpcs: import('../types').GmcpOccupant[],
     characterName: string | null,
-    roomItems: string[],
+    roomItems: import('../types').GmcpOccupant[],
     inlineCategories: InlineCategoryConfig[] = [],
     isHighlighterEnabled: boolean = true,
     highlightVersion: number = 0,
@@ -86,9 +86,9 @@ export const useMessageHighlighter = (
      * Generates a hash of dependencies to determine when cache should be invalidated.
      */
     const generateDepsHash = useCallback(() => {
-        const rp = roomPlayers.join('|');
-        const rn = roomNpcs.join('|');
-        const ri = roomItems.join('|');
+        const rp = roomPlayers.map(p => typeof p === 'string' ? p : p.name).join('|');
+        const rn = roomNpcs.map(p => typeof p === 'string' ? p : p.name).join('|');
+        const ri = roomItems.map(p => typeof p === 'string' ? p : p.name).join('|');
         const di = discoveredItems.join('|');
         const ic = inlineCategories.map(c => `${c.id}:${c.keywords.join(',')}`).join('|');
         return `${target || ''}:${rp}:${rn}:${ri}:${di}:${ic}:${isHighlighterEnabled}:${highlightVersion}`;

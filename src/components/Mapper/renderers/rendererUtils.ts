@@ -18,6 +18,11 @@ export interface RenderContext {
     allRooms: Record<string, any>;
     roomAtCoord: Record<string, any>;
     visitedAtCoord: Record<string, boolean>;
+    roomNpcs?: import('../../../types').GmcpOccupant[];
+    roomPlayers?: import('../../../types').GmcpOccupant[];
+    inlineCategories?: import('../../../types').InlineCategoryConfig[];
+    opponentName?: string | null;
+    opponentId?: string | null;
     preloaded: Record<string, any>;
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
     selectedRoomIds: Set<string>;

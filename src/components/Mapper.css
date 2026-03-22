@@ -93,7 +93,7 @@
 
 /* Darkness fades OUT when light is present (but not for artificial/moon) */
 .lighting-state-sun .mapper-dark-overlay {
-    opacity: 0;
+    opacity: 0.45; /* Subtle dark vignette even when sunny */
 }
 
 .lighting-state-moon .mapper-dark-overlay {

@@ -21,18 +21,17 @@ let lastVibrateTime = 0;
 export function useMessageLog(
     inCombatRef: React.RefObject<boolean>,
     isMobileBrevityMode: boolean,
-    roomContext: { players: string[], npcs: string[], items: string[], roomName?: string | null },
+    roomContext: { players: import('../types').GmcpOccupant[], npcs: import('../types').GmcpOccupant[], items: import('../types').GmcpOccupant[], roomName?: string | null },
     lastCommIdBySenderRef: React.MutableRefObject<Map<string, string>>
 ) {
     const [messages, setMessages] = useState<Message[]>([]);
     const lastMessageRef = useRef<Message | null>(null);
     const messageBufferRef = useRef<Message[]>([]);
     const flushTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const pendingUserCommandRef = useRef<Message | null>(null);
-    const pendingUserCommandTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const roomLineBufferRef = useRef<{ subject: string, action: string, original: string }[]>([]);
     const roomBufferTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const batchIdRef = useRef(0);
 
     const isCombatLine = useCallback((text: string) => {
         const lower = text.toLowerCase();
@@ -44,19 +43,13 @@ export function useMessageLog(
     }, []);
 
     const flushMessages = useCallback(() => {
-        const hasPendingUser = pendingUserCommandRef.current !== null;
-        if (messageBufferRef.current.length === 0 && !hasPendingUser) return;
-        const pending = [...messageBufferRef.current];
+        if (messageBufferRef.current.length === 0) return;
+
+        batchIdRef.current += 1;
+        const currentBatchId = batchIdRef.current;
+
+        const pending = messageBufferRef.current.map(m => ({ ...m, batchId: currentBatchId }));
         messageBufferRef.current = [];
-        // Append pending user command at the END so it appears after server data
-        if (pendingUserCommandRef.current) {
-            pending.push(pendingUserCommandRef.current);
-            pendingUserCommandRef.current = null;
-            if (pendingUserCommandTimeoutRef.current) {
-                clearTimeout(pendingUserCommandTimeoutRef.current);
-                pendingUserCommandTimeoutRef.current = null;
-            }
-        }
         // Move 'prompt' type messages to the end — server sends prompt before room info,
         // but we want it displayed after all room content in the same packet.
         const nonPrompts = pending.filter(m => m.type !== 'prompt');
@@ -315,19 +308,23 @@ export function useMessageLog(
         }
 
         if (type === 'user') {
-            // Defer user command display until after the next batch of server data,
-            // so the room info appears first and the command appears at the end of the packet.
-            if (pendingUserCommandRef.current) {
-                // Flush any prior pending command (with buffered data) before queuing a new one
-                if (pendingUserCommandTimeoutRef.current) {
-                    clearTimeout(pendingUserCommandTimeoutRef.current);
-                    pendingUserCommandTimeoutRef.current = null;
-                }
-                flushMessages();
+            // Drain any buffered server data first (from prior commands), then append the
+            // user command immediately. This ensures consistent ordering: lingering server
+            // output always precedes the new user command, and future server responses
+            // (which haven't arrived yet) will be batched and rendered below it.
+            if (flushTimeoutRef.current) {
+                clearTimeout(flushTimeoutRef.current);
+                flushTimeoutRef.current = null;
             }
-            pendingUserCommandRef.current = msg;
-            // Fallback: flush after 300ms if no server data arrives
-            pendingUserCommandTimeoutRef.current = setTimeout(flushMessages, 300);
+            const buffered = messageBufferRef.current.splice(0);
+            const nonPrompts = buffered.filter(m => m.type !== 'prompt');
+            const prompts = buffered.filter(m => m.type === 'prompt');
+            const drained = nonPrompts.length > 0 ? [...nonPrompts, ...prompts] : buffered;
+            lastMessageRef.current = msg;
+            setMessages(prev => {
+                const nextMessages = [...prev, ...drained, msg];
+                return nextMessages.length >= 500 ? nextMessages.slice(nextMessages.length - 500) : nextMessages;
+            });
         } else {
             lastMessageRef.current = msg;
             messageBufferRef.current.push(msg);

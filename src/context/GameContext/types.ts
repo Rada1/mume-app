@@ -41,6 +41,8 @@ export interface VitalsContextType {
     setBufferName: (val: string | null) => void;
     playerHealthStatus: CombatHealthStatus | null;
     opponentName: string | null;
+    opponentId: string | null;
+    setOpponentId: (val: string | null) => void;
     opponentHealthStatus: CombatHealthStatus | null;
     bufferHealthStatus: CombatHealthStatus | null;
     characterInfo: import('../../types').CharacterInfo;
@@ -183,12 +185,12 @@ export interface GameContextType {
     setIsFoggy: (val: boolean) => void;
 
     // Room Info
-    roomPlayers: string[];
-    setRoomPlayers: Dispatch<SetStateAction<string[]>>;
-    roomNpcs: string[];
-    setRoomNpcs: Dispatch<SetStateAction<string[]>>;
-    roomItems: string[];
-    setRoomItems: Dispatch<SetStateAction<string[]>>;
+    roomPlayers: import('../../types').GmcpOccupant[];
+    setRoomPlayers: Dispatch<SetStateAction<import('../../types').GmcpOccupant[]>>;
+    roomNpcs: import('../../types').GmcpOccupant[];
+    setRoomNpcs: Dispatch<SetStateAction<import('../../types').GmcpOccupant[]>>;
+    roomItems: import('../../types').GmcpOccupant[];
+    setRoomItems: Dispatch<SetStateAction<import('../../types').GmcpOccupant[]>>;
     currentTerrain: string;
     setCurrentTerrain: (terrain: string) => void;
     roomName: string | null;

@@ -63,8 +63,11 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const playerTrailRef = useRef<{ x: number, y: number, z: number, alpha: number }[]>([]);
     const lastRoomIdRef = useRef<string | null>(null);
 
-    const { triggerHaptic, executeCommand, theme, showLegacyButtons, btn, joystick, setIsTrackpadModifierActive, lighting } = useGame();
-    const { target, groupMembers } = useVitals();
+    const { 
+        triggerHaptic, executeCommand, theme, showLegacyButtons, btn, joystick, 
+        setIsTrackpadModifierActive, lighting, roomPlayers, roomNpcs, inlineCategories
+    } = useGame();
+    const { target, groupMembers, opponentName, opponentId } = useVitals();
     const { addMessage } = useLog();
     const { setUI, setPopoverState } = useUI();
     const isDarkMode = theme === 'dark';
@@ -196,6 +199,11 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 baseMapExitsRef={context.baseMapExitsRef}
                 groupMembers={groupMembers}
                 serverIdIndexRef={context.serverIdIndexRef}
+                roomPlayers={roomPlayers}
+                roomNpcs={roomNpcs}
+                inlineCategories={inlineCategories}
+                opponentName={opponentName}
+                opponentId={opponentId}
             />
             
             {isMobile && currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`] || preloadedCoordsRef.current[String(currentRoomId).replace(/^m_/, '')]) && (

@@ -40,6 +40,7 @@ const MessageItem = React.memo(({
     executeCommand,
     setParley,
     triggerHaptic,
+    latestBatchId,
 }: {
     msg: Message,
     processMessageHtml: (html: string, mid?: string, isRoomName?: boolean, type?: MessageType) => string,
@@ -48,10 +49,11 @@ const MessageItem = React.memo(({
     executeCommand: (cmd: string) => void;
     setParley: (p: import('../types').ParleyState) => void;
     triggerHaptic: (ms: number) => void;
+    latestBatchId?: number;
 }) => {
     const content = useMemo(() => processMessageHtml(msg.html, msg.id, msg.isRoomName, msg.type), [msg.html, msg.id, msg.isRoomName, msg.type, processMessageHtml]);
     const isRecent = Date.now() - msg.timestamp < 2000;
-    const isDimmed = inCombat && !msg.isCombat && !msg.isUrgent;
+    const isOldBatchDim = latestBatchId !== undefined && (msg.batchId === undefined || msg.batchId < latestBatchId);
 
     const triggerParley = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
@@ -77,7 +79,7 @@ const MessageItem = React.memo(({
 
     return (
         <div
-            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${msg.isComm ? ' is-comm' : ''}${isDimmed ? ' combat-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isDimmed ? ' recent-entry' : ''}`}
+            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${msg.isCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}`}
         >
             {msg.type === 'user' ? (
                 <span>{msg.textRaw}</span>
@@ -143,6 +145,15 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const { messages, processMessageHtml } = useLog();
     const { activePrompt, setTarget } = useVitals();
     const { scrollContainerRef, messagesEndRef, scrollToBottom } = viewport;
+
+    const latestBatchId = useMemo(() => {
+        if (messages.length === 0) return undefined;
+        // Search from the end to find the last message with a batchId (just in case there are anomalies)
+        for (let i = messages.length - 1; i >= 0; i--) {
+            if (messages[i].batchId !== undefined) return messages[i].batchId;
+        }
+        return undefined;
+    }, [messages]);
 
     const handlePointerDownInternal = useCallback((e: React.PointerEvent) => {
         if (onPointerDown) onPointerDown(e);
@@ -306,6 +317,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                 executeCommand={executeCommand}
                                 setParley={setParley}
                                 triggerHaptic={triggerHaptic}
+                                latestBatchId={latestBatchId}
                             />
                         </div>
                     );

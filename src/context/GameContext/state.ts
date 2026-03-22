@@ -100,9 +100,9 @@ export const useGameProviderState = () => {
     const [parley, setParley] = useState<ParleyState>({ active: false, command: 'tell', target: null });
     const [whoList, setWhoList] = useState<string[]>([]);
     const [whereList, setWhereList] = useState<import('../../types').WhereEntry[]>([]);
-    const [roomPlayers, setRoomPlayers] = useState<string[]>([]);
-    const [roomNpcs, setRoomNpcs] = useState<string[]>([]);
-    const [roomItems, setRoomItems] = useState<string[]>([]);
+    const [roomPlayers, setRoomPlayers] = useState<import('../../types').GmcpOccupant[]>([]);
+    const [roomNpcs, setRoomNpcs] = useState<import('../../types').GmcpOccupant[]>([]);
+    const [roomItems, setRoomItems] = useState<import('../../types').GmcpOccupant[]>([]);
     const [currentTerrain, setCurrentTerrain] = useState<string>('city');
     const [roomName, _setRoomName] = useState<string | null>(null);
     const [roomExits, setRoomExits] = useState<string[]>([]);
@@ -369,6 +369,7 @@ export const useGameProviderState = () => {
     const [playerHealthStatus, setPlayerHealthStatus] = useState<CombatHealthStatus | null>(null);
     const [opponentHealthStatus, setOpponentHealthStatus] = useState<CombatHealthStatus | null>(null);
     const [opponentName, setOpponentName] = useState<string | null>(null);
+    const [opponentId, setOpponentId] = useState<string | null>(null);
     const [bufferHealthStatus, setBufferHealthStatus] = useState<CombatHealthStatus | null>(null);
     const [bufferName, setBufferName] = useState<string | null>(null);
 
@@ -434,13 +435,14 @@ export const useGameProviderState = () => {
         playerHealthStatus, setPlayerHealthStatus,
         opponentHealthStatus, setOpponentHealthStatus,
         opponentName, setOpponentName,
+        opponentId, setOpponentId,
         bufferHealthStatus, setBufferHealthStatus,
         bufferName, setBufferName,
         characterInfo, setCharacterInfo,
         groupMembers, setGroupMembers,
         xpHistory, xpEvent, triggerXpTicker
     }), [stats, target, activePrompt, rumble, hitFlash, deathStage, heldButton, isMendingMode, mendingTarget,
-        playerHealthStatus, opponentHealthStatus, opponentName, bufferHealthStatus, bufferName, characterInfo, groupMembers,
+        playerHealthStatus, opponentHealthStatus, opponentName, opponentId, bufferHealthStatus, bufferName, characterInfo, groupMembers,
         xpHistory, xpEvent, triggerXpTicker]);
 
     const game = useMemo(() => ({

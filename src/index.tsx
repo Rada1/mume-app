@@ -51,7 +51,8 @@ const MudClient = () => {
         mumeEditState,
         setMumeEditState,
         isCrtEnabled,
-        isBloomEnabled
+        isBloomEnabled,
+        inCombat
     } = useGame();
 
     const { rumble, setTarget, heldButton, setHeldButton } = useVitals();
@@ -153,7 +154,7 @@ const MudClient = () => {
 
     return (
         <div
-            className={`app-container ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? 'has-drawer-open' : ''} ${isCrtEnabled ? 'crt-enabled' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''}`}
+            className={`app-container ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? 'has-drawer-open' : ''} ${isCrtEnabled ? 'crt-enabled' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''} ${inCombat ? 'in-combat' : ''}`}
             ref={containerRef}
             onDragOver={(e: React.DragEvent) => {
                 e.preventDefault();
