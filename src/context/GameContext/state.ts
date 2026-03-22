@@ -31,6 +31,8 @@ export const useGameProviderState = () => {
     const [showOrganicTerrain, setShowOrganicTerrain] = usePersistentState('mud-show-organic-terrain', true);
     const [inlineCategories, setInlineCategories] = usePersistentState<import('../../types').InlineCategoryConfig[]>('mud-inline-categories', (MASTER_SETTINGS as any).inlineCategories || DEFAULT_INLINE_CATEGORIES);
     const [isHighlighterEnabled, setIsHighlighterEnabled] = usePersistentState('mud-highlighter-enabled', true);
+    const [isCrtEnabled, setIsCrtEnabled] = usePersistentState('mud-crt-enabled', false);
+    const [isBloomEnabled, setIsBloomEnabled] = usePersistentState('mud-bloom-enabled', false);
     const [favorites, setFavorites] = usePersistentState<string[]>('mud-favorites', []);
 
     // Core Game State
@@ -492,6 +494,8 @@ export const useGameProviderState = () => {
         roomExits, setRoomExits,
         inlineCategories, setInlineCategories,
         isHighlighterEnabled, setIsHighlighterEnabled,
+        isCrtEnabled, setIsCrtEnabled,
+        isBloomEnabled, setIsBloomEnabled,
         favorites, setFavorites,
         activeDragData, setActiveDragData,
         heldButton, setHeldButton,
@@ -519,7 +523,7 @@ export const useGameProviderState = () => {
         lightningEnabled, weather, isFoggy, abilities, characterClass, actions,
         inventoryLines, statsLines, eqLines, optimisticInventoryLines, optimisticEqLines, applyOptimisticChange, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
         disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, showLegacyButtons, roomName, roomExits,
-        inlineCategories, isHighlighterEnabled, favorites, activeDragData, heldButton,
+        inlineCategories, isHighlighterEnabled, isCrtEnabled, isBloomEnabled, favorites, activeDragData, heldButton,
         parley, whoList, whereList, popoverState, discoveredItems,
         quests, groupMembers, mumeEditState, handleSaveMumeEdit, executeCommandRef
     ]);

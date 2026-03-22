@@ -81,6 +81,10 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setFavorites,
         isHighlighterEnabled,
         setIsHighlighterEnabled,
+        isCrtEnabled,
+        setIsCrtEnabled,
+        isBloomEnabled,
+        setIsBloomEnabled,
         parley,
         setParley,
         whoList,
@@ -191,6 +195,10 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setShowLegacyButtons={setShowLegacyButtons}
                     isHighlighterEnabled={isHighlighterEnabled}
                     setIsHighlighterEnabled={setIsHighlighterEnabled}
+                    isCrtEnabled={isCrtEnabled}
+                    setIsCrtEnabled={setIsCrtEnabled}
+                    isBloomEnabled={isBloomEnabled}
+                    setIsBloomEnabled={setIsBloomEnabled}
                 />
             )}
 

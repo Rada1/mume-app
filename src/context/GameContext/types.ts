@@ -133,6 +133,10 @@ export interface GameContextType {
     setIsImmersionMode: (val: boolean) => void;
     isMobileBrevityMode: boolean;
     setIsMobileBrevityMode: (val: boolean) => void;
+    isCrtEnabled: boolean;
+    setIsCrtEnabled: (val: boolean) => void;
+    isBloomEnabled: boolean;
+    setIsBloomEnabled: (val: boolean) => void;
     showLegacyButtons: boolean;
     setShowLegacyButtons: (val: boolean) => void;
     showOrganicTerrain: boolean;

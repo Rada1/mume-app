@@ -115,7 +115,7 @@ export const drawEntities = (
         
         ctx.restore();
 
-        // 3. Client-side movement predictions (gray dots + tether lines)
+        // 3. Client-side movement predictions (red dots + tether lines)
         const predictions = rCtx.clientPredictionsRef?.current;
         if (predictions && predictions.length > 0) {
             let fromX = px, fromY = py;
@@ -129,7 +129,7 @@ export const drawEntities = (
                 // Dashed tether line
                 ctx.save();
                 ctx.globalAlpha = alpha * 0.7;
-                ctx.strokeStyle = '#aaaaaa';
+                ctx.strokeStyle = '#ef4444';
                 ctx.lineWidth = 1.5 / rCtx.camera.zoom;
                 ctx.setLineDash([4 / rCtx.camera.zoom, 4 / rCtx.camera.zoom]);
                 ctx.beginPath();
@@ -139,10 +139,10 @@ export const drawEntities = (
                 ctx.setLineDash([]);
                 ctx.restore();
 
-                // Gray prediction dot
+                // Red prediction dot
                 ctx.save();
                 ctx.globalAlpha = alpha;
-                ctx.fillStyle = '#aaaaaa';
+                ctx.fillStyle = '#ef4444';
                 ctx.beginPath();
                 ctx.arc(toX, toY, 6, 0, Math.PI * 2);
                 ctx.fill();
@@ -172,7 +172,7 @@ export const drawEntities = (
                 const targetX = tx * GRID_SIZE, targetY = ty * GRID_SIZE;
                 
                 ctx.save();
-                ctx.strokeStyle = '#ffffff';
+                ctx.strokeStyle = rCtx.isDarkMode ? '#ffffff' : '#000000';
                 ctx.lineWidth = 3 / rCtx.camera.zoom;
                 ctx.setLineDash([]);
                 ctx.strokeRect(targetX - 2, targetY - 2, GRID_SIZE + 4, GRID_SIZE + 4);
@@ -182,7 +182,7 @@ export const drawEntities = (
 
                 ctx.save();
                 ctx.beginPath();
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+                ctx.strokeStyle = rCtx.isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.5)';
                 ctx.lineWidth = 2 / rCtx.camera.zoom;
                 ctx.setLineDash([5 / rCtx.camera.zoom, 5 / rCtx.camera.zoom]);
                 

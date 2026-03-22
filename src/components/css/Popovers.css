@@ -1,14 +1,14 @@
 /* Popover Menu Styles */
 .popover-menu {
     position: fixed;
-    background: #0a0d15;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: 1px solid var(--accent, rgba(255, 255, 255, 0.2));
+    background: var(--bg-modal, #0a0d15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--border-modal);
     border-radius: 12px;
     padding: 10px;
     z-index: 35000;
-    box-shadow: 0 10px 48px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 10px 48px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -29,7 +29,7 @@
 .popover-header {
     padding-bottom: 5px;
     margin-bottom: 5px;
-    border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+    border-bottom: 1px solid var(--border-modal);
     font-size: 0.75rem;
     color: var(--text-dim);
     text-align: center;
@@ -43,7 +43,7 @@
     flex-shrink: 0;
     display: flex;
     align-items: center;
-    background: var(--border-color, rgba(255, 255, 255, 0.1));
+    background: var(--input-bg);
     border-radius: 8px;
     cursor: pointer;
     color: var(--text-primary, #fff);
@@ -76,10 +76,10 @@
     transform: translate(-50%, -50%);
     width: 110px;
     height: 110px;
-    background: #0a0d15;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: 2px solid var(--accent, rgba(255, 255, 255, 0.2));
+    background: var(--bg-modal, #0a0d15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 2px solid var(--accent);
     border-radius: 50%;
     display: flex;
     flex-direction: column;
@@ -206,13 +206,13 @@
     position: absolute;
     top: calc(100% + 10px);
     right: 0;
-    background: #0a0d15;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.2));
+    background: var(--bg-modal, #0a0d15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--border-modal);
     border-radius: 12px;
     min-width: 220px;
-    box-shadow: 0 10px 48px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 10px 48px rgba(0, 0, 0, 0.2);
     z-index: 10000;
     padding: 8px;
     display: flex;
@@ -234,18 +234,18 @@
 }
 
 .dropdown-item:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--input-bg);
     color: var(--text-primary);
 }
 
 .dropdown-item.active {
     color: var(--accent);
-    background: var(--border-color, rgba(74, 222, 128, 0.1));
+    background: rgba(var(--accent-rgb), 0.1);
 }
 
 .menu-divider {
     height: 1px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--border-modal);
     margin: 4px 8px;
 }
 
@@ -287,11 +287,11 @@
 
 .shop-search-input {
     width: 100%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--input-bg);
+    border: 1px solid var(--border-modal);
     border-radius: 8px;
     padding: 10px 10px 10px 34px;
-    color: #fff;
+    color: var(--text-primary);
     font-size: 0.9rem;
     outline: none;
     transition: all 0.2s;
@@ -299,7 +299,7 @@
 
 .shop-search-input:focus {
     border-color: var(--accent);
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--bg-panel);
 }
 
 .shop-category-grid {

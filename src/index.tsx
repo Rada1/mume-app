@@ -14,6 +14,7 @@ import './components/Modals.css';
 import './components/css/Popovers.css';
 import './components/css/HelpGuides.css';
 import './components/css/PremiumSwitch.css';
+import './styles/effects.css';
 
 import { MainContentLayer } from './components/Layout/MainContentLayer';
 import { HUDClustersLayer } from './components/Layout/HUDClustersLayer';
@@ -48,7 +49,9 @@ const MudClient = () => {
         handleLogPointerUp,
         env,
         mumeEditState,
-        setMumeEditState
+        setMumeEditState,
+        isCrtEnabled,
+        isBloomEnabled
     } = useGame();
 
     const { rumble, setTarget, heldButton, setHeldButton } = useVitals();
@@ -150,7 +153,7 @@ const MudClient = () => {
 
     return (
         <div
-            className={`app-container ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? 'has-drawer-open' : ''}`}
+            className={`app-container ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? 'has-drawer-open' : ''} ${isCrtEnabled ? 'crt-enabled' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''}`}
             ref={containerRef}
             onDragOver={(e: React.DragEvent) => {
                 e.preventDefault();
@@ -216,6 +219,7 @@ const MudClient = () => {
             }}
             onClick={handleBackgroundClick}
         >
+            {isCrtEnabled && <div className="crt-overlay" />}
             <div className={`app-content-shaker ${rumble ? 'rumble-active' : ''}`} style={{ flex: 1, position: 'relative' }}>
                 <div className="background-layer" style={{
                     backgroundImage: bgImage ? `url(${bgImage})` : 'none',

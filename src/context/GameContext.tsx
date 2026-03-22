@@ -79,7 +79,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         actions, actionsRef,
         inCombat, status, characterName,
         mood, spellSpeed, alertness, playerPosition,
-        isImmersionMode
+        isImmersionMode,
+        isCrtEnabled,
+        isBloomEnabled
     } = s;
 
     const { stats, rumble, hitFlash, deathStage, target, activePrompt } = v;
@@ -254,7 +256,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         showLegacyButtons: s.showLegacyButtons, setShowLegacyButtons: s.setShowLegacyButtons,
         showOrganicTerrain: s.showOrganicTerrain, setShowOrganicTerrain: s.setShowOrganicTerrain,
         inlineCategories: s.inlineCategories, setInlineCategories: s.setInlineCategories,
-        isHighlighterEnabled: s.isHighlighterEnabled, setIsHighlighterEnabled: s.setIsHighlighterEnabled
+        isHighlighterEnabled: s.isHighlighterEnabled, setIsHighlighterEnabled: s.setIsHighlighterEnabled,
+        isCrtEnabled: s.isCrtEnabled, setIsCrtEnabled: s.setIsCrtEnabled,
+        isBloomEnabled: s.isBloomEnabled, setIsBloomEnabled: s.setIsBloomEnabled
     });
 
     const [input, setInput] = useState("");

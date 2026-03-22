@@ -38,6 +38,10 @@ interface GeneralSettingsProps {
     setShowLegacyButtons: (val: boolean) => void;
     isHighlighterEnabled: boolean;
     setIsHighlighterEnabled: (val: boolean) => void;
+    isCrtEnabled: boolean;
+    setIsCrtEnabled: (val: boolean) => void;
+    isBloomEnabled: boolean;
+    setIsBloomEnabled: (val: boolean) => void;
 }
 
 const GeneralSettings: React.FC<GeneralSettingsProps> = ({
@@ -76,6 +80,10 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setShowLegacyButtons,
     isHighlighterEnabled,
     setIsHighlighterEnabled,
+    isCrtEnabled,
+    setIsCrtEnabled,
+    isBloomEnabled,
+    setIsBloomEnabled,
 }) => {
     let protocol = 'wss:';
     let host = '';
@@ -101,7 +109,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
 
     return (
         <>
-            <div className="setting-group" style={{ border: '1px solid var(--border-color, #333)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+            <div className="setting-group" style={{ border: '1px solid var(--border-modal)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
                     <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Connection Details</label>
                     <button
@@ -181,7 +189,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             style={{
                                 width: '40px',
                                 height: '20px',
-                                background: autoConnect ? 'var(--accent)' : 'var(--input-bg, #334155)',
+                                background: autoConnect ? 'var(--accent)' : 'var(--input-bg)',
                                 borderRadius: '20px',
                                 position: 'relative',
                                 cursor: 'pointer',
@@ -245,7 +253,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 </div>
             </div>
 
-            <div className="setting-group" style={{ border: '1px solid rgba(59, 130, 246, 0.3)', background: 'rgba(59, 130, 246, 0.05)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+            <div className="setting-group" style={{ border: '1px solid rgba(59, 130, 246, 0.3)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                         <label className="setting-label" style={{ color: '#60a5fa', fontWeight: 'bold', margin: 0 }}>mMapper Integration</label>
@@ -258,7 +266,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             style={{
                                 width: '40px',
                                 height: '20px',
-                                background: isMmapperMode ? '#3b82f6' : 'var(--input-bg, #334155)',
+                                background: isMmapperMode ? '#3b82f6' : 'var(--input-bg)',
                                 borderRadius: '20px',
                                 position: 'relative',
                                 cursor: 'pointer',
@@ -279,8 +287,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                     </div>
                 </div>
                 {isMmapperMode && (
-                    <div style={{ marginTop: '12px', padding: '12px', background: 'var(--input-bg, rgba(0,0,0,0.4))', borderRadius: '6px', fontSize: '0.8rem', border: '1px solid var(--border-color, rgba(255,255,255,0.1))' }}>
-                        <div style={{ color: 'var(--text-primary, #fff)', marginBottom: '10px', fontSize: '0.85rem', fontWeight: 'bold', borderBottom: '1px solid var(--border-color, #333)', paddingBottom: '5px' }}>Setup Instructions:</div>
+                    <div style={{ marginTop: '12px', padding: '12px', background: 'var(--input-bg)', borderRadius: '6px', fontSize: '0.8rem', border: '1px solid var(--border-modal)' }}>
+                        <div style={{ color: 'var(--text-primary)', marginBottom: '10px', fontSize: '0.85rem', fontWeight: 'bold', borderBottom: '1px solid var(--border-modal)', paddingBottom: '5px' }}>Setup Instructions:</div>
 
                         <div style={{ marginBottom: '12px' }}>
                             <div style={{ color: 'var(--accent)', fontWeight: 'bold' }}>1. Start the Bridge</div>
@@ -300,7 +308,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 )}
             </div>
 
-            <div className="setting-group" style={{ border: '1px solid rgba(245, 158, 11, 0.3)', background: 'rgba(245, 158, 11, 0.05)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+            <div className="setting-group" style={{ border: '1px solid rgba(245, 158, 11, 0.3)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -316,7 +324,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             style={{
                                 width: '40px',
                                 height: '20px',
-                                background: showDebugEchoes ? '#f59e0b' : 'var(--input-bg, #334155)',
+                                background: showDebugEchoes ? '#f59e0b' : 'var(--input-bg)',
                                 borderRadius: '20px',
                                 position: 'relative',
                                 cursor: 'pointer',
@@ -339,13 +347,13 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
             </div>
 
 
-            <div className="setting-group" style={{ border: '1px solid var(--border-color)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+            <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                         <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Interface Mode</label>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Force Desktop or Mobile orientation.</div>
                     </div>
-                    <div style={{ display: 'flex', backgroundColor: 'var(--input-bg)', borderRadius: '20px', padding: '2px', border: '1px solid var(--border-color)', overflow: 'hidden', flexWrap: 'wrap', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', backgroundColor: 'var(--input-bg)', borderRadius: '20px', padding: '2px', border: '1px solid var(--border-modal)', overflow: 'hidden', flexWrap: 'wrap', justifyContent: 'center' }}>
                         {(['auto', 'desktop', 'portrait', 'landscape'] as const).map((m) => (
                             <button
                                 key={m}
@@ -364,7 +372,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 </div>
             </div>
 
-            <div className="setting-group" style={{ border: '1px solid var(--border-color)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+            <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
                     <div style={{ flex: '1 1 200px' }}>
                         <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Immersion Mode</label>
@@ -396,7 +404,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 )}
             </div>
 
-            <div className="setting-group" style={{ border: '1px solid rgba(236, 72, 153, 0.3)', background: 'rgba(236, 72, 153, 0.05)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+            <div className="setting-group" style={{ border: '1px solid rgba(236, 72, 153, 0.3)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
                     <div style={{ flex: '1 1 200px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -428,7 +436,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                     </button>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(236, 72, 153, 0.2)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
                     <div style={{ flex: '1 1 200px' }}>
                         <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Object Highlighting</label>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Highlight weapons, armor, and interactable objects in text.</div>
@@ -451,12 +459,12 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(236, 72, 153, 0.2)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
                     <div style={{ flex: '1 1 200px' }}>
                         <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Client Theme</label>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Switch between Light and Dark visual modes.</div>
                     </div>
-                    <div style={{ display: 'flex', backgroundColor: 'var(--input-bg)', borderRadius: '20px', padding: '2px', border: '1px solid var(--border-color)' }}>
+                    <div style={{ display: 'flex', backgroundColor: 'var(--input-bg)', borderRadius: '20px', padding: '2px', border: '1px solid var(--border-modal)' }}>
                         <button
                             onClick={() => setTheme('dark')}
                             style={{
@@ -478,7 +486,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(236, 72, 153, 0.2)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
                     <div style={{ flex: '1 1 200px' }}>
                         <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Novice Mode</label>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Smart command parsing for easier inputs.</div>
@@ -499,6 +507,52 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             transition: 'all 0.3s'
                         }} />
                     </button>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
+                    <div style={{ flex: '1 1 200px' }}>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>CRT Filter</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Retro scanlines and subtle screen flicker.</div>
+                    </div>
+                    <div
+                        className={`setting-toggle ${isCrtEnabled ? 'active' : ''}`}
+                        onClick={() => setIsCrtEnabled(!isCrtEnabled)}
+                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isCrtEnabled ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                    >
+                        <div style={{
+                            width: '20px',
+                            height: '20px',
+                            background: '#fff',
+                            borderRadius: '50%',
+                            position: 'absolute',
+                            top: '2px',
+                            left: isCrtEnabled ? '22px' : '2px',
+                            transition: 'all 0.3s'
+                        }} />
+                    </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
+                    <div style={{ flex: '1 1 200px' }}>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Bloom Effect</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Soft glow on bright UI elements and text.</div>
+                    </div>
+                    <div
+                        className={`setting-toggle ${isBloomEnabled ? 'active' : ''}`}
+                        onClick={() => setIsBloomEnabled(!isBloomEnabled)}
+                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isBloomEnabled ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                    >
+                        <div style={{
+                            width: '20px',
+                            height: '20px',
+                            background: '#fff',
+                            borderRadius: '50%',
+                            position: 'absolute',
+                            top: '2px',
+                            left: isBloomEnabled ? '22px' : '2px',
+                            transition: 'all 0.3s'
+                        }} />
+                    </div>
                 </div>
             </div>
 

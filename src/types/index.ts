@@ -301,6 +301,10 @@ export interface SettingsModalProps {
     setShowLegacyButtons: (val: boolean) => void;
     isHighlighterEnabled: boolean;
     setIsHighlighterEnabled: (val: boolean) => void;
+    isCrtEnabled: boolean;
+    setIsCrtEnabled: (val: boolean) => void;
+    isBloomEnabled: boolean;
+    setIsBloomEnabled: (val: boolean) => void;
 }
 
 export interface ButtonSetSettings {
@@ -335,6 +339,8 @@ export interface SavedSettings {
     inlineCategories?: InlineCategoryConfig[];
     favorites?: string[];
     isHighlighterEnabled?: boolean;
+    isCrtEnabled?: boolean;
+    isBloomEnabled?: boolean;
 }
 
 export interface RoomNode {

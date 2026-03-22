@@ -6,6 +6,7 @@
 import { useCallback, RefObject, useRef } from 'react';
 import { CustomButton, InlineCategoryConfig, MessageType } from '../types';
 import { buildHighlighterCandidates, applyColorTaggedObjects } from '../utils/highlighterUtils';
+import { getGlowColorForCategory } from '../utils/categorizationUtils';
 
 // --- Logic Section: Message Processing & Highlighting ---
 
@@ -158,10 +159,11 @@ export const useMessageHighlighter = (
                 // Search newHtml using the entity-encoded form (how ansi-to-html wrote it)
                 const htmlNameCandidate = nameCandidate.replace(/[^\x00-\x7F]/g, c => `&#x${c.codePointAt(0)!.toString(16).toUpperCase()};`);
                 let highlighted = false;
+                const playerGlow = getGlowColorForCategory('inlineplayer');
                 newHtml = safeHighlight(newHtml, htmlNameCandidate, false, (m) => {
                     if (highlighted) return m;
                     highlighted = true;
-                    return `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${esc(nameCandidate)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(nameCandidate)}" data-action="menu" data-menu-display="list" style="--glow-color: rgba(125, 211, 252, 1); color: var(--glow-color); font-weight: 800">${m}</span>`;
+                    return `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${esc(nameCandidate)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(nameCandidate)}" data-action="menu" data-menu-display="list" style="--glow-color: ${playerGlow}; color: var(--glow-color); font-weight: 800">${m}</span>`;
                 });
             }
         }

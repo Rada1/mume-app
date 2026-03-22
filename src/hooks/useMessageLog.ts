@@ -34,6 +34,15 @@ export function useMessageLog(
     const roomLineBufferRef = useRef<{ subject: string, action: string, original: string }[]>([]);
     const roomBufferTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+    const isCombatLine = useCallback((text: string) => {
+        const lower = text.toLowerCase();
+        return lower.includes(' hits ') || lower.includes(' misses ') || 
+               lower.includes(' scratches ') || lower.includes(' bruises ') || 
+               lower.includes(' smashes ') || lower.includes(' cleaves ') || 
+               lower.includes(' pierces ') || lower.includes(' crushes ') ||
+               lower.includes(' massacres ') || lower.includes(' obliterates ');
+    }, []);
+
     const flushMessages = useCallback(() => {
         const hasPendingUser = pendingUserCommandRef.current !== null;
         if (messageBufferRef.current.length === 0 && !hasPendingUser) return;
@@ -329,5 +338,5 @@ export function useMessageLog(
         }
     }, [inCombatRef, setMessages, flushMessages, isMobileBrevityMode, roomContext, flushRoomBuffer]);
 
-    return { messages, setMessages, addMessage, flushMessages };
+    return { messages, setMessages, addMessage, flushMessages, isCombatLine };
 }

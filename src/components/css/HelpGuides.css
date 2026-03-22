@@ -3,16 +3,16 @@
     display: flex;
     height: 100%;
     min-height: 400px;
-    background: var(--bg-app, rgba(0, 0, 0, 0.2));
+    background: var(--bg-app);
     border-radius: 8px;
     overflow: hidden;
-    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.05));
+    border: 1px solid var(--border-modal);
 }
 
 .help-sidebar {
     width: 180px;
-    background: var(--bg-panel, rgba(255, 255, 255, 0.03));
-    border-right: 1px solid var(--border-color, rgba(255, 255, 255, 0.05));
+    background: var(--bg-panel);
+    border-right: 1px solid var(--border-modal);
     display: flex;
     flex-direction: column;
 }
@@ -34,9 +34,9 @@
 }
 
 .help-nav-item.active {
-    background: var(--bg-panel, rgba(74, 144, 226, 0.1));
-    color: var(--accent, #4a90e2) !important;
-    border-left: 3px solid var(--accent, #4a90e2);
+    background: rgba(var(--accent-rgb), 0.1);
+    color: var(--accent) !important;
+    border-left: 3px solid var(--accent);
 }
 
 .help-nav-item .chevron {
@@ -47,14 +47,14 @@
 .help-sidebar-footer {
     margin-top: auto;
     padding: 12px;
-    border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.05));
+    border-top: 1px solid var(--border-modal);
 }
 
 .help-content {
     flex: 1;
     padding: 24px;
     overflow-y: auto;
-    background: var(--bg-app, rgba(0, 0, 0, 0.1));
+    background: var(--bg-app);
     -webkit-overflow-scrolling: touch;
 }
 
@@ -82,7 +82,7 @@
     }
 
     .help-nav-item.active {
-        border-bottom: 3px solid #4a90e2;
+        border-bottom: 3px solid var(--accent);
     }
 
     .help-nav-item .chevron {
@@ -108,9 +108,9 @@
 .markdown-body h2 {
     font-size: 1.1rem;
     margin: 20px 0 10px 0;
-    color: #4a90e2;
+    color: var(--accent);
     font-weight: 600;
-    border-bottom: 1px solid rgba(74, 144, 226, 0.2);
+    border-bottom: 1px solid rgba(var(--accent-rgb), 0.2);
     padding-bottom: 4px;
 }
 

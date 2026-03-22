@@ -15,6 +15,11 @@
     --border-color: rgba(255, 255, 255, 0.1);
     --input-bg: rgba(0, 0, 0, 0.6);
     --header-bg: rgba(0, 0, 0, 0.75);
+    --bg-modal: #0a0d15;
+    --border-modal: rgba(255, 255, 255, 0.15);
+    --color-exit: rgba(255, 255, 255, 0.9);
+    --mapper-bg: rgba(15, 23, 42, 0.4);
+    --mapper-border: rgba(255, 255, 255, 0.1);
 
     /* ANSI Colors */
     --ansi-black: #000000;
@@ -45,11 +50,16 @@
     --border-color: rgba(0, 0, 0, 0.1);
     --input-bg: rgba(255, 255, 255, 0.8);
     --header-bg: rgba(255, 255, 255, 0.7);
+    --bg-modal: #ffffff;
+    --border-modal: rgba(0, 0, 0, 0.1);
     --accent: #007aff;
     --accent-rgb: 0, 122, 255;
     --map-accent: #0066cc;
     --ansi-white: #444444;
     --ansi-bright-white: #000000;
+    --color-exit: #000000;
+    --mapper-bg: #fcfaf2;
+    --mapper-border: rgba(0, 0, 0, 0.1);
 }
 
 * {

@@ -232,7 +232,7 @@ export const buildHighlighterCandidates = (
                     `<span class="inline-btn exit-bracket" data-mid="${mid}" data-action="command" data-cmd="${esc(bracketCmd)}" data-context="${esc(prefix)}" style="${bracketStyle}">${prefix}</span>` : '';
                 const closeBracket = suffix ? 
                     `<span class="inline-btn exit-bracket" data-mid="${mid}" data-action="command" data-cmd="${esc(bracketCmd)}" data-context="${esc(suffix)}" style="${bracketStyle}">${suffix}</span>` : '';
-                const glowColor = 'rgba(255, 255, 255, 0.9)';
+                const glowColor = 'var(--color-exit)';
                 const dirBtn = `<span class="inline-btn exit-word" data-mid="${mid}" data-action="command" data-cmd="${esc(dir)}" data-context="${esc(dir)}" style="--glow-color: ${glowColor}; color: ${glowColor}">${dir}</span>`;
 
                 return `${openBracket}${dirBtn}${closeBracket}`;

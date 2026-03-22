@@ -6,8 +6,8 @@
 import { InlineCategoryConfig } from '../types';
 
 // palette definitions for consistency
-const COLOR_NPC = 'rgba(240, 171, 252, 1)';   // Brighter Neon Purple (#f0abfc)
-const COLOR_PLAYER = 'rgba(125, 211, 252, 1)'; // Brighter Sky Blue (#7dd3fc)
+const COLOR_NPC = 'rgba(217, 70, 239, 0.9)';   // Softer Magenta (#d946ef)
+const COLOR_PLAYER = 'rgba(56, 189, 248, 0.9)'; // Softer Sky Blue (#38bdf8)
 const COLOR_OBJ = 'rgba(180, 100, 50, 0.9)';   // Object Brown
 
 export const DEFAULT_INLINE_CATEGORIES: InlineCategoryConfig[] = [

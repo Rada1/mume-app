@@ -48,6 +48,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setShowLegacyButtons,
     isHighlighterEnabled,
     setIsHighlighterEnabled,
+    isCrtEnabled,
+    setIsCrtEnabled,
+    isBloomEnabled,
+    setIsBloomEnabled,
 }) => {
     const {
         isMmapperMode, setIsMmapperMode,
@@ -124,6 +128,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setShowLegacyButtons={setShowLegacyButtons}
                                 isHighlighterEnabled={isHighlighterEnabled}
                                 setIsHighlighterEnabled={setIsHighlighterEnabled}
+                                isCrtEnabled={isCrtEnabled}
+                                setIsCrtEnabled={setIsCrtEnabled}
+                                isBloomEnabled={isBloomEnabled}
+                                setIsBloomEnabled={setIsBloomEnabled}
                             />
                             <DataManagement
                                 exportSettings={exportSettings}

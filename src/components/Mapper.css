@@ -12,16 +12,16 @@
     align-items: center;
     border-radius: 12px;
     overflow: hidden;
-    background: rgba(17, 17, 27, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    background: var(--mapper-bg);
+    border: 1px solid var(--mapper-border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     pointer-events: auto !important;
 }
 
 .mapper-container {
-    background: rgba(15, 23, 42, 0.1) !important;
+    background: var(--mapper-bg) !important;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
 }
@@ -83,6 +83,12 @@
     mix-blend-mode: multiply;
     opacity: 0.85; /* Active when state is 'dark' or 'none' */
     transition: opacity 1s ease-in-out;
+}
+
+.light-mode .mapper-dark-overlay {
+    background: radial-gradient(circle at center, transparent 15%, rgba(255, 255, 255, 0.95) 100%);
+    mix-blend-mode: normal; /* Just a white fade out */
+    opacity: 0.95;
 }
 
 /* Darkness fades OUT when light is present (but not for artificial/moon) */
