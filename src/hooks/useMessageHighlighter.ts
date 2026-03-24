@@ -199,6 +199,33 @@ export const useMessageHighlighter = (
                 .forEach(c => {
                     newHtml = safeHighlight(newHtml, c.pattern, !!c.isRegex, c.replacer);
                 });
+
+            // --- 4. Special Pass: Full-Line Spat Buttons ---
+            // These match against the textOnly content but wrap the entire HTML line.
+            // This is necessary for sentence-level triggers where parts of the sentence 
+            // (like the name) might already be wrapped in tags.
+            buttonsRef.current?.filter(b => b.trigger?.spit && b.trigger?.enabled && b.trigger.pattern).forEach(b => {
+                const pattern = b.trigger!.pattern!;
+                const isRegex = b.trigger!.isRegex;
+                const regex = new RegExp(isRegex ? pattern : pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+                
+                const match = regex.exec(textOnly);
+                if (match) {
+                    let finalLabel = b.label;
+                    let finalCommand = b.command;
+                    for (let i = 1; i < match.length; i++) {
+                        const val = match[i] || '';
+                        finalLabel = finalLabel.replace(new RegExp(`\\$${i}`, 'g'), val);
+                        finalCommand = finalCommand.replace(new RegExp(`\\$${i}`, 'g'), val);
+                    }
+                    
+                    const isSelected = selectedPrefixes.has(`${finalCommand}:${b.id}`);
+                    const glowColor = b.style.backgroundColor || 'var(--accent)';
+                    
+                    // Wrap the entire line HTML in the spat trigger
+                    newHtml = `<span class="inline-btn spat-row-trigger${isSelected ? ' selected' : ''}" data-id="${b.id}" data-mid="${mid}" data-cmd="${esc(finalCommand)}" data-context="${esc(textOnly)}" data-icon="${esc(b.icon || '')}" data-label="${esc(finalLabel)}" data-color="${b.style.backgroundColor}" data-action="${b.actionType || 'command'}" data-menu-display="${b.menuDisplay || 'list'}" data-spit="true" data-duration="${b.trigger?.duration || ''}" style="--glow-color: ${glowColor}">${newHtml}</span>`;
+                }
+            });
         }
 
         const finalHtml = prefixHtml + newHtml;

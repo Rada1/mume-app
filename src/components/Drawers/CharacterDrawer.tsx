@@ -231,8 +231,8 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                             <div className="progress-bar-fill xp" style={{ width: `${Math.min(100, (info.xp / (info.xpMax || 1)) * 100)}%` }} />
                                         </div>
                                         <div className="progress-footer">
-                                            <span className="total-label">Target: {formatNumber(info.xpMax)}</span>
-                                            <span className="needed-label">Needed: +{formatNumber(Math.max(0, info.xpMax - info.xp))}</span>
+                                            <span className="total-label" style={{ color: '#fff', opacity: 1 }}>Target: {formatNumber(info.xpMax)}</span>
+                                            <span className="needed-label">Needed: <span style={{ color: '#4ade80' }}>+{formatNumber(Math.max(0, info.xpMax - info.xp))}</span></span>
                                         </div>
                                     </div>
                                     <div className="progress-container">
@@ -247,8 +247,8 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                             <div className="progress-bar-fill tp" style={{ width: `${Math.min(100, (info.tp / (info.tpMax || 1)) * 100)}%` }} />
                                         </div>
                                         <div className="progress-footer">
-                                            <span className="total-label">Target: {formatNumber(info.tpMax)}</span>
-                                            <span className="needed-label">Needed: +{formatNumber(Math.max(0, info.tpMax - info.tp))}</span>
+                                            <span className="total-label" style={{ color: '#fff', opacity: 1 }}>Target: {formatNumber(info.tpMax)}</span>
+                                            <span className="needed-label">Needed: <span style={{ color: '#4ade80' }}>+{formatNumber(Math.max(0, info.tpMax - info.tp))}</span></span>
                                         </div>
                                     </div>
                                 </div>

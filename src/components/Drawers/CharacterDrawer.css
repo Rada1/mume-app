@@ -54,6 +54,7 @@
     display: flex;
     gap: 8px;
     flex: 1;
+    min-width: 0;
 }
 
 .drawer-tab {
@@ -69,6 +70,27 @@
     border-radius: 10px;
     transition: all 0.2s ease;
     font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+@media (max-width: 420px) {
+    .drawer-header {
+        padding: 12px 10px;
+    }
+    .drawer-tabs {
+        gap: 4px;
+    }
+    .drawer-tab {
+        padding: 6px 8px;
+        font-size: 0.72rem;
+        gap: 4px;
+    }
+    .drawer-tab svg {
+        width: 12px;
+        height: 12px;
+    }
 }
 
 .drawer-tab.active {
@@ -345,7 +367,23 @@
     opacity: 0.6;
 }
 
-@media (min-width: 768px) {
+@media (max-width: 768px) {
+    .character-drawer-content.log-card-drawer {
+        top: 0;
+        left: 50%;
+        right: auto;
+        width: 92vw;
+        max-width: 480px;
+        transform: translate(-50%, -100%);
+        border-radius: 0 0 20px 20px;
+    }
+    
+    .character-drawer-content.log-card-drawer.open {
+        transform: translate(-50%, 0);
+    }
+}
+
+@media (min-width: 769px) {
     .character-drawer-content {
         width: 500px;
         left: 50%;

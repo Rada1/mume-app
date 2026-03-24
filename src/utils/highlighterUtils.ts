@@ -472,7 +472,8 @@ export const applyColorTaggedObjects = (
              lowerHtml.includes('you take') ||
              lowerHtml.includes('you wear') ||
              lowerHtml.includes('you wield') ||
-             lowerHtml.includes('you remove')) {
+             lowerHtml.includes('you remove') ||
+             lowerHtml.includes('gives you')) {
         cmd = 'inline-obj-char';
     }
     else cmd = 'inline-obj-room';
