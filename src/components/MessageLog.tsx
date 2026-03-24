@@ -22,6 +22,25 @@ const ReplyButton = ({ msg, setParley, onReply }: { msg: Message, setParley: (p:
     );
 };
 
+const Typewriter = ({ text, isRecent }: { text: string, isRecent: boolean }) => {
+    const [displayedText, setDisplayedText] = useState(isRecent ? '' : text);
+
+    useEffect(() => {
+        if (!isRecent || displayedText === text) return;
+
+        let index = 0;
+        const interval = setInterval(() => {
+            setDisplayedText(text.slice(0, index + 1));
+            index++;
+            if (index >= text.length) clearInterval(interval);
+        }, 8); // Faster typewriter (8ms)
+
+        return () => clearInterval(interval);
+    }, [text, isRecent]);
+
+    return <span>{displayedText}</span>;
+};
+
 import { useBaseGame, useVitals, useLog } from '../context/GameContext';
 
 interface MessageLogProps {
@@ -111,7 +130,7 @@ const MessageItem = React.memo(({
                             style={{ color: msg.commColor, cursor: 'pointer', '--glow-color': msg.commColor } as React.CSSProperties}
                             onClick={triggerParley}
                         >
-                            <span>{msg.commText}</span>
+                            <Typewriter text={msg.commText || ''} isRecent={isRecent} />
                         </div>
                         <ReplyButton msg={msg} setParley={setParley} onReply={triggerParley} />
                     </div>
