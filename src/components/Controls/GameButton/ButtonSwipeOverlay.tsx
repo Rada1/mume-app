@@ -6,10 +6,15 @@ interface ButtonSwipeOverlayProps {
     button: CustomButton;
     activeDir: SwipeDirection | null;
     isCancelling: boolean;
+    buttonRect?: DOMRect;
+    rayParams: { angle: number, length: number, opacity: number, color?: string };
 }
 
-export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, activeDir, isCancelling }) => {
+export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, activeDir, isCancelling, buttonRect, rayParams }) => {
     if (!activeDir && !isCancelling) return null;
+
+    const centerX = buttonRect ? (buttonRect.left + buttonRect.width / 2) : 0;
+    const centerY = buttonRect ? (buttonRect.top + buttonRect.height / 2) : 0;
 
     return createPortal(
         <div style={{
@@ -19,6 +24,12 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
             zIndex: 50000,
             '--wheel-center-x': '50%',
             '--wheel-center-y': '50%',
+            '--ray-x': `${centerX}px`,
+            '--ray-y': `${centerY}px`,
+            '--ray-angle': `${rayParams.angle}deg`,
+            '--ray-length': `${rayParams.length}px`,
+            '--ray-opacity': rayParams.opacity,
+            '--ray-color': rayParams.color || 'var(--set-accent, var(--accent))',
             '--set-accent': button.style.borderColor || 'var(--set-accent, var(--accent))',
             '--set-accent-rgb': button.style.borderColor ? (() => {
                 const hex = button.style.borderColor.replace('#', '');
@@ -69,6 +80,22 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                 '--cancel-x': `calc(var(--wheel-center-x, 50%) + 200px)`,
                 '--cancel-y': `var(--wheel-center-y, 50%)`
             } as any}>Cancel</div>
+            
+            <div className="swipe-ray portal-ray" style={{
+                position: 'fixed',
+                left: 'var(--ray-x)',
+                top: 'var(--ray-y)',
+                width: 'var(--ray-length)',
+                opacity: 'var(--ray-opacity)',
+                transform: 'translateY(-50%) rotate(var(--ray-angle))',
+                transformOrigin: 'left center',
+                zIndex: 49999, // Just below wheel content but above backdrop
+                background: 'linear-gradient(to right, var(--ray-color) 0%, var(--ray-color) 70%, transparent 100%)',
+                height: '3px',
+                boxShadow: '0 0 15px var(--ray-color)',
+                borderRadius: '99px',
+                pointerEvents: 'none'
+            }} />
         </div>,
         document.body
     );

@@ -1,23 +1,29 @@
-import React, { useState, useRef, useEffect } from 'react';
+/**
+ * @file EquipmentDrawer.tsx
+ * @description Renders the player's equipment list with interactive items.
+ */
+
+import React from 'react';
 import ReactDOM from 'react-dom';
+import { useGame, useUI } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
-import { extractNoun, isItemContainer, isFluidContainer, sanitizeGameTarget } from '../../utils/gameUtils';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
-import { useGame, useVitals, useUI } from '../../context/GameContext';
-import { MendingFooter } from './MendingFooter';
+import { useItemDrawerInteractions } from '../../hooks/useItemDrawerInteractions';
+import { getEffectiveKeyword } from '../../utils/keywordUtils';
 
 interface EquipmentDrawerProps {
     isOpen: boolean;
     isPeeking?: boolean;
     onClose: () => void;
     eqLines: DrawerLine[];
-    inventoryLines: DrawerLine[];
     handleButtonClick: (button: any, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => void;
     triggerHaptic: (ms: number) => void;
     isLandscape?: boolean;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
     pendingDrawerContainerRef: React.MutableRefObject<{ containerId: string; cmd: 'inventorylist' | 'equipmentlist'; afterId: string } | null>;
     inlineCategories?: import('../../types').InlineCategoryConfig[];
+    entities: Record<string, import('../../types').GameEntity>;
+    keywordOverrides: Record<string, string>;
 }
 
 export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
@@ -25,685 +31,133 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     isPeeking,
     onClose,
     eqLines,
-    inventoryLines,
     handleButtonClick,
     triggerHaptic,
     isLandscape,
     executeCommand,
     pendingDrawerContainerRef,
-    inlineCategories = []
+    inlineCategories = [],
+    entities,
+    keywordOverrides
 }) => {
-    const [draggedItem, setDraggedItem] = useState<{ line: DrawerLine; source: 'inventory' | 'equipment'; x: number; y: number; commandLabel?: string; itemNoun?: string } | null>(null);
-    const [primedItemId, setPrimedItemId] = useState<string | null>(null);
-    const [activeDropTarget, setActiveDropTarget] = useState<{ type: 'section' | 'container' | 'log'; id: string } | null>(null);
-    const lastHoveredTargetRef = useRef<HTMLElement | null>(null);
-    const lastGlowTargetRef = useRef<HTMLElement | null>(null);
-    const [expandedContainers, setExpandedContainers] = useState<Set<string>>(new Set());
-    const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
-
-    const { activeDragData, applyOptimisticChange } = useGame() as any;
+    const { applyOptimisticChange } = useGame() as any;
     const { setUI, ui, setPopoverState, popoverState } = useUI();
-    const { isMendingMode, setIsMendingMode, mendingTarget, setMendingTarget } = useVitals();
+    const drawerRef = React.useRef<HTMLDivElement>(null);
+    const [expandedContainers, setExpandedContainers] = React.useState<Set<string>>(new Set());
 
-    // Enable pointer events on this drawer for ANY native HTML5 drag on the page, not just
-    // ones that set activeDragData via React state (which has async re-render timing issues).
-    // This also covers the target badge in InputArea which has its own onDragStart.
-    useEffect(() => {
-        const onDocDragOver = (e: DragEvent) => {
-            if (drawerRef.current) drawerRef.current.style.pointerEvents = 'auto';
-            // Auto-open the items drawer when dragging near the right edge
-            if (e.clientX > window.innerWidth - 150) {
-                setUI((prev: any) => prev.drawer === 'items' ? prev : { ...prev, drawer: 'items' });
-                drawerRef.current?.classList.add('native-drag-over');
-            } else {
-                drawerRef.current?.classList.remove('native-drag-over');
-            }
-        };
-        const onDocDragEnd = () => {
-            if (drawerRef.current) drawerRef.current.style.removeProperty('pointer-events');
-            drawerRef.current?.classList.remove('native-drag-over');
-        };
-        document.addEventListener('dragover', onDocDragOver);
-        document.addEventListener('dragend', onDocDragEnd);
-        document.addEventListener('drop', onDocDragEnd);
-        return () => {
-            document.removeEventListener('dragover', onDocDragOver);
-            document.removeEventListener('dragend', onDocDragEnd);
-            document.removeEventListener('drop', onDocDragEnd);
-        };
-    }, [setUI]);
-
-    const ghostRef = useRef<HTMLDivElement>(null);
-    const longPressTimerRef = useRef<any>(null);
-    const startPosRef = useRef<{ x: number; y: number } | null>(null);
-    const pendingDragRef = useRef<{ line: DrawerLine; source: 'inventory' | 'equipment' } | null>(null);
-    const draggedRef = useRef<{ line: DrawerLine; source: 'inventory' | 'equipment' } | null>(null);
-    const isDraggingRef = useRef(false);
-    const drawerRef = useRef<HTMLDivElement>(null);
-    const pointerIdRef = useRef<number | null>(null);
-    const pointerTargetRef = useRef<HTMLElement | null>(null);
-    const touchMoveHandlerRef = useRef<((e: TouchEvent) => void) | null>(null);
-
-    const cleanupDrag = () => {
-        if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
-        document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
-        if (touchMoveHandlerRef.current) {
-            window.removeEventListener('touchmove', touchMoveHandlerRef.current);
-            touchMoveHandlerRef.current = null;
-        }
-        setDraggedItem(null);
-        setPrimedItemId(null);
-        setActiveDropTarget(null);
-        lastHoveredTargetRef.current = null;
-        lastGlowTargetRef.current = null;
-        startPosRef.current = null;
-        pendingDragRef.current = null;
-        draggedRef.current = null;
-        isDraggingRef.current = false;
-        pointerIdRef.current = null;
-        pointerTargetRef.current = null;
-        window.removeEventListener('pointermove', handleGlobalPointerMove);
-        window.removeEventListener('pointerup', handleGlobalPointerUp);
-        window.removeEventListener('pointercancel', cleanupDrag);
-    };
-
-    const moveCountRef = useRef(0);
-
-    const handleSectionScroll = (e: React.UIEvent<HTMLDivElement>) => {
-        // Placeholder to avoid reference error, can be implemented later if sticky headers are needed
-    };
+    // --- Consolidated Interaction Logic ---
+    const {
+        handlePointerDown,
+        draggedItem,
+        selectedItems,
+        isSelectMode,
+        primedItemId,
+        exitSelectMode,
+        ghostRef,
+        executeActionForSelected,
+        setSelectedItems
+    } = useItemDrawerInteractions({
+        drawerType: 'equipment',
+        lines: eqLines,
+        drawerRef,
+        isOpen,
+        onClose,
+        setUI,
+        ui,
+        executeCommand,
+        triggerHaptic,
+        applyOptimisticChange,
+        entities,
+        popoverState,
+        setPopoverState,
+        keywordOverrides
+    });
 
     const isLineVisible = (line: DrawerLine, allLines: DrawerLine[]): boolean => {
         if (!line.parentItemId) return true;
-        
-        // Find the parent item
         const parent = allLines.find(l => l.id === line.parentItemId);
-        if (!parent) return true; // Orphaned items shown by default
-        
-        // If parent is not expanded, this line is hidden
+        if (!parent) return true;
         if (!expandedContainers.has(parent.id)) return false;
-        
-        // Check if parent itself is visible (recursive)
         return isLineVisible(parent, allLines);
     };
 
-    const handleGlobalPointerMove = (e: PointerEvent) => {
-        if (startPosRef.current && !isDraggingRef.current) {
-            const dx = Math.abs(e.clientX - startPosRef.current.x);
-            const dy = Math.abs(e.clientY - startPosRef.current.y);
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            const threshold = e.pointerType === 'mouse' ? 10 : 8;
-
-            if (dist > threshold) {
-                // User is scrolling — cancel drag setup and let browser handle it
-                cleanupDrag();
-                return;
-            }
-        }
-
-        if (isDraggingRef.current) {
-            if (ghostRef.current) {
-                ghostRef.current.style.left = `${e.clientX}px`;
-                ghostRef.current.style.top = `${e.clientY}px`;
-            }
-
-            if (isOpen && drawerRef.current) {
-                const rect = drawerRef.current.getBoundingClientRect();
-                if (e.clientX < rect.left - 50 || (rect.left < 50 && e.clientX < 80)) {
-                    onClose();
-                }
-            }
-
-            // Scroll auto edge detection
-            const contentEl = drawerRef.current?.querySelector('.drawer-content');
-            if (contentEl) {
-                const rect = contentEl.getBoundingClientRect();
-                const threshold = 50; 
-                const speedScale = 0.2;
-                
-                if (e.clientY < rect.top + threshold) {
-                    const dist = (rect.top + threshold) - e.clientY;
-                    contentEl.scrollTop -= dist * speedScale;
-                } else if (e.clientY > rect.bottom - threshold) {
-                    const dist = e.clientY - (rect.bottom - threshold);
-                    contentEl.scrollTop += dist * speedScale;
-                }
-            }
-
-            moveCountRef.current++;
-            if (moveCountRef.current % 2 !== 0) return;
-
-            const target = document.elementFromPoint(e.clientX, e.clientY);
-            const currentDragged = draggedRef.current;
-            if (!currentDragged) return;
-
-            // Use extractNoun for a cleaner label
-            const isMultiDrag = selectedItems.has(currentDragged.line.id);
-            const dragCount = isMultiDrag ? selectedItems.size : 1;
-            const itemNoun = extractNoun(currentDragged.line.text);
-            const dragLabel = dragCount > 1 ? `${dragCount} items` : itemNoun;
-
-            let commandLabel = "";
-            const logRecipient = target?.closest('.pc-highlighter, .npc-highlighter') as HTMLElement | null;
-            const inputArea = target?.closest('.input-area') as HTMLElement | null;
-            const mainLog = target?.closest('.message-log-container') as HTMLElement | null;
-            const targetItem = target?.closest('.inline-btn.auto-item') as HTMLElement | null;
-            const sectionTarget = target?.closest('[data-drawer-section]') as HTMLElement | null;
-
-            const logicalTarget = logRecipient || targetItem || inputArea || (mainLog && !target?.closest('.right-drawer') ? mainLog : null) || sectionTarget;
-
-            if (logicalTarget !== lastHoveredTargetRef.current) {
-                lastHoveredTargetRef.current = logicalTarget;
-            }
-
-            // Glow target: only specific drop targets, never the broad mainLog container
-            const glowTarget = logRecipient || targetItem || inputArea || sectionTarget || null;
-            // For section containers, glow the header drop zone rather than the whole section div
-            const glowElement = (glowTarget === sectionTarget && sectionTarget)
-                ? (sectionTarget.querySelector('.drawer-section-drop-zone') as HTMLElement | null) ?? sectionTarget
-                : glowTarget;
-            if (glowElement !== lastGlowTargetRef.current) {
-                if (lastGlowTargetRef.current) lastGlowTargetRef.current.classList.remove('drop-hover-active');
-                lastGlowTargetRef.current = glowElement;
-                if (glowElement) {
-                    glowElement.classList.add('drop-hover-active');
-                }
-            }
-
-            if (logRecipient) {
-                const ctx = logRecipient.getAttribute('data-context');
-                if (ctx) {
-                    const recipientName = sanitizeGameTarget(ctx) || ctx;
-                    const category = logRecipient.getAttribute('data-category');
-                    if (category === 'inline-shopkeeper' && !isMultiDrag) {
-                        if (popoverState?.setId !== 'inline-shopkeeper-drop') {
-                            const rect = logRecipient.getBoundingClientRect();
-                            triggerHaptic(40);
-                            setPopoverState({
-                                x: Math.min(window.innerWidth - 180, rect.right + 10),
-                                y: Math.max(80, rect.top - 20),
-                                setId: 'inline-shopkeeper-drop',
-                                context: itemNoun,
-                                parentNoun: recipientName,
-                                menuDisplay: 'list'
-                            });
-                        }
-                        setActiveDropTarget({ type: 'log', id: recipientName });
-                        commandLabel = `Mend / Sell / Give ${dragLabel}`;
-                    } else {
-                        setActiveDropTarget({ type: 'log', id: recipientName });
-                        commandLabel = `give ${dragLabel} ${recipientName}`;
-                    }
-                }
-            } else if (targetItem) {
-                const targetCmd = targetItem.getAttribute('data-cmd');
-                const targetContext = targetItem.getAttribute('data-context');
-                const targetText = targetItem.innerText || '';
-                const isTargetContainer = isItemContainer(targetText);
-                const targetItemName = targetItem?.getAttribute('data-item-name') || targetContext || extractNoun(targetText);
-
-                if (targetCmd === 'inline-water' && isFluidContainer(currentDragged.line.text)) {
-                    setActiveDropTarget({ type: 'log', id: targetContext || 'water' });
-                    commandLabel = `fill ${dragLabel}`;
-                } else if (isTargetContainer && targetItemName !== (currentDragged?.line.context || currentDragged?.line.id)) {
-                    setActiveDropTarget({ type: 'container', id: targetItemName! });
-                    commandLabel = `put ${dragLabel} in ${targetItemName}`;
-                }
-            } else if (inputArea) {
-                setActiveDropTarget({ type: 'log', id: 'input' });
-                commandLabel = `append: ${dragLabel}`;
-            } else if (sectionTarget) {
-                const section = sectionTarget.getAttribute('data-drawer-section');
-                if (section && section !== currentDragged?.source) {
-                    setActiveDropTarget({ type: 'section', id: section });
-                    const action = (section === 'equipment' || section === 'equipmentlist') ? 'wear' : 'remove';
-                    commandLabel = `${action} ${dragLabel}`;
-                } else if (section && currentDragged?.line.parentItemNoun) {
-                    setActiveDropTarget({ type: 'section', id: section });
-                    commandLabel = `get ${dragLabel}`;
-                } else {
-                    setActiveDropTarget(null);
-                    commandLabel = isMultiDrag ? `moving ${dragCount} items` : dragLabel;
-                }
-            } else {
-                // Default action for anywhere else (ground/log)
-                setActiveDropTarget({ type: 'log', id: 'ground' });
-                commandLabel = `drop ${dragLabel}`;
-            }
-
-            setDraggedItem(prev => prev ? { ...prev, x: e.clientX, y: e.clientY, commandLabel } : null);
-        }
-    };
-
-    const handleGlobalPointerUp = (e: PointerEvent) => {
-        if (isDraggingRef.current && draggedRef.current) {
-            const target = document.elementFromPoint(e.clientX, e.clientY);
-            const currentItem = draggedRef.current.line;
-            const currentSource = draggedRef.current.source;
-            const isMultiDrag = selectedItems.has(currentItem.id);
-            const itemsToProcess = isMultiDrag ? Array.from(selectedItems).map(id => {
-                const line = [...eqLines, ...inventoryLines].find(l => l.id === id);
-                if (!line) return null;
-                const source = eqLines.some(l => l.id === id) ? 'equipment' : 'inventory';
-                return { line, source };
-            }).filter(Boolean) : [{ line: currentItem, source: currentSource }];
-
-            const logRecipient = target?.closest('.pc-highlighter, .npc-highlighter') as HTMLElement | null;
-            const targetBtn = target?.closest('.inline-btn.auto-item') as HTMLElement | null;
-            const mainLog = target?.closest('.message-log-container') as HTMLElement | null;
-            const sectionWrapper = target?.closest('[data-drawer-section]') as HTMLElement | null;
-            const dropBtn = target?.closest('[data-drop-cmd]') as HTMLElement | null;
-
-            const isLogDrop = !!(logRecipient || dropBtn || (mainLog && !target?.closest('.right-drawer')));
-
-            if (logRecipient || dropBtn || targetBtn || (mainLog && !target?.closest('.right-drawer')) || sectionWrapper) {
-                triggerHaptic(60);
-
-                // Apply all optimistic UI changes immediately before sending commands
-                itemsToProcess.forEach((item) => {
-                    if (!item) return;
-                    const itm = item.line;
-                    const src = item.source as 'inventory' | 'equipment';
-                    if (logRecipient) {
-                        applyOptimisticChange({ type: 'give', item: itm, from: src === 'equipment' ? 'eq' : 'inv' });
-                    } else if (mainLog && !target?.closest('.right-drawer')) {
-                        applyOptimisticChange({ type: 'drop', item: itm, from: src === 'equipment' ? 'eq' : 'inv' });
-                    } else if (sectionWrapper) {
-                        const section = sectionWrapper.getAttribute('data-drawer-section');
-                        if (section && section !== src) {
-                            if (section === 'equipment' || section === 'equipmentlist') {
-                                applyOptimisticChange({ type: 'wear', item: itm });
-                            } else {
-                                applyOptimisticChange({ type: 'remove', item: itm });
-                            }
-                        }
-                    }
-                });
-
-                itemsToProcess.forEach((item, index) => {
-                    if (!item) return;
-                    const itm = item.line;
-                    const src = item.source as 'inventory' | 'equipment';
-                    
-                    // Improved stable ID extraction
-                    const fullPath = itm.context || itm.id;
-                    const parentPath = itm.parentItemId;
-                    let itemStableId = fullPath;
-                    if (parentPath && fullPath.endsWith('.' + parentPath)) {
-                        itemStableId = fullPath.substring(0, fullPath.length - parentPath.length - 1);
-                    }
-                    
-                    const noun = sanitizeGameTarget(itemStableId) || itemStableId;
-                    const parentNoun = itm.parentItemNoun;
-                    const delay = index * 250;
-
-                    console.log(`[EquipmentDrawer] Drop detected:`, {
-                        text: itm.text,
-                        noun,
-                        parentNoun,
-                        src,
-                        fullPath,
-                        parentPath,
-                        target: target?.className
-                    });
-
-                    const isPopoverTarget = target?.closest('.popover-menu') || target?.closest('.popover-item');
-                    if (isPopoverTarget) {
-                        console.log('[EquipmentDrawer] Drop on popover detected, ignoring default actions');
-                        cleanupDrag();
-                        return;
-                    }
-
-                    setTimeout(() => {
-                        if (dropBtn) {
-                            const dropCmd = dropBtn.getAttribute('data-drop-cmd');
-                            const dropCtx = dropBtn.getAttribute('data-drop-context');
-                            const dropParent = dropBtn.getAttribute('data-drop-parent');
-                            
-                            if (dropCmd && dropCtx) {
-                                triggerHaptic(80);
-                                let finalCmd = dropCmd.replace(/%n/g, noun);
-                                if (dropParent) finalCmd = finalCmd.replace(/%p/g, dropParent);
-
-                                if (dropCmd === 'shop-mend') {
-                                    // Already in items drawer, maybe focus eq section?
-                                } else {
-                                    if (src === 'equipment') {
-                                        executeCommand(`remove ${noun}`, true, true);
-                                        setTimeout(() => executeCommand(finalCmd, false, false), 120);
-                                    } else if (parentNoun) {
-                                        executeCommand(`get ${noun} ${parentNoun}`, true, true);
-                                        setTimeout(() => executeCommand(finalCmd, false, false), 120);
-                                    } else {
-                                        executeCommand(finalCmd, false, false);
-                                    }
-                                }
-                                cleanupDrag();
-                                return;
-                            }
-                        }
-
-                        if (logRecipient) {
-                            const rawRecipientName = logRecipient.getAttribute('data-context');
-                            const recipientName = sanitizeGameTarget(rawRecipientName) || rawRecipientName;
-                            const category = logRecipient.getAttribute('data-category');
-                            
-                            if (recipientName) {
-                                if (category === 'inline-shopkeeper' && !isMultiDrag && popoverState?.setId !== 'inline-shopkeeper-drop') {
-                                    triggerHaptic(60);
-                                    setPopoverState({
-                                        x: e.clientX,
-                                        y: e.clientY,
-                                        setId: 'inline-shopkeeper-drop',
-                                        context: noun,
-                                        parentNoun: recipientName,
-                                        menuDisplay: 'list'
-                                    });
-                                    cleanupDrag();
-                                    return;
-                                }
-
-                                if (src === 'equipment') {
-                                    executeCommand(`remove ${noun}`, true, true);
-                                    setTimeout(() => executeCommand(`give ${noun} ${recipientName}`, false, false), 120);
-                                } else if (parentNoun) {
-                                    executeCommand(`get ${noun} ${parentNoun}`, true, true);
-                                    setTimeout(() => executeCommand(`give ${noun} ${recipientName}`, false, false), 120);
-                                } else {
-                                    executeCommand(`give ${noun} ${recipientName}`, false, false);
-                                }
-                            }
-                        } else if (targetBtn) {
-                            const targetCmd = targetBtn?.getAttribute('data-cmd');
-                            const targetContext = targetBtn?.getAttribute('data-context');
-                            const targetText = (targetBtn as HTMLElement)?.innerText || '';
-                            const isTargetContainer = isItemContainer(targetText);
-                            const targetItemName = targetBtn?.getAttribute('data-item-name') || targetContext || extractNoun(targetText);
-
-                            if (targetCmd === 'inline-water' && isFluidContainer(itm.text)) {
-                                if (src === 'equipment') {
-                                    executeCommand(`remove ${noun}`, true, true);
-                                    setTimeout(() => executeCommand(`fill ${noun} ${targetContext || 'water'}`, false, false), 120);
-                                } else if (parentNoun) {
-                                    executeCommand(`get ${noun} ${parentNoun}`, true, true);
-                                    setTimeout(() => executeCommand(`fill ${noun} ${targetContext || 'water'}`, false, false), 120);
-                                } else {
-                                    executeCommand(`fill ${noun} ${targetContext || 'water'}`, false, false);
-                                }
-                            } else if (isTargetContainer && targetItemName !== (itm.context || itm.id)) {
-                                if (src === 'equipment') {
-                                    executeCommand(`remove ${noun}`, true, true);
-                                    setTimeout(() => executeCommand(`put ${noun} ${targetItemName}`, false, false), 120);
-                                } else if (parentNoun) {
-                                    executeCommand(`get ${noun} ${parentNoun}`, true, true);
-                                    setTimeout(() => executeCommand(`put ${noun} ${targetItemName}`, false, false), 120);
-                                } else {
-                                    executeCommand(`put ${noun} ${targetItemName}`, false, false);
-                                }
-                            }
-                        } else if (mainLog && !target?.closest('.right-drawer')) {
-                            if (src === 'equipment') {
-                                executeCommand(`remove ${noun}`, true, true);
-                                setTimeout(() => executeCommand(`drop ${noun}`, false, false), 120);
-                            } else if (parentNoun) {
-                                executeCommand(`get ${noun} ${parentNoun}`, true, true);
-                                setTimeout(() => executeCommand(`drop ${noun}`, false, false), 120);
-                            } else {
-                                executeCommand(`drop ${noun}`, false, false);
-                            }
-                        } else if (sectionWrapper) {
-                            const section = sectionWrapper.getAttribute('data-drawer-section');
-                            if (section && section !== src) {
-                                if (parentNoun) {
-                                    executeCommand(`get ${noun} ${parentNoun}`, true, true);
-                                    const c = (section === 'equipment' || section === 'equipmentlist') ? 'wear' : 'remove';
-                                    setTimeout(() => executeCommand(`${c} ${noun}`, false, false), 120);
-                                } else {
-                                    const c = (section === 'equipment' || section === 'equipmentlist') ? 'wear' : 'remove';
-                                    executeCommand(`${c} ${noun}`, false, false);
-                                }
-                            } else if (section && parentNoun) {
-                                // Just a redundant check but ensures we use the best handle
-                                executeCommand(`get ${noun} ${parentNoun}`, false, false);
-                            }
-                        }
-
-                        // Final item cleanup/refresh logic (skip if drawer closed via log drop)
-                        if (index === itemsToProcess.length - 1) {
-                            if (!isLogDrop) {
-                                setTimeout(() => {
-                                    executeCommand('inv', false, true, true, true);
-                                    executeCommand('eq', false, true, true, true);
-                                }, 150);
-                            }
-                            setSelectedItems(new Set());
-                        }
-                    }, delay);
-                });
-                cleanupDrag();
-                return;
-            }
-        }
-        setTimeout(() => cleanupDrag(), 0);
-    };
-
-    useEffect(() => {
-        return () => cleanupDrag();
-    }, []);
-
-    useEffect(() => {
-        if (!isOpen && !isDraggingRef.current) {
-            cleanupDrag();
-        }
-    }, [isOpen]);
-
-    const startActiveDrag = (x: number, y: number) => {
-        if (pendingDragRef.current && !isDraggingRef.current) {
-            triggerHaptic(40);
-            const line = pendingDragRef.current.line;
-            const source = pendingDragRef.current.source;
-            draggedRef.current = { line, source };
-            setDraggedItem({ line, source, x, y, itemNoun: extractNoun(line.text) });
-            isDraggingRef.current = true;
-            setPrimedItemId(null);
-            if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
-
-            // Capture pointer now that drag is active
-            if (pointerTargetRef.current && pointerIdRef.current !== null) {
-                try { pointerTargetRef.current.setPointerCapture(pointerIdRef.current); } catch (_) {}
-            }
-
-            // Now add drag tracking listeners (deferred from pointerDown to avoid blocking scroll)
-            window.addEventListener('pointermove', handleGlobalPointerMove);
-            window.addEventListener('pointerup', handleGlobalPointerUp);
-
-            // Prevent browser scrolling while dragging
-            const preventScroll = (e: TouchEvent) => { e.preventDefault(); };
-            touchMoveHandlerRef.current = preventScroll;
-            window.addEventListener('touchmove', preventScroll, { passive: false });
-        }
-    };
-
-    const handlePointerDown = (e: React.PointerEvent, line: DrawerLine, source: 'inventory' | 'equipment') => {
-        if (!line.isItem) return;
-        if (isMendingMode) {
-            triggerHaptic(20);
-            const newSelected = new Set(selectedItems);
-            if (newSelected.has(line.id)) {
-                newSelected.delete(line.id);
-            } else {
-                newSelected.add(line.id);
-            }
-            setSelectedItems(newSelected);
-            return;
-        }
-        cleanupDrag();
-        // Don't capture pointer yet — let browser handle scroll if user swipes
-        pointerIdRef.current = e.pointerId;
-        pointerTargetRef.current = e.target as HTMLElement;
-        startPosRef.current = { x: e.clientX, y: e.clientY };
-        pendingDragRef.current = { line, source };
-        setPrimedItemId(line.id);
-
-        // Only listen for pointercancel during hold (fires if browser starts scrolling)
-        window.addEventListener('pointercancel', cleanupDrag);
-
-        longPressTimerRef.current = setTimeout(() => {
-            if (startPosRef.current) {
-                startActiveDrag(startPosRef.current.x, startPosRef.current.y);
-            }
-        }, 400);
-    };
-
-
-    const renderLine = (line: DrawerLine, listType: 'inventorylist' | 'equipmentlist') => {
-        const source = listType === 'inventorylist' ? 'inventory' : 'equipment';
+    const renderLine = (line: DrawerLine) => {
         const isBeingDragged = draggedItem?.line.id === line.id;
-        const isTargeted = activeDropTarget?.type === 'container' && activeDropTarget.id === (line.context || line.id);
         const isSelected = selectedItems.has(line.id);
         const depth = line.depth || 0;
+        const itemBrown = 'rgba(180, 100, 50, 0.9)';
 
         if (line.isItem) {
             const isPrimed = primedItemId === line.id;
-            const itemNoun = extractNoun(line.text);
-            const categories = (inlineCategories && inlineCategories.length > 0) ? inlineCategories : undefined;
-            const category = getCategoryForName(line.text, categories) || 'inline-default';
-            const itemBrown = 'rgba(180, 100, 50, 0.9)';
-            const glowColor = itemBrown; 
-            const textColor = itemBrown;
-            // Stronger visual cues: background, border, and subtle glow
-            const baseBackground = 'rgba(255, 255, 255, 0.03)';
-            const primedBackground = 'rgba(255, 255, 255, 0.1)';
-            const borderLeftStyle = '4px solid transparent';
-            const glowEffect = 'none';
+            const conditionRegex = /\s?\((flawless|well-maintained|worn|scratched|damaged|beaten|battered|beaten and battered|shabby|sub-standard|poor|fragmented|broken|shattered)\)/gi;
+            const cleanedText = line.text.replace(conditionRegex, '').trim();
+            const displayName = cleanedText.includes(' (') ? cleanedText.split(' (')[0] : cleanedText;
+            const extraInfo = cleanedText.includes(' (') ? cleanedText.split(' (')[1] : null;
+
+            const entity = entities[line.entityId || ''];
+            const itemNoun = getEffectiveKeyword(line.text, line.html, entity, keywordOverrides) || line.stableId;
 
             return (
-                <div key={line.id} style={{ display: 'flex', flexDirection: 'column', marginLeft: `${depth * 20}px`, marginBottom: '4px' }}>
-                    {line.prefixHtml && (
-                        <div 
-                            style={{ 
-                                padding: '4px 0 2px 28px', 
-                                opacity: 0.7, 
-                                fontSize: 'var(--dynamic-log-size, 16px)', 
-                                fontWeight: 'normal',
-                                whiteSpace: 'nowrap',
-                                color: 'var(--text-dim)',
-                                flexShrink: 0
-                            }}
-                            dangerouslySetInnerHTML={{ __html: line.prefixHtml }}
-                        />
-                    )}
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <div 
-                            className={`drawer-checkbox ${isSelected ? 'selected' : ''}`}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                triggerHaptic(20);
-                                const newSelected = new Set(selectedItems);
-                                if (newSelected.has(line.id)) newSelected.delete(line.id);
-                                else newSelected.add(line.id);
-                                setSelectedItems(newSelected);
-                            }}
-                            style={{
-                                width: '18px',
-                                height: '18px',
-                                borderRadius: '4px',
-                                border: `2px solid ${isSelected ? 'var(--accent)' : 'rgba(255,255,255,0.1)'}`,
-                                marginRight: '10px',
-                                backgroundColor: isSelected ? 'var(--accent)' : 'transparent',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                transition: 'all 0.2s ease',
-                                flexShrink: 0,
-                                cursor: 'pointer'
-                            }}
-                        >
-                            {isSelected && <span style={{ color: '#000', fontSize: '12px', fontWeight: 'bold' }}>✓</span>}
-                        </div>
+                <div key={line.id} style={{ display: 'flex', flexDirection: 'column', marginLeft: `${depth * 8}px`, marginBottom: '1px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', minHeight: '22px' }}>
+                        {line.prefixHtml && (
+                            <span 
+                                className="drawer-line-prefix"
+                                dangerouslySetInnerHTML={{ __html: line.prefixHtml }}
+                            />
+                        )}
                         <div
-                            className={`inline-btn auto-item ${isPrimed ? 'primed' : ''} ${isTargeted ? 'drop-target' : ''} ${line.isContainer ? 'is-container' : ''} ${isSelected ? 'selected' : ''}`}
+                            className={`inline-btn auto-item ${isPrimed ? 'primed' : ''} ${line.isContainer ? 'is-container' : ''} ${isSelected ? 'selected-item' : ''}`}
                             data-item-name={line.context || line.id}
-                            onPointerDown={(e) => handlePointerDown(e, line, source)}
+                            data-id={line.entityId || ''}
+                            onPointerDown={(e) => handlePointerDown(e, line)}
                             onPointerUp={(e) => {
-                                if (isDraggingRef.current) return;
-                                cleanupDrag();
-                                if (!line.isItem) return;
-                                triggerHaptic(20);
-
+                                if (isSelectMode) {
+                                    const newSet = new Set(selectedItems);
+                                    if (newSet.has(line.id)) newSet.delete(line.id);
+                                    else newSet.add(line.id);
+                                    setSelectedItems(new Set(newSet));
+                                    triggerHaptic(20);
+                                    if (newSet.size === 0) exitSelectMode();
+                                    return;
+                                }
                                 if (line.isContainer) {
+                                    triggerHaptic(20);
                                     setExpandedContainers(prev => {
                                         const next = new Set(prev);
-                                        if (next.has(line.id)) {
-                                            next.delete(line.id);
-                                        } else {
+                                        if (next.has(line.id)) next.delete(line.id);
+                                        else {
                                             next.add(line.id);
-                                            pendingDrawerContainerRef.current = {
-                                                containerId: line.id,
-                                                cmd: listType,
-                                                afterId: line.id
-                                            };
+                                            pendingDrawerContainerRef.current = { containerId: line.id, cmd: 'equipmentlist', afterId: line.id };
                                             executeCommand(`look in ${line.context || line.id}`, true, true);
-                                            const thisId = line.id;
-                                            setTimeout(() => { 
-                                                if (pendingDrawerContainerRef.current?.containerId === thisId) {
-                                                    pendingDrawerContainerRef.current = null; 
-                                                }
-                                            }, 5000);
                                         }
                                         return next;
                                     });
-                                    return;
+                                } else {
+                                    handleButtonClick({
+                                        id: 'drawer-item-' + line.id,
+                                        label: itemNoun,
+                                        command: 'inline-obj-worn',
+                                        actionType: 'menu',
+                                        setId: 'inline-obj-worn',
+                                        entityId: line.entityId,
+                                        isVisible: true,
+                                        style: { backgroundColor: itemBrown }
+                                    } as any, e as any, itemNoun, false, line.parentItemNoun);
                                 }
-
-                                // Unified Button Click
-                                handleButtonClick({
-                                    id: 'drawer-item-' + line.id,
-                                    label: itemNoun,
-                                    command: listType === 'equipmentlist' ? 'inline-obj-worn' : 'inline-obj-char',
-                                    actionType: 'menu',
-                                    setId: listType === 'equipmentlist' ? 'inline-obj-worn' : 'inline-obj-char',
-                                    isVisible: true,
-                                    style: { backgroundColor: glowColor || 'var(--accent)' }
-                                } as any, e as any, line.context || line.id, false, line.parentItemNoun);
                             }}
                             style={{
-                                flex: 1,
-                                padding: '4px 8px', // More compact padding
-                                background: line.isItem ? (isPrimed ? primedBackground : baseBackground) : 'transparent',
-                                borderRadius: '4px',
-                                borderLeft: line.isItem ? borderLeftStyle : 'none',
-                                boxShadow: line.isItem ? glowEffect : 'none',
-                                fontSize: 'var(--dynamic-log-size, 16px)',
-                                cursor: 'grab',
-                                fontWeight: 'bold',
+                                color: itemBrown,
                                 opacity: isBeingDragged ? 0.3 : 1,
-                                 color: textColor,
-                                transition: 'all 0.2s ease',
-                                touchAction: 'pan-y',
-                                display: 'flex',
-                                alignItems: 'center'
+                                marginLeft: line.prefixHtml ? '0' : `${depth * 20}px`
                             }}
                         >
-                        <div style={{ flex: 1, display: 'flex', alignItems: 'baseline', flexWrap: 'nowrap', overflow: 'hidden' }}>
-                            <span style={{ fontWeight: '900', color: textColor, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                {line.text.includes(' (') ? line.text.split(' (')[0] : line.text}
-                            </span>
-                            {line.text.includes(' (') && (
-                                <span style={{ 
-                                    fontWeight: 'normal', 
-                                    opacity: 0.5, 
-                                    marginLeft: '6px', 
-                                    fontSize: '0.9em', 
-                                    color: 'var(--text-dim, #aaa)',
-                                    whiteSpace: 'nowrap'
-                                }}>
-                                    ({line.text.split(' (')[1]}
-                                </span>
-                            )}
-                        </div>
+                            <div className="drawer-item-text-wrapper">
+                                <span className="drawer-item-name">{displayName}</span>
+                                {extraInfo && <span className="drawer-item-extra">({extraInfo}</span>}
+                            </div>
                             {line.isContainer && (
-                                <span style={{ fontSize: '0.7rem', opacity: 0.5, marginLeft: '8px', transition: 'transform 0.2s ease', transform: expandedContainers.has(line.id) ? 'rotate(90deg)' : 'rotate(0deg)' }}>▶</span>
+                                <span className={`drawer-container-toggle ${expandedContainers.has(line.id) ? 'expanded' : ''}`}>▶</span>
                             )}
                         </div>
                     </div>
@@ -712,152 +166,76 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
         }
 
         return (
-            <div key={line.id} style={{ 
-                marginLeft: `${depth * 20}px`,
-                padding: '12px 10px 4px', 
-                fontSize: depth > 0 ? 'calc(var(--dynamic-log-size, 16px) * 0.85)' : 'var(--dynamic-log-size, 16px)', 
-                opacity: depth > 0 ? 0.6 : 0.95, 
-                fontWeight: '900',
-                borderBottom: depth === 0 ? '1px solid #b8860b' : 'none',
-                color: depth > 0 ? '#89b4fa' : 'var(--accent)',
-                letterSpacing: '1.5px',
-                textTransform: 'uppercase',
-                marginTop: depth > 0 ? '4px' : '12px'
-            }} dangerouslySetInnerHTML={{ __html: line.html }} />
+            <div key={line.id} className={`drawer-header-line depth-${depth}`} dangerouslySetInnerHTML={{ __html: line.html }} />
         );
     };
 
     return (
-        <div
+        <div 
             ref={drawerRef}
-            className={`right-drawer ${isOpen ? 'open' : ''} ${isPeeking && activeDragData?.type === 'inline-btn' ? 'deep-peeking' : (isPeeking ? 'peeking' : '')} ${isLandscape ? 'landscape' : ''}`}
-            onDragOver={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            }}
-            onDrop={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const dataStr = e.dataTransfer.getData('application/json') || e.dataTransfer.getData('text/plain');
-                if (!dataStr) return;
-                
-                let data;
-                try { data = JSON.parse(dataStr); } catch (err) { return; }
-                
-                if (data && data.type === 'inline-btn' && data.context) {
-                    const target = document.elementFromPoint(e.clientX, e.clientY);
-                    const targetBtn = target?.closest('.inline-btn.auto-item');
-                    const isTargetContainer = targetBtn?.classList.contains('is-container');
-                    const targetName = targetBtn?.getAttribute('data-item-name');
-
-                    triggerHaptic(60);
-                    if (isTargetContainer && targetName) {
-                        executeCommand(`get ${data.context}`, true, true);
-                        setTimeout(() => executeCommand(`put ${data.context} ${targetName}`), 125);
-                    } else {
-                        executeCommand(`get ${data.context}`);
-                    }
-                }
-            }}
+            className={`right-drawer log-card-drawer ${isOpen ? 'open' : ''} ${isPeeking ? 'peeking' : ''} ${isLandscape ? 'landscape-mode' : ''}`}
             onPointerDown={(e) => {
                 const target = e.target as HTMLElement;
-                if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.closest('.drawer-checkbox') || target.tagName === 'INPUT') return;
+                if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT') return;
+                e.currentTarget.dataset.swipeX = e.clientX.toString();
+                e.currentTarget.dataset.swipeY = e.clientY.toString();
                 e.currentTarget.setPointerCapture(e.pointerId);
-                (e.currentTarget as any)._startX = e.clientX;
-                (e.currentTarget as any)._startY = e.clientY;
             }}
             onPointerUp={(e) => {
-                const startX = (e.currentTarget as any)._startX;
-                const startY = (e.currentTarget as any)._startY;
-                if (startX !== undefined && startX !== null) {
-                    const deltaX = startX - e.clientX;
-                    const deltaY = Math.abs(e.clientY - (startY || 0));
-                    // For right drawer, swiping right (negative deltaX) closes it
-                    if (deltaX < -20 && Math.abs(deltaX) > deltaY) {
-                        triggerHaptic(40);
-                        onClose();
+                const sx = parseFloat(e.currentTarget.dataset.swipeX || "0");
+                const sy = parseFloat(e.currentTarget.dataset.swipeY || "0");
+                if (sx && sy) {
+                    const deltaX = sx - e.clientX;
+                    const deltaY = Math.abs(e.clientY - sy);
+                    if (deltaX < -20 && Math.abs(deltaX) > deltaY) { 
+                        triggerHaptic(40); 
+                        exitSelectMode();
+                        onClose(); 
+                    } else if (isSelectMode) {
+                        const target = e.target as HTMLElement;
+                        if (!target.closest('.auto-item') && !target.closest('.select-mode-bar')) exitSelectMode();
                     }
                 }
-                (e.currentTarget as any)._startX = null;
-                (e.currentTarget as any)._startY = null;
+                delete e.currentTarget.dataset.swipeX;
+                delete e.currentTarget.dataset.swipeY;
             }}
-            onPointerCancel={(e) => {
-                (e.currentTarget as any)._startX = null;
-            }}
-            style={{ touchAction: 'pan-y', ...(activeDragData ? { pointerEvents: 'auto' } : {}) }}
         >
-            <div className="drawer-header" style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                padding: '12px 20px', 
-                background: 'rgba(10, 13, 21, 0.92)', 
-                backdropFilter: 'blur(25px)',
-                WebkitBackdropFilter: 'blur(25px)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '16px',
-                margin: '10px 15px',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-                pointerEvents: 'auto'
-            }}>
-                <span className="drawer-title" style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px', color: '#ffffff' }}>Item Manager</span>
-                <button onClick={() => { triggerHaptic(20); onClose(); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '30px', height: '30px', borderRadius: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer' }}>✕</button>
-            </div>
+            {isSelectMode && (
+                <div className="select-mode-bar">
+                    <span className="select-count">{selectedItems.size} selected</span>
+                    <button className="select-action-btn" onClick={() => executeActionForSelected('drop')}>Drop</button>
+                    <button className="select-action-btn" onClick={() => executeActionForSelected('remove')}>Remove</button>
+                    <button className="select-action-btn select-cancel-btn" onClick={exitSelectMode}>✕ Cancel</button>
+                </div>
+            )}
 
-            <div className="drawer-content" onScroll={handleSectionScroll}>
+            <div className="drawer-content" style={{ padding: '20px' }}>
                 <div className="drawer-section" data-drawer-section="equipmentlist">
-                    <div className="drawer-section-drop-zone">
+                    <div className="drawer-section-drop-zone" style={{ display: 'flex', alignItems: 'center' }}>
                         <span>⚔ Equipment</span>
                         <span className="drop-hint">drop here → wear</span>
+                        <button 
+                            onPointerDown={(e) => e.stopPropagation()}
+                            onClick={() => { triggerHaptic(20); exitSelectMode(); onClose(); }} 
+                            className="drawer-close-btn"
+                        >✕</button>
                     </div>
-                    {eqLines.filter(l => isLineVisible(l, eqLines)).map(line => renderLine(line, 'equipmentlist'))}
-                    {eqLines.length === 0 && <div className="empty-state">No equipment worn</div>}
-                </div>
-
-                <div className="drawer-section" data-drawer-section="inventorylist">
-                    <div className="drawer-section-drop-zone">
-                        <span>⬡ Inventory</span>
-                        <span className="drop-hint">drop here → get</span>
-                    </div>
-                    {inventoryLines.filter(l => isLineVisible(l, inventoryLines)).map(line => renderLine(line, 'inventorylist'))}
-                    {inventoryLines.length === 0 && <div className="empty-state">Inventory is empty</div>}
+                    {eqLines.filter(l => isLineVisible(l, eqLines)).map(line => renderLine(line))}
+                    {eqLines.length === 0 && <div className="drawer-empty-state">No equipment worn</div>}
                 </div>
             </div>
 
-            <MendingFooter
-                isMendingMode={isMendingMode}
-                setIsMendingMode={setIsMendingMode}
-                setMendingTarget={setMendingTarget}
-                selectedItems={selectedItems}
-                setSelectedItems={setSelectedItems}
-                eqLines={eqLines}
-                inventoryLines={inventoryLines}
-                executeCommand={executeCommand}
-                onClose={onClose}
-            />
-
             {draggedItem && ReactDOM.createPortal(
-                <div
-                    ref={ghostRef}
-                    className="drag-ghost"
-                    style={{
-                        left: draggedItem.x,
-                        top: draggedItem.y,
-                        pointerEvents: 'none'
-                    }}
-                >
+                <div ref={ghostRef} className="drag-ghost" style={{ left: draggedItem.x, top: draggedItem.y, pointerEvents: 'none' }}>
                     {(() => {
                         const label = draggedItem.commandLabel ?? draggedItem.line.text;
                         const noun = draggedItem.itemNoun;
                         if (!noun) return <>{label}</>;
                         const idx = label.indexOf(noun);
                         if (idx === -1) return <>{label}</>;
-                        return <>
-                            {label.slice(0, idx)}
-                            <span style={{ color: 'rgb(175,255,255)', fontWeight: 'bold' }}>{noun}</span>
-                            {label.slice(idx + noun.length)}
-                        </>;
+                        return <>{label.slice(0, idx)}<span style={{ color: 'rgb(175,255,255)', fontWeight: 'bold' }}>{noun}</span>{label.slice(idx + noun.length)}</>;
                     })()}
-                    {selectedItems.size > 1 && selectedItems.has(draggedItem.line.id) && (
+                    {selectedItems.size > 1 && (
                         <div className="ghost-badge">{selectedItems.size}</div>
                     )}
                 </div>,

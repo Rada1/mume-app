@@ -1,7 +1,10 @@
+/**
+ * @file useButtonGestures.ts
+ * @description Hook managing pointer gestures for individual game buttons, including swiping and radial menus.
+ */
 import React, { useCallback } from 'react';
 import { CustomButton, PopoverState, SwipeDirection } from '../../../types';
 import { getButtonCommand } from '../../../utils/buttonUtils';
-import { triggerSwipeFeedback } from '../../SwipeFeedbackOverlay';
 
 export interface UseButtonGesturesProps {
     button: CustomButton;
@@ -25,6 +28,11 @@ export interface UseButtonGesturesProps {
     setButtons: React.Dispatch<React.SetStateAction<CustomButton[]>>;
     setEditButton: (button: CustomButton) => void;
     setWheelPos: React.Dispatch<React.SetStateAction<{ x: number, y: number }>>;
+    playClickSound: () => void;
+    isSoundEnabled: boolean;
+    initAudio: () => void;
+    setRayParams: (params: { angle: number, length: number, opacity: number, color?: string }) => void;
+    isMobile?: boolean;
 }
 
 export const useButtonGestures = ({
@@ -48,13 +56,32 @@ export const useButtonGestures = ({
     handleButtonClick,
     setButtons,
     setEditButton,
-    setWheelPos
+    setWheelPos,
+    playClickSound,
+    isSoundEnabled,
+    initAudio,
+    setRayParams,
+    isMobile
 }: UseButtonGesturesProps) => {
 
+    // Helper to update ray params easily
+    const updateRay = useCallback((angle: number, length: number, opacity: number, color?: string) => {
+        setRayParams({ angle, length, opacity, color });
+    }, [setRayParams]);
+
+    // --- Auto-Reset on External Fire ---
+    React.useEffect(() => {
+        if (!heldButton || (heldButton && (heldButton.id !== button.id || heldButton.didFire))) {
+            setActiveDir(null);
+            setIsCancelling(false);
+            updateRay(0, 0, 0);
+        }
+    }, [heldButton?.id, heldButton?.didFire, button.id, setActiveDir, setIsCancelling, updateRay]);
+
+    // --- Interaction Start ---
     const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         if (isEditMode) {
-            if (button.setId === 'Xbox') {
-                // Xbox buttons are locked and cannot be moved
+            if (button.setId === 'Tactical') {
                 if (wasDraggingRef) wasDraggingRef.current = false;
                 return;
             } else {
@@ -62,6 +89,7 @@ export const useButtonGestures = ({
             }
         } else {
             if (e.cancelable) e.preventDefault();
+            initAudio(); 
             const el = e.currentTarget as any;
             const rect = el.getBoundingClientRect();
             el._startX = e.clientX;
@@ -86,23 +114,19 @@ export const useButtonGestures = ({
                 initialX,
                 initialY
             });
-            el.style.setProperty('--ray-color', button.style.borderColor || button.style.backgroundColor || 'var(--accent)');
+            updateRay(0, 0, 0, button.style.borderColor || button.style.backgroundColor || 'var(--accent)');
             el.style.setProperty('--cancel-opacity', '0');
             el.style.setProperty('--cancel-scale', '0');
         }
-    }, [isEditMode, handleDragStart, button, setWheelPos, wasDraggingRef, triggerHaptic, setHeldButton]);
+    }, [isEditMode, handleDragStart, button, setWheelPos, wasDraggingRef, triggerHaptic, setHeldButton, initAudio, updateRay]);
 
+    // --- Gesture Recording & Feedback ---
     const onPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         if (isEditMode) return;
         const el = e.currentTarget as any;
         if (!el._startX) return;
 
         if (heldButton?.id === button.id && heldButton.didFire) {
-            if (activeDir) setActiveDir(null);
-            setCommandPreview(null);
-            document.documentElement.style.removeProperty('--preview-glow-color');
-            el.style.setProperty('--ray-opacity', '0');
-            el.style.setProperty('--cancel-opacity', '0');
             return;
         }
 
@@ -120,9 +144,16 @@ export const useButtonGestures = ({
             }
         }
 
-        const distToCenter = Math.sqrt(dx * dx + dy * dy);
+        const isDial = button.menuDisplay === 'dial';
+        const startX = el._startX;
+        const startY = el._startY;
+
+        const dxVal = e.clientX - startX;
+        const dyVal = e.clientY - startY;
+        const distVal = Math.sqrt(dxVal * dxVal + dyVal * dyVal);
+
         const isLong = joystick.isTargetModifierActive;
-        const preview = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, isLong);
+        const preview = getButtonCommand(button, dxVal, dyVal, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, isLong);
         setCommandPreview(preview?.cmd || null);
         if (preview?.cmd) {
             document.documentElement.style.setProperty(
@@ -132,11 +163,9 @@ export const useButtonGestures = ({
         } else {
             document.documentElement.style.removeProperty('--preview-glow-color');
         }
-
-        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+        const angle = Math.atan2(dyVal, dxVal) * 180 / Math.PI;
         let snappedAngle = Math.round(angle / 45) * 45;
 
-        // Prevent wrap-around jump at 180/-180 by tracking continuous rotation
         if (el._lastAngle !== undefined) {
             let diff = snappedAngle - el._lastAngle;
             while (diff > 180) { snappedAngle -= 360; diff -= 360; }
@@ -164,7 +193,7 @@ export const useButtonGestures = ({
             setActiveDir(preview.dir || null);
             el.style.setProperty('--cancel-opacity', '0');
             setIsCancelling(false);
-        } else if (preview && isSwipedOut && distToCenter < 20) {
+        } else if (preview && isSwipedOut && distVal < 20) {
             el._wasInCancelZone = false;
             setActiveDir('center' as any);
             el.style.setProperty('--cancel-opacity', '0');
@@ -177,8 +206,9 @@ export const useButtonGestures = ({
             setIsCancelling(false);
         }
 
-        if (distToCenter > 20 && snappedAngle !== el._lastSnappedAngle) {
+        if (distVal > 20 && snappedAngle !== el._lastSnappedAngle) {
             triggerHaptic(15);
+            if (isSoundEnabled) playClickSound();
             el._lastSnappedAngle = snappedAngle;
         }
 
@@ -186,7 +216,7 @@ export const useButtonGestures = ({
             || (isLong && ['menu', 'assign', 'select-assign'].includes(button.longActionType || ''));
         const menuSetId = isLong ? (button.longCommand || button.command) : button.command;
 
-        if (isMenuButton && distToCenter > 25 && !el._didFire) {
+        if (isMenuButton && distVal > 25 && !el._didFire) {
             const rect = el.getBoundingClientRect();
             const initialX = rect.left + rect.width / 2;
             const initialY = rect.top + rect.height / 2;
@@ -200,22 +230,23 @@ export const useButtonGestures = ({
                 assignSourceId: (button.actionType === 'assign' || button.actionType === 'select-assign') ? button.id : undefined,
                 executeAndAssign: button.actionType === 'select-assign',
                 menuDisplay: button.menuDisplay,
+                accentColor: button.style.borderColor || button.style.backgroundColor,
                 initialPointerX: isDial ? initialX : undefined,
                 initialPointerY: isDial ? initialY : undefined
             });
             triggerHaptic(40);
         }
 
-        el.style.setProperty('--ray-angle', `${snappedAngle}deg`);
-        el.style.setProperty('--ray-length', `${distToCenter + 50}px`);
-        const timePassed = Date.now() - el._startTime;
-        const isHeld = timePassed > 150 || distToCenter > 60;
-        const shouldShowRay = distToCenter > 20 && isHeld && (preview || isCancelZone);
-        el.style.setProperty('--ray-opacity', (shouldShowRay && !el._didFire) ? '1' : '0');
-        el.style.setProperty('--ray-color', isCancelZone ? '#ef4444' : (button.style.borderColor || 'var(--set-accent, var(--accent))'));
+        const shouldShowRay = distVal > 15;
+        const rayColor = isCancelZone ? '#ef4444' : (button.style.borderColor || 'var(--set-accent, var(--accent))');
+        
+        // Finalize ray parameters for state update
+        const rayLength = isDial ? 140 : distVal + 55;
+        updateRay(snappedAngle, rayLength, shouldShowRay ? 1 : 0, rayColor);
 
-    }, [isEditMode, heldButton, button, activeDir, setActiveDir, setCommandPreview, wasDraggingRef, setHeldButton, joystick, target, setIsCancelling, triggerHaptic, setPopoverState]);
+    }, [isEditMode, heldButton, button, activeDir, setActiveDir, setCommandPreview, wasDraggingRef, setHeldButton, joystick, target, setIsCancelling, triggerHaptic, setPopoverState, isSoundEnabled, playClickSound, updateRay, isMobile]);
 
+    // --- Execution & Termination ---
     const onPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         if (e.cancelable) e.preventDefault();
         const el = e.currentTarget as any;
@@ -227,7 +258,12 @@ export const useButtonGestures = ({
             return;
         }
 
-        const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
+        const currentX = e.clientX;
+        const currentY = e.clientY;
+        const startX = el._startX || currentX;
+        const startY = el._startY || currentY;
+        const dx = currentX - startX;
+        const dy = currentY - startY;
         const dist = Math.sqrt(dx * dx + dy * dy);
         const isOverButton = dist < 25;
         const isLong = joystick.isTargetModifierActive;
@@ -244,10 +280,9 @@ export const useButtonGestures = ({
         setActiveDir(null);
         const finalIsCancelling = isCancelling;
         setIsCancelling(false);
-        el._wasInCancelZone = false;
-        el.style.setProperty('--ray-opacity', '0');
         el.style.setProperty('--cancel-opacity', '0');
         el.style.setProperty('--cancel-scale', '0');
+        updateRay(0, 0, 0);
 
         el._startX = null;
         el._startY = null;
@@ -258,7 +293,7 @@ export const useButtonGestures = ({
 
         const cancelX = window.innerWidth / 2 + 200;
         const cancelY = window.innerHeight / 2;
-        const distToCancelBubble = Math.sqrt(Math.pow(e.clientX - cancelX, 2) + Math.pow(e.clientY - cancelY, 2));
+        const distToCancelBubble = Math.sqrt(Math.pow(currentX - cancelX, 2) + Math.pow(currentY - cancelY, 2));
 
         if (finalIsCancelling || distToCancelBubble < 45) return;
 
@@ -266,6 +301,7 @@ export const useButtonGestures = ({
             if (previewCmd.actionType === 'nav') {
                 setActiveSet(previewCmd.cmd);
                 triggerHaptic(35);
+                if (isSoundEnabled) playClickSound();
             } else if (['assign', 'menu', 'select-assign', 'select-recipient'].includes(previewCmd.actionType || '')) {
                 const rect = el.getBoundingClientRect();
                 const isSwipe = el._maxDist > 15;
@@ -275,8 +311,8 @@ export const useButtonGestures = ({
 
                 triggerHaptic(40);
                 setPopoverState({
-                    x: isSwipe ? (isDial ? window.innerWidth / 2 : e.clientX) : rect.right + 10,
-                    y: isSwipe ? (isDial ? window.innerHeight / 2 : e.clientY) : rect.top,
+                    x: isSwipe ? (isDial ? window.innerWidth / 2 : currentX) : rect.right + 10,
+                    y: isSwipe ? (isDial ? window.innerHeight / 2 : currentY) : rect.top,
                     sourceHeight: rect.height,
                     setId: previewCmd.cmd,
                     context: previewCmd.actionType === 'select-assign' ? previewCmd.modifiers : button.label,
@@ -284,29 +320,26 @@ export const useButtonGestures = ({
                     assignSwipeDir: previewCmd.dir,
                     executeAndAssign: previewCmd.actionType === 'select-assign' || previewCmd.actionType === 'assign',
                     menuDisplay: button.menuDisplay,
+                    accentColor: button.style.borderColor || button.style.backgroundColor,
                     type: previewCmd.actionType === 'select-recipient' ? 'give-recipient-select' : undefined,
                     initialPointerX: (isSwipe && isDial) ? initialX : undefined,
                     initialPointerY: (isSwipe && isDial) ? initialY : undefined
                 });
             } else if (previewCmd.actionType === 'preload' || (previewCmd.cmd && previewCmd.cmd.startsWith('input:'))) {
                 const prefill = previewCmd.cmd.startsWith('input:') ? previewCmd.cmd.slice(6) : (previewCmd.cmd + (previewCmd.cmd.endsWith(' ') ? '' : ' '));
-                // We need to use the actual setter passed from parent
-                (handleButtonClick as any)({ ...button, command: prefill, actionType: 'preload', _skipJoystick: true }, e);
+                handleButtonClick({ ...button, command: prefill, actionType: 'preload', _skipJoystick: true }, e as any);
             } else if (previewCmd.cmd === '__clear_target__') {
-                handleButtonClick({ ...button, command: '__clear_target__', actionType: 'command', _skipJoystick: true }, e);
+                handleButtonClick({ ...button, command: '__clear_target__', actionType: 'command', _skipJoystick: true }, e as any);
             } else if (previewCmd.cmd && previewCmd.cmd.trim() !== '') {
                 executeCommand(previewCmd.cmd, false, false);
                 if (joystick.currentDir) joystick.setIsJoystickConsumed(true);
                 triggerHaptic(35);
-
-                if (previewCmd.isSwipe) {
-                    const angleRad = Math.atan2(dy, dx);
-                    const angleDeg = angleRad * (180 / Math.PI);
-                    triggerSwipeFeedback(e.clientX, e.clientY, angleDeg, button.style.borderColor || 'var(--accent)');
-                }
-
-                el.classList.remove('btn-glow-active'); void el.offsetWidth; el.classList.add('btn-glow-active');
+                if (isSoundEnabled) playClickSound();
             }
+            
+            el.classList.remove('btn-glow-active');
+            void el.offsetWidth;
+            el.classList.add('btn-glow-active');
         } else {
             if (el._maxDist < 15 || isReturnToCenter) {
                 el.classList.remove('btn-glow-active'); void el.offsetWidth; el.classList.add('btn-glow-active');
@@ -322,20 +355,17 @@ export const useButtonGestures = ({
                         return;
                     }
                 }
-                handleButtonClick({ ...button, _skipJoystick: false } as any, e);
+                handleButtonClick({ ...button, _skipJoystick: false } as any, e as any);
             }
         }
 
         if (button.trigger?.enabled && button.trigger.autoHide && button.display === 'floating') {
             setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));
         }
-    }, [isEditMode, heldButton, button, joystick, target, isCancelling, setHeldButton, setCommandPreview, setActiveDir, setIsCancelling, setActiveSet, triggerHaptic, setPopoverState, executeCommand, handleButtonClick, setButtons]);
+    }, [isEditMode, heldButton, button, joystick, target, isCancelling, setHeldButton, setCommandPreview, setActiveDir, setIsCancelling, setActiveSet, triggerHaptic, setPopoverState, executeCommand, handleButtonClick, setButtons, updateRay]);
 
     const onPointerCancel = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         const el = e.currentTarget as any;
-        clearTimeout(el._lpt); el._lpt = null;
-        clearTimeout(el._lst); el._lst = null;
-        if (el._repeatInterval) { clearInterval(el._repeatInterval); el._repeatInterval = null; }
         setHeldButton(null);
         setCommandPreview(null);
         document.documentElement.style.removeProperty('--preview-glow-color');

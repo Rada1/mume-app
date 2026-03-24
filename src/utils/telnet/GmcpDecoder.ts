@@ -29,6 +29,7 @@ export interface GmcpHandlers {
     onGroupSet?: (data: any) => void;
     onMumeEdit?: (data: import('../../types').GmcpMumeEdit) => void;
     onRoomCharsCombat?: (data: any[]) => void;
+    onCharRide?: (data: any) => void;
     onDisconnect?: () => void;
 }
 
@@ -52,16 +53,16 @@ export class GmcpDecoder {
             this.handleUpdateExits(json);
         } else if (pkgLower === 'room.players') {
             this.handleRoomPlayers(json);
-        } else if (pkgLower === 'room.chars' || pkgLower === 'room.chars.set' || pkgLower === 'room.chars.list' || pkgLower === 'mume.client.chars') {
+        } else if (pkgLower === 'room.npcs' || pkgLower === 'room.chars' || pkgLower === 'room.char' || pkgLower === 'room.chars.set' || pkgLower === 'room.chars.list' || pkgLower === 'mume.client.chars') {
             this.handleRoomNpcs(json);
             this.handleRoomCharsCombat(json);
         } else if (pkgLower === 'room.addplayer') {
             this.handleSimpleJson(json, handlers.onAddPlayer);
-        } else if (pkgLower === 'room.addchar' || pkgLower === 'room.chars.add') {
+        } else if (pkgLower === 'room.addnpc' || pkgLower === 'room.addchar' || pkgLower === 'room.chars.add' || pkgLower === 'room.char.add') {
             this.handleSimpleJson(json, handlers.onAddNpc);
         } else if (pkgLower === 'room.removeplayer') {
             this.handleSimpleJson(json, handlers.onRemovePlayer);
-        } else if (pkgLower === 'room.removechar' || pkgLower === 'room.chars.remove') {
+        } else if (pkgLower === 'room.removenpc' || pkgLower === 'room.removechar' || pkgLower === 'room.chars.remove' || pkgLower === 'room.char.remove') {
             this.handleSimpleJson(json, handlers.onRemoveNpc);
         } else if (pkgLower === 'room.items' || pkgLower === 'char.items' || pkgLower === 'char.inv' || pkgLower === 'room.objects' || pkgLower === 'room.items.list' || pkgLower === 'char.items.list' || pkgLower === 'room.items.set' || pkgLower === 'mume.client.inventory' || pkgLower === 'mume.client.equipment' || pkgLower === 'mume.client.roomitems') {
             this.handleRoomItems(json);
@@ -91,6 +92,8 @@ export class GmcpDecoder {
             this.handleCommChannel(json);
         } else if (pkgLower === 'mume.client.edit') {
             this.handleSimpleJson(json, handlers.onMumeEdit);
+        } else if (pkgLower === 'char.ride') {
+            this.handleSimpleJson(json, handlers.onCharRide);
         }
     }
 

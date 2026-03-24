@@ -18,19 +18,22 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 
 ### 🎮 Game State & UI Context
 - **Central State (HP, Mana, Target, Inventory):** `src/context/GameContext.tsx`
-- **User Settings & Persistence:** `src/hooks/useSettings.ts`, `src/hooks/usePersistentState.ts`
+- **Entity Registry (NPCs, Players, Items):** `src/hooks/useEntityRegistry.ts` (Source of Truth)
+- **User Settings & Persistence:** `src/hooks/useSettings.ts`, `src/context/GameContext/useSettingsState.ts`
 - **Global Types & Interfaces:** `src/types/index.ts`
 
 ### 🏗️ UI & Layout
 - **Main App Shell:** `src/index.tsx`
 - **Visual Layers (Weather, HUD, Modals):** `src/components/Layout/`
-- **Input Area & Commands:** `src/components/InputArea.tsx`
+- **Inline Button Popovers:** `src/components/Popovers/StandardMenuPopover.tsx`
 - **Mapper Component:** `src/components/Mapper/` (and `src/mapper/renderer.ts`)
 
 ### 🧠 Logic & Networking
 - **Low-level Telnet/GMCP:** `src/hooks/useTelnet.ts`
 - **GMCP Data Handling:** `src/hooks/useGmcpHandlers.ts`
-- **Game Output Parsing (Text):** `src/hooks/useGameParser.ts`
+- **Game Output Parsing (Text):** `src/hooks/GameParser/useGameParser.ts` (Orchestrator)
+- **Parser Sub-Hooks:** `useStageInitializer.ts`, `useMessageRouter.ts`, `useLineProcessor.ts`
+- **Action Filtering:** `src/utils/actionUtils.ts` (Capability -> Button Map)
 - **Command Parsing (User Input):** `src/services/parser/services/mudParser.ts`
 - **Message Log & Combat:** `src/hooks/useMessageLog.ts`
 - **Command Control (Sending to Game):** `src/hooks/useCommandController.ts`
@@ -44,6 +47,8 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 | **Fix a Layout Issue** | `src/components/Layout/`, `src/styles/layout.css` |
 | **Handle a New GMCP Packet** | `useGmcpHandlers.ts`, `GameContext.tsx`, `types/index.ts` |
 | **Change Message Styling** | `useMessageLog.ts`, `useMessageHighlighter.ts`, `MessageLog.css` |
+| **Fix Inline Button Menus** | `actionUtils.ts`, `useEntityRegistry.ts` |
+| **Update Parser Logic** | `useGameParser.ts`, `useStageInitializer.ts`, `useMessageRouter.ts` |
 | **Add a New Modal/Setting** | `ModalsLayer.tsx`, `useSettings.ts`, `SettingsModal.tsx` |
 | **Update Button Logic** | `useButtons.ts`, `useButtonLogic.ts`, `ButtonUtils.ts` |
 

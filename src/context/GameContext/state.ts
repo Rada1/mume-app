@@ -1,39 +1,23 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { usePersistentState } from '../../hooks/usePersistentState';
-import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, GameAction, ParleyState, PopoverState, CombatHealthStatus, QuestData, GroupMember } from '../../types';
-import { OptimisticChange } from './types';
+import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, GameAction, ParleyState, PopoverState, CombatHealthStatus, QuestData, GroupMember, OptimisticChange } from '../../types';
 import MASTER_SETTINGS from '../../constants/mastersettings.json';
-import { DEFAULT_INLINE_CATEGORIES } from '../../utils/categorizationUtils';
-import { sanitizeGameTarget } from '../../utils/gameUtils';
+import { extractNoun, extractColorTaggedKeyword, sanitizeGameTarget } from '../../utils/gameUtils';
+import { useSettingsState } from './useSettingsState';
+import { useUIState } from './useUIState';
+import { useEntityRegistry } from '../../hooks/useEntityRegistry';
 
 export const useGameProviderState = () => {
     // Settings & Mode
-    const [isNoviceMode, setIsNoviceMode] = usePersistentState('mud-novice-mode', (MASTER_SETTINGS as any).isNoviceMode ?? false);
-    const [isSoundEnabled, setIsSoundEnabled] = usePersistentState('mud-sound-enabled', (MASTER_SETTINGS as any).isSoundEnabled ?? true);
-    const [isMmapperMode, setIsMmapperMode] = usePersistentState('mud-mmapper-mode', false);
-    const [theme, setTheme] = usePersistentState<'light' | 'dark'>('mud-theme', 'dark');
-    const [showControls, setShowControls] = usePersistentState<boolean>('mud-show-controls', (() => {
-        // If there's a stored preference, use it. Otherwise default to false on desktop, true on mobile.
-        const stored = localStorage.getItem('mud-show-controls');
-        if (stored !== null) return JSON.parse(stored) as boolean;
-        const isMobile = window.matchMedia('(pointer: coarse)').matches;
-        return isMobile;
-    })());
-    const [autoConnect, setAutoConnect] = usePersistentState('mud-auto-connect', (MASTER_SETTINGS as any).autoConnect ?? true);
-    const [hasSeenOnboarding, setHasSeenOnboarding] = usePersistentState('mud-has-seen-onboarding', false);
-    const [showDebugEchoes, setShowDebugEchoes] = usePersistentState('mud-show-debug-echoes', false);
-    const [uiMode, setUiMode] = usePersistentState<any>('mud-ui-mode', (MASTER_SETTINGS as any).uiMode ?? 'auto');
-    const [disable3dScroll, setDisable3dScroll] = usePersistentState('mud-disable-3d-scroll', (MASTER_SETTINGS as any).disable3dScroll ?? false);
-    const [disableSmoothScroll, setDisableSmoothScroll] = usePersistentState('mud-disable-smooth-scroll', (MASTER_SETTINGS as any).disableSmoothScroll ?? false);
-    const [isImmersionMode, setIsImmersionMode] = usePersistentState('mud-immersion-mode', (MASTER_SETTINGS as any).isImmersionMode ?? true);
-    const [isMobileBrevityMode, setIsMobileBrevityMode] = usePersistentState('mud-mobile-brevity', false);
-    const [showLegacyButtons, setShowLegacyButtons] = usePersistentState('mud-show-legacy-buttons', false);
-    const [showOrganicTerrain, setShowOrganicTerrain] = usePersistentState('mud-show-organic-terrain', true);
-    const [inlineCategories, setInlineCategories] = usePersistentState<import('../../types').InlineCategoryConfig[]>('mud-inline-categories', (MASTER_SETTINGS as any).inlineCategories || DEFAULT_INLINE_CATEGORIES);
-    const [isHighlighterEnabled, setIsHighlighterEnabled] = usePersistentState('mud-highlighter-enabled', true);
-    const [isCrtEnabled, setIsCrtEnabled] = usePersistentState('mud-crt-enabled', false);
-    const [isBloomEnabled, setIsBloomEnabled] = usePersistentState('mud-bloom-enabled', false);
-    const [favorites, setFavorites] = usePersistentState<string[]>('mud-favorites', []);
+    const settings = useSettingsState();
+    const {
+        isNoviceMode, setIsNoviceMode, isSoundEnabled, setIsSoundEnabled, isMmapperMode, setIsMmapperMode, theme, setTheme, showControls, setShowControls, autoConnect, setAutoConnect, hasSeenOnboarding, setHasSeenOnboarding,
+        showDebugEchoes, setShowDebugEchoes, uiMode, setUiMode, disable3dScroll, setDisable3dScroll, disableSmoothScroll, setDisableSmoothScroll, isImmersionMode, setIsImmersionMode, isMobileBrevityMode, setIsMobileBrevityMode, showOrganicTerrain, setShowOrganicTerrain, inlineCategories, setInlineCategories, isHighlighterEnabled, setIsHighlighterEnabled,
+        isCrtEnabled, setIsCrtEnabled, isBloomEnabled, setIsBloomEnabled, favorites, setFavorites, zoneMusic, setZoneMusic
+    } = settings;
+
+    // Registry
+    const { entities, setEntities, registerEntity, getEntity, clearRegistry, detectCapabilities, extractNoun } = useEntityRegistry();
 
     // Core Game State
     const [status, setStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');
@@ -106,6 +90,7 @@ export const useGameProviderState = () => {
     const [currentTerrain, setCurrentTerrain] = useState<string>('city');
     const [roomName, _setRoomName] = useState<string | null>(null);
     const [roomExits, setRoomExits] = useState<string[]>([]);
+    const [roomZone, setRoomZone] = useState<string | null>(null);
     const roomNameRef = useRef<string | null>(null);
     const setRoomName = useCallback((name: string | null) => {
         roomNameRef.current = name;
@@ -114,82 +99,10 @@ export const useGameProviderState = () => {
     // Still keep the effect for sync if needed by other components
     useEffect(() => { roomNameRef.current = roomName; }, [roomName]);
 
-    // UI state
-    const [ui, setUI] = useState<{
-        drawer: 'none' | 'stats' | 'items' | 'character' | 'players';
-        isDrawerPeeking: boolean;
-        peekingDrawer: 'none' | 'stats' | 'items' | 'character' | 'players' | 'map';
-        setManagerOpen: boolean;
-        mapExpanded: boolean;
-        isMenuOpen: boolean;
-        isSetMenuOpen: boolean;
-        menuView: 'main' | 'availableSets';
-    }>(() => {
-        const isMobileInitial = typeof window !== 'undefined' && 
-            (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768);
-            
-        return {
-            drawer: 'none',
-            isDrawerPeeking: false,
-            peekingDrawer: 'none',
-            setManagerOpen: false,
-            mapExpanded: !isMobileInitial, // Open by default on desktop
-            isMenuOpen: false,
-            isSetMenuOpen: false,
-            menuView: 'main'
-        };
-    });
-
     const executeCommandRef = useRef<(cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void>(() => { });
 
-    const setIsStatsOpen = useCallback((open: boolean) => {
-        setUI(prev => {
-            if (open && prev.drawer !== 'stats') {
-                // Fetch fresh data only when OPENING the drawer
-                // Use a short delay if needed to avoid blocking UI transition
-                setTimeout(() => {
-                    executeCommandRef.current?.('stat', true, true, true, true);
-                    setTimeout(() => executeCommandRef.current?.('at', true, true, true, true), 100);
-                }, 50);
-            }
-            return { ...prev, drawer: open ? 'stats' : 'none' };
-        });
-    }, []);
-
-    const setIsCharacterOpen = useCallback((open: boolean) => {
-        setUI(prev => {
-            if (open && prev.drawer !== 'character') {
-                setTimeout(() => {
-                    executeCommandRef.current?.('info', true, true, true, true);
-                    setTimeout(() => executeCommandRef.current?.('score', true, true, true, true), 100);
-                    setTimeout(() => executeCommandRef.current?.('at', true, true, true, true), 200);
-                    setTimeout(() => executeCommandRef.current?.('look self', true, true, true, true), 300);
-                    setTimeout(() => executeCommandRef.current?.('whois', true, true, true, true), 400);
-                    setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 500);
-                    setTimeout(() => executeCommandRef.current?.('practice', true, true, true, true), 600);
-                }, 50);
-            }
-            return { ...prev, drawer: open ? 'character' : 'none' };
-        });
-    }, []);
-
-    const setIsItemsDrawerOpen = useCallback((open: boolean) => {
-        setUI(prev => {
-            if (open && prev.drawer !== 'items') {
-                setTimeout(() => {
-                    executeCommandRef.current?.('inv', true, true, true, true);
-                    setTimeout(() => executeCommandRef.current?.('eq', true, true, true, true), 150);
-                }, 50);
-            }
-            return { ...prev, drawer: open ? 'items' : 'none' };
-        });
-    }, []);
-    const setIsPlayersOpen = useCallback((open: boolean) => {
-        setUI(prev => ({ ...prev, drawer: open ? 'players' : 'none' }));
-    }, []);
-
-    const setIsMapExpanded = useCallback((open: boolean) => setUI(prev => ({ ...prev, mapExpanded: open })), []);
-    const setIsSetManagerOpen = useCallback((open: boolean) => setUI(prev => ({ ...prev, setManagerOpen: open })), []);
+    // UI state
+    const { ui, setUI, setIsStatsOpen, setIsCharacterOpen, setIsEquipmentOpen, setIsInventoryOpen, setIsPlayersOpen, setIsMapExpanded, setIsSetManagerOpen } = useUIState(executeCommandRef);
 
     // Environmental state
     const [lighting, setLighting] = useState<LightingType>('none');
@@ -249,7 +162,20 @@ export const useGameProviderState = () => {
     const [spellSpeed, setSpellSpeed] = useState('normal');
     const [alertness, setAlertness] = useState('normal');
     const [activePrompt, setActivePrompt] = useState("");
-    const [playerPosition, setPlayerPosition] = useState('standing');
+    const [playerPosition, _setPlayerPosition] = useState('standing');
+    const playerPositionRef = useRef('standing');
+    const setPlayerPosition = useCallback((pos: string) => {
+        _setPlayerPosition(pos);
+        playerPositionRef.current = pos;
+    }, []);
+
+    const [isRiding, _setIsRiding] = useState(false);
+    const isRidingRef = useRef(false);
+    const setIsRiding = useCallback((val: boolean) => {
+        _setIsRiding(val);
+        isRidingRef.current = val;
+    }, []);
+
     const [popoverState, setPopoverState] = useState<PopoverState | null>(null);
 
     // Global listener for replaying onboarding
@@ -303,54 +229,80 @@ export const useGameProviderState = () => {
         const currentInv = optInvRef.current ?? invLinesRef.current;
         const currentEq = optEqRef.current ?? eqLinesRef.current;
 
+        // Resolve item if not provided
+        let item = change.item;
+        if (!item) {
+            if (change.lineId) {
+                item = currentInv.find(l => l.id === change.lineId) || currentEq.find(l => l.id === change.lineId);
+            } else if (change.noun) {
+                const target = change.noun.toLowerCase();
+                item = currentInv.find(l => ((extractColorTaggedKeyword(l.html) || extractNoun(l.text)) ?? '').toLowerCase() === target)
+                    || currentEq.find(l => ((extractColorTaggedKeyword(l.html) || extractNoun(l.text)) ?? '').toLowerCase() === target);
+            }
+        }
+        if (!item) return;
+
         switch (change.type) {
             case 'wear': {
-                const sid = change.item.stableId || change.item.id;
+                const sid = item.stableId || item.id;
                 setOptimisticInventoryLines(removeItemAndChildren(currentInv, sid));
                 break;
             }
             case 'remove': {
-                const newEq = currentEq.filter(l => l.id !== change.item.id);
-                const invItem: DrawerLine = { ...change.item, prefix: undefined, prefixHtml: undefined, depth: 0, parentItemId: undefined, parentItemNoun: undefined };
+                const newEq = currentEq.filter(l => l.id !== item.id);
+                const invItem: DrawerLine = { ...item, prefix: undefined, prefixHtml: undefined, depth: 0, parentItemId: undefined, parentItemNoun: undefined };
                 setOptimisticEqLines(newEq);
                 setOptimisticInventoryLines([...currentInv, invItem]);
                 break;
             }
             case 'drop':
             case 'give': {
-                const sid = change.item.stableId || change.item.id;
-                if (change.from === 'inv') {
+                const sid = item.stableId || item.id;
+                if (change.from === 'inv' || currentInv.some(l => l.id === item?.id)) {
                     setOptimisticInventoryLines(removeItemAndChildren(currentInv, sid));
                 } else {
-                    setOptimisticEqLines(currentEq.filter(l => l.id !== change.item.id));
+                    setOptimisticEqLines(currentEq.filter(l => l.id !== item?.id));
                 }
                 break;
             }
             case 'get': {
-                const sid = change.item.stableId || change.item.id;
+                const sid = item.stableId || item.id;
                 const withoutItem = removeItemAndChildren(currentInv, sid);
-                const unnested: DrawerLine = { ...change.item, depth: 0, parentItemId: undefined, parentItemNoun: undefined };
+                const unnested: DrawerLine = { ...item, depth: 0, parentItemId: undefined, parentItemNoun: undefined };
                 setOptimisticInventoryLines([...withoutItem, unnested]);
                 break;
             }
             case 'put': {
-                const sid = change.item.stableId || change.item.id;
+                const sid = item.stableId || item.id;
                 const withoutItem = removeItemAndChildren(currentInv, sid);
-                const cSid = change.container.stableId || change.container.id;
-                const nested: DrawerLine = {
-                    ...change.item,
-                    depth: (change.container.depth ?? 0) + 1,
-                    parentItemId: change.container.context || cSid,
-                    parentItemNoun: cSid
-                };
-                const idx = withoutItem.findIndex(l => l.id === change.container.id);
-                const result = [...withoutItem];
-                result.splice(idx >= 0 ? idx + 1 : result.length, 0, nested);
-                setOptimisticInventoryLines(result);
+                
+                // If container is also defined by noun
+                let container = change.container;
+                if (!container && change.containerNoun) {
+                    const cTarget = change.containerNoun.toLowerCase();
+                    container = currentInv.find(l => (extractColorTaggedKeyword(l.html) || extractNoun(l.text)).toLowerCase() === cTarget);
+                }
+
+                if (container) {
+                    const cSid = container.stableId || container.id;
+                    const nested: DrawerLine = {
+                        ...item,
+                        depth: (container.depth ?? 0) + 1,
+                        parentItemId: container.context || cSid,
+                        parentItemNoun: cSid
+                    };
+                    const idx = withoutItem.findIndex(l => l.id === container?.id);
+                    const result = [...withoutItem];
+                    result.splice(idx >= 0 ? idx + 1 : result.length, 0, nested);
+                    setOptimisticInventoryLines(result);
+                } else {
+                    setOptimisticInventoryLines(withoutItem);
+                }
                 break;
             }
         }
     }, []);
+
     const isDrawerCapture = useRef<number>(0);
     const isSilentCapture = useRef<number>(0);
     const isWaitingForStats = useRef<boolean>(false);
@@ -365,6 +317,38 @@ export const useGameProviderState = () => {
     const [discoveredItems, setDiscoveredItems] = useState<string[]>([]);
     const [isTrackpadModifierActive, setIsTrackpadModifierActive] = useState(false);
     
+    // Selection state
+    const [selectedObjectIds, setSelectedObjectIds] = useState<Set<string>>(new Set());
+
+    const toggleObjectSelection = useCallback((id: string, setId?: string, context?: string) => {
+        setSelectedObjectIds(prev => {
+            const next = new Set(prev);
+            // Search for any existing entry for this id (regardless of setId or context)
+            let existingEntry: string | null = null;
+            for (const item of next) {
+                const parts = item.split(':');
+                const itemId = parts.length > 1 ? parts[1] : parts[0];
+                if (itemId === id) {
+                    existingEntry = item;
+                    break;
+                }
+            }
+
+            if (existingEntry) {
+                next.delete(existingEntry);
+            } else {
+                let entry = setId ? `${setId}:${id}` : id;
+                if (context) entry += `:${context}`;
+                next.add(entry);
+            }
+            return next;
+        });
+    }, []);
+
+    const clearObjectSelection = useCallback(() => {
+        setSelectedObjectIds(new Set());
+    }, []);
+
     // Combat Overlay State
     const [playerHealthStatus, setPlayerHealthStatus] = useState<CombatHealthStatus | null>(null);
     const [opponentHealthStatus, setOpponentHealthStatus] = useState<CombatHealthStatus | null>(null);
@@ -452,7 +436,8 @@ export const useGameProviderState = () => {
         mood, setMood,
         spellSpeed, setSpellSpeed,
         alertness, setAlertness,
-        playerPosition, setPlayerPosition,
+        playerPosition, setPlayerPosition, playerPositionRef,
+        isRiding, setIsRiding, isRidingRef,
         isNoviceMode, setIsNoviceMode,
         isSoundEnabled, setIsSoundEnabled,
         isMmapperMode, setIsMmapperMode,
@@ -464,7 +449,7 @@ export const useGameProviderState = () => {
         roomItems, setRoomItems,
         currentTerrain, setCurrentTerrain,
         ui, setUI,
-        setIsStatsOpen, setIsItemsDrawerOpen, setIsCharacterOpen, setIsMapExpanded, setIsSetManagerOpen, setIsPlayersOpen,
+        setIsStatsOpen, setIsEquipmentOpen, setIsInventoryOpen, setIsCharacterOpen, setIsMapExpanded, setIsSetManagerOpen, setIsPlayersOpen,
         lighting, setLighting,
         lightningEnabled, setLightningEnabled,
         weather, setWeather,
@@ -487,13 +472,13 @@ export const useGameProviderState = () => {
         disableSmoothScroll, setDisableSmoothScroll,
         isImmersionMode, setIsImmersionMode,
         isMobileBrevityMode, setIsMobileBrevityMode,
-        showLegacyButtons, setShowLegacyButtons,
         showOrganicTerrain, setShowOrganicTerrain,
         parley, setParley,
         whoList, setWhoList,
         whereList, setWhereList,
         roomName, setRoomName, roomNameRef,
         roomExits, setRoomExits,
+        roomZone, setRoomZone,
         inlineCategories, setInlineCategories,
         isHighlighterEnabled, setIsHighlighterEnabled,
         isCrtEnabled, setIsCrtEnabled,
@@ -503,6 +488,7 @@ export const useGameProviderState = () => {
         heldButton, setHeldButton,
         popoverState, setPopoverState,
         discoveredItems, setDiscoveredItems,
+        zoneMusic, setZoneMusic,
         isTrackpadModifierActive, setIsTrackpadModifierActive,
         setPlayerHealthStatus: vitals.setPlayerHealthStatus,
         setOpponentHealthStatus: vitals.setOpponentHealthStatus,
@@ -517,18 +503,26 @@ export const useGameProviderState = () => {
         setMumeEditState,
         handleSaveMumeEdit,
         executeCommandRef,
+        entities,
+        setEntities,
+        registerEntity,
+        getEntity,
+        clearRegistry,
+        selectedObjectIds, toggleObjectSelection, clearObjectSelection,
     }), [
-        inCombat, status, characterName, mood, spellSpeed, alertness, playerPosition,
+        inCombat, status, characterName, mood, spellSpeed, alertness, playerPosition, isRiding,
         isNoviceMode, isSoundEnabled, isMmapperMode, theme, showControls,
         roomPlayers, roomNpcs, roomItems, currentTerrain, ui, setIsCharacterOpen,
-        setIsItemsDrawerOpen, setIsMapExpanded, setIsSetManagerOpen, lighting,
+        setIsEquipmentOpen, setIsInventoryOpen, setIsMapExpanded, setIsSetManagerOpen, lighting,
         lightningEnabled, weather, isFoggy, abilities, characterClass, actions,
         inventoryLines, statsLines, eqLines, optimisticInventoryLines, optimisticEqLines, applyOptimisticChange, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
-        disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, showLegacyButtons, roomName, roomExits,
+        disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, roomName, roomExits, roomZone,
         inlineCategories, isHighlighterEnabled, isCrtEnabled, isBloomEnabled, favorites, activeDragData, heldButton,
-        parley, whoList, whereList, popoverState, discoveredItems,
-        quests, groupMembers, mumeEditState, handleSaveMumeEdit, executeCommandRef
+        parley, whoList, whereList, popoverState, discoveredItems, zoneMusic,
+        quests, groupMembers, mumeEditState, handleSaveMumeEdit, executeCommandRef,
+        entities, setEntities, registerEntity, getEntity, clearRegistry, selectedObjectIds, toggleObjectSelection, clearObjectSelection
     ]);
+
 
     return { vitals, game };
 };

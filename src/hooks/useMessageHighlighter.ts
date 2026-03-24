@@ -20,7 +20,9 @@ export const useMessageHighlighter = (
     inlineCategories: InlineCategoryConfig[] = [],
     isHighlighterEnabled: boolean = true,
     highlightVersion: number = 0,
-    discoveredItems: string[] = []
+    discoveredItems: string[] = [],
+    keywordOverrides: Record<string, string> = {},
+    selectedObjectIds: Set<string> = new Set()
 ) => {
     const cacheRef = useRef<Map<string, { html: string, htmlRaw: string, deps: string }>>(new Map());
     const regexCacheRef = useRef<Map<string, RegExp>>(new Map());
@@ -86,13 +88,15 @@ export const useMessageHighlighter = (
      * Generates a hash of dependencies to determine when cache should be invalidated.
      */
     const generateDepsHash = useCallback(() => {
-        const rp = roomPlayers.map(p => typeof p === 'string' ? p : p.name).join('|');
-        const rn = roomNpcs.map(p => typeof p === 'string' ? p : p.name).join('|');
-        const ri = roomItems.map(p => typeof p === 'string' ? p : p.name).join('|');
+        const rp = roomPlayers.map(p => typeof p === 'string' ? p : `${p.id || ''}${p.name}`).join('|');
+        const rn = roomNpcs.map(p => typeof p === 'string' ? p : `${p.id || ''}${p.name}`).join('|');
+        const ri = roomItems.map(p => typeof p === 'string' ? p : `${p.id || ''}${p.name}`).join('|');
         const di = discoveredItems.join('|');
         const ic = inlineCategories.map(c => `${c.id}:${c.keywords.join(',')}`).join('|');
-        return `${target || ''}:${rp}:${rn}:${ri}:${di}:${ic}:${isHighlighterEnabled}:${highlightVersion}`;
-    }, [target, roomPlayers, roomNpcs, roomItems, discoveredItems, inlineCategories, isHighlighterEnabled, highlightVersion]);
+        const ko = Object.entries(keywordOverrides).map(([k, v]) => `${k}:${v}`).join('|');
+        const sel = Array.from(selectedObjectIds).join(',');
+        return `${target || ''}:${rp}:${rn}:${ri}:${di}:${ic}:${ko}:${isHighlighterEnabled}:${highlightVersion}:${sel}`;
+    }, [target, roomPlayers, roomNpcs, roomItems, discoveredItems, inlineCategories, isHighlighterEnabled, highlightVersion, selectedObjectIds, keywordOverrides]);
 
     /**
      * Main entry point for processing a message's HTML and applying highlights.
@@ -125,8 +129,17 @@ export const useMessageHighlighter = (
         let newHtml = targetHtml;
         const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
+        // Pre-calculate selected prefixes for O(1) lookup in highlighter utils
+        const selectedPrefixes = new Set<string>();
+        selectedObjectIds.forEach(entry => {
+            const parts = entry.split(':');
+            if (parts.length >= 2) {
+                selectedPrefixes.add(`${parts[0]}:${parts[1]}`);
+            }
+        });
+
         // --- 0. Color-tagged object detection (runs first so highlightDepth protects these spans) ---
-        newHtml = applyColorTaggedObjects(newHtml, mid, inlineCategories, target, type);
+        newHtml = applyColorTaggedObjects(newHtml, mid, inlineCategories, target, type, keywordOverrides, selectedPrefixes, roomPlayers, roomNpcs);
 
         const textOnly = targetHtml
             .replace(/<[^>]+>/g, '')
@@ -163,7 +176,9 @@ export const useMessageHighlighter = (
                 newHtml = safeHighlight(newHtml, htmlNameCandidate, false, (m) => {
                     if (highlighted) return m;
                     highlighted = true;
-                    return `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${esc(nameCandidate)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(nameCandidate)}" data-action="menu" data-menu-display="list" style="--glow-color: ${playerGlow}; color: var(--glow-color); font-weight: 800">${m}</span>`;
+                    const buttonId = `auto-${nameCandidate}`;
+                    const isSelected = selectedPrefixes.has(`inlineplayer:${buttonId}`);
+                    return `<span class="inline-btn auto-occupant pc-highlighter${isSelected ? ' selected' : ''}" draggable="true" data-id="auto-${esc(nameCandidate)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(nameCandidate)}" data-action="menu" data-menu-display="list" style="--glow-color: ${playerGlow}; color: var(--glow-color); font-weight: 800">${m}</span>`;
                 });
             }
         }
@@ -172,7 +187,8 @@ export const useMessageHighlighter = (
             // Build and sort candidates using utility
             const candidates = buildHighlighterCandidates(
                 mid, target, buttonsRef, roomPlayers, roomNpcs, characterName, 
-                roomItems, discoveredItems, inlineCategories, type, textOnly
+                roomItems, discoveredItems, inlineCategories, type, textOnly, keywordOverrides,
+                selectedPrefixes
             );
 
             candidates

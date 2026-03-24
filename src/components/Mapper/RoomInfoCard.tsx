@@ -9,7 +9,7 @@ interface RoomInfoCardProps {
     mode: 'play' | 'edit';
     onClose: () => void;
     cardRef: React.RefObject<HTMLDivElement>;
-    preloadedCoordsRef?: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, any>, string, string, string[], string[]]>>;
+    preloadedCoordsRef?: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, any>, string, string, string[], string[], string]>>;
     setViewZ?: (z: number | null) => void;
     isDarkMode: boolean;
 }
@@ -30,8 +30,8 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
         const vnum = roomId.substring(2);
         const data = preloadedCoordsRef.current[vnum];
         if (data) {
-            // MMapper format: [x, y, z, terrainVal, exits, name, masterId, mobFlags, loadFlags]
-            const [x, y, z, terrainVal, exitsData, nameVal, masterId, mobFlagsMaster, loadFlagsMaster] = data;
+            // MMapper format: [x, y, z, terrainVal, exits, name, masterId, mobFlags, loadFlags, area]
+            const [x, y, z, terrainVal, exitsData, nameVal, masterId, mobFlagsMaster, loadFlagsMaster, areaVal] = data;
 
             // Map the strange numbers/objects to our internal exit format
             const mappedExits: Record<string, import('./mapperTypes').MapperExit> = {};
@@ -73,9 +73,9 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                 resolvedTerrain = TERRAIN_MAP[tKey] || normalizeTerrain(tKey);
             }
 
-            // Guess Zone from name if missing
-            let resolvedZone = 'Imported Map';
-            if (nameVal) {
+            // Use Area from JSON if available, otherwise Guess Zone from name
+            let resolvedZone = areaVal || 'Imported Map';
+            if (!areaVal && nameVal) {
                 const nv = String(nameVal).toLowerCase();
                 if (nv.includes('bree')) resolvedZone = 'Bree';
                 else if (nv.includes('shire') || nv.includes('hobbit') || nv.includes('buckland')) resolvedZone = 'The Shire';

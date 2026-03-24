@@ -13,7 +13,7 @@ export const RANGER_SKILLS: CustomButton[] = [
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 85, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(21, 128, 61, 0.5)", "transparent": true, "shape": "pill" },
+        "style": { "x": 85, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(21, 128, 61, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
         "isVisible": true
     },
@@ -25,7 +25,7 @@ export const RANGER_SKILLS: CustomButton[] = [
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 75, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(21, 128, 61, 0.5)", "transparent": true, "shape": "pill" },
+        "style": { "x": 75, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(21, 128, 61, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
         "isVisible": true
     },
@@ -37,7 +37,7 @@ export const RANGER_SKILLS: CustomButton[] = [
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 65, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(21, 128, 61, 0.5)", "transparent": true, "shape": "pill" },
+        "style": { "x": 65, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(21, 128, 61, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
         "isVisible": true
     }

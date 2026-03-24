@@ -26,7 +26,7 @@ export const MendingFooter: React.FC<MendingFooterProps> = ({
             border: '1px solid #b8860b',
             display: 'flex',
             gap: '10px',
-            background: 'rgba(10, 13, 21, 0.92)',
+            background: 'rgba(10, 13, 21, 0.35)',
             backdropFilter: 'blur(25px)',
             WebkitBackdropFilter: 'blur(25px)',
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',

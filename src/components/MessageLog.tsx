@@ -12,7 +12,7 @@ const ReplyButton = ({ msg, setParley, onReply }: { msg: Message, setParley: (p:
 
     return (
         <button
-            className="reply-btn"
+            className="reply-btn inline-btn"
             title={msg.replyTarget ? `Reply to ${msg.replyTarget}` : `Reply on ${msg.replyCommand}`}
             onClick={onReply}
         >
@@ -106,8 +106,8 @@ const MessageItem = React.memo(({
                     </div>
                     <div className="comm-content-row">
                         <div 
-                            className="comm-bubble" 
-                            style={{ color: msg.commColor, cursor: 'pointer' }}
+                            className="comm-bubble inline-btn" 
+                            style={{ color: msg.commColor, cursor: 'pointer', '--glow-color': msg.commColor } as React.CSSProperties}
                             onClick={triggerParley}
                         >
                             <span>{msg.commText}</span>

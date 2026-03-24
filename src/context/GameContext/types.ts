@@ -2,7 +2,8 @@ import { ReactNode, SetStateAction, Dispatch, RefObject, MutableRefObject, Chang
 import {
     GameStats, PopoverState, Message, MessageType, WeatherType,
     LightingType, SoundTrigger, TeleportTarget, CustomButton,
-    DrawerLine, DeathStage, GameAction, SpatButton, CombatHealthStatus, GroupMember
+    DrawerLine, DeathStage, GameAction, SpatButton, CombatHealthStatus, GroupMember,
+    OptimisticChange
 } from '../../types';
 import { useButtons } from '../../hooks/useButtons';
 import { useJoystick } from '../../hooks/useJoystick';
@@ -11,13 +12,6 @@ import { useViewport } from '../../hooks/useViewport';
 import { useEnvironment } from '../../hooks/useEnvironment';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
 
-export type OptimisticChange =
-    | { type: 'wear'; item: DrawerLine }
-    | { type: 'remove'; item: DrawerLine }
-    | { type: 'drop'; item: DrawerLine; from: 'inv' | 'eq' }
-    | { type: 'give'; item: DrawerLine; from: 'inv' | 'eq' }
-    | { type: 'get'; item: DrawerLine }
-    | { type: 'put'; item: DrawerLine; container: DrawerLine };
 
 export interface VitalsContextType {
     stats: GameStats;
@@ -61,30 +55,36 @@ export interface LogContextType {
     addSystemMessage: (text: string) => void;
     isCombatLine: (text: string) => boolean;
     processMessageHtml: (html: string, mid?: string, isRoomName?: boolean, type?: MessageType) => string;
+    refreshLogHighlights: () => void;
     handleLogPointerDown: (e: React.PointerEvent) => void;
     handleLogPointerUp: (e: React.PointerEvent) => void;
+    selectedObjectIds: Set<string>;
+    toggleObjectSelection: (id: string, setId?: string, context?: string) => void;
+    clearObjectSelection: () => void;
 }
 
 export interface UIContextType {
     ui: {
-        drawer: 'none' | 'stats' | 'items' | 'character' | 'players';
+        drawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players';
         isDrawerPeeking: boolean;
-        peekingDrawer: 'none' | 'stats' | 'items' | 'character' | 'players' | 'map';
+        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map';
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;
         isSetMenuOpen: boolean;
         menuView: 'main' | 'availableSets';
+        peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map';
     };
     setUI: Dispatch<SetStateAction<{
-        drawer: 'none' | 'stats' | 'items' | 'character' | 'players';
+        drawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players';
         isDrawerPeeking: boolean;
-        peekingDrawer: 'none' | 'stats' | 'items' | 'character' | 'players' | 'map';
+        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map';
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;
         isSetMenuOpen: boolean;
         menuView: 'main' | 'availableSets';
+        peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map';
     }>>;
     popoverState: PopoverState | null;
     setPopoverState: (val: PopoverState | null) => void;
@@ -94,7 +94,8 @@ export interface UIContextType {
     setSettingsTab: (val: 'general' | 'sound' | 'actions' | 'help') => void;
     setIsStatsOpen: (open: boolean) => void;
     setIsCharacterOpen: (open: boolean) => void;
-    setIsItemsDrawerOpen: (open: boolean) => void;
+    setIsEquipmentOpen: (open: boolean) => void;
+    setIsInventoryOpen: (open: boolean) => void;
     setIsMapExpanded: (open: boolean) => void;
     setIsSetManagerOpen: (open: boolean) => void;
     setIsPlayersOpen: (open: boolean) => void;
@@ -152,6 +153,8 @@ export interface GameContextType {
     whoList: string[];
     whereList: import('../../types').WhereEntry[];
     setWhereList: Dispatch<SetStateAction<import('../../types').WhereEntry[]>>;
+    zoneMusic: import('../../types').ZoneMusicMapping[];
+    setZoneMusic: Dispatch<SetStateAction<import('../../types').ZoneMusicMapping[]>>;
 
     mood: string;
     setMood: (val: string) => void;
@@ -161,6 +164,10 @@ export interface GameContextType {
     setAlertness: (val: string) => void;
     playerPosition: string;
     setPlayerPosition: (val: string) => void;
+    playerPositionRef: RefObject<string>;
+    isRiding: boolean;
+    setIsRiding: (val: boolean) => void;
+    isRidingRef: RefObject<boolean>;
     isTrackpadModifierActive: boolean;
     setIsTrackpadModifierActive: Dispatch<SetStateAction<boolean>>;
     setPlayerHealthStatus: (val: CombatHealthStatus | null) => void;
@@ -193,6 +200,8 @@ export interface GameContextType {
     setRoomItems: Dispatch<SetStateAction<import('../../types').GmcpOccupant[]>>;
     currentTerrain: string;
     setCurrentTerrain: (terrain: string) => void;
+    roomZone: string | null;
+    setRoomZone: (zone: string | null) => void;
     roomName: string | null;
     roomNameRef: RefObject<string | null>;
 
@@ -204,6 +213,17 @@ export interface GameContextType {
     setActions: Dispatch<SetStateAction<GameAction[]>>;
     characterClass: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none';
     setCharacterClass: (val: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none') => void;
+    keywordOverrides: Record<string, string>;
+    openKeywordEdit: (context: string, displayText: string) => void;
+    setKeywordOverride: (context: string, keyword: string) => void;
+    removeKeywordOverride: (context: string) => void;
+
+    entities: Record<string, import('../../types').GameEntity>;
+    setEntities: Dispatch<SetStateAction<Record<string, import('../../types').GameEntity>>>;
+    registerEntity: (id: string, name: string, location: import('../../types').EntityLocation, category?: string) => import('../../types').GameEntity;
+    getEntity: (id: string) => import('../../types').GameEntity | undefined;
+    clearRegistry: () => void;
+
 
     detectLighting: (symbol: string) => void;
     soundTriggersRef: RefObject<SoundTrigger[]>;
@@ -313,6 +333,9 @@ export interface GameContextType {
 
     // Sound & Haptics
     playSound: (buffer: AudioBuffer) => void;
+    playRandomSound: (buffers: AudioBuffer[]) => void;
+    playDoorSound: (isOpen: boolean) => void;
+    playClickSound: () => void;
     triggerHaptic: (ms: number) => void;
 
     // Low-level callback registration
@@ -343,4 +366,9 @@ export interface GameContextType {
     addDiagnosticLog: (msg: string) => void;
     activeDragData: any;
     setActiveDragData: Dispatch<SetStateAction<any>>;
+
+    // Selection State
+    selectedObjectIds: Set<string>;
+    toggleObjectSelection: (id: string, setId?: string, context?: string) => void;
+    clearObjectSelection: () => void;
 }

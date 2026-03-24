@@ -56,6 +56,7 @@ export interface MapperRef {
     handleMoveConfirmed: (e?: any) => void;
     handleMoveFailure: () => void;
     handleCenterOnPlayer: () => void;
+    triggerRender: () => void;
     stableRoomIdRef: React.MutableRefObject<string | null>;
     stableRoomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;

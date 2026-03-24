@@ -5,6 +5,7 @@ export const useTriggerProcessor = (deps: {
     isSoundEnabledRef: React.RefObject<boolean>;
     soundTriggersRef: React.RefObject<any[]>;
     playSound: (buffer: AudioBuffer) => void;
+    playRandomSound: (buffers: AudioBuffer[]) => void;
     buttonsRef: React.RefObject<any[]>;
     setButtons: React.Dispatch<React.SetStateAction<any[]>>;
     buttonTimers: React.RefObject<Record<string, ReturnType<typeof setTimeout>>>;
@@ -12,14 +13,25 @@ export const useTriggerProcessor = (deps: {
     actionsRef: React.RefObject<GameAction[]>;
     executeCommandRef: React.RefObject<(cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void>;
 }) => {
-    const { isSoundEnabledRef, soundTriggersRef, playSound, buttonsRef, setButtons, buttonTimers, setActiveSet, actionsRef, executeCommandRef } = deps;
+    const { isSoundEnabledRef, soundTriggersRef, playSound, playRandomSound, buttonsRef, setButtons, buttonTimers, setActiveSet, actionsRef, executeCommandRef } = deps;
 
     const processTriggers = useCallback((textOnly: string) => {
         // Sound Triggers
         soundTriggersRef.current?.forEach(trig => {
-            if (!trig.pattern || !trig.buffer) return;
+            if (!trig.pattern) return;
+            const hasBuffers = trig.buffers && trig.buffers.length > 0;
+            const hasBuffer = !!trig.buffer;
+            if (!hasBuffer && !hasBuffers) return;
+
             const match = trig.isRegex ? new RegExp(trig.pattern, 'i').test(textOnly) : textOnly.toLowerCase().includes(trig.pattern.toLowerCase());
-            if (match && isSoundEnabledRef.current) playSound(trig.buffer);
+            if (match && isSoundEnabledRef.current) {
+                if (hasBuffers) {
+                    const randomIndex = Math.floor(Math.random() * trig.buffers!.length);
+                    playSound(trig.buffers![randomIndex]);
+                } else if (trig.buffer) {
+                    playSound(trig.buffer);
+                }
+            }
         });
 
         // Button Triggers

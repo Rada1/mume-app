@@ -33,7 +33,8 @@ export interface CommandControllerDeps {
     setPopoverState: (val: any) => void;
     setIsCharacterOpen: (open: boolean) => void;
     setIsStatsOpen: (open: boolean) => void;
-    setIsItemsDrawerOpen: (open: boolean) => void;
+    setIsEquipmentOpen: (open: boolean) => void;
+    setIsInventoryOpen: (open: boolean) => void;
     setIsPlayersOpen: (open: boolean) => void;
     setIsSettingsOpen: (open: boolean) => void;
     setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'help') => void;
@@ -46,7 +47,7 @@ export interface CommandControllerDeps {
     wasDraggingRef: React.RefObject<boolean>;
     ui: {
         mapExpanded: boolean;
-        drawer: 'none' | 'character' | 'items';
+        drawer: 'none' | 'character' | 'equipment' | 'inventory';
         setManagerOpen: boolean;
         isDrawerPeeking: boolean;
     };
@@ -64,7 +65,15 @@ export interface CommandControllerDeps {
     keywordOverrides: Record<string, string>;
     openKeywordEdit: (context: string, displayText: string) => void;
     lastCommandContextRef: React.MutableRefObject<{ context: string; displayText: string } | null>;
+    entities: Record<string, import('../types').GameEntity>;
+    applyOptimisticChange: (change: import('../types').OptimisticChange) => void;
+    selectedObjectIds: Set<string>;
+    toggleObjectSelection: (id: string, setId?: string, context?: string) => void;
+    clearObjectSelection: () => void;
+    playClickSound: () => void;
+    isSoundEnabled: boolean;
 }
+
 
 export function useCommandController(deps: CommandControllerDeps) {
     const { input, setInput, isNoviceMode, viewport, triggerHaptic, setTarget, addMessage } = deps;
@@ -126,7 +135,15 @@ export function useCommandController(deps: CommandControllerDeps) {
         keywordOverrides: deps.keywordOverrides,
         openKeywordEdit: deps.openKeywordEdit,
         lastCommandContextRef: deps.lastCommandContextRef,
+        entities: deps.entities,
+        applyOptimisticChange: deps.applyOptimisticChange,
+        selectedObjectIds: deps.selectedObjectIds,
+        toggleObjectSelection: deps.toggleObjectSelection,
+        clearObjectSelection: deps.clearObjectSelection,
+        playClickSound: deps.playClickSound,
+        isSoundEnabled: deps.isSoundEnabled,
     });
+
 
     const handleSend = useCallback((e?: React.FormEvent) => {
         e?.preventDefault();

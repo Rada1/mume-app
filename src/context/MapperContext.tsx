@@ -125,10 +125,9 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             const sIndex: Record<string, string> = {};
             for (const vnum in data) {
                 const rData = data[vnum], [x, y, z] = rData;
-                // Format: [x, y, z, terrain, exits, name, serverId, mobFlags, loadFlags]
-                const rName = rData[5]; 
-                const rServerId = rData[6];
-                
+                // Format: [x, y, z, terrain, exits, name, serverId, mobFlags, loadFlags, area]
+                const rName = rData[5];
+                const rServerId = rData[6];                
                 const floor = Math.round(z);
                 if (!index[floor]) index[floor] = {};
                 const bucketX = Math.floor(x / 5), bucketY = Math.floor(y / 5), key = `${bucketX},${bucketY}`;

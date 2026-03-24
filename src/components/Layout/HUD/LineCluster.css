@@ -59,11 +59,13 @@
 }
 
 .line-cluster .custom-btn .button-label {
-    font-size: 0.45rem !important;
-    max-width: 28px;
+    font-size: 0.65rem !important;
+    max-width: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
+    line-height: 1;
+    text-align: center;
 }
 
 .line-cluster-container.hud-hidden {

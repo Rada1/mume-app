@@ -48,7 +48,7 @@
 .practice-table th {
     position: sticky;
     top: 0;
-    background: rgba(30, 30, 30, 0.9);
+    background: rgba(30, 30, 30, 0.65);
     padding: 8px;
     color: #888;
     font-weight: 500;

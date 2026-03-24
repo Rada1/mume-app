@@ -3,9 +3,7 @@ import { createRoot } from 'react-dom/client';
 
 import './index.css';
 import './components/MessageLog.css';
-import './components/Controls/Joystick.css';
 import './components/Controls/Stats.css';
-import './components/Controls/Xbox.css';
 import './components/Controls/CustomButtons.css';
 import './components/Controls/SwipeWheel.css';
 import './components/Controls/Landscape.css';
@@ -135,8 +133,6 @@ const MudClient = () => {
             // Don't clear selection if clicking on a button, its handle, or a cluster
             if (target.closest('.custom-btn') ||
                 target.closest('.hud-cluster') ||
-                target.closest('.xbox-cluster') ||
-                target.closest('.joystick-cluster') ||
                 target.closest('.resize-handle') ||
                 target.closest('.modal')) {
                 return;

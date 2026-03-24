@@ -1,8 +1,18 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Direction, TeleportTarget, MessageType, DrawerLine, GameAction, CaptureStage } from '../types';
 import { extractNoun } from '../utils/gameUtils';
 import { MapperRef } from '../components/Mapper/mapperTypes';
 import { getGateState } from '../components/Mapper/mapperUtils';
+
+// --- Command Registry Imports ---
+import { CommandRegistry } from '../services/command/CommandRegistry';
+import { CommandContext } from '../services/command/types';
+import { SemicolonMiddleware } from '../services/command/middlewares/SemicolonMiddleware';
+import { TargetMiddleware } from '../services/command/middlewares/TargetMiddleware';
+import { TeleportMiddleware } from '../services/command/middlewares/TeleportMiddleware';
+import { ActionMiddleware } from '../services/command/middlewares/ActionMiddleware';
+import { CaptureMiddleware } from '../services/command/middlewares/CaptureMiddleware';
+import { SystemCommandMiddleware } from '../services/command/middlewares/SystemCommandMiddleware';
 
 export interface ExecutorDeps {
     telnet: { sendCommand: (cmd: string) => void };
@@ -26,7 +36,8 @@ export interface ExecutorDeps {
     setPopoverState: (val: any) => void;
     status: 'connected' | 'disconnected' | 'connecting';
     setIsCharacterOpen: (open: boolean) => void;
-    setIsItemsDrawerOpen: (open: boolean) => void;
+    setIsEquipmentOpen: (open: boolean) => void;
+    setIsInventoryOpen: (open: boolean) => void;
     setIsSettingsOpen: (open: boolean) => void;
     setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'help') => void;
     actions: GameAction[];
@@ -38,31 +49,59 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         telnet, addMessage, initAudio, navIntervalRef, mapperRef, teleportTargets,
         isDrawerCapture, isSilentCapture, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         setInventoryLines, setStatsLines, setEqLines, setTarget, target,
-        setPopoverState, status, setIsCharacterOpen, setIsItemsDrawerOpen,
+        setPopoverState, status, setIsCharacterOpen, setIsEquipmentOpen, setIsInventoryOpen,
         setIsSettingsOpen, setSettingsTab,
         actions, setActions
     } = deps;
 
+    // --- Initialize Registry ---
+    const registry = useMemo(() => {
+        const r = new CommandRegistry();
+        r.use(SemicolonMiddleware);
+        r.use(SystemCommandMiddleware);
+        r.use(TeleportMiddleware);
+        r.use(ActionMiddleware);
+        r.use(CaptureMiddleware);
+        r.use(TargetMiddleware);
+        return r;
+    }, []);
+
     const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, _isHistorical = false, fromDrawer = false) => {
         initAudio();
         
-        // Handle semicolon-separated commands
-        const commands = cmd.split(';').map(c => c.trim()).filter(c => c.length > 0);
-        if (commands.length > 1) {
-            commands.forEach(subCmd => {
-                executeCommand(subCmd, silent, isSystem, _isHistorical, fromDrawer);
-            });
+        // --- 1. Construct Context ---
+        const context: CommandContext = {
+            ...deps,
+            executeCommand,
+            addMessage: addMessage as any // Cast for extended signature
+        };
+
+        // --- 2. Run Pipeline ---
+        const result = registry.execute(cmd, context, { silent, isSystem, fromDrawer });
+
+        // --- 3. Process Result ---
+        if (result === null) return; // Command cancelled/intercepted by middleware
+
+        if (Array.isArray(result)) {
+            result.forEach(subCmd => executeCommand(subCmd, silent, isSystem, _isHistorical, fromDrawer));
             return;
         }
 
+        const finalCmd = result;
+
+        // --- 4. Navigation Safety ---
+        if (!isSystem && navIntervalRef.current) {
+            clearInterval(navIntervalRef.current);
+            navIntervalRef.current = null;
+            addMessage('system', 'Navigation stopped.');
+        }
+
+        // --- 5. Silent Capture Safety (Keep here as it uses timers/refs) ---
         if (silent && isSystem) {
-            isSilentCapture.current++;
-            // Safety timeout: if a prompt isn't detected, assume the command finished
-            // Practice commands need more time for long lists.
-            const timeoutMs = (cmd.toLowerCase().startsWith('prac')) ? 15000 : 8000;
+            const timeoutMs = (finalCmd.toLowerCase().startsWith('prac')) ? 15000 : 8000;
             setTimeout(() => {
                 if (isSilentCapture.current > 0) {
-                    console.log(`[Executor] Silent capture safety reset (Count: ${isSilentCapture.current}, Cmd: ${cmd})`);
+                    console.log(`[Executor] Silent capture safety reset (Count: ${isSilentCapture.current}, Cmd: ${finalCmd})`);
                     isSilentCapture.current = 0;
                     if (captureStage.current !== 'container') {
                         deps.finalizeCapture();
@@ -71,199 +110,29 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             }, timeoutMs);
         }
 
-        // Target Setting
-        const setTargetMatch = cmd.match(/^(:|#)?target\s*(\s+|=)\s*(.+)$/i) || cmd.match(/^#target\s+(.+)$/i);
-        if (setTargetMatch) {
-            const rawTarget = setTargetMatch[3] || setTargetMatch[2] || setTargetMatch[1];
-            if (rawTarget) {
-                const nounTarget = extractNoun(rawTarget.trim());
-                setTarget(nounTarget);
-                return;
-            }
-        }
-
-        // Target substitution
-        let finalCmd = cmd;
-        const hasTargetPlaceholder = /<target>/i.test(cmd);
-
-        if (hasTargetPlaceholder) {
-            if (target) {
-                // Replace "<target>" with the actual name
-                finalCmd = cmd.replace(/<target>/gi, target);
-            } else {
-                // Strip "<target>" and clean up double spaces/trailing space
-                finalCmd = cmd.replace(/\s*<target>/gi, '').trim();
-            }
-        } else if (target) {
-            const lower = cmd.toLowerCase().trim();
-            // Intelligent auto-append for common combat/magic prefixes if no explicit target provided
-            const isCastOrSkill = lower.startsWith('cast ') || lower.startsWith('skill ');
-
-            // Common standalone verbs that usually want a target if one is available
-            const combatVerbs = ['kill', 'k', 'hit', 'bash', 'kick', 'trip', 'bs', 'backstab', 'murder', 'charge', 'circle', 'assist', 'rescue', 'shoot', 'throw', 'track', 'consider', 'examine', 'eat', 'drink', 'quaff', 'sip'];
-            const isStandaloneCombat = combatVerbs.includes(lower);
-
-            if (isCastOrSkill || isStandaloneCombat) {
-                if (isCastOrSkill) {
-                    // Heuristic: if command is just 'cast "spell"' or 'skill "name"' with no extra word, append target
-                    const parts = lower.split(/\s+/);
-                    if (parts.length <= 2 || (parts[0] === 'cast' && parts.length <= 3 && cmd.includes("'"))) {
-                        finalCmd = `${cmd.trim()} ${target}`;
-                    }
-                } else {
-                    // Standalone combat verb - always append if we have a target
-                    finalCmd = `${cmd.trim()} ${target}`;
-                }
-            }
-        }
-
-        if (!isSystem && navIntervalRef.current) {
-            clearInterval(navIntervalRef.current); navIntervalRef.current = null;
-            addMessage('system', 'Navigation stopped.');
-        }
-
-        const lowerCmd = cmd.toLowerCase().trim();
-
-        // Teleport Interception
-        if (teleportTargets.length > 0) {
-            const teleportMatch = lowerCmd.match(/^(cast\s+['"]?(teleport|portal|scry)['"]?)$/i);
-            if (teleportMatch) {
-                setPopoverState({ x: window.innerWidth / 2 - 100, y: window.innerHeight / 2 - 100, type: 'teleport-select', setId: 'teleport', spellCommand: teleportMatch[1] });
-                return;
-            }
-        }
-
-        if (lowerCmd.startsWith('#teleport') || lowerCmd.startsWith('#tp') || lowerCmd.startsWith('#targets')) {
-            const isManage = lowerCmd.includes('manage') || lowerCmd.includes('list');
-            setPopoverState({
-                x: window.innerWidth / 2 - (isManage ? 150 : 100),
-                y: window.innerHeight / 2 - (isManage ? 150 : 100),
-                type: isManage ? 'teleport-manage' : 'teleport-select',
-                setId: 'teleport',
-                spellCommand: isManage ? undefined : "cast 'teleport'"
-            });
-            return;
-        }
-
-        // Action Interception
-        if (lowerCmd.startsWith('#action')) {
-            const actionMatch = cmd.match(/^#action\s+({?)(.+?)(}?)\s+({?)(.+?)(}?)\s*$/i);
-            if (actionMatch) {
-                const pattern = actionMatch[2];
-                const command = actionMatch[5];
-                setActions(prev => [...prev, {
-                    id: Math.random().toString(36).substring(2, 9),
-                    pattern,
-                    command,
-                    isRegex: false,
-                    enabled: true
-                }]);
-                addMessage('system', `Action added: [${pattern}] -> [${command}]`);
-                return;
-            } else {
-                addMessage('system', 'Usage: #action {pattern} {command}');
-                return;
-            }
-        }
-        if (lowerCmd.startsWith('#unaction')) {
-            const unactionMatch = cmd.match(/^#unaction\s+({?)(.+?)(}?)\s*$/i);
-            if (unactionMatch) {
-                const patternToRemove = unactionMatch[2].toLowerCase();
-                setActions(prev => {
-                    const filtered = prev.filter(a => a.pattern.toLowerCase() !== patternToRemove);
-                    if (filtered.length !== prev.length) {
-                        addMessage('system', `Action removed: [${patternToRemove}]`);
-                    } else {
-                        addMessage('system', `Action not found: [${patternToRemove}]`);
-                    }
-                    return filtered;
-                });
-                return;
-            } else {
-                addMessage('system', 'Usage: #unaction {pattern}');
-                return;
-            }
-        }
-
-        if (lowerCmd === '/help' || lowerCmd === '/?') {
-            const setSettingsTab = (deps as any).setSettingsTab;
-            const setIsSettingsOpen = (deps as any).setIsSettingsOpen;
-            if (setSettingsTab && setIsSettingsOpen) {
-                setSettingsTab('help');
-                setIsSettingsOpen(true);
-                return;
-            }
-        }
-
-        // Container Interception
-        if (lowerCmd.startsWith('look in ')) {
-            captureStage.current = 'container';
-            isDrawerCapture.current = 1;
-            // Only reset popover if this is NOT a silent (drawer-triggered) look in
-            // Drawer-triggered look in commands route results into the drawer list directly
-            if (!silent) {
-                setPopoverState((prev: any) => prev ? { ...prev, type: 'container', containerItems: [] } : prev);
-            }
-        }
-
+        // --- 6. Post-Execution Drawer Safety ---
         if (fromDrawer) {
-            isDrawerCapture.current++;
-            // Safety timeout
             setTimeout(() => {
                 if (isDrawerCapture.current > 0) {
-                    console.log(`[Executor] Drawer capture safety reset (Count: ${isDrawerCapture.current})`);
                     isDrawerCapture.current = 0;
-                    if (captureStage.current === 'container') {
-                         // Don't reset if we are actively capturing a container
-                    } else {
-                         deps.finalizeCapture();
-                    }
+                    if (captureStage.current !== 'container') deps.finalizeCapture();
                 }
             }, 8000);
-        } else if (!isSystem) {
-            // CRITICAL: If the user sends a manual command, we MUST ensure they aren't stuck 
-            // in a capture stage from a background drawer task that hung or is taking too long.
-            isDrawerCapture.current = 0;
-            isSilentCapture.current = 0;
-            // Don't reset captureStage for 'who'/'where' — the parser sets it when the server's
-            // header line arrives, and we need it to survive so list entries are tagged correctly.
-            if (lowerCmd !== 'who' && lowerCmd !== 'where') {
-                deps.finalizeCapture();
-            }
         }
 
-        if (lowerCmd === 'inventory' || lowerCmd === 'inv' || lowerCmd === 'i') {
-            isWaitingForInv.current = true; captureStage.current = 'none';
-        } else if (lowerCmd === 'stat' || lowerCmd === 'st' || lowerCmd === 'status' || lowerCmd === 'score' || lowerCmd === 'sc' || lowerCmd === 'at') {
-            isWaitingForStats.current = true; captureStage.current = 'none'; setStatsLines([]);
-        } else if (lowerCmd === 'info' || lowerCmd === 'i') {
-            // Also reset CharacterInfo implicitly if needed or just let parser handle it
-            // No specific flag for info as parser looks for "You are a..."
-        } else if (lowerCmd === 'eq' || lowerCmd === 'equipment') {
-            isWaitingForEq.current = true; captureStage.current = 'none';
-        } else if (lowerCmd === 'practice' || lowerCmd === 'prac') {
-            captureStage.current = 'practice';
-        }
-
-        if (lowerCmd === 'closeall') {
-            setIsCharacterOpen(false); setIsItemsDrawerOpen(false);
-        }
-
-        // Only cast to bypass the TypeScript signature limitation of `addMessage` in the deps interface,
-        // which currently only expects 2 arguments in the type definition but takes up to 6 in implementation.
+        // --- 7. Echo to Log ---
         if (!silent) (addMessage as any)('user', finalCmd, undefined, undefined, undefined, { textOnly: finalCmd, lower: finalCmd.toLowerCase() });
 
+        // --- 8. Mapper Movement Hooks ---
         const moveCmd = finalCmd.toLowerCase().trim();
-        const dirMap: Record<string, string> = {
+        const dirMap: Record<string, Direction> = {
             n: 'n', north: 'n', s: 's', south: 's', e: 'e', east: 'e', w: 'w', west: 'w',
             u: 'u', up: 'u', d: 'd', down: 'd', ne: 'ne', northeast: 'ne', nw: 'nw', northwest: 'nw',
             se: 'se', southeast: 'se', sw: 'sw', southwest: 'sw'
         };
         
-        // Exact match only for move commands
-        const dir = dirMap[moveCmd] as Direction;
+        const dir = dirMap[moveCmd];
         if (dir) {
-            // Responsive Pre-movement
             const currentRoomId = mapperRef.current?.stableRoomIdRef?.current;
             const rooms = mapperRef.current?.stableRoomsRef?.current;
             const preloaded = mapperRef.current?.preloadedCoordsRef?.current;
@@ -284,29 +153,19 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
                     }
                 }
             }
-
             if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-push-move', { detail: dir }));
         }
 
-
+        // --- 9. Telnet Send ---
         if (status === 'connected') telnet.sendCommand(finalCmd);
         else if (!silent) addMessage('error', 'Not connected.');
 
-        // Auto-refresh combat stats panel when player changes mood.
-        // Use silent+isSystem but NOT fromDrawer — keeps isDrawerCapture at 0 so
-        // the stat response is parsed cleanly (same path as a manual stat command).
-        if (!silent && status === 'connected' && /^ch\w*\s+mood\b/i.test(lowerCmd)) {
+        // --- 10. Post-Execution Refreshes ---
+        if (!silent && status === 'connected' && /^ch\w*\s+mood\b/i.test(moveCmd)) {
             setTimeout(() => executeCommand('stat', true, true, false, false), 3000);
         }
 
-        // Re-centering is handled automatically by the mapper's internal animation loop
-        // when autoCenter is active. Explicitly calling handleCenterOnPlayer here
-        // can cause imprecise 'snaps' on mobile that conflict with smooth animations.
-    }, [status, target, teleportTargets, initAudio, addMessage, setTarget, setPopoverState,
-        telnet, navIntervalRef, mapperRef, isDrawerCapture, captureStage, isWaitingForInv,
-        isWaitingForStats, isWaitingForEq, setInventoryLines, setStatsLines, setEqLines,
-        setIsCharacterOpen, setIsItemsDrawerOpen
-    ]);
+    }, [registry, deps, status, target, teleportTargets, initAudio, addMessage, telnet, navIntervalRef, mapperRef, isDrawerCapture, captureStage, isSilentCapture, deps.finalizeCapture]);
 
     return { executeCommand };
 };

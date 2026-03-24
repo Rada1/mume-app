@@ -25,7 +25,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     uiPositions, isEditMode, handleDragStart, characterName, isMmapperMode, isMobile, mapperRef,
     dragState, isLandscape, wasDraggingRef, heldButton, setHeldButton, setCommandPreview
 }) => {
-    const { triggerHaptic, showLegacyButtons, showControls, viewport, btn, handleButtonClick, executeCommand, joystick } = useGame();
+    const { triggerHaptic, showControls, viewport, btn, handleButtonClick, executeCommand, joystick } = useGame();
     const { target, activePrompt, stats } = useVitals();
     const { ui, setUI, setPopoverState } = useUI();
     const { isMapFloating, setIsMapFloating } = useMapper();
@@ -84,12 +84,12 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     gap: '10px'
                 }}
             >
-                {!showLegacyButtons && (isEditMode || (showControls && !isKeyboardOpen)) && !isLandscape && !isExpanded && (
+                {(isEditMode || (showControls && !isKeyboardOpen)) && !isLandscape && !isExpanded && (
                     <div className="line-cluster-container" style={{ pointerEvents: 'auto' }}>
                         <LineCluster
                             isEditMode={isEditMode}
                             handleDragStart={handleDragStart}
-                            buttons={btn.buttons.filter(b => b.setId === 'Xbox')}
+                            buttons={btn.buttons.filter(b => b.setId === 'Tactical')}
                             selectedButtonIds={btn.selectedButtonIds}
                             dragState={dragState}
                             handleButtonClick={handleButtonClick}

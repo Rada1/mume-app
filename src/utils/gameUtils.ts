@@ -1,75 +1,13 @@
 /**
- * Extracts the MUME interaction keyword from an item's display name.
- * Only the core noun (not adjectives or material prefixes) is a valid keyword.
- *
- * Examples:
- *   "a leather backpack"   → "backpack"
- *   "a gleaming longsword" → "longsword"
- *   "some iron rations"    → "rations"
- *   "a pair of boots"      → "boots"
- *   "a flask of water"     → "flask"
- *   "a piece of bread"     → "bread"
+ * @file gameUtils.ts
+ * @description General game utilities for MUME.
  */
-export const extractMumeKeyword = (label: string): string => {
-    // Strip ANSI, tags, parentheses, and brackets
-    let name = label.replace(/\x1b\[[0-9;]*m/g, '')
-                    .replace(/<[^>]*>/g, '')
-                    .replace(/\([^)]*\)/g, '')
-                    .replace(/\[[^\]]*\]/g, '')
-                    .trim().toLowerCase();
 
-    // quantifiers that are never valid MUME keywords
-    const quantifiers = /^(pair|pairs|set|piece|bundle|pile|handful|bit|slice|loaf|lump|chunk|portion|of|a|an|the|some|several|many|various)$/i;
+import { GameEntity } from '../types';
+import { extractMumeKeyword, extractColorTaggedKeyword, extractNoun, sanitizeGameTarget } from './keywordUtils';
 
-    // Handle "X of Y" patterns
-    const ofMatch = name.match(/^(.+?)\s+of\s+(.+)$/);
-    if (ofMatch) {
-        const before = ofMatch[1].trim();
-        const after  = ofMatch[2].trim();
-        
-        // Compound quantifiers → keyword is what comes AFTER "of"
-        const isQuantifier = quantifiers.test(before);
-        const source = isQuantifier ? after : before;
-        const words = source.split(/\s+/).filter(w => !quantifiers.test(w));
-        return words[words.length - 1] || source.split(/\s+/).pop() || source;
-    }
-
-    // No "of" pattern: filter out quantifiers and the last word is the primary keyword
-    const words = name.split(/\s+/).filter(w => !quantifiers.test(w));
-    return words[words.length - 1] || name.split(/\s+/).pop() || name;
-};
-
-/**
- * Extracts a meaningful noun from a game item/player description.
- * Useful for drawer interactive buttons.
- */
-export const extractNoun = (text: string): string => {
-    // Strip ANSI escape codes first
-    let clean = text.replace(/\x1b\[[0-9;]*m/g, '');
-    // Remove tags and brackets
-    clean = clean.replace(/<[^>]*>/g, '').replace(/\([^)]*\)/g, '').replace(/\[[^\]]*\]/g, '').trim();
-    clean = clean.replace(/[.,:;!]+$/, '').trim();
-    
-    // Logic: Use the smart MUME keyword extractor
-    let noun = extractMumeKeyword(clean);
-    
-    // Words or suffixes that should NOT be singularized (plural-only in MUME)
-    const exclusions = [
-        'glass', 'dress', 'grass', 'moss', 'bias', 'status', 'compass', 'chaos', 'lens', 'atlas',
-        'trousers', 'pants', 'breeches', 'leggings', 'hose', 'gloves', 'boots', 'shoes',
-        'gauntlets', 'greaves', 'vambraces', 'pauldrons', 'bracers', 'sleeves'
-    ];
-    if (exclusions.some(ex => noun.endsWith(ex))) {
-        return noun;
-    }
-
-    // Basic singularization for MUME interaction (flagons -> flagon, wolves -> wolf, etc.)
-    if (noun.endsWith('ies')) return noun.slice(0, -3) + 'y';
-    if (noun.endsWith('ves')) return noun.slice(0, -3) + 'f';
-    if (noun.endsWith('s') && !noun.endsWith('ss')) return noun.slice(0, -1);
-    
-    return noun;
-};
+// Re-export for backward compatibility
+export { extractMumeKeyword, extractColorTaggedKeyword, extractNoun, sanitizeGameTarget };
 
 /**
  * Simplifies a long description into a core noun phrase.
@@ -94,30 +32,25 @@ export const simplifyDescription = (text: string): string => {
     const quantifiers = ["a", "an", "the", "some", "pair", "pairs", "set", "piece", "bundle", "pile", "handful", "bit", "slice", "loaf", "lump", "chunk", "portion", "of"];
     
     // Split into words, but look for the "core"
-    // Usually, the first non-adjective or the thing before "in", "of", "with"
     const words = rest.split(/\s+/);
     let coreNoun = "";
     
     for (let i = 0; i < words.length; i++) {
         const word = words[i].toLowerCase();
-        // If we hit a preposition or descriptive Clause, stop
         if (["in", "of", "with", "from", "at", "for", "on", "wearing", "carrying", "holding", "offering"].includes(word)) {
             break;
         }
-        // If it's not a common adjective or quantifier, maybe it's the noun?
         if (!adjs.includes(word) && !quantifiers.includes(word) && !["and", "&"].includes(word)) {
             coreNoun = words[i];
             break;
         }
     }
 
-    // Fallback: if we didn't find a core noun, use the last word before any preposition
     if (!coreNoun) {
         coreNoun = words[0];
     }
 
     if (article) {
-        // Ensure "A dealer" vs "An orc"
         const result = `${article} ${coreNoun}`.trim();
         return result.charAt(0).toUpperCase() + result.slice(1);
     }
@@ -136,7 +69,6 @@ export const pluralizeMumeSubject = (subject: string): string => {
     let rest = s;
     if (prefixMatch) rest = prefixMatch[2];
 
-    // Handle " of " - e.g. "Guard of Bree" -> "Guards of Bree"
     const ofIdx = rest.toLowerCase().indexOf(' of ');
     if (ofIdx !== -1) {
         const head = rest.substring(0, ofIdx);
@@ -184,10 +116,7 @@ export const pluralizeRest = (text: string) => {
  * Detects if a game item is a container based on its description and MUME-specific tags.
  */
 export const isItemContainer = (text: string): boolean => {
-    // Strip ANSI escape codes first
     const cleanRaw = text.replace(/\x1b\[[0-9;]*m/g, '').toLowerCase();
-    
-    // Check for MUME-specific status tags
     if (cleanRaw.includes('(containing)') || 
         cleanRaw.includes('(closed)') || 
         cleanRaw.includes('(open)') || 
@@ -195,8 +124,6 @@ export const isItemContainer = (text: string): boolean => {
         cleanRaw.trim().endsWith(':')) {
         return true;
     }
-
-    // Keyword detection for common MUME containers that might be empty/open/not displaying tags
     const containerKeywords = /sack|satchel|pouch|pack|quiver|backpack|bag|chest|box|barrel|crate|keg|vial|flask|bottle|waterskin|beltpouch|moneybelt/i;
     return containerKeywords.test(cleanRaw);
 };
@@ -210,15 +137,11 @@ export const isFluidContainer = (text: string): boolean => {
     return fluidKeywords.test(cleanRaw);
 };
 
-
 /**
- * Converts English number words (one, twenty-five, one hundred) to integers.
- * Specifically handles MUME shop pricing text.
+ * English number words to integers.
  */
 export const parseEnglishNumber = (text: string): number => {
-    // If it's already a number in string form, just return it
     if (/^\d+$/.test(text)) return parseInt(text, 10);
-
     const units: Record<string, number> = {
         "zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
         "eleven": 11, "twelve": 12, "thirteen": 13, "fourteen": 14, "fifteen": 15, "sixteen": 16, "seventeen": 17, "eighteen": 18, "nineteen": 19
@@ -227,93 +150,36 @@ export const parseEnglishNumber = (text: string): number => {
         "twenty": 20, "thirty": 30, "forty": 40, "fifty": 50, "sixty": 60, "seventy": 70, "eighty": 80, "ninety": 90
     };
     const scales: Record<string, number> = { "hundred": 100, "thousand": 1000 };
-
     const words = text.toLowerCase().replace(/-/g, ' ').split(/\s+/).filter(w => w !== 'and');
     let total = 0;
     let current = 0;
-
     for (const word of words) {
-        if (units[word] !== undefined) {
-            current += units[word];
-        } else if (tens[word] !== undefined) {
-            current += tens[word];
-        } else if (scales[word] !== undefined) {
+        if (units[word] !== undefined) current += units[word];
+        else if (tens[word] !== undefined) current += tens[word];
+        else if (scales[word] !== undefined) {
             current *= scales[word];
-            if (current >= 100) {
-                total += current;
-                current = 0;
-            }
-        } else if (/^\d+$/.test(word)) { // handle mixed case like "2 hundred"
-            current += parseInt(word, 10);
-        }
+            if (current >= 100) { total += current; current = 0; }
+        } else if (/^\d+$/.test(word)) current += parseInt(word, 10);
     }
     return total + current;
 };
 
 /**
- * Formats a MUME price string (e.g. "fourteen gold and seven silver") into 
- * a shorthand numeric version (e.g. "14 gold 7 silver").
+ * Formats a MUME price string into shorthand.
  */
 export const formatMumePrice = (priceStr: string): string => {
     if (!priceStr) return "";
-    
-    // Strip script-added tags like <o1234> or ANSI
     const cleanPrice = priceStr.replace(/<[^>]+>/g, '').replace(/\x1b\[[0-9;]*m/g, '').trim();
-    
-    // Split by units: e.g. "fourteen gold", "seven silver", "five copper"
     const parts = cleanPrice.toLowerCase().split(/ and |, /);
     const result: string[] = [];
-    
     parts.forEach(part => {
         const match = part.trim().match(/^(.*?)\s+(gold|silver|copper|lauren|celeb|busc|pennies?|coins?)$/);
         if (match) {
             const numPart = match[1].trim();
             const unit = match[2].trim();
             const value = parseEnglishNumber(numPart);
-            if (value > 0 || (parts.length === 1 && value === 0)) {
-                result.push(`${value} ${unit}`);
-            }
+            if (value > 0 || (parts.length === 1 && value === 0)) result.push(`${value} ${unit}`);
         }
     });
-
     return result.join(' ');
 };
-
-/**
- * Sanitizes a target string for game commands.
- * Rule: any corpse object should eliminate all the -s and just use corpse as the target.
- * Example: "corpse-of-a-hobbit" -> "corpse"
- */
-export const sanitizeGameTarget = (target: string | null | undefined): string | null => {
-    if (target === null || target === undefined) return null;
-    let clean = target.trim();
-    
-    // Rule: any corpse object should eliminate all the -s and just use corpse as the target.
-    if (clean.toLowerCase().startsWith('corpse-')) {
-        return 'corpse';
-    }
-
-    // Rule: specific container simplifications for easier interaction (e.g. leather-backpack -> backpack)
-    const containerTypes = ['backpack', 'bag', 'sack', 'pouch', 'satchel', 'quiver', 'chest', 'box', 'barrel', 'crate', 'keg', 'vial', 'flask', 'bottle', 'waterskin', 'skin', 'water-skin'];
-    const parts = clean.toLowerCase().split('-');
-    if (parts.length > 1 && containerTypes.includes(parts[parts.length - 1])) {
-        const lastPart = parts[parts.length - 1];
-        if (lastPart === 'waterskin' || lastPart === 'water-skin') return 'skin';
-        return lastPart;
-    }
-    if (clean.toLowerCase() === 'waterskin' || clean.toLowerCase() === 'water-skin') return 'skin';
-
-    // Aggressively strip punctuation from entities (e.g. "Maelton, the village elder" -> "Maelton the village elder")
-    clean = clean.replace(/[.,:;!?"'()[\]{}<>*#~]/g, ' ').trim();
-    
-    // Strip leading articles and quantifiers
-    clean = clean.replace(/^(a|an|the|some)\s+(pair|pairs|set|piece|bundle|pile|handful|bit|slice|loaf|lump|chunk|portion)\s+of\s+/i, '');
-    clean = clean.replace(/^(pair|pairs|set|piece|bundle|pile|handful|bit|slice|loaf|lump|chunk|portion)\s+of\s+/i, '');
-    clean = clean.replace(/^(a|an|the|some)\s+/i, '');
-
-    // Normalize internal spaces to a single space (e.g. "mother   eagle" -> "mother eagle")
-    // MUME handles multi-word targets with spaces fine if they are terminal, 
-    // but we use extractMumeKeyword/extractNoun to ensure single-word keywords for complex commands.
-    return clean.replace(/\s+/g, ' ');
-};
-

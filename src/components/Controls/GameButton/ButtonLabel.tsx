@@ -1,19 +1,24 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { CustomButton } from '../../../types';
 
 export const ButtonLabel: React.FC<{ button: CustomButton }> = ({ button }) => {
     if (button.icon) {
-        return (
-            <img
-                src={button.icon}
-                className="button-icon"
-                alt=""
-                style={{ 
-                    transform: `scale(${button.style.iconScale || 1})`,
-                    opacity: button.style.iconOpacity !== undefined ? button.style.iconOpacity : 1.0
-                }}
-            />
-        );
+        // If it's a data URL or external image
+        if (button.icon.startsWith('data:') || button.icon.startsWith('http') || button.icon.startsWith('/') || button.icon.includes('.')) {
+            return (
+                <img
+                    src={button.icon}
+                    alt={button.label}
+                    className="button-icon"
+                    style={{
+                        transform: `scale(${button.style?.iconScale || 1})`,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain'
+                    }}
+                />
+            );
+        }
     }
 
     if (button.style.curvedText && button.style.shape === 'circle') {

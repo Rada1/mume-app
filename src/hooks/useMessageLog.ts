@@ -158,6 +158,10 @@ export function useMessageLog(
             (textOnly.length < curRoom.length + 8 && (textOnly.startsWith(curRoom) || textLower.startsWith(curRoom.toLowerCase())))
         ));
 
+        if (textLower === 'you are hungry.' || textLower === 'you are thirsty.') {
+            return;
+        }
+
         if (isActuallyRoomName) {
             flushRoomBuffer();
             skipBrevity = true;

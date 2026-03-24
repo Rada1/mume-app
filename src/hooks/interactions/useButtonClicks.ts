@@ -7,20 +7,30 @@ export const useButtonClicks = (deps: InteractionDeps) => {
     const {
         executeCommand, setInput, setTarget, addMessage, triggerHaptic, btn, joystick, target,
         popoverState, setPopoverState, setCommandPreview, wasDraggingRef, viewport, setParley, parley,
-        keywordOverrides
+        keywordOverrides, applyOptimisticChange,
+        playClickSound, isSoundEnabled, initAudio
     } = deps;
 
-    const handleButtonClick = useCallback((button: CustomButton, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => {
+    const handleButtonClick = useCallback((button: CustomButton & { entityId?: string }, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => {
+        console.log('[useButtonClicks] handleButtonClick:', { 
+            buttonId: button.id, 
+            actionType: button.actionType,
+            command: button.command,
+            context,
+            isEditMode: btn.isEditMode
+        });
+        initAudio();
         e.stopPropagation();
+        if (isSoundEnabled) playClickSound();
         triggerHaptic(20);
 
         if (btn.isEditMode) {
-            if (button.setId !== 'Xbox' && !wasDraggingRef.current) btn.setEditingButtonId(button.id);
+            if (button.setId !== 'Tactical' && !wasDraggingRef.current) btn.setEditingButtonId(button.id);
             return;
         }
 
         const targetEl = (e.currentTarget as HTMLElement);
-        if (popoverState && !['menu', 'assign', 'select-assign', 'select-recipient', 'teleport-manage'].includes(button.actionType || '')) setPopoverState(null);
+        if (popoverState && !['menu', 'assign', 'select-assign', 'select-recipient', 'select-container', 'teleport-manage'].includes(button.actionType || '')) setPopoverState(null);
         if (targetEl?.classList) { targetEl.classList.remove('btn-glow-active'); void targetEl.offsetWidth; targetEl.classList.add('btn-glow-active'); }
 
         // --- Keyboard Focus Fix (Mobile) ---
@@ -35,7 +45,9 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         }
 
         const effectiveContext = (context && keywordOverrides[context]) ? keywordOverrides[context] : context;
+        console.log('[useButtonClicks] context resolution:', { context, effectiveContext, keywordOverride: context ? keywordOverrides[context] : undefined });
         let finalContext = sanitizeGameTarget(effectiveContext) || effectiveContext || '';
+        console.log('[useButtonClicks] finalContext:', finalContext);
         let detectedParent = parentNoun;
 
         // If no explicit parentNoun, try to detect it from the context (e.g. food.2.backpack or 2.boots.backpack)
@@ -94,10 +106,10 @@ export const useButtonClicks = (deps: InteractionDeps) => {
                 context: context || button.label,
                 assignSourceId: popoverState?.assignSourceId,
                 executeAndAssign: popoverState?.executeAndAssign,
-                menuDisplay: popoverState?.menuDisplay,
                 isContainer,
                 parentNoun,
-                type: undefined
+                entityId: button.entityId,
+                type: button.command === 'give-target-select' ? 'give-target-select' : undefined
             });
 
             // If we are opening a menu, and 'closeKeyboard' is enabled, blur focus
@@ -107,21 +119,27 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             }
             return;
         }
-        else if (['assign', 'menu', 'select-assign', 'select-recipient'].includes(button.actionType || '')) {
+        else if (['assign', 'menu', 'select-assign', 'select-recipient', 'select-container'].includes(button.actionType || '')) {
             const rect = targetEl?.getBoundingClientRect();
             const eventX = (e as any).clientX !== undefined ? (e as any).clientX : (e as any).nativeEvent?.clientX;
             const eventY = (e as any).clientY !== undefined ? (e as any).clientY : (e as any).nativeEvent?.clientY;
 
+            console.log('[useButtonClicks] Setting PopoverState for specialized action:', {
+                type: button.actionType === 'select-recipient' ? 'give-recipient-select' : (button.actionType === 'select-container' ? 'put-container-select' : undefined),
+                setId: button.command,
+                context: button.actionType === 'select-assign' ? (joystick.currentDir || (joystick.isTargetModifierActive ? target : '')) : (context || button.label)
+            });
             setPopoverState({
                 x: eventX || (rect ? rect.right + 10 : window.innerWidth / 2),
                 y: eventY || (rect ? rect.top : window.innerHeight / 2),
                 sourceHeight: rect?.height, setId: button.command,
                 context: button.actionType === 'select-assign' ? (joystick.currentDir || (joystick.isTargetModifierActive ? target : '')) : (context || button.label),
                 assignSourceId: (button.actionType === 'assign' || button.actionType === 'select-assign') ? button.id : undefined,
-                executeAndAssign: button.actionType === 'select-assign', menuDisplay: button.menuDisplay,
                 isContainer,
                 parentNoun,
-                type: button.actionType === 'select-recipient' ? 'give-recipient-select' : undefined
+                entityId: button.entityId,
+                category: popoverState?.category,
+                type: button.actionType === 'select-recipient' ? 'give-recipient-select' : (button.actionType === 'select-container' ? 'put-container-select' : undefined)
             });
 
             if (button.trigger?.closeKeyboard) {
@@ -152,7 +170,6 @@ export const useButtonClicks = (deps: InteractionDeps) => {
                         if (isInputPrefix && viewport.isMobile) {
                             setTimeout(() => { if (inputEl) inputEl.readOnly = wasReadOnly; }, 100);
                         }
-
                         const len = inputEl.value.length;
                         inputEl.setSelectionRange(len, len);
                     }
@@ -184,6 +201,28 @@ export const useButtonClicks = (deps: InteractionDeps) => {
                 executeCommand(`get ${finalContext} ${detectedParent}`, true, true, false, false, { fromUi: true });
             }
 
+            // --- Optimistic Updates for Common Actions ---
+            const firstWord = finalCmd.split(' ')[0].toLowerCase();
+            const remainder = finalCmd.slice(firstWord.length).trim();
+            if (firstWord === 'wear' || firstWord === 'hold') {
+                applyOptimisticChange({ type: 'wear', noun: remainder });
+            } else if (firstWord === 'remove') {
+                applyOptimisticChange({ type: 'remove', noun: remainder });
+            } else if (firstWord === 'drop') {
+                const fromSource = (button.setId === 'equipmentlist' || button.setId === 'inline-obj-worn') ? 'eq' : 'inv';
+                applyOptimisticChange({ type: 'drop', noun: remainder, from: fromSource });
+            } else if (firstWord === 'give' && remainder.includes(' ')) {
+                const parts = remainder.split(' ');
+                const itemNoun = parts[0];
+                const fromSource = (button.setId === 'equipmentlist' || button.setId === 'inline-obj-worn') ? 'eq' : 'inv';
+                applyOptimisticChange({ type: 'give', noun: itemNoun, from: fromSource });
+            } else if (firstWord === 'put' && remainder.includes(' ')) {
+                const parts = remainder.split(' ');
+                const itemNoun = parts[0];
+                const containerNoun = parts[1];
+                applyOptimisticChange({ type: 'put', noun: itemNoun, containerNoun });
+            }
+
             // EXPLICITLY pass shouldFocus: false to avoid unintentional keyboard pop on mobile
             setCommandPreview(finalCmd); executeCommand(finalCmd, false, false, false, false, { shouldFocus: false, fromUi: true });
 
@@ -208,7 +247,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             }
         }
         if (button.trigger?.enabled && button.trigger.autoHide && button.display === 'floating') btn.setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));
-    }, [btn, popoverState, setPopoverState, triggerHaptic, joystick, target, executeCommand, setInput, setTarget, addMessage, setCommandPreview, wasDraggingRef, viewport, setParley, parley, keywordOverrides]);
+    }, [btn, popoverState, setPopoverState, triggerHaptic, joystick, target, executeCommand, setInput, setTarget, addMessage, setCommandPreview, wasDraggingRef, viewport, setParley, parley, keywordOverrides, applyOptimisticChange]);
 
     return { handleButtonClick };
 };

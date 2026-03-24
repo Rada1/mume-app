@@ -81,6 +81,8 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
         const conds = stats.conditions || {};
         const activeConds = Object.keys(conds).filter(k => conds[k]);
         
+        const purpleSpells = ['armour', 'shield', 'strength', 'sanctuary', 'shroud', 'bless', 'detect magic', 'detect evil', 'sense life'];
+
         if (activeConds.length === 0 && activeSpells.length === 0) {
             return <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', fontStyle: 'italic' }}>No active effects</div>;
         }
@@ -101,27 +103,30 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                         {c}
                     </div>
                 ))}
-                {activeSpells.map((s, i) => (
-                    <div key={i} style={{
-                        padding: '3px 8px',
-                        background: 'rgba(59, 130, 246, 0.2)',
-                        border: '1px solid rgba(59, 130, 246, 0.4)',
-                        borderRadius: '10px',
-                        color: '#93c5fd',
-                        fontSize: '0.68rem',
-                        fontWeight: 'bold',
-                        textTransform: 'capitalize'
-                    }}>
-                        {s}
-                    </div>
-                ))}
+                {activeSpells.map((s, i) => {
+                    const isPurple = purpleSpells.some(ps => s.toLowerCase().includes(ps));
+                    return (
+                        <div key={i} style={{
+                            padding: '3px 8px',
+                            background: isPurple ? 'rgba(168, 85, 247, 0.2)' : 'rgba(59, 130, 246, 0.2)',
+                            border: isPurple ? '1px solid rgba(168, 85, 247, 0.4)' : '1px solid rgba(59, 130, 246, 0.4)',
+                            borderRadius: '10px',
+                            color: isPurple ? '#d8b4fe' : '#93c5fd',
+                            fontSize: '0.68rem',
+                            fontWeight: 'bold',
+                            textTransform: 'capitalize'
+                        }}>
+                            {s}
+                        </div>
+                    );
+                })}
             </div>
         );
     };
 
     return (
         <div
-            className={`stats-drawer ${isOpen ? 'open' : ''} ${isLandscape ? 'landscape-mode' : ''}`}
+            className={`stats-drawer log-card-drawer ${isOpen ? 'open' : ''} ${isLandscape ? 'landscape-mode' : ''}`}
             onPointerDown={(e) => {
                 const target = e.target as HTMLElement;
                 if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT') return;
@@ -133,9 +138,10 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                 const startX = (e.currentTarget as any)._startX;
                 const startY = (e.currentTarget as any)._startY;
                 if (startX !== undefined && startX !== null) {
-                    const deltaX = startX - e.clientX;
-                    const deltaY = Math.abs(e.clientY - (startY || 0));
-                    if (deltaX > 20 && deltaX > deltaY) {
+                    const deltaX = Math.abs(e.clientX - startX);
+                    const deltaY = e.clientY - (startY || 0);
+                    // Swipe down to close
+                    if (deltaY > 50 && deltaY > deltaX) {
                         triggerHaptic(40);
                         onClose();
                     }
@@ -163,7 +169,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                     display: 'flex',
                     alignItems: 'center',
                     padding: '12px 20px',
-                    background: 'rgba(10, 13, 21, 0.92)',
+                    background: 'rgba(10, 13, 21, 0.65)',
                     backdropFilter: 'blur(25px)',
                     WebkitBackdropFilter: 'blur(25px)',
                     border: '1px solid rgba(255, 255, 255, 0.1)',

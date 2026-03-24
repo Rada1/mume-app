@@ -6,6 +6,7 @@ import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { getButtonCommand } from '../../utils/buttonUtils';
 import CombatOverlay from '../CombatOverlay';
 import CombatStatsPanel from '../CombatStatsPanel';
+import { MultiSelectToolbar } from '../Popovers/MultiSelectToolbar';
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -132,6 +133,7 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
                 />
+                <MultiSelectToolbar />
             </div>
 
             <InputArea

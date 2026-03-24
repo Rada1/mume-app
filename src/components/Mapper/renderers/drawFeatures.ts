@@ -196,7 +196,7 @@ export const drawFeatures = (
                             drawInkyLine(ctx, x1, y1, x2, y2, WALL_COLOR, 3.0, dpr, invZoom);
                         } else if (hasDoor) {
                             const ddx = x2 - x1, ddy = y2 - y1;
-                            ctx.strokeStyle = isDarkMode ? "#fab387" : "#e67e22";
+                            ctx.strokeStyle = WALL_COLOR;
                             ctx.lineWidth = 3.5;
                             ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.stroke();
                             ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
@@ -351,7 +351,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                 if (!hasExit) {
                     drawInkyLine(ctx, x1, y1, x2, y2, WALL_COLOR, 3.0, dpr, invZoom);
                 } else if (hasDoor && camera.zoom >= 0.1) {
-                    const ddx = x2 - x1, ddy = y2 - y1; ctx.strokeStyle = isDarkMode ? "#fab387" : "#e67e22"; ctx.lineWidth = 3.5;
+                    const ddx = x2 - x1, ddy = y2 - y1; ctx.strokeStyle = WALL_COLOR; ctx.lineWidth = 3.5;
                     ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.stroke();
                     ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
                     if (isClosed) { ctx.strokeStyle = "#ffcc00"; ctx.lineWidth = 4.0; ctx.beginPath(); ctx.moveTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke(); }

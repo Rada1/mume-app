@@ -52,8 +52,8 @@ export const GroupDrawer: React.FC<GroupDrawerProps> = ({
             </div>
             
             <div className="group-members-list">
-                {groupMembers.map(member => (
-                    <MemberRow key={member.id} member={member} />
+                {groupMembers.map((member, index) => (
+                    <MemberRow key={member.id} member={member} index={index} />
                 ))}
                 {isEditMode && groupMembers.length === 0 && (
                     <div className="edit-placeholder">Group Members</div>

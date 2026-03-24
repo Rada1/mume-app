@@ -22,12 +22,14 @@ export const useButtonLogic = (
         const filtered = rawButtons.filter(b => {
             if (isEditMode) return true;
 
-            // Xbox cluster special handling
-            if (b.id.startsWith('xbox-')) {
-                // Warrior (z), Ranger (y), and Door (xbox-door) are always available per request.
-                // Cleric (x), Mage (b), and Thief (a) are hidden if no class skills are known.
+            // Tactical/Legacy cluster special handling
+            if (b.id.startsWith('xbox-') || b.id.startsWith('tactical-')) {
+                // Warrior, Ranger, and Door are always available per request.
+                // Cleric, Mage, and Thief are hidden if no class skills are known.
                 const buttonToClass: Record<string, string> = {
-                    'xbox-x': 'cleric', 'xbox-b': 'mage', 'xbox-a': 'thief'
+                    'xbox-x': 'cleric', 'tactical-cleric': 'cleric',
+                    'xbox-b': 'mage', 'tactical-mage': 'mage', 'tactical-action': 'mage',
+                    'xbox-a': 'thief', 'tactical-thief': 'thief'
                 };
                 const classKey = buttonToClass[b.id];
                 if (classKey && b.hideIfUnknown) {

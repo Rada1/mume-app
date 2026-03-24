@@ -56,6 +56,12 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         teleportTargets,
         setTeleportTargets,
         roomPlayers,
+        roomNpcs,
+        roomItems,
+        entities,
+        registerEntity,
+        selectedObjectIds,
+        clearObjectSelection,
         triggerHaptic,
         addMessage,
         setSettings,
@@ -129,20 +135,22 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 popoverState: !!popoverState
             });
 
-            // Also check for Dial Menu (it doesn't use popoverRef directly)
+            // Dial menus use a different overlay logic, but we still need to prevent execution
             if (popoverState.menuDisplay === 'dial') {
                 const dialOverlay = document.querySelector('.dial-menu-overlay');
                 const dialCenter = document.querySelector('.dial-menu-center');
                 if (dialCenter && dialCenter.contains(target)) return;
-                // If it's a dial overlay itself, the DialMenu logic will handle it, 
-                // but we might want to shut it down here too if it's "outside".
                 if (dialOverlay && !dialOverlay.contains(target)) {
                     console.log('[DEBUG] Closing Dial Popover');
+                    (window as any).popoverIsClosing = true;
                     setPopoverState(null);
+                    setTimeout(() => { (window as any).popoverIsClosing = false; }, 300);
                 }
             } else {
                 console.log('[DEBUG] Closing Popover (Standard)');
+                (window as any).popoverIsClosing = true;
                 setPopoverState(null);
+                setTimeout(() => { (window as any).popoverIsClosing = false; }, 300);
             }
         };
 
@@ -282,6 +290,10 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 handleButtonClick={handleButtonClick}
                 triggerHaptic={triggerHaptic}
                 roomPlayers={roomPlayers}
+                roomNpcs={roomNpcs}
+                roomItems={roomItems}
+                inventoryLines={displayInventoryLines}
+                eqLines={displayEqLines}
                 setSettings={setSettings || {}}
                 inlineCategories={inlineCategories}
                 setInlineCategories={setInlineCategories}
@@ -294,6 +306,11 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 practice={practice}
                 shop={shop}
                 openKeywordEdit={openKeywordEdit}
+                entities={entities}
+                registerEntity={registerEntity}
+                selectedObjectIds={selectedObjectIds}
+                clearObjectSelection={clearObjectSelection}
+                keywordOverrides={keywordOverrides}
             />
 
             <DrawerManager

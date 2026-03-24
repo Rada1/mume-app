@@ -46,3 +46,9 @@ Use clear, visual separators for logical blocks within a file. This helps AI age
 ## 6. Type Safety (Zero-Any)
 - **Rule:** The use of `any` is strictly prohibited.
 - **Process:** If a complex object (like a GMCP packet) arrives, define its interface in `src/types/index.ts` first.
+
+## 7. Capability-Based Entity System
+To ensure reliable inline button menus and consistent visuals, the application uses a centralized **Entity Registry**.
+- **The Registry (`src/hooks/useEntityRegistry.ts`):** The Single Source of Truth. It scans entities (NPCs, Items, Players) once and assigns them **Capabilities** (e.g., `isVendor`, `isWeapon`, `isWearable`).
+- **Data-Driven Actions (`src/utils/actionUtils.ts`):** Decisions on which buttons to show are made by mapping Capabilities to Button Sets.
+- **Strict Logic:** Never use "String Soup" (checking names for keywords) in the UI or Parser. All identification logic must live in the Registry.

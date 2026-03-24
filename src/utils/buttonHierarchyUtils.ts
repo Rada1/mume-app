@@ -6,8 +6,9 @@
 export const INLINE_HIERARCHY: Record<string, string[]> = {
     'inline-corpses': ['inline-containers', 'inline-obj-room'],
     'inline-containers': ['inline-obj-room'],
-    'inline-obj-room': ['inline-object'],
+    'inline-obj-room': [],
     'inline-weapon': ['inline-object'],
+    'inline-fluidcontainer': ['inline-object'],
     'inline-armour': ['inline-object'],
     'inline-shield': ['inline-object'],
     'inline-lantern': ['inline-object'],
@@ -17,7 +18,7 @@ export const INLINE_HIERARCHY: Record<string, string[]> = {
     'inline-default': ['inline-object'],
     'inline-quiver': ['inline-containers', 'inline-obj-room'],
     'inline-obj-worn': ['inline-object'],
-    'inline-obj-char': ['inline-object'],
+    'inline-obj-char': [],
     'inline-obj-shop': ['inline-object'],
     
     // NPC Hierarchy
@@ -28,27 +29,58 @@ export const INLINE_HIERARCHY: Record<string, string[]> = {
     'inline-guildmaster': ['inlinenpc']
 };
 
-/**
- * Builds a chain of set IDs representing the inheritance hierarchy for a given set.
- * @param setId The primary set ID (e.g. 'inline-obj-room' or 'inline-obj-char')
- * @param detectedCatId An optional specific sub-category (e.g. 'inline-weapon') detected from context
- * @returns An array of set IDs in order of priority (most specific first)
- */
 export const getHierarchyChain = (setId: string, detectedCatId: string | null = null): string[] => {
-    const baseHierarchy = INLINE_HIERARCHY[setId] || [];
-    const chain = [setId, ...baseHierarchy];
+    // Aliases for drawer list views
+    if (setId === 'inventorylist') setId = 'inline-obj-char';
+    if (setId === 'equipmentlist') setId = 'inline-obj-worn';
+
+    const CONTAINER_CATS = ['inline-containers', 'inline-quiver', 'inline-corpses', 'inline-fluidcontainer', 'inline-water'];
     
-    if (detectedCatId && !chain.includes(detectedCatId)) {
-        // Splice sub-category right after the primary context (room/char)
-        chain.splice(1, 0, detectedCatId);
-        // Also include its parents if missing
-        const catParents = INLINE_HIERARCHY[detectedCatId] || [];
-        catParents.forEach(p => {
-            if (!chain.includes(p)) {
-                // Parents of sub-categories usually go to the end
-                chain.push(p);
-            }
-        });
+    // --- Rule: Room objects should only be 'get' + containers + base objects (Examine) --- 
+    if (setId === 'inline-obj-room') {
+        const chain = ['inline-obj-room', 'inline-object'];
+        if (detectedCatId && CONTAINER_CATS.includes(detectedCatId)) {
+            chain.push(detectedCatId);
+            const parents = INLINE_HIERARCHY[detectedCatId] || [];
+            chain.push(...parents);
+        }
+        return Array.from(new Set(chain));
     }
-    return Array.from(new Set(chain)); // Final safety against duplicates
+
+    // --- Rule: Inventory objects should be 'wear/drop' + sub-categories ---
+    if (setId === 'inline-obj-char') {
+        const chain = ['inline-obj-char'];
+        if (detectedCatId) {
+            chain.push(detectedCatId);
+            const parents = INLINE_HIERARCHY[detectedCatId] || [];
+            chain.push(...parents);
+        }
+        chain.push('inline-object');
+        // Filter out room-specific sets to avoid "Get" in inventory
+        return Array.from(new Set(chain)).filter(id => id !== 'inline-obj-room');
+    }
+
+    // --- Rule: Worn objects should allow containers ---
+    if (setId === 'inline-obj-worn') {
+        const chain = [setId];
+        if (detectedCatId && CONTAINER_CATS.includes(detectedCatId)) {
+            chain.push(detectedCatId);
+            const parents = INLINE_HIERARCHY[detectedCatId] || [];
+            chain.push(...parents);
+        }
+        chain.push('inline-object');
+        return Array.from(new Set(chain)).filter(id => id !== 'inline-obj-room');
+    }
+
+    // Default catch-all hierarchy logic
+    const baseHierarchy = INLINE_HIERARCHY[setId] || [];
+    let result = [setId, ...baseHierarchy];
+    
+    if (detectedCatId && !result.includes(detectedCatId)) {
+        result.splice(1, 0, detectedCatId);
+        const catParents = INLINE_HIERARCHY[detectedCatId] || [];
+        result.push(...catParents);
+    }
+    
+    return Array.from(new Set(result));
 };

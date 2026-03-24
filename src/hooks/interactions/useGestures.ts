@@ -3,13 +3,17 @@ import { InteractionDeps } from '../useInteractionHandlers';
 export const useGestures = (deps: InteractionDeps) => {
     const {
         executeCommand, triggerHaptic, ui,
-        setIsMapExpanded, setIsCharacterOpen, setIsStatsOpen, setIsItemsDrawerOpen, setIsPlayersOpen
+        setIsMapExpanded, setIsCharacterOpen, setIsStatsOpen, setIsEquipmentOpen, setIsInventoryOpen, setIsPlayersOpen
     } = deps;
 
     const handleInputSwipe = (dir: string) => {
         triggerHaptic(20);
         if (dir === 'up') setIsMapExpanded(true);
-        else if (dir === 'down') {
+        else if (dir === 'ne') {
+            executeCommand('who', true, true, true, true);
+            setTimeout(() => executeCommand('where', true, true, true, true), 150);
+            setIsPlayersOpen(true);
+        } else if (dir === 'down') {
             if (ui.mapExpanded) {
                 setIsMapExpanded(false);
             } else {
@@ -22,6 +26,10 @@ export const useGestures = (deps: InteractionDeps) => {
                 setTimeout(() => executeCommand('practice', true, true, true, true), 600);
                 setIsCharacterOpen(true);
             }
+        } else if (dir === 'sw') {
+            executeCommand('inv', true, true, true, true);
+            setTimeout(() => executeCommand('eq', true, true, true, true), 150);
+            setIsInventoryOpen(true);
         } else if (dir === 'right') {
             executeCommand('stat', true, true, true, true);
             setTimeout(() => executeCommand('at', true, true, true, true), 100);
@@ -29,11 +37,7 @@ export const useGestures = (deps: InteractionDeps) => {
         } else if (dir === 'left') {
             executeCommand('inv', true, true, true, true);
             setTimeout(() => executeCommand('eq', true, true, true, true), 150);
-            setIsItemsDrawerOpen(true);
-        } else if (dir === 'sw') {
-            executeCommand('who', true, true, true, true);
-            setTimeout(() => executeCommand('where', true, true, true, true), 150);
-            setIsPlayersOpen(true);
+            setIsEquipmentOpen(true);
         }
     };
 

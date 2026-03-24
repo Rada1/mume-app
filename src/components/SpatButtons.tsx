@@ -10,6 +10,10 @@ interface SpatButtonsProps {
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean, fromUi?: boolean }) => void;
     setSpatButtons: React.Dispatch<React.SetStateAction<SpatButton[]>>;
     setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
+    playClickSound?: () => void;
+    triggerHaptic: (ms: number) => void;
+    initAudio?: () => void;
+    isSoundEnabled?: boolean;
 }
 
 const SpatButtonItem = React.memo(({ sb, activeDir, onPointerDown, onPointerMove, onPointerUp, onPointerCancel }: {
@@ -94,7 +98,11 @@ export const SpatButtons: React.FC<SpatButtonsProps> = React.memo(({
     setActiveSet,
     executeCommand,
     setSpatButtons,
-    setPopoverState
+    setPopoverState,
+    playClickSound,
+    triggerHaptic,
+    initAudio,
+    isSoundEnabled
 }) => {
     const [activeDirMap, setActiveDirMap] = useState<Record<string, string | null>>({});
     const interactionState = useRef<Record<string, { startX: number, startY: number, lastX: number, lastY: number, maxDist: number }>>({});
@@ -111,6 +119,10 @@ export const SpatButtons: React.FC<SpatButtonsProps> = React.memo(({
         if (e.cancelable) e.preventDefault();
         e.stopPropagation();
         
+        initAudio?.();
+        if (isSoundEnabled) playClickSound?.();
+        triggerHaptic(20);
+
         const el = e.currentTarget as HTMLElement;
         el.setPointerCapture(e.pointerId);
         interactionState.current[id] = {

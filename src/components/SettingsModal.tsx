@@ -44,8 +44,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setIsImmersionMode,
     isMobileBrevityMode,
     setIsMobileBrevityMode,
-    showLegacyButtons,
-    setShowLegacyButtons,
     isHighlighterEnabled,
     setIsHighlighterEnabled,
     isCrtEnabled,
@@ -124,8 +122,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setIsImmersionMode={setIsImmersionMode}
                                 isMobileBrevityMode={isMobileBrevityMode}
                                 setIsMobileBrevityMode={setIsMobileBrevityMode}
-                                showLegacyButtons={showLegacyButtons}
-                                setShowLegacyButtons={setShowLegacyButtons}
                                 isHighlighterEnabled={isHighlighterEnabled}
                                 setIsHighlighterEnabled={setIsHighlighterEnabled}
                                 isCrtEnabled={isCrtEnabled}

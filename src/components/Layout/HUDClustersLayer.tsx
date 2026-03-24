@@ -7,8 +7,6 @@ import { Plus, X, RotateCcw, Grid } from 'lucide-react';
 import { MapperCluster } from './HUD/MapperCluster';
 import { GridOverlay } from '../Grid/GridOverlay';
 import { StatsCluster } from './HUD/StatsCluster';
-import { JoystickCluster } from './HUD/JoystickCluster';
-import { XboxCluster } from './HUD/XboxCluster';
 import { LineCluster } from './HUD/LineCluster';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/MapperContext';
@@ -84,11 +82,7 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
 
                 {(effectiveShowControls || btn.isEditMode) && (
                     <>
-                        {showLegacyButtons && (
-                            <XboxCluster uiPositions={btn.uiPositions} isEditMode={btn.isEditMode} handleDragStart={handleDragStart} buttons={btn.buttons} selectedButtonIds={btn.selectedButtonIds} dragState={btn.dragState} handleButtonClick={handleButtonClick} wasDraggingRef={wasDraggingRef} triggerHaptic={triggerHaptic} setPopoverState={setPopoverState} setEditingButtonId={btn.setEditingButtonId} setSelectedIds={btn.setSelectedIds} activePrompt={activePrompt} executeCommand={executeCommand} setCommandPreview={setCommandPreview} heldButton={heldButton} setHeldButton={setHeldButton} joystick={joystick} target={target} isGridEnabled={btn.isGridEnabled} gridSize={btn.gridSize} setActiveSet={btn.setActiveSet} setButtons={btn.setButtons} isMobile={isMobile} isLandscape={isLandscape} stats={stats} />
-                        )}
-
-                        {!showLegacyButtons && (btn.isEditMode || (!isMobile || isLandscape || isMapFloating)) && (
+                        {(!isMobile || isLandscape || isMapFloating) && (
                             <div className={`line-cluster-container ${(!showControls || isKeyboardOpen) && !btn.isEditMode ? 'hud-hidden' : ''}`}>
                                 <LineCluster
                                     isEditMode={btn.isEditMode}
@@ -121,22 +115,18 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
                         <div className="custom-buttons-layer">
                             {btn.buttons.filter(b => {
                                 const isFromActiveSet = b.setId === btn.activeSet;
-                                const isXbox = b.setId === 'Xbox';
+                                const isTactical = b.setId === 'Tactical';
                                 const isInline = b.display === 'inline';
                                 const isTriggered = b.isVisible === true && b.trigger?.enabled;
                                 const isRogue = ['Score', 'Inv', 'Look', 'Combat', 'Set'].includes(b.label || '');
 
-                                if (isXbox || isInline || isRogue) return false;
+                                if (isTactical || isInline || isRogue) return false;
                                 if (btn.isEditMode) return isFromActiveSet;
                                 return isFromActiveSet || isTriggered;
                             }).map(button => (
                                 <GameButton key={button.id} button={button} isEditMode={btn.isEditMode} isGridEnabled={btn.isGridEnabled} gridSize={btn.gridSize} isSelected={btn.selectedButtonIds.has(button.id)} dragState={btn.dragState} handleDragStart={handleDragStart} handleButtonClick={handleButtonClick} wasDraggingRef={wasDraggingRef} triggerHaptic={triggerHaptic} setPopoverState={setPopoverState} setEditButton={(b) => { btn.setEditingButtonId(b.id); if (!btn.selectedButtonIds.has(b.id)) btn.setSelectedIds(new Set([b.id])); }} activePrompt={activePrompt} executeCommand={executeCommand} setCommandPreview={setCommandPreview} setHeldButton={setHeldButton} heldButton={heldButton} joystick={{ isActive: joystick.joystickActive, currentDir: joystick.currentDir, isTargetModifierActive: joystick.isTargetModifierActive, setIsJoystickConsumed: joystick.setIsJoystickConsumed }} target={target} setActiveSet={btn.setActiveSet} setButtons={btn.setButtons} isMobile={isMobile} />
                             ))}
                         </div>
-
-                        {showLegacyButtons && (
-                            <JoystickCluster uiPositions={btn.uiPositions} isEditMode={btn.isEditMode} dragState={btn.dragState} handleDragStart={handleDragStart} joystick={joystick} btnGlow={btnGlow} setBtnGlow={setBtnGlow} executeCommand={executeCommand} triggerHaptic={triggerHaptic} heldButton={heldButton} setHeldButton={setHeldButton} buttons={btn.buttons} target={target} setActiveSet={btn.setActiveSet} setPopoverState={setPopoverState} setCommandPreview={setCommandPreview} />
-                        )}
                     </>
                 )}
             </div>

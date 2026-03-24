@@ -53,7 +53,7 @@ const InputArea: React.FC<InputAreaProps> = ({
     const { ui, setUI } = useUI();
     const { viewport } = useBaseGame();
     const { stats: vitalsStats, setStats: setVitalsStats } = useVitals();
-    const { inCombat, setActiveDragData, triggerHaptic } = useGame();
+    const { inCombat, setActiveDragData, triggerHaptic, playClickSound, isSoundEnabled, initAudio } = useGame();
     const handleWimpyChange = useCallback((val: number) => {
         triggerHaptic(10);
         setVitalsStats(prev => ({ ...prev, wimpy: val }));
@@ -81,9 +81,10 @@ const InputArea: React.FC<InputAreaProps> = ({
 
                 if (Math.max(absX, absY) > 20) {
                     let peek: any = 'none';
-                    if (dx < -15 && dy > 15) peek = 'players';
+                    if (dx < -15 && dy > 15) peek = 'inventory';
+                    else if (dx > 15 && dy < -15) peek = 'players';
                     else if (absY > absX) peek = dy < 0 ? 'map' : 'character';
-                    else peek = dx < 0 ? 'items' : 'stats';
+                    else peek = dx < 0 ? 'equipment' : 'stats';
                     
                     if (ui.peekingDrawer !== peek) {
                         setUI(prev => ({ ...prev, peekingDrawer: peek }));
@@ -185,6 +186,9 @@ const InputArea: React.FC<InputAreaProps> = ({
     };
 
     const handleParleyCommandClick = (e: React.MouseEvent) => {
+        initAudio?.();
+        if (isSoundEnabled) playClickSound?.();
+        triggerHaptic(20);
         const rect = e.currentTarget.getBoundingClientRect();
         setPopoverState({
             x: rect.left + rect.width / 2,
@@ -197,6 +201,9 @@ const InputArea: React.FC<InputAreaProps> = ({
     };
 
     const handleParleyTargetClick = (e: React.MouseEvent) => {
+        initAudio?.();
+        if (isSoundEnabled) playClickSound?.();
+        triggerHaptic(20);
         const rect = e.currentTarget.getBoundingClientRect();
         setPopoverState({
             x: rect.left + rect.width / 2,
@@ -211,6 +218,9 @@ const InputArea: React.FC<InputAreaProps> = ({
     const TARGETLESS_COMMANDS = ['say', 'narrate', 'shout', 'yell', 'sing'];
 
     const handleParleyClear = () => {
+        initAudio?.();
+        if (isSoundEnabled) playClickSound?.();
+        triggerHaptic(20);
         setParley({ ...parley, active: false });
     };
 
@@ -237,6 +247,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                 // but we still record startPos to detect the bubble-up swipe.
                 if (targetElement.tagName !== 'INPUT' && targetElement.tagName !== 'TEXTAREA') {
                     if (e.cancelable) e.preventDefault();
+                    e.stopPropagation();
                     e.currentTarget.setPointerCapture(e.pointerId);
                 }
             }}
@@ -255,9 +266,10 @@ const InputArea: React.FC<InputAreaProps> = ({
 
                     if (Math.max(absX, absY) > 20) {
                         let peek: any = 'none';
-                        if (dx < -15 && dy > 15) peek = 'players';
+                        if (dx < -15 && dy > 15) peek = 'inventory';
+                        else if (dx > 15 && dy < -15) peek = 'players';
                         else if (absY > absX) peek = dy < 0 ? 'map' : 'character';
-                        else peek = dx < 0 ? 'items' : 'stats';
+                        else peek = dx < 0 ? 'equipment' : 'stats';
                         
                         if (ui.peekingDrawer !== peek) {
                             setUI(prev => ({ ...prev, peekingDrawer: peek }));
@@ -283,7 +295,12 @@ const InputArea: React.FC<InputAreaProps> = ({
                         // Detect Southwest (Left and Down)
                         if (deltaX < -25 && deltaY > 25) {
                             onSwipe?.('sw');
-                        } else if (absY > absX) {
+                        } 
+                        // Detect Northeast (Right and Up)
+                        else if (deltaX > 25 && deltaY < -25) {
+                            onSwipe?.('ne');
+                        }
+                        else if (absY > absX) {
                             onSwipe?.(deltaY < 0 ? 'up' : 'down');
                         } else {
                             onSwipe?.(deltaX < 0 ? 'left' : 'right');
@@ -438,6 +455,10 @@ const InputArea: React.FC<InputAreaProps> = ({
                             executeCommand={executeCommand}
                             setSpatButtons={setSpatButtons}
                             setPopoverState={setPopoverState}
+                            playClickSound={playClickSound}
+                            triggerHaptic={triggerHaptic}
+                            initAudio={initAudio}
+                            isSoundEnabled={isSoundEnabled}
                         />
                     )}
 

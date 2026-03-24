@@ -21,8 +21,8 @@ export const getButtonCommand = (
 
     // Cancellation is now handled via screen-absolute position in GameButton.tsx
 
-    let cmd = (isLong && !isSwiped) ? (button.longCommand || button.command || '') : (isSwiped ? '' : (button.command || ''));
-    let actionType = (isLong && !isSwiped && button.longCommand) ? (button.longActionType || 'command') : (button.actionType || 'command');
+    let cmd = (isLong && !isSwiped && (!joystickState || !joystickState.currentDir)) ? (button.longCommand || button.command || '') : (isSwiped ? '' : (button.command || ''));
+    let actionType = (isLong && !isSwiped && button.longCommand && (!joystickState || !joystickState.currentDir)) ? (button.longActionType || 'command') : (button.actionType || 'command');
     let dir: SwipeDirection | undefined = undefined;
 
     if (isSwiped) {
@@ -33,7 +33,7 @@ export const getButtonCommand = (
         const hasBase = !!(button.swipeCommands?.[dir] && button.swipeCommands[dir]!.trim());
         const hasLong = !!(isLong && button.longSwipeCommands?.[dir] && button.longSwipeCommands[dir]!.trim());
 
-        if (isLong) {
+        if (isLong && (!joystickState || !joystickState.currentDir)) {
             if (hasLong) {
                 cmd = button.longSwipeCommands![dir]!;
                 actionType = button.longSwipeActionTypes?.[dir] || 'command';

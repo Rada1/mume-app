@@ -38,8 +38,6 @@ interface UseSettingsDeps {
     setIsImmersionMode: (val: boolean) => void;
     isMobileBrevityMode: boolean;
     setIsMobileBrevityMode: (val: boolean) => void;
-    showLegacyButtons: boolean;
-    setShowLegacyButtons: (val: boolean) => void;
     showOrganicTerrain: boolean;
     setShowOrganicTerrain: (val: boolean) => void;
     inlineCategories: import('../types').InlineCategoryConfig[];
@@ -66,7 +64,6 @@ export function useSettings(deps: UseSettingsDeps) {
         disableSmoothScroll, setDisableSmoothScroll,
         isImmersionMode, setIsImmersionMode,
         isMobileBrevityMode, setIsMobileBrevityMode,
-        showLegacyButtons, setShowLegacyButtons,
         inlineCategories, setInlineCategories,
         isHighlighterEnabled, setIsHighlighterEnabled,
         isCrtEnabled, setIsCrtEnabled,
@@ -196,7 +193,6 @@ export function useSettings(deps: UseSettingsDeps) {
                     if (settings.disableSmoothScroll !== undefined) setDisableSmoothScroll(settings.disableSmoothScroll);
                     if (settings.isImmersionMode !== undefined) setIsImmersionMode(settings.isImmersionMode);
                     if (settings.isMobileBrevityMode !== undefined) setIsMobileBrevityMode(settings.isMobileBrevityMode);
-                    if (settings.showLegacyButtons !== undefined) setShowLegacyButtons(settings.showLegacyButtons);
                     if (settings.inlineCategories) setInlineCategories(settings.inlineCategories);
                     if (settings.isHighlighterEnabled !== undefined) setIsHighlighterEnabled(settings.isHighlighterEnabled);
                     if (settings.isCrtEnabled !== undefined) setIsCrtEnabled(settings.isCrtEnabled);
@@ -207,10 +203,15 @@ export function useSettings(deps: UseSettingsDeps) {
                         const restored: SoundTrigger[] = [];
                         for (const s of settings.soundTriggers) {
                             try {
-                                const res = await fetch(s.srcData);
-                                const ab = await res.arrayBuffer();
-                                const ad = await audioCtxRef.current.decodeAudioData(ab);
-                                restored.push({ ...s, buffer: ad } as SoundTrigger);
+                                const srcDataList = Array.isArray(s.srcData) ? s.srcData : [s.srcData];
+                                const buffers: AudioBuffer[] = [];
+                                for (const data of srcDataList) {
+                                    const res = await fetch(data);
+                                    const ab = await res.arrayBuffer();
+                                    const ad = await audioCtxRef.current.decodeAudioData(ab);
+                                    buffers.push(ad);
+                                }
+                                restored.push({ ...s, buffers } as SoundTrigger);
                             } catch (err) { console.error("Failed to restore sound:", s.fileName); }
                         }
                         setSoundTriggers(restored);
@@ -236,15 +237,32 @@ export function useSettings(deps: UseSettingsDeps) {
                         const res = await fetch(srcData);
                         const ab = await res.arrayBuffer();
                         const ad = await audioCtxRef.current!.decodeAudioData(ab);
-                        const newSound: SoundTrigger = {
-                            id: Math.random().toString(36).substring(7),
-                            pattern: newSoundPattern || file.name,
-                            isRegex: newSoundRegex,
-                            buffer: ad,
-                            srcData,
-                            fileName: file.name
-                        };
-                        setSoundTriggers(prev => [...prev, newSound]);
+                        
+                        const pattern = newSoundPattern || file.name;
+                        
+                        setSoundTriggers(prev => {
+                            const existingIdx = prev.findIndex(t => t.pattern === pattern && t.isRegex === newSoundRegex);
+                            if (existingIdx >= 0) {
+                                const next = [...prev];
+                                const current = next[existingIdx];
+                                next[existingIdx] = {
+                                    ...current,
+                                    buffers: [...(current.buffers || (current.buffer ? [current.buffer] : [])), ad],
+                                    srcData: [...(Array.isArray(current.srcData) ? current.srcData : [current.srcData]), srcData],
+                                    fileName: [...(Array.isArray(current.fileName) ? current.fileName : [current.fileName]), file.name]
+                                };
+                                return next;
+                            } else {
+                                return [...prev, {
+                                    id: Math.random().toString(36).substring(7),
+                                    pattern,
+                                    isRegex: newSoundRegex,
+                                    buffers: [ad],
+                                    srcData: [srcData],
+                                    fileName: [file.name]
+                                }];
+                            }
+                        });
                         setNewSoundPattern('');
                     } catch (err) { addMessage('error', 'Failed to process audio file.'); }
                 }
@@ -280,7 +298,6 @@ export function useSettings(deps: UseSettingsDeps) {
         disableSmoothScroll, setDisableSmoothScroll,
         isImmersionMode, setIsImmersionMode,
         isMobileBrevityMode, setIsMobileBrevityMode,
-        showLegacyButtons, setShowLegacyButtons,
         isHighlighterEnabled, setIsHighlighterEnabled,
         isCrtEnabled, setIsCrtEnabled,
         isBloomEnabled, setIsBloomEnabled,

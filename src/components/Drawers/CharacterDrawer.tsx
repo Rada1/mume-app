@@ -97,7 +97,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
             onClick={handleBackdropClick}
         >
             <div
-                className={`character-drawer-content ${isOpen ? 'open' : ''}`}
+                className={`character-drawer-content log-card-drawer ${isOpen ? 'open' : ''}`}
                 onClick={(e) => { if (e.target === e.currentTarget) onClose(); else e.stopPropagation(); }}
                 onPointerDown={(e) => {
                     const target = e.target as HTMLElement;
@@ -109,8 +109,8 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                     if (swipePos.current) {
                         const deltaY = e.clientY - swipePos.current.y;
                         const deltaX = Math.abs(e.clientX - swipePos.current.x);
-                        // Swipe up to close (top drawer)
-                        if (deltaY < -30 && Math.abs(deltaY) > deltaX) {
+                        // Swipe down to close
+                        if (deltaY > 50 && deltaY > deltaX) {
                             onClose();
                         }
                     }
@@ -356,7 +356,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                     ).map(([category, skills]) => (
                                         <React.Fragment key={category}>
                                             <PracticeClassHeaderCard label={category} />
-                                            {skills.map((skill, idx) => (
+                                            {(skills as PracticeSkill[]).map((skill, idx) => (
                                                 <PracticeSkillCard key={idx} skill={skill} />
                                             ))}
                                         </React.Fragment>

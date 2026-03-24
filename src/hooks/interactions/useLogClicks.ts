@@ -1,0 +1,249 @@
+import { useCallback, useEffect, useRef } from 'react';
+import { InteractionDeps } from '../useInteractionHandlers';
+import { EntityCapability } from '../../types';
+import { getButtonCommand } from '../../utils/buttonUtils';
+import { sanitizeGameTarget } from '../../utils/gameUtils';
+
+export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>) => {
+    const {
+        executeCommand, setInput, setTarget, triggerHaptic, btn, joystick, target,
+        setPopoverState, viewport, ui, heldButton, setHeldButton,
+        isTrackpadModifierActive, keywordOverrides, lastCommandContextRef,
+        entities, selectedObjectIds, toggleObjectSelection, clearObjectSelection,
+        playClickSound, isSoundEnabled, initAudio
+    } = deps;
+
+    const lastLogClickRef = useRef<number>(0);
+    const lastBtnClickRef = useRef<number>(0);
+
+    const isTrackpadModifierActiveRef = useRef(isTrackpadModifierActive);
+    const isJoystickTargetActiveRef = useRef(joystick.isTargetModifierActive);
+    const keywordOverridesRef = useRef(keywordOverrides);
+
+    useEffect(() => { isTrackpadModifierActiveRef.current = isTrackpadModifierActive; }, [isTrackpadModifierActive]);
+    useEffect(() => { isJoystickTargetActiveRef.current = joystick.isTargetModifierActive; }, [joystick.isTargetModifierActive]);
+    useEffect(() => { keywordOverridesRef.current = keywordOverrides; }, [keywordOverrides]);
+
+    const handleLogDoubleClick = useCallback((e: React.MouseEvent) => {
+        let selection = window.getSelection()?.toString().trim();
+
+        if (!selection) {
+            const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
+            if (targetEl) {
+                selection = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
+            } else {
+                const ev = e.nativeEvent as any;
+                const x = ev.clientX || (ev.touches?.[0]?.clientX);
+                const y = ev.clientY || (ev.touches?.[0]?.clientY);
+
+                if (x !== undefined && y !== undefined) {
+                    let range: Range | null = null;
+                    if ((document as any).caretRangeFromPoint) {
+                        range = (document as any).caretRangeFromPoint(x, y);
+                    }
+
+                    if (!range || range.startContainer.nodeType !== Node.TEXT_NODE) {
+                        const offsets = [
+                            { dx: -5, dy: -5 }, { dx: 5, dy: -5 },
+                            { dx: -5, dy: 5 }, { dx: 5, dy: 5 },
+                            { dx: 0, dy: -10 }, { dx: 0, dy: 10 }
+                        ];
+                        for (const offset of offsets) {
+                            const r = (document as any).caretRangeFromPoint(x + offset.dx, y + offset.dy);
+                            if (r && r.startContainer.nodeType === Node.TEXT_NODE) {
+                                range = r;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (range) {
+                        const node = range.startContainer;
+                        const offset = range.startOffset;
+                        if (node.nodeType === Node.TEXT_NODE) {
+                            const text = node.textContent || "";
+                            const beforeStr = text.slice(0, offset);
+                            const afterStr = text.slice(offset);
+
+                            const beforeWord = beforeStr.match(/(\w+)$/)?.[1] || "";
+                            const afterWord = afterStr.match(/^(\w+)/)?.[1] || "";
+
+                            selection = (beforeWord + afterWord).trim();
+                        }
+                    }
+                }
+            }
+        }
+
+        if (selection) {
+            const cleanSelection = sanitizeGameTarget(selection) || selection;
+            setTarget(cleanSelection);
+            triggerHaptic(30);
+
+            try {
+                window.getSelection()?.removeAllRanges();
+            } catch (err) {
+                // Ignore failures to clear
+            }
+        }
+    }, [setTarget, triggerHaptic]);
+
+    const handleLogClick = useCallback((e: React.MouseEvent) => {
+        initAudio(); // Sound fix
+        if (ui.mapExpanded && viewport.isMobile) return;
+
+        const now = Date.now();
+        const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
+
+        const doubleTapThreshold = viewport.isMobile ? 400 : 300;
+
+        if (targetEl) {
+            if (now - lastBtnClickRef.current < doubleTapThreshold) {
+                lastBtnClickRef.current = 0;
+                const context = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
+                if (context) {
+                    setTarget(context);
+                    triggerHaptic(30);
+                    e.stopPropagation();
+                }
+                return;
+            }
+            if (isSoundEnabled) playClickSound();
+            lastBtnClickRef.current = now;
+        } else {
+            if (selectedObjectIds.size > 0) {
+                clearObjectSelection();
+                triggerHaptic(20);
+                e.stopPropagation();
+                return;
+            }
+
+            if (now - lastLogClickRef.current < doubleTapThreshold) {
+                lastLogClickRef.current = 0;
+                handleLogDoubleClick(e);
+                return;
+            }
+            lastLogClickRef.current = now;
+            return;
+        }
+        
+        const isLong = isJoystickTargetActiveRef.current;
+        const isMod = isTrackpadModifierActiveRef.current;
+ 
+        if (selectedObjectIds.size > 0 && targetEl && !isLong && !isMod) {
+            const id = targetEl.getAttribute('data-id') || '';
+            const setId = targetEl.getAttribute('data-cmd') || '';
+            const context = targetEl.getAttribute('data-context') || '';
+            if (id) {
+                toggleObjectSelection(id, setId, context);
+                triggerHaptic(40);
+            }
+            e.stopPropagation();
+            return;
+        }
+
+        e.stopPropagation();
+
+        const cmd = targetEl.getAttribute('data-cmd');
+        const context = targetEl.getAttribute('data-context');
+        const action = targetEl.getAttribute('data-action');
+        const category = targetEl.getAttribute('data-category');
+        const menuDisplay = targetEl.getAttribute('data-menu-display') as 'dial' | 'list' || undefined;
+        const rawContextStr = context || targetEl.innerText.trim();
+        const effectiveContextStr = rawContextStr && keywordOverridesRef.current[rawContextStr] ? keywordOverridesRef.current[rawContextStr] : rawContextStr;
+        const contextStr = sanitizeGameTarget(effectiveContextStr) || effectiveContextStr;
+
+        const entityId = targetEl.getAttribute('data-id') || '';
+
+        if (heldButton && !heldButton.didFire && !heldButton.id.startsWith('log-inline-')) {
+            const sourceButton = btn.buttons.find(b => b.id === heldButton.id);
+            if (sourceButton) {
+                const resolved = getButtonCommand(sourceButton, heldButton.dx || 0, heldButton.dy || 0, contextStr, undefined, heldButton.modifiers || [], joystick, target, isLong);
+                if (resolved?.cmd) {
+                    lastCommandContextRef.current = { context: rawContextStr, displayText: targetEl.innerText.trim() };
+                    executeCommand(resolved.cmd);
+                    setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
+                    triggerHaptic(60);
+                    return;
+                }
+            }
+
+            let finalCmd = isLong ? (heldButton.longCommand || heldButton.baseCommand) : heldButton.baseCommand;
+
+            if (finalCmd) {
+                if (contextStr) {
+                    if (finalCmd.includes('%n')) finalCmd = finalCmd.replace(/%n/g, contextStr);
+                    else finalCmd = `${finalCmd} ${contextStr}`;
+                }
+
+                lastCommandContextRef.current = { context: rawContextStr, displayText: targetEl.innerText.trim() };
+                executeCommand(finalCmd);
+                setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
+                triggerHaptic(60);
+                return;
+            }
+        } else if (isLong || isTrackpadModifierActiveRef.current) {
+            if (lookModFiredRef.current) {
+                lookModFiredRef.current = false;
+                return;
+            }
+            if (contextStr) {
+                executeCommand(`look ${contextStr}`);
+                joystick.setIsJoystickConsumed(true);
+                triggerHaptic(60);
+                return;
+            }
+        }
+
+        if (action === 'menu') {
+            setPopoverState({
+                x: e.clientX || (e.nativeEvent as MouseEvent).clientX,
+                y: e.clientY || (e.nativeEvent as MouseEvent).clientY,
+                setId: cmd || 'selection',
+                category: category || undefined,
+                context: context || undefined,
+                entityId: entityId || undefined,
+                menuDisplay
+            });
+            targetEl.classList.add('menu-active');
+            triggerHaptic(20);
+        } else if ((action === 'command' || action === 'preload') && cmd) {
+            let finalCmd = cmd;
+            if (context) {
+                finalCmd = finalCmd.replace(/%n/g, context).replace(/\$1/g, context);
+            }
+
+            if (action === 'preload' || finalCmd.startsWith('input:')) {
+                const isInputPrefix = finalCmd.startsWith('input:');
+                const prefill = isInputPrefix ? finalCmd.slice(6) : (finalCmd + (finalCmd.endsWith(' ') ? '' : ' '));
+                setInput(prefill);
+
+                const shouldFocus = !viewport.isMobile || isInputPrefix;
+                if (shouldFocus) {
+                    setTimeout(() => {
+                        const inputEl = document.querySelector('input') as HTMLInputElement;
+                        if (inputEl) {
+                            const wasReadOnly = inputEl.readOnly;
+                            if (isInputPrefix && viewport.isMobile) inputEl.readOnly = false;
+                            inputEl.focus();
+                            if (isInputPrefix && viewport.isMobile) {
+                                setTimeout(() => { if (inputEl) inputEl.readOnly = wasReadOnly; }, 100);
+                            }
+                            const len = inputEl.value.length;
+                            inputEl.setSelectionRange(len, len);
+                        }
+                    }, 10);
+                }
+            } else {
+                if (context) lastCommandContextRef.current = { context, displayText: targetEl.innerText.trim() };
+                executeCommand(finalCmd, false, false, false, false, { shouldFocus: false });
+            }
+            triggerHaptic(40);
+        } else if (cmd === 'target' && context) {
+            setTarget(context);
+            triggerHaptic(30);
+        }
+    }, [handleLogDoubleClick, viewport.isMobile, heldButton, executeCommand, setHeldButton, triggerHaptic, setPopoverState, setInput, setTarget, ui.mapExpanded, entities, btn, joystick, target, lastCommandContextRef, selectedObjectIds, toggleObjectSelection, clearObjectSelection, isSoundEnabled, playClickSound, lookModFiredRef, initAudio]);
+
+    return { handleLogClick, handleLogDoubleClick };
+};

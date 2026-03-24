@@ -40,17 +40,23 @@ export const LineCluster: React.FC<LineClusterProps> = ({
     const { viewport } = useGame();
     const { isLandscape } = viewport;
 
-    const xboxIds = ['xbox-b', 'xbox-x', 'xbox-z', 'xbox-door', 'xbox-a', 'xbox-y'];
+    // Pull the 6 tactical buttons by their setId
+    const tacticalButtons = buttons.filter(b => b.setId === 'Tactical');
+
+    // Sort them to ensure consistent layout if needed, but for now we'll just use the order they come in
+    // or we can sort by ID if we want a specific order (e.g. tactical-ranger, tactical-cleric, etc.)
+    const sortedButtons = [...tacticalButtons].sort((a, b) => {
+        const order = ['tactical-ranger', 'tactical-cleric', 'tactical-thief', 'tactical-warrior', 'tactical-action', 'tactical-doors'];
+        return order.indexOf(a.id) - order.indexOf(b.id);
+    });
 
     // Check if we should be hidden (redundant with Layer but safe)
     if (isMobile && !isLandscape && viewport.isKeyboardOpen && !isEditMode) return null;
 
     return (
         <div className="line-cluster">
-            {xboxIds.map(id => {
-                const button = buttons.find(b => b.id === id);
-                if (!button) return null;
-
+            {sortedButtons.map((button) => {
+                const id = button.id;
                 // NO STAT BARS IN LINE CLUSTER
 
                 return (

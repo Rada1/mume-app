@@ -75,16 +75,18 @@ def compile_ardagmcp():
         
         mob_flags = [f.text.strip() for f in elem.findall('mobflag') if f.text]
         load_flags = [f.text.strip() for f in elem.findall('loadflag') if f.text]
-        
+
+        area_elem = elem.find('area')
+        area = area_elem.text.strip() if area_elem is not None and area_elem.text else ""
+
         terrain_elem = elem.find('terrain')
         terrain = terrain_elem.text.strip() if terrain_elem is not None and terrain_elem.text else "0"
 
         rooms[room_id] = [
-            x, -y, z * floor_height, 
+            x, -y, z * floor_height,
             terrain, exits, name, server_id,
-            mob_flags, load_flags
-        ]
-        
+            mob_flags, load_flags, area
+        ]        
         count += 1
         if count % 5000 == 0:
             print(f"Processed {count}...")

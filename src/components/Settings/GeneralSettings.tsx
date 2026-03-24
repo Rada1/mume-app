@@ -34,8 +34,6 @@ interface GeneralSettingsProps {
     setIsImmersionMode: (val: boolean) => void;
     isMobileBrevityMode: boolean;
     setIsMobileBrevityMode: (val: boolean) => void;
-    showLegacyButtons: boolean;
-    setShowLegacyButtons: (val: boolean) => void;
     isHighlighterEnabled: boolean;
     setIsHighlighterEnabled: (val: boolean) => void;
     isCrtEnabled: boolean;
@@ -76,8 +74,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setIsImmersionMode,
     isMobileBrevityMode,
     setIsMobileBrevityMode,
-    showLegacyButtons,
-    setShowLegacyButtons,
     isHighlighterEnabled,
     setIsHighlighterEnabled,
     isCrtEnabled,

@@ -325,7 +325,7 @@ export const useRoomInfoHandler = ({
 
         const name = data.name || 'Unknown Room';
         const desc = data.desc || '';
-        const zone = data.area || data.zone || 'Unknown Zone';
+        let zone = data.area || data.zone || (ghostData ? ghostData[9] : 'Unknown Zone');
         const freshTerrain = normalizeTerrain(data.terrain || data.environment || null);
         const questFlags = data.room_quest_flags || [];
 

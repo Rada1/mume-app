@@ -1,9 +1,11 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { CustomButton, PopoverState } from '../../../types';
 import { getButtonCommand } from '../../../utils/buttonUtils';
+import { useGame } from '../../../context/GameContext';
 import { useButtonGestures } from './useButtonGestures';
 import { ButtonLabel } from './ButtonLabel';
 import { ButtonSwipeOverlay } from './ButtonSwipeOverlay';
+import { CircularVitals } from './CircularVitals';
 
 interface GameButtonProps {
     button: CustomButton;
@@ -35,8 +37,6 @@ interface GameButtonProps {
     moveRatio?: number;
     variant?: 'default' | 'diamond';
 }
-
-import { CircularVitals } from './CircularVitals';
 
 export const GameButton: React.FC<GameButtonProps> = ({
     button,
@@ -70,7 +70,9 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const [activeDir, setActiveDir] = React.useState<any>(null);
     const [isCancelling, setIsCancelling] = React.useState(false);
     const [wheelPos, setWheelPos] = React.useState({ x: 0, y: 0 });
+    const [rayParams, setRayParams] = React.useState<{ angle: number, length: number, opacity: number, color?: string }>({ angle: 0, length: 0, opacity: 0, color: 'var(--accent)' });
     const buttonRef = useRef<HTMLDivElement>(null);
+    const { playClickSound, isSoundEnabled, initAudio } = useGame();
 
     const [renderParams, setRenderParams] = React.useState({
         w: button.style.w,
@@ -82,7 +84,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
         button, isEditMode, handleDragStart, wasDraggingRef, triggerHaptic, setHeldButton, heldButton,
         joystick, target, setCommandPreview, setActiveDir, activeDir, setIsCancelling, isCancelling,
         setPopoverState, executeCommand, setActiveSet, handleButtonClick, setButtons, setEditButton,
-        setWheelPos
+        setWheelPos, playClickSound, isSoundEnabled, initAudio, setRayParams, isMobile
     });
 
     if (button.display === 'inline') return null;
@@ -90,7 +92,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const needsCircularVitals = (hpRatio !== undefined || manaRatio !== undefined || moveRatio !== undefined) && variant === 'default';
     const needsDiamondVitals = (hpRatio !== undefined || manaRatio !== undefined || moveRatio !== undefined) && variant === 'diamond';
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (heldButton?.id === button.id && heldButton.dx !== undefined && heldButton.dy !== undefined) {
             const preview = getButtonCommand(button, heldButton.dx, heldButton.dy, undefined, undefined, heldButton.modifiers, joystick, target, joystick.isActive);
             setCommandPreview(preview?.cmd || null);
@@ -115,11 +117,11 @@ export const GameButton: React.FC<GameButtonProps> = ({
         }
     }, [needsCircularVitals, button.isVisible]);
 
-    if (!button.isVisible && !isEditMode && button.setId !== 'Xbox') return null;
+    if (!button.isVisible && !isEditMode && button.setId !== 'Tactical') return null;
 
     const isFloating = button.display === 'floating';
 
-    const getGlowColor = () => {
+    const getGlowColorInternal = () => {
         if (button.trigger?.enabled && button.isVisible) {
             return button.style.borderColor || button.style.backgroundColor || 'var(--accent)';
         }
@@ -129,6 +131,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const getRgb = (colorVal: string | undefined, defaultVal: string) => {
         if (!colorVal) return defaultVal;
         const hex = colorVal.replace('#', '');
+        if (hex.length < 6) return defaultVal;
         const r = parseInt(hex.substring(0, 2), 16);
         const g = parseInt(hex.substring(2, 4), 16);
         const b = parseInt(hex.substring(4, 6), 16);
@@ -156,12 +159,16 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 borderRadius: variant === 'diamond' ? '0' : `${button.style.borderRadius || 8}px`,
                 '--set-accent': button.style.borderColor || 'var(--accent)',
                 '--set-accent-rgb': getRgb(button.style.borderColor, '255, 255, 255'),
-                opacity: (button.isVisible || isEditMode || button.setId === 'Xbox') ? (button.isDimmed ? 0.35 : 1) : 0,
-                pointerEvents: (button.isVisible || isEditMode || button.setId === 'Xbox') ? (button.isDimmed && !isEditMode ? 'none' : 'auto') : 'none',
-                boxShadow: button.style.transparent ? 'none' : ((button.trigger?.enabled && button.isVisible) ? `0 0 20px ${getGlowColor()}` : 'none'),
+                '--ray-angle': `${rayParams.angle}deg`,
+                '--ray-length': `${rayParams.length}px`,
+                '--ray-opacity': rayParams.opacity,
+                '--ray-color': rayParams.color,
+                opacity: (button.isVisible || isEditMode || button.setId === 'Tactical') ? (button.isDimmed ? 0.35 : 1) : 0,
+                pointerEvents: (button.isVisible || isEditMode || button.setId === 'Tactical') ? (button.isDimmed && !isEditMode ? 'none' : 'auto') : 'none',
+                boxShadow: button.style.transparent ? 'none' : ((button.trigger?.enabled && button.isVisible) ? `0 0 20px ${getGlowColorInternal()}` : 'none'),
                 backdropFilter: button.style.transparent ? 'none' : undefined,
                 WebkitBackdropFilter: button.style.transparent ? 'none' : undefined,
-                zIndex: activeDir ? 20000 : (isSelected ? 1001 : (isFloating ? 1000 : 100)),
+                zIndex: activeDir ? 60000 : (isSelected ? 1001 : (isFloating ? 1000 : 100)),
                 overflow: 'visible'
             } as any}
             {...gestures}
@@ -184,11 +191,16 @@ export const GameButton: React.FC<GameButtonProps> = ({
                     isOuter={true}
                 />
             )}
-            <ButtonSwipeOverlay button={button} activeDir={activeDir} isCancelling={isCancelling} />
-            <div className="swipe-ray" />
+            <ButtonSwipeOverlay 
+                button={button} 
+                activeDir={activeDir} 
+                isCancelling={isCancelling} 
+                buttonRect={buttonRef.current?.getBoundingClientRect()}
+                rayParams={rayParams}
+            />
             <ButtonLabel button={button} />
 
-            {isEditMode && button.setId !== 'Xbox' && (
+            {isEditMode && button.setId !== 'Tactical' && (
                 <div
                     className="resize-handle"
                     onPointerDown={(e) => {

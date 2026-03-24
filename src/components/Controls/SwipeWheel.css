@@ -12,7 +12,7 @@
     transform: translateY(-50%) rotate(var(--ray-angle, 0deg));
     opacity: var(--ray-opacity, 0);
     pointer-events: none;
-    z-index: -1;
+    z-index: 3;
     box-shadow: 0 0 15px var(--ray-color, var(--set-accent, var(--accent)));
     transition: opacity 0.1s ease, transform 0.05s ease-out;
     /* Faster, smoother transition */
@@ -22,7 +22,7 @@
 
 /* Counter-rotate ray if the parent is a rotated diamond */
 .is-diamond .swipe-ray {
-    transform: translateY(-50%) rotate(calc(var(--ray-angle, 0deg) - 45deg));
+    transform: translateY(-50%) rotate(calc(var(--ray-angle, 0deg) - 45deg)) !important;
 }
 
 .cancel-indicator {
@@ -231,8 +231,8 @@
     transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
     /* Radiate out towards perimeter, starting just outside center button */
     text-align: left;
+    justify-content: flex-start;
     margin-left: 155px;
-    /* Positions label outside center button (radius 35px from center 115px) */
     width: 70px;
     display: flex;
     align-items: center;
@@ -243,6 +243,7 @@
 .swipe-slice-label.flip {
     transform: rotate(180deg);
     text-align: right;
+    justify-content: flex-end;
     mask-image: linear-gradient(to left, #000 70%, transparent 100%);
     -webkit-mask-image: linear-gradient(to left, #000 70%, transparent 100%);
 }

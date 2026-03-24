@@ -28,7 +28,8 @@ export interface InteractionDeps {
     viewport: any;
     setIsMapExpanded: (val: boolean) => void;
     setIsCharacterOpen: (val: boolean) => void;
-    setIsItemsDrawerOpen: (val: boolean) => void;
+    setIsEquipmentOpen: (val: boolean) => void;
+    setIsInventoryOpen: (val: boolean) => void;
     setIsSettingsOpen: (val: boolean) => void;
     setIsStatsOpen: (val: boolean) => void;
     setIsPlayersOpen: (val: boolean) => void;
@@ -42,7 +43,7 @@ export interface InteractionDeps {
     captureStage: React.MutableRefObject<CaptureStage>;
     ui: {
         mapExpanded: boolean;
-        drawer: 'none' | 'character' | 'items';
+        drawer: 'none' | 'character' | 'equipment' | 'inventory';
         setManagerOpen: boolean;
         isDrawerPeeking: boolean;
     };
@@ -57,7 +58,16 @@ export interface InteractionDeps {
     keywordOverrides: Record<string, string>;
     openKeywordEdit: (context: string, displayText: string) => void;
     lastCommandContextRef: React.MutableRefObject<{ context: string; displayText: string } | null>;
+    entities: Record<string, import('../types').GameEntity>;
+    applyOptimisticChange: (change: import('../types').OptimisticChange) => void;
+    selectedObjectIds: Set<string>;
+    toggleObjectSelection: (id: string, setId?: string, context?: string) => void;
+    clearObjectSelection: () => void;
+    playClickSound: () => void;
+    isSoundEnabled: boolean;
+    initAudio: () => void;
 }
+
 
 import { useButtonClicks } from './interactions/useButtonClicks';
 import { useGestures } from './interactions/useGestures';
@@ -69,6 +79,7 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
     const { handleInputSwipe } = useGestures(deps);
     const { handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp } = useLogTaps(deps);
     const { handleDragStart, handleDragEnd } = useLogDragAndDrop(deps);
+
 
     return {
         handleButtonClick,

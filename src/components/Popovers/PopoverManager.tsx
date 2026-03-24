@@ -6,13 +6,15 @@ import { RecipientSelectPopover } from './RecipientSelectPopover';
 import { TeleportSavePopover, TeleportSelectPopover, TeleportManagePopover } from './TeleportPopovers';
 import ShopSearchPopover from './ShopSearchPopover';
 import { ContainerPopover } from './ContainerPopover';
+import { ContainerSelectPopover } from './ContainerSelectPopover';
 import { FloatingGroupCard } from '../FloatingGroupCard';
 import { getHierarchyChain } from '../../utils/buttonHierarchyUtils';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
 
 export const PopoverManager: React.FC<PopoverManagerProps> = ({
-    popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, setSettings, inlineCategories, setInlineCategories, favorites, setFavorites, parley, setParley, whoList,
-    isMendingMode, setIsMendingMode, setMendingTarget, setIsItemsDrawerOpen, refreshLogHighlights, practice, shop, openKeywordEdit
+    popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, roomNpcs, roomItems, inventoryLines, eqLines, setSettings, inlineCategories, setInlineCategories, favorites, setFavorites, parley, setParley, whoList,
+    isMendingMode, setIsMendingMode, setMendingTarget, setIsEquipmentOpen, setIsInventoryOpen, refreshLogHighlights, practice, shop, openKeywordEdit,
+    entities, registerEntity, selectedObjectIds, clearObjectSelection, keywordOverrides
 }) => {
 
     useLayoutEffect(() => {
@@ -120,6 +122,11 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         };
 
         const handlePointerUp = (e: PointerEvent) => {
+            if ((window as any).popoverIsClosing) {
+                console.log('[DEBUG] PopoverManager ignoring pointerup (menu is closing)');
+                return;
+            }
+
             if (scrollIntervalRef.current) {
                 cancelAnimationFrame(scrollIntervalRef.current);
                 scrollIntervalRef.current = null;
@@ -169,18 +176,19 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     }, [popoverState, triggerHaptic, setPopoverState]);
 
     if (!popoverState) return null;
+    console.log('[PopoverManager] Current state:', { type: popoverState.type, setId: popoverState.setId, context: popoverState.context });
 
     // Resolve theme color for this menu
-    let themeColor = setSettings[popoverState.setId]?.themeColor;
+    let themeColor = setSettings[popoverState.setId]?.themeColor || popoverState.accentColor;
     if (!themeColor) {
         if (popoverState.setId === 'inlineplayer') themeColor = 'rgb(150, 150, 255)';
         else if (popoverState.setId?.startsWith('inline-') || popoverState.setId === 'inlinenpc') {
-            themeColor = getGlowColorForCategory(popoverState.setId, inlineCategories || []) || undefined;
+            themeColor = getGlowColorForCategory(popoverState.category || popoverState.setId, inlineCategories || []) || undefined;
         }
     }
 
     if (popoverState.menuDisplay === 'dial') {
-        const detectedCatId = popoverState.context ? getCategoryForName(popoverState.context, inlineCategories || []) : null;
+        const detectedCatId = popoverState.category || (popoverState.context ? getCategoryForName(popoverState.context, inlineCategories || []) : null);
         const setIdsChain = getHierarchyChain(popoverState.setId, detectedCatId);
         
         return (
@@ -194,7 +202,11 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     if (popoverState.assignSourceId) {
                         const isExecute = popoverState.executeAndAssign;
                         const dir = popoverState.assignSwipeDir;
-                        setButtons((prev: CustomButton[]) => prev.map(b => b.id === popoverState.assignSourceId ? (dir ? { ...b, swipeCommands: { ...b.swipeCommands, [dir]: btn.command }, swipeActionTypes: { ...b.swipeActionTypes, [dir]: btn.actionType || 'command' } } : { ...b, command: btn.command, label: btn.label, actionType: btn.actionType || 'command' }) : b));
+                        setButtons((prev: CustomButton[]) => prev.map(b => b.id === popoverState.assignSourceId ? (dir ? { 
+                            ...b, 
+                            swipeCommands: { ...(b.swipeCommands || {}), [dir]: btn.command }, 
+                            swipeActionTypes: { ...(b.swipeActionTypes || {}), [dir]: btn.actionType || 'command' } 
+                        } : { ...b, command: btn.command, label: btn.label, actionType: btn.actionType || 'command' }) : b));
                         if (isExecute) handleButtonClick(btn, e as any, popoverState.context);
                         setPopoverState(null);
                         addMessage('system', `${isExecute ? 'Executed and assigned' : 'Assigned'} '${btn.label}'${dir ? ` to swipe ${dir}` : ''}.`);
@@ -204,6 +216,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                 }}
                 triggerHaptic={triggerHaptic}
                 themeColor={themeColor}
+                instruction={popoverState.executeAndAssign ? 'fire and remap' : 'select to fire'}
             />
         );
     }
@@ -236,7 +249,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             {popoverState.type === 'teleport-save' && <TeleportSavePopover popoverState={popoverState} setPopoverState={setPopoverState} setTeleportTargets={setTeleportTargets} addMessage={addMessage} />}
             {popoverState.type === 'teleport-select' && <TeleportSelectPopover popoverState={popoverState} setPopoverState={setPopoverState} teleportTargets={teleportTargets} executeCommand={executeCommand} />}
             {popoverState.type === 'teleport-manage' && <TeleportManagePopover teleportTargets={teleportTargets} setTeleportTargets={setTeleportTargets} setPopoverState={setPopoverState} />}
-            {popoverState.type === 'give-recipient-select' && <RecipientSelectPopover popoverState={popoverState} roomPlayers={roomPlayers} executeCommand={executeCommand} setPopoverState={setPopoverState} />}
+            {popoverState.type === 'give-recipient-select' && <RecipientSelectPopover popoverState={popoverState} roomPlayers={roomPlayers} roomNpcs={roomNpcs} executeCommand={executeCommand} setPopoverState={setPopoverState} themeColor={themeColor} />}
             {popoverState.type === 'shop-search' && <ShopSearchPopover executeCommand={executeCommand} onClose={() => setPopoverState(null)} />}
             {popoverState.type === 'container' && (
                 <ContainerPopover 
@@ -247,18 +260,30 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     themeColor={themeColor} 
                 />
             )}
-            {(popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target' || !popoverState.type) && (
-                <StandardMenuPopover 
-                    popoverState={popoverState} 
-                    buttons={buttons} 
-                    availableSets={availableSets} 
-                    setPopoverState={setPopoverState} 
-                    setButtons={setButtons} 
-                    handleButtonClick={handleButtonClick} 
-                    setTarget={setTarget} 
-                    addMessage={addMessage} 
-                    themeColor={themeColor} 
-                    favorites={favorites} 
+            {popoverState.type === 'put-container-select' && (
+                <ContainerSelectPopover
+                    popoverState={popoverState}
+                    roomItems={roomItems}
+                    inventoryLines={inventoryLines || []}
+                    eqLines={eqLines || []}
+                    entities={entities}
+                    executeCommand={executeCommand}
+                    setPopoverState={setPopoverState}
+                    themeColor={themeColor}
+                />
+            )}
+            {(popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target' || popoverState.type === 'give-target-select' || popoverState.type === 'menu' || !popoverState.type) && (
+                <StandardMenuPopover
+                    popoverState={popoverState}
+                    buttons={buttons}
+                    availableSets={availableSets}
+                    setPopoverState={setPopoverState}
+                    setButtons={setButtons}
+                    handleButtonClick={handleButtonClick}
+                    setTarget={setTarget}
+                    addMessage={addMessage}
+                    themeColor={themeColor}
+                    favorites={favorites}
                     setFavorites={setFavorites}
                     parley={parley}
                     setParley={setParley}
@@ -269,11 +294,20 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     isMendingMode={isMendingMode}
                     setIsMendingMode={setIsMendingMode}
                     setMendingTarget={setMendingTarget}
+                    setIsEquipmentOpen={setIsEquipmentOpen}
+                    setIsInventoryOpen={setIsInventoryOpen}
                     refreshLogHighlights={refreshLogHighlights}
                     triggerHaptic={triggerHaptic}
                     openKeywordEdit={openKeywordEdit}
-                />
-            )}
+                    roomPlayers={roomPlayers}
+                    roomNpcs={roomNpcs}
+                    roomItems={roomItems}
+                    entities={entities}
+                    registerEntity={registerEntity}
+                    selectedObjectIds={selectedObjectIds}
+                    clearObjectSelection={clearObjectSelection}
+                    keywordOverrides={keywordOverrides}
+                />            )}
         </div>
     );
 };

@@ -153,6 +153,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             // Prevent browser gestures (scrolling, etc) from stealing map input
             if (e.pointerType === 'mouse' && e.button !== 0) return; // Only allow left-click for drag
             if (e.cancelable) e.preventDefault();
+            e.stopPropagation();
 
             activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
             try { cvs.setPointerCapture(e.pointerId); } catch(err) {}
@@ -241,6 +242,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
 
             // Prevent browser scroll during map interaction
             if (e.cancelable) e.preventDefault();
+            e.stopPropagation();
 
             activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
             
@@ -332,6 +334,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
         };
 
         const onUp = (e: PointerEvent) => {
+            e.stopPropagation();
             const { mode, joystick, executeCommand, triggerHaptic, stopWalking, setInfoRoomId, setSelectedRoomIds, setIsDragging, setRooms } = depsRef.current;
             
             if (longPressTimerRef.current) { clearTimeout(longPressTimerRef.current); longPressTimerRef.current = null; }
@@ -369,9 +372,9 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                 undefined,
                                 undefined,
                                 depsRef.current.heldButton.modifiers,
-                                undefined,
+                                { currentDir: comboDir, isTargetModifierActive: false },
                                 depsRef.current.target,
-                                true
+                                isTap
                             );
                             
                             if (result) {
@@ -398,15 +401,14 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                             assignSwipeDir: result.dir,
                                             executeAndAssign: result.actionType === 'select-assign' || result.actionType === 'assign',
                                             menuDisplay: button.menuDisplay,
+                                            accentColor: button.style.borderColor || button.style.backgroundColor,
                                             type: result.actionType === 'select-recipient' ? 'give-recipient-select' : undefined
                                         });
                                     } else {
                                         depsRef.current.executeCommand(result.cmd);
                                     }
                                 } else if (comboDir) {
-                                    const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' };
-                                    const finalCmd = `${result.cmd} ${dirMap[comboDir] || comboDir}`;
-                                    depsRef.current.executeCommand(finalCmd);
+                                    depsRef.current.executeCommand(result.cmd);
                                 }
                                 
                                 depsRef.current.setHeldButton?.((prev: any) => prev ? { ...prev, didFire: true } : null);

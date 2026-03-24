@@ -7,29 +7,31 @@ import { InlineCategoryConfig } from '../types';
 
 // palette definitions for consistency
 const COLOR_NPC = 'rgba(217, 70, 239, 0.9)';   // Softer Magenta (#d946ef)
-const COLOR_PLAYER = 'rgba(56, 189, 248, 0.9)'; // Softer Sky Blue (#38bdf8)
+const COLOR_PLAYER = 'rgba(125, 211, 252, 0.9)'; // Match who-list/pc-highlighter (#7dd3fc)
 const COLOR_OBJ = 'rgba(180, 100, 50, 0.9)';   // Object Brown
 
 export const DEFAULT_INLINE_CATEGORIES: InlineCategoryConfig[] = [
+    // --- NPCS & SERVICES (Parent: NPC) ---
+    { id: 'innkeeper', keywords: ['innkeeper', 'barman', 'tender', 'lodging'], color: COLOR_NPC },
+    { id: 'shopkeeper', keywords: ['shopkeeper', 'dealer', 'keeper', 'merchant', 'weaponsmith', 'armourer', 'smith', 'trader', 'grocer', 'librarian', 'provisioner', 'alchemist', 'herbalist', 'tailor', 'blacksmith', 'vendor', 'cobbler', 'peddler'], color: COLOR_NPC },
+    { id: 'mounts', keywords: ['horse', 'pony', 'steed', 'donkey', 'mule', 'warg'], color: COLOR_NPC },
+    { id: 'guildmaster', keywords: ['guildmaster', 'teacher', 'master', 'trainer', 'huor'], color: COLOR_NPC },
+    { id: 'npc', keywords: ['orc', 'troll', 'wolf', 'spider', 'goblin', 'warg', 'bandit', 'scout', 'warrior', 'guard', 'citizen', 'deer', 'bear', 'rabbit', 'snake', 'wraith', 'spirit', 'undead', 'zombie', 'skeleton', 'bird', 'eagle', 'hawk', 'owl', 'crow', 'raven', 'rat', 'bat', 'shaman', 'priest', 'cleric', 'mage', 'sorcerer', 'thief', 'assassin', 'mercenary', 'elite', 'veteran', 'captain', 'leader', 'king', 'queen', 'lord', 'lady', 'dúnadan', 'dunadan', 'soldier', 'officer', 'man', 'woman', 'girl', 'boy', 'scholar', 'insolent', 'rugged'], color: COLOR_NPC },
+
     // --- LIGHT & OBJECTS (Parent: Object) ---
-    { id: 'lightsource', keywords: ['hooded', 'lamp', 'torch', 'candle'], color: COLOR_OBJ },
-    { id: 'lantern', keywords: ['lantern', 'light'], color: COLOR_OBJ },
+    { id: 'lightsource', keywords: ['hooded', 'torch', 'candle'], color: COLOR_OBJ },
+    { id: 'lantern', keywords: [], color: COLOR_OBJ },
     { id: 'weapon', keywords: ['sword', 'blade', 'dagger', 'axe', 'mace', 'spear', 'staff', 'club', 'flail', 'scimitar', 'rapier', 'halberd', 'bow', 'sling', 'stick', 'knife', 'fist', 'blowpipe', 'wand', 'ElfHewer', 'Durin', 'Trollsbane', 'Glamdring', 'Orcrist', 'Beater', 'Biter', 'Sting', 'Mithvegil', 'Bonecrusher', 'Angmacil', 'Alrehir'], color: COLOR_OBJ },
     { id: 'armour', keywords: ['mail', 'breastplate', 'greaves', 'gauntlets', 'helmet', 'boots', 'leggings', 'sleeves', 'bracers', 'cloak', 'surcoat', 'jerkin', 'robe', 'tunic', 'trousers', 'belt', 'pants', 'breeches', 'shoes', 'sandals', 'scabbard', 'Dragonhelm', 'morion', 'crown', 'circlet', 'coif', 'basinet', 'cap', 'hat', 'hood', 'scarf', 'collar', 'hauberk', 'shirt', 'vest', 'jacket', 'dress', 'blouse', 'cape', 'mantle', 'vambraces', 'gloves', 'skirt', 'slippers', 'girdle', 'sash', 'wrapping', 'Daedeltiri'], color: COLOR_OBJ },
     { id: 'shield', keywords: ['shield', 'buckler', 'targe'], color: COLOR_OBJ },
     { id: 'containers', keywords: ['bag', 'pouch', 'sack', 'backpack', 'satchel', 'quiver', 'chest', 'box', 'case', 'wallet', 'crate', 'cabinet', 'bookshelf', 'jar', 'quiver', 'wallet', 'case'], color: COLOR_OBJ },
     { id: 'food', keywords: ['meat', 'bread', 'biscuit', 'lembas', 'mushroom', 'honey', 'wafer', 'cookie', 'eg', 'dumpling', 'bannock', 'cheese', 'pastry', 'flour', 'cake', 'pie'], color: COLOR_OBJ },
-    { id: 'water', keywords: ['water', 'fountain', 'pond', 'stream', 'cup', 'skin', 'flagon', 'flask', 'bottle', 'jug', 'vial', 'mug', 'barrel', 'pail', 'goblet', 'pint', 'tincture', 'phial'], color: COLOR_OBJ },
+    { id: 'fluidcontainer', keywords: ['flask', 'bottle', 'cup', 'skin', 'flagon', 'goblet', 'vial', 'keg', 'barrel', 'waterskin', 'pitcher', 'jug', 'mug', 'stein', 'pot', 'bowl', 'bucket', 'pail', 'calabash', 'gourd'], color: COLOR_OBJ },
+    { id: 'water', keywords: ['water', 'fountain', 'pond', 'stream', 'cup', 'skin', 'flagon', 'flask', 'bottle', 'jug', 'vial', 'mug', 'barrel', 'pail', 'goblet', 'pint', 'tincture', 'phial', 'pool', 'well', 'spring', 'lake', 'river', 'sea', 'ocean', 'puddle', 'basin'], color: COLOR_OBJ },
     { id: 'treasure', keywords: ['gem', 'diamond', 'ruby', 'sapphire', 'topaz', 'emerald', 'garnet', 'opal', 'agate', 'onyx', 'citrine', 'spinel', 'carnelian', 'gold', 'silver', 'nugget', 'pearl', 'heirloom', 'treasure', 'medal', 'coin'], color: COLOR_OBJ },
     { id: 'corpses', keywords: ['corpse'], color: COLOR_OBJ },
-    { id: 'misc', keywords: ['map', 'scroll', 'parchment', 'key', 'relic', 'ring', 'amulet', 'necklace', 'charm', 'stone', 'orb', 'pendant', 'wristband', 'bracelet', 'circlet', 'crown', 'cloakpin', 'brooch', 'book', 'journal', 'libram', 'chronicle', 'paper', 'note', 'instrument', 'flute', 'harp', 'lute', 'drums', 'pipes', 'horn', 'rope', 'lockpicks', 'kit', 'sheath', 'harness', 'baldric', 'boat', 'skiff', 'canoe', 'raft', 'stick', 'fetish', 'die', 'top', 'pen', 'quill'], color: COLOR_OBJ },
+    { id: 'misc', keywords: ['map', 'scroll', 'parchment', 'key', 'relic', 'ring', 'amulet', 'necklace', 'charm', 'stone', 'orb', 'pendant', 'wristband', 'bracelet', 'circlet', 'crown', 'cloakpin', 'brooch', 'book', 'journal', 'libram', 'chronicle', 'paper', 'note', 'instrument', 'flute', 'harp', 'lute', 'drums', 'pipes', 'horn', 'rope', 'lockpicks', 'kit', 'sheath', 'harness', 'baldric', 'boat', 'skiff', 'canoe', 'raft', 'stick', 'fetish', 'die', 'top', 'pen', 'quill', 'lamp', 'lantern', 'light', 'street-lamp'], color: COLOR_OBJ },
     { id: 'object-room', keywords: [], color: COLOR_OBJ },
-
-    // --- NPCS & SERVICES (Parent: NPC) ---
-    { id: 'innkeeper', keywords: ['innkeeper'], color: COLOR_NPC },
-    { id: 'shopkeeper', keywords: ['barman', 'dealer', 'keeper', 'merchant', 'weaponsmith', 'armourer'], color: COLOR_NPC },
-    { id: 'mounts', keywords: ['horse', 'pony', 'steed', 'donkey', 'mule', 'warg'], color: COLOR_NPC },
-    { id: 'guildmaster', keywords: ['guildmaster', 'teacher', 'master', 'trainer', 'huor'], color: COLOR_NPC },
 
     { id: 'exit', keywords: ['north', 'south', 'east', 'west', 'up', 'down'], color: 'rgba(255, 255, 255, 0.9)' },
     { id: 'default', keywords: [], color: COLOR_OBJ }
@@ -43,15 +45,28 @@ export function getCategoryForName(name: string, customCategories?: InlineCatego
     const lowerName = name.toLowerCase();
     const categories = customCategories || DEFAULT_INLINE_CATEGORIES;
 
+    // Word-boundary check to prevent miscategorization (e.g. "Scabbard" -> "bar" -> NPC)
+    const words = lowerName.split(/[\s,.-]+/);
+
     for (const cat of categories) {
-        if ((cat.keywords || []).some(keyword => lowerName.includes(keyword.toLowerCase()))) {
+        if ((cat.keywords || []).some(keyword => {
+            const lowKey = keyword.toLowerCase();
+            if (lowKey.length <= 3) {
+                return words.includes(lowKey);
+            }
+            return lowerName.includes(lowKey);
+        })) {
             return `inline-${cat.id}`;
         }
     }
 
     if (customCategories) {
         for (const cat of DEFAULT_INLINE_CATEGORIES) {
-            if (cat.keywords.some(keyword => lowerName.includes(keyword.toLowerCase()))) {
+            if (cat.keywords.some(keyword => {
+                const lowKey = keyword.toLowerCase();
+                if (lowKey.length <= 3) return words.includes(lowKey);
+                return lowerName.includes(lowKey);
+            })) {
                 return `inline-${cat.id}`;
             }
         }
@@ -70,16 +85,16 @@ export function getGlowColorForCategory(category: string | null, customCategorie
 
     // Resolve the parent colors first from the current configuration
     const categories = customCategories || DEFAULT_INLINE_CATEGORIES;
-    const npcParentColor = categories.find(c => c.id === 'default' && c.keywords.includes('npc_forced'))?.color || COLOR_NPC;
-    const objParentColor = categories.find(c => c.id === 'object-room')?.color || COLOR_OBJ;
+    const npcParentColor = categories.find(c => c.id === 'npc')?.color || COLOR_NPC;
+    const objParentColor = categories.find(c => c.id === 'object-room' || c.id === 'default')?.color || COLOR_OBJ;
 
     // Hierarchy Definitions
-    const NPC_FAMILY = ['innkeeper', 'shopkeeper', 'mounts', 'guildmaster', 'huor', 'inlinenpc', 'inline-npc'];
+    const NPC_FAMILY = ['innkeeper', 'shopkeeper', 'mounts', 'guildmaster', 'huor', 'npc', 'inlinenpc', 'inline-npc'];
     const OBJ_FAMILY = ['lightsource', 'lantern', 'weapon', 'armour', 'shield', 'containers', 'food', 'water', 'corpses', 'object', 'object-room', 'quiver', 'obj-room', 'obj-char', 'obj-worn', 'obj-shop', 'misc', 'treasure'];
 
-    if (NPC_FAMILY.includes(baseId)) return npcParentColor;
+    if (NPC_FAMILY.includes(baseId) || baseId === 'npc') return npcParentColor;
     if (OBJ_FAMILY.includes(baseId)) return objParentColor;
-    if (baseId === 'inline-player' || baseId === 'inlineplayer') return COLOR_PLAYER;
+    if (baseId === 'inline-player' || baseId === 'inlineplayer' || baseId === 'player') return COLOR_PLAYER;
 
     const config = categories.find(c => c.id === baseId) || categories.find(c => c.id === 'default');
     return config?.color || COLOR_OBJ;

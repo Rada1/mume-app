@@ -10,6 +10,7 @@ interface DialMenuProps {
     onExecute: (button: CustomButton, e: PointerEvent) => void;
     triggerHaptic: (ms: number) => void;
     themeColor?: string;
+    instruction?: string;
 }
 
 export const DialMenu: React.FC<DialMenuProps> = ({
@@ -20,7 +21,8 @@ export const DialMenu: React.FC<DialMenuProps> = ({
     onClose,
     onExecute,
     triggerHaptic,
-    themeColor
+    themeColor,
+    instruction
 }) => {
     const menuButtons = useMemo(() => {
         const ids = Array.isArray(setId) ? setId : [setId];
@@ -108,9 +110,14 @@ export const DialMenu: React.FC<DialMenuProps> = ({
         const handleGlobalUp = (e: PointerEvent) => {
             if (e.cancelable) e.preventDefault();
             if (activeIndexRef.current !== null && menuButtons[activeIndexRef.current]) {
-                onExecute(menuButtons[activeIndexRef.current], e);
+                const btn = menuButtons[activeIndexRef.current];
+                onExecute(btn, e);
+                // Only close if it's NOT a menu-opening action
+                const isMenu = ['nav', 'menu', 'select-assign', 'select-recipient', 'select-container', 'assign', 'teleport-manage'].includes(btn.actionType || '') || btn.label === 'Look In';
+                if (!isMenu) onClose();
+            } else {
+                onClose();
             }
-            onClose();
         };
 
         window.addEventListener('pointermove', handleGlobalMove, true);
@@ -182,7 +189,7 @@ export const DialMenu: React.FC<DialMenuProps> = ({
                     ) : (
                         <div className="dial-center-placeholder">
                             <div className="dial-center-icon" style={{ opacity: 0.3, background: 'var(--input-bg, rgba(255,255,255,0.1))', color: 'var(--text-primary, #fff)', boxShadow: 'none' }}>...</div>
-                            <div style={{ fontSize: '0.6rem', opacity: 0.5, textTransform: 'uppercase', fontWeight: 800 }}>Select</div>
+                            <div style={{ fontSize: '0.62rem', opacity: 0.7, textTransform: 'uppercase', fontWeight: 800, marginTop: '4px', maxWidth: '100px', lineHeight: 1.1 }}>{instruction || 'Select'}</div>
                         </div>
                     )}
                 </div>

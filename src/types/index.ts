@@ -11,6 +11,14 @@ export type UiMode = 'auto' | 'desktop' | 'portrait' | 'landscape';
 export type CaptureStage = 'none' | 'who' | 'where' | 'inv' | 'eq' | 'stat' | 'container' | 'shop' | 'shop-detail' | 'practice' | 'whois' | 'description' | 'info' | 'quest';
 export type CombatHealthStatus = 'Healthy' | 'Fine' | 'Hurt' | 'Wounded' | 'Badly Wounded' | 'Awful' | 'Dying' | 'Stunned' | 'None';
 
+export type OptimisticChange =
+    | { type: 'wear'; item?: DrawerLine; noun?: string; lineId?: string }
+    | { type: 'remove'; item?: DrawerLine; noun?: string; lineId?: string }
+    | { type: 'drop'; item?: DrawerLine; from: 'inv' | 'eq'; noun?: string; lineId?: string }
+    | { type: 'give'; item?: DrawerLine; from: 'inv' | 'eq'; noun?: string; lineId?: string }
+    | { type: 'get'; item?: DrawerLine; noun?: string; lineId?: string }
+    | { type: 'put'; item?: DrawerLine; container?: DrawerLine; noun?: string; containerNoun?: string; lineId?: string };
+
 export interface InlineCategoryConfig {
     id: string; // The base name of the category (e.g. 'lantern')
     keywords: string[];
@@ -100,6 +108,49 @@ export interface DrawerLine {
     prefixHtml?: string;
     parentItemId?: string;
     parentItemNoun?: string;
+    entityId?: string;
+}
+
+export type EntityLocation = 'room' | 'inv' | 'eq' | string; // string for 'container:<id>'
+
+export enum EntityCapability {
+    Wearable = 'wearable',
+    Weapon = 'weapon',
+    Blade = 'blade',
+    Blunt = 'blunt',
+    Axe = 'axe',
+    Spear = 'spear',
+    Staff = 'staff',
+    Container = 'container',
+    DrinkContainer = 'drink',
+    Food = 'food',
+    Readable = 'readable',
+    Light = 'light',
+    Shield = 'shield',
+    FluidContainer = 'fluid',
+    // NPC / Actor Capabilities
+    Npc = 'npc',
+    Player = 'player',
+    Mount = 'mount',
+    Innkeeper = 'innkeeper',
+    Shopkeeper = 'shopkeeper',
+    Guildmaster = 'guildmaster',
+    Corpse = 'corpse',
+    Exit = 'exit'
+}
+
+export interface GameEntity {
+    id: string;
+    name: string;
+    noun: string;
+    location: EntityLocation;
+    parentId?: string;
+    capabilities: EntityCapability[];
+    weight?: number;
+    value?: number;
+    vnum?: number; // If known from GMCP
+    shortDesc?: string;
+    longDesc?: string;
 }
 
 export interface GameStats {
@@ -118,7 +169,7 @@ export interface GameStats {
     staminaStatus?: string;
 }
 
-export type ActionType = 'command' | 'nav' | 'menu' | 'assign' | 'select-assign' | 'teleport-manage' | 'select-recipient' | 'preload';
+export type ActionType = 'command' | 'nav' | 'menu' | 'assign' | 'select-assign' | 'teleport-manage' | 'select-recipient' | 'select-container' | 'preload';
 
 export interface CustomButton {
     id: string;
@@ -181,9 +232,10 @@ export interface SoundTrigger {
     id: string;
     pattern: string;
     isRegex: boolean;
-    buffer: AudioBuffer;
-    srcData: string; // Base64 data for saving/loading
-    fileName: string;
+    buffer?: AudioBuffer; // Backward compatibility
+    buffers?: AudioBuffer[]; // Array of buffers for random selection
+    srcData: string | string[]; // Base64 data for saving/loading
+    fileName: string | string[];
 }
 
 export interface TeleportTarget {
@@ -202,8 +254,9 @@ export interface PopoverState {
     x: number;
     y: number;
     sourceHeight?: number;
-    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target' | 'container' | 'shop-card' | 'practice-card';
+    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'give-target-select' | 'put-container-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target' | 'container' | 'shop-card' | 'practice-card';
     setId: string;
+    category?: string;
     context?: string;
     containerItems?: DrawerLine[];
     assignSourceId?: string;
@@ -216,8 +269,10 @@ export interface PopoverState {
     spellCommand?: string; // e.g. "cast 'teleport'"
     isContainer?: boolean;
     parentNoun?: string;
+    entityId?: string;
     shopItems?: ShopItem[];
     practiceData?: PracticeData;
+    accentColor?: string;
 }
 
 export interface PopoverManagerProps {
@@ -234,7 +289,11 @@ export interface PopoverManagerProps {
     setTeleportTargets: React.Dispatch<React.SetStateAction<TeleportTarget[]>>;
     handleButtonClick: (button: CustomButton, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => void;
     triggerHaptic: (ms: number) => void;
-    roomPlayers: string[];
+    roomPlayers: (string | GmcpOccupant)[];
+    roomNpcs: (string | GmcpOccupant)[];
+    roomItems: any[];
+    inventoryLines?: DrawerLine[];
+    eqLines?: DrawerLine[];
     setSettings: Record<string, ButtonSetSettings>;
     inlineCategories?: InlineCategoryConfig[];
     setInlineCategories?: React.Dispatch<React.SetStateAction<InlineCategoryConfig[]>>;
@@ -246,11 +305,17 @@ export interface PopoverManagerProps {
     isMendingMode?: boolean;
     setIsMendingMode?: (val: boolean) => void;
     setMendingTarget?: (val: string | null) => void;
-    setIsItemsDrawerOpen?: (open: boolean) => void;
+    setIsEquipmentOpen?: (open: boolean) => void;
+    setIsInventoryOpen?: (open: boolean) => void;
     refreshLogHighlights?: () => void;
     practice?: any;
     shop?: any;
     openKeywordEdit?: (context: string, displayText: string) => void;
+    entities: Record<string, GameEntity>;
+    registerEntity: (id: string, name: string, location: EntityLocation, category?: string) => GameEntity;
+    selectedObjectIds: Set<string>;
+    clearObjectSelection: () => void;
+    keywordOverrides?: Record<string, string>;
 }
 
 
@@ -298,8 +363,6 @@ export interface SettingsModalProps {
     setIsImmersionMode: (val: boolean) => void;
     isMobileBrevityMode: boolean;
     setIsMobileBrevityMode: (val: boolean) => void;
-    showLegacyButtons: boolean;
-    setShowLegacyButtons: (val: boolean) => void;
     isHighlighterEnabled: boolean;
     setIsHighlighterEnabled: (val: boolean) => void;
     isCrtEnabled: boolean;
@@ -335,7 +398,6 @@ export interface SavedSettings {
     disableSmoothScroll?: boolean;
     isImmersionMode?: boolean;
     isMobileBrevityMode?: boolean;
-    showLegacyButtons?: boolean;
     showOrganicTerrain?: boolean;
     inlineCategories?: InlineCategoryConfig[];
     favorites?: string[];
@@ -536,4 +598,9 @@ export interface GmcpMumeEdit {
     title: string;
     text: string;
     key: string;
+}
+
+export interface ZoneMusicMapping {
+    zone: string;
+    url: string | string[];
 }

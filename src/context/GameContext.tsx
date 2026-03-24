@@ -11,10 +11,9 @@ import { useViewport } from '../hooks/useViewport';
 import { useEnvironment } from '../hooks/useEnvironment';
 import { useMessageHighlighter } from '../hooks/useMessageHighlighter';
 import { useTelnet } from '../hooks/useTelnet';
-import { useGameParser } from '../hooks/useGameParser';
+import { useGameParser } from '../hooks/GameParser/useGameParser';
 import { useCommandController } from '../hooks/useCommandController';
 import { useSettings } from '../hooks/useSettings';
-import { useSoundSystem } from '../hooks/useSoundSystem';
 import { useSpatButtons } from '../hooks/useSpatButtons';
 import { usePracticeHandler } from '../hooks/usePracticeHandler';
 import { MapperRef } from '../components/Mapper/mapperTypes';
@@ -24,6 +23,8 @@ import { useGmcpHandlers } from '../hooks/useGmcpHandlers';
 import { useShopHandler } from '../hooks/useShopHandler';
 import { useGameProviderState } from './GameContext/state';
 import { useKeywordOverrides } from '../hooks/useKeywordOverrides';
+import { useSessionManager } from '../hooks/useSessionManager';
+import { useGameAudio } from '../hooks/useGameAudio';
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);
 export const VitalsContext = createContext<VitalsContextType | undefined>(undefined);
@@ -74,6 +75,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Destructure some commonly used values for brevity in dependencies
     const {
         roomPlayers, roomNpcs, roomItems,
+        roomZone,
         isNoviceMode, isSoundEnabled, characterClass, abilities,
         lighting, lightningEnabled, weather, isFoggy,
         actions, actionsRef,
@@ -162,13 +164,28 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [messages]);
 
-    const playSoundRef = useRef<(buffer: AudioBuffer) => void>(() => { });
-    const setPlaySound = useCallback((fn: (buffer: AudioBuffer) => void) => { playSoundRef.current = fn; }, []);
-    const playSound = useCallback((buffer: AudioBuffer) => playSoundRef.current(buffer), []);
-
-    const triggerHapticRef = useRef<(ms: number) => void>(() => { });
-    const setTriggerHaptic = useCallback((fn: (ms: number) => void) => { triggerHapticRef.current = fn; }, []);
-    const triggerHaptic = useCallback((ms: number) => triggerHapticRef.current(ms), []);
+    const {
+        audioCtxRef,
+        initAudio,
+        playSound,
+        setPlaySound,
+        playRandomSound,
+        playMovementSound,
+        playDoorSound,
+        loadDoorSound,
+        playClickSound,
+        loadClickSound,
+        triggerHaptic,
+        setTriggerHaptic
+    } = useGameAudio({
+        isSoundEnabled: s.isSoundEnabled,
+        roomZone: s.roomZone,
+        zoneMusic: s.zoneMusic,
+        inCombat: s.inCombat,
+        lighting: s.lighting,
+        currentTerrain: s.currentTerrain,
+        weather: s.weather
+    });
 
     const containerRef = useRef<HTMLDivElement>(null);
     const mapperRef = useRef<MapperRef>(null);
@@ -203,6 +220,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setCharacterName: s.setCharacterName,
         setPlayerPosition: s.setPlayerPosition,
         setRoomName: s.setRoomName,
+        setRoomZone: s.setRoomZone,
         isMobileBrevityMode: s.isMobileBrevityMode,
         setRoomExits: s.setRoomExits,
         setDiscoveredItems: s.setDiscoveredItems,
@@ -223,7 +241,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setWhereList: s.setWhereList,
         opponentId: v.opponentId,
         setOpponentId: v.setOpponentId,
-        detectLighting: env.detectLighting
+        detectLighting: env.detectLighting,
+        playMovementSound,
+        playDoorSound,
+        playerPositionRef: s.playerPositionRef,
+        setIsRiding: s.setIsRiding,
+        isRidingRef: s.isRidingRef
     });
 
     const { spatButtons, setSpatButtons, triggerSpit, triggerSpitManual } = useSpatButtons(messages, containerRef, triggerHaptic);
@@ -236,9 +259,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const practice = usePracticeHandler(s.setAbilities);
     const shop = useShopHandler();
 
-    const { audioCtxRef, initAudio, triggerHaptic: soundSystemHaptic } = useSoundSystem();
-    // Wire the real haptic function into the ref immediately
-    triggerHapticRef.current = soundSystemHaptic;
     const settings = useSettings({
         addMessage, audioCtxRef, initAudio,
         setButtons: btn.setButtons,
@@ -255,7 +275,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         disableSmoothScroll: s.disableSmoothScroll, setDisableSmoothScroll: s.setDisableSmoothScroll,
         isImmersionMode: s.isImmersionMode, setIsImmersionMode: s.setIsImmersionMode,
         isMobileBrevityMode: s.isMobileBrevityMode, setIsMobileBrevityMode: s.setIsMobileBrevityMode,
-        showLegacyButtons: s.showLegacyButtons, setShowLegacyButtons: s.setShowLegacyButtons,
         showOrganicTerrain: s.showOrganicTerrain, setShowOrganicTerrain: s.setShowOrganicTerrain,
         inlineCategories: s.inlineCategories, setInlineCategories: s.setInlineCategories,
         isHighlighterEnabled: s.isHighlighterEnabled, setIsHighlighterEnabled: s.setIsHighlighterEnabled,
@@ -263,14 +282,22 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isBloomEnabled: s.isBloomEnabled, setIsBloomEnabled: s.setIsBloomEnabled
     });
 
+    // Auto-load click sound if sound is enabled
+    useEffect(() => {
+        if (isSoundEnabled && audioCtxRef.current) {
+            loadClickSound();
+        }
+    }, [isSoundEnabled, audioCtxRef.current, loadClickSound]);
+
     const [input, setInput] = useState("");
-    const { processMessageHtml } = useMessageHighlighter(v.target, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems, s.inlineCategories, s.isHighlighterEnabled, highlightVersion, s.discoveredItems);
+    const { processMessageHtml } = useMessageHighlighter(v.target, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems, s.inlineCategories, s.isHighlighterEnabled, highlightVersion, s.discoveredItems, keywordOverrides, s.selectedObjectIds);
 
 
     const navIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     const parser = useGameParser({
-        isItemsOpen: s.ui.drawer === 'items',
+        isInventoryOpen: s.ui.drawer === 'inventory',
+        isEquipmentOpen: s.ui.drawer === 'equipment',
         isCharacterOpen: s.ui.drawer === 'character',
         isStatsOpen: s.ui.drawer === 'stats',
         isPlayersOpen: s.ui.drawer === 'players',
@@ -281,7 +308,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             buttonTimers: btn.buttonTimers,
             setActiveSet: btn.setActiveSet,
         },
-        addMessage, playSound, triggerHaptic,
+        addMessage, playSound, playRandomSound, playDoorSound, triggerHaptic,
         setWeather: s.setWeather,
         setIsFoggy: s.setIsFoggy,
         setStats: v.setStats,
@@ -297,6 +324,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setMood: s.setMood,
         detectLighting: env.detectLighting,
         setCurrentTerrain: s.setCurrentTerrain,
+        addDiagnosticLog,
+        keywordOverrides,
         isSoundEnabledRef: settings.isSoundEnabledRef,
         soundTriggersRef: settings.soundTriggersRef,
         actionsRef: s.actionsRef,
@@ -316,7 +345,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isWaitingForInv: s.isWaitingForInv,
         roomNameRef: s.roomNameRef,
         roomName: s.roomName,
-        addDiagnosticLog,
         popoverState: s.popoverState,
         setPopoverState: s.setPopoverState,
         pendingDrawerContainerRef: s.pendingDrawerContainerRef,
@@ -335,8 +363,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         triggerXpTicker: v.triggerXpTicker,
         pendingGmcpCommRef,
         lastCommIdBySenderRef,
-        groupMembers: s.groupMembers
+        groupMembers: s.groupMembers,
+        registerEntity: s.registerEntity,
+        setEntities: s.setEntities
     });
+
 
     const { processLine } = parser;
 
@@ -369,7 +400,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             onGroupAdd: (data) => { gmcpHandlers.onGroupAdd(data); groupAddFn?.(data); },
             onGroupUpdate: (data) => { gmcpHandlers.onGroupUpdate(data); groupUpdateFn?.(data); },
             onGroupRemove: (id) => { gmcpHandlers.onGroupRemove(id); groupRemoveFn?.(id); },
-            onGroupSet: (data) => { gmcpHandlers.onGroupSet(data); groupSetFn?.(data); }
+            onGroupSet: (data) => { gmcpHandlers.onGroupSet(data); groupSetFn?.(data); },
+            onCharRide: gmcpHandlers.onCharRide
         }
     });
 
@@ -388,7 +420,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         popoverState: s.popoverState, setPopoverState: s.setPopoverState,
         setIsCharacterOpen: s.setIsCharacterOpen,
         setIsStatsOpen: s.setIsStatsOpen,
-        setIsItemsDrawerOpen: s.setIsItemsDrawerOpen,
+        setIsEquipmentOpen: s.setIsEquipmentOpen,
+        setIsInventoryOpen: s.setIsInventoryOpen,
         setIsMapExpanded: s.setIsMapExpanded,
         setIsPlayersOpen: s.setIsPlayersOpen,
         viewport,
@@ -408,7 +441,15 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         keywordOverrides,
         openKeywordEdit,
         lastCommandContextRef,
+        entities: s.entities,
+        applyOptimisticChange: s.applyOptimisticChange,
+        selectedObjectIds: s.selectedObjectIds,
+        toggleObjectSelection: s.toggleObjectSelection,
+        clearObjectSelection: s.clearObjectSelection,
+        playClickSound,
+        isSoundEnabled,
     });
+
 
     const { handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd } = controller;
 
@@ -435,114 +476,23 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (s.executeCommandRef) s.executeCommandRef.current = executeCommand;
     }, [executeCommand, s.executeCommandRef]);
 
-    // Auto-login session tracking
-    const autoLoginSessionRef = useRef({ nameSent: false, passwordSent: false, lastStatus: '' });
-    const telnetSendCommandRef = useRef(telnet.sendCommand);
-    useEffect(() => { telnetSendCommandRef.current = telnet.sendCommand; }, [telnet.sendCommand]);
-
-    useEffect(() => {
-        // Reset session tracking when we start a new connection
-        if (s.status === 'connecting' && autoLoginSessionRef.current.lastStatus !== 'connecting') {
-            autoLoginSessionRef.current = { nameSent: false, passwordSent: false, lastStatus: 'connecting' };
-        }
-        autoLoginSessionRef.current.lastStatus = s.status;
-
-        if (s.status !== 'connected' || !v.activePrompt) return;
-
-        const lower = v.activePrompt.toLowerCase();
-
-        // Handle Name Prompt
-        if (settings.loginName && !autoLoginSessionRef.current.nameSent) {
-            if (lower.includes("by what name do you wish to be known?") || lower.includes("what is your name?") || lower.includes("character's name")) {
-                autoLoginSessionRef.current.nameSent = true;
-                addSystemMessage(`Auto-login: Sending name: ${settings.loginName}`);
-                telnetSendCommandRef.current(settings.loginName);
-            }
-        }
-
-        // Handle Password Prompt (only if name was sent or we don't have a name/prompt for it)
-        if (settings.loginPassword && !autoLoginSessionRef.current.passwordSent) {
-            if (lower.includes("password:")) {
-                autoLoginSessionRef.current.passwordSent = true;
-                addSystemMessage(`Auto-login: Sending password...`);
-                telnetSendCommandRef.current(settings.loginPassword);
-            }
-        }
-    }, [v.activePrompt, s.status, settings.loginName, settings.loginPassword, addSystemMessage]);
-
-    // Practice sync on character detection
-    const lastSyncedCharRef = useRef<string | null>(null);
-    useEffect(() => {
-        if (s.characterName && s.characterName !== lastSyncedCharRef.current && s.status === 'connected') {
-            lastSyncedCharRef.current = s.characterName;
-            // Delay slightly to ensure login sequence is fully finished
-            setTimeout(() => {
-                executeCommand('practice', true, true);
-            }, 2000);
-        } else if (!s.characterName) {
-            lastSyncedCharRef.current = null;
-        }
-    }, [s.characterName, s.status, executeCommand]);
-
-    // Open Practice Popover when data arrives (REMOVED: Now inline)
-
-    // Only on mount
-    useEffect(() => {
-        if (s.autoConnect && s.status === 'disconnected') {
-            telnet.connect();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    // Phase 1: First-Run Onboarding Greeting
-    useEffect(() => {
-        if (s.status === 'connected' && !s.hasSeenOnboarding && s.isNoviceMode) {
-            const greetingMessages = [
-                "Welcome! The map (top-right) tracks your movement automatically.",
-                "Vitals (top-center) show your status. Click a target's name in the log to lock onto them.",
-                "Tactical buttons (bottom-sides) can be swiped for extra actions."
-            ];
-            greetingMessages.forEach((msg, i) => {
-                setTimeout(() => {
-                    addSystemMessage(msg);
-                }, 1000 * (i + 1));
-            });
-        }
-    }, [s.status, s.hasSeenOnboarding, s.isNoviceMode, addSystemMessage]);
-
-    // Group Combat Assist Trigger:
-    // When any groupmate is fighting, show a single 'Assist' spit button.
-    const isAssistActiveRef = useRef<boolean>(false);
-    useEffect(() => {
-        const checkStr = (val: any) => typeof val === 'string' && (val.toLowerCase().includes('fight') || val.toLowerCase().includes('combat'));
-        
-        const isAnyoneFighting = s.groupMembers.some(m => 
-            checkStr(m.position) || checkStr((m as any).pos) || checkStr((m as any).status) || checkStr((m as any).state) || (m as any).fighting || (m as any).combat
-        );
-        
-        if (!isAnyoneFighting) {
-            isAssistActiveRef.current = false;
-            return;
-        }
-
-        const hasExistingAssist = spatButtons.some(sb => sb.btnId === 'auto-assist-generic');
-        if (!hasExistingAssist && !isAssistActiveRef.current) {
-            isAssistActiveRef.current = true;
-            
-            triggerSpitManual({
-                id: `auto-assist-generic`,
-                label: `Assist`,
-                command: `assist`,
-                style: { backgroundColor: 'rgba(220, 38, 38, 0.8)' }, // Red combat glow
-                trigger: { 
-                    enabled: true,
-                    duration: 15, // Button lasts 15s or until clicked
-                    spit: true 
-                }
-            });
-        }
-    }, [s.groupMembers, triggerSpitManual, addSystemMessage, spatButtons]);
-
+    useSessionManager({
+        status: s.status,
+        activePrompt: v.activePrompt,
+        loginName: settings.loginName,
+        loginPassword: settings.loginPassword,
+        addSystemMessage,
+        telnetSendCommand: telnet.sendCommand,
+        telnetConnect: telnet.connect,
+        characterName: s.characterName,
+        executeCommand,
+        autoConnect: s.autoConnect,
+        hasSeenOnboarding: s.hasSeenOnboarding,
+        isNoviceMode,
+        groupMembers: s.groupMembers,
+        spatButtons,
+        triggerSpitManual
+    });
 
     // Handle keyboard-triggered visibility for buttons
     useEffect(() => {
@@ -578,13 +528,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         settingsTab, setSettingsTab,
         setIsStatsOpen: s.setIsStatsOpen,
         setIsCharacterOpen: s.setIsCharacterOpen,
-        setIsItemsDrawerOpen: s.setIsItemsDrawerOpen,
+        setIsEquipmentOpen: s.setIsEquipmentOpen,
+        setIsInventoryOpen: s.setIsInventoryOpen,
         setIsMapExpanded: s.setIsMapExpanded,
         setIsSetManagerOpen: s.setIsSetManagerOpen,
         setIsPlayersOpen: s.setIsPlayersOpen,
     }), [
         s.ui, s.popoverState, s.setPopoverState, isSettingsOpen, settingsTab,
-        s.setIsCharacterOpen, s.setIsItemsDrawerOpen, s.setIsMapExpanded, s.setIsSetManagerOpen, s.setUI, s.setIsPlayersOpen
+        s.setIsCharacterOpen, s.setIsEquipmentOpen, s.setIsInventoryOpen, s.setIsMapExpanded, s.setIsSetManagerOpen, s.setUI, s.setIsPlayersOpen
     ]);
 
     const gameValue = useMemo(() => ({
@@ -607,7 +558,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         onGroupUpdate: groupUpdateFn, setOnGroupUpdate: setGroupUpdateFn,
         onGroupRemove: groupRemoveFn, setOnGroupRemove: setGroupRemoveFn,
         onGroupSet: groupSetFn, setOnGroupSet: setGroupSetFn,
-        playSound, setPlaySound, triggerHaptic, setTriggerHaptic,
+        playSound, playRandomSound, playDoorSound, setPlaySound, triggerHaptic, setTriggerHaptic, playClickSound,
         btn, joystick, editor, containerRef, viewport, env,
         initAudio,
         setSettings: btn.setSettings, setSetSettings: btn.setSetSettings,
@@ -625,6 +576,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         spatButtons, setSpatButtons,
         diagnosticLogs, addDiagnosticLog,
         refreshLogHighlights,
+        addMessage, addSystemMessage,
         isMendingMode: v.isMendingMode, setIsMendingMode: v.setIsMendingMode,
         mendingTarget: v.mendingTarget, setMendingTarget: v.setMendingTarget,
         heldButton: v.heldButton, setHeldButton: v.setHeldButton,
@@ -644,8 +596,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         handleDragStart, handleDragEnd,
         settings, audioCtxRef, telnet, parser, spatButtons, diagnosticLogs, addDiagnosticLog,
         v.isMendingMode, v.setIsMendingMode, v.mendingTarget, v.setMendingTarget,
-        s.showLegacyButtons, v.heldButton, v.setHeldButton, handleLogPointerDown, handleLogPointerUp,
-        handleSaveMumeEdit, s.setQuests
+        v.heldButton, v.setHeldButton, handleLogPointerDown, handleLogPointerUp,
+        handleSaveMumeEdit, s.setQuests, addMessage, addSystemMessage
     ]);
 
     const logValue = useMemo(() => ({
@@ -657,8 +609,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         processMessageHtml,
         refreshLogHighlights,
         handleLogPointerDown,
-        handleLogPointerUp
-    }), [messages, setMessages, addMessage, addSystemMessage, isCombatLine, processMessageHtml, refreshLogHighlights, handleLogPointerDown, handleLogPointerUp]);
+        handleLogPointerUp,
+        selectedObjectIds: s.selectedObjectIds,
+        toggleObjectSelection: s.toggleObjectSelection,
+        clearObjectSelection: s.clearObjectSelection
+    }), [messages, setMessages, addMessage, addSystemMessage, isCombatLine, processMessageHtml, refreshLogHighlights, handleLogPointerDown, handleLogPointerUp, s.selectedObjectIds, s.toggleObjectSelection, s.clearObjectSelection]);
 
     // Reset mending mode when drawer closes
     useEffect(() => {

@@ -32,6 +32,7 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
         handleMoveConfirmed,
         handleMoveFailure,
         handleCenterOnPlayer: options.onRecenter,
+        triggerRender: options.triggerRender || contextTriggerRender,
         stableRoomIdRef: currentRoomIdRef,
         stableRoomsRef: roomsRef,
         preloadedCoordsRef,
