@@ -157,7 +157,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             {/* Desktop Edge Tabs */}
             <div
                 className={`desktop-edge-tab left ${ui.drawer === 'stats' ? 'active' : ''} ${ui.peekingDrawer === 'stats' ? 'peeking' : ''}`}
-                style={{ top: '40%' }}
+                style={{ top: '25%' }}
                 onClick={() => handleTabClick('stats')}
                 title="Combat Statistics"
             >
@@ -177,7 +177,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 
             <div
                 className={`desktop-edge-tab right ${ui.drawer === 'equipment' ? 'active' : ''} ${ui.peekingDrawer === 'equipment' ? 'peeking' : ''}`}
-                style={{ top: '30%' }}
+                style={{ top: '25%' }}
                 onClick={() => handleTabClick('equipment')}
                 onDragOver={(e) => {
                     e.preventDefault();
@@ -209,7 +209,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 
             <div
                 className={`desktop-edge-tab right ${ui.drawer === 'inventory' ? 'active' : ''} ${ui.peekingDrawer === 'inventory' ? 'peeking' : ''}`}
-                style={{ top: '40%' }}
+                style={{ top: '45%' }}
                 onClick={() => handleTabClick('inventory')}
                 onDragOver={(e) => {
                     e.preventDefault();
@@ -245,8 +245,8 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 
             <div
                 id="drawer-tab-map"
-                className={`desktop-edge-tab left ${ui.mapExpanded ? 'active' : ''} ${ui.peekingDrawer === 'map' ? 'peeking' : ''}`}
-                style={{ top: '60%' }}
+                className={`desktop-bottom-tab ${ui.mapExpanded ? 'active' : ''} ${ui.peekingDrawer === 'map' ? 'peeking' : ''}`}
+                style={{ left: 'calc(50vw - 450px - 110px)' }}
                 onClick={() => setUI(prev => ({ ...prev, mapExpanded: !prev.mapExpanded, peekingSource: 'none' }))}
                 title="Map View"
             >
@@ -255,10 +255,10 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             </div>
 
             <div
-                className={`desktop-edge-tab right ${ui.drawer === 'players' ? 'active' : ''} ${ui.peekingDrawer === 'players' ? 'peeking' : ''}`}
-                style={{ top: '55%' }}
-                onClick={() => handleTabClick('players')}
-                title="Players"
+                className={`desktop-edge-tab left ${ui.drawer === 'players' ? 'active' : ''} ${ui.peekingDrawer === 'players' ? 'peeking' : ''}`}
+                style={{ top: '45%' }}
+                onClick={() => setUI(prev => ({ ...prev, drawer: prev.drawer === 'players' ? 'none' : 'players', peekingSource: 'none' }))}
+                title="Players & Group"
             >
                 <Users className="tab-icon" />
                 <span className="tab-text">Players</span>

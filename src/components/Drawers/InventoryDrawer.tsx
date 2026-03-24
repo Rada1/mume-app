@@ -4,11 +4,9 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { useGame, useUI } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
-import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
-import { useItemDrawerInteractions } from '../../hooks/useItemDrawerInteractions';
+import { getCategoryForName } from '../../utils/categorizationUtils';
 
 interface InventoryDrawerProps {
     isOpen: boolean;
@@ -30,47 +28,18 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     onClose,
     triggerHaptic,
     inventoryLines,
-    handleButtonClick,
     executeCommand,
-    pendingDrawerContainerRef,
-    inlineCategories = [],
     entities,
     keywordOverrides
 }) => {
-    const { applyOptimisticChange } = useGame() as any;
-    const { setUI, ui, setPopoverState, popoverState } = useUI();
+    const { 
+        handleLogPointerDown, 
+        handleLogPointerUp, 
+        handleLogClick, 
+        selectedObjectIds,
+        clearObjectSelection 
+    } = useGame();
     const drawerRef = React.useRef<HTMLDivElement>(null);
-    const [expandedContainers, setExpandedContainers] = React.useState<Set<string>>(new Set());
-
-    // --- Consolidated Interaction Logic ---
-    const {
-        handlePointerDown,
-        draggedItem,
-        selectedItems,
-        isSelectMode,
-        primedItemId,
-        exitSelectMode,
-        ghostRef,
-        executeActionForSelected,
-        setSelectedItems
-    } = useItemDrawerInteractions({
-        drawerType: 'inventory',
-        lines: inventoryLines,
-        drawerRef,
-        isOpen,
-        onClose,
-        setUI,
-        ui,
-        executeCommand,
-        triggerHaptic,
-        applyOptimisticChange,
-        entities,
-        popoverState,
-        setPopoverState,
-        keywordOverrides
-    });
-
-    // --- Local Handlers ---
 
     const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault(); e.stopPropagation();
@@ -88,7 +57,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             const target = document.elementFromPoint(e.clientX, e.clientY);
             const targetBtn = target?.closest('.inline-btn.auto-item');
             const isTargetContainer = targetBtn?.classList.contains('is-container');
-            const targetName = targetBtn?.getAttribute('data-item-name');
+            const targetName = targetBtn?.getAttribute('data-context');
 
             triggerHaptic(60);
             if (isTargetContainer && targetName) {
@@ -100,155 +69,161 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
         }
     };
 
+    const onPointerDownInternal = (e: React.PointerEvent) => {
+        const target = e.target as HTMLElement;
+        const container = e.currentTarget as HTMLElement;
+        if (target.closest('.inline-btn')) {
+            handleLogPointerDown(e);
+            return;
+        }
+        container.dataset.swipeX = e.clientX.toString();
+        container.dataset.swipeY = e.clientY.toString();
+        container.setPointerCapture(e.pointerId);
+    };
+
+    const onPointerUpInternal = (e: React.PointerEvent) => {
+        const target = e.target as HTMLElement;
+        const container = e.currentTarget as HTMLElement;
+        if (target.closest('.inline-btn')) {
+            handleLogPointerUp(e);
+            return;
+        }
+        const sx = parseFloat(container.dataset.swipeX || "0");
+        const sy = parseFloat(container.dataset.swipeY || "0");
+        if (sx && sy) {
+            const deltaX = e.clientX - sx;
+            const deltaY = e.clientY - sy;
+            const absX = Math.abs(deltaX);
+            const absY = Math.abs(deltaY);
+            if ((deltaY > 50 && absY > absX) || (deltaX > 50 && absX > absY)) {
+                onClose();
+            }
+        }
+        delete container.dataset.swipeX;
+        delete container.dataset.swipeY;
+    };
+
+    const onClickInternal = (e: React.MouseEvent) => {
+        const target = e.target as HTMLElement;
+        const btn = target.closest('.inline-btn') as HTMLElement;
+        if (btn) {
+            handleLogClick(e);
+        } else {
+            if (selectedObjectIds.size > 0) clearObjectSelection();
+        }
+    };
+
+    const renderLine = (line: DrawerLine) => {
+        const depth = line.depth || 0;
+        const fullId = `inventorylist:${line.entityId || line.id}:${line.context || line.id}`;
+        const isSelected = selectedObjectIds.has(fullId);
+        const itemBrown = 'rgba(180, 100, 50, 0.9)';
+
+        if (line.isItem) {
+            const conditionRegex = /\s?\((flawless|well-maintained|worn|scratched|damaged|beaten|battered|beaten and battered|shabby|sub-standard|poor|fragmented|broken|shattered)\)/gi;
+            const cleanedText = line.text.replace(conditionRegex, '').trim();
+            const displayName = cleanedText.includes(' (') ? cleanedText.split(' (')[0] : cleanedText;
+            const extraInfo = cleanedText.includes(' (') ? cleanedText.split(' (')[1] : null;
+
+            const cat = getCategoryForName(line.text);
+            const isActuallyContainer = line.isContainer || cat === 'inline-containers';
+
+            return (
+                <div key={line.id} style={{ display: 'flex', flexDirection: 'column', marginLeft: `${depth * 8}px`, marginBottom: '1px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', minHeight: '22px' }}>
+                        {line.prefixHtml && (
+                            <span 
+                                className="drawer-line-prefix"
+                                dangerouslySetInnerHTML={{ __html: line.prefixHtml }}
+                            />
+                        )}
+                        <div
+                            className={`inline-btn auto-item ${isSelected ? 'selected-item' : ''} ${isActuallyContainer ? 'is-container' : ''}`}
+                            data-id={fullId}
+                            data-line-id={line.id}
+                            data-context={line.context || line.id}
+                            data-action="menu"
+                            data-category={cat || undefined}
+                            data-cmd="inline-obj-char"
+                            style={{ 
+                                marginLeft: line.prefixHtml ? '0' : `${depth * 20}px`,
+                                boxShadow: isSelected ? `inset 0 0 12px ${itemBrown}44` : 'none',
+                                borderColor: isSelected ? itemBrown : 'transparent',
+                                '--glow-color': itemBrown,
+                                color: itemBrown,
+                                cursor: 'default'
+                            } as React.CSSProperties}
+                        >
+                            <div className="drawer-item-text-wrapper">
+                                <span className="drawer-item-name" style={{ color: itemBrown }}>{displayName}</span>
+                                {extraInfo && <span className="drawer-item-extra">({extraInfo}</span>}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div key={line.id} className={`drawer-header-line depth-${depth}`} style={{ paddingLeft: `${depth * 8}px` }} dangerouslySetInnerHTML={{ __html: line.html }} />
+        );
+    };
+
     return (
         <div
             ref={drawerRef}
             className={`inventory-drawer log-card-drawer ${isOpen ? 'open' : ''} ${isPeeking ? 'peeking' : ''}`}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
-            onPointerDown={(e) => {
-                const target = e.target as HTMLElement;
-                if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT') return;
-                // Base-layer swipes for closure
-                e.currentTarget.dataset.swipeX = e.clientX.toString();
-                e.currentTarget.dataset.swipeY = e.clientY.toString();
-                e.currentTarget.setPointerCapture(e.pointerId);
-            }}
-            onPointerUp={(e) => {
-                const sx = parseFloat(e.currentTarget.dataset.swipeX || "0");
-                const sy = parseFloat(e.currentTarget.dataset.swipeY || "0");
-                if (sx && sy) {
-                    const deltaY = e.clientY - sy;
-                    const deltaX = Math.abs(e.clientX - sx);
-                    if (deltaY > 50 && deltaY > deltaX) {
-                        exitSelectMode();
-                        onClose();
-                    } else if (isSelectMode) {
-                        const target = e.target as HTMLElement;
-                        if (!target.closest('.auto-item') && !target.closest('.select-mode-bar')) exitSelectMode();
-                    }
-                }
-                delete e.currentTarget.dataset.swipeX;
-                delete e.currentTarget.dataset.swipeY;
-            }}
+            onPointerDown={onPointerDownInternal}
+            onPointerUp={onPointerUpInternal}
+            onPointerCancel={onPointerUpInternal}
+            onClick={onClickInternal}
         >
-            {draggedItem && ReactDOM.createPortal(
-                <div
-                    ref={ghostRef}
-                    className="drag-ghost"
-                    style={{ left: draggedItem.x, top: draggedItem.y, pointerEvents: 'none' }}
-                >
-                    {(() => {
-                        const label = draggedItem.commandLabel ?? draggedItem.line.text;
-                        const noun = draggedItem.itemNoun;
-                        if (!noun) return <>{label}</>;
-                        const idx = label.indexOf(noun);
-                        if (idx === -1) return <>{label}</>;
-                        return <>
-                            {label.slice(0, idx)}
-                            <span style={{ color: 'rgb(175,255,255)', fontWeight: 'bold' }}>{noun}</span>
-                            {label.slice(idx + noun.length)}
-                        </>;
-                    })()}
-                </div>,
-                document.body
-            )}
-            
-            {isSelectMode && (
-                <div className="select-mode-bar">
-                    <span className="select-count">{selectedItems.size} selected</span>
-                    <button className="select-action-btn" onClick={() => executeActionForSelected('drop')}>Drop</button>
-                    <button className="select-action-btn" onClick={() => executeActionForSelected('wear')}>Equip</button>
-                    <button className="select-action-btn" onClick={() => executeActionForSelected('get')}>Get</button>
-                    <button className="select-action-btn select-cancel-btn" onClick={exitSelectMode}>✕ Cancel</button>
-                </div>
-            )}
-            <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
+            <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', padding: '12px 15px' }}>
                 <div className="drawer-section" data-drawer-section="inventorylist">
-                    <div className="drawer-section-drop-zone" style={{ display: 'flex', alignItems: 'center' }}>
-                        <span>Inventory</span>
-                        <span className="drop-hint">drop items here</span>
+                    <div className="drawer-header" style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '12px 20px',
+                        background: 'rgba(10, 13, 21, 0.65)',
+                        backdropFilter: 'blur(25px)',
+                        WebkitBackdropFilter: 'blur(25px)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '16px',
+                        margin: '0 0 15px 0',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                        pointerEvents: 'auto',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontWeight: '900', fontSize: '0.75rem', letterSpacing: '1.5px', color: '#ffffff', textTransform: 'uppercase' }}>Inventory</span>
+                        </div>
                         <button 
                             onPointerDown={(e) => e.stopPropagation()}
-                            onClick={() => { triggerHaptic(20); exitSelectMode(); onClose(); }} 
-                            className="drawer-close-btn"
+                            onClick={() => { triggerHaptic(20); onClose(); }} 
+                            style={{ 
+                                background: 'rgba(255,255,255,0.08)', 
+                                border: 'none', 
+                                color: '#fff', 
+                                width: '30px', 
+                                height: '30px', 
+                                borderRadius: '15px', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center', 
+                                fontSize: '1rem', 
+                                cursor: 'pointer'
+                            }}
                         >✕</button>
                     </div>
                     {inventoryLines.length === 0 ? (
                         <div className="drawer-empty-state">Inventory is currently empty</div>
                     ) : (                     
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-                            {(() => {
-                                const visibleLines: DrawerLine[] = [];
-                                const collapsedDepths: Set<number> = new Set();
-                                for (const line of inventoryLines) {
-                                    const depth = line.depth || 0;
-                                    Array.from(collapsedDepths).forEach(d => { if (d >= depth) collapsedDepths.delete(d); });
-                                    if (collapsedDepths.size > 0) continue;
-                                    visibleLines.push(line);
-                                    if (line.isContainer && !expandedContainers.has(line.id)) collapsedDepths.add(depth);
-                                }
-                                return visibleLines.map(line => {
-                                    const isPrimed = primedItemId === line.id;
-                                    const isSelected = selectedItems.has(line.id);
-                                    const depth = line.depth || 0;
-                                    const isExpanded = expandedContainers.has(line.id);
-                                    const cat = getCategoryForName(line.text);
-                                    const glowColor = getGlowColorForCategory(cat);
-
-                                    return (
-                                        <div key={line.id} style={{ display: 'flex', flexDirection: 'column', marginLeft: `${depth * 8}px`, marginBottom: '1px' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', minHeight: '22px' }}>
-                                                {line.prefixHtml && (
-                                                    <span 
-                                                        className="drawer-line-prefix"
-                                                        dangerouslySetInnerHTML={{ __html: line.prefixHtml }}
-                                                    />
-                                                )}
-                                                <div
-                                                    className={`inline-btn auto-item ${isPrimed ? 'primed' : ''} ${isSelected ? 'selected-item' : ''} ${line.isContainer ? 'is-container' : ''}`}
-                                                    data-item-name={line.context || line.id}
-                                                    data-id={line.entityId || ''}
-                                                    onPointerDown={(e) => handlePointerDown(e, line)}
-                                                    onPointerUp={(e) => {
-                                                        if (isSelectMode) {
-                                                            const newSet = new Set(selectedItems);
-                                                            if (newSet.has(line.id)) newSet.delete(line.id);
-                                                            else newSet.add(line.id);
-                                                            setSelectedItems(new Set(newSet));
-                                                            triggerHaptic(20);
-                                                            if (newSet.size === 0) exitSelectMode();
-                                                            return;
-                                                        }
-                                                        if (line.isContainer) {
-                                                            triggerHaptic(20);
-                                                            setExpandedContainers(prev => {
-                                                                const next = new Set(prev);
-                                                                if (next.has(line.id)) next.delete(line.id);
-                                                                else {
-                                                                    next.add(line.id);
-                                                                    if (pendingDrawerContainerRef) pendingDrawerContainerRef.current = { containerId: line.context || line.id, cmd: 'inventorylist', afterId: line.id };
-                                                                    executeCommand(`look in ${line.context || line.id}`, true, true);
-                                                                }
-                                                                return next;
-                                                            });
-                                                        } else {
-                                                             handleButtonClick({ setId: 'inline-obj-char', display: 'floating', entityId: line.entityId } as any, e as any, line.context || line.id, false, line.parentItemNoun);
-                                                        }
-                                                    }}
-                                                    style={{ 
-                                                        marginLeft: line.prefixHtml ? '0' : `${depth * 20}px`,
-                                                        boxShadow: isSelected ? `inset 0 0 12px ${glowColor}44` : 'none',
-                                                        borderColor: isSelected ? glowColor : 'transparent'
-                                                    }}
-                                                >
-                                                    <span dangerouslySetInnerHTML={{ __html: line.html }} />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                });
-                            })()}
+                            {inventoryLines.map(line => renderLine(line))}
                         </div>
                     )}
                 </div>

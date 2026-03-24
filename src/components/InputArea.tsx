@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { MessageCircle, Reply, Repeat } from 'lucide-react';
+import { MessageCircle, Reply, Repeat, XCircle } from 'lucide-react';
 import { SpatButtons } from './SpatButtons';
 import { SpatButton, PopoverState } from '../types';
 import { useUI, useBaseGame, useVitals, useGame } from '../context/GameContext';
@@ -74,16 +74,20 @@ const InputArea: React.FC<InputAreaProps> = ({
                 const absX = Math.abs(dx);
                 const absY = Math.abs(dy);
 
-                setOffset({
-                    x: absX > absY ? Math.max(-40, Math.min(40, dx)) : 0,
-                    y: absY > absX ? Math.max(-20, Math.min(20, dy)) : 0
-                });
+                // Full circular visual feedback (30px radius)
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const maxDist = 30;
+                const ox = dist > maxDist ? (dx / dist) * maxDist : dx;
+                const oy = dist > maxDist ? (dy / dist) * maxDist : dy;
+                setOffset({ x: ox, y: oy });
 
-                if (Math.max(absX, absY) > 20) {
+                if (dist > 20) {
                     let peek: any = 'none';
-                    if (dx < -15 && dy > 15) peek = 'inventory';
-                    else if (dx > 15 && dy < -15) peek = 'players';
-                    else if (absY > absX) peek = dy < 0 ? 'map' : 'character';
+                    if (dx < -15 && dy < -15) peek = 'inventory'; // NW -> reveal SE
+                    else if (dx > 15 && dy < -15) peek = 'stats'; // NE -> reveal SW
+                    else if (dx < -15 && dy > 15) peek = 'equipment'; // SW -> reveal NE
+                    else if (dx > 15 && dy > 15) peek = 'players'; // SE -> reveal NW
+                    else if (Math.abs(dy) > Math.abs(dx)) peek = dy < 0 ? 'map' : 'character';
                     else peek = dx < 0 ? 'equipment' : 'stats';
                     
                     if (ui.peekingDrawer !== peek) {
@@ -104,14 +108,12 @@ const InputArea: React.FC<InputAreaProps> = ({
 
                 // High sensitivity threshold (35px) for quick flicks
                 if (Math.max(absX, absY) > 35) {
-                    // Detect Southwest (Left and Down)
-                    if (deltaX < -25 && deltaY > 25) {
-                        onSwipe?.('sw');
-                    } else if (absY > absX) {
-                        onSwipe?.(deltaY < 0 ? 'up' : 'down');
-                    } else {
-                        onSwipe?.(deltaX < 0 ? 'left' : 'right');
-                    }
+                    if (deltaX < -25 && deltaY > 25) onSwipe?.('sw');
+                    else if (deltaX > 25 && deltaY < -25) onSwipe?.('ne');
+                    else if (deltaX > 25 && deltaY > 25) onSwipe?.('se');
+                    else if (deltaX < -25 && deltaY < -25) onSwipe?.('nw');
+                    else if (absY > absX) onSwipe?.(deltaY < 0 ? 'up' : 'down');
+                    else onSwipe?.(deltaX < 0 ? 'left' : 'right');
                 }
             }
             isSwiping.current = false;
@@ -258,16 +260,19 @@ const InputArea: React.FC<InputAreaProps> = ({
                     const absX = Math.abs(dx);
                     const absY = Math.abs(dy);
 
-                    // Limit the visual shift for subtle feedback
-                    setOffset({
-                        x: Math.abs(dx) > Math.abs(dy) ? Math.max(-40, Math.min(40, dx)) : 0,
-                        y: Math.abs(dy) > Math.abs(dx) ? Math.max(-20, Math.min(20, dy)) : 0
-                    });
+                    // Full circular visual feedback (30px radius)
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const maxDist = 30;
+                    const ox = dist > maxDist ? (dx / dist) * maxDist : dx;
+                    const oy = dist > maxDist ? (dy / dist) * maxDist : dy;
+                    setOffset({ x: ox, y: oy });
 
                     if (Math.max(absX, absY) > 20) {
                         let peek: any = 'none';
-                        if (dx < -15 && dy > 15) peek = 'inventory';
-                        else if (dx > 15 && dy < -15) peek = 'players';
+                        if (dx < -15 && dy < -15) peek = 'inventory'; // NW -> reveal SE
+                        else if (dx > 15 && dy < -15) peek = 'stats'; // NE -> reveal SW
+                        else if (dx < -15 && dy > 15) peek = 'equipment'; // SW -> reveal NE
+                        else if (dx > 15 && dy > 15) peek = 'players'; // SE -> reveal NW
                         else if (absY > absX) peek = dy < 0 ? 'map' : 'character';
                         else peek = dx < 0 ? 'equipment' : 'stats';
                         
@@ -291,20 +296,14 @@ const InputArea: React.FC<InputAreaProps> = ({
                     const absY = Math.abs(deltaY);
 
                     // High sensitivity threshold (35px) for quick flicks
-                    if (Math.max(absX, absY) > 35) {
-                        // Detect Southwest (Left and Down)
-                        if (deltaX < -25 && deltaY > 25) {
-                            onSwipe?.('sw');
-                        } 
-                        // Detect Northeast (Right and Up)
-                        else if (deltaX > 25 && deltaY < -25) {
-                            onSwipe?.('ne');
-                        }
-                        else if (absY > absX) {
-                            onSwipe?.(deltaY < 0 ? 'up' : 'down');
-                        } else {
-                            onSwipe?.(deltaX < 0 ? 'left' : 'right');
-                        }
+                    const deltaDist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                    if (deltaDist > 35) {
+                        if (deltaX < -25 && deltaY > 25) onSwipe?.('sw');
+                        else if (deltaX > 25 && deltaY < -25) onSwipe?.('ne');
+                        else if (deltaX > 25 && deltaY > 25) onSwipe?.('se');
+                        else if (deltaX < -25 && deltaY < -25) onSwipe?.('nw');
+                        else if (Math.abs(deltaY) > Math.abs(deltaX)) onSwipe?.(deltaY < 0 ? 'up' : 'down');
+                        else onSwipe?.(deltaX < 0 ? 'left' : 'right');
                     }
                     startPos.current = null;
                 }
@@ -320,185 +319,207 @@ const InputArea: React.FC<InputAreaProps> = ({
             }}
             onDrop={handleNativeDrop}
             style={{
-                touchAction: 'none',
-                transform: `translate3d(${offset.x}px, ${offset.y}px, 0)`,
-                transition: isSwiping.current ? 'none' : 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
+                touchAction: 'none'
             }}
         >
-            <div className={`input-main-container${commandPreview ? ' command-preview-active' : ''}`}>
-                <div className="swipe-handle" style={{
-                    position: 'absolute',
-                    top: '4px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    width: '40px',
-                    height: '4px',
-                    background: 'var(--text-faded, rgba(255, 255, 255, 0.2))',
-                    borderRadius: '2px',
-                    pointerEvents: 'none'
-                }} />
-                <form className="input-form" onSubmit={onSend}>
-                    <span className="cmd-prompt">{'>'}</span>
-                    
-
-
-                    {parley.active && (() => {
-                        const isTargetless = TARGETLESS_COMMANDS.includes(parley.command);
+            <div 
+                className="input-floating-wrapper"
+                style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    gap: '12px',
+                    alignItems: 'flex-end',
+                    width: '100%',
+                    transform: `translate3d(${offset.x}px, ${offset.y}px, 0)`,
+                    transition: isSwiping.current ? 'none' : 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                    willChange: 'transform'
+                }}
+            >
+                <div className={`input-main-container${commandPreview ? ' command-preview-active' : ''}`}>
+                    <div className="swipe-handle" style={{
+                        position: 'absolute',
+                        top: '4px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        width: '40px',
+                        height: '4px',
+                        background: 'var(--text-faded, rgba(255, 255, 255, 0.2))',
+                        borderRadius: '2px',
+                        pointerEvents: 'none'
+                    }} />
+                    <form className="input-form" onSubmit={onSend}>
+                        <span className="cmd-prompt">{'>'}</span>
                         
-                        const PARLEY_COLORS: Record<string, string> = {
-                            tell: '#22c55e',    // green
-                            whisper: '#22c55e', // also green often
-                            say: '#06b6d4',     // cyan
-                            yell: '#a855f7',    // purple
-                            shout: '#ef4444',   // red often? User didn't ask but good to have
-                            narrate: '#eab308', // yellow
-                            sing: '#f472b6'     // pink?
-                        };
-                        const commandColor = PARLEY_COLORS[parley.command.toLowerCase()] || 'inherit';
+                        {parley.active && (() => {
+                            const isTargetless = TARGETLESS_COMMANDS.includes(parley.command);
+                            
+                            const PARLEY_COLORS: Record<string, string> = {
+                                tell: '#22c55e',    // green
+                                whisper: '#22c55e', // also green often
+                                say: '#06b6d4',     // cyan
+                                yell: '#a855f7',    // purple
+                                shout: '#ef4444',   // red often? User didn't ask but good to have
+                                narrate: '#eab308', // yellow
+                                sing: '#f472b6'     // pink?
+                            };
+                            const commandColor = PARLEY_COLORS[parley.command.toLowerCase()] || 'inherit';
 
-                        return (
-                            <div className="parley-indicator-container">
-                                <div 
-                                    className="parley-indicator parley-command" 
-                                    onClick={handleParleyCommandClick}
-                                    style={{ color: commandColor, borderColor: commandColor !== 'inherit' ? commandColor : undefined }}
-                                >
-                                    {parley.command}
+                            return (
+                                <div className="parley-indicator-container">
+                                    <div 
+                                        className="parley-indicator parley-command" 
+                                        onClick={handleParleyCommandClick}
+                                        style={{ color: commandColor, borderColor: commandColor !== 'inherit' ? commandColor : undefined }}
+                                    >
+                                        {parley.command}
+                                    </div>
+                                    <div
+                                        className="parley-indicator parley-target"
+                                        onClick={handleParleyTargetClick}
+                                        title={isTargetless ? 'This command has no target' : undefined}
+                                    >
+                                        {isTargetless ? '' : (parley.target ?? '')}
+                                    </div>
+                                    <button 
+                                        type="button"
+                                        className="parley-clear-btn" 
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            handleParleyClear();
+                                        }}
+                                    >
+                                        ×
+                                    </button>
                                 </div>
-                                <div
-                                    className="parley-indicator parley-target"
-                                    onClick={handleParleyTargetClick}
-                                    title={isTargetless ? 'This command has no target' : undefined}
-                                >
-                                    {isTargetless ? '' : (parley.target ?? '')}
+                            );
+                        })()}
+                        <div 
+                            onClick={() => inputRef.current?.focus()}
+                            style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', cursor: 'text' }}
+                        >
+                            {commandPreview && !input && (
+                                <div style={{
+                                    position: 'absolute',
+                                    left: '0',
+                                    color: 'var(--accent)',
+                                    opacity: 0.9,
+                                    fontWeight: '500',
+                                    pointerEvents: 'none',
+                                    fontFamily: 'inherit',
+                                    fontSize: 'inherit',
+                                    padding: '0',
+                                    marginLeft: '0'
+                                }}>
+                                    {commandPreview}
                                 </div>
-                                <button 
-                                    type="button"
-                                    className="parley-clear-btn" 
-                                    onClick={(e) => {
+                            )}
+                            <textarea
+                                ref={inputRef}
+                                className="input-field"
+                                value={input}
+                                rows={1}
+                                onChange={(e) => {
+                                    setInput(e.target.value);
+                                    // Auto-resize logic
+                                    const target = e.target as HTMLTextAreaElement;
+                                    target.style.height = 'auto';
+                                    target.style.height = `${target.scrollHeight}px`;
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
                                         e.preventDefault();
-                                        e.stopPropagation();
-                                        handleParleyClear();
-                                    }}
-                                >
-                                    ×
-                                </button>
-                            </div>
-                        );
-                    })()}
-                    <div 
-                        onClick={() => inputRef.current?.focus()}
-                        style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', cursor: 'text' }}
-                    >
-                        {commandPreview && !input && (
-                            <div style={{
-                                position: 'absolute',
-                                left: '0',
-                                color: 'var(--accent)',
-                                opacity: 0.9,
-                                fontWeight: '500',
-                                pointerEvents: 'none',
-                                fontFamily: 'inherit',
-                                fontSize: 'inherit',
-                                padding: '0',
-                                marginLeft: '0'
-                            }}>
-                                {commandPreview}
-                            </div>
+                                        onSend();
+                                    }
+                                }}
+                                onFocus={(e) => {
+                                    // Clear startPos on focus to prevent the 'keyboard pop-up' 
+                                    // from being detected as a swipe-up.
+                                    startPos.current = null;
+                                    e.currentTarget.parentElement?.parentElement?.classList.add('focused');
+                                }}
+                                onBlur={(e) => {
+                                    e.currentTarget.parentElement?.parentElement?.classList.remove('focused');
+                                }}
+                                onClick={(e) => {
+                                    if (isMobile && inputRef.current) {
+                                        inputRef.current.focus();
+                                    }
+                                }}
+                                placeholder={commandPreview ? "" : "Enter command..."}
+                            />
+                        </div>
+
+                        <button type="submit" style={{ display: 'none' }}>Send</button>
+                    </form>
+
+                    <div className="input-actions-container">
+                        {shouldShowSpat && (
+                            <SpatButtons
+                                spatButtons={spatButtons}
+                                isMobile={!!isMobile}
+                                isKeyboardOpen={isKeyboardOpen}
+                                setActiveSet={setActiveSet}
+                                executeCommand={executeCommand}
+                                setSpatButtons={setSpatButtons}
+                                setPopoverState={setPopoverState}
+                                playClickSound={playClickSound}
+                                triggerHaptic={triggerHaptic}
+                                initAudio={initAudio}
+                                isSoundEnabled={isSoundEnabled}
+                            />
                         )}
-                        <textarea
-                            ref={inputRef}
-                            className="input-field"
-                            value={input}
-                            rows={1}
-                            onChange={(e) => {
-                                setInput(e.target.value);
-                                // Auto-resize logic
-                                const target = e.target as HTMLTextAreaElement;
-                                target.style.height = 'auto';
-                                target.style.height = `${target.scrollHeight}px`;
-                            }}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                    e.preventDefault();
-                                    onSend();
-                                }
-                            }}
-                            onFocus={(e) => {
-                                // Clear startPos on focus to prevent the 'keyboard pop-up' 
-                                // from being detected as a swipe-up.
-                                startPos.current = null;
-                                e.currentTarget.parentElement?.parentElement?.classList.add('focused');
-                            }}
-                            onBlur={(e) => {
-                                e.currentTarget.parentElement?.parentElement?.classList.remove('focused');
-                            }}
-                            onClick={(e) => {
-                                if (isMobile && inputRef.current) {
-                                    inputRef.current.focus();
-                                }
-                            }}
-                            placeholder={commandPreview ? "" : "Enter command..."}
-                        />
+
+                        <button
+                            type="button"
+                            className="msg-repeat-btn"
+                            onClick={() => executeCommand('!', false, false, true)}
+                            onPointerDown={(e) => e.stopPropagation()}
+                            title="Repeat Last Command (!)"
+                        >
+                            <Repeat size={18} />
+                        </button>
+
+                        {vitalsStats.conditions?.waiting && (
+                            <button
+                                type="button"
+                                className="msg-cancel-btn"
+                                onClick={() => executeCommand('', false, false, false)}
+                                onPointerDown={(e) => e.stopPropagation()}
+                                title="Cancel Current Action (Send Newline)"
+                            >
+                                <XCircle size={18} />
+                            </button>
+                        )}
                     </div>
-
-                    <button type="submit" style={{ display: 'none' }}>Send</button>
-                </form>
-
-                <div className="input-actions-container">
-                    {shouldShowSpat && (
-                        <SpatButtons
-                            spatButtons={spatButtons}
-                            isMobile={!!isMobile}
-                            isKeyboardOpen={isKeyboardOpen}
-                            setActiveSet={setActiveSet}
-                            executeCommand={executeCommand}
-                            setSpatButtons={setSpatButtons}
-                            setPopoverState={setPopoverState}
-                            playClickSound={playClickSound}
-                            triggerHaptic={triggerHaptic}
-                            initAudio={initAudio}
-                            isSoundEnabled={isSoundEnabled}
-                        />
-                    )}
-
-                    <button
-                        type="button"
-                        className="msg-repeat-btn"
-                        onClick={() => executeCommand('!', false, false, true)}
-                        onPointerDown={(e) => e.stopPropagation()}
-                        title="Repeat Last Command (!)"
-                    >
-                        <Repeat size={18} />
-                    </button>
                 </div>
-            </div>
 
-            <div className="input-vitals-dock" style={{ position: 'relative' }}>
-                {isMobile && isKeyboardOpen && !parley.active && (
-                    <button
-                        type="button"
-                        className="mobile-parley-toggle"
-                        onPointerDown={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setParley(prev => ({ ...prev, active: true }));
-                            // Re-focus the textarea so the keyboard stays open.
-                            // Use rAF to let the button unmount first, then focus.
-                            requestAnimationFrame(() => inputRef.current?.focus());
-                        }}
-                    >
-                        <MessageCircle size={18} />
-                    </button>
-                )}
-                <XpTicker isLandscape={viewport.isLandscape} />
-                <ModernVitals
-                    stats={vitalsStats}
-                    inCombat={inCombat}
-                    onWimpyChange={handleWimpyChange}
-                    onScoreRefresh={() => executeCommand('score')}
-                    triggerHaptic={triggerHaptic}
-                />
+                <div className="input-vitals-dock" style={{ position: 'relative' }}>
+                    {isMobile && isKeyboardOpen && !parley.active && (
+                        <button
+                            type="button"
+                            className="mobile-parley-toggle"
+                            onPointerDown={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setParley(prev => ({ ...prev, active: true }));
+                                // Re-focus the textarea so the keyboard stays open.
+                                // Use rAF to let the button unmount first, then focus.
+                                requestAnimationFrame(() => inputRef.current?.focus());
+                            }}
+                        >
+                            <MessageCircle size={18} />
+                        </button>
+                    )}
+                    <XpTicker isLandscape={viewport.isLandscape} />
+                    <ModernVitals
+                        stats={vitalsStats}
+                        inCombat={inCombat}
+                        onWimpyChange={handleWimpyChange}
+                        onScoreRefresh={() => executeCommand('score')}
+                        triggerHaptic={triggerHaptic}
+                    />
+                </div>
             </div>
         </div>
     );

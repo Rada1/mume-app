@@ -26,13 +26,6 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
     const executeCommand = contextExecuteCommand || propsExecuteCommand;
     
     const practiceData = practice.practiceData;
-
-    // Inline editing states
-    const [isEditingDescription, setIsEditingDescription] = useState(false);
-    const [tempDescription, setTempDescription] = useState('');
-    
-    const [isEditingWhois, setIsEditingWhois] = useState(false);
-    const [tempWhois, setTempWhois] = useState('');
     
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [tempTitle, setTempTitle] = useState('');
@@ -42,24 +35,12 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
 
     useEffect(() => {
         if (isOpen && characterInfo) {
-            if (!isEditingDescription) setTempDescription(characterInfo.description || '');
-            if (!isEditingWhois) setTempWhois(characterInfo.whois || '');
             if (!isEditingTitle) setTempTitle(characterInfo.name || '');
         }
-    }, [isOpen, characterInfo, isEditingDescription, isEditingWhois, isEditingTitle]);
+    }, [isOpen, characterInfo, isEditingTitle]);
 
     const [isSelectingClass, setIsSelectingClass] = useState(false);
     const classes = ['Adventurer', 'Apprentice', 'Pilferer', 'Recruit', 'Sentry'];
-
-    const handleSaveDescription = () => {
-        executeCommand(`change description ${tempDescription}`);
-        setIsEditingDescription(false);
-    };
-
-    const handleSaveWhois = () => {
-        executeCommand(`change whois ${tempWhois}`);
-        setIsEditingWhois(false);
-    };
 
     const handleSaveTitle = () => {
         executeCommand(`change title ${tempTitle}`);
@@ -107,10 +88,13 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                 }}
                 onPointerUp={(e) => {
                     if (swipePos.current) {
+                        const deltaX = e.clientX - swipePos.current.x;
                         const deltaY = e.clientY - swipePos.current.y;
-                        const deltaX = Math.abs(e.clientX - swipePos.current.x);
-                        // Swipe down to close
-                        if (deltaY > 50 && deltaY > deltaX) {
+                        const absX = Math.abs(deltaX);
+                        const absY = Math.abs(deltaY);
+
+                        // Swipe down OR swipe right to close
+                        if ((deltaY > 50 && absY > absX) || (deltaX > 40 && absX > absY)) {
                             onClose();
                         }
                     }
@@ -218,19 +202,19 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                             <div className="stats-grid">
                                 <div className="stat-card gold info-section-glass">
                                     <div className="stat-label"><Coins size={14} /> Gold</div>
-                                    <div className="stat-value">{formatNumber(info.gold)}</div>
+                                    <div className="stat-value" style={{ color: '#4ade80' }}>{formatNumber(info.gold)}</div>
                                 </div>
                                 
                                 <div className="base-stats-section info-section-glass">
                                     <h3>Base Stats</h3>
                                     <div className="base-stats-grid">
-                                        <div className="base-stat-item"><span>Str</span> {info.stats?.str || 0}</div>
-                                        <div className="base-stat-item"><span>Int</span> {info.stats?.int || 0}</div>
-                                        <div className="base-stat-item"><span>Wis</span> {info.stats?.wis || 0}</div>
-                                        <div className="base-stat-item"><span>Dex</span> {info.stats?.dex || 0}</div>
-                                        <div className="base-stat-item"><span>Con</span> {info.stats?.con || 0}</div>
-                                        <div className="base-stat-item"><span>Wil</span> {info.stats?.wil || 0}</div>
-                                        <div className="base-stat-item"><span>Per</span> {info.stats?.per || 0}</div>
+                                        <div className="base-stat-item"><span>Str</span> <strong style={{ color: '#4ade80' }}>{info.stats?.str || 0}</strong></div>
+                                        <div className="base-stat-item"><span>Int</span> <strong style={{ color: '#4ade80' }}>{info.stats?.int || 0}</strong></div>
+                                        <div className="base-stat-item"><span>Wis</span> <strong style={{ color: '#4ade80' }}>{info.stats?.wis || 0}</strong></div>
+                                        <div className="base-stat-item"><span>Dex</span> <strong style={{ color: '#4ade80' }}>{info.stats?.dex || 0}</strong></div>
+                                        <div className="base-stat-item"><span>Con</span> <strong style={{ color: '#4ade80' }}>{info.stats?.con || 0}</strong></div>
+                                        <div className="base-stat-item"><span>Wil</span> <strong style={{ color: '#4ade80' }}>{info.stats?.wil || 0}</strong></div>
+                                        <div className="base-stat-item"><span>Per</span> <strong style={{ color: '#4ade80' }}>{info.stats?.per || 0}</strong></div>
                                     </div>
                                 </div>
 
@@ -239,7 +223,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                         <div className="progress-labels">
                                             <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
                                                 <span style={{ color: 'var(--accent)', fontWeight: '800' }}>XP</span>
-                                                <span style={{ fontSize: '0.9rem', color: '#fff' }}>{formatNumber(info.xp)}</span>
+                                                <span style={{ fontSize: '0.9rem', color: '#4ade80', fontWeight: 'bold' }}>{formatNumber(info.xp)}</span>
                                             </div>
                                             <span style={{ fontSize: '0.8rem', opacity: 0.9, fontWeight: '800' }}>{Math.floor((info.xp / (info.xpMax || 1)) * 100)}%</span>
                                         </div>
@@ -255,7 +239,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                         <div className="progress-labels">
                                             <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
                                                 <span style={{ color: '#60a5fa', fontWeight: '800' }}>TP</span>
-                                                <span style={{ fontSize: '0.9rem', color: '#fff' }}>{formatNumber(info.tp)}</span>
+                                                <span style={{ fontSize: '0.9rem', color: '#4ade80', fontWeight: 'bold' }}>{formatNumber(info.tp)}</span>
                                             </div>
                                             <span style={{ fontSize: '0.8rem', opacity: 0.9, fontWeight: '800' }}>{Math.floor((info.tp / (info.tpMax || 1)) * 100)}%</span>
                                         </div>
@@ -267,72 +251,6 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                             <span className="needed-label">Needed: +{formatNumber(Math.max(0, info.tpMax - info.tp))}</span>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-
-                            <div className="details-section">
-                                <div className="section-header">
-                                    <h3>Description</h3>
-                                    {!isEditingDescription && (
-                                        <button className="edit-section-button" onClick={() => setIsEditingDescription(true)}>
-                                            <Edit3 size={12} />
-                                        </button>
-                                    )}
-                                </div>
-                                <div className="description-box">
-                                    {isEditingDescription ? (
-                                        <div className="inline-editor-container">
-                                            <textarea 
-                                                value={tempDescription}
-                                                onChange={(e) => setTempDescription(e.target.value)}
-                                                autoFocus
-                                                rows={4}
-                                            />
-                                            <div className="editor-actions">
-                                                <button className="editor-save-button" onClick={handleSaveDescription}>
-                                                    <Save size={14} />
-                                                </button>
-                                                <button className="editor-cancel-button" onClick={() => setIsEditingDescription(false)}>
-                                                    <RotateCcw size={14} />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        characterInfo.description || <span style={{ opacity: 0.3 }}>No description set...</span>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="details-section" style={{ marginBottom: '20px' }}>
-                                <div className="section-header">
-                                    <h3>Whois</h3>
-                                    {!isEditingWhois && (
-                                        <button className="edit-section-button" onClick={() => setIsEditingWhois(true)}>
-                                            <Edit3 size={12} />
-                                        </button>
-                                    )}
-                                </div>
-                                <div className="whois-box">
-                                    {isEditingWhois ? (
-                                        <div className="inline-editor-container">
-                                            <textarea 
-                                                value={tempWhois}
-                                                onChange={(e) => setTempWhois(e.target.value)}
-                                                autoFocus
-                                                rows={2}
-                                            />
-                                            <div className="editor-actions">
-                                                <button className="editor-save-button" onClick={handleSaveWhois}>
-                                                    <Save size={14} />
-                                                </button>
-                                                <button className="editor-cancel-button" onClick={() => setIsEditingWhois(false)}>
-                                                    <RotateCcw size={14} />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        characterInfo.whois || <span style={{ opacity: 0.3 }}>No whois set...</span>
-                                    )}
                                 </div>
                             </div>
                         </div>

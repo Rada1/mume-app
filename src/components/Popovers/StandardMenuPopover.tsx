@@ -373,23 +373,10 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                         return isValid;
                                     });
                                     if (setIdButtons.length === 0) return null;
-                                    const levelName = setId.replace(/^inline-?|npc/, '').toUpperCase();
                                     const depth = chainIdx;
                                     
                                     return (
                                         <React.Fragment key={setId}>
-                                            <div style={{ 
-                                                padding: '4px 8px', 
-                                                paddingLeft: `${8 + (depth * 16)}px`,
-                                                fontSize: '0.65rem', 
-                                                opacity: 0.4, 
-                                                textTransform: 'uppercase', 
-                                                letterSpacing: '1px', 
-                                                marginTop: chainIdx > 0 ? '8px' : '0',
-                                                borderBottom: '1px solid rgba(255,255,255,0.05)'
-                                            }}>
-                                                {levelName} ACTIONS
-                                            </div>
                                             {setIdButtons.map(b => renderButton(b, depth))}
                                         </React.Fragment>
                                     );

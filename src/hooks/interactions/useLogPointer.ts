@@ -42,13 +42,13 @@ export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.Muta
      */
     const cleanupDrag = useCallback(() => {
         const isMobile = viewport.isMobile;
-        const logEl = document.querySelector('.message-log') as HTMLElement;
-        if (logEl) {
-            logEl.style.userSelect = 'auto';
-            logEl.style.webkitUserSelect = 'auto';
+        const container = document.querySelector('.message-log') as HTMLElement || document.querySelector('.log-card-drawer') as HTMLElement;
+        if (container) {
+            container.style.userSelect = 'auto';
+            container.style.webkitUserSelect = 'auto';
             if (isMobile) {
-                logEl.style.overflow = 'auto';
-                logEl.style.touchAction = 'pan-y';
+                container.style.overflow = 'auto';
+                container.style.touchAction = 'pan-y';
             }
         }
         

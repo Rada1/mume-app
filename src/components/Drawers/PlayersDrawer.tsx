@@ -99,7 +99,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
             onClick={handleBackdropClick}
         >
             <div
-                className={`character-drawer-content log-card-drawer ${isOpen ? 'open' : ''}`}
+                className={`character-drawer-content log-card-drawer left-drawer ${isOpen ? 'open' : ''}`}
                 onClick={(e) => { if (e.target === e.currentTarget) onClose(); else e.stopPropagation(); }}
                 onPointerDown={(e) => {
                     const target = e.target as HTMLElement;
@@ -109,10 +109,13 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                 }}
                 onPointerUp={(e) => {
                     if (swipePos.current) {
+                        const deltaX = e.clientX - swipePos.current.x;
                         const deltaY = e.clientY - swipePos.current.y;
-                        const deltaX = Math.abs(e.clientX - swipePos.current.x);
-                        // Swipe down to close
-                        if (deltaY > 50 && deltaY > deltaX) {
+                        const absX = Math.abs(deltaX);
+                        const absY = Math.abs(deltaY);
+
+                        // Swipe down OR swipe left to close (since it's on the left edge)
+                        if ((deltaY > 50 && absY > absX) || (deltaX < -40 && absX > absY)) {
                             onClose();
                         }
                     }

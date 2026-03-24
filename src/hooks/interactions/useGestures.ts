@@ -9,10 +9,14 @@ export const useGestures = (deps: InteractionDeps) => {
     const handleInputSwipe = (dir: string) => {
         triggerHaptic(20);
         if (dir === 'up') setIsMapExpanded(true);
-        else if (dir === 'ne') {
+        else if (dir === 'se') {
             executeCommand('who', true, true, true, true);
             setTimeout(() => executeCommand('where', true, true, true, true), 150);
             setIsPlayersOpen(true);
+        } else if (dir === 'ne') {
+            setIsStatsOpen(true);
+        } else if (dir === 'nw') {
+            setIsEquipmentOpen(true);
         } else if (dir === 'down') {
             if (ui.mapExpanded) {
                 setIsMapExpanded(false);

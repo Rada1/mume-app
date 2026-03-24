@@ -23,6 +23,7 @@ import { MapperProvider } from './context/MapperContext';
 import { SpatButtons } from './components/SpatButtons';
 import { useSpatButtons } from './hooks/useSpatButtons';
 import SwipeFeedbackOverlay from './components/SwipeFeedbackOverlay';
+import { MultiSelectToolbar } from './components/Popovers/MultiSelectToolbar';
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
 
@@ -150,7 +151,7 @@ const MudClient = () => {
 
     return (
         <div
-            className={`app-container ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? 'has-drawer-open' : ''} ${isCrtEnabled ? 'crt-enabled' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''} ${inCombat ? 'in-combat' : ''}`}
+            className={`app-container ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isCrtEnabled ? 'crt-enabled' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''} ${inCombat ? 'in-combat' : ''}`}
             ref={containerRef}
             onDragOver={(e: React.DragEvent) => {
                 e.preventDefault();
@@ -260,6 +261,8 @@ const MudClient = () => {
                 setManagerSelectedSet={setManagerSelectedSet}
                 connect={() => telnet.connect()}
             />
+
+            <MultiSelectToolbar />
 
             {heldButton?.isLogDragging && (
                 <div 

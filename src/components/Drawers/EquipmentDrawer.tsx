@@ -8,7 +8,6 @@ import ReactDOM from 'react-dom';
 import { useGame, useUI } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
-import { useItemDrawerInteractions } from '../../hooks/useItemDrawerInteractions';
 import { getEffectiveKeyword } from '../../utils/keywordUtils';
 
 interface EquipmentDrawerProps {
@@ -40,62 +39,76 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     entities,
     keywordOverrides
 }) => {
-    const { applyOptimisticChange } = useGame() as any;
-    const { setUI, ui, setPopoverState, popoverState } = useUI();
+    const { 
+        handleLogPointerDown, 
+        handleLogPointerUp, 
+        handleLogClick, 
+        selectedObjectIds,
+        toggleObjectSelection,
+        clearObjectSelection 
+    } = useGame();
+    const { setUI, ui } = useUI();
     const drawerRef = React.useRef<HTMLDivElement>(null);
-    const [expandedContainers, setExpandedContainers] = React.useState<Set<string>>(new Set());
 
-    // --- Consolidated Interaction Logic ---
-    const {
-        handlePointerDown,
-        draggedItem,
-        selectedItems,
-        isSelectMode,
-        primedItemId,
-        exitSelectMode,
-        ghostRef,
-        executeActionForSelected,
-        setSelectedItems
-    } = useItemDrawerInteractions({
-        drawerType: 'equipment',
-        lines: eqLines,
-        drawerRef,
-        isOpen,
-        onClose,
-        setUI,
-        ui,
-        executeCommand,
-        triggerHaptic,
-        applyOptimisticChange,
-        entities,
-        popoverState,
-        setPopoverState,
-        keywordOverrides
-    });
+    const onPointerDownInternal = (e: React.PointerEvent) => {
+        const target = e.target as HTMLElement;
+        const container = e.currentTarget as HTMLElement;
+        if (target.closest('.inline-btn')) {
+            handleLogPointerDown(e);
+            return;
+        }
+        // Base-layer swipes for closure
+        container.dataset.swipeX = e.clientX.toString();
+        container.dataset.swipeY = e.clientY.toString();
+        container.setPointerCapture(e.pointerId);
+    };
 
-    const isLineVisible = (line: DrawerLine, allLines: DrawerLine[]): boolean => {
-        if (!line.parentItemId) return true;
-        const parent = allLines.find(l => l.id === line.parentItemId);
-        if (!parent) return true;
-        if (!expandedContainers.has(parent.id)) return false;
-        return isLineVisible(parent, allLines);
+    const onPointerUpInternal = (e: React.PointerEvent) => {
+        const target = e.target as HTMLElement;
+        const container = e.currentTarget as HTMLElement;
+        if (target.closest('.inline-btn')) {
+            handleLogPointerUp(e);
+            return;
+        }
+        const sx = parseFloat(container.dataset.swipeX || "0");
+        const sy = parseFloat(container.dataset.swipeY || "0");
+        if (sx && sy) {
+            const deltaX = e.clientX - sx;
+            const deltaY = e.clientY - sy;
+            const absX = Math.abs(deltaX);
+            const absY = Math.abs(deltaY);
+            
+            if ((deltaY > 50 && absY > absX) || (deltaX > 50 && absX > absY)) {
+                onClose();
+            }
+        }
+        delete container.dataset.swipeX;
+        delete container.dataset.swipeY;
+    };
+
+    const onClickInternal = (e: React.MouseEvent) => {
+        const target = e.target as HTMLElement;
+        const btn = target.closest('.inline-btn') as HTMLElement;
+        if (btn) {
+            handleLogClick(e);
+        } else {
+            if (selectedObjectIds.size > 0) clearObjectSelection();
+        }
     };
 
     const renderLine = (line: DrawerLine) => {
-        const isBeingDragged = draggedItem?.line.id === line.id;
-        const isSelected = selectedItems.has(line.id);
         const depth = line.depth || 0;
-        const itemBrown = 'rgba(180, 100, 50, 0.9)';
-
+        const fullId = `equipmentlist:${line.entityId || line.id}:${line.context || line.id}`;
+        const isSelected = selectedObjectIds.has(fullId);
+        
         if (line.isItem) {
-            const isPrimed = primedItemId === line.id;
             const conditionRegex = /\s?\((flawless|well-maintained|worn|scratched|damaged|beaten|battered|beaten and battered|shabby|sub-standard|poor|fragmented|broken|shattered)\)/gi;
             const cleanedText = line.text.replace(conditionRegex, '').trim();
             const displayName = cleanedText.includes(' (') ? cleanedText.split(' (')[0] : cleanedText;
             const extraInfo = cleanedText.includes(' (') ? cleanedText.split(' (')[1] : null;
 
-            const entity = entities[line.entityId || ''];
-            const itemNoun = getEffectiveKeyword(line.text, line.html, entity, keywordOverrides) || line.stableId;
+            const itemBrown = 'rgba(180, 100, 50, 0.9)';
+            const cat = getCategoryForName(line.text);
 
             return (
                 <div key={line.id} style={{ display: 'flex', flexDirection: 'column', marginLeft: `${depth * 8}px`, marginBottom: '1px' }}>
@@ -107,58 +120,26 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                             />
                         )}
                         <div
-                            className={`inline-btn auto-item ${isPrimed ? 'primed' : ''} ${line.isContainer ? 'is-container' : ''} ${isSelected ? 'selected-item' : ''}`}
-                            data-item-name={line.context || line.id}
-                            data-id={line.entityId || ''}
-                            onPointerDown={(e) => handlePointerDown(e, line)}
-                            onPointerUp={(e) => {
-                                if (isSelectMode) {
-                                    const newSet = new Set(selectedItems);
-                                    if (newSet.has(line.id)) newSet.delete(line.id);
-                                    else newSet.add(line.id);
-                                    setSelectedItems(new Set(newSet));
-                                    triggerHaptic(20);
-                                    if (newSet.size === 0) exitSelectMode();
-                                    return;
-                                }
-                                if (line.isContainer) {
-                                    triggerHaptic(20);
-                                    setExpandedContainers(prev => {
-                                        const next = new Set(prev);
-                                        if (next.has(line.id)) next.delete(line.id);
-                                        else {
-                                            next.add(line.id);
-                                            pendingDrawerContainerRef.current = { containerId: line.id, cmd: 'equipmentlist', afterId: line.id };
-                                            executeCommand(`look in ${line.context || line.id}`, true, true);
-                                        }
-                                        return next;
-                                    });
-                                } else {
-                                    handleButtonClick({
-                                        id: 'drawer-item-' + line.id,
-                                        label: itemNoun,
-                                        command: 'inline-obj-worn',
-                                        actionType: 'menu',
-                                        setId: 'inline-obj-worn',
-                                        entityId: line.entityId,
-                                        isVisible: true,
-                                        style: { backgroundColor: itemBrown }
-                                    } as any, e as any, itemNoun, false, line.parentItemNoun);
-                                }
-                            }}
+                            className={`inline-btn auto-item ${isSelected ? 'selected-item' : ''} ${line.isContainer ? 'is-container' : ''}`}
+                            data-id={fullId}
+                            data-line-id={line.id}
+                            data-context={line.context || line.id}
+                            data-action="menu"
+                            data-category={cat || undefined}
+                            data-cmd="inline-obj-worn"
                             style={{
+                                marginLeft: line.prefixHtml ? '0' : `${depth * 20}px`,
+                                boxShadow: isSelected ? `inset 0 0 12px ${itemBrown}44` : 'none',
+                                borderColor: isSelected ? itemBrown : 'transparent',
+                                '--glow-color': itemBrown,
                                 color: itemBrown,
-                                opacity: isBeingDragged ? 0.3 : 1,
-                                marginLeft: line.prefixHtml ? '0' : `${depth * 20}px`
-                            }}
+                                cursor: 'default'
+                            } as React.CSSProperties}
                         >
                             <div className="drawer-item-text-wrapper">
-                                <span className="drawer-item-name">{displayName}</span>
-                                {extraInfo && <span className="drawer-item-extra">({extraInfo}</span>}
+                                <span className="drawer-item-name" style={{ color: itemBrown }}>{displayName}</span>
+                                {extraInfo && <span className="drawer-item-extra" style={{ color: itemBrown }}>({extraInfo}</span>}
                             </div>
-                            {line.isContainer && (
-                                <span className={`drawer-container-toggle ${expandedContainers.has(line.id) ? 'expanded' : ''}`}>▶</span>
-                            )}
                         </div>
                     </div>
                 </div>
@@ -166,7 +147,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
         }
 
         return (
-            <div key={line.id} className={`drawer-header-line depth-${depth}`} dangerouslySetInnerHTML={{ __html: line.html }} />
+            <div key={line.id} className={`drawer-header-line depth-${depth}`} style={{ paddingLeft: `${depth * 8}px` }} dangerouslySetInnerHTML={{ __html: line.html }} />
         );
     };
 
@@ -174,73 +155,54 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
         <div 
             ref={drawerRef}
             className={`right-drawer log-card-drawer ${isOpen ? 'open' : ''} ${isPeeking ? 'peeking' : ''} ${isLandscape ? 'landscape-mode' : ''}`}
-            onPointerDown={(e) => {
-                const target = e.target as HTMLElement;
-                if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT') return;
-                e.currentTarget.dataset.swipeX = e.clientX.toString();
-                e.currentTarget.dataset.swipeY = e.clientY.toString();
-                e.currentTarget.setPointerCapture(e.pointerId);
-            }}
-            onPointerUp={(e) => {
-                const sx = parseFloat(e.currentTarget.dataset.swipeX || "0");
-                const sy = parseFloat(e.currentTarget.dataset.swipeY || "0");
-                if (sx && sy) {
-                    const deltaX = sx - e.clientX;
-                    const deltaY = Math.abs(e.clientY - sy);
-                    if (deltaX < -20 && Math.abs(deltaX) > deltaY) { 
-                        triggerHaptic(40); 
-                        exitSelectMode();
-                        onClose(); 
-                    } else if (isSelectMode) {
-                        const target = e.target as HTMLElement;
-                        if (!target.closest('.auto-item') && !target.closest('.select-mode-bar')) exitSelectMode();
-                    }
-                }
-                delete e.currentTarget.dataset.swipeX;
-                delete e.currentTarget.dataset.swipeY;
-            }}
+            onPointerDown={onPointerDownInternal}
+            onPointerUp={onPointerUpInternal}
+            onPointerCancel={onPointerUpInternal}
+            onClick={onClickInternal}
         >
-            {isSelectMode && (
-                <div className="select-mode-bar">
-                    <span className="select-count">{selectedItems.size} selected</span>
-                    <button className="select-action-btn" onClick={() => executeActionForSelected('drop')}>Drop</button>
-                    <button className="select-action-btn" onClick={() => executeActionForSelected('remove')}>Remove</button>
-                    <button className="select-action-btn select-cancel-btn" onClick={exitSelectMode}>✕ Cancel</button>
-                </div>
-            )}
-
-            <div className="drawer-content" style={{ padding: '20px' }}>
+            <div className="drawer-content" style={{ padding: '12px 15px' }}>
                 <div className="drawer-section" data-drawer-section="equipmentlist">
-                    <div className="drawer-section-drop-zone" style={{ display: 'flex', alignItems: 'center' }}>
-                        <span>⚔ Equipment</span>
-                        <span className="drop-hint">drop here → wear</span>
+                    <div className="drawer-header" style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '12px 20px',
+                        background: 'rgba(10, 13, 21, 0.65)',
+                        backdropFilter: 'blur(25px)',
+                        WebkitBackdropFilter: 'blur(25px)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '16px',
+                        margin: '0 0 15px 0',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                        pointerEvents: 'auto',
+                        position: 'relative',
+                        zIndex: 10
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontWeight: '900', fontSize: '0.75rem', letterSpacing: '1.5px', color: '#ffffff', textTransform: 'uppercase' }}>Equipment</span>
+                        </div>
                         <button 
                             onPointerDown={(e) => e.stopPropagation()}
-                            onClick={() => { triggerHaptic(20); exitSelectMode(); onClose(); }} 
-                            className="drawer-close-btn"
+                            onClick={() => { triggerHaptic(20); onClose(); }} 
+                            style={{ 
+                                background: 'rgba(255,255,255,0.08)', 
+                                border: 'none', 
+                                color: '#fff', 
+                                width: '30px', 
+                                height: '30px', 
+                                borderRadius: '15px', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center', 
+                                fontSize: '1rem', 
+                                cursor: 'pointer'
+                            }}
                         >✕</button>
                     </div>
-                    {eqLines.filter(l => isLineVisible(l, eqLines)).map(line => renderLine(line))}
+                    {eqLines.map(line => renderLine(line))}
                     {eqLines.length === 0 && <div className="drawer-empty-state">No equipment worn</div>}
                 </div>
             </div>
-
-            {draggedItem && ReactDOM.createPortal(
-                <div ref={ghostRef} className="drag-ghost" style={{ left: draggedItem.x, top: draggedItem.y, pointerEvents: 'none' }}>
-                    {(() => {
-                        const label = draggedItem.commandLabel ?? draggedItem.line.text;
-                        const noun = draggedItem.itemNoun;
-                        if (!noun) return <>{label}</>;
-                        const idx = label.indexOf(noun);
-                        if (idx === -1) return <>{label}</>;
-                        return <>{label.slice(0, idx)}<span style={{ color: 'rgb(175,255,255)', fontWeight: 'bold' }}>{noun}</span>{label.slice(idx + noun.length)}</>;
-                    })()}
-                    {selectedItems.size > 1 && (
-                        <div className="ghost-badge">{selectedItems.size}</div>
-                    )}
-                </div>,
-                document.body
-            )}
         </div>
     );
 };

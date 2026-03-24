@@ -133,7 +133,6 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
                 />
-                <MultiSelectToolbar />
             </div>
 
             <InputArea
