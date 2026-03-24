@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { InteractionDeps } from '../useInteractionHandlers';
 import { CustomButton } from '../../types';
 import { sanitizeGameTarget } from '../../utils/gameUtils';
+import { triggerRingAnimation, getPressedColor } from './pointerUtils';
 
 export const useButtonClicks = (deps: InteractionDeps) => {
     const {
@@ -11,7 +12,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         playClickSound, isSoundEnabled, initAudio
     } = deps;
 
-    const handleButtonClick = useCallback((button: CustomButton & { entityId?: string }, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => {
+    const handleButtonClick = useCallback((button: CustomButton & { entityId?: string, _skipInteractionFire?: boolean }, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => {
         console.log('[useButtonClicks] handleButtonClick:', { 
             buttonId: button.id, 
             actionType: button.actionType,
@@ -24,6 +25,12 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         if (isSoundEnabled) playClickSound();
         triggerHaptic(20);
 
+        // Mark interaction as "fired" if we are currently holding another button (swipe combo)
+        // This prevents the originating swipe button from firing its command on release.
+        if (deps.setHeldButton && !button._skipInteractionFire) {
+            deps.setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
+        }
+
         if (btn.isEditMode) {
             if (button.setId !== 'Tactical' && !wasDraggingRef.current) btn.setEditingButtonId(button.id);
             return;
@@ -31,7 +38,18 @@ export const useButtonClicks = (deps: InteractionDeps) => {
 
         const targetEl = (e.currentTarget as HTMLElement);
         if (popoverState && !['menu', 'assign', 'select-assign', 'select-recipient', 'select-container', 'teleport-manage'].includes(button.actionType || '')) setPopoverState(null);
-        if (targetEl?.classList) { targetEl.classList.remove('btn-glow-active'); void targetEl.offsetWidth; targetEl.classList.add('btn-glow-active'); }
+        if (targetEl?.classList) { 
+            targetEl.classList.remove('btn-glow-active'); 
+            void targetEl.offsetWidth; 
+            targetEl.classList.add('btn-glow-active'); 
+
+            // Trigger visual feedback ring using the button's highlight color
+            const rect = targetEl.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const color = getPressedColor(targetEl);
+            triggerRingAnimation(cx, cy, color);
+        }
 
         // --- Keyboard Focus Fix (Mobile) ---
         // If we are on mobile, and the keyboard is NOT currently open (according to viewport tracker),
@@ -89,8 +107,13 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' };
             finalCmd = `${finalCmd} ${dirMap[joystick.currentDir] || joystick.currentDir}`;
             joystick.setIsJoystickConsumed(true);
+            console.log(`[useButtonClicks] Combo fired: hiding swipe wheel`);
+            joystick.setIsSwipeWheelHidden(true);
         } else if (joystick.isTargetModifierActive && target && !(button as any)._skipJoystick) {
-            finalCmd = `${finalCmd} ${target}`; joystick.setIsJoystickConsumed(true);
+            finalCmd = `${finalCmd} ${target}`; 
+            joystick.setIsJoystickConsumed(true);
+            console.log(`[useButtonClicks] Target combo fired: hiding swipe wheel`);
+            joystick.setIsSwipeWheelHidden(true);
         }
 
         if (button.actionType === 'nav' || button.actionType === 'menu') {

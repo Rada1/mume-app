@@ -15,6 +15,7 @@ const ReplyButton = ({ msg, setParley, onReply }: { msg: Message, setParley: (p:
             className="reply-btn inline-btn"
             title={msg.replyTarget ? `Reply to ${msg.replyTarget}` : `Reply on ${msg.replyCommand}`}
             onClick={onReply}
+            style={{ '--glow-color': msg.commColor } as React.CSSProperties}
         >
             <div className="reply-btn-icon">↩</div>
         </button>

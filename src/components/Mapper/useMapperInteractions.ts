@@ -148,6 +148,9 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 scrollLockRef.current = true;
                 return;
             }
+            if ((e.target as HTMLElement).closest('.message-log') || (e.target as HTMLElement).closest('.hud-cluster')) {
+                return;
+            }
             scrollLockRef.current = false;
 
             // Prevent browser gestures (scrolling, etc) from stealing map input
@@ -160,6 +163,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             
             const pointers = Array.from(activePointersRef.current.keys()).sort((a, b) => a - b).map(id => ({ id, ...activePointersRef.current.get(id)! }));
             lastPointersRef.current = pointers;
+            console.log(`[useMapperInteractions] onDown: id=${e.pointerId}, size=${activePointersRef.current.size}, target=${(e.target as HTMLElement).className}`);
 
             if (activePointersRef.current.size === 1) {
                 const { mode, setSelectedRoomIds } = depsRef.current;

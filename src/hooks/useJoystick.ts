@@ -9,6 +9,8 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
     const [isTargetModifierActive, setIsTargetModifierActive] = useState(false);
     const [swipeRay, setSwipeRay] = useState<{ active: boolean, angle: number, dist: number, x?: number, y?: number }>({ active: false, angle: 0, dist: 0 });
     const [joystickGlow, setJoystickGlow] = useState(false);
+    const [isSwipeWheelHidden, setIsSwipeWheelHidden] = useState(false);
+    
 
     const joystickKnobRef = useRef<HTMLDivElement>(null);
     const joystickStartPos = useRef<{ x: number, y: number } | null>(null);
@@ -85,6 +87,9 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
 
     const handleJoystickStart = useCallback((e: React.PointerEvent, executeCommand?: (cmd: string) => void) => {
         activePointersRef.current.add(e.pointerId);
+        if (activeJoystickPointerRef.current !== null && activeJoystickPointerRef.current !== e.pointerId) {
+            return;
+        }
 
         if (activePointersRef.current.size > 1) {
             handleJoystickCancel();
@@ -94,9 +99,11 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         // Use pointerId tracking instead of isPrimary so that a non-primary pointer
         // (e.g. second finger tapping the trackpad while holding an action button) works.
         activeJoystickPointerRef.current = e.pointerId;
+        console.log(`[useJoystick] handleJoystickStart: pointerId=${e.pointerId}, size=${activePointersRef.current.size}`);
         if (executeCommand) executeCommandRef.current = executeCommand;
         setJoystickActive(true);
         setIsJoystickConsumed(false);
+        setIsSwipeWheelHidden(false);
         setIsTargetModifierActive(false);
 
         try { e.currentTarget.setPointerCapture(e.pointerId); } catch(err) {}
@@ -276,6 +283,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
 
         setJoystickActive(false);
         setIsJoystickConsumed(false);
+        setIsSwipeWheelHidden(false);
         setIsTargetModifierActive(false);
         setCurrentDir(null);
         setSwipeRay({ active: false, angle: 0, dist: 0 });
@@ -362,7 +370,9 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         }
         setJoystickActive(false);
         setIsJoystickConsumed(false);
+        setIsSwipeWheelHidden(false);
         setIsTargetModifierActive(false);
+        console.log(`[useJoystick] handleJoystickCancel: pointerId=${e?.pointerId || 'all'}, size=${activePointersRef.current.size}`);
         setCurrentDir(null);
         setSwipeRay({ active: false, angle: 0, dist: 0 });
         lastHapticDirRef.current = null;
@@ -385,6 +395,8 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         swipeRay,
         joystickGlow,
         setJoystickGlow,
+        isSwipeWheelHidden,
+        setIsSwipeWheelHidden,
         joystickKnobRef,
         handleJoystickStart,
         handleJoystickMove,

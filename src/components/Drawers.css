@@ -36,9 +36,9 @@
     max-width: 480px;
     height: auto;
     max-height: 85dvh;
-    background: rgba(10, 13, 21, 0.85);
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
+    background: rgba(10, 13, 21, 0.4);
+    backdrop-filter: blur(1.5px);
+    -webkit-backdrop-filter: blur(1.5px);
     border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 20px;
     z-index: 4000;
@@ -79,9 +79,9 @@
     /* 50vw - 450px (log half) - 420px (drawer width) - 12px (gap) */
     left: calc(50vw - 450px - 420px - 12px);
     width: 420px;
-    background: rgba(10, 13, 21, 0.65);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
+    background: rgba(10, 13, 21, 0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     z-index: 3002;

@@ -143,8 +143,9 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'space-between',
-                    paddingLeft: `${16 + (depth * 16)}px` // Dynamic indent
-                }}
+                    paddingLeft: `${16 + (depth * 16)}px`, // Dynamic indent
+                    '--set-accent': button.style.borderColor || button.style.backgroundColor || 'var(--accent)'
+                } as any}
             >
                 <span style={{ pointerEvents: 'none', display: 'flex', alignItems: 'center' }}>
                     {depth > 0 && <span style={{ opacity: 0.3, marginRight: '8px', fontSize: '0.8rem' }}>﹂</span>}
@@ -299,10 +300,16 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
             )}
 
             {isTargetable && !isChoosingCategory && (
-                <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} onClick={() => {
-                    triggerHaptic?.(20);
-                    setTarget(popoverState.context || null); setPopoverState(null);
-                }}>Set as Target</div>
+                <div 
+                    className="popover-item" 
+                    data-menu-item="true" 
+                    onPointerDown={(e) => { e.stopPropagation(); }} 
+                    onClick={() => {
+                        triggerHaptic?.(20);
+                        setTarget(popoverState.context || null); setPopoverState(null);
+                    }}
+                    style={{ '--set-accent': popoverState.accentColor || 'var(--accent)' } as any}
+                >Set as Target</div>
             )}
 
             {isSetManager ? (

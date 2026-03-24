@@ -18,6 +18,9 @@ export interface InteractionDeps {
         currentDir: string | null;
         isTargetModifierActive: boolean;
         setIsJoystickConsumed: (val: boolean) => void;
+        handleJoystickCancel: (e?: any) => void;
+        isSwipeWheelHidden: boolean;
+        setIsSwipeWheelHidden: (val: boolean) => void;
     };
     isTrackpadModifierActive: boolean;
     target: string | null;

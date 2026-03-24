@@ -65,7 +65,7 @@ export const DpadCluster: React.FC<DpadClusterProps> = ({
                 receive multi-touch, we can just remove pointer events from this container entirely
                 and let useMapperInteractions handle joystick passing! */}
             <TrackpadSwipeWheel 
-                active={joystick.joystickActive} 
+                active={joystick.joystickActive && !joystick.isSwipeWheelHidden} 
                 currentDir={currentDir || null} 
                 isModifierActive={isTrackpadModifierActive}
             />

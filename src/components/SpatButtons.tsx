@@ -1,6 +1,7 @@
 import React, { useRef, useLayoutEffect, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { SpatButton, PopoverState } from '../types';
+import { triggerRingAnimation, getPressedColor } from '../hooks/interactions/pointerUtils';
 
 interface SpatButtonsProps {
     spatButtons: SpatButton[];
@@ -196,6 +197,13 @@ export const SpatButtons: React.FC<SpatButtonsProps> = React.memo(({
         const isTap = state.maxDist < 40;
 
         if (isTap || (dir && state.maxDist >= 40)) {
+            // Trigger visual feedback ring using the button's color
+            const rect = el.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const color = getPressedColor(el);
+            triggerRingAnimation(cx, cy, color);
+
             // Aggressively stop event from reaching any other elements
             if (e.cancelable) e.preventDefault();
             e.stopPropagation();
@@ -224,7 +232,8 @@ export const SpatButtons: React.FC<SpatButtonsProps> = React.memo(({
                     context: sb.label,
                     x: endX,
                     y: endY,
-                    menuDisplay: sb.menuDisplay || 'list'
+                    menuDisplay: sb.menuDisplay || 'list',
+                    accentColor: sb.color
                 });
             } else {
                 executeCommand(cmd, false, false, false, false, { shouldFocus: false, fromUi: true });

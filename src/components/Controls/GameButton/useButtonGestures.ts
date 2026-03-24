@@ -14,7 +14,7 @@ export interface UseButtonGesturesProps {
     triggerHaptic: (ms: number) => void;
     setHeldButton: React.Dispatch<React.SetStateAction<{ id: string, baseCommand: string, longCommand?: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean, initialX?: number, initialY?: number } | null>>;
     heldButton: { id: string, baseCommand: string, longCommand?: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean, initialX?: number, initialY?: number } | null;
-    joystick: { isActive: boolean, currentDir: string | null, isTargetModifierActive: boolean, setIsJoystickConsumed: (val: boolean) => void };
+    joystick: { isActive: boolean, currentDir: string | null, isTargetModifierActive: boolean, setIsJoystickConsumed: (val: boolean) => void, setIsSwipeWheelHidden?: (val: boolean) => void };
     target: string | null;
     setCommandPreview: (cmd: string | null) => void;
     setActiveDir: React.Dispatch<React.SetStateAction<SwipeDirection | null>>;
@@ -75,6 +75,14 @@ export const useButtonGestures = ({
             setActiveDir(null);
             setIsCancelling(false);
             updateRay(0, 0, 0);
+            // If it's our button that fired externally, clear the local pointer start
+            if (heldButton?.id === button.id && heldButton.didFire) {
+                const el = document.getElementById(button.id) as any;
+                if (el) {
+                    el._startX = null;
+                    el._startY = null;
+                }
+            }
         }
     }, [heldButton?.id, heldButton?.didFire, button.id, setActiveDir, setIsCancelling, updateRay]);
 
@@ -103,16 +111,23 @@ export const useButtonGestures = ({
             triggerHaptic(15);
             const initialX = rect.left + rect.width / 2;
             const initialY = rect.top + rect.height / 2;
-            setHeldButton({
-                id: button.id,
-                baseCommand: button.command,
-                longCommand: button.longCommand,
-                modifiers: [],
-                dx: 0,
-                dy: 0,
-                didFire: false,
-                initialX,
-                initialY
+            setHeldButton(prev => {
+                // If there's already a held button that is SWIPING, don't overwrite it.
+                // This allows us to tap other buttons for combos without losing the swipe state of the first button.
+                if (prev && prev.id !== button.id && (Math.abs(prev.dx || 0) > 15 || Math.abs(prev.dy || 0) > 15)) {
+                    return prev;
+                }
+                return {
+                    id: button.id,
+                    baseCommand: button.command,
+                    longCommand: button.longCommand,
+                    modifiers: [],
+                    dx: 0,
+                    dy: 0,
+                    didFire: false,
+                    initialX,
+                    initialY
+                };
             });
             updateRay(0, 0, 0, button.style.borderColor || button.style.backgroundColor || 'var(--accent)');
             el.style.setProperty('--cancel-opacity', '0');
@@ -133,15 +148,31 @@ export const useButtonGestures = ({
         const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
         const dist = Math.sqrt(dx * dx + dy * dy);
         el._maxDist = Math.max(el._maxDist || 0, dist);
-
+        
         if (dist > 10 && wasDraggingRef) wasDraggingRef.current = true;
 
         if (dist > 15) {
-            if (!heldButton || heldButton.id !== button.id) {
-                setHeldButton({ id: button.id, baseCommand: button.command, longCommand: button.longCommand, modifiers: heldButton?.modifiers || [], dx, dy });
-            } else if (heldButton.dx !== dx || heldButton.dy !== dy) {
-                setHeldButton(prev => prev ? { ...prev, dx, dy } : null);
-            }
+            setHeldButton(prev => {
+                // If someone else is already swiping, don't take it back.
+                if (prev && prev.id !== button.id && (Math.abs(prev.dx || 0) > 15 || Math.abs(prev.dy || 0) > 15)) {
+                    return prev;
+                }
+                // If it's already us, update dx/dy
+                if (prev && prev.id === button.id) {
+                    if (prev.dx === dx && prev.dy === dy) return prev;
+                    return { ...prev, dx, dy };
+                }
+                // Otherwise (null or someone not swiping), take it.
+                return { 
+                    id: button.id, 
+                    baseCommand: button.command, 
+                    longCommand: button.longCommand, 
+                    modifiers: prev?.modifiers || [], 
+                    dx, 
+                    dy,
+                    didFire: false
+                };
+            });
         }
 
         const isDial = button.menuDisplay === 'dial';
@@ -251,6 +282,7 @@ export const useButtonGestures = ({
         if (e.cancelable) e.preventDefault();
         const el = e.currentTarget as any;
         if (isEditMode) return;
+        console.log(`[useButtonGestures] onPointerUp: button=${button.id}, maxDist=${el._maxDist?.toFixed(1)}, heldButtonOwner=${heldButton?.id}`);
 
         if (heldButton?.id === button.id && heldButton.didFire) {
             setHeldButton(null);
@@ -332,7 +364,11 @@ export const useButtonGestures = ({
                 handleButtonClick({ ...button, command: '__clear_target__', actionType: 'command', _skipJoystick: true }, e as any);
             } else if (previewCmd.cmd && previewCmd.cmd.trim() !== '') {
                 executeCommand(previewCmd.cmd, false, false);
-                if (joystick.currentDir) joystick.setIsJoystickConsumed(true);
+                if (joystick.currentDir) {
+                    console.log(`[useButtonGestures] Combo fired via gesture: hiding swipe wheel`);
+                    joystick.setIsJoystickConsumed(true);
+                    if (joystick.setIsSwipeWheelHidden) joystick.setIsSwipeWheelHidden(true);
+                }
                 triggerHaptic(35);
                 if (isSoundEnabled) playClickSound();
             }

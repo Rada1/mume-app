@@ -150,7 +150,7 @@
 }
 
 .message-content .inline-btn {
-    color: var(--glow-color, #4b6eef);
+    color: var(--glow-color, inherit);
     font-weight: bold !important;
 }
 

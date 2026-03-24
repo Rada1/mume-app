@@ -7,8 +7,20 @@
  * Resolves the glow color for an element, falling back to theme accents.
  */
 export const getPressedColor = (targetEl: HTMLElement): string => {
+    // Check inline style first (higher specificity)
+    const inlineGlow = targetEl.style.getPropertyValue('--glow-color').trim();
+    if (inlineGlow) return inlineGlow;
+    
+    const inlineAccent = targetEl.style.getPropertyValue('--set-accent').trim();
+    if (inlineAccent) return inlineAccent;
+
+    const style = getComputedStyle(targetEl);
     return (
-        getComputedStyle(targetEl).getPropertyValue('--glow-color').trim() ||
+        style.getPropertyValue('--glow-color').trim() ||
+        style.getPropertyValue('--set-accent').trim() ||
+        style.getPropertyValue('--btn-theme-rgb').trim() ||
+        style.getPropertyValue('--accent').trim() ||
+        style.color || 
         getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() ||
         '#4b6eef'
     );
@@ -20,16 +32,20 @@ export const getPressedColor = (targetEl: HTMLElement): string => {
 export const triggerRingAnimation = (x: number, y: number, color: string) => {
     const sz = 28;
     const ring = document.createElement('div');
+    const scrollY = window.scrollY || window.pageYOffset;
+    const scrollX = window.scrollX || window.pageXOffset;
+
     ring.style.cssText = `
-        position: fixed;
-        left: ${x - sz / 2}px;
-        top: ${y - sz / 2}px;
+        position: absolute;
+        left: ${x + scrollX - sz / 2}px;
+        top: ${y + scrollY - sz / 2}px;
         width: ${sz}px;
         height: ${sz}px;
         border-radius: 50%;
         border: 2px solid ${color};
         pointer-events: none;
-        z-index: 9999;
+        z-index: 99999;
+        box-shadow: 0 0 8px ${color};
     `;
     document.body.appendChild(ring);
     

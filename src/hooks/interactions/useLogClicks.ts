@@ -196,6 +196,9 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         }
 
         if (action === 'menu') {
+            const glowColor = targetEl.style.getPropertyValue('--glow-color').trim();
+            const accentColor = glowColor || targetEl.style.color || undefined;
+
             setPopoverState({
                 x: e.clientX || (e.nativeEvent as MouseEvent).clientX,
                 y: e.clientY || (e.nativeEvent as MouseEvent).clientY,
@@ -203,7 +206,8 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 category: category || undefined,
                 context: context || undefined,
                 entityId: entityId || undefined,
-                menuDisplay
+                menuDisplay,
+                accentColor
             });
             targetEl.classList.add('menu-active');
             triggerHaptic(20);

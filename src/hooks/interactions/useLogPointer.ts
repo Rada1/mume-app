@@ -62,7 +62,7 @@ export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.Muta
         activeTargetElRef.current = null;
         activePressedRectRef.current = null;
         
-        setHeldButton(null);
+        // setHeldButton(null); // This is now handled conditionally in handleGlobalUp
         setActiveDragData(null);
         setCommandPreview('');
         
@@ -72,8 +72,10 @@ export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.Muta
     }, [setUI, setHeldButton, setActiveDragData, setCommandPreview, viewport.isMobile]);
 
     const handleGlobalUp = useCallback((e: PointerEvent) => {
+        // Only clear heldButton if it was started by the log
+        setHeldButton((prev: any) => (prev?.id?.startsWith('log-inline-')) ? null : prev);
         internalUp(e, activeTargetElRef.current, activePressedRectRef.current, isShopItemRef.current, cleanupDrag);
-    }, [internalUp, cleanupDrag]);
+    }, [internalUp, cleanupDrag, setHeldButton]);
 
     const startDrag = useCallback((e: React.PointerEvent | null, targetEl: HTMLElement, label: string, contextStr: string) => {
         isLogDraggingRef.current = true;
@@ -126,6 +128,11 @@ export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.Muta
         window.addEventListener('pointercancel', handleGlobalUp);
 
         if (viewport.isMobile && targetEl) {
+            // Protect active swipe session: don't overwrite if another button is already swiping
+            if (heldButton && heldButton.id !== ('log-inline-' + (targetEl.getAttribute('data-id') || '')) && (Math.abs(heldButton.dx || 0) > 15 || Math.abs(heldButton.dy || 0) > 15)) {
+                return;
+            }
+
             const id = 'log-inline-' + (targetEl.getAttribute('data-id') || Math.random());
             const cmd = targetEl.getAttribute('data-cmd') || '';
             const context = targetEl.getAttribute('data-context') || '';
