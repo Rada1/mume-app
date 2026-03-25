@@ -118,6 +118,12 @@ const DIRECTION_MAP: Record<string, string> = {
   'd': 'd',
 };
 
+const SPLIT_COMMANDS_REGEX = /\band\b|\bthen\b|[,.]/gi;
+const CLEAN_PUNCTUATION_REGEX = /[?!]/g;
+const TOKEN_REGEX = /'[^']*'|"[^"]*"|\S+/g;
+const ORDINAL_REGEX = /^(\d+)(st|nd|rd|th)$/i;
+const ILLEGAL_CHARS_REGEX = /[@#$%^&*]/;
+
 export class SemanticMUDParser {
   private steps: ParserStep[] = [];
 
@@ -155,13 +161,13 @@ export class SemanticMUDParser {
   private splitCommands(input: string): string[] {
     // Split by "and", "then", ",", "."
     return input
-      .split(/\band\b|\bthen\b|[,.]/gi)
+      .split(SPLIT_COMMANDS_REGEX)
       .map(s => s.trim())
       .filter(s => s.length > 0);
   }
 
   private processSingleCommand(input: string): { output: string; confidence: number } {
-    let current = input.toLowerCase().replace(/[?!]/g, '');
+    let current = input.toLowerCase().replace(CLEAN_PUNCTUATION_REGEX, '');
     let confidence = 0.8; // Default base confidence
 
     // Check for socials/pass-through
@@ -172,9 +178,10 @@ export class SemanticMUDParser {
     // 2. Tokenization with Quote Preservation
     // Match words and quoted strings as single units
     const tokens: string[] = [];
-    const tokenRegex = /'[^']*'|"[^"]*"|\S+/g;
+    // Reset regex index
+    TOKEN_REGEX.lastIndex = 0;
     let m;
-    while ((m = tokenRegex.exec(current)) !== null) {
+    while ((m = TOKEN_REGEX.exec(current)) !== null) {
       tokens.push(m[0]);
     }
 
@@ -237,7 +244,7 @@ export class SemanticMUDParser {
           const processPart = (parts: string[]) => {
             if (parts.length === 0) return '';
             const first = parts[0];
-            const ordinalMatch = first.match(/^(\d+)(st|nd|rd|th)$/i);
+            const ordinalMatch = first.match(ORDINAL_REGEX);
             if (ordinalMatch) {
               const num = ordinalMatch[1];
               const noun = parts[parts.length - 1];
@@ -267,7 +274,7 @@ export class SemanticMUDParser {
              target = remaining.join(' ');
           } else {
             const firstArg = remaining[0];
-            const ordinalMatch = firstArg.match(/^(\d+)(st|nd|rd|th)$/i);
+            const ordinalMatch = firstArg.match(ORDINAL_REGEX);
             if (ordinalMatch) {
               const num = ordinalMatch[1];
               const nounParts = remaining.slice(1);
@@ -305,11 +312,11 @@ export class SemanticMUDParser {
   private validate(output: string): boolean {
     const words = output.split(/\s+/);
     // Check for remaining stop words
-    for (const word of words) {
-      if (STOP_WORDS.has(word)) return false;
+    for (let i = 0; i < words.length; i++) {
+      if (STOP_WORDS.has(words[i])) return false;
     }
     // Check for illegal characters (MUDs usually only like alphanumeric and basic punctuation)
-    if (/[@#$%^&*]/.test(output)) return false;
+    if (ILLEGAL_CHARS_REGEX.test(output)) return false;
     
     return true;
   }

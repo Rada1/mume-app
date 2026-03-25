@@ -66,12 +66,15 @@ export const useMapAnimation = ({
         const now = performance.now();
         const deltaTime = now - lastFrameTimeRef.current;
         
-        // Increase throttle to ~60fps (16ms) instead of 30fps (32ms)
-        // Since we've optimized the rendering, we can afford more frames.
-        if (deltaTime < 16) return true;
+        // We do not want to force a throttle skip that just requests another frame doing nothing.
+        // Instead of returning `true` to spin the loop, if it's too early, we'll let it render but
+        // scale the lerp. However, requestAnimationFrame natively runs at the display refresh rate.
+        // Throttling it manually often leads to micro-stutters.
+        // We will remove the artificial 16ms throttle to allow 120hz/144hz monitors to render smoothly.
+        // If we want to cap to 60fps, we should just accumulate deltaTime.
         
-        // Calculate a normalized factor for lerping based on time (aiming for 60fps base)
-        const frameScale = Math.min(2, deltaTime / 16.67);
+        // Calculate a normalized factor for lerping based on time (aiming for 60fps base, 16.67ms)
+        const frameScale = Math.min(3, deltaTime / 16.67); // Capped at 3 frames to prevent huge jumps
         lastFrameTimeRef.current = now;
 
         if (!ctxRef.current) {

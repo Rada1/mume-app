@@ -259,16 +259,22 @@ const MessageLog: React.FC<MessageLogProps> = ({
         const container = scrollContainerRef.current;
         if (!container) return;
 
+        let resizeRafId: number | null = null;
         const observer = new ResizeObserver(() => {
             if (viewport.isLockedToBottomRef.current) {
-                requestAnimationFrame(() => {
+                if (resizeRafId !== null) return;
+                resizeRafId = requestAnimationFrame(() => {
+                    resizeRafId = null;
                     viewport.scrollToBottom(true, false, 'ContainerResize');
                 });
             }
         });
 
         observer.observe(container);
-        return () => observer.disconnect();
+        return () => {
+            if (resizeRafId !== null) cancelAnimationFrame(resizeRafId);
+            observer.disconnect();
+        };
     }, [viewport, scrollContainerRef]);
 
     // Re-scroll when virtualizer re-measures items and totalSize changes.

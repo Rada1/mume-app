@@ -133,31 +133,36 @@ export function useViewport(
 
         let lastHeight = container.scrollHeight;
 
+        let resizeRafId: number | null = null;
+
         const resizeObserver = new ResizeObserver(() => {
-            const newHeight = container.scrollHeight;
-            if (newHeight === lastHeight) return;
+            if (resizeRafId !== null) return; // Already scheduled
 
-            // If already animating, the animation loop itself will track the height.
-            // But for simple snaps or stillness, let's follow the growth.
-            if (isAutoScrollingRef.current) {
+            resizeRafId = requestAnimationFrame(() => {
+                resizeRafId = null;
+                const newHeight = container.scrollHeight;
+                if (newHeight === lastHeight) return;
+
+                // If already animating, the animation loop itself will track the height.
+                // But for simple snaps or stillness, let's follow the growth.
+                if (isAutoScrollingRef.current) {
+                    lastHeight = newHeight;
+                    return;
+                }
+
                 lastHeight = newHeight;
-                return;
-            }
 
-            lastHeight = newHeight;
-
-            if (isLockedToBottomRef.current) {
-                // Remove the delay, use RAF for sub-pixel accuracy
-                requestAnimationFrame(() => {
-                    if (isLockedToBottomRef.current && !isAutoScrollingRef.current) {
-                        scrollToBottom(true, true, 'ResizeObserver_Growth');
-                    }
-                });
-            }
+                if (isLockedToBottomRef.current && !isAutoScrollingRef.current) {
+                    scrollToBottom(true, true, 'ResizeObserver_Growth');
+                }
+            });
         });
 
         resizeObserver.observe(container);
-        return () => resizeObserver.disconnect();
+        return () => {
+            if (resizeRafId !== null) cancelAnimationFrame(resizeRafId);
+            resizeObserver.disconnect();
+        };
     }, [scrollToBottom]);
 
     const [logFontSize, setLogFontSize] = useState(() => {
