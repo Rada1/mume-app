@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git diff HEAD~3 HEAD -- manifest.json public/manifest.json src/index.html index.html *.webmanifest)"
+      "Bash(git diff HEAD~3 HEAD -- manifest.json public/manifest.json src/index.html index.html *.webmanifest)",
+      "WebFetch(domain:www.achaea.com)",
+      "WebFetch(domain:www.aardwolf.com)",
+      "WebFetch(domain:nexus.ironrealms.com)",
+      "WebFetch(domain:mume.org)"
     ]
   }
 }
