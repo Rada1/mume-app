@@ -7,6 +7,7 @@ import React from 'react';
 import { useGame, useUI } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
 import { getCategoryForName } from '../../utils/categorizationUtils';
+import { isObjectSelected } from '../../utils/selectionUtils';
 
 interface InventoryDrawerProps {
     isOpen: boolean;
@@ -116,7 +117,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     const renderLine = (line: DrawerLine) => {
         const depth = line.depth || 0;
         const fullId = `inventorylist:${line.entityId || line.id}:${line.context || line.id}`;
-        const isSelected = selectedObjectIds.has(fullId);
+        const isSelected = isObjectSelected(selectedObjectIds, fullId, 'inline-obj-char');
         const itemBrown = 'rgba(180, 100, 50, 0.9)';
 
         if (line.isItem) {

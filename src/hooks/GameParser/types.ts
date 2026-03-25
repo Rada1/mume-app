@@ -7,6 +7,10 @@ export interface UseGameParserDeps {
     pendingGmcpCommRef?: React.MutableRefObject<{ sender: string; chan: string; msg?: string } | null>;
     lastCommIdBySenderRef?: React.MutableRefObject<Map<string, string>>;
     playSound: (buffer: AudioBuffer) => void;
+    playHitImpactSound?: () => void;
+    playIncantationSound?: () => void;
+    stopIncantationSound?: (andExplode: boolean) => void;
+    playMagicExplosionSound?: () => void;
     playRandomSound: (buffers: AudioBuffer[]) => void;
     playDoorSound: (isOpen: boolean) => void;
     triggerHaptic: (ms: number) => void;
@@ -61,4 +65,12 @@ export interface UseGameParserDeps {
     shop: any;
     triggerXpTicker?: () => void;
     groupMembers: import('../../types').GroupMember[];
+    deathRoomId: string | null;
+    setDeathRoomId: (val: string | null) => void;
+    accountState: import('../../types').AccountState;
+    setAccountState: React.Dispatch<React.SetStateAction<import('../../types').AccountState>>;
+    setGameState: React.Dispatch<React.SetStateAction<import('../../types').GameState>>;
+    activePrompt: string;
+    gameState: import('../../types').GameState;
+    isMobile?: boolean;
 }

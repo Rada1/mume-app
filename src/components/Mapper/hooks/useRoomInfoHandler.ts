@@ -21,12 +21,16 @@ interface RoomInfoProps {
     addMessage?: (type: string, msg: string) => void;
     showDebugEchoes?: boolean;
     preMoveRef?: React.MutableRefObject<{ dir: string; targetId: string; time: number } | null>;
+    deathRoomId?: string | null;
+    setDeathRoomId?: (val: string | null) => void;
+    baseMapExitsRef?: React.MutableRefObject<Record<string, any>>;
 }
 
 export const useRoomInfoHandler = ({
     roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef,
     nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef,
-    firstExploredAtRef, triggerRender, onRoomInfoProcessed, addMessage, showDebugEchoes, preMoveRef
+    firstExploredAtRef, triggerRender, onRoomInfoProcessed, addMessage, showDebugEchoes, preMoveRef,
+    deathRoomId, setDeathRoomId, baseMapExitsRef
 }: RoomInfoProps) => {
 
     const handleRoomInfo = useCallback((data: GmcpRoomInfo) => {
@@ -347,6 +351,11 @@ export const useRoomInfoHandler = ({
             if (ghostData) [nx, ny, nz] = ghostData;
             else if (!currentActiveRoom && !ghostData) { nx = 0; ny = 0; nz = 0; }
 
+            const rawGmcpId = String(gmcpId);
+            const mData = (baseMapExitsRef?.current?.[rawGmcpId]) || (ghostData);
+            const mLight = mData ? (Array.isArray(mData) ? mData[10] : mData.light) : undefined;
+            const mSundeath = mData ? (Array.isArray(mData) ? mData[11] : mData.sundeath) : undefined;
+
             const newRoom: MapperRoom = {
                 id: targetId!, gmcpId: Number(gmcpId) || 0, name, desc,
                 x: nx, y: ny, z: nz,
@@ -355,6 +364,10 @@ export const useRoomInfoHandler = ({
                 mobFlags: Array.from(new Set(ghostData ? ghostData[7] : [])),
                 loadFlags: Array.from(new Set(ghostData ? ghostData[8] : [])),
                 roomQuestFlags: questFlags,
+                // NEW FORMAT: 1 is Dark, 0 is Lit. Default 0.
+                light: data.light !== undefined ? data.light : (mLight !== undefined ? mLight : 0),
+                // NEW FORMAT: 0 is No-Sundeath (Death), 1 is Safe. Default 1.
+                sundeath: data.sundeath !== undefined ? data.sundeath : (mSundeath !== undefined ? mSundeath : 1),
                 createdAt: Date.now()
             };
             newRooms[targetId!] = newRoom;
@@ -373,6 +386,11 @@ export const useRoomInfoHandler = ({
             const newLoadFlags = ghostData ? ghostData[8] : existingRoom.loadFlags || [];
             const newRoomQuestFlags = questFlags.length > 0 ? questFlags : existingRoom.roomQuestFlags || [];
 
+            const rawGmcpId = String(gmcpId);
+            const mData = (baseMapExitsRef?.current?.[rawGmcpId]) || (ghostData);
+            const mLight = mData ? (Array.isArray(mData) ? mData[10] : mData.light) : undefined;
+            const mSundeath = mData ? (Array.isArray(mData) ? mData[11] : mData.sundeath) : undefined;
+
             // Check dynamic properties too
             const arraysDiffer = (a: any[], b: any[]) => a.length !== b.length || a.some((v, i) => v !== b[i]);
 
@@ -385,7 +403,9 @@ export const useRoomInfoHandler = ({
                 arraysDiffer(existingRoom.loadFlags || [], newLoadFlags) ||
                 arraysDiffer(existingRoom.roomQuestFlags || [], newRoomQuestFlags) ||
                 (ghostData && (existingRoom.x !== ghostData[0] || existingRoom.y !== ghostData[1])) ||
-                (currentActiveRoom && dirUsed && activeRoomId !== targetId)
+                (currentActiveRoom && dirUsed && activeRoomId !== targetId) ||
+                (data.light !== undefined && existingRoom.light !== data.light) ||
+                (data.sundeath !== undefined && existingRoom.sundeath !== data.sundeath)
             );
 
             if (needsUpdate) {
@@ -398,7 +418,11 @@ export const useRoomInfoHandler = ({
                     terrain: finalTerrain,
                     mobFlags: newMobFlags,
                     loadFlags: newLoadFlags,
-                    roomQuestFlags: newRoomQuestFlags
+                    roomQuestFlags: newRoomQuestFlags,
+                    // light 1 is Dark, 0 is Lit
+                    light: data.light !== undefined ? data.light : (mLight !== undefined ? mLight : (existingRoom.light ?? 0)),
+                    // sundeath 0 is Death, 1 is Safe
+                    sundeath: data.sundeath !== undefined ? data.sundeath : (mSundeath !== undefined ? mSundeath : (existingRoom.sundeath ?? 1))
                 };
                 if (ghostData) {
                     const [nx, ny, nz] = ghostData;
@@ -470,6 +494,12 @@ export const useRoomInfoHandler = ({
         const roomChanged = targetId !== activeRoomId;
         if (roomChanged) {
             setCurrentRoomId(targetId);
+        }
+
+        // Clear deathRoomId if we just entered the room where we died
+        if (targetId && deathRoomId && targetId === deathRoomId && setDeathRoomId) {
+            setDeathRoomId(null);
+            if (showDebugEchoes) addMessage?.('system', `[Mapper] Death room highlight cleared.`);
         }
 
         // Update the current room reference immediately for canvas consumption

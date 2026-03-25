@@ -3,6 +3,10 @@ import { useRef, useCallback, useEffect } from 'react';
 export const useSoundSystem = (isSoundEnabled: boolean = true) => {
     const audioCtxRef = useRef<AudioContext | null>(null);
     const clickSoundRef = useRef<AudioBuffer | null>(null);
+    const hitImpactSoundRef = useRef<AudioBuffer | null>(null);
+    const incantationsSoundRef = useRef<AudioBuffer | null>(null);
+    const magicExplosionSoundRef = useRef<AudioBuffer | null>(null);
+    const activeIncantationRef = useRef<{ source: AudioBufferSourceNode, gain: GainNode } | null>(null);
 
     const initAudio = useCallback(() => {
         if (!audioCtxRef.current) {
@@ -193,6 +197,98 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         playSound(buffers[randomIndex]);
     }, [playSound]);
 
+    const loadHitImpactSound = useCallback(async () => {
+        if (!audioCtxRef.current || hitImpactSoundRef.current) return;
+        try {
+            const response = await fetch('/assets/Sounds/Sound effects/hit-impact.mp3');
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
+            hitImpactSoundRef.current = audioBuffer;
+        } catch (err) {
+            console.error('Failed to load hit impact sound:', err);
+        }
+    }, []);
+
+    const playHitImpactSound = useCallback((options?: { volume?: number }) => {
+        if (hitImpactSoundRef.current) {
+            playSound(hitImpactSoundRef.current, { volume: options?.volume });
+        } else {
+            loadHitImpactSound();
+        }
+    }, [loadHitImpactSound, playSound]);
+
+    const loadSpellSounds = useCallback(async () => {
+        if (!audioCtxRef.current) return;
+        try {
+            if (!incantationsSoundRef.current) {
+                const res = await fetch('/assets/Sounds/Sound effects/incantations.mp3');
+                const buf = await audioCtxRef.current.decodeAudioData(await res.arrayBuffer());
+                incantationsSoundRef.current = buf;
+            }
+            if (!magicExplosionSoundRef.current) {
+                const res = await fetch('/assets/Sounds/Sound effects/magicexplosion.mp3');
+                const buf = await audioCtxRef.current.decodeAudioData(await res.arrayBuffer());
+                magicExplosionSoundRef.current = buf;
+            }
+        } catch (err) {
+            console.error('Failed to load spell sounds:', err);
+        }
+    }, []);
+
+    const playMagicExplosionSound = useCallback((options?: { volume?: number }) => {
+        if (magicExplosionSoundRef.current) {
+            playSound(magicExplosionSoundRef.current, { volume: options?.volume || 2.0 });
+        } else {
+            loadSpellSounds();
+        }
+    }, [loadSpellSounds, playSound]);
+
+    const playIncantationSound = useCallback(() => {
+        if (!audioCtxRef.current || !incantationsSoundRef.current) {
+            loadSpellSounds();
+            return;
+        }
+        if (activeIncantationRef.current) return;
+
+        const ctx = audioCtxRef.current;
+        const source = ctx.createBufferSource();
+        source.buffer = incantationsSoundRef.current;
+        source.loop = true;
+        // Add random pitch jitter (+/- 5%) for natural variation
+        source.playbackRate.value = 1.0 + (Math.random() * 0.1 - 0.05);
+
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(1.0, ctx.currentTime + 0.3);
+
+        source.connect(gain);
+        gain.connect(ctx.destination);
+        source.start(0);
+
+        activeIncantationRef.current = { source, gain };
+    }, [loadSpellSounds]);
+
+    const stopIncantationSound = useCallback((playExplosion: boolean = false) => {
+        if (!activeIncantationRef.current || !audioCtxRef.current) return;
+        const { source, gain } = activeIncantationRef.current;
+        const ctx = audioCtxRef.current;
+
+        gain.gain.setValueAtTime(gain.gain.value, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.3);
+
+        if (playExplosion) playMagicExplosionSound();
+
+        setTimeout(() => {
+            try {
+                source.stop();
+                source.disconnect();
+                gain.disconnect();
+            } catch (e) { }
+        }, 300);
+
+        activeIncantationRef.current = null;
+    }, [playMagicExplosionSound]);
+
     return {
         audioCtxRef,
         initAudio,
@@ -204,6 +300,12 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         loadDoorSound,
         playClickSound,
         loadClickSound,
+        playHitImpactSound,
+        loadHitImpactSound,
+        playIncantationSound,
+        stopIncantationSound,
+        playMagicExplosionSound,
+        loadSpellSounds,
         triggerHaptic
     };
 };

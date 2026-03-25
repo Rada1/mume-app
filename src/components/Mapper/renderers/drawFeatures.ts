@@ -47,10 +47,11 @@ const drawRoomFlagsOptimized = (
         { regex: /SHOP|STORE/i, sym: '$', color: '#f9e2af' },
         { regex: /GUILD|OFFICE/i, sym: 'G', color: '#cba6f7' },
         { regex: /RENT|INN/i, sym: 'R', color: '#89b4fa' },
-        { regex: /AGGRESSIVE/i, sym: '!', color: '#f38ba8', large: true },
+        { regex: /AGGRESSIVE|DEATH|DANGER/i, sym: '!', color: '#f38ba8', large: true },
         { regex: /HERB/i, sym: '♣', color: '#a6e3a1', large: true },
         { regex: /WATER|POND|WELL|FOUNTAIN/i, sym: '≈', color: '#89b4fa', large: true },
-        { regex: /DT|DEATHTRAP/i, sym: '☠', color: '#f38ba8' },
+        { regex: /DARK/i, sym: '☾', color: '#cad3f5' },
+        { regex: /NO_SUNDEATH/i, sym: '☠', color: '#ee99a0' }
     ];
 
     // 1. Special case: Quest Flags (always prioritized)
@@ -170,11 +171,6 @@ export const drawFeatures = (
                                 const pathWidth = 6;
                                 if (isCurrentRoad && normalizeTerrain(targetData[3] as any) === 'Road') drawLine(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? ROAD_COLOR_DARK : ROAD_COLOR_LIGHT, roadWidth, dpr, invZoom);
                                 else drawLine(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? PATH_COLOR_DARK : PATH_COLOR_LIGHT, pathWidth, dpr, invZoom);
-                            } else {
-                                const dx = Math.abs(rx - targetData[0]), dy = Math.abs(ry - targetData[1]);
-                                if (dx > 1.1 || dy > 1.1 || dir === 'u' || dir === 'd') {
-                                    drawLine(ctx, anchorX, anchorY, tpx, tpy, LONG_CONNECTION_COLOR, 2, dpr, invZoom);
-                                }
                             }
                             ctx.restore();
                         }
@@ -212,15 +208,25 @@ export const drawFeatures = (
 
                 // 3. Indicators and Flags (Zoom > 0.2)
                 if (camera.zoom > 0.2) {
-                    const mobF = localRoom?.mobFlags || rData[7] || [], loadF = localRoom?.loadFlags || rData[8] || [], questF = localRoom?.roomQuestFlags || [];
-                    if (mobF.length > 0 || loadF.length > 0 || questF.length > 0) {
+                    const hasLiveMob = localRoom?.mobFlags && localRoom.mobFlags.length > 0;
+                    const hasLiveLoad = localRoom?.loadFlags && localRoom.loadFlags.length > 0;
+                    
+                    const mobF = hasLiveMob ? localRoom.mobFlags! : (rData[7] || []);
+                    const loadF = hasLiveLoad ? localRoom.loadFlags! : (rData[8] || []);
+                    const questF = localRoom?.roomQuestFlags || [];
+
+                    const finalMobF = [...mobF];
+                    // Skip synthetic map icons for DARK/SUNDEATH as per user request
+                    // Shading is handled in drawTerrains.ts
+
+                    if (finalMobF.length > 0 || loadF.length > 0 || questF.length > 0) {
                         ctx.save();
                         if (isPeeked) {
                             ctx.globalAlpha = 0.4;
                         } else if (isExplored) {
                             ctx.globalAlpha = exploredAlphaMul;
                         }
-                        drawRoomFlagsOptimized(ctx, anchorX, anchorY, camera.zoom, mobF, loadF, questF);
+                        drawRoomFlagsOptimized(ctx, anchorX, anchorY, camera.zoom, finalMobF, loadF, questF);
                         ctx.restore();
                     }
 

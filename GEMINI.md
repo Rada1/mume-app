@@ -18,13 +18,17 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 
 ### 🎮 Game State & UI Context
 - **Central State (HP, Mana, Target, Inventory):** `src/context/GameContext.tsx`
+- **Map & Exploration State:** `src/context/MapperContext.tsx`
+- **User Input & Command History:** `src/context/InputContext.tsx`
 - **Entity Registry (NPCs, Players, Items):** `src/hooks/useEntityRegistry.ts` (Source of Truth)
 - **User Settings & Persistence:** `src/hooks/useSettings.ts`, `src/context/GameContext/useSettingsState.ts`
 - **Global Types & Interfaces:** `src/types/index.ts`
 
 ### 🏗️ UI & Layout
 - **Main App Shell:** `src/index.tsx`
-- **Visual Layers (Weather, HUD, Modals):** `src/components/Layout/`
+- **Core Layout Layers:** `src/components/Layout/` (Atmospheric, HUDClusters, MainContent, Modals)
+- **HUD Components:** `src/components/Layout/HUD/` (MapperCluster, StatsCluster, LineCluster, GroupDrawer)
+- **Side Drawers (Inventory, Equipment, Stats):** `src/components/Drawers/`
 - **Inline Button Popovers:** `src/components/Popovers/StandardMenuPopover.tsx`
 - **Mapper Component:** `src/components/Mapper/` (and `src/mapper/renderer.ts`)
 
@@ -32,12 +36,15 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 - **Low-level Telnet/GMCP:** `src/hooks/useTelnet.ts`
 - **GMCP Data Handling:** `src/hooks/useGmcpHandlers.ts`
 - **Game Output Parsing (Text):** `src/hooks/GameParser/useGameParser.ts` (Orchestrator)
-- **Parser Sub-Hooks:** `useStageInitializer.ts`, `useMessageRouter.ts`, `useLineProcessor.ts`
+- **Parser Sub-Hooks:** `src/hooks/GameParser/` (Combat, Comm, Room, Stat, Atmosphere, Prompt, etc.)
 - **Action Filtering:** `src/utils/actionUtils.ts` (Capability -> Button Map)
 - **Command Parsing (User Input):** `src/services/parser/services/mudParser.ts`
 - **Message Log & Combat:** `src/hooks/useMessageLog.ts`
 - **Command Control (Sending to Game):** `src/hooks/useCommandController.ts`
-- **Buttons & UI Interactions:** `src/hooks/useButtons.ts`, `src/hooks/useInteractionHandlers.ts`
+- **Specialized Handlers:** `usePracticeHandler.ts`, `useShopHandler.ts`, `useQuestsHandler.ts`
+- **Buttons & UI Interactions:** `useButtons.ts`, `useSpatButtons.ts`, `useInteractionHandlers.ts`, `useViewport.ts`
+- **Advanced Processing:** `useTriggerProcessor.ts`, `useKeywordOverrides.ts`, `useMessageHighlighter.ts`
+- **Audio & Atmosphere:** `useAtmosphereAudio.ts`, `useSoundSystem.ts`, `useZoneMusic.ts`, `useWeatherSounds.ts`, `useTerrainSounds.ts`
 
 ## 🛠️ Common Tasks Cheat Sheet
 
@@ -48,9 +55,11 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 | **Handle a New GMCP Packet** | `useGmcpHandlers.ts`, `GameContext.tsx`, `types/index.ts` |
 | **Change Message Styling** | `useMessageLog.ts`, `useMessageHighlighter.ts`, `MessageLog.css` |
 | **Fix Inline Button Menus** | `actionUtils.ts`, `useEntityRegistry.ts` |
-| **Update Parser Logic** | `useGameParser.ts`, `useStageInitializer.ts`, `useMessageRouter.ts` |
+| **Update Parser Logic** | `src/hooks/GameParser/`, `useGameParser.ts` |
 | **Add a New Modal/Setting** | `ModalsLayer.tsx`, `useSettings.ts`, `SettingsModal.tsx` |
 | **Update Button Logic** | `useButtons.ts`, `useButtonLogic.ts`, `ButtonUtils.ts` |
+| **Adjust Audio/Atmosphere** | `useAtmosphereAudio.ts`, `useSoundSystem.ts`, `useZoneMusic.ts` |
+| **Modify Drawers/UI Tabs** | `src/components/Drawers/`, `DrawerManager.tsx` |
 
 ## 🚫 Avoid Scanning (Use .geminiignore)
 - **Data/Logs:** Do NOT open `.txt`, `.xml`, `.mm2`, or large `.json` files in the root.

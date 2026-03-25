@@ -9,7 +9,7 @@ import { useLogPointerUp } from './useLogPointerUp';
  * @description thin orchestrator for log pointer interactions.
  * Delegates to modular hooks for down, move, and up logic.
  */
-export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>) => {
+export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>, longPressJustFiredRef?: React.MutableRefObject<boolean>) => {
     const { 
         setHeldButton, setActiveDragData, setCommandPreview, setUI, 
         viewport, triggerHaptic, heldButton, initAudio
@@ -28,7 +28,7 @@ export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.Muta
 
     // --- Modular Hooks ---
     const { handleLogPointerDown: internalDown } = useLogPointerDown(
-        deps, lookModFiredRef, logLongPressTimerRef, logDragStartPosRef, isLogDraggingRef
+        deps, lookModFiredRef, logLongPressTimerRef, logDragStartPosRef, isLogDraggingRef, longPressJustFiredRef
     );
     const { handleLogPointerMove: internalMove } = useLogPointerMove(
         deps, logDragStartPosRef, isLogDraggingRef, moveCountRef

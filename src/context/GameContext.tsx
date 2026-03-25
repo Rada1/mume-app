@@ -96,6 +96,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [keywordEditState, setKeywordEditState] = useState<{ context: string; displayText: string } | null>(null);
     const [keywordFailureBanner, setKeywordFailureBanner] = useState<{ context: string; displayText: string } | null>(null);
     const lastCommandContextRef = useRef<{ context: string; displayText: string } | null>(null);
+    const manualCancelRef = useRef(false);
     const openKeywordEdit = useCallback((context: string, displayText: string) => {
         setKeywordEditState({ context, displayText });
     }, []);
@@ -171,10 +172,17 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setPlaySound,
         playRandomSound,
         playMovementSound,
+        loadMovementSound,
         playDoorSound,
         loadDoorSound,
         playClickSound,
         loadClickSound,
+        playHitImpactSound,
+        loadHitImpactSound,
+        playIncantationSound,
+        stopIncantationSound,
+        playMagicExplosionSound,
+        loadSpellSounds,
         triggerHaptic,
         setTriggerHaptic
     } = useGameAudio({
@@ -184,8 +192,23 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         inCombat: s.inCombat,
         lighting: s.lighting,
         currentTerrain: s.currentTerrain,
-        weather: s.weather
+        weather: s.weather,
+        playerPosition: s.playerPosition,
+        waiting: v.stats.conditions?.waiting,
+        manualCancelRef,
+        gameState: s.gameState
     });
+
+    useEffect(() => {
+        if (initAudio && loadClickSound && loadMovementSound && loadDoorSound && loadHitImpactSound && loadSpellSounds) {
+            initAudio();
+            loadClickSound();
+            loadMovementSound();
+            loadDoorSound();
+            loadHitImpactSound();
+            loadSpellSounds();
+        }
+    }, [initAudio, loadClickSound, loadMovementSound, loadDoorSound, loadHitImpactSound, loadSpellSounds]);
 
     const containerRef = useRef<HTMLDivElement>(null);
     const mapperRef = useRef<MapperRef>(null);
@@ -282,13 +305,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isBloomEnabled: s.isBloomEnabled, setIsBloomEnabled: s.setIsBloomEnabled
     });
 
-    // Auto-load click sound if sound is enabled
-    useEffect(() => {
-        if (isSoundEnabled && audioCtxRef.current) {
-            loadClickSound();
-        }
-    }, [isSoundEnabled, audioCtxRef.current, loadClickSound]);
-
     const [input, setInput] = useState("");
     const { processMessageHtml } = useMessageHighlighter(v.target, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems, s.inlineCategories, s.isHighlighterEnabled, highlightVersion, s.discoveredItems, keywordOverrides, s.selectedObjectIds);
 
@@ -308,7 +324,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             buttonTimers: btn.buttonTimers,
             setActiveSet: btn.setActiveSet,
         },
-        addMessage, playSound, playRandomSound, playDoorSound, triggerHaptic,
+        addMessage, playSound, playHitImpactSound, playRandomSound, playDoorSound, triggerHaptic,
         setWeather: s.setWeather,
         setIsFoggy: s.setIsFoggy,
         setStats: v.setStats,
@@ -365,7 +381,18 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         lastCommIdBySenderRef,
         groupMembers: s.groupMembers,
         registerEntity: s.registerEntity,
-        setEntities: s.setEntities
+        setEntities: s.setEntities,
+        playIncantationSound,
+        stopIncantationSound,
+        playMagicExplosionSound,
+        deathRoomId: v.deathRoomId,
+        setDeathRoomId: v.setDeathRoomId,
+        accountState: v.accountState,
+        setAccountState: v.setAccountState,
+        setGameState: s.setGameState,
+        activePrompt: v.activePrompt,
+        gameState: s.gameState,
+        isMobile: viewport.isMobile
     });
 
 
@@ -448,6 +475,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         clearObjectSelection: s.clearObjectSelection,
         playClickSound,
         isSoundEnabled,
+        manualCancelRef,
+        waiting: v.stats.conditions?.waiting
     });
 
 
@@ -464,19 +493,23 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             if (typeof window !== 'undefined' && (window as any).mumeTelnet?.sendGmcp) {
                 (window as any).mumeTelnet.sendGmcp('Mume.Client.Edit', JSON.stringify({
                     key: s.mumeEditState.key,
-                    text: text
+                    text: text,
+                    playHitImpactSound: playHitImpactSound,
+                    playIncantationSound: playIncantationSound,
+                    stopIncantationSound: stopIncantationSound,
+                    playMagicExplosionSound: playMagicExplosionSound
                 }));
             }
         }
         s.setMumeEditState(prev => ({ ...prev, isOpen: false }));
-    }, [s.mumeEditState.key, executeCommand, s.setMumeEditState]);
+    }, [s.mumeEditState.key, executeCommand, s.setMumeEditState, playHitImpactSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound]);
 
     // Update the ref so the state and parser components can call it
     useEffect(() => {
         if (s.executeCommandRef) s.executeCommandRef.current = executeCommand;
     }, [executeCommand, s.executeCommandRef]);
 
-    useSessionManager({
+    const { prepareLoginAttempt } = useSessionManager({
         status: s.status,
         activePrompt: v.activePrompt,
         loginName: settings.loginName,
@@ -491,7 +524,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isNoviceMode,
         groupMembers: s.groupMembers,
         spatButtons,
-        triggerSpitManual
+        triggerSpitManual,
+        gameState: s.gameState
     });
 
     // Handle keyboard-triggered visibility for buttons
@@ -574,12 +608,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         mapperRef, ...settings, audioCtxRef,
         telnet, parser, practice,
         spatButtons, setSpatButtons,
+        gameState: s.gameState, setGameState: s.setGameState, prepareLoginAttempt,
         diagnosticLogs, addDiagnosticLog,
         refreshLogHighlights,
         addMessage, addSystemMessage,
         isMendingMode: v.isMendingMode, setIsMendingMode: v.setIsMendingMode,
         mendingTarget: v.mendingTarget, setMendingTarget: v.setMendingTarget,
         heldButton: v.heldButton, setHeldButton: v.setHeldButton,
+        accountState: v.accountState, setAccountState: v.setAccountState,
         keywordOverrides, openKeywordEdit,
         keywordEditState, setKeywordEditState,
         setKeywordOverride, removeKeywordOverride,
@@ -597,7 +633,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         settings, audioCtxRef, telnet, parser, spatButtons, diagnosticLogs, addDiagnosticLog,
         v.isMendingMode, v.setIsMendingMode, v.mendingTarget, v.setMendingTarget,
         v.heldButton, v.setHeldButton, handleLogPointerDown, handleLogPointerUp,
-        handleSaveMumeEdit, s.setQuests, addMessage, addSystemMessage
+        handleSaveMumeEdit, s.setQuests, addMessage, addSystemMessage,
+        s.gameState, s.setGameState, prepareLoginAttempt
     ]);
 
     const logValue = useMemo(() => ({

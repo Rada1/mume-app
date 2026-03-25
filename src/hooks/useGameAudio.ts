@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 import { useSoundSystem } from './useSoundSystem';
 import { useZoneMusic } from './useZoneMusic';
 import { useTerrainSounds } from './useTerrainSounds';
@@ -13,6 +13,10 @@ export interface GameAudioDeps {
     lighting: string;
     currentTerrain: string;
     weather: WeatherType;
+    playerPosition?: string;
+    waiting?: boolean;
+    manualCancelRef?: React.MutableRefObject<boolean>;
+    gameState?: string;
 }
 
 export const useGameAudio = ({
@@ -22,8 +26,13 @@ export const useGameAudio = ({
     inCombat,
     lighting,
     currentTerrain,
-    weather
+    weather,
+    playerPosition,
+    waiting,
+    manualCancelRef,
+    gameState
 }: GameAudioDeps) => {
+    const isSleeping = playerPosition === 'sleeping';
     const playSoundRef = useRef<(buffer: AudioBuffer) => void>(() => { });
     const setPlaySound = useCallback((fn: (buffer: AudioBuffer) => void) => { playSoundRef.current = fn; }, []);
     const playSound = useCallback((buffer: AudioBuffer) => playSoundRef.current(buffer), []);
@@ -42,15 +51,38 @@ export const useGameAudio = ({
         playSound: soundSystemPlay,
         playRandomSound,
         playMovementSound: soundSystemMove,
+        loadMovementSound,
         playDoorSound,
         loadDoorSound,
         playClickSound,
-        loadClickSound
+        loadClickSound,
+        playHitImpactSound,
+        loadHitImpactSound,
+        playIncantationSound,
+        stopIncantationSound,
+        playMagicExplosionSound,
+        loadSpellSounds
     } = useSoundSystem(isSoundEnabled);
 
-    useZoneMusic({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic, isInCombat: inCombat, lighting });
-    useTerrainSounds({ currentTerrain, isSoundEnabled, audioCtxRef, lighting });
-    useWeatherSounds({ weather, isSoundEnabled, audioCtxRef });
+    useZoneMusic({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic, isInCombat: inCombat, lighting, isSleeping, gameState });
+    useTerrainSounds({ currentTerrain, isSoundEnabled, audioCtxRef, lighting, isSleeping });
+    useWeatherSounds({ weather, isSoundEnabled, audioCtxRef, isSleeping });
+
+    // Stop incantation if we are no longer waiting (interrupt or end of cast)
+    const lastWaitingRef = useRef(waiting);
+    useEffect(() => {
+        if (lastWaitingRef.current && !waiting) {
+            if (manualCancelRef?.current) {
+                console.log('[Audio] Manual cancel detected, silent stop');
+                stopIncantationSound(false);
+                manualCancelRef.current = false;
+            } else {
+                console.log('[Audio] Waiting state cleared, triggering explosion if cast was successful');
+                stopIncantationSound(true); 
+            }
+        }
+        lastWaitingRef.current = waiting;
+    }, [waiting, stopIncantationSound, manualCancelRef]);
 
     // Wire the real functions into refs immediately
     triggerHapticRef.current = soundSystemHaptic;
@@ -64,10 +96,17 @@ export const useGameAudio = ({
         setPlaySound,
         playRandomSound,
         playMovementSound,
+        loadMovementSound,
         playDoorSound,
         loadDoorSound,
         playClickSound,
         loadClickSound,
+        playHitImpactSound,
+        loadHitImpactSound,
+        playIncantationSound,
+        stopIncantationSound,
+        playMagicExplosionSound,
+        loadSpellSounds,
         triggerHaptic,
         setTriggerHaptic
     };

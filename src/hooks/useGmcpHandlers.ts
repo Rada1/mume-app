@@ -713,6 +713,7 @@ export const useGmcpHandlers = ({
             }
         },
         onDisconnect: () => {
+            setCharacterName(null);
             setGroupMembers([]);
             setRoomPlayers([]);
             setRoomNpcs([]);

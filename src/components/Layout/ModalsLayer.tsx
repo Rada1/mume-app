@@ -7,6 +7,7 @@ import { DrawerManager } from '../Drawers/DrawerManager';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { OnboardingOverlay } from '../OnboardingOverlay';
 import { KeywordEditModal } from '../KeywordEditModal';
+import { AccountScreen } from '../Account/AccountScreen';
 
 interface ModalsLayerProps {
     isLoading: boolean;
@@ -102,6 +103,9 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setKeywordOverride, removeKeywordOverride,
         keywordOverrides,
         keywordFailureBanner, setKeywordFailureBanner,
+        gameState,
+        accountState,
+        viewport,
     } = useGame() as any;
 
     const { setTarget } = useVitals();
@@ -157,6 +161,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         window.addEventListener('pointerdown', handleClickOutside, { capture: true });
         return () => window.removeEventListener('pointerdown', handleClickOutside, { capture: true });
     }, [popoverState, setPopoverState]);
+
+    console.log('[DEBUG] ModalsLayer Render', { gameState, accountStage: accountState?.stage });
 
     return (
         <>
@@ -365,6 +371,9 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 >
                     ⚠ Keyword "{keywordFailureBanner.context}" not found — tap to fix
                 </div>
+            )}
+            {gameState === 'account' && accountState.stage !== 'none' && viewport.isMobile && (
+                <AccountScreen />
             )}
         </>
     );

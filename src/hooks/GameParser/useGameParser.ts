@@ -3,7 +3,7 @@
  * @description Orchestrator hook that coordinates specialized sub-parsers to process game output.
  */
 
-import { useRef, useCallback } from 'react';
+import React, { useCallback, useRef, useMemo, useEffect } from 'react';
 import { DrawerLine, GameEntity } from '../../types';
 import { UseGameParserDeps } from './types';
 
@@ -24,10 +24,16 @@ import { useCommParser } from './useCommParser';
 import { useLineProcessor } from './useLineProcessor';
 import { useStageInitializer } from './useStageInitializer';
 import { useMessageRouter } from './useMessageRouter';
+import { useAccountParser } from './useAccountParser';
 
 export function useGameParser(deps: UseGameParserDeps) {
     const { 
-        mapperRef, btn, addMessage, playSound, playRandomSound, triggerHaptic, setStats, setWeather, setIsFoggy, 
+        mapperRef, btn, addMessage, playSound,        playHitImpactSound,
+        playIncantationSound,
+        stopIncantationSound,
+        playMagicExplosionSound,
+        playRandomSound,
+ playDoorSound, triggerHaptic, setStats, setWeather, setIsFoggy, 
         setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, 
         setInCombat, inCombatRef, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, 
         executeCommandRef, setInventoryLines, setStatsLines, setEqLines, setWhoList, setWhereList, 
@@ -37,8 +43,9 @@ export function useGameParser(deps: UseGameParserDeps) {
         setBufferHealthStatus, setBufferName, setCharacterInfo, setQuests, quests,
         mumeEditState, setMumeEditState, isPlayersOpen, isInventoryOpen, isEquipmentOpen,
         triggerXpTicker, pendingGmcpCommRef, lastCommIdBySenderRef, groupMembers,
-        shop, practice, registerEntity, setEntities, playDoorSound, setPlayerPosition,
-        isCharacterOpen, isStatsOpen
+        shop, practice, registerEntity, setEntities, setPlayerPosition,
+        isCharacterOpen, isStatsOpen,
+        accountState, setAccountState, setGameState
     } = deps;
 
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef, playRandomSound });
@@ -67,7 +74,7 @@ export function useGameParser(deps: UseGameParserDeps) {
 
     const { checkCombatMatch, handleCombatExit, handleXpTicker } = useCombatParser({
         inCombatRef, setInCombat, setOpponentHealthStatus, setOpponentName, setCharacterInfo,
-        triggerXpTicker, groupMembers
+        triggerXpTicker, groupMembers, mapperRef, setDeathRoomId: deps.setDeathRoomId
     });
 
     const { parseGlobalStatus, parseDetailedScore } = useStatParser({
@@ -101,12 +108,35 @@ export function useGameParser(deps: UseGameParserDeps) {
         finalizeCapture
     });
 
-    const { determineVisibility, routeMessage, detectItemsInRoom } = useMessageRouter({
+    const { routeMessage, determineVisibility, detectItemsInRoom } = useMessageRouter({
         captureStage, isSilentCapture, isDrawerCapture,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
         isWaitingForInv, isWaitingForEq, isWaitingForStats,
         setWhoList, setWhereList, setCharacterInfo, setDiscoveredItems, extractNoun, ansiConvert
     });
+
+    const { parseAccountLine } = useAccountParser({
+        accountState,
+        setAccountState,
+        setGameState,
+        sendCommand: (cmd: string) => executeCommandRef.current?.(cmd),
+        executeCommandRef,
+        isMobile: deps.isMobile
+    });
+
+    // --- Account / Prompt Watcher ---
+    // This allows the Account Screen to trigger on the PROMPT (without newline)
+    // so it's the "first thing" the user sees.
+    useEffect(() => {
+        if (!deps.activePrompt) return;
+        // Only run if we aren't already in a game state
+        if (deps.gameState !== 'playing') {
+            const lines = deps.activePrompt.split('\n');
+            lines.forEach((line, idx) => {
+                parseAccountLine(line, idx === 0);
+            });
+        }
+    }, [deps.activePrompt, deps.gameState, parseAccountLine]);
 
     const processLine = useCallback((line: string) => {
         let cleanLine = line.replace(/\r$/, '').normalize('NFC');
@@ -148,6 +178,32 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         const combatInfo = checkCombatMatch(lower);
         const isCombatMatch = combatInfo.isMatch;
+
+        if (combatInfo.isMatch && combatInfo.side === 'player' && (combatInfo as any).isImpact) {
+            playHitImpactSound?.();
+        }
+
+        // Check for Account/Login prompts
+        if (parseAccountLine(line, false)) return;
+
+        // --- Spell Casting Sounds ---
+        if (lower.includes('strange incantations') || 
+            lower.includes('you start to concentrate') || 
+            lower.includes('you muster all of your concentration')) {
+            playIncantationSound?.();
+        }
+
+        if (lower === 'ok.') {
+            stopIncantationSound?.(true);
+        } else if (lower.includes('lose your concentration') || 
+                   lower.includes('lost your concentration') ||
+                   lower.includes('stop your incantations') ||
+                   lower.includes('are interrupted') ||
+                   lower.includes('concentration is broken') ||
+                   lower.includes('too dazed to concentrate') ||
+                   lower.includes('too stunned to concentrate')) {
+            stopIncantationSound?.(false);
+        }
 
         if (lower.includes('type %e on an empty line to save') || 
                  lower.includes('type %q to abandon') ||
@@ -262,7 +318,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         const isImportantMessage = /hits you|receive your share|is dead|tells you|say,|group:|following/i.test(lower);
         const shouldShow = determineVisibility(textOnly, lower, isImportantMessage, isRoomName, promptInfo.isEndPrompt);
 
-        if (textOnly.includes('*** Return:') || textOnly.includes('*** [Hit Return to continue]')) {
+        if ((textOnly.includes('*** Return:') || textOnly.includes('*** [Hit Return to continue]')) && deps.gameState === 'playing') {
             executeCommandRef.current?.('', true, true);
         }
 

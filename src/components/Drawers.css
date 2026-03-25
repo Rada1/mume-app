@@ -739,6 +739,39 @@
     line-height: 1.1;
 }
 
+/* Equipment Drawer Specific Centering */
+.equipment-drawer .equipment-item-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 0;
+}
+
+.equipment-drawer .equipment-location {
+    width: auto !important;
+    margin-right: 0 !important;
+    text-align: center;
+    font-size: 0.72rem !important;
+    opacity: 0.45;
+    color: #fff;
+    margin-top: -1px; /* Pull it slightly closer to the item name button */
+}
+
+.equipment-drawer .inline-btn {
+    width: 100%;
+    display: flex !important;
+    justify-content: center !important;
+    padding: 3px 10px !important;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.equipment-drawer .drawer-item-text-wrapper {
+    justify-content: center;
+    text-align: center;
+}
+
 .drawer-container-toggle {
     font-size: 0.7rem;
     opacity: 0.5;

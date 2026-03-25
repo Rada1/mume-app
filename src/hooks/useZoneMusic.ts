@@ -8,15 +8,32 @@ interface ZoneMusicDeps {
     zoneMusic: ZoneMusicMapping[];
     isInCombat?: boolean;
     lighting?: string;
+    isSleeping?: boolean;
+    gameState?: string;
 }
 
-const STATIC_MUSIC_MAP: Record<string, string> = {
-    'Bree': '/assets/Sounds/Zone Sounds/BreeSound.wav',
-    'the Old East Road': '/assets/Sounds/Zone Sounds/oldeastroad.mp3',
-    'the Shire': '/assets/Music/shire.mp3',
-    'the Blue Mountains': '/assets/Music/blue_mountains.mp3',
-    'the Old Forest': '/assets/Music/old_forest.mp3',
-    'the Barrow-downs': '/assets/Music/downs.mp3',
+const STATIC_MUSIC_MAP: Record<string, string | string[]> = {
+    'bree': '/assets/Sounds/Zone Sounds/BreeSound.wav',
+    'old east road': [
+        '/assets/Sounds/Zone Sounds/oldeastroad.mp3', 
+        '/assets/Sounds/Zone Sounds/oldeastroad2.mp3'
+    ],
+    'shire': [
+        '/assets/Sounds/Zone Sounds/Shire1.mp3', 
+        '/assets/Sounds/Zone Sounds/Shire2.mp3'
+    ],
+    'blue mountains': '/assets/Music/blue_mountains.mp3',
+    'old forest': '/assets/Music/old_forest.mp3',
+    'barrow-downs': '/assets/Music/downs.mp3',
+    'rivendell': [
+        '/assets/Sounds/Zone Sounds/Rivendell1.mp3', 
+        '/assets/Sounds/Zone Sounds/Rivendell2.mp3', 
+        '/assets/Sounds/Zone Sounds/Rivendell3.mp3'
+    ],
+    'grey havens': '/assets/Sounds/Zone Sounds/Gray Havens1.mp3',
+    'north anduin': '/assets/Sounds/Zone Sounds/northanduin.mp3',
+    'road to tharbad': '/assets/Sounds/Zone Sounds/roadtotharbad.mp3',
+    'road to fornost': '/assets/Sounds/Zone Sounds/roadtofornost1.mp3',
 };
 
 const FIGHT_MUSIC_URL = '/assets/Sounds/Sound effects/fight.mp3';
@@ -27,7 +44,7 @@ interface TrackState {
     url: string | null;
 }
 
-export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic, isInCombat, lighting }: ZoneMusicDeps) => {
+export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic, isInCombat, lighting, isSleeping, gameState }: ZoneMusicDeps) => {
     const zoneTrack = useRef<TrackState>({ source: null, gain: null, url: null });
     const combatTrack = useRef<TrackState>({ source: null, gain: null, url: null });
     const lastZoneRef = useRef<string | null>(null);
@@ -37,7 +54,7 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
 
     // --- Main Logic ---
     useEffect(() => {
-        if (!isSoundEnabled || !audioCtxRef.current) {
+        if (!isSoundEnabled || !audioCtxRef.current || isSleeping) {
             stopAll();
             return;
         }
@@ -50,8 +67,8 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
         const lightingChanged = isDay !== (lastLightingRef.current === 'sun');
         lastLightingRef.current = lighting || null;
         
-        if (!isDay) {
-            // Silence area music at night
+        if (!isDay && gameState !== 'account') {
+            // Silence area music at night (but not on the account screen)
             if (zoneTrack.current.source) {
                 console.log('[ZoneMusic] Night detected, silencing area music.');
                 isStoppingManualRef.current = true;
@@ -62,9 +79,11 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
             return;
         }
 
-        if (roomZone && (roomZone !== lastZoneRef.current || lightingChanged)) {
-            console.log('[ZoneMusic] Zone changed to:', roomZone);
-            lastZoneRef.current = roomZone;
+        if ((roomZone || gameState === 'account') && (roomZone !== lastZoneRef.current || gameState !== lastZoneRef.current || lightingChanged)) {
+            console.log('[ZoneMusic] State/Zone changed, updating music. Zone:', roomZone, 'State:', gameState);
+            if (gameState === 'account') lastZoneRef.current = 'account';
+            else lastZoneRef.current = roomZone;
+
             // Clear any pending silence timer when moving to a new area
             if (silenceTimeoutRef.current) {
                 clearTimeout(silenceTimeoutRef.current);
@@ -76,7 +95,7 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
         // 3. Handle Volume Ducking based on Combat state
         updateVolumes();
 
-    }, [roomZone, isSoundEnabled, isInCombat, zoneMusic, lighting]);
+    }, [roomZone, isSoundEnabled, isInCombat, zoneMusic, lighting, isSleeping, gameState]);
 
     const stopAll = () => {
         isStoppingManualRef.current = true;
@@ -91,12 +110,13 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
     };
 
     const updateVolumes = () => {
-        if (!audioCtxRef.current) return;
+        if (!audioCtxRef.current || isStoppingManualRef.current) return;
         const ctx = audioCtxRef.current;
-        const targetZoneVol = isInCombat ? 0.02 : 0.1;
+        const targetZoneVol = isInCombat ? 0.01 : 0.05;
         
         if (zoneTrack.current.gain) {
             const g = zoneTrack.current.gain.gain;
+            console.log('[ZoneMusic] Updating volume to:', targetZoneVol);
             g.cancelScheduledValues(ctx.currentTime);
             g.setValueAtTime(g.value, ctx.currentTime);
             g.linearRampToValueAtTime(targetZoneVol, ctx.currentTime + 3);
@@ -140,18 +160,62 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
     };
 
     const updateZoneMusic = async () => {
-        if (!roomZone || !audioCtxRef.current) return;
+        if (!audioCtxRef.current || isSleeping) {
+            if (isSleeping) {
+                if (zoneTrack.current.source) fadeOutAndStop(zoneTrack.current);
+                if (combatTrack.current.source) fadeOutAndStop(combatTrack.current);
+                zoneTrack.current = { source: null, gain: null, url: null };
+                combatTrack.current = { source: null, gain: null, url: null };
+            }
+            return;
+        }
+
+        // --- Account Music Logic ---
+        if (gameState === 'account') {
+            const accountMusicUrl = '/assets/Sounds/Zone Sounds/Lorien1.mp3';
+            if (zoneTrack.current.url === accountMusicUrl && zoneTrack.current.source) return;
+
+            console.log('[ZoneMusic] Starting Account music:', accountMusicUrl);
+            const buffer = await loadAudio(accountMusicUrl);
+            if (!buffer) return;
+
+            const ctx = audioCtxRef.current!;
+            if (zoneTrack.current.source) fadeOutAndStop({ ...zoneTrack.current });
+
+            const source = ctx.createBufferSource();
+            source.buffer = buffer;
+            source.loop = true; // Looping music for the account screen
+
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(0, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 3);
+
+            source.connect(gain);
+            gain.connect(ctx.destination);
+            source.start(0);
+
+            zoneTrack.current = { source, gain, url: accountMusicUrl };
+            lastZoneRef.current = 'account';
+            return;
+        }
+        
+        if (!roomZone) {
+            return;
+        }
         
         // Find matching URL
-        const dynamicMatch = zoneMusic.find(m => m.zone.toLowerCase() === roomZone.toLowerCase());
-        const rawUrl = dynamicMatch?.url || STATIC_MUSIC_MAP[roomZone] || STATIC_MUSIC_MAP[roomZone.replace(/^the\s+/i, '')];
+        const normalizedZone = roomZone.toLowerCase().replace(/^the\s+/i, '');
+        const dynamicMatch = zoneMusic.find(m => m.zone.toLowerCase().replace(/^the\s+/i, '') === normalizedZone);
+        const rawUrl = dynamicMatch?.url || STATIC_MUSIC_MAP[normalizedZone];
         if (!rawUrl) {
             fadeOutAndStop(zoneTrack.current);
             zoneTrack.current = { source: null, gain: null, url: null };
             return;
         }
 
-        const musicUrl = Array.isArray(rawUrl) ? rawUrl[0] : rawUrl;
+        const musicUrl = Array.isArray(rawUrl) 
+            ? rawUrl[Math.floor(Math.random() * rawUrl.length)] 
+            : rawUrl;
         if (musicUrl === zoneTrack.current.url && zoneTrack.current.source) return;
 
         console.log('[ZoneMusic] Loading Zone Music:', musicUrl);
@@ -163,8 +227,8 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
         // Fade out previous zone track (passing a copy so we can clear the ref immediately)
         if (zoneTrack.current.source) {
             isStoppingManualRef.current = true;
+            console.log('[ZoneMusic] Initiating fade out of old track:', zoneTrack.current.url);
             fadeOutAndStop({ ...zoneTrack.current });
-            isStoppingManualRef.current = false;
         }
 
         // Start new zone track
@@ -175,6 +239,7 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
         source.onended = () => {
             // Only trigger silence timeout if the track finished naturally (not stopped by cross-fade/hook)
             if (!isStoppingManualRef.current && lastZoneRef.current === roomZone) {
+                zoneTrack.current.source = null;
                 const silenceMinutes = 1 + Math.random() * 3; // 1-4 minutes of silence
                 console.log(`[ZoneMusic] Track finished. Waiting ${silenceMinutes.toFixed(1)} minutes before looping.`);
                 silenceTimeoutRef.current = setTimeout(() => {
@@ -187,7 +252,7 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
 
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        const targetVol = isInCombat ? 0.02 : 0.1;
+        const targetVol = isInCombat ? 0.01 : 0.05;
         gain.gain.linearRampToValueAtTime(targetVol, ctx.currentTime + 3);
 
         source.connect(gain);
@@ -198,6 +263,7 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
         source.start(0, offset);
 
         zoneTrack.current = { source, gain, url: musicUrl };
+        isStoppingManualRef.current = false;
     };
 
     const loadAudio = async (url: string): Promise<AudioBuffer | null> => {

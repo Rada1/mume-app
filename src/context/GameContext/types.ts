@@ -25,6 +25,8 @@ export interface VitalsContextType {
     hitFlash: boolean;
     deathStage: DeathStage;
     setDeathStage: (val: DeathStage) => void;
+    deathRoomId: string | null;
+    setDeathRoomId: (val: string | null) => void;
     heldButton: any;
     setHeldButton: (val: any) => void;
     isMendingMode: boolean;
@@ -108,6 +110,8 @@ export interface GameContextType {
     inCombatRef: RefObject<boolean>;
     status: 'connected' | 'disconnected' | 'connecting';
     setStatus: (val: 'connected' | 'disconnected' | 'connecting') => void;
+    gameState: import('../../types').GameState;
+    setGameState: Dispatch<SetStateAction<import('../../types').GameState>>;
     characterName: string | null;
     setCharacterName: (name: string | null) => void;
 
@@ -180,6 +184,8 @@ export interface GameContextType {
     mumeEditState: { isOpen: boolean; title: string; text: string; key: string };
     setMumeEditState: Dispatch<SetStateAction<{ isOpen: boolean; title: string; text: string; key: string }>>;
     handleSaveMumeEdit: (text: string) => void;
+    accountState: import('../../types').AccountState;
+    setAccountState: Dispatch<SetStateAction<import('../../types').AccountState>>;
 
     // Environmental state
     lighting: LightingType;
@@ -276,6 +282,7 @@ export interface GameContextType {
     setLoginName: Dispatch<SetStateAction<string>>;
     loginPassword: string;
     setLoginPassword: Dispatch<SetStateAction<string>>;
+    prepareLoginAttempt: () => void;
     isLoading: boolean;
     setIsLoading: Dispatch<SetStateAction<boolean>>;
     soundTriggers: SoundTrigger[];

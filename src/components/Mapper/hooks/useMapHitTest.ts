@@ -10,7 +10,7 @@ interface UseMapHitTestProps {
     canvasRef: React.RefObject<HTMLCanvasElement>;
     viewZ: number | null;
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
-    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>>;
+    preloadedCoordsRef: React.MutableRefObject<Record<string, any[]>>;
 }
 
 export const useMapHitTest = ({
@@ -20,9 +20,10 @@ export const useMapHitTest = ({
     const screenToWorld = useCallback((sx: number, sy: number) => {
         const cvs = canvasRef.current;
         if (!cvs) return { x: 0, y: 0 };
+        const rect = cvs.getBoundingClientRect();
         return {
-            x: (sx / cameraRef.current.zoom) + cameraRef.current.x,
-            y: (sy / cameraRef.current.zoom) + cameraRef.current.y
+            x: ((sx - rect.left) / cameraRef.current.zoom) + cameraRef.current.x,
+            y: ((sy - rect.top) / cameraRef.current.zoom) + cameraRef.current.y
         };
     }, [canvasRef, cameraRef]);
 
@@ -36,7 +37,7 @@ export const useMapHitTest = ({
         // 1. Search Local State first
         for (const key in roomsToSearch) {
             const r = roomsToSearch[key];
-            const rx = r.x * GRID_SIZE, ry = r.y * GRID_SIZE;
+            const rx = Math.round(r.x) * GRID_SIZE, ry = Math.round(r.y) * GRID_SIZE;
             if (wx >= rx - margin && wx <= rx + GRID_SIZE + margin && wy >= ry - margin && wy <= ry + GRID_SIZE + margin) {
                 const rz = r.z || 0;
                 if (rz === currentZ) return r.id;
@@ -60,7 +61,7 @@ export const useMapHitTest = ({
                         if (vnums) {
                             for (const vnum of vnums) {
                                 const [rx_g, ry_g] = preloadedCoordsRef.current[vnum];
-                                const rx = rx_g * GRID_SIZE, ry = ry_g * GRID_SIZE;
+                                const rx = Math.round(rx_g) * GRID_SIZE, ry = Math.round(ry_g) * GRID_SIZE;
                                 if (wx >= rx - margin && wx <= rx + GRID_SIZE + margin && wy >= ry - margin && wy <= ry + GRID_SIZE + margin) {
                                     return `m_${vnum}`;
                                 }

@@ -13,6 +13,8 @@ export interface MapperRoom {
     mobFlags?: string[];
     loadFlags?: string[];
     roomQuestFlags?: string[];
+    light?: string | number | null;
+    sundeath?: number;
     createdAt: number;
 }
 
@@ -83,6 +85,7 @@ export interface GmcpRoomInfo {
     environment?: string | null;
     light?: string | number | null;
     l?: string | number | null;
+    sundeath?: number;
     exits?: Record<string, GmcpExitInfo | number | false>;
     details?: string[];
     room_quest_flags?: string[];

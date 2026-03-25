@@ -8,7 +8,8 @@ export type SwipeDirection = 'up' | 'down' | 'left' | 'right' | 'ne' | 'nw' | 's
 export type DeathStage = 'none' | 'fade_to_black' | 'flash' | 'black_hold' | 'fade_in' | 'blood_vignette';
 export type TriggerAction = 'show' | 'switch_set';
 export type UiMode = 'auto' | 'desktop' | 'portrait' | 'landscape';
-export type CaptureStage = 'none' | 'who' | 'where' | 'inv' | 'eq' | 'stat' | 'container' | 'shop' | 'shop-detail' | 'practice' | 'whois' | 'description' | 'info' | 'quest';
+export type GameState = 'disconnected' | 'account' | 'playing';
+export type CaptureStage = 'none' | 'who' | 'where' | 'inv' | 'eq' | 'stat' | 'container' | 'shop' | 'shop-detail' | 'practice' | 'whois' | 'description' | 'info' | 'quest' | 'account';
 export type CombatHealthStatus = 'Healthy' | 'Fine' | 'Hurt' | 'Wounded' | 'Badly Wounded' | 'Awful' | 'Dying' | 'Stunned' | 'None';
 
 export type OptimisticChange =
@@ -369,6 +370,8 @@ export interface SettingsModalProps {
     setIsCrtEnabled: (val: boolean) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
+    showLegacyButtons: boolean;
+    setShowLegacyButtons: (val: boolean) => void;
 }
 
 export interface ButtonSetSettings {
@@ -490,6 +493,7 @@ export interface GmcpRoomInfo {
     environment?: string | null;
     light?: string | number | null;
     l?: string | number | null;
+    sundeath?: boolean;
     exits?: Record<string, GmcpExitInfo | number | false>;
     details?: string[];
 }
@@ -603,4 +607,41 @@ export interface GmcpMumeEdit {
 export interface ZoneMusicMapping {
     zone: string;
     url: string | string[];
+}
+
+// --- ACCOUNT & CHARACTER SELECTION ---
+
+export type AccountStage = 'login' | 'character-select' | 'character-detail' | 'account-menu' | 'character-creation' | 'none';
+
+export interface CharacterEntry {
+    index?: number;
+    name: string;
+    race: string;
+    sublevel?: string;
+    level: string | number;
+    logon: string;
+    area: string;
+    rent: string;
+    status?: string;
+    host?: string;
+}
+
+export interface CreationOption {
+    id: string;
+    label: string;
+}
+
+export interface CreationPrompt {
+    title: string;
+    description: string;
+    options: CreationOption[];
+    footer?: string;
+}
+
+export interface AccountState {
+    stage: AccountStage;
+    characters: CharacterEntry[];
+    selectedCharacter: CharacterEntry | null;
+    creationPrompt?: CreationPrompt;
+    lastCreatedCharacterName?: string;
 }

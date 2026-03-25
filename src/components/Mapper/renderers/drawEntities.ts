@@ -616,6 +616,109 @@ export const drawMarkers = (
     });
 };
 
+export const drawDeathIndicator = (rCtx: RenderContext) => {
+    const { ctx, deathRoomId, allRooms, preloaded, currentZ, camera, now, dpr } = rCtx;
+    if (!deathRoomId) return;
+
+    let rx: number | undefined, ry: number | undefined, rz: number | undefined;
+
+    // Resolve death room coordinates
+    const localRoom = allRooms[`m_${deathRoomId}`] || allRooms[deathRoomId] || Object.values(allRooms).find(r => String(r.gmcpId) === deathRoomId);
+    if (localRoom) {
+        rx = localRoom.x; ry = localRoom.y; rz = localRoom.z || 0;
+    } else if (preloaded[deathRoomId]) {
+        const p = preloaded[deathRoomId];
+        rx = p[0]; ry = p[1]; rz = p[2] || 0;
+    }
+
+    if (rx === undefined || ry === undefined) return;
+    if (rz === undefined) rz = 0;
+
+    const px = rx * GRID_SIZE + GRID_SIZE / 2;
+    const py = ry * GRID_SIZE + GRID_SIZE / 2;
+    const alpha = Math.max(0, 1 - Math.abs(rz - currentZ));
+
+    // Pulse effect
+    const pulse = (Math.sin(now / 350) + 1) / 2;
+
+    // --- Off-Screen Indicators ---
+    const viewX1 = camera.x, viewY1 = camera.y;
+    const viewW = ctx.canvas.width / (rCtx.dpr * camera.zoom);
+    const viewH = ctx.canvas.height / (rCtx.dpr * camera.zoom);
+    const viewX2 = viewX1 + viewW, viewY2 = viewY1 + viewH;
+
+    const isOffScreen = px < viewX1 || px > viewX2 || py < viewY1 || py > viewY2;
+
+    if (isOffScreen) {
+        // Draw directional arrow at screen edge
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+        const centerX = viewX1 + viewW / 2;
+        const centerY = viewY1 + viewH / 2;
+        const dx = px - centerX;
+        const dy = py - centerY;
+        const angleToMember = Math.atan2(dy, dx);
+
+        const aspect = viewW / viewH;
+        const tanAngle = Math.abs(Math.tan(angleToMember));
+        let edgeX, edgeY;
+
+        if (tanAngle < 1 / aspect) {
+            edgeX = Math.sign(dx) * (viewW / 2 - 15);
+            edgeY = edgeX * Math.tan(angleToMember);
+        } else {
+            edgeY = Math.sign(dy) * (viewH / 2 - 15);
+            edgeX = edgeY / Math.tan(angleToMember);
+        }
+
+        const screenX = (viewW / 2 + edgeX) * rCtx.dpr * camera.zoom;
+        const screenY = (viewH / 2 + edgeY) * rCtx.dpr * camera.zoom;
+
+        // Draw Arrow
+        ctx.translate(screenX, screenY);
+        ctx.rotate(angleToMember);
+        
+        ctx.fillStyle = `rgba(239, 68, 68, ${0.4 + pulse * 0.6})`;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = 'rgba(239, 68, 68, 0.8)';
+        
+        ctx.beginPath();
+        ctx.moveTo(8, 0);
+        ctx.lineTo(-8, -6);
+        ctx.lineTo(-4, 0);
+        ctx.lineTo(-8, 6);
+        ctx.closePath();
+        ctx.fill();
+
+        // Label
+        ctx.rotate(-angleToMember); // Reset rotation for text
+        ctx.font = 'bold 10px Inter';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('DEATH', 0, 18);
+
+        ctx.restore();
+    } else if (alpha > 0.1) {
+        // On-screen pulsing red highlight
+        ctx.save();
+        ctx.globalAlpha = alpha * (0.3 + pulse * 0.4);
+        ctx.fillStyle = '#ef4444';
+        
+        ctx.beginPath();
+        ctx.arc(px, py, GRID_SIZE * 0.45 + (pulse * 4), 0, Math.PI * 2);
+        ctx.fill();
+
+        // Inner core
+        ctx.globalAlpha = alpha * 0.8;
+        ctx.beginPath();
+        ctx.arc(px, py, 4, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.restore();
+    }
+};
+
 export const drawMarquee = (rCtx: RenderContext, marquee: { start: { x: number, y: number }, end: { x: number, y: number } } | null) => {
     const { ctx, dpr } = rCtx;
     if (marquee && marquee.start && marquee.end) {

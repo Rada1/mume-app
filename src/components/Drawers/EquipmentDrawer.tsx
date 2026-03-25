@@ -9,6 +9,7 @@ import { useGame, useUI } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
 import { getEffectiveKeyword } from '../../utils/keywordUtils';
+import { isObjectSelected } from '../../utils/selectionUtils';
 
 interface EquipmentDrawerProps {
     isOpen: boolean;
@@ -99,7 +100,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     const renderLine = (line: DrawerLine) => {
         const depth = line.depth || 0;
         const fullId = `equipmentlist:${line.entityId || line.id}:${line.context || line.id}`;
-        const isSelected = selectedObjectIds.has(fullId);
+        const isSelected = isObjectSelected(selectedObjectIds, fullId, 'inline-obj-worn');
         
         if (line.isItem) {
             const conditionRegex = /\s?\((flawless|well-maintained|worn|scratched|damaged|beaten|battered|beaten and battered|shabby|sub-standard|poor|fragmented|broken|shattered)\)/gi;
@@ -111,14 +112,8 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             const cat = getCategoryForName(line.text);
 
             return (
-                <div key={line.id} style={{ display: 'flex', flexDirection: 'column', marginLeft: `${depth * 8}px`, marginBottom: '1px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', minHeight: '22px' }}>
-                        {line.prefixHtml && (
-                            <span 
-                                className="drawer-line-prefix"
-                                dangerouslySetInnerHTML={{ __html: line.prefixHtml }}
-                            />
-                        )}
+                <div key={line.id} className="equipment-item-row" style={{ marginLeft: `${depth * 8}px`, marginBottom: '6px' }}>
+                    <div className="equipment-item-content">
                         <div
                             className={`inline-btn auto-item ${isSelected ? 'selected-item' : ''} ${line.isContainer ? 'is-container' : ''}`}
                             data-id={fullId}
@@ -128,7 +123,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                             data-category={cat || undefined}
                             data-cmd="inline-obj-worn"
                             style={{
-                                marginLeft: line.prefixHtml ? '0' : `${depth * 20}px`,
+                                marginLeft: '0',
                                 boxShadow: isSelected ? `inset 0 0 12px ${itemBrown}44` : 'none',
                                 borderColor: isSelected ? itemBrown : 'transparent',
                                 '--glow-color': itemBrown,
@@ -141,6 +136,12 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                                 {extraInfo && <span className="drawer-item-extra" style={{ color: itemBrown }}>({extraInfo}</span>}
                             </div>
                         </div>
+                        {line.prefixHtml && (
+                            <span 
+                                className="drawer-line-prefix equipment-location"
+                                dangerouslySetInnerHTML={{ __html: line.prefixHtml }}
+                            />
+                        )}
                     </div>
                 </div>
             );
@@ -154,7 +155,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     return (
         <div 
             ref={drawerRef}
-            className={`right-drawer log-card-drawer ${isOpen ? 'open' : ''} ${isPeeking ? 'peeking' : ''} ${isLandscape ? 'landscape-mode' : ''}`}
+            className={`right-drawer log-card-drawer equipment-drawer ${isOpen ? 'open' : ''} ${isPeeking ? 'peeking' : ''} ${isLandscape ? 'landscape-mode' : ''}`}
             onPointerDown={onPointerDownInternal}
             onPointerUp={onPointerUpInternal}
             onPointerCancel={onPointerUpInternal}

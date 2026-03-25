@@ -5,7 +5,7 @@
  */
 
 import React, { createContext, useContext, useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { useGame, useLog, useUI } from './GameContext';
+import { useGame, useLog, useUI, useVitals } from './GameContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useMapData } from '../components/Mapper/hooks/useMapData';
 import { useMapPersistence } from '../components/Mapper/hooks/useMapPersistence';
@@ -70,6 +70,7 @@ const MapperContext = createContext<MapperContextType | undefined>(undefined);
 export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { characterName, executeCommand, showDebugEchoes } = useGame();
     const { addMessage } = useLog();
+    const { deathRoomId, setDeathRoomId } = useVitals();
 
     const [renderVersion, setRenderVersion] = useState(0);
     const triggerRender = useCallback(() => {
@@ -249,7 +250,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef,
         discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, addMessage,
         showDebugEchoes, nameIndexRef, serverIdIndexRef, firstExploredAtRef, triggerRender,
-        onRoomInfoProcessed, preMoveRef
+        onRoomInfoProcessed, preMoveRef, deathRoomId, setDeathRoomId
     });
 
     const handleRoomInfo = masterHandlers.handleRoomInfo;

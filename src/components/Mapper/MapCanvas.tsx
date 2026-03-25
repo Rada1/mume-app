@@ -50,6 +50,7 @@ interface MapCanvasProps {
     inlineCategories?: import('../../types').InlineCategoryConfig[];
     opponentName?: string | null;
     opponentId?: string | null;
+    deathRoomId?: string | null;
 }
 
 export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
@@ -65,7 +66,8 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
-        roomPlayers, roomNpcs, inlineCategories, opponentName, opponentId
+        roomPlayers, roomNpcs, inlineCategories, opponentName, opponentId,
+        deathRoomId
     } = props;
 
     const { drawMap } = useMapperRenderer({
@@ -75,7 +77,8 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
-        roomPlayers, roomNpcs, inlineCategories, opponentName, opponentId
+        roomPlayers, roomNpcs, inlineCategories, opponentName, opponentId,
+        deathRoomId
     });
 
     useMapAnimation({

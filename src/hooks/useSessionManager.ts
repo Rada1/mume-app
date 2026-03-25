@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
 export interface SessionManagerDeps {
     status: string;
@@ -16,6 +16,7 @@ export interface SessionManagerDeps {
     groupMembers: any[];
     spatButtons: any[];
     triggerSpitManual: (btn: any) => void;
+    gameState: import('../types').GameState;
 }
 
 export const useSessionManager = ({
@@ -33,12 +34,19 @@ export const useSessionManager = ({
     isNoviceMode,
     groupMembers,
     spatButtons,
-    triggerSpitManual
+    triggerSpitManual,
+    gameState
 }: SessionManagerDeps) => {
     // --- Auto-login session tracking ---
     const autoLoginSessionRef = useRef({ nameSent: false, passwordSent: false, lastStatus: '' });
     const telnetSendCommandRef = useRef(telnetSendCommand);
     useEffect(() => { telnetSendCommandRef.current = telnetSendCommand; }, [telnetSendCommand]);
+
+    // Use refs for credentials so the effect only fires on prompt changes, not on each keystroke
+    const loginNameRef = useRef(loginName);
+    const loginPasswordRef = useRef(loginPassword);
+    useEffect(() => { loginNameRef.current = loginName; }, [loginName]);
+    useEffect(() => { loginPasswordRef.current = loginPassword; }, [loginPassword]);
 
     useEffect(() => {
         // Reset session tracking when we start a new connection
@@ -49,26 +57,45 @@ export const useSessionManager = ({
 
         if (status !== 'connected' || !activePrompt) return;
 
+        // If we are already in the character selection flow, don't auto-send more login info
+        if (gameState === 'playing') return;
+
         const lower = activePrompt.toLowerCase();
+        const currentName = loginNameRef.current;
+        const currentPassword = loginPasswordRef.current;
+
+        const isNamePrompt = lower.includes("by what name do you wish to be known?") || lower.includes("what is your name?") || lower.includes("character's name");
 
         // Handle Name Prompt
-        if (loginName && !autoLoginSessionRef.current.nameSent) {
-            if (lower.includes("by what name do you wish to be known?") || lower.includes("what is your name?") || lower.includes("character's name")) {
+        if (isNamePrompt) {
+            // Server is starting a fresh login cycle — reset passwordSent so it can be
+            // sent again on the upcoming "Password:" prompt (handles wrong-name retries)
+            autoLoginSessionRef.current.passwordSent = false;
+
+            if (currentName && !autoLoginSessionRef.current.nameSent) {
                 autoLoginSessionRef.current.nameSent = true;
-                addSystemMessage(`Auto-login: Sending name: ${loginName}`);
-                telnetSendCommandRef.current(loginName);
+                addSystemMessage(`Auto-login: Sending name: ${currentName}`);
+                telnetSendCommandRef.current(currentName);
             }
         }
 
-        // Handle Password Prompt (only if name was sent or we don't have a name/prompt for it)
-        if (loginPassword && !autoLoginSessionRef.current.passwordSent) {
+        // Handle Password Prompt
+        if (currentPassword && !autoLoginSessionRef.current.passwordSent) {
             if (lower.includes("password:")) {
                 autoLoginSessionRef.current.passwordSent = true;
                 addSystemMessage(`Auto-login: Sending password...`);
-                telnetSendCommandRef.current(loginPassword);
+                telnetSendCommandRef.current(currentPassword);
             }
         }
-    }, [activePrompt, status, loginName, loginPassword, addSystemMessage]);
+    }, [activePrompt, status, addSystemMessage]);
+
+    // Exposed so LoginView can signal a manual login attempt is starting.
+    // Sets nameSent=true (caller sends name) and resets passwordSent=false
+    // (auto-login will handle the upcoming "Password:" prompt).
+    const prepareLoginAttempt = useCallback(() => {
+        autoLoginSessionRef.current.nameSent = true;
+        autoLoginSessionRef.current.passwordSent = false;
+    }, []);
 
     // --- Practice sync on character detection ---
     const lastSyncedCharRef = useRef<string | null>(null);
@@ -141,4 +168,5 @@ export const useSessionManager = ({
         }
     }, [groupMembers, triggerSpitManual, spatButtons]);
 
+    return { prepareLoginAttempt };
 };

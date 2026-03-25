@@ -228,6 +228,41 @@ const getSourceDirection = (vnum: string, rCtx: RenderContext): string | null =>
     return sourceDir;
 };
 
+const applyRoomShading = (ctx: CanvasRenderingContext2D, r: any, s: number, alphaMul: number, rCtx: RenderContext) => {
+    // baseMapExitsRef (from ardagmcp.xml) is keyed by server_id.
+    // preloaded (mume_map_data.json) is keyed by internal sequential id, with server_id at index [6].
+    const preloadedEntry = rCtx.preloaded[r.vnum];
+    const serverId = preloadedEntry && Array.isArray(preloadedEntry) ? String(preloadedEntry[6]) : r.vnum;
+    const masterData = rCtx.baseMapExitsRef?.current?.[serverId] || rCtx.baseMapExitsRef?.current?.[r.vnum];
+
+    let light: any;
+    let sundeath: any;
+
+    if (masterData) {
+        light = Array.isArray(masterData) ? masterData[10] : masterData.light;
+        sundeath = Array.isArray(masterData) ? masterData[11] : masterData.sundeath;
+    } else {
+        // Fall back to local room or batch data when no ardagmcp master data is available
+        const localRoom = rCtx.allRooms[`m_${r.vnum}`] || rCtx.allRooms[r.vnum];
+        light = localRoom?.light !== undefined ? localRoom.light : r.light;
+        sundeath = localRoom?.sundeath !== undefined ? localRoom.sundeath : r.sundeath;
+    }
+
+    let overlayAlpha = 0;
+    // light=1 → DARK room (always dark in MM2 format, e.g. caves with no torch)
+    if (light === 1 || light === '1') overlayAlpha += 0.2;
+    // sundeath=0 → NO_SUNDEATH (indoor/cave, never killed by sun) → extra dark
+    if (sundeath === 0 || sundeath === '0') overlayAlpha += 0.3;
+
+    if (overlayAlpha > 0) {
+        ctx.save();
+        ctx.fillStyle = '#000000';
+        ctx.globalAlpha = overlayAlpha * alphaMul;
+        ctx.fillRect(r.x, r.y, s, s);
+        ctx.restore();
+    }
+};
+
 export const drawTerrains = (
     rCtx: RenderContext,
     bX1: number, bY1: number, bX2: number, bY2: number,
@@ -236,9 +271,9 @@ export const drawTerrains = (
     const { ctx, isDarkMode, explored, unveilMap, allRooms, preloaded, imagesRef } = rCtx;
     const s = GRID_SIZE;
 
-    const exploredBatches: Record<string, { x: number, y: number, terrain: string, vnum: string }[]> = {};
-    const revealedBatches: Record<string, { x: number, y: number, terrain: string, vnum: string }[]> = {};
-    const peekBatches: Record<string, { x: number, y: number, terrain: string, vnum: string, peekDirs: string[] }[]> = {};
+    const exploredBatches: Record<string, { x: number, y: number, terrain: string, vnum: string, light?: number, sundeath?: number }[]> = {};
+    const revealedBatches: Record<string, { x: number, y: number, terrain: string, vnum: string, light?: number, sundeath?: number }[]> = {};
+    const peekBatches: Record<string, { x: number, y: number, terrain: string, vnum: string, peekDirs: string[], light?: number, sundeath?: number }[]> = {};
 
     if (!floorIndex) return;
 
@@ -260,12 +295,15 @@ export const drawTerrains = (
                 const tx = Math.round(rx) * s;
                 const ty = Math.round(ry) * s;
 
+                const l = localRoom ? localRoom.light : rData[10];
+                const sd = localRoom ? localRoom.sundeath : rData[11];
+
                 if (isExplored) {
                     if (!exploredBatches[color]) exploredBatches[color] = [];
-                    exploredBatches[color].push({ x: tx, y: ty, terrain, vnum });
+                    exploredBatches[color].push({ x: tx, y: ty, terrain, vnum, light: l, sundeath: sd });
                 } else if (unveilMap) {
                     if (!revealedBatches[color]) revealedBatches[color] = [];
-                    revealedBatches[color].push({ x: tx, y: ty, terrain, vnum });
+                    revealedBatches[color].push({ x: tx, y: ty, terrain, vnum, light: l, sundeath: sd });
                 } else {
                     // Peek Logic: Check neighbors
                     const ghostExits = rData[4];
@@ -279,7 +317,7 @@ export const drawTerrains = (
                         }
                         if (peekDirs.length > 0) {
                             if (!peekBatches[color]) peekBatches[color] = [];
-                            peekBatches[color].push({ x: tx, y: ty, terrain, vnum, peekDirs });
+                            peekBatches[color].push({ x: tx, y: ty, terrain, vnum, peekDirs, light: l, sundeath: sd });
                         }
                     }
                 }
@@ -313,12 +351,16 @@ export const drawTerrains = (
                         else if (sourceDir === 'e') ctx.fillRect(r.x + s * (1 - alphaMul), r.y, s * alphaMul, s);
                         else { ctx.globalAlpha = 0.5 * alphaMul; ctx.fillRect(r.x, r.y, s, s); }
                         ctx.restore();
+                        applyRoomShading(ctx, r, s, alphaMul, rCtx);
                         continue;
                     }
                 }
             }
+            
+            // Draw base terrain
             ctx.globalAlpha = 0.5 * alphaMul;
             ctx.fillRect(r.x, r.y, s, s);
+            applyRoomShading(ctx, r, s, alphaMul, rCtx);
         }
     }
     ctx.restore();
@@ -366,6 +408,7 @@ export const drawTerrains = (
                     ctx.globalAlpha = 0.45 * peekAlphaMul; // Start just below explored (0.5)
                     ctx.fillRect(r.x, r.y, s, s);
                     ctx.restore();
+                    applyRoomShading(ctx, r, s, peekAlphaMul, rCtx);
                 }
             }
         }
@@ -414,7 +457,9 @@ export const drawTerrains = (
             const rooms = revealedBatches[color];
             ctx.fillStyle = color;
             for (let i = 0; i < rooms.length; i++) {
-                ctx.fillRect(rooms[i].x, rooms[i].y, s, s);
+                const r = rooms[i];
+                ctx.fillRect(r.x, r.y, s, s);
+                applyRoomShading(ctx, r, s, 1.0, rCtx);
             }
         }
         ctx.restore();
@@ -436,7 +481,6 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
     const s = GRID_SIZE;
 
     ctx.save();
-    ctx.globalAlpha = 0.5;
     for (let i = 0; i < localRooms.length; i++) {
         const room = localRooms[i];
         if (room.id.startsWith('m_')) continue;
@@ -446,7 +490,9 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
         const rx = Math.round(room.x) * s, ry = Math.round(room.y) * s;
         ctx.fillStyle = getTerrainColor(room.terrain, isDarkMode);
         ctx.fillRect(rx, ry, s, s);
+        applyRoomShading(ctx, { ...room, vnum: String(room.id).startsWith('m_') ? room.id.substring(2) : room.id }, s, 1.0, rCtx);
     }
+    // Correctly restore once AFTER the loop
     ctx.restore();
 
     for (let i = 0; i < localRooms.length; i++) {

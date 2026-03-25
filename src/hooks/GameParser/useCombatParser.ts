@@ -14,6 +14,8 @@ export interface CombatParserDeps {
     setCharacterInfo: (val: CharacterInfo | ((prev: CharacterInfo) => CharacterInfo)) => void;
     triggerXpTicker?: () => void;
     groupMembers: GroupMember[];
+    mapperRef?: React.RefObject<any>;
+    setDeathRoomId?: (val: string | null) => void;
 }
 
 const COMBAT_VERBS_STR = ['hit', 'miss', 'wound', 'kill', 'maul', 'pierce', 'cleave', 'stab', 'slash', 'pound', 'crush', 'smite', 'strike', 'backstab', 'charge', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shocked', 'stunned', 'blinded', 'silenced', 'hurt', 'die', 'fighting', 'incantations', 'recovered'].join('|');
@@ -27,13 +29,18 @@ export function useCombatParser(deps: CombatParserDeps) {
         setOpponentName,
         setCharacterInfo,
         triggerXpTicker,
-        groupMembers
+        groupMembers,
+        mapperRef,
+        setDeathRoomId
     } = deps;
 
     const checkCombatMatch = useCallback((lower: string) => {
         const isMatch = COMBAT_REGEX.test(lower) || ((lower.includes('dodge') || lower.includes('parry') || lower.includes('flee')) && inCombatRef.current);
         
         if (!isMatch) return { isMatch: false };
+
+        const impactVerbs = ['hit', 'pierce', 'slash', 'smite', 'crush', 'pound', 'stab', 'cleave'];
+        const isImpact = impactVerbs.some(verb => lower.includes(` ${verb} `) || lower.includes(` ${verb}s `) || lower.includes(`${verb} you`) || lower.includes(`${verb}s you`));
 
         // Determine side
         let side: 'player' | 'opponent' | 'groupmate' | undefined = undefined;
@@ -48,7 +55,7 @@ export function useCombatParser(deps: CombatParserDeps) {
                 side = 'opponent';
             }
         }
-        return { isMatch: true, side };
+        return { isMatch: true, side, isImpact };
     }, [inCombatRef, groupMembers]);
 
     const handleCombatExit = useCallback((lower: string) => {
@@ -61,11 +68,25 @@ export function useCombatParser(deps: CombatParserDeps) {
                 setInCombat(false, true);
                 setOpponentHealthStatus(null);
                 setOpponentName(null);
+                
+                if (/you are dead/i.test(lower) && setDeathRoomId && mapperRef?.current) {
+                    const currentRoom = mapperRef.current.getCurrentRoom?.();
+                    if (currentRoom?.id) {
+                        setDeathRoomId(currentRoom.id.toString());
+                    }
+                }
+                
                 return true;
+            }
+        } else if (/you are dead/i.test(lower) && setDeathRoomId && mapperRef?.current) {
+            // Also check for death even if not "in combat" (e.g. trap, fall)
+            const currentRoom = mapperRef.current.getCurrentRoom?.();
+            if (currentRoom?.id) {
+                setDeathRoomId(currentRoom.id.toString());
             }
         }
         return false;
-    }, [inCombatRef, setInCombat, setOpponentHealthStatus, setOpponentName]);
+    }, [inCombatRef, setInCombat, setOpponentHealthStatus, setOpponentName, setDeathRoomId, mapperRef]);
 
     const handleXpTicker = useCallback((lower: string) => {
         const xpTextMatch = lower.match(/you receive (\d+) experience/i);

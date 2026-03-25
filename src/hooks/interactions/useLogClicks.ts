@@ -4,7 +4,7 @@ import { EntityCapability } from '../../types';
 import { getButtonCommand } from '../../utils/buttonUtils';
 import { sanitizeGameTarget } from '../../utils/gameUtils';
 
-export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>) => {
+export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>, longPressJustFiredRef?: React.MutableRefObject<boolean>) => {
     const {
         executeCommand, setInput, setTarget, triggerHaptic, btn, joystick, target,
         setPopoverState, viewport, ui, heldButton, setHeldButton,
@@ -131,6 +131,13 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         const isMod = isTrackpadModifierActiveRef.current;
  
         if (selectedObjectIds.size > 0 && targetEl && !isLong && !isMod) {
+            // Absorb the click that always fires after a long-press selection to
+            // prevent it from immediately un-toggling the item that was just added.
+            if (longPressJustFiredRef?.current) {
+                longPressJustFiredRef.current = false;
+                e.stopPropagation();
+                return;
+            }
             const id = targetEl.getAttribute('data-id') || '';
             const setId = targetEl.getAttribute('data-cmd') || '';
             const context = targetEl.getAttribute('data-context') || '';

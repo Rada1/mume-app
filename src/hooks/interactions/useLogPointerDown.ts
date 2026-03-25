@@ -7,20 +7,20 @@ import { useCallback, useRef } from 'react';
 import { InteractionDeps } from '../useInteractionHandlers';
 import { sanitizeGameTarget } from '../../utils/gameUtils';
 import { getButtonCommand } from '../../utils/buttonUtils';
-import { getCaretSelectionAtPoint } from './pointerUtils';
 
 export const useLogPointerDown = (
     deps: InteractionDeps,
     lookModFiredRef: React.MutableRefObject<boolean>,
     logLongPressTimerRef: React.MutableRefObject<NodeJS.Timeout | null>,
     logDragStartPosRef: React.MutableRefObject<{ x: number; y: number } | null>,
-    isLogDraggingRef: React.MutableRefObject<boolean>
+    isLogDraggingRef: React.MutableRefObject<boolean>,
+    longPressJustFiredRef?: React.MutableRefObject<boolean>
 ) => {
     const {
         executeCommand, triggerHaptic, btn, joystick, target,
         viewport, entities, selectedObjectIds, toggleObjectSelection,
         heldButton, setHeldButton, lastCommandContextRef, isTrackpadModifierActive,
-        keywordOverrides, setTarget
+        keywordOverrides
     } = deps;
 
     const handleLogPointerDown = useCallback((e: React.PointerEvent, startDrag: (e: React.PointerEvent, targetEl: HTMLElement, label: string, contextStr: string) => void) => {
@@ -79,22 +79,11 @@ export const useLogPointerDown = (
         logDragStartPosRef.current = { x: e.clientX, y: e.clientY };
         isLogDraggingRef.current = false;
 
-        const x = e.clientX;
-        const y = e.clientY;
         const isMobile = viewport.isMobile;
 
         // --- 4. Long Press Timer ---
         logLongPressTimerRef.current = setTimeout(() => {
             if (!logDragStartPosRef.current) return;
-            triggerHaptic(60);
-
-            // Handle text selection for mobile targeting
-            if (isMobile && !targetEl) {
-                const selection = getCaretSelectionAtPoint(x, y);
-                if (selection && setTarget) {
-                    setTarget(sanitizeGameTarget(selection) || selection);
-                }
-            }
 
             if (targetEl) {
                 // Multi-select or Drag Start
@@ -104,10 +93,11 @@ export const useLogPointerDown = (
                     const isSelected = Array.from(selectedObjectIds).some(entry => entry === id || entry.endsWith(':' + id));
                     if (!isSelected) {
                         toggleObjectSelection(id, setId);
+                        if (longPressJustFiredRef) longPressJustFiredRef.current = true;
                         triggerHaptic(80);
                     }
                 }
-                
+
                 // --- DRAG-AND-DROP DISABLED ---
                 // To re-enable, uncomment the line below:
                 // startDrag(e, targetEl, label, contextStr);
@@ -117,7 +107,7 @@ export const useLogPointerDown = (
     }, [
         btn, joystick, target, executeCommand, triggerHaptic, setHeldButton, heldButton, 
         viewport, lastCommandContextRef, keywordOverrides, isTrackpadModifierActive, 
-        selectedObjectIds, toggleObjectSelection, setTarget, lookModFiredRef, 
+        selectedObjectIds, toggleObjectSelection, lookModFiredRef,
         logLongPressTimerRef, logDragStartPosRef, isLogDraggingRef
     ]);
 

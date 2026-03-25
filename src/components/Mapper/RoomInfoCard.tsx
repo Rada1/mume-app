@@ -9,7 +9,7 @@ interface RoomInfoCardProps {
     mode: 'play' | 'edit';
     onClose: () => void;
     cardRef: React.RefObject<HTMLDivElement>;
-    preloadedCoordsRef?: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, any>, string, string, string[], string[], string]>>;
+    preloadedCoordsRef?: React.MutableRefObject<Record<string, any[]>>;
     setViewZ?: (z: number | null) => void;
     isDarkMode: boolean;
 }
@@ -25,20 +25,20 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
         }
     }, [roomId, room?.z, setViewZ]);
 
-    // Virtual Master Room derivation
-    if (!room && roomId.startsWith('m_') && preloadedCoordsRef?.current) {
-        const vnum = roomId.substring(2);
-        const data = preloadedCoordsRef.current[vnum];
-        if (data) {
-            // MMapper format: [x, y, z, terrainVal, exits, name, masterId, mobFlags, loadFlags, area]
-            const [x, y, z, terrainVal, exitsData, nameVal, masterId, mobFlagsMaster, loadFlagsMaster, areaVal] = data;
+    // Data resolution: Use live room state if available, but always supplement/fallback to preloaded Arda map data
+    const vnum = roomId.startsWith('m_') ? roomId.substring(2) : roomId;
+    const masterData = preloadedCoordsRef?.current?.[vnum];
+    
+    if (masterData) {
+        // Arda Map format: [x, y, z, terrainVal, exits, name, masterId, mobFlags, loadFlags, area, light, sundeath]
+        const [mx, my, mz, mTVal, mExits, mName, mMasterId, mMobF, mLoadF, mArea, mLight, mSundeath] = masterData;
 
-            // Map the strange numbers/objects to our internal exit format
+        if (!room) {
+            // Derive a "Virtual Master Room" for rooms in the Arda map that aren't in live state
             const mappedExits: Record<string, import('./mapperTypes').MapperExit> = {};
-            if (exitsData) {
-                for (const d in (exitsData as any)) {
+            if (mExits) {
+                for (const d in (mExits as any)) {
                     let dirKey = d.toLowerCase();
-                    // Normalize standard and full direction names
                     if (dirKey === 'north') dirKey = 'n';
                     else if (dirKey === 'south') dirKey = 's';
                     else if (dirKey === 'east') dirKey = 'e';
@@ -50,7 +50,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                     else if (dirKey === 'southeast') dirKey = 'se';
                     else if (dirKey === 'southwest') dirKey = 'sw';
 
-                    const dest = (exitsData as any)[d];
+                    const dest = (mExits as any)[d];
                     const rawDestId = typeof dest === 'number' ? dest : (typeof dest === 'object' ? (dest as any).id || (dest as any).target : (typeof dest === 'string' ? dest : null));
                     const destId = rawDestId !== null ? Number(rawDestId) : null;
 
@@ -66,44 +66,79 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                 }
             }
 
-            // Resolve Terrain Name using utility
             let resolvedTerrain = 'Field';
-            if (terrainVal !== undefined) {
-                const tKey = String(terrainVal);
+            if (mTVal !== undefined) {
+                const tKey = String(mTVal);
                 resolvedTerrain = TERRAIN_MAP[tKey] || normalizeTerrain(tKey);
             }
 
-            // Use Area from JSON if available, otherwise Guess Zone from name
-            let resolvedZone = areaVal || 'Imported Map';
-            if (!areaVal && nameVal) {
-                const nv = String(nameVal).toLowerCase();
+            let resolvedZone = mArea || 'Imported Map';
+            if (!mArea && mName) {
+                const nv = String(mName).toLowerCase();
                 if (nv.includes('bree')) resolvedZone = 'Bree';
                 else if (nv.includes('shire') || nv.includes('hobbit') || nv.includes('buckland')) resolvedZone = 'The Shire';
-                else if (nv.includes('grey havens') || nv.includes('mithlond')) resolvedZone = 'Grey Havens';
-                else if (nv.includes('rivendell') || nv.includes('imladris')) resolvedZone = 'Rivendell';
-                else if (nv.includes('moria') || nv.includes('khazad')) resolvedZone = 'Moria';
-                else if (nv.includes('lorien')) resolvedZone = 'Lothlorien';
-                else if (nv.includes('fornost')) resolvedZone = 'Fornost';
-                else if (nv.includes('tharbad')) resolvedZone = 'Tharbad';
-                else if (nv.includes('fangorn')) resolvedZone = 'Fangorn';
-                else if (nv.includes('rohan') || nv.includes('edoras')) resolvedZone = 'Rohan';
-                else if (nv.includes('gondor')) resolvedZone = 'Gondor';
+                else if (nv.includes('moria')) resolvedZone = 'Moria';
             }
 
             room = {
                 id: roomId,
                 gmcpId: Number(vnum),
-                name: String(nameVal || `Room ${vnum}`),
-                x, y, z,
+                name: String(mName || `Room ${vnum}`),
+                x: mx, y: my, z: mz,
                 terrain: resolvedTerrain,
                 exits: mappedExits,
-                desc: (masterId && masterId !== vnum) ? `Alias of room ${masterId}` : '',
+                desc: (mMasterId && mMasterId !== vnum) ? `Alias of room ${mMasterId}` : '',
                 zone: resolvedZone,
                 notes: '',
-                mobFlags: mobFlagsMaster || [],
-                loadFlags: loadFlagsMaster || [],
+                mobFlags: mMobF || [],
+                loadFlags: mLoadF || [],
+                light: mLight,
+                sundeath: mSundeath,
                 createdAt: Date.now()
             };
+        } else {
+            // MERGE Logic: Supplement the live room with rich "Geographical" data (Arda Map)
+            const clonedRoom = { ...room };
+            let hasChanged = false;
+
+            // Fallback terrain if live is generic or missing
+            if (!clonedRoom.terrain || clonedRoom.terrain === 'Field') {
+                const tKey = String(mTVal);
+                clonedRoom.terrain = TERRAIN_MAP[tKey] || normalizeTerrain(tKey);
+                hasChanged = true;
+            }
+
+            // Sync Mob/Load flags (merge sets to avoid duplicates)
+            if (mMobF && mMobF.length > 0) {
+                const merged = Array.from(new Set([...(clonedRoom.mobFlags || []), ...mMobF]));
+                if (merged.length !== (clonedRoom.mobFlags?.length || 0)) {
+                    clonedRoom.mobFlags = merged;
+                    hasChanged = true;
+                }
+            }
+            if (mLoadF && mLoadF.length > 0) {
+                const merged = Array.from(new Set([...(clonedRoom.loadFlags || []), ...mLoadF]));
+                if (merged.length !== (clonedRoom.loadFlags?.length || 0)) {
+                    clonedRoom.loadFlags = merged;
+                    hasChanged = true;
+                }
+            }
+
+            // Fallback shading flags
+            if (clonedRoom.light === undefined && mLight !== undefined) { clonedRoom.light = mLight; hasChanged = true; }
+            if (clonedRoom.sundeath === undefined && mSundeath !== undefined) { clonedRoom.sundeath = mSundeath; hasChanged = true; }
+
+            // Ensure DARK/NO_SUNDEATH are in mobFlags for UI badge consistency
+            if (clonedRoom.light !== undefined && Number(clonedRoom.light) === 1) {
+                if (!clonedRoom.mobFlags) clonedRoom.mobFlags = ['DARK'];
+                else if (!clonedRoom.mobFlags.includes('DARK')) { clonedRoom.mobFlags = [...clonedRoom.mobFlags, 'DARK']; hasChanged = true; }
+            }
+            if (clonedRoom.sundeath !== undefined && Number(clonedRoom.sundeath) === 0) {
+                if (!clonedRoom.mobFlags) clonedRoom.mobFlags = ['NO_SUNDEATH'];
+                else if (!clonedRoom.mobFlags.includes('NO_SUNDEATH')) { clonedRoom.mobFlags = [...clonedRoom.mobFlags, 'NO_SUNDEATH']; hasChanged = true; }
+            }
+
+            if (hasChanged) room = clonedRoom;
         }
     }
 
@@ -187,17 +222,22 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                 </div>
             )}
 
-            {(room.mobFlags?.length || room.loadFlags?.length) ? (
+            {(room.mobFlags?.length || room.loadFlags?.length || room.roomQuestFlags?.length) ? (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                     {room.mobFlags?.map(f => {
                         const isAgg = f.includes('AGGRESSIVE');
                         const isShop = f.includes('SHOP');
                         const isGuild = f.includes('GUILD');
+                        const isDark = f === 'DARK';
+                        const isNoSun = f === 'NO_SUNDEATH';
+                        
                         let color = '#94e2d5'; // DEFAULT TEAL
                         let bg = 'rgba(148, 226, 213, 0.1)';
                         if (isAgg) { color = '#f38ba8'; bg = 'rgba(243, 139, 168, 0.15)'; }
                         else if (isShop) { color = '#f9e2af'; bg = 'rgba(249, 226, 175, 0.15)'; }
                         else if (isGuild) { color = '#cba6f7'; bg = 'rgba(203, 166, 247, 0.15)'; }
+                        else if (isDark) { color = '#cad3f5'; bg = 'rgba(202, 211, 245, 0.15)'; }
+                        else if (isNoSun) { color = '#ee99a0'; bg = 'rgba(238, 153, 160, 0.15)'; }
 
                         return (
                             <span key={f} style={{ color, backgroundColor: bg, padding: '4px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', border: `1px solid ${color}33`, textTransform: 'uppercase' }}>
@@ -235,6 +275,11 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                             </span>
                         );
                     })}
+                    {room.roomQuestFlags?.map(f => (
+                        <span key={f} style={{ color: '#fab387', backgroundColor: 'rgba(250, 179, 135, 0.15)', padding: '4px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', border: '1px solid #fab38733', textTransform: 'uppercase' }}>
+                            {f}
+                        </span>
+                    ))}
                 </div>
             ) : null}
 

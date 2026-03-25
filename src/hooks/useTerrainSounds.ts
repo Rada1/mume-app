@@ -5,6 +5,7 @@ interface TerrainSoundsDeps {
     isSoundEnabled: boolean;
     audioCtxRef: React.MutableRefObject<AudioContext | null>;
     lighting?: string;
+    isSleeping?: boolean;
 }
 
 const TERRAIN_SOUND_MAP: Record<string, string> = {
@@ -18,14 +19,14 @@ const TERRAIN_SOUND_MAP: Record<string, string> = {
     'TUNNEL': '/assets/Sounds/Terrain Sounds/tunnel.mp3',
 };
 
-export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, lighting }: TerrainSoundsDeps) => {
+export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, lighting, isSleeping }: TerrainSoundsDeps) => {
     const currentSourceRef = useRef<AudioBufferSourceNode | null>(null);
     const currentGainRef = useRef<GainNode | null>(null);
     const lastTerrainRef = useRef<string | null>(null);
     const lastLightingRef = useRef<string | null>(null);
 
     useEffect(() => {
-        if (!isSoundEnabled || !currentTerrain || !audioCtxRef.current) {
+        if (!isSoundEnabled || !currentTerrain || !audioCtxRef.current || isSleeping) {
             fadeOutAndStop();
             lastTerrainRef.current = null;
             lastLightingRef.current = null;
@@ -60,7 +61,7 @@ export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, 
 
         playTerrainAmbient(soundUrl);
 
-    }, [currentTerrain, isSoundEnabled, lighting]);
+    }, [currentTerrain, isSoundEnabled, lighting, isSleeping]);
 
     const fadeOutAndStop = () => {
         if (currentGainRef.current && audioCtxRef.current) {
@@ -120,7 +121,7 @@ export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, 
             const gain = ctx.createGain();
             gain.gain.setValueAtTime(0, ctx.currentTime);
             // Balanced volume level (0.5)
-            gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 3);
+            gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 3);
 
             source.connect(gain);
             gain.connect(ctx.destination);

@@ -38,8 +38,8 @@ export const useSettingsState = () => {
     const [showOrganicTerrain, setShowOrganicTerrain] = usePersistentState('mud-show-organic-terrain', true);
     const [inlineCategories, setInlineCategories] = usePersistentState<InlineCategoryConfig[]>('mud-inline-categories', (MASTER_SETTINGS as any).inlineCategories || DEFAULT_INLINE_CATEGORIES);
     const [isHighlighterEnabled, setIsHighlighterEnabled] = usePersistentState('mud-highlighter-enabled', true);
-    const [isCrtEnabled, setIsCrtEnabled] = usePersistentState('mud-crt-enabled', false);
-    const [isBloomEnabled, setIsBloomEnabled] = usePersistentState('mud-bloom-enabled', false);
+    const [isCrtEnabled, setIsCrtEnabled] = usePersistentState('mud-crt-enabled', true);
+    const [isBloomEnabled, setIsBloomEnabled] = usePersistentState('mud-bloom-enabled', true);
     const [favorites, setFavorites] = usePersistentState<string[]>('mud-favorites', []);
     const [zoneMusic, setZoneMusic] = usePersistentState<ZoneMusicMapping[]>('mud-zone-music', [
         { zone: 'Bree', url: '/assets/Sounds/Zone Sounds/BreeSound.wav' },

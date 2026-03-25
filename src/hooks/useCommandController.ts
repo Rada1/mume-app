@@ -72,15 +72,28 @@ export interface CommandControllerDeps {
     clearObjectSelection: () => void;
     playClickSound: () => void;
     isSoundEnabled: boolean;
+    manualCancelRef?: React.MutableRefObject<boolean>;
+    waiting?: boolean;
 }
 
 
 export function useCommandController(deps: CommandControllerDeps) {
-    const { input, setInput, isNoviceMode, viewport, triggerHaptic, setTarget, addMessage } = deps;
+    const { input, setInput, isNoviceMode, viewport, triggerHaptic, setTarget, addMessage, manualCancelRef, waiting } = deps;
 
     const executor = useCommandExecutor(deps);
     const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, isHistorical = false, fromDrawer = false, options?: { shouldFocus?: boolean, fromUi?: boolean }) => {
+        // Manual cancel detection
+        if (cmd === '' && waiting && manualCancelRef) {
+            console.log('[Controller] Manual cancel detected (newline while waiting)');
+            manualCancelRef.current = true;
+        }
+
         if (!isSystem && !silent) {
+            // New: Play click sound on command entry (keyboard, numpad, or other non-button sources)
+            if (!options?.fromUi && deps.isSoundEnabled && deps.playClickSound) {
+                deps.playClickSound();
+            }
+
             // Defensive focus: only focus elements if explicitly requested or on desktop.
             // On mobile, never auto-focus unless it's a specific 'input:' command AND we want that behavior.
             const isInputPrefix = cmd.startsWith('input:');

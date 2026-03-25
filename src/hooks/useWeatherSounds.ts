@@ -5,15 +5,16 @@ interface WeatherSoundsDeps {
     weather: WeatherType;
     isSoundEnabled: boolean;
     audioCtxRef: React.MutableRefObject<AudioContext | null>;
+    isSleeping?: boolean;
 }
 
-export const useWeatherSounds = ({ weather, isSoundEnabled, audioCtxRef }: WeatherSoundsDeps) => {
+export const useWeatherSounds = ({ weather, isSoundEnabled, audioCtxRef, isSleeping }: WeatherSoundsDeps) => {
     const currentSourceRef = useRef<AudioBufferSourceNode | null>(null);
     const currentGainRef = useRef<GainNode | null>(null);
     const lastWeatherRef = useRef<WeatherType | null>(null);
 
     useEffect(() => {
-        if (!isSoundEnabled || !weather || weather === 'clear' || weather === 'none' || !audioCtxRef.current) {
+        if (!isSoundEnabled || !weather || weather === 'clear' || weather === 'none' || !audioCtxRef.current || isSleeping) {
             fadeOutAndStop();
             lastWeatherRef.current = weather;
             return;
@@ -28,7 +29,7 @@ export const useWeatherSounds = ({ weather, isSoundEnabled, audioCtxRef }: Weath
             fadeOutAndStop();
         }
 
-    }, [weather, isSoundEnabled]);
+    }, [weather, isSoundEnabled, isSleeping]);
 
     const fadeOutAndStop = () => {
         if (currentGainRef.current && audioCtxRef.current) {
@@ -86,7 +87,7 @@ export const useWeatherSounds = ({ weather, isSoundEnabled, audioCtxRef }: Weath
             const gain = ctx.createGain();
             gain.gain.setValueAtTime(0, ctx.currentTime);
             // Balanced volume across weather effects
-            gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 3);
+            gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 3);
 
             source.connect(gain);
             gain.connect(ctx.destination);

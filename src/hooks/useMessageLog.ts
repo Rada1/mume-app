@@ -139,8 +139,9 @@ export function useMessageLog(
         const textOnly = precalculated?.textOnly || text.replace(/\x1b\[[0-9;]*m/g, '').trim();
         const textLower = precalculated?.lower || textOnly.toLowerCase();
 
-        // If combatOverride is provided directly (from parser), use it only if we're in combat mode
-        const isCombat = !!combatOverride && inCombatRef.current;
+        // If combatOverride is provided directly (from parser), trust it.
+        // The parser handles inCombat context for ambiguous verbs like 'dodge'.
+        const isCombat = !!combatOverride;
         const combatSide = isCombat
             ? (providedCombatSide || ((textLower.startsWith('you ') || textLower.startsWith('your ')) ? 'player' : 'opponent'))
             : undefined;

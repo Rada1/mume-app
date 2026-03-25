@@ -7,6 +7,7 @@ import { useCallback, RefObject, useRef } from 'react';
 import { CustomButton, InlineCategoryConfig, MessageType } from '../types';
 import { buildHighlighterCandidates, applyColorTaggedObjects } from '../utils/highlighterUtils';
 import { getGlowColorForCategory } from '../utils/categorizationUtils';
+import { isObjectSelected } from '../utils/selectionUtils';
 
 // --- Logic Section: Message Processing & Highlighting ---
 
@@ -129,17 +130,8 @@ export const useMessageHighlighter = (
         let newHtml = targetHtml;
         const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-        // Pre-calculate selected prefixes for O(1) lookup in highlighter utils
-        const selectedPrefixes = new Set<string>();
-        selectedObjectIds.forEach(entry => {
-            const parts = entry.split(':');
-            if (parts.length >= 2) {
-                selectedPrefixes.add(`${parts[0]}:${parts[1]}`);
-            }
-        });
-
         // --- 0. Color-tagged object detection (runs first so highlightDepth protects these spans) ---
-        newHtml = applyColorTaggedObjects(newHtml, mid, inlineCategories, target, type, keywordOverrides, selectedPrefixes, roomPlayers, roomNpcs);
+        newHtml = applyColorTaggedObjects(newHtml, mid, inlineCategories, target, type, keywordOverrides, selectedObjectIds, roomPlayers, roomNpcs);
 
         const textOnly = targetHtml
             .replace(/<[^>]+>/g, '')
@@ -177,7 +169,7 @@ export const useMessageHighlighter = (
                     if (highlighted) return m;
                     highlighted = true;
                     const buttonId = `auto-${nameCandidate}`;
-                    const isSelected = selectedPrefixes.has(`inlineplayer:${buttonId}`);
+                    const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'inlineplayer');
                     return `<span class="inline-btn auto-occupant pc-highlighter${isSelected ? ' selected' : ''}" draggable="true" data-id="auto-${esc(nameCandidate)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(nameCandidate)}" data-action="menu" data-menu-display="list" style="--glow-color: ${playerGlow}; color: var(--glow-color); font-weight: 800">${m}</span>`;
                 });
             }
@@ -188,7 +180,7 @@ export const useMessageHighlighter = (
             const candidates = buildHighlighterCandidates(
                 mid, target, buttonsRef, roomPlayers, roomNpcs, characterName, 
                 roomItems, discoveredItems, inlineCategories, type, textOnly, keywordOverrides,
-                selectedPrefixes
+                selectedObjectIds
             );
 
             candidates
@@ -219,7 +211,7 @@ export const useMessageHighlighter = (
                         finalCommand = finalCommand.replace(new RegExp(`\\$${i}`, 'g'), val);
                     }
                     
-                    const isSelected = selectedPrefixes.has(`${finalCommand}:${b.id}`);
+                    const isSelected = isObjectSelected(selectedObjectIds, b.id, finalCommand);
                     const glowColor = b.style.backgroundColor || 'var(--accent)';
                     
                     // Wrap the entire line HTML in the spat trigger
@@ -238,7 +230,7 @@ export const useMessageHighlighter = (
         }
 
         return finalHtml;
-    }, [target, buttonsRef, roomPlayers, roomNpcs, characterName, roomItems, inlineCategories, generateDepsHash, highlightVersion, discoveredItems]);
+    }, [target, buttonsRef, roomPlayers, roomNpcs, characterName, roomItems, inlineCategories, generateDepsHash, highlightVersion, discoveredItems, isHighlighterEnabled, keywordOverrides, selectedObjectIds]);
 
     return { processMessageHtml };
 };

@@ -125,8 +125,8 @@ export const getTerrainColor = (terrain: string | number, isDarkMode: boolean): 
 
 
 export const getGateState = (rA: any, wE: any, d: string, allRooms: Record<string, any>, preloaded: Record<string, any>) => {
-    // Authoritative data source: trust live exits if they exist.
-    const exA = rA?.exits ? rA.exits[d] : wE?.[d];
+    // Authoritative data source: trust live exits if they exist, but fallback to preloaded if specific exit is missing
+    const exA = (rA?.exits && rA.exits[d]) ? rA.exits[d] : wE?.[d];
     if (!exA) return { hasExit: false, hasDoor: false, isClosed: false };
 
     const tV = String(exA.target || exA.gmcpDestId || ""), oD = DIRS[d]?.opp;

@@ -80,7 +80,9 @@
 .bloom-enabled .xbox-cluster,
 .bloom-enabled .modal,
 .bloom-enabled .btn-primary,
-.bloom-enabled .btn-secondary {
+.bloom-enabled .btn-secondary,
+.bloom-enabled .account-screen-overlay,
+.bloom-enabled .account-view {
   filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));
 }
 
@@ -91,7 +93,9 @@
 .light-mode.bloom-enabled .xbox-cluster,
 .light-mode.bloom-enabled .modal,
 .light-mode.bloom-enabled .btn-primary,
-.light-mode.bloom-enabled .btn-secondary {
+.light-mode.bloom-enabled .btn-secondary,
+.light-mode.bloom-enabled .account-screen-overlay,
+.light-mode.bloom-enabled .account-view {
   filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.15));
 }
 
@@ -102,4 +106,25 @@
 
 .light-mode.crt-enabled .background-layer {
   filter: none; /* Keep light mode clean */
+}
+/* --- Transition Overlays --- */
+.screen-transition-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  z-index: 99999;
+  pointer-events: none;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.screen-transition-overlay.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 3.5s cubic-bezier(0.4, 0, 0.2, 1), 
+              visibility 0s linear 3.5s;
 }

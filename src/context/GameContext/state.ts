@@ -21,6 +21,8 @@ export const useGameProviderState = () => {
 
     // Core Game State
     const [status, setStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');
+    const [gameState, setGameState] = useState<import('../../types').GameState>('disconnected');
+
     const [target, _setTarget] = useState<string | null>(null);
     const setTarget = useCallback((val: string | null) => {
         _setTarget(sanitizeGameTarget(val));
@@ -81,6 +83,21 @@ export const useGameProviderState = () => {
     }, []);
 
     const [characterName, setCharacterName] = useState<string | null>(null);
+
+    // Sync Game State with status and characterName
+    useEffect(() => {
+        if (status === 'disconnected') {
+            setGameState('disconnected');
+        } else if (status === 'connected') {
+            // If we have a character name, we are definitely playing.
+            // If not, we are likely at the account/login screen.
+            if (characterName) {
+                setGameState('playing');
+            } else {
+                setGameState('account');
+            }
+        }
+    }, [status, characterName]);
     const [parley, setParley] = useState<ParleyState>({ active: false, command: 'tell', target: null });
     const [whoList, setWhoList] = useState<string[]>([]);
     const [whereList, setWhereList] = useState<import('../../types').WhereEntry[]>([]);
@@ -141,6 +158,8 @@ export const useGameProviderState = () => {
         else setCharacterClass((MASTER_SETTINGS as any).characterClass || 'none');
     }, [characterName]);
 
+    const [deathRoomId, setDeathRoomId] = useState<string | null>(null);
+
     // Save changes to character-specific keys
     useEffect(() => {
         const key = characterName ? `mud-abilities-${characterName.toLowerCase()}` : 'mud-abilities';
@@ -151,6 +170,19 @@ export const useGameProviderState = () => {
         const key = characterName ? `mud-character-class-${characterName.toLowerCase()}` : 'mud-character-class';
         localStorage.setItem(key, JSON.stringify(characterClass));
     }, [characterClass, characterName]);
+
+    useEffect(() => {
+        const key = characterName ? `mud-death-room-${characterName.toLowerCase()}` : 'mud-death-room';
+        localStorage.setItem(key, JSON.stringify(deathRoomId));
+    }, [deathRoomId, characterName]);
+
+    useEffect(() => {
+        if (!characterName) return;
+        const charDeathKey = `mud-death-room-${characterName.toLowerCase()}`;
+        const savedDeathId = localStorage.getItem(charDeathKey);
+        if (savedDeathId) setDeathRoomId(JSON.parse(savedDeathId));
+        else setDeathRoomId(null);
+    }, [characterName]);
 
     const [actions, setActions] = useState<GameAction[]>((MASTER_SETTINGS as any).actions || []);
     const actionsRef = useRef(actions);
@@ -323,13 +355,21 @@ export const useGameProviderState = () => {
     const toggleObjectSelection = useCallback((id: string, setId?: string, context?: string) => {
         setSelectedObjectIds(prev => {
             const next = new Set(prev);
-            // Search for any existing entry for this id (regardless of setId or context)
+            // Search for any existing entry for this id
+            // We need to be careful: if id is "inventorylist:1:sword", entry might be "inline-obj-char:inventorylist:1:sword"
             let existingEntry: string | null = null;
-            for (const item of next) {
-                const parts = item.split(':');
-                const itemId = parts.length > 1 ? parts[1] : parts[0];
-                if (itemId === id) {
-                    existingEntry = item;
+            for (const entry of next) {
+                if (entry === id) {
+                    existingEntry = entry;
+                    break;
+                }
+                if (setId && entry === `${setId}:${id}`) {
+                    existingEntry = entry;
+                    break;
+                }
+                // Also check if ID is the "inner" part of the entry (e.g. entry is "inline-btn:auto-obj-sword" and id is "auto-obj-sword")
+                if (entry.endsWith(':' + id)) {
+                    existingEntry = entry;
                     break;
                 }
             }
@@ -388,12 +428,19 @@ export const useGameProviderState = () => {
             return prev;
         });
     }, [characterInfo.xp]);
-
     const [mumeEditState, setMumeEditState] = useState({
         isOpen: false,
         title: '',
         text: '',
         key: ''
+    });
+    
+    // Account Selection State
+    const [accountState, setAccountState] = useState<import('../../types').AccountState>({
+        stage: 'none',
+        characters: [],
+        selectedCharacter: null,
+        lastCreatedCharacterName: undefined
     });
 
     const handleSaveMumeEdit = useCallback((text: string) => {
@@ -413,6 +460,7 @@ export const useGameProviderState = () => {
         rumble, setRumble,
         hitFlash, setHitFlash,
         deathStage, setDeathStage,
+        deathRoomId, setDeathRoomId,
         heldButton, setHeldButton,
         isMendingMode, setIsMendingMode,
         mendingTarget, setMendingTarget,
@@ -424,14 +472,16 @@ export const useGameProviderState = () => {
         bufferName, setBufferName,
         characterInfo, setCharacterInfo,
         groupMembers, setGroupMembers,
-        xpHistory, xpEvent, triggerXpTicker
-    }), [stats, target, activePrompt, rumble, hitFlash, deathStage, heldButton, isMendingMode, mendingTarget,
+        xpHistory, xpEvent, triggerXpTicker,
+        accountState, setAccountState
+    }), [stats, target, activePrompt, rumble, hitFlash, deathStage, deathRoomId, heldButton, isMendingMode, mendingTarget,
         playerHealthStatus, opponentHealthStatus, opponentName, opponentId, bufferHealthStatus, bufferName, characterInfo, groupMembers,
-        xpHistory, xpEvent, triggerXpTicker]);
+        xpHistory, xpEvent, triggerXpTicker, accountState]);
 
     const game = useMemo(() => ({
         inCombat, setInCombat,
         status, setStatus,
+        gameState, setGameState,
         characterName, setCharacterName,
         mood, setMood,
         spellSpeed, setSpellSpeed,
@@ -510,7 +560,7 @@ export const useGameProviderState = () => {
         clearRegistry,
         selectedObjectIds, toggleObjectSelection, clearObjectSelection,
     }), [
-        inCombat, status, characterName, mood, spellSpeed, alertness, playerPosition, isRiding,
+        inCombat, status, gameState, characterName, mood, spellSpeed, alertness, playerPosition, isRiding,
         isNoviceMode, isSoundEnabled, isMmapperMode, theme, showControls,
         roomPlayers, roomNpcs, roomItems, currentTerrain, ui, setIsCharacterOpen,
         setIsEquipmentOpen, setIsInventoryOpen, setIsMapExpanded, setIsSetManagerOpen, lighting,

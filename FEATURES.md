@@ -87,6 +87,15 @@ The client translates game text into visual atmospheric effects.
 - **Layout Management**: Reset buttons and layouts to "Core Defaults", "User Defaults", or "Factory Settings".
 - **Export/Import Settings**: Back up your entire configuration (buttons, triggers, URLs) to a JSON file.
 
+## 🎓 Character Progression (Practice & Quests)
+- **Practice System**: Dedicated UI for tracking skill progression. Automatically categorizes skills (Spells, Combat, Utilities) and shows percentage progress.
+- **Quest Tracking**: Interactive quest log that monitors active tasks, completed goals, and available rewards.
+- **Shop Integration**: Specialized UI for interacting with vendors, comparing item stats, and managing transactions.
+
+> **Agent Context:** 
+> - **Logic**: `src/hooks/usePracticeHandler.ts`, `src/hooks/useQuestsHandler.ts`, `src/hooks/useShopHandler.ts`
+> - **UI Components**: `src/components/PracticeSkillCard.tsx`, `src/components/ShopItemCard.tsx`
+
 ---
 
-*This list is updated as new features are added to the client. Last Updated: February 2026.*
+*This list is updated as new features are added to the client. Last Updated: March 2026.*

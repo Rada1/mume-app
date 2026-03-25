@@ -1,7 +1,7 @@
 import { MapperMarker } from './mapperTypes';
 
 export type MapData = {
-    rooms: Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean, flags?: string[] }>, string, string, string[], string[]]>;
+    rooms: Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean, flags?: string[] }>, string, string, string[], string[], string, number?, number?]>;
     markers: Record<string, MapperMarker>;
 };
 
@@ -13,7 +13,7 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
 
         reader.onload = async (e) => {
             try {
-                const roomCoords: Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean, flags?: string[] }>, string, string, string[], string[]]> = {};
+                const roomCoords: Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean, flags?: string[] }>, string, string, string[], string[], string, number?, number?]> = {};
                 const markers: Record<string, MapperMarker> = {};
 
                 if (isXML) {
@@ -88,7 +88,15 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                             if (loadNodes[j].textContent) loadFlags.push(loadNodes[j].textContent.trim());
                         }
 
-                        parsedRooms.push({ idAttr, serverIdAttr, x, y, z, terrain, exits, name, mobFlags, loadFlags });
+                        const lightNode = room.getElementsByTagName("light")[0];
+                        const lightText = lightNode ? lightNode.textContent?.trim() : null;
+                        const light = lightText === 'DARK' ? 1 : (lightText === 'LIT' ? 2 : 0);
+
+                        const sundeathNode = room.getElementsByTagName("sundeath")[0];
+                        const sundeathText = sundeathNode ? sundeathNode.textContent?.trim() : null;
+                        const sundeath = sundeathText === 'NO_SUNDEATH' ? 0 : (sundeathText === 'SUNDEATH' ? 1 : undefined);
+
+                        parsedRooms.push({ idAttr, serverIdAttr, x, y, z, terrain, exits, name, mobFlags, loadFlags, light, sundeath });
 
                         // Room markers
                         const roomMarkerNodes = room.getElementsByTagName("marker");
@@ -120,7 +128,7 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                                 pr.exits[dir].target = idToServerId[targetId];
                             }
                         }
-                        roomCoords[pr.serverIdAttr] = [pr.x + 1, -pr.y + 1, pr.z * floorHeight, pr.terrain, pr.exits, pr.name, pr.serverIdAttr, pr.mobFlags, pr.loadFlags];
+                        roomCoords[pr.serverIdAttr] = [pr.x + 1, -pr.y + 1, pr.z * floorHeight, pr.terrain, pr.exits, pr.name, pr.serverIdAttr, pr.mobFlags, pr.loadFlags, pr.zone || "", pr.light, pr.sundeath];
                     }
 
                     // Parse standalone markers - Use scale 100.0 (Global Arda Alignment)
@@ -224,9 +232,10 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                     rstr(); // note
 
                     const terrain = ru8();
-                    ru8(); ru8(); ru8(); // light, align, portable
+                    const light = ru8();
+                    ru8(); ru8(); // align, portable
                     if (version >= 24) ru8(); // ridable
-                    if (version >= 33) ru8(); // sundeath
+                    const sundeath = version >= 33 ? ru8() : 0;
                     const mobFlagsVal = version >= 33 ? ru32() : ru16();
                     const loadFlagsVal = version >= 33 ? ru32() : ru16();
                     if (version < 39) ru8(); // upToDate
@@ -271,7 +280,7 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                     const key = String(internalId);
                     const X_OFFSET_BIN = 1;
                     const Y_OFFSET_BIN = 1;
-                    roomCoords[key] = [x + X_OFFSET_BIN, -y + Y_OFFSET_BIN, z * floorHeight, terrain, exits, name, String(serverId || key), mobFlags, loadFlags];
+                    roomCoords[key] = [x + X_OFFSET_BIN, -y + Y_OFFSET_BIN, z * floorHeight, terrain, exits, name, String(serverId || key), mobFlags, loadFlags, "", light, sundeath];
                 }
 
                 for (let i = 0; i < markCount; i++) {

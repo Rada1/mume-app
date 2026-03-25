@@ -24,6 +24,7 @@ import { SpatButtons } from './components/SpatButtons';
 import { useSpatButtons } from './hooks/useSpatButtons';
 import SwipeFeedbackOverlay from './components/SwipeFeedbackOverlay';
 import { MultiSelectToolbar } from './components/Popovers/MultiSelectToolbar';
+import { TransitionLayer } from './components/Layout/TransitionLayer';
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
 
@@ -218,6 +219,7 @@ const MudClient = () => {
             onClick={handleBackgroundClick}
         >
             {isCrtEnabled && <div className="crt-overlay" />}
+            <TransitionLayer />
             <div className={`app-content-shaker ${rumble ? 'rumble-active' : ''}`} style={{ flex: 1, position: 'relative' }}>
                 <div className="background-layer" style={{
                     backgroundImage: bgImage ? `url(${bgImage})` : 'none',

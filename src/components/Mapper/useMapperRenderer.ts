@@ -3,7 +3,7 @@ import { GRID_SIZE, normalizeTerrain } from './mapperUtils';
 import { RenderContext } from './renderers/rendererUtils';
 import { drawTerrains, drawLocalTerrains } from './renderers/drawTerrains';
 import { drawFeatures, drawLocalFeatures } from './renderers/drawFeatures';
-import { drawGrid, drawEntities, drawGroupMembers, drawMarkers, drawMarquee } from './renderers/drawEntities';
+import { drawGrid, drawEntities, drawGroupMembers, drawDeathIndicator, drawMarkers, drawMarquee } from './renderers/drawEntities';
 
 interface RendererProps {
     rooms: Record<string, any>;
@@ -43,6 +43,7 @@ interface RendererProps {
     inlineCategories?: import('../../types').InlineCategoryConfig[];
     opponentName?: string | null;
     opponentId?: string | null;
+    deathRoomId?: string | null;
 }
 
 export const useMapperRenderer = ({
@@ -53,6 +54,7 @@ export const useMapperRenderer = ({
     unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath,
     triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
     roomPlayers, roomNpcs, inlineCategories, opponentName, opponentId,
+    deathRoomId,
     showOrganicTerrain = true
 }: RendererProps) => {
 
@@ -281,17 +283,19 @@ export const useMapperRenderer = ({
             imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers, unveilMap,
             allRooms, roomAtCoord: (cache as any).roomAtCoord, visitedAtCoord: (cache as any).visitedAtCoord, 
             preloaded: preloadedCoordsRef.current, firstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef, clientPredictionsRef,
-            groupMembers, serverIdIndexRef, roomPlayers, roomNpcs, inlineCategories, opponentName
+            groupMembers, serverIdIndexRef, roomPlayers, roomNpcs, inlineCategories, opponentName,
+            deathRoomId
         };
 
         drawGroupMembers(rCtx);
+        drawDeathIndicator(rCtx);
         drawEntities(rCtx, playerTrailRef, playerPosRef, characterName);
         drawMarkers(rCtx, stableMarkersRef, selectedMarkerId, camera.x, camera.y, camera.x + baseW/camera.zoom, camera.y + baseH/camera.zoom);
 
         ctx.restore();
         drawMarquee(rCtx, marquee);
 
-    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, renderVersion, firstExploredAtRef, groupMembers, serverIdIndexRef, roomPlayers, roomNpcs, inlineCategories, opponentName]);
+    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, renderVersion, firstExploredAtRef, groupMembers, serverIdIndexRef, roomPlayers, roomNpcs, inlineCategories, opponentName, deathRoomId]);
 
     return { drawMap };
 };

@@ -67,7 +67,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         triggerHaptic, executeCommand, theme, showLegacyButtons, btn, joystick, 
         setIsTrackpadModifierActive, lighting, roomPlayers, roomNpcs, inlineCategories
     } = useGame();
-    const { target, groupMembers, opponentName, opponentId } = useVitals();
+    const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
     const { addMessage } = useLog();
     const { setUI, setPopoverState } = useUI();
     const isDarkMode = theme === 'dark';
@@ -204,6 +204,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 inlineCategories={inlineCategories}
                 opponentName={opponentName}
                 opponentId={opponentId}
+                deathRoomId={deathRoomId}
             />
             
             {isMobile && currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`] || preloadedCoordsRef.current[String(currentRoomId).replace(/^m_/, '')]) && (

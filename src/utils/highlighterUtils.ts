@@ -14,6 +14,7 @@ import {
     exitDirections,
     magicKeywords
 } from '../constants/highlighterItems';
+import { isObjectSelected } from './selectionUtils';
 
 export interface Candidate {
     pattern: string;
@@ -57,7 +58,7 @@ export const buildHighlighterCandidates = (
     type?: MessageType,
     textOnly: string = '',
     keywordOverrides: Record<string, string> = {},
-    selectedPrefixes: Set<string> = new Set()
+    selectedObjectIds: Set<string> = new Set()
 ): Candidate[] => {
     const candidates: Candidate[] = [];
     // Normalized sets to handle accent mismatches (e.g. Dúnadan vs Dunadan)
@@ -110,7 +111,7 @@ export const buildHighlighterCandidates = (
         const glowColor = '#facc15'; 
         const command = category;
         const buttonId = `auto-target-${target}`;
-        const isSelected = selectedPrefixes.has(`${command}:${buttonId}`);
+        const isSelected = isObjectSelected(selectedObjectIds, buttonId, command);
 
         candidates.push({
             pattern: target,
@@ -140,7 +141,7 @@ export const buildHighlighterCandidates = (
                     }
                 }
                 const { glow, classExtra } = getTargetAwareStyles(m, finalCommand, b.style.backgroundColor.replace('0.3', '0.6').replace('0.2', '0.5'), target);
-                const isSelected = selectedPrefixes.has(`${finalCommand}:${b.id}`);
+                const isSelected = isObjectSelected(selectedObjectIds, b.id, finalCommand);
                 return `<span class="inline-btn${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${b.id}" data-mid="${mid}" data-cmd="${esc(finalCommand)}" data-context="${esc(m)}" data-icon="${esc(b.icon || '')}" data-label="${esc(finalLabel)}" data-color="${b.style.backgroundColor}" data-action="${b.actionType || 'command'}" data-menu-display="${b.menuDisplay || 'list'}" data-spit="${b.trigger?.spit ? 'true' : 'false'}" data-duration="${b.trigger?.duration || ''}" data-swipes='${b.swipeCommands ? JSON.stringify(b.swipeCommands).replace(/'/g, "&apos;") : ""}' data-swipe-actions='${b.swipeActionTypes ? JSON.stringify(b.swipeActionTypes).replace(/'/g, "&apos;") : ""}' style="--glow-color: ${glow}">${m}</span>`;
             },
             length: pattern.length
@@ -158,7 +159,7 @@ export const buildHighlighterCandidates = (
                 replacer: (m, _match) => {
                     const { glow, classExtra } = getTargetAwareStyles(m, name, 'rgba(125, 211, 252, 1)', target);
                     const buttonId = `auto-${name}`;
-                    const isSelected = selectedPrefixes.has(`inlineplayer:${buttonId}`);
+                    const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'inlineplayer');
                     return `<span class="inline-btn auto-occupant pc-highlighter${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(name)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}; font-weight: 800">${m.replace(/,/g, '')}</span>`;
                 },
                 length: p.length
@@ -215,7 +216,7 @@ export const buildHighlighterCandidates = (
                 replacer: (m, _match) => {
                     const { glow, classExtra } = getTargetAwareStyles(m, originalName, glowColor, target);
                     const buttonId = `auto-npc-${originalName}`;
-                    const isSelected = selectedPrefixes.has(`${command}:${buttonId}`);
+                    const isSelected = isObjectSelected(selectedObjectIds, buttonId, command);
                     return `<span class="inline-btn auto-npc npc-highlighter${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(context)}" data-category="${esc(category || '')}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}">${m.replace(/,/g, '')}</span>`;
                 },
                 length: p.length
@@ -230,7 +231,7 @@ export const buildHighlighterCandidates = (
             pattern: p,
             priority: 5,
             replacer: (m, _match) => {
-                const isSelected = selectedPrefixes.has('inline-corpses:auto-corpse');
+                const isSelected = isObjectSelected(selectedObjectIds, 'auto-corpse', 'inline-corpses');
                 return `<span class="inline-btn auto-item${isSelected ? ' selected' : ''}" draggable="true" data-id="auto-corpse" data-mid="${mid}" data-cmd="inline-corpses" data-context="corpse" data-action="menu" data-menu-display="list" style="--glow-color: ${corpseGlowColor}">${m}</span>`;
             },
             length: p.length
@@ -269,7 +270,7 @@ export const buildHighlighterCandidates = (
                 replacer: (m, _match) => {
                     const { glow, classExtra } = getTargetAwareStyles(m, itemName, glowColor, target);
                     const buttonId = `auto-item-${noun}`;
-                    const isSelected = selectedPrefixes.has(`${command}:${buttonId}`);
+                    const isSelected = isObjectSelected(selectedObjectIds, buttonId, command);
                     return `<span class="inline-btn auto-item${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(noun)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}">${m.replace(/,/g, '')}</span>`;
                 },
                 length: p.length
@@ -292,7 +293,7 @@ export const buildHighlighterCandidates = (
             replacer: (m, _match) => {
                 const { glow, classExtra } = getTargetAwareStyles(m, itemName, getGlowColorForCategory(category || command, inlineCategories), target);
                 const buttonId = `auto-item-${noun}`;
-                const isSelected = selectedPrefixes.has(`${command}:${buttonId}`);
+                const isSelected = isObjectSelected(selectedObjectIds, buttonId, command);
                 return `<span class="inline-btn auto-item${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(noun)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}">${m.replace(/,/g, '')}</span>`;
             },
             length: itemName.length
@@ -442,7 +443,7 @@ export const applyColorTaggedObjects = (
     target: string | null, 
     type?: MessageType,
     keywordOverrides: Record<string, string> = {},
-    selectedPrefixes: Set<string> = new Set(),
+    selectedObjectIds: Set<string> = new Set(),
     roomPlayers: import('../types').GmcpOccupant[] = [],
     roomNpcs: import('../types').GmcpOccupant[] = []
 ): string => {
@@ -504,7 +505,7 @@ export const applyColorTaggedObjects = (
         const { glow, classExtra } = getTargetAwareStyles(displayName, finalContext, baseGlow, target);
         
         const buttonId = `auto-obj-${keyword}`;
-        const isSelected = selectedPrefixes.has(`${finalCmd}:${buttonId}`);
+        const isSelected = isObjectSelected(selectedObjectIds, buttonId, finalCmd);
         
         return `<span class="inline-btn auto-obj color-tagged-obj${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${finalCmd}" data-context="${esc(finalContext)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}">${innerHtml.replace(/,/g, '')}</span>`;
     });
