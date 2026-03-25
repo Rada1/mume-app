@@ -343,7 +343,13 @@ export interface GameContextType {
     playRandomSound: (buffers: AudioBuffer[]) => void;
     playDoorSound: (isOpen: boolean) => void;
     playClickSound: () => void;
+    playCommMessageSound: (options?: { volume?: number }) => void;
+    stopCommMessageSound: () => void;
+    playTutorialExitSound: (options?: { volume?: number }) => void;
     triggerHaptic: (ms: number) => void;
+
+
+
 
     // Low-level callback registration
     setDetectLighting: (fn: (text: string) => void) => void;

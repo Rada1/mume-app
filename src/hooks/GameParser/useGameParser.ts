@@ -29,7 +29,11 @@ import { useAccountParser } from './useAccountParser';
 export function useGameParser(deps: UseGameParserDeps) {
     const { 
         mapperRef, btn, addMessage, playSound,        playHitImpactSound,
+        playCommMessageSound,
+        playTutorialExitSound,
+
         playIncantationSound,
+
         stopIncantationSound,
         playMagicExplosionSound,
         playRandomSound,
@@ -58,6 +62,8 @@ export function useGameParser(deps: UseGameParserDeps) {
     const tempEntitiesRef = useRef<Record<string, GameEntity>>({});
     const counterRef = useRef(0);
     const shopPagerSeenRef = useRef(false);
+    const tutorialExitPlayedRef = useRef(false);
+
 
     // Initialize Specialized Hooks
     const { finalizeCapture } = useStageManager({
@@ -112,12 +118,14 @@ export function useGameParser(deps: UseGameParserDeps) {
         captureStage, isSilentCapture, isDrawerCapture,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
         isWaitingForInv, isWaitingForEq, isWaitingForStats,
-        setWhoList, setWhereList, setCharacterInfo, setDiscoveredItems, extractNoun, ansiConvert
+        setWhoList, setWhereList, setCharacterInfo, setDiscoveredItems, extractNoun, ansiConvert,
+        playerPosition: deps.playerPosition
     });
 
     const { parseAccountLine } = useAccountParser({
         accountState,
         setAccountState,
+        gameState: deps.gameState,
         setGameState,
         sendCommand: (cmd: string) => executeCommandRef.current?.(cmd),
         executeCommandRef,
@@ -187,7 +195,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (parseAccountLine(line, false)) return;
 
         // --- Spell Casting Sounds ---
-        if (lower.includes('strange incantations') || 
+        // Only trigger for the player, not NPCs or other players
+        if (lower.includes('you begin some strange incantations') || 
             lower.includes('you start to concentrate') || 
             lower.includes('you muster all of your concentration')) {
             playIncantationSound?.();
@@ -204,6 +213,18 @@ export function useGameParser(deps: UseGameParserDeps) {
                    lower.includes('too stunned to concentrate')) {
             stopIncantationSound?.(false);
         }
+
+        // --- Tutorial Exit Sound ---
+        // Note: only check the first part of the phrase — MUME wraps long lines at ~80 chars,
+        // which splits "adventure concludes for now, for I must make haste to / Isengard" across
+        // two separate processLine calls, so both conditions would never match simultaneously.
+        if (!tutorialExitPlayedRef.current &&
+            lower.includes('adventure concludes for now')) {
+            tutorialExitPlayedRef.current = true;
+            playTutorialExitSound?.();
+        }
+
+
 
         if (lower.includes('type %e on an empty line to save') || 
                  lower.includes('type %q to abandon') ||
@@ -344,7 +365,9 @@ export function useGameParser(deps: UseGameParserDeps) {
                 if (commInfo.commSender && commInfo.lastCommIdBySenderRef) commInfo.lastCommIdBySenderRef.current.set(commInfo.commSender, currentMid);
             }
             addMessage(msgType, finalRawText, isCombatMatch, currentMid, isRoomName, { textOnly, lower }, undefined, undefined, undefined, false, commInfo.replyTarget, commInfo.replyCommand, commInfo.commSender, commInfo.commAction, commInfo.commText, commInfo.commColor, combatInfo.side);
+
         }
+
 
         if (promptInfo.isEndPrompt) finalizeCapture();
     }, [addMessage, setInventoryLines, setStatsLines, setEqLines, setWhoList, setWhereList, deps, processTriggers, roomNameRef, setPopoverState, finalizeCapture, parsePrompt, checkCombatMatch, handleCombatExit, handleXpTicker, parseGlobalStatus, parseDetailedScore, detectRoom, parseAtmosphere, trackAction, parseComm, createLines, resetNounCounts, resetContainerStack, practice, shop, quests, setCharacterInfo, setDiscoveredItems, executeCommandRef, captureStage, ansiConvert, extractNoun, initializeStage, determineVisibility, routeMessage, detectItemsInRoom, mumeEditState.isOpen, setMumeEditState]);

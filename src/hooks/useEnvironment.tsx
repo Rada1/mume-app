@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { Sun, Moon, Zap, EyeOff, CloudRain, CloudLightning, Snowflake, CloudFog } from 'lucide-react';
+import { Sun, Moon, Zap, EyeOff, CloudRain, CloudLightning, Snowflake, CloudFog, Cloud } from 'lucide-react';
 import { LightingType } from '../types';
 
 interface EnvironmentDeps {
@@ -103,7 +103,7 @@ export function useEnvironment(deps: EnvironmentDeps) {
             case 'rain': return <CloudRain size={16} className="text-blue-400" />;
             case 'heavy-rain': return <CloudRain size={16} className="text-blue-600 drop-shadow-sm" />;
             case 'snow': return <Snowflake size={16} className="text-white" />;
-            case 'cloud': return <CloudFog size={16} className="text-gray-400" />;
+            case 'cloud': return <Cloud size={16} className="text-gray-400" />;
             default: return null;
         }
     };

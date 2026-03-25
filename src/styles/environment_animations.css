@@ -10,6 +10,14 @@
     }
 }
 
+@keyframes fog-drift-map {
+    0%   { transform: translateX(-4%) translateY(-3%) scale(1.04); }
+    20%  { transform: translateX(3%)  translateY(-1%) scale(1.01); }
+    45%  { transform: translateX(2%)  translateY(4%)  scale(1.06); }
+    70%  { transform: translateX(-3%) translateY(2%)  scale(1.02); }
+    100% { transform: translateX(-4%) translateY(-3%) scale(1.04); }
+}
+
 @keyframes drop-fall {
     0% {
         transform: translateY(0);

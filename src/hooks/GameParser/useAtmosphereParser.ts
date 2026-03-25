@@ -32,7 +32,10 @@ export function useAtmosphereParser(deps: AtmosphereParserDeps) {
         if (lower.includes("starts to rain") || lower.includes("it is raining")) setWeather(lower.includes("heavily") ? 'heavy-rain' : 'rain');
         if (lower.includes("starts to snow") || lower.includes("it is snowing")) setWeather('snow');
         if (lower.includes("rain stops") || lower.includes("snow stops") || lower.includes("clouds disappear")) setWeather('none');
-        if (lower.includes("fog thins") || lower.includes("fog dissipates")) setIsFoggy(false);
+        
+        if (lower.includes("starts to fog") || lower.includes("it is foggy") || lower.includes("fog has thickened") || lower.includes("thick fog covers") || lower.includes("disappears into the fog") || (lower.includes("fog") && lower.includes("thickens"))) setIsFoggy(true);
+        if (lower.includes("fog thins") || lower.includes("fog dissipates") || lower.includes("fog has lifted") || lower.includes("fog disappears")) setIsFoggy(false);
+
 
         if (lower.includes("flash of lightning") || lower.includes("lightning illuminates")) {
             setLightningEnabled(true);

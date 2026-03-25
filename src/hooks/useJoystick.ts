@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { Direction } from '../types';
+import { Direction, ExecuteCommand } from '../types';
 
 
 export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits: string[] = []) => {
@@ -28,7 +28,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
     const lastPointerPosRef = useRef<{ x: number, y: number } | null>(null);
 
     // Command Execution Ref
-    const executeCommandRef = useRef<((cmd: string) => void) | null>(null);
+    const executeCommandRef = useRef<ExecuteCommand | null>(null);
     const activePointersRef = useRef<Set<number>>(new Set());
 
     const dirMap: Record<string, string> = {
@@ -85,7 +85,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         repeatMoveTimer.current = setInterval(firePulse, 750);
     }, [triggerHaptic]);
 
-    const handleJoystickStart = useCallback((e: React.PointerEvent, executeCommand?: (cmd: string) => void) => {
+    const handleJoystickStart = useCallback((e: React.PointerEvent, executeCommand?: ExecuteCommand) => {
         activePointersRef.current.add(e.pointerId);
         if (activeJoystickPointerRef.current !== null && activeJoystickPointerRef.current !== e.pointerId) {
             return;
@@ -127,7 +127,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         setSwipeRay({ active: false, angle: 0, dist: 0, x: undefined, y: undefined });
     }, [startRepeatTimer]);
 
-    const handleJoystickMove = useCallback((e: React.PointerEvent, executeCommand?: (cmd: string) => void, suppressMove?: boolean) => {
+    const handleJoystickMove = useCallback((e: React.PointerEvent, executeCommand?: ExecuteCommand, suppressMove?: boolean) => {
         if (activePointersRef.current.size > 1) return null;
         if (e.pointerId !== activeJoystickPointerRef.current) return null;
         if (executeCommand) executeCommandRef.current = executeCommand;
@@ -264,7 +264,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         return dir;
     }, [joystickActive, isJoystickConsumed, triggerHaptic, startRepeatTimer, availableExits]);
 
-    const handleJoystickEnd = useCallback((e: React.PointerEvent, executeCommand: (cmd: string) => void, triggerHaptic: (duration?: number) => void, suppressDefault?: boolean) => {
+    const handleJoystickEnd = useCallback((e: React.PointerEvent, executeCommand: ExecuteCommand, triggerHaptic: (duration?: number) => void, suppressDefault?: boolean) => {
         activePointersRef.current.delete(e.pointerId);
         if (e.pointerId !== activeJoystickPointerRef.current) return false;
         console.log(`[Joystick] End: x=${e.clientX} y=${e.clientY} (Consumed: ${isJoystickConsumed || isTargetModifierActive})`);
@@ -311,18 +311,18 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         if (!wasConsumed) {
             // Tap to Look
             if (displacement < 20 && dist < 20) {
-                executeCommand('look');
+                executeCommand('look', false, false, false, false, { fromUi: true });
                 // Removed release haptic for lookout/tap
                 return true;
             }
             
-            // Execute Move on Release
+            // Directional execution
             let threshold = 25;
             if (initialDir === 'nw' && !availableExits.includes('u')) threshold = 60;
             else if (initialDir === 'se' && !availableExits.includes('d')) threshold = 60;
 
             if (dist >= threshold && initialDir) {
-                executeCommand(dirMap[initialDir] || initialDir);
+                executeCommand(dirMap[initialDir] || initialDir, false, false, false, false, { fromUi: true });
                 lastSentDirRef.current = initialDir;
 
                 
@@ -343,7 +343,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         setCurrentDir(dir === 'up' ? 'u' : 'd');
     }, []);
 
-    const handleNavEnd = useCallback((dir: 'up' | 'down', executeCommand: (cmd: string) => void, triggerHaptic: (duration?: number) => void, setBtnGlow: React.Dispatch<React.SetStateAction<{ up: boolean, down: boolean }>>) => {
+    const handleNavEnd = useCallback((dir: 'up' | 'down', executeCommand: ExecuteCommand, triggerHaptic: (duration?: number) => void, setBtnGlow: React.Dispatch<React.SetStateAction<{ up: boolean, down: boolean }>>) => {
         const wasConsumed = isJoystickConsumed;
         setCurrentDir(null);
         setIsJoystickConsumed(false);

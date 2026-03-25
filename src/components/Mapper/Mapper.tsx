@@ -63,9 +63,9 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const playerTrailRef = useRef<{ x: number, y: number, z: number, alpha: number }[]>([]);
     const lastRoomIdRef = useRef<string | null>(null);
 
-    const { 
-        triggerHaptic, executeCommand, theme, showLegacyButtons, btn, joystick, 
-        setIsTrackpadModifierActive, lighting, roomPlayers, roomNpcs, inlineCategories
+    const {
+        triggerHaptic, executeCommand, theme, showLegacyButtons, btn, joystick,
+        setIsTrackpadModifierActive, lighting, roomPlayers, roomNpcs, inlineCategories, isFoggy
     } = useGame();
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
     const { addMessage } = useLog();
@@ -149,7 +149,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     }, [isMapFloating, setIsMapFloating, setUI, triggerHaptic]);
 
     return (
-        <div className={`mapper-container lighting-state-${lighting || 'none'} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ 
+        <div className={`mapper-container lighting-state-${lighting || 'none'} ${isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ 
             position: 'relative', 
             width: '100%', 
             height: '100%', 
@@ -161,6 +161,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             <div className="mapper-overlay mapper-moon-overlay" />
             <div className="mapper-overlay mapper-artificial-overlay" />
             <div className="mapper-overlay mapper-dark-overlay" />
+            <div className="mapper-overlay mapper-fog-overlay" />
             <MapCanvas
                 ref={canvasRef}
                 rooms={rooms}

@@ -1,12 +1,15 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { MapperRoom } from '../mapperTypes';
+import { ExecuteCommand } from '../../../types';
+
 
 export const useSmartWalk = (
     currentRoomId: string | null,
     rooms: Record<string, MapperRoom>,
-    executeCommand: (cmd: string) => void,
+    executeCommand: ExecuteCommand,
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>,
     addMessage?: (type: any, text: string) => void
+
 ) => {
     const [isWalking, setIsWalking] = useState(false);
     const [walkTargetId, setWalkTargetId] = useState<string | null>(null);
@@ -136,7 +139,7 @@ export const useSmartWalk = (
             const destRoom = rooms[targetId] || (targetId.startsWith('m_') ? null : rooms[`m_${targetId}`]);
             const destName = destRoom?.name || (preloadedCoordsRef.current[normTarget]?.[5]) || normTarget;
             addMessage?.('system', `Walking to: ${destName}...`);
-            executeCommand(pathResult.dirs[0]);
+            executeCommand(pathResult.dirs[0], false, false, false, false, { fromUi: true });
         } else if (normCurrent === normTarget) {
             addMessage?.('system', 'You are already there.');
             stopWalking();
@@ -162,7 +165,7 @@ export const useSmartWalk = (
             const newPath = findPath(currentRoomId, targetRoomIdRef.current!);
             if (newPath && newPath.dirs.length > 0) {
                 setWalkPath(newPath.ids);
-                executeCommand(newPath.dirs[0]);
+                executeCommand(newPath.dirs[0], false, false, false, false, { fromUi: true });
             } else {
                 // If path is temporarily lost (e.g. room loading lag), wait ONE frame before stopping
                 setTimeout(() => {
@@ -170,7 +173,7 @@ export const useSmartWalk = (
                         const retryPath = findPath(currentRoomId, targetRoomIdRef.current!);
                         if (retryPath && retryPath.dirs.length > 0) {
                             setWalkPath(retryPath.ids);
-                            executeCommand(retryPath.dirs[0]);
+                            executeCommand(retryPath.dirs[0], false, false, false, false, { fromUi: true });
                         } else {
                             stopWalking();
                         }

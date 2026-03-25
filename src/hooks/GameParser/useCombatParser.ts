@@ -18,7 +18,7 @@ export interface CombatParserDeps {
     setDeathRoomId?: (val: string | null) => void;
 }
 
-const COMBAT_VERBS_STR = ['hit', 'miss', 'wound', 'kill', 'maul', 'pierce', 'cleave', 'stab', 'slash', 'pound', 'crush', 'smite', 'strike', 'backstab', 'charge', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shocked', 'stunned', 'blinded', 'silenced', 'hurt', 'die', 'fighting', 'incantations', 'recovered'].join('|');
+const COMBAT_VERBS_STR = ['hit', 'miss', 'wound', 'kill', 'maul', 'pierce', 'cleave', 'stab', 'slash', 'pound', 'crush', 'smite', 'strike', 'backstab', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shocked', 'stunned', 'blinded', 'silenced', 'hurt', 'die', 'fighting', 'recovered'].join('|');
 const COMBAT_REGEX = new RegExp(`(?: )(${COMBAT_VERBS_STR})s?(?: )|(${COMBAT_VERBS_STR})s? you`);
 
 export function useCombatParser(deps: CombatParserDeps) {
@@ -35,9 +35,14 @@ export function useCombatParser(deps: CombatParserDeps) {
     } = deps;
 
     const checkCombatMatch = useCallback((lower: string) => {
-        const isMatch = COMBAT_REGEX.test(lower) || ((lower.includes('dodge') || lower.includes('parry') || lower.includes('flee')) && inCombatRef.current);
+        // Exclude specific flavor text that shouldn't be combat
+        if (lower.includes('hissing shriek') || lower.includes('the nine')) return { isMatch: false };
+
+        const isSpecificCharge = /^you charge\b/i.test(lower) || /\bcharges (?:at|towards) you\b/i.test(lower) || /\bcharge (?:at|towards) you\b/i.test(lower);
+        const isMatch = COMBAT_REGEX.test(lower) || isSpecificCharge || ((lower.includes('dodge') || lower.includes('parry') || lower.includes('flee')) && inCombatRef.current);
         
         if (!isMatch) return { isMatch: false };
+
 
         const impactVerbs = ['hit', 'pierce', 'slash', 'smite', 'crush', 'pound', 'stab', 'cleave'];
         const isImpact = impactVerbs.some(verb => lower.includes(` ${verb} `) || lower.includes(` ${verb}s `) || lower.includes(`${verb} you`) || lower.includes(`${verb}s you`));

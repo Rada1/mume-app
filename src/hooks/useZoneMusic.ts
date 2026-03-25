@@ -36,7 +36,11 @@ const STATIC_MUSIC_MAP: Record<string, string | string[]> = {
     'road to fornost': '/assets/Sounds/Zone Sounds/roadtofornost1.mp3',
 };
 
-const FIGHT_MUSIC_URL = '/assets/Sounds/Sound effects/fight.mp3';
+const FIGHT_MUSIC_URLS = [
+    '/assets/Sounds/Sound effects/fight.mp3',
+    '/assets/Sounds/Sound effects/fight2.mp3'
+];
+
 
 interface TrackState {
     source: AudioBufferSourceNode | null;
@@ -130,8 +134,10 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
         if (isInCombat) {
             if (!combatTrack.current.source) {
                 console.log('[ZoneMusic] Starting Combat Music');
-                const buffer = await loadAudio(FIGHT_MUSIC_URL);
+                const randomUrl = FIGHT_MUSIC_URLS[Math.floor(Math.random() * FIGHT_MUSIC_URLS.length)];
+                const buffer = await loadAudio(randomUrl);
                 if (!buffer) return;
+
 
                 const source = ctx.createBufferSource();
                 source.buffer = buffer;
@@ -139,16 +145,17 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
 
                 const gain = ctx.createGain();
                 gain.gain.setValueAtTime(0, ctx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 1.5);
+                gain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 1.5);
+
 
                 source.connect(gain);
                 gain.connect(ctx.destination);
-                
+
                 // Random start offset but never start too close to the end
                 const offset = Math.random() * Math.max(0, buffer.duration - 30);
+                if (ctx.state === 'suspended') await ctx.resume();
                 source.start(0, offset);
-
-                combatTrack.current = { source, gain, url: FIGHT_MUSIC_URL };
+                combatTrack.current = { source, gain, url: randomUrl };
             }
         } else {
             if (combatTrack.current.source) {
@@ -192,6 +199,7 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
 
             source.connect(gain);
             gain.connect(ctx.destination);
+            if (ctx.state === 'suspended') await ctx.resume();
             source.start(0);
 
             zoneTrack.current = { source, gain, url: accountMusicUrl };
@@ -257,9 +265,10 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
 
         source.connect(gain);
         gain.connect(ctx.destination);
-        
+
         // Random start offset but never start too close to the end
         const offset = Math.random() * Math.max(0, buffer.duration - 30);
+        if (ctx.state === 'suspended') await ctx.resume();
         source.start(0, offset);
 
         zoneTrack.current = { source, gain, url: musicUrl };

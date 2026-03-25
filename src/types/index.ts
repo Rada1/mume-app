@@ -11,6 +11,8 @@ export type UiMode = 'auto' | 'desktop' | 'portrait' | 'landscape';
 export type GameState = 'disconnected' | 'account' | 'playing';
 export type CaptureStage = 'none' | 'who' | 'where' | 'inv' | 'eq' | 'stat' | 'container' | 'shop' | 'shop-detail' | 'practice' | 'whois' | 'description' | 'info' | 'quest' | 'account';
 export type CombatHealthStatus = 'Healthy' | 'Fine' | 'Hurt' | 'Wounded' | 'Badly Wounded' | 'Awful' | 'Dying' | 'Stunned' | 'None';
+export type ExecuteCommand = (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean, fromUi?: boolean }) => void;
+
 
 export type OptimisticChange =
     | { type: 'wear'; item?: DrawerLine; noun?: string; lineId?: string }

@@ -109,6 +109,32 @@
     opacity: 0.85;
 }
 
+/* --- Fog --- */
+.mapper-fog-overlay {
+    z-index: 4; /* Below all lighting layers (dark:6, moon/artificial:7) so light renders on top of fog */
+    /* Multiple radial wisps for a natural mist look */
+    background:
+        radial-gradient(ellipse 85% 70% at 25% 35%, rgba(185, 200, 215, 0.22) 0%, transparent 70%),
+        radial-gradient(ellipse 70% 80% at 72% 60%, rgba(185, 200, 215, 0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 50% at 50% 10%, rgba(185, 200, 215, 0.15) 0%, transparent 65%),
+        rgba(185, 200, 215, 0.12);
+    transition: opacity 5s ease-in-out;
+}
+
+.foggy .mapper-fog-overlay {
+    opacity: 1;
+    transition: opacity 2s ease-in-out;
+    animation: fog-drift-map 55s ease-in-out infinite;
+}
+
+.lighting-state-dark .foggy .mapper-fog-overlay {
+    background:
+        radial-gradient(ellipse 85% 70% at 25% 35%, rgba(120, 135, 148, 0.22) 0%, transparent 70%),
+        radial-gradient(ellipse 70% 80% at 72% 60%, rgba(120, 135, 148, 0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 50% at 50% 10%, rgba(120, 135, 148, 0.15) 0%, transparent 65%),
+        rgba(120, 135, 148, 0.12);
+}
+
 @keyframes mapper-lantern-flicker {
     0% { opacity: 0.45; filter: saturate(1); }
     10% { opacity: 0.52; filter: saturate(1.1); }

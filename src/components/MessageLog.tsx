@@ -22,24 +22,53 @@ const ReplyButton = ({ msg, setParley, onReply }: { msg: Message, setParley: (p:
     );
 };
 
-const Typewriter = ({ text, isRecent }: { text: string, isRecent: boolean }) => {
-    const [displayedText, setDisplayedText] = useState(isRecent ? '' : text);
+// Module-level: tracks message IDs where the typewriter finished or was interrupted.
+// Survives virtualizer unmount/remount so the animation never restarts mid-sentence.
+const typewriterDoneIds = new Set<string>();
+
+const Typewriter = ({ msgId, text, isRecent, playCommMessageSound, stopCommMessageSound }: {
+    msgId: string,
+    text: string,
+    isRecent: boolean,
+    playCommMessageSound?: (options?: { volume?: number }) => void,
+    stopCommMessageSound?: () => void
+}) => {
+    // If the animation was interrupted (e.g. line shifted up in virtualizer), show full text immediately
+    const alreadyDone = typewriterDoneIds.has(msgId);
+    const [displayedText, setDisplayedText] = useState(!isRecent || alreadyDone ? text : '');
 
     useEffect(() => {
-        if (!isRecent || displayedText === text) return;
+        if (!isRecent || alreadyDone || displayedText === text) return;
 
         let index = 0;
         const interval = setInterval(() => {
             setDisplayedText(text.slice(0, index + 1));
+
+            // Play typing sound every few characters to avoid audio clutter
+            if (index % 4 === 0 && playCommMessageSound) {
+                playCommMessageSound({ volume: 1.0 });
+            }
+
             index++;
-            if (index >= text.length) clearInterval(interval);
+            if (index >= text.length) {
+                clearInterval(interval);
+                typewriterDoneIds.add(msgId);
+                if (stopCommMessageSound) stopCommMessageSound();
+            }
         }, 8); // Faster typewriter (8ms)
 
-        return () => clearInterval(interval);
-    }, [text, isRecent]);
+        return () => {
+            clearInterval(interval);
+            // Mark as done so re-mounts skip the animation and show full text
+            typewriterDoneIds.add(msgId);
+            if (stopCommMessageSound) stopCommMessageSound();
+        };
+    }, [text, isRecent, msgId, alreadyDone, playCommMessageSound, stopCommMessageSound]);
 
     return <span>{displayedText}</span>;
 };
+
+
 
 import { useBaseGame, useVitals, useLog } from '../context/GameContext';
 
@@ -60,8 +89,14 @@ const MessageItem = React.memo(({
     executeCommand,
     setParley,
     triggerHaptic,
+    playClickSound,
+    playCommMessageSound,
+    stopCommMessageSound,
     latestBatchId,
 }: {
+
+
+
     msg: Message,
     processMessageHtml: (html: string, mid?: string, isRoomName?: boolean, type?: MessageType) => string,
     inCombat: boolean,
@@ -69,7 +104,12 @@ const MessageItem = React.memo(({
     executeCommand: (cmd: string) => void;
     setParley: (p: import('../types').ParleyState) => void;
     triggerHaptic: (ms: number) => void;
+    playClickSound: () => void;
+    playCommMessageSound?: (options?: { volume?: number }) => void;
+    stopCommMessageSound?: () => void;
     latestBatchId?: number;
+
+
 }) => {
     const content = useMemo(() => processMessageHtml(msg.html, msg.id, msg.isRoomName, msg.type), [msg.html, msg.id, msg.isRoomName, msg.type, processMessageHtml]);
     const isRecent = Date.now() - msg.timestamp < 2000;
@@ -80,6 +120,8 @@ const MessageItem = React.memo(({
         const directed = msg.replyCommand === 'tell' || msg.replyCommand === 'whisper';
         setParley({ active: true, command: msg.replyCommand!, target: directed ? (msg.replyTarget ?? null) : null });
         triggerHaptic(20);
+        playClickSound();
+
 
         // Trigger keyboard on mobile
         setTimeout(() => {
@@ -95,7 +137,8 @@ const MessageItem = React.memo(({
                 }
             }
         }, 50);
-    }, [msg.replyCommand, msg.replyTarget, setParley]);
+    }, [msg.replyCommand, msg.replyTarget, setParley, triggerHaptic, playClickSound]);
+
 
     return (
         <div
@@ -130,9 +173,11 @@ const MessageItem = React.memo(({
                             style={{ color: msg.commColor, cursor: 'pointer', '--glow-color': msg.commColor } as React.CSSProperties}
                             onClick={triggerParley}
                         >
-                            <Typewriter text={msg.commText || ''} isRecent={isRecent} />
+                            <Typewriter msgId={msg.id} text={msg.commText || ''} isRecent={isRecent} playCommMessageSound={playCommMessageSound} stopCommMessageSound={stopCommMessageSound} />
                         </div>
                         <ReplyButton msg={msg} setParley={setParley} onReply={triggerParley} />
+
+
                     </div>
                 </div>
             ) : (
@@ -161,7 +206,10 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onDragStart,
     onDragEnd
 }) => {
-    const { inCombat, viewport, executeCommand, setParley, triggerHaptic } = useBaseGame();
+    const { inCombat, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound } = useBaseGame();
+
+
+
     const { messages, processMessageHtml } = useLog();
     const { activePrompt, setTarget } = useVitals();
     const { scrollContainerRef, messagesEndRef, scrollToBottom } = viewport;
@@ -337,8 +385,12 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                 executeCommand={executeCommand}
                                 setParley={setParley}
                                 triggerHaptic={triggerHaptic}
+                                playClickSound={playClickSound}
+                                playCommMessageSound={playCommMessageSound}
+                                stopCommMessageSound={stopCommMessageSound}
                                 latestBatchId={latestBatchId}
                             />
+
                         </div>
                     );
                 })}

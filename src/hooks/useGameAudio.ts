@@ -61,7 +61,15 @@ export const useGameAudio = ({
         playIncantationSound,
         stopIncantationSound,
         playMagicExplosionSound,
+        loadCommMessageSound,
+        playCommMessageSound,
+        stopCommMessageSound,
+        playTutorialExitSound,
+        loadTutorialExitSound,
         loadSpellSounds
+
+
+
     } = useSoundSystem(isSoundEnabled);
 
     useZoneMusic({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic, isInCombat: inCombat, lighting, isSleeping, gameState });
@@ -107,7 +115,15 @@ export const useGameAudio = ({
         stopIncantationSound,
         playMagicExplosionSound,
         loadSpellSounds,
+        playCommMessageSound,
+        stopCommMessageSound,
+        playTutorialExitSound,
+        loadTutorialExitSound,
+        loadCommMessageSound,
+
+
         triggerHaptic,
+
         setTriggerHaptic
     };
 };

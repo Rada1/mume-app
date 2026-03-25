@@ -3,7 +3,8 @@
  * @description Hook managing pointer gestures for individual game buttons, including swiping and radial menus.
  */
 import React, { useCallback } from 'react';
-import { CustomButton, PopoverState, SwipeDirection } from '../../../types';
+import { CustomButton, PopoverState, SwipeDirection, ExecuteCommand } from '../../../types';
+
 import { getButtonCommand } from '../../../utils/buttonUtils';
 
 export interface UseButtonGesturesProps {
@@ -22,7 +23,7 @@ export interface UseButtonGesturesProps {
     setIsCancelling: React.Dispatch<React.SetStateAction<boolean>>;
     isCancelling: boolean;
     setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
-    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean) => void;
+    executeCommand: ExecuteCommand;
     setActiveSet: (setId: string) => void;
     handleButtonClick: (button: CustomButton, e: React.MouseEvent | React.PointerEvent) => void;
     setButtons: React.Dispatch<React.SetStateAction<CustomButton[]>>;

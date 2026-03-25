@@ -4,6 +4,7 @@ import { CharacterEntry, AccountStage, CreationPrompt } from '../../types';
 interface UseAccountParserProps {
     accountState: import('../../types').AccountState;
     setAccountState: React.Dispatch<React.SetStateAction<import('../../types').AccountState>>;
+    gameState: import('../../types').GameState;
     setGameState: React.Dispatch<React.SetStateAction<import('../../types').GameState>>;
     sendCommand: (cmd: string) => void;
     executeCommandRef: React.MutableRefObject<((cmd: string, silent?: boolean, isEnter?: boolean) => void) | undefined>;
@@ -14,32 +15,56 @@ interface UseAccountParserProps {
 // Module-level ref ensures persistence across hook re-renders during creation flow
 const creationPromptRef: { current: CreationPrompt | null } = { current: null };
 
-export function useAccountParser({ accountState, setAccountState, setGameState, sendCommand, executeCommandRef, isMobile }: UseAccountParserProps) {
+export function useAccountParser({ accountState, setAccountState, gameState, setGameState, sendCommand, executeCommandRef, isMobile }: UseAccountParserProps) {
     // Use Refs to keep parseAccountLine stable and avoid re-render loops
     const stageRef = useRef(accountState.stage);
     stageRef.current = accountState.stage;
+    const gameStateRef = useRef(gameState);
+    gameStateRef.current = gameState;
     const charsRef = useRef(accountState.characters);
     charsRef.current = accountState.characters;
     const isMobileRef = useRef(isMobile);
     isMobileRef.current = isMobile;
     const lastProcessedPromptRef = useRef<string | null>(null);
     const currentChunkLinesRef = useRef<string[]>([]);
+    const prevCreationDescLinesRef = useRef<Set<string>>(new Set());
 
     const parseAccountLine = useCallback((line: string, isNewChunk: boolean): boolean => {
         if (isNewChunk) {
-            currentChunkLinesRef.current = [];
+            // Keep a rolling buffer of lines to allow "surgical restore" across packets
+            if (currentChunkLinesRef.current.length > 100) {
+                currentChunkLinesRef.current = currentChunkLinesRef.current.slice(-50);
+            }
         }
 
         const cleanLine = line.replace(/\x1b\[[0-9;]*m/g, '').trim();
         if (!cleanLine) return false;
 
+        currentChunkLinesRef.current.push(cleanLine);
+
         if (isNewChunk) {
-            currentChunkLinesRef.current = [cleanLine];
             // Only clear if we were in a menu state, otherwise keep the creation prompt until we match a new one
             if (stageRef.current === 'account-menu' || stageRef.current === 'login') {
                 creationPromptRef.current = null;
+                currentChunkLinesRef.current = [cleanLine];
+            } else if (stageRef.current === 'character-creation') {
+                // Reset the chunk buffer so the surgical restore can't pull in lore text
+                // from a previous page (e.g. the Continue/Back info page before actual subrace options).
+                // Description already accumulated in creationPromptRef.current.description is preserved.
+                currentChunkLinesRef.current = [cleanLine];
             }
             console.log(`[AccountParser] New chunk started with line: ${cleanLine}`);
+        }
+
+        // During gameplay, skip all account parsing except detecting return to Account>
+        if (gameStateRef.current === 'playing') {
+            if (cleanLine === 'Account>') {
+                creationPromptRef.current = null;
+                setGameState('account');
+                setAccountState(prev => ({ ...prev, stage: 'account-menu', creationPrompt: null }));
+                return true;
+            }
+            return false;
         }
 
         // 0. Detect Paginator (Progress output)
@@ -47,7 +72,6 @@ export function useAccountParser({ accountState, setAccountState, setGameState, 
             cleanLine.includes('*** [Hit Return to continue]') ||
             cleanLine.includes('*** Return:')) {
             if (isMobileRef.current) {
-                console.log(`[AccountParser] Detected paginator (mobile), sending return.`);
                 // Use silent non-system so isSilentCapture is NOT incremented
                 executeCommandRef.current?.('', true, false);
                 return true; // Mobile: auto-page and suppress from log
@@ -80,103 +104,118 @@ export function useAccountParser({ accountState, setAccountState, setGameState, 
 
         if (lowerLine.includes('welcome to mume!') || lowerLine.includes('another account on mume')) {
             console.log(`[AccountParser] Matched New Account prompt: ${cleanLine}`);
-            creationPromptRef.current = {
-                title: 'New Account',
-                description: 'Welcome to MUME! This graphical client will walk you through creating your new account and your first character.',
-                options: [
-                    { id: 'n', label: 'No, creating my first account' },
-                    { id: 'y', label: 'Yes, I have another account' }
-                ],
-                footer: '[Y/N/?]>'
-            };
-            setAccountState(prev => ({ 
-                ...prev, 
-                stage: 'character-creation', 
-                creationPrompt: creationPromptRef.current! 
-            }));
-            return true;
+            if (isMobileRef.current) {
+                creationPromptRef.current = {
+                    title: 'New Account',
+                    description: 'Welcome to MUME! This graphical client will walk you through creating your new account and your first character.',
+                    options: [
+                        { id: 'n', label: 'No, creating my first account' },
+                        { id: 'y', label: 'Yes, I have another account' }
+                    ],
+                    footer: '[Y/N/?]>'
+                };
+                setAccountState(prev => ({
+                    ...prev,
+                    stage: 'character-creation',
+                    creationPrompt: creationPromptRef.current!
+                }));
+                return true;
+            }
+            return false;
         }
 
         if (lowerLine.includes('enter new account name') || lowerLine.includes('account name:')) {
             console.log(`[AccountParser] Matched Account Name prompt: ${cleanLine}`);
-            creationPromptRef.current = {
-                title: 'Account Name',
-                description: 'Pick a unique name for your new MUME account. This is the name you will use to log in.',
-                options: [],
-                footer: 'Account Name>'
-            };
-            setAccountState(prev => ({ 
-                ...prev, 
-                stage: 'character-creation', 
-                creationPrompt: creationPromptRef.current! 
-            }));
-            return true;
+            if (isMobileRef.current) {
+                creationPromptRef.current = {
+                    title: 'Account Name',
+                    description: 'Pick a unique name for your new MUME account. This is the name you will use to log in.',
+                    options: [],
+                    footer: 'Account Name>'
+                };
+                setAccountState(prev => ({
+                    ...prev,
+                    stage: 'character-creation',
+                    creationPrompt: creationPromptRef.current!
+                }));
+                return true;
+            }
+            return false;
         }
 
-        if (lowerLine === 'account password:' || 
-            lowerLine === 'password:' || 
+        if (lowerLine === 'account password:' ||
+            lowerLine === 'password:' ||
             lowerLine.startsWith('pick your account password') ||
             lowerLine.startsWith('enter password') ||
             lowerLine.startsWith('enter your password')) {
             console.log(`[AccountParser] Matched Set Password prompt: ${cleanLine}`);
-            creationPromptRef.current = {
-                title: 'Set Password',
-                description: 'Pick a strong password. You will need this every time you log in.',
-                options: [],
-                footer: 'Password: '
-            };
-            setAccountState(prev => ({ 
-                ...prev, 
-                stage: 'character-creation', 
-                creationPrompt: creationPromptRef.current! 
-            }));
-            return true;
+            if (isMobileRef.current) {
+                creationPromptRef.current = {
+                    title: 'Set Password',
+                    description: 'Pick a strong password. You will need this every time you log in.',
+                    options: [],
+                    footer: 'Password: '
+                };
+                setAccountState(prev => ({
+                    ...prev,
+                    stage: 'character-creation',
+                    creationPrompt: creationPromptRef.current!
+                }));
+                return true;
+            }
+            return false;
         }
 
-        if (lowerLine.includes('verify:') || 
-            lowerLine.includes('verify password') || 
+        if (lowerLine.includes('verify:') ||
+            lowerLine.includes('verify password') ||
             lowerLine.includes('confirm password') ||
             lowerLine.includes('re-type') ||
             lowerLine.includes('verify it matches')) {
             console.log(`[AccountParser] Matched Verify prompt: ${cleanLine}`);
-            creationPromptRef.current = {
-                title: 'Verify Password',
-                description: 'For security, please input your password a second time to verify it matches.',
-                options: [],
-                footer: 'Verify: '
-            };
-            setAccountState(prev => ({ 
-                ...prev, 
-                stage: 'character-creation', 
-                creationPrompt: creationPromptRef.current! 
-            }));
-            return true;
+            if (isMobileRef.current) {
+                creationPromptRef.current = {
+                    title: 'Verify Password',
+                    description: 'For security, please input your password a second time to verify it matches.',
+                    options: [],
+                    footer: 'Verify: '
+                };
+                setAccountState(prev => ({
+                    ...prev,
+                    stage: 'character-creation',
+                    creationPrompt: creationPromptRef.current!
+                }));
+                return true;
+            }
+            return false;
         }
 
         // Detect Game Time Output
         if (cleanLine.startsWith('It is ') && cleanLine.includes('the Third Age')) {
-            creationPromptRef.current = {
-                title: 'Middle-earth Time',
-                description: cleanLine,
-                options: [{ id: 'menu', label: 'Back to Menu' }],
-                footer: ''
-            };
-            setAccountState(prev => ({ 
-                ...prev, 
-                stage: 'character-creation', 
-                creationPrompt: creationPromptRef.current! 
-            }));
-            return true;
+            if (isMobileRef.current) {
+                creationPromptRef.current = {
+                    title: 'Middle-earth Time',
+                    description: cleanLine,
+                    options: [{ id: 'menu', label: 'Back to Menu' }],
+                    footer: ''
+                };
+                setAccountState(prev => ({
+                    ...prev,
+                    stage: 'character-creation',
+                    creationPrompt: creationPromptRef.current!
+                }));
+                return true;
+            }
+            return false;
         }
 
-        if (creationPromptRef.current?.title === 'Middle-earth Time' && 
+        if (isMobileRef.current && creationPromptRef.current?.title === 'Middle-earth Time' &&
             (cleanLine.startsWith('Dawn is') || cleanLine.startsWith('It is'))) {
             // Append second line if it arrived
             if (!creationPromptRef.current.description.includes(cleanLine)) {
                 creationPromptRef.current.description += '\n' + cleanLine;
-                setAccountState(prev => ({ 
-                    ...prev, 
-                    creationPrompt: { ...creationPromptRef.current! } 
+                setAccountState(prev => ({
+                    ...prev,
+                    creationPrompt: { ...creationPromptRef.current! }
                 }));
             }
             return true;
@@ -187,30 +226,45 @@ export function useAccountParser({ accountState, setAccountState, setGameState, 
                 "Choose Your Allegiance", "Choose Your Race", "Choose Your Subrace",
                 "Choose Your Hometown", "Choose Your Sex", "Choose Your Alignment",
                 "Choose Your Archetype", "Choose Your Stats", "Choose Your Physique",
-                "Choose Your Name", "Your Character", "Choose Your Specialty", 
+                "Choose Your Name", "Your Character", "Choose Your Specialty",
                 "Choose Your Profession", "Choose Your Class"
             ];
-            
+
             const isHeader = creationHeaders.some(h => cleanLine.includes(h));
             if (isHeader) {
-                // Reset buffer for new creation stage
-                creationPromptRef.current = {
-                    title: cleanLine,
-                    description: '',
-                    options: [],
-                    footer: ''
-                };
-                setAccountState(prev => ({ 
-                    ...prev, 
-                    stage: 'character-creation', 
-                    creationPrompt: creationPromptRef.current! 
-                }));
-                setGameState('account');
-                return true;
+                if (isMobileRef.current) {
+                    // If we already have a description but NO options yet, the text arrival was
+                    // likely the intro for THIS header. Keep it.
+                    const currentDesc = creationPromptRef.current?.description || '';
+                    const hasOptions = creationPromptRef.current?.options.length > 0;
+
+                    // Save previous description lines so we can skip them if MUME repeats them on the next page
+                    if (currentDesc) {
+                        prevCreationDescLinesRef.current = new Set(
+                            currentDesc.split(/\n| /).map(s => s.trim()).filter(Boolean)
+                        );
+                    }
+
+                    // Reset buffer for new creation stage
+                    creationPromptRef.current = {
+                        title: cleanLine,
+                        description: hasOptions ? '' : currentDesc,
+                        options: [],
+                        footer: ''
+                    };
+                    setAccountState(prev => ({
+                        ...prev,
+                        stage: 'character-creation',
+                        creationPrompt: creationPromptRef.current!
+                    }));
+                    setGameState('account');
+                    return true;
+                }
+                return false;
             }
 
-            // 2. Parse Creation Prompt Details
-            if (creationPromptRef.current && stageRef.current !== 'character-select') {
+            // 2. Parse Creation Prompt Details (mobile only)
+            if (isMobileRef.current && creationPromptRef.current && stageRef.current !== 'character-select') {
                 // Parse options: (1) Option Name OR 1) Option Name
                 const optionMatch = cleanLine.match(/^\s*\(?(\d+|back|\?)\)?\s+(.+)$/i);
                 if (optionMatch) {
@@ -222,10 +276,12 @@ export function useAccountParser({ accountState, setAccountState, setGameState, 
                     if (id === "1" && existingOpt1 && existingOpt1.label !== label) {
                         creationPromptRef.current.options = [];
                         
-                        // Surgically restore description from current chunk lines that aren't options/headers
+                        // Surgically restore description from current chunk lines that aren't options/headers/footers
                         creationPromptRef.current.description = currentChunkLinesRef.current
                             .filter(l => !l.match(/^\s*\(?(\d+|back|\?)\)?\s+(.+)$/i))
                             .filter(l => !l.match(/^[=\-\s\*\.]+$/))
+                            .filter(l => !creationHeaders.some(h => l.includes(h)))
+                            .filter(l => !l.endsWith('>'))
                             .join('\n');
                     }
 
@@ -245,7 +301,10 @@ export function useAccountParser({ accountState, setAccountState, setGameState, 
                     cleanLine.includes('"back"') || 
                     cleanLine.includes('Select an option') || 
                     cleanLine.includes('Pick a number') ||
-                    cleanLine.includes('Enter your name')
+                    cleanLine.includes('Enter your name') ||
+                    cleanLine.includes('?') ||
+                    cleanLine.includes('[') ||
+                    cleanLine.match(/[Yy]\/[Nn]/)
                 )) {
                     creationPromptRef.current.footer = cleanLine;
                     setAccountState(prev => ({ 
@@ -268,6 +327,11 @@ export function useAccountParser({ accountState, setAccountState, setGameState, 
 
                 // Collect description text
                 if (cleanLine && !cleanLine.match(/^[=\-\s\*\.]+$/) && !isHeader) {
+                    // Skip lines that are just repetitions of the previous page's description
+                    const words = cleanLine.split(/\s+/).filter(Boolean);
+                    const isRepeat = words.length > 3 && words.every(w => prevCreationDescLinesRef.current.has(w));
+                    if (isRepeat) return true;
+
                     const desc = creationPromptRef.current.description.trimEnd();
                     const isListItem = cleanLine.match(/^(\*|\-|•|\d+[\.\)])/);
 
@@ -325,10 +389,12 @@ export function useAccountParser({ accountState, setAccountState, setGameState, 
         if (/no\s+name/i.test(cleanLine) && /level/i.test(cleanLine) && /race/i.test(cleanLine)) {
             creationPromptRef.current = null; // Ensure creation state is cleared before character entries
             setGameState('account');
-            setAccountState(prev => ({ 
-                ...prev, 
-                stage: prev.stage === 'login' ? 'account-menu' : 'character-select', 
-                characters: [] 
+            setAccountState(prev => ({
+                ...prev,
+                // Stay at account-menu if already there (e.g. MUME auto-sent list after Account>).
+                // Only advance to character-select if the user explicitly navigated there.
+                stage: (prev.stage === 'account-menu' || prev.stage === 'login') ? 'account-menu' : 'character-select',
+                characters: []
             }));
             return false;
         }
@@ -339,10 +405,10 @@ export function useAccountParser({ accountState, setAccountState, setGameState, 
             (cleanLine.includes('Name') && cleanLine.includes('Logon') && cleanLine.includes('Area') && cleanLine.includes('Rent'))) {
             creationPromptRef.current = null; // Ensure creation state is cleared before character entries
             setGameState('account');
-            setAccountState(prev => ({ 
-                ...prev, 
-                stage: prev.stage === 'login' ? 'account-menu' : 'character-select', 
-                characters: [] 
+            setAccountState(prev => ({
+                ...prev,
+                stage: (prev.stage === 'account-menu' || prev.stage === 'login') ? 'account-menu' : 'character-select',
+                characters: []
             }));
             return false;
         }
@@ -368,7 +434,6 @@ export function useAccountParser({ accountState, setAccountState, setGameState, 
 
             setAccountState(prev => ({
                 ...prev,
-                stage: 'character-select',
                 characters: alreadyExists ? prev.characters : [...prev.characters, newChar]
             }));
             setGameState('account');
@@ -409,7 +474,6 @@ export function useAccountParser({ accountState, setAccountState, setGameState, 
 
             setAccountState(prev => ({
                 ...prev,
-                stage: 'character-select',
                 characters: alreadyExists ? prev.characters : [...prev.characters, newChar]
             }));
             setGameState('account');
@@ -451,7 +515,7 @@ export function useAccountParser({ accountState, setAccountState, setGameState, 
         }
 
         // Suppression Logic
-        if (stageRef.current !== 'none' && stageRef.current !== 'login') {
+        if (stageRef.current !== 'login') {
             // In account-menu stage, suppress everything if it looks like the menu
             if (stageRef.current === 'account-menu') {
                 // If it's the list of commands or help text, suppress

@@ -1,4 +1,6 @@
 import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
+import { ExecuteCommand } from '../../types';
+
 import { MapperRoom, MapperMarker } from './mapperTypes';
 import { GRID_SIZE, DRAG_SENSITIVITY, ZOOM_SENSITIVITY } from './mapperUtils';
 import { useMapHitTest } from './hooks/useMapHitTest';
@@ -33,7 +35,7 @@ export interface InteractionDeps {
     heldButton?: any;
     setHeldButton?: (val: any) => void;
     target?: string;
-    executeCommand: (cmd: string) => void;
+    executeCommand: ExecuteCommand;
     startWalking: (targetId: string) => void;
     stopWalking: () => void;
     setIsDragging: (dragging: boolean) => void;
@@ -358,7 +360,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
 
                 if (dragTypeRef.current === 'joystick') {
                     // This handles Requirement 1 (Short Tap -> Look) and Requirement 6 (Flick -> Move)
-                    const resultData = joystick.handleJoystickEnd(e as any, executeCommand, triggerHaptic, !!depsRef.current.heldButton);
+                    const resultData = joystick.handleJoystickEnd(e as any, (cmd: string) => depsRef.current.executeCommand(cmd, false, false, false, false, { fromUi: true }), triggerHaptic, !!depsRef.current.heldButton);
                     
                     const isTap = resultData === true || (typeof resultData === 'object' && resultData.isCenterTap);
                     const comboDir = (typeof resultData === 'object') ? resultData.dir : null;
@@ -409,12 +411,11 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                             type: result.actionType === 'select-recipient' ? 'give-recipient-select' : undefined
                                         });
                                     } else {
-                                        depsRef.current.executeCommand(result.cmd);
+                                        depsRef.current.executeCommand(result.cmd, false, false, false, false, { fromUi: true });
                                     }
                                 } else if (comboDir) {
-                                    depsRef.current.executeCommand(result.cmd);
+                                    depsRef.current.executeCommand(result.cmd, false, false, false, false, { fromUi: true });
                                 }
-                                
                                 depsRef.current.setHeldButton?.((prev: any) => prev ? { ...prev, didFire: true } : null);
                                 comboFiredRef.current = true;
                                 depsRef.current.triggerHaptic(60);
@@ -422,6 +423,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         }
                     }
                 }
+
  else if (dragTypeRef.current === 'marquee' && marqueeStart && marqueeEnd) {
                     const { screenToWorld } = hitTestRef.current;
                     const w1 = screenToWorld(marqueeStart.x, marqueeStart.y), w2 = screenToWorld(marqueeEnd.x, marqueeEnd.y);

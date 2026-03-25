@@ -25,46 +25,51 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     isImmersionMode
 }) => {
     return (
-        <div className={`environment-root lighting-state-${isImmersionMode ? lighting : 'sun'}`}>
-            {/* --- LAYER 1: BOTTOM (Atmospheric Effects) [z-index: 5] --- */}
-            {isImmersionMode && (
-                <>
-                    <div className="lighting-container lighting-sun" style={{ opacity: lighting === 'sun' ? 1 : 0 }}><div className="lighting-inner" /></div>
-                    <div className="lighting-container lighting-moon" style={{ opacity: lighting === 'moon' ? 1 : 0 }}><div className="lighting-inner" /></div>
-                    <div className="lighting-container lighting-artificial" style={{ opacity: lighting === 'artificial' ? 1 : 0 }}><div className="lighting-inner" /></div>
-                    <div className="lighting-container lighting-dark" style={{ opacity: lighting === 'dark' ? 1 : 0 }}><div className="lighting-inner" /></div>
-                </>
-            )}
+        <>
+            {/* --- BACK LAYER: Ambient & Lighting [z-index: 1] --- */}
+            <div className={`environment-root back lighting-state-${isImmersionMode ? lighting : 'sun'}`}>
+                {isImmersionMode && (
+                    <>
+                        <div className="lighting-container lighting-sun" style={{ opacity: lighting === 'sun' ? 1 : 0 }}><div className="lighting-inner" /></div>
+                        <div className="lighting-container lighting-moon" style={{ opacity: lighting === 'moon' ? 1 : 0 }}><div className="lighting-inner" /></div>
+                        <div className="lighting-container lighting-artificial" style={{ opacity: lighting === 'artificial' ? 1 : 0 }}><div className="lighting-inner" /></div>
+                        <div className="lighting-container lighting-dark" style={{ opacity: lighting === 'dark' ? 1 : 0 }}><div className="lighting-inner" /></div>
+                    </>
+                )}
 
-            {/* Weather & Fog */}
-            {isImmersionMode && (
-                <>
-                    <div 
-                        className={`weather-layer weather-cloud ${(weather === 'rain' || weather === 'heavy-rain') ? 'storm-clouds' : ''}`} 
-                        style={{ opacity: (weather === 'cloud' || weather === 'rain' || weather === 'heavy-rain') ? 1 : 0 }} 
-                    />
-                    <div className={`fog-layer ${isFoggy ? 'fog-active' : ''}`} style={{ opacity: isFoggy ? 1 : 0 }} />
-                    {(weather === 'rain' || weather === 'heavy-rain') && <Rain heavy={weather === 'heavy-rain'} />}
-                </>
-            )}
+                <div className="dust-layer" />
+                <div className="overlay-layer" />
+                <div className={`storm-overlay-layer ${isImmersionMode && weather === 'heavy-rain' ? 'active' : ''}`} />
+                <div className="screen-vignette" />
 
-            {/* --- LAYER 2: MIDDLE (Grounding Overlay) [z-index: 10] --- */}
-            <div className="dust-layer" />
-            <div className="overlay-layer" />
-            <div className={`storm-overlay-layer ${isImmersionMode && weather === 'heavy-rain' ? 'active' : ''}`} />
-            <div className="screen-vignette" />
+                <div className={`combat-grayscale-filter ${inCombat ? 'active' : ''}`} />
+                <div className={`combat-vignette ${inCombat ? 'active' : ''}`} />
+            </div>
 
-            {/* --- LAYER 3: TOP (Alerts & Combat) [z-index: 20+] --- */}
-            <div className={`combat-grayscale-filter ${inCombat ? 'active' : ''}`} />
-            <div className={`combat-vignette ${inCombat ? 'active' : ''}`} />
-            <div className={`combat-layer-flash ${hitFlash ? 'active' : ''}`} />
-            <div className={`lightning-layer ${lightning ? 'lightning-active' : ''}`} />
+            {/* --- FRONT LAYER: Atmospheric & Interactive [z-index: 4500+] --- */}
+            <div className={`environment-root front`}>
+                {isImmersionMode && (
+                    <>
+                        <div
+                            className={`weather-layer weather-cloud ${(weather === 'rain' || weather === 'heavy-rain') ? 'storm-clouds' : ''}`}
+                            style={{ opacity: (weather === 'cloud' || weather === 'rain' || weather === 'heavy-rain') ? 1 : 0 }}
+                        />
+                        {(weather === 'rain' || weather === 'heavy-rain') && <Rain heavy={weather === 'heavy-rain'} />}
+                    </>
+                )}
+                {/* Fog renders regardless of immersion mode — it's a gameplay-relevant state */}
+                <div className={`fog-layer ${isFoggy ? 'fog-active' : ''}`} />
 
-            {/* Death Overlay (Highest) */}
-            <div className={`death-overlay ${deathStage !== 'none' ? 'death-active' : ''}`}
-                style={{ opacity: deathStage === 'fade_in' ? 0 : (deathStage === 'black_hold' ? 1 : undefined) }} />
-            <div className={`death-image-layer ${deathStage === 'flash' ? 'death-flash' : ''}`}
-                style={{ backgroundImage: `url(${DEATH_IMG})`, opacity: deathStage === 'flash' ? 1 : 0 }} />
-        </div>
+                <div className={`combat-layer-flash ${hitFlash ? 'active' : ''}`} />
+                <div className={`lightning-layer ${lightning ? 'lightning-active' : ''}`} />
+
+                {/* Death Overlay (Highest) */}
+                <div className={`death-overlay ${deathStage !== 'none' ? 'death-active' : ''}`}
+                    style={{ opacity: deathStage === 'fade_in' ? 0 : (deathStage === 'black_hold' ? 1 : undefined) }} />
+                <div className={`death-image-layer ${deathStage === 'flash' ? 'death-flash' : ''}`}
+                    style={{ backgroundImage: `url(${DEATH_IMG})`, opacity: deathStage === 'flash' ? 1 : 0 }} />
+            </div>
+        </>
     );
+
 };

@@ -183,7 +183,15 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         stopIncantationSound,
         playMagicExplosionSound,
         loadSpellSounds,
+        playCommMessageSound,
+        stopCommMessageSound,
+        playTutorialExitSound,
+        loadTutorialExitSound,
+        loadCommMessageSound,
+
+
         triggerHaptic,
+
         setTriggerHaptic
     } = useGameAudio({
         isSoundEnabled: s.isSoundEnabled,
@@ -200,15 +208,20 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
 
     useEffect(() => {
-        if (initAudio && loadClickSound && loadMovementSound && loadDoorSound && loadHitImpactSound && loadSpellSounds) {
+        if (initAudio && loadClickSound && loadMovementSound && loadDoorSound && loadHitImpactSound && loadSpellSounds && loadCommMessageSound) {
             initAudio();
             loadClickSound();
             loadMovementSound();
             loadDoorSound();
             loadHitImpactSound();
             loadSpellSounds();
+            loadCommMessageSound();
+            loadTutorialExitSound();
         }
-    }, [initAudio, loadClickSound, loadMovementSound, loadDoorSound, loadHitImpactSound, loadSpellSounds]);
+
+    }, [initAudio, loadClickSound, loadMovementSound, loadDoorSound, loadHitImpactSound, loadSpellSounds, loadCommMessageSound, loadTutorialExitSound]);
+
+
 
     const containerRef = useRef<HTMLDivElement>(null);
     const mapperRef = useRef<MapperRef>(null);
@@ -383,7 +396,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         registerEntity: s.registerEntity,
         setEntities: s.setEntities,
         playIncantationSound,
+        playCommMessageSound,
         stopIncantationSound,
+        playTutorialExitSound,
         playMagicExplosionSound,
         deathRoomId: v.deathRoomId,
         setDeathRoomId: v.setDeathRoomId,
@@ -392,7 +407,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setGameState: s.setGameState,
         activePrompt: v.activePrompt,
         gameState: s.gameState,
-        isMobile: viewport.isMobile
+        isMobile: viewport.isMobile,
+        playerPosition: s.playerPosition
     });
 
 
@@ -592,7 +608,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         onGroupUpdate: groupUpdateFn, setOnGroupUpdate: setGroupUpdateFn,
         onGroupRemove: groupRemoveFn, setOnGroupRemove: setGroupRemoveFn,
         onGroupSet: groupSetFn, setOnGroupSet: setGroupSetFn,
-        playSound, playRandomSound, playDoorSound, setPlaySound, triggerHaptic, setTriggerHaptic, playClickSound,
+        playSound, playRandomSound, playDoorSound, setPlaySound, triggerHaptic, setTriggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, playTutorialExitSound,
+
+
+
         btn, joystick, editor, containerRef, viewport, env,
         initAudio,
         setSettings: btn.setSettings, setSetSettings: btn.setSetSettings,
@@ -626,7 +645,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         s, accentColor, teleportTargets,
         roomInfoFn, roomExitsFn, charVitalsFn, roomPlayersFn, roomNpcsFn, roomItemsFn,
         addPlayerFn, addNpcFn, removePlayerFn, removeNpcFn, opponentChangeFn,
-        playSound, triggerHaptic,
+        playSound, triggerHaptic, playCommMessageSound, stopCommMessageSound, playTutorialExitSound,
+
+
+
         btn, joystick, editor, viewport, env,
         input, handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
         handleDragStart, handleDragEnd,

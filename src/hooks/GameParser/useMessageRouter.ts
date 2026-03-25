@@ -19,6 +19,7 @@ interface MessageRouterDeps {
     setDiscoveredItems: (val: string[] | ((prev: string[]) => string[])) => void;
     extractNoun: (name: string) => string;
     ansiConvert: any;
+    playerPosition?: string;
 }
 
 export const useMessageRouter = (deps: MessageRouterDeps) => {
@@ -26,10 +27,18 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         captureStage, isSilentCapture, isDrawerCapture,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
         isWaitingForInv, isWaitingForEq, isWaitingForStats,
-        setWhoList, setWhereList, setCharacterInfo, setDiscoveredItems, extractNoun, ansiConvert
+        setWhoList, setWhereList, setCharacterInfo, setDiscoveredItems, extractNoun, ansiConvert,
+        playerPosition
     } = deps;
 
     const determineVisibility = useCallback((textOnly: string, lower: string, isImportantMessage: boolean, isRoomName: boolean, isEndPrompt: boolean) => {
+        // --- Sleeping Suppression ---
+        // If the player is sleeping, suppress weather and lighting updates
+        if (playerPosition === 'sleeping') {
+            const isWeatherOrLighting = /starts to (rain|snow)|it is (raining|snowing|foggy)|rain stops|snow stops|clouds disappear|starts to fog|fog has (thinned|thickened|lifted|dissipated|disappeared)|thick fog covers|disappears into the fog|flash of lightning|lightning illuminates/i.test(lower);
+            if (isWeatherOrLighting) return false;
+        }
+
         let isDrawerHiding = false;
         
         if (textOnly.includes('*** Return:') || textOnly.includes('*** [Hit Return to continue]')) {
@@ -60,7 +69,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         }
 
         return (isSilentCapture.current === 0 && !isDrawerHiding) || isImportantMessage || isRoomName;
-    }, [captureStage, isSilentCapture, isDrawerCapture, isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen, isWaitingForInv, isWaitingForEq, isWaitingForStats]);
+    }, [captureStage, isSilentCapture, isDrawerCapture, isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen, isWaitingForInv, isWaitingForEq, isWaitingForStats, playerPosition]);
 
     const routeMessage = useCallback((msgType: string, textOnly: string, lower: string, cleanLine: string, attachedText: string, isMatch: boolean) => {
         let finalType = msgType;

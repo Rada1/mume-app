@@ -187,7 +187,7 @@ const CharacterDetailView = () => {
 };
 
 const AccountMenuView = () => {
-    const { executeCommand, setAccountState, initAudio, playClickSound } = useGame();
+    const { executeCommand, setAccountState, accountState, initAudio, playClickSound } = useGame();
 
     const menuItems = [
         { id: 'list', label: 'Characters', cmd: 'list', desc: 'Select a character to play' },
@@ -207,9 +207,16 @@ const AccountMenuView = () => {
                         onClick={() => {
                             playClickSound();
                             initAudio();
+
+                            if (item.id === 'list') {
+                                // Explicitly transition to character-select — the parser won't do it
+                                // automatically from account-menu (to prevent auto-advance on login).
+                                setAccountState(prev => ({ ...prev, stage: 'character-select' }));
+                            }
+
                             executeCommand(item.cmd);
-                            
-                            // For commands that require terminal interaction or just show a text response, 
+
+                            // For commands that require terminal interaction or just show a text response,
                             // hide the overlay so the user can see the output.
                             if (['lag', 'link', 'password'].includes(item.cmd)) {
                                 setAccountState(prev => ({ ...prev, stage: 'none' }));
@@ -230,18 +237,79 @@ const CharacterCreationView: React.FC = () => {
     const { accountState, executeCommand, initAudio, playClickSound } = useGame();
     const { creationPrompt } = accountState;
     const [customName, setCustomName] = React.useState('');
+    const [editingStats, setEditingStats] = React.useState(false);
+    const [editStatValues, setEditStatValues] = React.useState<{label: string, value: number}[]>([]);
+    const [editPointsLeft, setEditPointsLeft] = React.useState(0);
+    const lastEscapeRef = React.useRef<number>(0);
 
-    // Clear the input whenever the prompt changes (name to password to verify)
+    // Clear all inputs/modes whenever the prompt title changes
     React.useEffect(() => {
         setCustomName('');
+        setEditingStats(false);
     }, [creationPrompt?.title]);
 
+    // Double-Escape keyboard shortcut → send escape-escape to server (back to main menu)
+    React.useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                const now = Date.now();
+                if (now - lastEscapeRef.current < 600) {
+                    playClickSound();
+                    executeCommand('');
+                    setTimeout(() => executeCommand(''), 1000);
+                    lastEscapeRef.current = 0;
+                } else {
+                    lastEscapeRef.current = now;
+                }
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [executeCommand, playClickSound]);
+
     if (!creationPrompt) return null;
+
+    const isStatsPage = creationPrompt.title.includes('Choose Your Stats');
+    const pointsLeftId = parseInt(
+        creationPrompt.options.find(o => /points\s+left/i.test(o.label))?.id ?? '-1'
+    );
+
+    // Options minus the informational "points left" entry
+    const displayOptions = creationPrompt.options.filter(o => !/points\s+left/i.test(o.label));
 
     const handleSelect = (id: string) => {
         playClickSound();
         initAudio();
+        if (isStatsPage && id === '2') {
+            // Intercept "Edit" — launch the stat editor
+            setEditStatValues(stats.map(s => ({ label: s.label, value: parseInt(s.value) })));
+            setEditPointsLeft(pointsLeftId >= 0 ? pointsLeftId : 0);
+            setEditingStats(true);
+            executeCommand('2');
+            return;
+        }
         executeCommand(id);
+    };
+
+    const handleStatIncrease = (label: string) => {
+        if (editPointsLeft <= 0) return;
+        playClickSound();
+        const current = editStatValues.find(s => s.label === label);
+        if (!current) return;
+        const newValue = current.value + 1;
+        setEditStatValues(prev => prev.map(s => s.label === label ? { ...s, value: newValue } : s));
+        setEditPointsLeft(p => p - 1);
+        executeCommand(`${label.toLowerCase()} ${newValue}`);
+    };
+
+    const handleStatDecrease = (label: string) => {
+        const current = editStatValues.find(s => s.label === label);
+        if (!current || current.value <= 3) return;
+        playClickSound();
+        const newValue = current.value - 1;
+        setEditStatValues(prev => prev.map(s => s.label === label ? { ...s, value: newValue } : s));
+        setEditPointsLeft(p => p + 1);
+        executeCommand(`${label.toLowerCase()} ${newValue}`);
     };
 
     const handleCustomName = () => {
@@ -279,12 +347,14 @@ const CharacterCreationView: React.FC = () => {
     return (
         <div className="account-view creation-view">
             <h2 className="creation-title">{creationPrompt.title}</h2>
-            
-            <div className="creation-description">
-                {displayDescription}
-            </div>
 
-            {stats.length > 0 && (
+            {!editingStats && (
+                <div className="creation-description">
+                    {displayDescription}
+                </div>
+            )}
+
+            {!editingStats && stats.length > 0 && (
                 <div className="creation-stats-grid">
                     {stats.map(stat => (
                         <div key={stat.label} className="stat-item">
@@ -295,18 +365,69 @@ const CharacterCreationView: React.FC = () => {
                 </div>
             )}
 
-            <div className="creation-grid">
-                {creationPrompt.options.map(option => (
-                    <button 
-                        key={option.id} 
-                        className="creation-item" 
-                        onClick={() => handleSelect(option.id)}
-                    >
-                        <div className="creation-id">{option.id}</div>
-                        <div className="creation-label">{option.label}</div>
-                    </button>
-                ))}
-            </div>
+            {/* Points remaining banner on review screen */}
+            {isStatsPage && !editingStats && pointsLeftId > 0 && (
+                <div className="stat-points-banner">
+                    {pointsLeftId} points to distribute
+                </div>
+            )}
+
+            {editingStats ? (
+                <div className="stat-editor">
+                    <div className="stat-editor-points">
+                        <span className="points-label">Points Remaining</span>
+                        <span className={`points-value ${editPointsLeft === 0 ? 'zero' : ''}`}>{editPointsLeft}</span>
+                    </div>
+                    <div className="stat-editor-list">
+                        {editStatValues.map(stat => (
+                            <div key={stat.label} className="stat-editor-row">
+                                <span className="stat-editor-label">{stat.label}</span>
+                                <div className="stat-adj-controls">
+                                    <button
+                                        className="stat-adj-btn"
+                                        onClick={() => handleStatDecrease(stat.label)}
+                                        disabled={stat.value <= 3}
+                                    >−</button>
+                                    <span className="stat-editor-value">{stat.value}</span>
+                                    <button
+                                        className="stat-adj-btn"
+                                        onClick={() => handleStatIncrease(stat.label)}
+                                        disabled={editPointsLeft <= 0}
+                                    >+</button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}>
+                        <button className="creation-footer-btn" style={{ flex: 1, justifyContent: 'center' }} onClick={() => {
+                            playClickSound();
+                            setEditingStats(false);
+                        }}>
+                            ← Review
+                        </button>
+                        <button className="account-button" style={{ flex: 2, marginTop: 0 }} onClick={() => {
+                            playClickSound();
+                            setEditingStats(false);
+                            executeCommand('1');
+                        }}>
+                            Accept Stats
+                        </button>
+                    </div>
+                </div>
+            ) : (
+                <div className="creation-grid">
+                    {displayOptions.map(option => (
+                        <button
+                            key={option.id}
+                            className="creation-item"
+                            onClick={() => handleSelect(option.id)}
+                        >
+                            <div className="creation-id">({option.id})</div>
+                            <div className="creation-label">{option.label}</div>
+                        </button>
+                    ))}
+                </div>
+            )}
 
             {isNamePrompt && (
                 <div className="custom-name-row">
@@ -326,33 +447,31 @@ const CharacterCreationView: React.FC = () => {
                 </div>
             )}
 
-            {creationPrompt.footer && (
-                <div className="creation-footer" style={{ gap: '1rem' }}>
-                    <button 
-                        className="creation-footer-btn danger" 
+            <div className="creation-footer" style={{ gap: '1rem' }}>
+                <button
+                    className="creation-footer-btn danger"
+                    onClick={() => {
+                        playClickSound();
+                        executeCommand('');
+                        setTimeout(() => executeCommand(''), 1000);
+                    }}
+                >
+                    Cancel
+                </button>
+
+                {creationPrompt.footer?.toLowerCase().includes('"back"') && (
+                    <button
+                        className="creation-footer-btn"
                         onClick={() => {
                             playClickSound();
-                            executeCommand('');
-                            setTimeout(() => executeCommand(''), 1000);
+                            executeCommand('back');
                         }}
                     >
-                        Cancel
+                        <span className="footer-icon">←</span>
+                        Back
                     </button>
-
-                    {creationPrompt.footer.toLowerCase().includes('"back"') && (
-                        <button 
-                            className="creation-footer-btn" 
-                            onClick={() => {
-                                playClickSound();
-                                executeCommand('back');
-                            }}
-                        >
-                            <span className="footer-icon">←</span>
-                            Back
-                        </button>
-                    )}
-                </div>
-            )}
+                )}
+            </div>
         </div>
     );
 };

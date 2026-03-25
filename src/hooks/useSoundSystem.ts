@@ -4,9 +4,14 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
     const audioCtxRef = useRef<AudioContext | null>(null);
     const clickSoundRef = useRef<AudioBuffer | null>(null);
     const hitImpactSoundRef = useRef<AudioBuffer | null>(null);
+    const commMessageSoundRef = useRef<AudioBuffer | null>(null);
     const incantationsSoundRef = useRef<AudioBuffer | null>(null);
     const magicExplosionSoundRef = useRef<AudioBuffer | null>(null);
     const activeIncantationRef = useRef<{ source: AudioBufferSourceNode, gain: GainNode } | null>(null);
+    const activeCommMessageRef = useRef<{ source: AudioBufferSourceNode, gain: GainNode } | null>(null);
+    const tutorialExitSoundRef = useRef<AudioBuffer | null>(null);
+
+
 
     const initAudio = useCallback(() => {
         if (!audioCtxRef.current) {
@@ -217,6 +222,87 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         }
     }, [loadHitImpactSound, playSound]);
 
+    const loadCommMessageSound = useCallback(async () => {
+        if (!audioCtxRef.current || commMessageSoundRef.current) return;
+        try {
+            const response = await fetch('/assets/Sounds/Sound effects/commmessage.mp3');
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
+            commMessageSoundRef.current = audioBuffer;
+        } catch (err) {
+            console.error('Failed to load comm message sound:', err);
+        }
+    }, []);
+
+    const loadTutorialExitSound = useCallback(async () => {
+        if (!audioCtxRef.current) initAudio();
+        if (!audioCtxRef.current || tutorialExitSoundRef.current) return;
+        try {
+            const response = await fetch('/assets/Sounds/Sound effects/tutorialexit.mp3');
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
+            tutorialExitSoundRef.current = audioBuffer;
+        } catch (err) {
+            console.error('Failed to load tutorial exit sound:', err);
+        }
+    }, [initAudio]);
+
+
+    const playTutorialExitSound = useCallback(async (options?: { volume?: number }) => {
+        if (!audioCtxRef.current) initAudio();
+        if (!tutorialExitSoundRef.current) {
+            await loadTutorialExitSound();
+        }
+        if (tutorialExitSoundRef.current) {
+            playSound(tutorialExitSoundRef.current, { volume: options?.volume || 0.05 });
+        }
+    }, [loadTutorialExitSound, playSound, initAudio]);
+
+
+    const stopCommMessageSound = useCallback(() => {
+
+        if (!activeCommMessageRef.current || !audioCtxRef.current) return;
+        const { source, gain } = activeCommMessageRef.current;
+        const ctx = audioCtxRef.current;
+        
+        try {
+            gain.gain.setValueAtTime(gain.gain.value, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.05);
+            setTimeout(() => {
+                try {
+                    source.stop();
+                    source.disconnect();
+                    gain.disconnect();
+                } catch (e) { }
+            }, 50);
+        } catch (e) { }
+        activeCommMessageRef.current = null;
+    }, []);
+
+    const playCommMessageSound = useCallback((options?: { volume?: number }) => {
+        if (!audioCtxRef.current || !isSoundEnabled || !commMessageSoundRef.current) {
+            if (!commMessageSoundRef.current) loadCommMessageSound();
+            return;
+        }
+
+        // Stop previous if exists
+        stopCommMessageSound();
+
+        const ctx = audioCtxRef.current;
+        const source = ctx.createBufferSource();
+        source.buffer = commMessageSoundRef.current;
+        
+        const gain = ctx.createGain();
+        gain.gain.value = options?.volume || 1.2;
+
+        source.connect(gain);
+        gain.connect(ctx.destination);
+        source.start(0);
+
+        activeCommMessageRef.current = { source, gain };
+    }, [loadCommMessageSound, stopCommMessageSound, isSoundEnabled]);
+
+
     const loadSpellSounds = useCallback(async () => {
         if (!audioCtxRef.current) return;
         try {
@@ -302,7 +388,14 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         loadClickSound,
         playHitImpactSound,
         loadHitImpactSound,
+        playCommMessageSound,
+        stopCommMessageSound,
+        loadCommMessageSound,
+        playTutorialExitSound,
+        loadTutorialExitSound,
         playIncantationSound,
+
+
         stopIncantationSound,
         playMagicExplosionSound,
         loadSpellSounds,

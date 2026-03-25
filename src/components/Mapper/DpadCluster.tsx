@@ -1,5 +1,7 @@
 import React, { useCallback } from 'react';
 import { useGame, useVitals } from '../../context/GameContext';
+import { ExecuteCommand } from '../../types';
+
 import './DpadCluster.css';
 import { TrackpadSwipeWheel } from './TrackpadSwipeWheel';
 import { getButtonCommand } from '../../utils/buttonUtils';
@@ -37,7 +39,7 @@ export const DpadCluster: React.FC<DpadClusterProps> = ({
             if (button) {
                 const result = getButtonCommand(button, heldButton.dx || 0, heldButton.dy || 0, undefined, undefined, heldButton.modifiers, { currentDir: dir, isTargetModifierActive: !!joystick.isTargetModifierActive }, target, true);
                 if (result) {
-                    executeCommand(result.cmd);
+                    executeCommand(result.cmd, false, false, false, false, { fromUi: true });
                     setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
                     triggerHaptic(60);
                 }
@@ -47,7 +49,7 @@ export const DpadCluster: React.FC<DpadClusterProps> = ({
 
     const onPointerUp = useCallback((e: React.PointerEvent) => {
         if (handleJoystickEnd) {
-            handleJoystickEnd(e, executeCommand, triggerHaptic);
+            handleJoystickEnd(e, (cmd: string) => executeCommand(cmd, false, false, false, false, { fromUi: true }), triggerHaptic);
         }
     }, [handleJoystickEnd, executeCommand, triggerHaptic]);
 
@@ -56,14 +58,6 @@ export const DpadCluster: React.FC<DpadClusterProps> = ({
             className="dpad-container-with-sidebar"
             style={{ pointerEvents: 'none' }}
         >
-            {/* We attach the gesture events specifically to a transparent interaction overlay
-                that only consumes the first touch. However, the true fix here for a full
-                screen joystick vs map is that DpadCluster shouldn't catch pointer events
-                AT ALL initially. Instead, MapCanvas should receive the events, and if it's
-                a single touch swipe, it can trigger the joystick logic.
-                Wait, the DpadCluster is meant to be a full screen joystick. To let MapCanvas
-                receive multi-touch, we can just remove pointer events from this container entirely
-                and let useMapperInteractions handle joystick passing! */}
             <TrackpadSwipeWheel 
                 active={joystick.joystickActive && !joystick.isSwipeWheelHidden} 
                 currentDir={currentDir || null} 

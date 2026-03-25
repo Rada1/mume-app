@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useCallback } from 'react';
-import { CustomButton, PopoverState } from '../../../types';
+import { CustomButton, PopoverState, ExecuteCommand } from '../../../types';
+
 import { getButtonCommand } from '../../../utils/buttonUtils';
 import { useGame } from '../../../context/GameContext';
 import { useButtonGestures } from './useButtonGestures';
@@ -21,7 +22,7 @@ interface GameButtonProps {
     setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
     setEditButton: (button: CustomButton) => void;
     activePrompt: string | null;
-    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean) => void;
+    executeCommand: ExecuteCommand;
     setCommandPreview: (cmd: string | null) => void;
     setHeldButton: React.Dispatch<React.SetStateAction<{ id: string, baseCommand: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean, initialX?: number, initialY?: number } | null>>;
     heldButton: { id: string, baseCommand: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean, initialX?: number, initialY?: number } | null;

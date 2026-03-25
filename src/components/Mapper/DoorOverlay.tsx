@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
+import { ExecuteCommand } from '../../types';
+
 import { GameButton } from '../Controls/GameButton/GameButton';
 import { GRID_SIZE, DIRS, getGateState } from './mapperUtils';
 import { CustomButton } from '../../types';
@@ -158,7 +160,9 @@ export const DoorOverlay: React.FC<DoorOverlayProps> = ({
                         setPopoverState={setPopoverState}
                         setEditButton={() => { }}
                         activePrompt={null}
-                        executeCommand={executeCommand}
+                        executeCommand={(cmd, silent, isSystem, isHistorical, fromDrawer, options) => {
+                            executeCommand(cmd, silent, isSystem, isHistorical, fromDrawer, { ...options, fromUi: true });
+                        }}
                         setCommandPreview={() => { }}
                         setHeldButton={() => { }}
                         heldButton={null}

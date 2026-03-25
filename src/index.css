@@ -440,6 +440,21 @@
     transition: filter 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Base transition so grayscale fades in AND out smoothly over 1s */
+.app-container .background-layer,
+.app-container .environment-root,
+.app-container .hud-clusters-absolute-layer,
+.app-container .mobile-bottom-gutter,
+.app-container .mapper-cluster,
+.app-container .mapper-container,
+.app-container .header,
+.app-container .input-area,
+.app-container .joystick-cluster,
+.app-container .xbox-cluster,
+.app-container .custom-buttons-layer {
+    transition: filter 1s ease;
+}
+
 .app-container.in-combat .background-layer,
 .app-container.in-combat .environment-root,
 .app-container.in-combat .hud-clusters-absolute-layer,

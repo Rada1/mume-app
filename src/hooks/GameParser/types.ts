@@ -8,7 +8,10 @@ export interface UseGameParserDeps {
     lastCommIdBySenderRef?: React.MutableRefObject<Map<string, string>>;
     playSound: (buffer: AudioBuffer) => void;
     playHitImpactSound?: () => void;
+    playCommMessageSound?: (options?: { volume?: number }) => void;
+    playTutorialExitSound?: (options?: { volume?: number }) => Promise<void>;
     playIncantationSound?: () => void;
+
     stopIncantationSound?: (andExplode: boolean) => void;
     playMagicExplosionSound?: () => void;
     playRandomSound: (buffers: AudioBuffer[]) => void;
@@ -73,4 +76,5 @@ export interface UseGameParserDeps {
     activePrompt: string;
     gameState: import('../../types').GameState;
     isMobile?: boolean;
+    playerPosition?: string;
 }

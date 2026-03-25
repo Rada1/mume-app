@@ -4,9 +4,18 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    z-index: 1;
     overflow: hidden;
 }
+
+.environment-root.back {
+    z-index: 1;
+}
+
+.environment-root.front {
+    z-index: 4500;
+}
+
+
 
 .overlay-layer {
     position: absolute;
@@ -227,21 +236,55 @@
 }
 
 .fog-layer {
-    background: linear-gradient(to top, rgba(160, 170, 180, 0.12), transparent 85%);
-    mix-blend-mode: soft-light;
+    background: linear-gradient(to top,
+        rgba(185, 200, 210, 0.35) 0%,
+        rgba(185, 200, 210, 0.2) 40%,
+        rgba(185, 200, 210, 0.05) 75%,
+        transparent 100%);
     bottom: 0;
     top: auto;
-    height: 60%;
-    animation: fog-drift-new 30s linear infinite alternate;
+    height: 65%;
+    opacity: 0;
+    transition: opacity 5s ease-in-out;
+    pointer-events: none;
+    z-index: 5; /* Internal to .front (4500) */
 }
+
+.fog-active {
+    opacity: 1;
+    transition: opacity 2s ease-in-out;
+    animation: fog-drift-new 45s linear infinite alternate;
+}
+
+/* --- Mobile Portrait: offset fog so it anchors to the log bottom, not the screen bottom --- */
+/* The map drawer peeks at 280px; without this the densest fog is hidden behind the drawer */
+.is-mobile:not(.is-landscape) .fog-layer {
+    bottom: 280px;
+}
+
+.is-mobile:not(.is-landscape).is-map-expanded .fog-layer {
+    bottom: 65vh;
+}
+
+.lighting-state-dark .fog-active {
+    background: linear-gradient(to top,
+        rgba(120, 135, 145, 0.3) 0%,
+        rgba(120, 135, 145, 0.15) 40%,
+        rgba(120, 135, 145, 0.04) 75%,
+        transparent 100%);
+}
+
+
 
 .lightning-layer {
     background: rgba(255, 255, 255, 0.12);
     mix-blend-mode: soft-light;
-    z-index: 60;
+    z-index: 10; /* Internal to .front (4500) */
     opacity: 0;
     transition: opacity 0.05s ease-out;
 }
+
+
 
 .lightning-active {
     opacity: 1;
@@ -278,12 +321,14 @@
 .death-overlay {
     position: absolute;
     inset: 0;
-    z-index: 2000;
+    z-index: 2000; /* Internal to .front (4500) -> Higher than fog/rain */
     background: #000;
     opacity: 0;
     transition: opacity 2s ease-in;
     pointer-events: none;
 }
+
+
 
 .death-active .death-overlay {
     opacity: 1;
@@ -300,6 +345,8 @@
     pointer-events: none;
 }
 
+
+
 .death-image-layer.death-flash {
     opacity: 1;
     animation: death-flicker 1s steps(10) infinite;
@@ -311,6 +358,8 @@
     z-index: 20;
     background: radial-gradient(circle, transparent 45%, rgba(220, 20, 20, 0.25) 100%);
     box-shadow: inset 0 0 100px rgba(255, 0, 0, 0.3);
+
+
     opacity: 0;
     transition: opacity 2.5s ease-out;
     pointer-events: none;
@@ -325,9 +374,11 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    z-index: 5;
+    z-index: 6;
     overflow: hidden;
 }
+
+
 
 .rain-drop {
     position: absolute;
