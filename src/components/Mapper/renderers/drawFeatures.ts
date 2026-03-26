@@ -48,6 +48,7 @@ const drawRoomFlagsOptimized = (
         { regex: /GUILD|OFFICE/i, sym: 'G', color: '#cba6f7' },
         { regex: /RENT|INN/i, sym: 'R', color: '#89b4fa' },
         { regex: /AGGRESSIVE|DEATH|DANGER/i, sym: '!', color: '#f38ba8', large: true },
+        { regex: /STABLE|HORSE|MULE|PACK_HORSE|TRAINED_HORSE|WARG/i, sym: '♘', color: '#e8b86d', large: true },
         { regex: /HERB/i, sym: '♣', color: '#a6e3a1', large: true },
         { regex: /WATER|POND|WELL|FOUNTAIN/i, sym: '≈', color: '#89b4fa', large: true },
         { regex: /DARK/i, sym: '☾', color: '#cad3f5' },

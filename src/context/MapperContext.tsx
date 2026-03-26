@@ -141,12 +141,18 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     nIndex[rName].push(vnum); 
                 }
                 
-                // Track Server ID (GMCP ID) if available
-                if (rServerId) {
+                // Self-mapping as low-priority fallback
+                sIndex[String(vnum)] = vnum;
+            }
+            // Second pass: explicit serverId mappings override self-mappings.
+            // A room's serverId is the authoritative MUME VNUM; its internal key is just MMapper's ID.
+            // Without this pass, a room whose internal key happens to equal another room's serverId
+            // would overwrite the correct serverId→internalId mapping with a wrong self-mapping.
+            for (const vnum in data) {
+                const rServerId = data[vnum][6];
+                if (rServerId && String(rServerId) !== String(vnum)) {
                     sIndex[String(rServerId)] = vnum;
                 }
-                // Also map vnum directly as fallback
-                sIndex[String(vnum)] = vnum;
             }
             spatialIndexRef.current = index; nameIndexRef.current = nIndex; serverIdIndexRef.current = sIndex;
             console.log('[Mapper] Proactively built serverIdIndexRef with', Object.keys(sIndex).length, 'entries.');

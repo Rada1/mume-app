@@ -83,6 +83,21 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
             return;
         }
 
+        // If zone went null (area with no zone data), stop old music immediately
+        if (!roomZone && gameState !== 'account' && lastZoneRef.current !== null) {
+            lastZoneRef.current = null;
+            if (silenceTimeoutRef.current) {
+                clearTimeout(silenceTimeoutRef.current);
+                silenceTimeoutRef.current = null;
+            }
+            if (zoneTrack.current.source) {
+                isStoppingManualRef.current = true;
+                fadeOutAndStop({ ...zoneTrack.current });
+                zoneTrack.current = { source: null, gain: null, url: null };
+                isStoppingManualRef.current = false;
+            }
+        }
+
         if ((roomZone || gameState === 'account') && (roomZone !== lastZoneRef.current || gameState !== lastZoneRef.current || lightingChanged)) {
             console.log('[ZoneMusic] State/Zone changed, updating music. Zone:', roomZone, 'State:', gameState);
             if (gameState === 'account') lastZoneRef.current = 'account';
@@ -229,6 +244,12 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
         console.log('[ZoneMusic] Loading Zone Music:', musicUrl);
         const buffer = await loadAudio(musicUrl);
         if (!buffer) return;
+
+        // Zone changed while we were loading — bail so the stale track doesn't override the current one
+        if (lastZoneRef.current !== roomZone) {
+            console.log('[ZoneMusic] Zone changed while loading, discarding stale track:', roomZone);
+            return;
+        }
 
         const ctx = audioCtxRef.current;
 
