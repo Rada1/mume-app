@@ -266,6 +266,12 @@
     bottom: 65vh;
 }
 
+/* When keyboard is open, the app-container is already cropped to the visual viewport.
+   Reset fog to bottom: 0 so it anchors to the visible area bottom, not off-screen. */
+.app-container.kb-open .fog-layer {
+    bottom: 0;
+}
+
 .lighting-state-dark .fog-active {
     background: linear-gradient(to top,
         rgba(120, 135, 145, 0.3) 0%,

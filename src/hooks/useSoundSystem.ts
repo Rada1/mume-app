@@ -254,7 +254,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
             await loadTutorialExitSound();
         }
         if (tutorialExitSoundRef.current) {
-            playSound(tutorialExitSoundRef.current, { volume: options?.volume || 0.05 });
+            playSound(tutorialExitSoundRef.current, { volume: options?.volume || 0.1 });
         }
     }, [loadTutorialExitSound, playSound, initAudio]);
 
