@@ -505,7 +505,7 @@ export const AccountScreen: React.FC = () => {
 
                 <div className="account-view-container">
 
-                    <div className="account-glow-layer" />
+
                     {stage === 'login' && <LoginView />}
                     {stage === 'character-select' && <CharacterListView />}
                     {stage === 'character-detail' && <CharacterDetailView />}

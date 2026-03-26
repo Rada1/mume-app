@@ -72,17 +72,6 @@
     position: relative;
     width: 100%;
 }
-
-.account-glow-layer {
-    position: absolute;
-    inset: 0;
-    z-index: 1; /* Behind the card content */
-    pointer-events: none;
-    overflow: visible;
-    animation: accountFadeIn 0.25s ease-out;
-}
-
-
 .account-view {
     background: #0a0d15;
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -94,100 +83,8 @@
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
     animation: accountFadeIn 0.25s ease-out;
     position: relative;
-    z-index: 10; /* Above the glow layer */
+    z-index: 10;
 }
-
-/* Primary fluctuating glow layer - High density */
-.account-glow-layer::before {
-    content: '';
-    position: absolute;
-    inset: -60px;
-    padding: 60px;
-    border-radius: 80px;
-    background: radial-gradient(circle at center, rgba(255, 215, 0, 0.45) 0%, transparent 70%);
-    filter: blur(25px);
-    
-    -webkit-mask-image: 
-        conic-gradient(from var(--border-angle), 
-            #fff 0%, transparent 8%, #fff 15%, transparent 25%, 
-            #fff 35%, transparent 42%, #fff 50%, transparent 58%, 
-            #fff 65%, transparent 75%, #fff 82%, transparent 92%, #fff 100%),
-        linear-gradient(#fff 0 0);
-    -webkit-mask-clip: border-box, content-box;
-    -webkit-mask-composite: destination-out;
-    
-    mask-image: 
-        conic-gradient(from var(--border-angle), 
-            #fff 0%, transparent 8%, #fff 15%, transparent 25%, 
-            #fff 35%, transparent 42%, #fff 50%, transparent 58%, 
-            #fff 65%, transparent 75%, #fff 82%, transparent 92%, #fff 100%),
-        linear-gradient(#fff 0 0);
-    mask-clip: border-box, content-box;
-    mask-composite: exclude;
-
-    animation: rotateBorder 35s linear infinite;
-    opacity: 0.9;
-}
-
-/* Secondary fluctuating glow layer - Irregular density */
-.account-glow-layer::after {
-    content: '';
-    position: absolute;
-    inset: -80px;
-    padding: 80px;
-    border-radius: 100px;
-    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.15) 0%, transparent 65%);
-    filter: blur(35px);
-    
-    -webkit-mask-image: 
-        conic-gradient(from var(--border-angle-alt), 
-            transparent 0%, #fff 12%, transparent 20%, #fff 28%, 
-            transparent 45%, #fff 55%, transparent 68%, #fff 75%, 
-            transparent 88%, #fff 100%),
-        linear-gradient(#fff 0 0);
-    -webkit-mask-clip: border-box, content-box;
-    -webkit-mask-composite: destination-out;
-
-    mask-image: 
-        conic-gradient(from var(--border-angle-alt), 
-            transparent 0%, #fff 12%, transparent 20%, #fff 28%, 
-            transparent 45%, #fff 55%, transparent 68%, #fff 75%, 
-            transparent 88%, #fff 100%),
-        linear-gradient(#fff 0 0);
-    mask-clip: border-box, content-box;
-    mask-composite: exclude;
-
-    animation: rotateBorderAlt 50s linear infinite reverse;
-    opacity: 0.7;
-}
-
-
-@property --border-angle {
-    syntax: '<angle>';
-    initial-value: 0deg;
-    inherits: false;
-}
-
-@property --border-angle-alt {
-    syntax: '<angle>';
-    initial-value: 0deg;
-    inherits: false;
-}
-
-
-
-@keyframes rotateBorder {
-    from { --border-angle: 0deg; }
-    to { --border-angle: 360deg; }
-}
-
-@keyframes rotateBorderAlt {
-    from { --border-angle-alt: 0deg; }
-    to { --border-angle-alt: 360deg; }
-}
-
-
-
 /* Homage Field */
 .account-homage {
     background: rgba(0, 0, 0, 0.2);

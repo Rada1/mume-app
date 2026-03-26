@@ -116,7 +116,7 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
     const updateVolumes = () => {
         if (!audioCtxRef.current || isStoppingManualRef.current) return;
         const ctx = audioCtxRef.current;
-        const targetZoneVol = isInCombat ? 0.01 : 0.05;
+        const targetZoneVol = isInCombat ? 0.02 : 0.10;
         
         if (zoneTrack.current.gain) {
             const g = zoneTrack.current.gain.gain;
@@ -145,7 +145,7 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
 
                 const gain = ctx.createGain();
                 gain.gain.setValueAtTime(0, ctx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 1.5);
+                gain.gain.linearRampToValueAtTime(0.10, ctx.currentTime + 1.5);
 
 
                 source.connect(gain);
@@ -195,7 +195,7 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
 
             const gain = ctx.createGain();
             gain.gain.setValueAtTime(0, ctx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 3);
+            gain.gain.linearRampToValueAtTime(0.10, ctx.currentTime + 3);
 
             source.connect(gain);
             gain.connect(ctx.destination);
@@ -260,7 +260,7 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
 
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        const targetVol = isInCombat ? 0.01 : 0.05;
+        const targetVol = isInCombat ? 0.02 : 0.10;
         gain.gain.linearRampToValueAtTime(targetVol, ctx.currentTime + 3);
 
         source.connect(gain);
