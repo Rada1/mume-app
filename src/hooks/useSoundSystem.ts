@@ -140,7 +140,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
 
     const playClickSound = useCallback(() => {
         if (clickSoundRef.current) {
-            playSound(clickSoundRef.current);
+            playSound(clickSoundRef.current, { volume: 0.7 });
         } else {
             // If not loaded yet, try to load it (it will be ready for next time)
             loadClickSound();
