@@ -98,9 +98,9 @@ const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: number, s:
         } else if (tName === 'City') {
             ictx.font = `bold ${Math.round(s * 0.5)}px monospace`;
             const cityColors = isDarkMode ? [
-                "rgba(200, 200, 200, 0.7)", "rgba(140, 140, 140, 0.7)"
+                "rgba(90, 90, 90, 0.6)", "rgba(90, 90, 90, 0.6)"
             ] : [
-                "rgba(80, 80, 80, 0.8)", "rgba(120, 120, 120, 0.8)"
+                "rgba(50, 50, 50, 0.6)", "rgba(50, 50, 50, 0.6)"
             ];
             ictx.textAlign = 'center';
             ictx.textBaseline = 'middle';

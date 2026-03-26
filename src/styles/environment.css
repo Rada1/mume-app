@@ -182,7 +182,7 @@
 }
 
 .weather-cloud {
-    background: rgba(100, 110, 130, 0.1);
+    background: rgba(100, 110, 130, 0.05);
     z-index: 4;
     transition: opacity 5s ease-in-out;
     pointer-events: none;
@@ -196,7 +196,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: rgba(160, 170, 180, 0.15);
+    background: rgba(160, 170, 180, 0.08);
     mix-blend-mode: soft-light;
     z-index: 1;
 }
@@ -215,7 +215,7 @@
     background-blend-mode: overlay;
     mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 100%);
     -webkit-mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 100%);
-    opacity: 0.5;
+    opacity: 0.3;
     animation: cloud-pulse 10s ease-in-out infinite alternate, cloud-drift 80s linear infinite;
     z-index: 2;
     filter: blur(1px) brightness(0.9) grayscale(0.6) contrast(1.6);
@@ -237,9 +237,9 @@
 
 .fog-layer {
     background: linear-gradient(to top,
-        rgba(185, 200, 210, 0.35) 0%,
-        rgba(185, 200, 210, 0.2) 40%,
-        rgba(185, 200, 210, 0.05) 75%,
+        rgba(185, 200, 210, 0.20) 0%,
+        rgba(185, 200, 210, 0.10) 40%,
+        rgba(185, 200, 210, 0.03) 75%,
         transparent 100%);
     bottom: 0;
     top: auto;
@@ -274,9 +274,9 @@
 
 .lighting-state-dark .fog-active {
     background: linear-gradient(to top,
-        rgba(120, 135, 145, 0.3) 0%,
-        rgba(120, 135, 145, 0.15) 40%,
-        rgba(120, 135, 145, 0.04) 75%,
+        rgba(120, 135, 145, 0.15) 0%,
+        rgba(120, 135, 145, 0.08) 40%,
+        rgba(120, 135, 145, 0.02) 75%,
         transparent 100%);
 }
 
