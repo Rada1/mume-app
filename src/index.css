@@ -155,7 +155,7 @@
 
 .background-layer,
 .atmospheric-layer,
-.hud-clusters-absolute-layer,
+.stats-cluster,
 .input-area,
 .header,
 .joystick-cluster,
@@ -166,12 +166,10 @@
 
 .app-container.in-combat .background-layer,
 .app-container.in-combat .atmospheric-layer,
-.app-container.in-combat .hud-clusters-absolute-layer,
+.app-container.in-combat .stats-cluster,
+.app-container.in-combat .custom-buttons-layer,
 .app-container.in-combat .header,
-.app-container.in-combat .input-area,
-.app-container.in-combat .joystick-cluster,
-.app-container.in-combat .xbox-cluster,
-.app-container.in-combat .custom-buttons-layer {
+.app-container.in-combat .input-area {
     filter: brightness(0.35) saturate(0.7);
 }
 
@@ -428,7 +426,7 @@
 
 .background-layer,
 .environment-root,
-.hud-clusters-absolute-layer,
+.stats-cluster,
 .mobile-bottom-gutter,
 .mapper-cluster,
 .mapper-container,
@@ -443,7 +441,7 @@
 /* Base transition so grayscale fades in AND out smoothly over 1s */
 .app-container .background-layer,
 .app-container .environment-root,
-.app-container .hud-clusters-absolute-layer,
+.app-container .stats-cluster,
 .app-container .mobile-bottom-gutter,
 .app-container .mapper-cluster,
 .app-container .mapper-container,
@@ -457,15 +455,13 @@
 
 .app-container.in-combat .background-layer,
 .app-container.in-combat .environment-root,
-.app-container.in-combat .hud-clusters-absolute-layer,
+.app-container.in-combat .stats-cluster,
+.app-container.in-combat .custom-buttons-layer,
 .app-container.in-combat .mobile-bottom-gutter,
 .app-container.in-combat .mapper-cluster,
 .app-container.in-combat .mapper-container,
 .app-container.in-combat .header,
-.app-container.in-combat .input-area,
-.app-container.in-combat .joystick-cluster,
-.app-container.in-combat .xbox-cluster,
-.app-container.in-combat .custom-buttons-layer {
+.app-container.in-combat .input-area {
     filter: grayscale(100%);
 }
 
@@ -483,3 +479,4 @@
 .app-container.in-combat .message.is-combat {
     filter: none !important;
 }
+

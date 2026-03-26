@@ -75,6 +75,7 @@ export const extractNoun = (text: string): string => {
     // Words or suffixes that should NOT be singularized (plural-only in MUME)
     const exclusions = [
         'glass', 'dress', 'grass', 'moss', 'bias', 'status', 'compass', 'chaos', 'lens', 'atlas',
+        'fungus', 'cactus', 'nexus', 'radius', 'corpus', 'viscous',
         'trousers', 'pants', 'breeches', 'leggings', 'hose', 'gloves', 'boots', 'shoes',
         'gauntlets', 'greaves', 'vambraces', 'pauldrons', 'bracers', 'sleeves'
     ];
