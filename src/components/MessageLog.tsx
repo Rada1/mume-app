@@ -142,7 +142,7 @@ const MessageItem = React.memo(({
 
     return (
         <div
-            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${msg.isCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}`}
+            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide && inCombat ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}`}
         >
             {msg.type === 'user' ? (
                 <span>{msg.textRaw}</span>
@@ -182,7 +182,7 @@ const MessageItem = React.memo(({
                 </div>
             ) : (
                 <div className="content-row">
-                    {msg.isCombat ? (
+                    {msg.isCombat && inCombat ? (
                         <div className="combat-bubble">
                             <div className="message-content" dangerouslySetInnerHTML={{ __html: content }} />
                         </div>
