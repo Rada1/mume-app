@@ -241,7 +241,7 @@ export function useMessageLog(
             if (messageBufferRef.current.length > 0) {
                 const idx = messageBufferRef.current.findIndex(m => m.id === actualId);
                 if (idx !== -1) messageBufferRef.current[idx] = updatedMsg;
-                else messageBufferRef.current.push(updatedMsg);
+                else setMessages(prev => prev.map(m => m.id === actualId ? updatedMsg : m));
             } else {
                 setMessages(prev => prev.map(m => m.id === actualId ? updatedMsg : m));
             }

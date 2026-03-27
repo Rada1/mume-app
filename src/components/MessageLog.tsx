@@ -37,6 +37,11 @@ const Typewriter = ({ msgId, text, isRecent, playCommMessageSound, stopCommMessa
     const alreadyDone = typewriterDoneIds.has(msgId);
     const [displayedText, setDisplayedText] = useState(!isRecent || alreadyDone ? text : '');
 
+    // On true unmount, mark as done so remounts skip animation and show full text
+    useEffect(() => {
+        return () => { typewriterDoneIds.add(msgId); };
+    }, [msgId]);
+
     useEffect(() => {
         if (!isRecent || alreadyDone || displayedText === text) return;
 
@@ -59,9 +64,10 @@ const Typewriter = ({ msgId, text, isRecent, playCommMessageSound, stopCommMessa
 
         return () => {
             clearInterval(interval);
-            // Mark as done so re-mounts skip the animation and show full text
-            typewriterDoneIds.add(msgId);
             if (stopCommMessageSound) stopCommMessageSound();
+            // Don't add to typewriterDoneIds here — that's handled by the unmount effect above.
+            // Adding here would prematurely mark the id as done on dep-change (e.g. comm-continue
+            // updating the text), causing the new animation to be skipped and text to freeze.
         };
     }, [text, isRecent, msgId, alreadyDone, playCommMessageSound, stopCommMessageSound]);
 
