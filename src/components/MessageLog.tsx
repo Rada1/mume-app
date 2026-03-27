@@ -42,6 +42,12 @@ const Typewriter = ({ msgId, text, isRecent, playCommMessageSound, stopCommMessa
         return () => { typewriterDoneIds.add(msgId); };
     }, [msgId]);
 
+    // When text updates after animation already completed (or message not recent),
+    // sync displayedText immediately — handles comm-continue appending to a finished bubble.
+    useEffect(() => {
+        if (alreadyDone || !isRecent) setDisplayedText(text);
+    }, [text, alreadyDone, isRecent]);
+
     useEffect(() => {
         if (!isRecent || alreadyDone || displayedText === text) return;
 
