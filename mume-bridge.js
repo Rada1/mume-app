@@ -1,12 +1,15 @@
 import { WebSocketServer } from 'ws';
 import net from 'net';
+import os from 'os';
 
 const WS_PORT = 8081;
 const TARGET_HOST = 'mume.org';
 const TARGET_PORT = 4242;
 
 console.log('--- MUME Direct TCP Bridge ---');
-console.log(`Listening on ws://localhost:${WS_PORT}`);
+console.log(`Listening on WS port: ${WS_PORT} (All interfaces)`);
+console.log(`Local Access: ws://localhost:${WS_PORT}`);
+console.log(`Network Access: ws://${Object.values(os.networkInterfaces()).flat().find(i => i?.family === 'IPv4' && !i?.internal)?.address || 'your-ip'}:${WS_PORT}`);
 console.log(`Proxying to ${TARGET_HOST}:${TARGET_PORT}`);
 console.log('------------------------------');
 

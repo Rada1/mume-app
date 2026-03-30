@@ -70,7 +70,14 @@ export function useSettings(deps: UseSettingsDeps) {
         isBloomEnabled, setIsBloomEnabled
     } = deps;
     const [bgImage, setBgImage] = useState((MASTER_SETTINGS as any).bgImage || DEFAULT_BG);
-    const [connectionUrl, setConnectionUrl] = useState((MASTER_SETTINGS as any).connectionUrl || DEFAULT_URL);
+    const resolveInitialUrl = () => {
+        const url = (MASTER_SETTINGS as any).connectionUrl || DEFAULT_URL;
+        if (url.includes('localhost') && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            return url.replace('localhost', window.location.hostname);
+        }
+        return url;
+    };
+    const [connectionUrl, setConnectionUrl] = useState(resolveInitialUrl());
     const [loginName, setLoginName] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
