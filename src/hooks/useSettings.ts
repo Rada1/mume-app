@@ -237,9 +237,9 @@ export function useSettings(deps: UseSettingsDeps) {
                         const res = await fetch(srcData);
                         const ab = await res.arrayBuffer();
                         const ad = await audioCtxRef.current!.decodeAudioData(ab);
-                        
+
                         const pattern = newSoundPattern || file.name;
-                        
+
                         setSoundTriggers(prev => {
                             const existingIdx = prev.findIndex(t => t.pattern === pattern && t.isRegex === newSoundRegex);
                             if (existingIdx >= 0) {

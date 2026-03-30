@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "mmapper": "node mmapper-bridge.js",
+    "bridge": "node mume-bridge.js",
     "test": "playwright test",
     "test:ui": "playwright test --ui"
   },

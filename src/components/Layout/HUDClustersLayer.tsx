@@ -9,7 +9,7 @@ import { GridOverlay } from '../Grid/GridOverlay';
 import { StatsCluster } from './HUD/StatsCluster';
 import { LineCluster } from './HUD/LineCluster';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
-import { useMapper } from '../../context/MapperContext';
+import { useMapper } from '../../context/useMapper';
 import { MumeEditor } from '../MumeEditor';
 
 interface HUDClustersLayerProps {

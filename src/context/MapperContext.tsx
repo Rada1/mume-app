@@ -4,7 +4,7 @@
  * Ensures synchronization across all Mapper instances (HUD, Drawer).
  */
 
-import React, { createContext, useContext, useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { createContext, useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useGame, useLog, useUI, useVitals } from './GameContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useMapData } from '../components/Mapper/hooks/useMapData';
@@ -65,7 +65,7 @@ interface MapperContextType {
     setIsMapFloating: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const MapperContext = createContext<MapperContextType | undefined>(undefined);
+export const MapperContext = createContext<MapperContextType | undefined>(undefined);
 
 export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { characterName, executeCommand, showDebugEchoes } = useGame();
@@ -492,8 +492,3 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return <MapperContext.Provider value={value}>{children}</MapperContext.Provider>;
 };
 
-export const useMapper = () => {
-    const context = useContext(MapperContext);
-    if (!context) throw new Error('useMapper must be used within a MapperProvider');
-    return context;
-};

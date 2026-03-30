@@ -216,11 +216,11 @@ export const useGameProviderState = () => {
             console.log('[Onboarding] Triggering replay...');
             setHasSeenOnboarding(false);
             // Close other UI elements that might block it
-            setUI(prev => ({ 
-                ...prev, 
-                setManagerOpen: false, 
-                isMenuOpen: false, 
-                drawer: 'none' 
+            setUI(prev => ({
+                ...prev,
+                setManagerOpen: false,
+                isMenuOpen: false,
+                drawer: 'none'
             }));
             // Settings modal is usually managed by useUI in context, 
             // but we can broadcast another event for components to react
@@ -307,7 +307,7 @@ export const useGameProviderState = () => {
             case 'put': {
                 const sid = item.stableId || item.id;
                 const withoutItem = removeItemAndChildren(currentInv, sid);
-                
+
                 // If container is also defined by noun
                 let container = change.container;
                 if (!container && change.containerNoun) {
@@ -348,7 +348,7 @@ export const useGameProviderState = () => {
     const [mendingTarget, setMendingTarget] = useState<string | null>(null);
     const [discoveredItems, setDiscoveredItems] = useState<string[]>([]);
     const [isTrackpadModifierActive, setIsTrackpadModifierActive] = useState(false);
-    
+
     // Selection state
     const [selectedObjectIds, setSelectedObjectIds] = useState<Set<string>>(new Set());
 
@@ -434,7 +434,7 @@ export const useGameProviderState = () => {
         text: '',
         key: ''
     });
-    
+
     // Account Selection State
     const [accountState, setAccountState] = useState<import('../../types').AccountState>({
         stage: 'none',

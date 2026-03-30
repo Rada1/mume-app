@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect, useImperativeHandle } from 'react';
-import { useMapper } from '../../context/MapperContext';
+import { useMapper } from '../../context/useMapper';
 
 export const useMapperController = (characterName: string | null, ref: React.Ref<any>, options: { onRecenter?: () => void, triggerRender?: () => void } = {}) => {
     const context = useMapper();

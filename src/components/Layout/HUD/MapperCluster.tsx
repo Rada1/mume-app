@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Mapper } from '../../Mapper/Mapper';
 import { LineCluster } from './LineCluster';
 import { useGame, useUI, useVitals } from '../../../context/GameContext';
-import { useMapper } from '../../../context/MapperContext';
+import { useMapper } from '../../../context/useMapper';
 import { GripHorizontal } from 'lucide-react';
 
 interface MapperClusterProps {

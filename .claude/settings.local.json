@@ -5,7 +5,8 @@
       "WebFetch(domain:www.achaea.com)",
       "WebFetch(domain:www.aardwolf.com)",
       "WebFetch(domain:nexus.ironrealms.com)",
-      "WebFetch(domain:mume.org)"
+      "WebFetch(domain:mume.org)",
+      "Bash(npm run:*)"
     ]
   }
 }

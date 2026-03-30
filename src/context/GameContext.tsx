@@ -62,7 +62,7 @@ export const useVitals = () => {
 };
 
 export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-// --- Section: Game Logic Refresh ---
+    // --- Section: Game Logic Refresh ---
     const [highlightVersion, setHighlightVersion] = useState(0);
     const refreshLogHighlights = useCallback(() => {
         setHighlightVersion(v => v + 1);
@@ -162,7 +162,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setKeywordFailureBanner(snapshot);
             setTimeout(() => setKeywordFailureBanner(null), 5000);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [messages]);
 
     const {
@@ -225,7 +225,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const containerRef = useRef<HTMLDivElement>(null);
     const mapperRef = useRef<MapperRef>(null);
-    
+
     const env = useEnvironment({
         lighting,
         setLighting: s.setLighting,
@@ -444,7 +444,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             onGroupUpdate: (data) => { gmcpHandlers.onGroupUpdate(data); groupUpdateFn?.(data); },
             onGroupRemove: (id) => { gmcpHandlers.onGroupRemove(id); groupRemoveFn?.(id); },
             onGroupSet: (data) => { gmcpHandlers.onGroupSet(data); groupSetFn?.(data); },
-            onCharRide: gmcpHandlers.onCharRide
+            onCharRide: gmcpHandlers.onCharRide,
+            addDiagnosticLog
         }
     });
 

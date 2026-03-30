@@ -6,7 +6,7 @@
 
 import React, { useRef, useMemo, useState, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { useGame, useLog, useVitals, useUI } from '../../context/GameContext';
-import { useMapper } from '../../context/MapperContext';
+import { useMapper } from '../../context/useMapper';
 import { MapCanvas } from './MapCanvas';
 import { MapperToolbar } from './MapperToolbar';
 import { MapperDropdown } from './MapperDropdown';

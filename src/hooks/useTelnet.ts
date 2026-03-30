@@ -40,6 +40,7 @@ export interface TelnetHandlers {
     onCharRide?: (data: any) => void;
     onDisconnect?: () => void;
     flushMessages?: () => void;
+    addDiagnosticLog?: (log: string) => void;
 }
 
 export interface TelnetOptions {
@@ -192,38 +193,54 @@ export function useTelnet(options: TelnetOptions) {
         };
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const connect = () => {
+    const connect = useCallback(() => {
         if (socketRef.current) socketRef.current.close();
         bufferRef.current = "";
         protocolHandler.current?.setGmcpReady(false);
         try {
-            handlers.setStatus('connecting');
+            handlersRef.current.setStatus('connecting');
             const msg1 = `Connecting to ${connectionUrl}...`;
-            handlers.addMessage('system', msg1, undefined, undefined, undefined, { textOnly: msg1, lower: msg1.toLowerCase() });
+            console.log(`[WebSocket] Initiating connection to ${connectionUrl} (Origin: ${window.location.origin})`);
+            handlersRef.current.addMessage('system', msg1, undefined, undefined, undefined, { textOnly: msg1, lower: msg1.toLowerCase() });
+            
+            // Try with no subprotocol first. If it fails once, some systems might prefer 'binary'.
             const ws = new WebSocket(connectionUrl);
             ws.binaryType = "arraybuffer";
+            
             ws.onopen = () => {
-                handlers.setStatus('connected');
+                console.log(`[WebSocket] Connected successfully to ${connectionUrl}`);
+                handlersRef.current.setStatus('connected');
                 const msg2 = 'Connected! Negotiating...';
-                handlers.addMessage('system', msg2, undefined, undefined, undefined, { textOnly: msg2, lower: msg2.toLowerCase() });
+                handlersRef.current.addMessage('system', msg2, undefined, undefined, undefined, { textOnly: msg2, lower: msg2.toLowerCase() });
                 const interval = setInterval(() => { if (ws.readyState === WebSocket.OPEN) sendGMCP('Core.Ping'); }, 30000);
                 (ws as any)._pingInterval = interval;
             };
             ws.onmessage = (event) => { if (event.data instanceof ArrayBuffer) protocolHandler.current?.handleRawData(new Uint8Array(event.data)); };
-            ws.onclose = () => {
-                handlers.setStatus('disconnected');
-                handlers.onDisconnect?.();
-                handlers.addMessage('error', 'Connection closed.', undefined, undefined, undefined, { textOnly: 'Connection closed.', lower: 'connection closed.' });
+            ws.onclose = (event) => {
+                const reason = event.reason ? ` Reason: ${event.reason}` : '';
+                const codeDesc = event.code === 1006 ? ' (Abnormal Closure - often firewall/proxy or TLS issue)' : '';
+                handlersRef.current.setStatus('disconnected');
+                handlersRef.current.onDisconnect?.();
+                handlersRef.current.addMessage('error', `Connection closed. Code: ${event.code}${codeDesc}`, undefined, undefined, undefined, { textOnly: `Connection closed. Code: ${event.code}${codeDesc}`, lower: `connection closed. code: ${event.code}${codeDesc.toLowerCase()}` });
+                handlersRef.current.addDiagnosticLog?.(`WebSocket closed: Code ${event.code}${codeDesc},${reason}, WasClean: ${event.wasClean}`);
+                console.warn(`[WebSocket] Closed: Code ${event.code}${codeDesc}${reason}`);
                 if ((ws as any)._pingInterval) clearInterval((ws as any)._pingInterval);
             };
-            ws.onerror = () => { 
-                handlers.setStatus('disconnected'); 
-                handlers.onDisconnect?.();
-                handlers.addMessage('error', 'Connection error.', undefined, undefined, undefined, { textOnly: 'Connection error.', lower: 'connection error.' }); 
+            ws.onerror = (event) => {
+                console.error('[WebSocket] Connection Error Event:', event);
+                handlersRef.current.setStatus('disconnected');
+                handlersRef.current.onDisconnect?.();
+                handlersRef.current.addMessage('error', 'Handshake failed. Check diagnostics.', undefined, undefined, undefined, { textOnly: 'Handshake failed. Check diagnostics.', lower: 'handshake failed. check diagnostics.' });
+                handlersRef.current.addDiagnosticLog?.(`WebSocket error on ${connectionUrl}. Browser Security (CORS/Origin) or mixed content might be blocking this. Result: Code 1006 likely.`);
             };
             socketRef.current = ws;
-        } catch (e) { handlers.setStatus('disconnected'); handlers.addMessage('error', 'Invalid URL.', undefined, undefined, undefined, { textOnly: 'Invalid URL.', lower: 'invalid url.' }); }
-    };
+        } catch (e: any) { 
+            handlersRef.current.setStatus('disconnected'); 
+            handlersRef.current.addMessage('error', `Socket Error: ${e?.message}`, undefined, undefined, undefined, { textOnly: `Socket Error: ${e?.message}`, lower: `socket error: ${e?.message?.toLowerCase()}` }); 
+            handlersRef.current.addDiagnosticLog?.(`Execution failure: ${e?.message}`);
+            console.error('[WebSocket] Setup exception:', e);
+        }
+    }, [connectionUrl, sendGMCP]);
 
     useEffect(() => {
         const handleVisibilityChange = () => {

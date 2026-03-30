@@ -54,7 +54,7 @@ interface DrawerManagerProps {
 }
 
 import { useGame } from '../../context/GameContext';
-import { useMapper } from '../../context/MapperContext';
+import { useMapper } from '../../context/useMapper';
 
 const MapperDockedGate: React.FC<{ 
     mapperRef: React.RefObject<any>, 
