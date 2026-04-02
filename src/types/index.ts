@@ -372,6 +372,8 @@ export interface SettingsModalProps {
     setIsCrtEnabled: (val: boolean) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
+    isSpectateMode: boolean;
+    setIsSpectateMode: (val: boolean) => void;
     showLegacyButtons: boolean;
     setShowLegacyButtons: (val: boolean) => void;
 }
@@ -595,9 +597,17 @@ export interface GroupMember {
     maxmana?: number;
     mp?: number;
     maxmp?: number;
+    mv?: number;
+    maxmv?: number;
     'hp-string'?: string;
     'mana-string'?: string;
     'mp-string'?: string;
+    'mv-string'?: string;
+    fighting?: boolean;
+    opponent?: string;
+    'opponent-hp'?: string;
+    zone?: string;
+    terrain?: string;
 }
 
 export interface GmcpMumeEdit {

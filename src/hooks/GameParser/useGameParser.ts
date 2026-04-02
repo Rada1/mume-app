@@ -49,7 +49,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         triggerXpTicker, pendingGmcpCommRef, lastCommIdBySenderRef, groupMembers,
         shop, practice, registerEntity, setEntities, setPlayerPosition,
         isCharacterOpen, isStatsOpen,
-        accountState, setAccountState, setGameState
+        accountState, setAccountState, setGameState,
+        isSpectateMode
     } = deps;
 
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef, playRandomSound });
@@ -75,7 +76,8 @@ export function useGameParser(deps: UseGameParserDeps) {
 
     const { parsePrompt } = usePromptParser({
         captureStage, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName,
-        setBufferHealthStatus, setBufferName, setInCombat, finalizeCapture
+        setBufferHealthStatus, setBufferName, setInCombat, finalizeCapture,
+        isSpectateMode: deps.isSpectateMode
     });
 
     const { checkCombatMatch, handleCombatExit, handleXpTicker } = useCombatParser({
@@ -150,15 +152,25 @@ export function useGameParser(deps: UseGameParserDeps) {
         let cleanLine = line.replace(/\r$/, '').normalize('NFC');
         if (!cleanLine) return;
 
+        // --- Spectate Mode (Snoop Filtering) ---
+        if (isSpectateMode) {
+            // Snoop prefixes typically look like '&I ' or with ANSI: '\x1b[1;32m&I '
+            // We strip the '&X ' part but preserve preceding ANSI codes
+            const snoopRegex = /^(\x1b\[[0-9;]*m)*&[a-zA-Z]\s/;
+            if (snoopRegex.test(cleanLine)) {
+                cleanLine = cleanLine.replace(/^((?:\x1b\[[0-9;]*m)*)&[a-zA-Z]\s/, '$1');
+            }
+        }
+
         let textOnlyWithSpaces = cleanLine.replace(/\x1b\[[0-9;]*m/g, '');
-        let textOnly = textOnlyWithSpaces.trim();
-        let lower = textOnly.toLowerCase();
+        let textOnly = textOnlyWithSpaces;
+        let lower = textOnly.trim().toLowerCase();
         
         if (captureStage.current !== 'practice' && textOnly.trim().length > 0) {
             practice.parsePracticeLine(textOnly);
         }
         
-        let content = textOnly.replace(/^([^\r\n>]{0,120}>)\s*/, '');
+        let content = textOnly.replace(/^([^\r\n<>]{0,120}>)\s*/, '');
         let contentLower = content.toLowerCase();
 
         const currentRoomName = roomNameRef.current;
@@ -186,6 +198,25 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         const combatInfo = checkCombatMatch(lower);
         const isCombatMatch = combatInfo.isMatch;
+
+        if (deps.isSpectateMode && lower.includes('(snooped)')) {
+            const regexes = [
+                /\(snooped\) .*?(?:hits|misses|wounds|pierces|smites|strikes|pounds|cleaves|dodges) (.*?)'s/,
+                /\(snooped\) .*?(?:tries to hit) (.*?)[,\.]/,
+                /(.*?) (?:fails to hit|hits|misses|wounds|pierces|smites|strikes|pounds|cleaves) .*? \(snooped\)/
+            ];
+            for (const r of regexes) {
+                const m = lower.match(r);
+                if (m) {
+                    const opponentText = m[1];
+                    let cleanName = opponentText.replace(/^(a|an|the) /, '');
+                    cleanName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+                    deps.setOpponentName(cleanName);
+                    deps.setOpponentHealthStatus('Healthy'); // Mock health
+                    break;
+                }
+            }
+        }
 
         if (combatInfo.isMatch && combatInfo.side === 'player' && (combatInfo as any).isImpact) {
             playHitImpactSound?.();

@@ -6,7 +6,8 @@
       "WebFetch(domain:www.aardwolf.com)",
       "WebFetch(domain:nexus.ironrealms.com)",
       "WebFetch(domain:mume.org)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(find '/c/Users/pwetz/Downloads/mume app/src' -type f \\\\\\(-name *.ts -o -name *.tsx \\\\\\))"
     ]
   }
 }

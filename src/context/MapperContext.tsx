@@ -68,9 +68,12 @@ interface MapperContextType {
 export const MapperContext = createContext<MapperContextType | undefined>(undefined);
 
 export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { characterName, executeCommand, showDebugEchoes } = useGame();
+    const { characterName, executeCommand, showDebugEchoes, isSpectateMode } = useGame();
     const { addMessage } = useLog();
     const { deathRoomId, setDeathRoomId } = useVitals();
+
+    const isSpectateModeRef = useRef(isSpectateMode);
+    useEffect(() => { isSpectateModeRef.current = isSpectateMode; }, [isSpectateMode]);
 
     const [renderVersion, setRenderVersion] = useState(0);
     const triggerRender = useCallback(() => {
@@ -440,7 +443,11 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const handlersRef = { handleRoomInfo, handleUpdateExits, handleTerrain, pushPendingMove, handleMoveConfirmed, handleMoveFailure, triggerRender };
         const stableHandlers = Object.freeze(handlersRef);
 
-        const onInfo    = (e: any) => stableHandlers.handleRoomInfo(e.detail);
+        const onInfo    = (e: any) => {
+            // In spectate mode, only process updates that explicitly come from the spectated target
+            if (isSpectateModeRef.current && !e.detail.spectating) return;
+            stableHandlers.handleRoomInfo(e.detail);
+        };
         const onExits   = (e: any) => stableHandlers.handleUpdateExits(e.detail);
         const onTerrain = (e: any) => stableHandlers.handleTerrain(e.detail);
         const onPush    = (e: any) => stableHandlers.pushPendingMove(e.detail);

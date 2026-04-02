@@ -15,6 +15,7 @@ export interface PromptParserDeps {
     setBufferName: (val: string | null) => void;
     setInCombat: (val: boolean, force?: boolean) => void;
     finalizeCapture: (targetStage?: CaptureStage) => boolean;
+    isSpectateMode?: boolean;
 }
 
 const HEALTH_MAP: Record<string, CombatHealthStatus> = {
@@ -38,7 +39,8 @@ export function usePromptParser(deps: PromptParserDeps) {
         setBufferHealthStatus,
         setBufferName,
         setInCombat,
-        finalizeCapture
+        finalizeCapture,
+        isSpectateMode
     } = deps;
 
     const findStatus = (str: string): CombatHealthStatus | null => {
@@ -128,8 +130,8 @@ export function usePromptParser(deps: PromptParserDeps) {
         if (oppName && oppStatus) {
             setOpponentName(oppName);
             setOpponentHealthStatus(oppStatus);
-            setInCombat(true);
-        } else {
+            if (!isSpectateMode) setInCombat(true);
+        } else if (!isSpectateMode) {
             setOpponentHealthStatus(null);
             setOpponentName(null);
             setInCombat(false);

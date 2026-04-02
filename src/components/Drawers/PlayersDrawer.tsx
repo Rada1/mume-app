@@ -103,7 +103,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                 onClick={(e) => { if (e.target === e.currentTarget) onClose(); else e.stopPropagation(); }}
                 onPointerDown={(e) => {
                     const target = e.target as HTMLElement;
-                    if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT') return;
+                    if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT' || target.closest('.group-member-row')) return;
                     swipePos.current = { x: e.clientX, y: e.clientY };
                     e.currentTarget.setPointerCapture(e.pointerId);
                 }}

@@ -142,11 +142,6 @@ export const useMessageHighlighter = (
 
         // --- 3. Specialized List Highlighting (WHO/WHERE) ---
         if (type === 'who-list' || type === 'where-list') {
-            // Strip MUME XML-style markup tags that ansi-to-html encodes as HTML entities,
-            // causing them to render as visible literal text (e.g. &lt;C&gt; → "<C>").
-            // Also strip bracket-style markers like [AW] that appear as plain text.
-            newHtml = newHtml.replace(/&lt;\/?[A-Za-z]+&gt;\s*/g, '').replace(/\[[A-Za-z]+\]\s*/g, '');
-
             let cleanText = textOnly.trim();
             let lastLength = 0;
             while (cleanText.length !== lastLength) {

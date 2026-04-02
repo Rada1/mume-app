@@ -92,6 +92,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setIsCrtEnabled,
         isBloomEnabled,
         setIsBloomEnabled,
+        isSpectateMode,
+        setIsSpectateMode,
         parley,
         setParley,
         whoList,
@@ -213,6 +215,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setIsCrtEnabled={setIsCrtEnabled}
                     isBloomEnabled={isBloomEnabled}
                     setIsBloomEnabled={setIsBloomEnabled}
+                    isSpectateMode={isSpectateMode}
+                    setIsSpectateMode={setIsSpectateMode}
                 />
             )}
 

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep:*)",
+      "Read(//mnt/c/Users/pwetz/Downloads/**)",
+      "Bash(2)",
+      "Bash(npx tsc:*)"
+    ]
+  }
+}

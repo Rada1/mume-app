@@ -144,6 +144,10 @@ export interface GameContextType {
     setIsCrtEnabled: (val: boolean) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
+    isSpectateMode: boolean;
+    setIsSpectateMode: (val: boolean) => void;
+    spectateTargetId: number | null;
+    setSpectateTargetId: (val: number | null) => void;
     showLegacyButtons: boolean;
     setShowLegacyButtons: (val: boolean) => void;
     showOrganicTerrain: boolean;

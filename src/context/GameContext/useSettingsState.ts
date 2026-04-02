@@ -40,6 +40,7 @@ export const useSettingsState = () => {
     const [isHighlighterEnabled, setIsHighlighterEnabled] = usePersistentState('mud-highlighter-enabled', true);
     const [isCrtEnabled, setIsCrtEnabled] = usePersistentState('mud-crt-enabled', true);
     const [isBloomEnabled, setIsBloomEnabled] = usePersistentState('mud-bloom-enabled', true);
+    const [isSpectateMode, setIsSpectateMode] = usePersistentState('mud-spectate-mode', false);
     const [favorites, setFavorites] = usePersistentState<string[]>('mud-favorites', []);
     const [zoneMusic, setZoneMusic] = usePersistentState<ZoneMusicMapping[]>('mud-zone-music', [
         { zone: 'Bree', url: '/assets/Sounds/Zone Sounds/BreeSound.wav' },
@@ -69,6 +70,7 @@ export const useSettingsState = () => {
         isHighlighterEnabled, setIsHighlighterEnabled,
         isCrtEnabled, setIsCrtEnabled,
         isBloomEnabled, setIsBloomEnabled,
+        isSpectateMode, setIsSpectateMode,
         favorites, setFavorites,
         zoneMusic, setZoneMusic
     };

@@ -89,12 +89,14 @@ export function useCommParser(deps: CommParserDeps) {
             }
         } else {
             const commPatterns: [RegExp, string, boolean][] = [
-                [/^(.+?)\s+(tells? you|tells?|whispers?)(?:[:,\s]+)(.*)$/i, 'tell', true],
-                [/^(.+?)\s+(says?|asks?(?:\s+you)?|exclaims?)(?:[:,\s]+)(.*)$/i, 'say', true],
-                [/^(.+?)\s+(narrates?)(?:[:,\s]+)(.*)$/i, 'narrate', true],
-                [/^(.+?)\s+(shouts?|yells?)(?:[:,\s]+)(.*)$/i, 'shout', true],
-                [/^(.+?)\s+(sings?)(?:[:,\s]+)(.*)$/i, 'sing', true],
-                [/^(.+?)\s+(prays?)(?:[:,\s]+)(.*)$/i, 'pray', true],
+                // In MUME, all speech channels (tells, says, yells, etc.) always enclose the message in single quotes.
+                // By enforcing the (['"].*['"]) pattern, we avoid matching lists in help files or game tables.
+                [/^(.+?)\s+(tells? you|tells?|whispers?)\s+(['"].*['"])$/i, 'tell', true],
+                [/^(.+?)\s+(says?|asks?(?:\s+you)?|exclaims?)\s+(['"].*['"])$/i, 'say', true],
+                [/^(.+?)\s+(narrates?)\s+(['"].*['"])$/i, 'narrate', true],
+                [/^(.+?)\s+(shouts?|yells?)\s+(['"].*['"])$/i, 'shout', true],
+                [/^(.+?)\s+(sings?)\s+(['"].*['"])$/i, 'sing', true],
+                [/^(.+?)\s+(prays?)\s+(['"].*['"])$/i, 'pray', true],
             ];
             for (const [re, cmd, hasSender] of commPatterns) {
                 const m = textOnly.match(re);

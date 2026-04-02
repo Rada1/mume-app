@@ -615,11 +615,22 @@ export const useGmcpHandlers = ({
     
     // --- Group Handlers ---
 
-    /** Normalizes a raw group member: resolves room ID from whatever field MUME uses -> mapid */
+    /** Normalizes a raw group member: coerces id to number, resolves mapid */
     const normalizeGroupMember = (raw: any): GroupMember => {
-        const mapid = raw.mapid ?? raw.room ?? raw.roomid ?? raw.room_id ?? raw.rid ?? raw.vnum ?? raw.map_id ?? undefined;
-        console.log('[Group Member] raw keys:', Object.keys(raw), '| resolved mapid:', mapid, '| raw:', JSON.stringify(raw));
-        return { ...raw, mapid: mapid !== undefined ? Number(mapid) : undefined };
+        // Coerce id to number for consistent comparisons
+        const id = raw.id !== undefined && raw.id !== null ? Number(raw.id) : raw.id;
+
+        // Try dedicated ID fields first; only fall back to raw.room if it's numeric (not a name string)
+        const candidates = [raw.mapid, raw.roomid, raw.room_id, raw.rid, raw.vnum, raw.map_id];
+        let mapid: number | undefined = undefined;
+        for (const c of candidates) {
+            if (c !== undefined && c !== null) { mapid = Number(c); break; }
+        }
+        if (mapid === undefined && raw.room !== undefined && raw.room !== null && !isNaN(Number(raw.room))) {
+            mapid = Number(raw.room);
+        }
+        console.log('[Group Member] raw keys:', Object.keys(raw), '| id:', id, '| resolved mapid:', mapid, '| fighting:', raw.fighting, '| raw:', JSON.stringify(raw));
+        return { ...raw, id, mapid: (mapid !== undefined && !isNaN(mapid)) ? mapid : undefined };
     };
 
     const onGroupAdd = useCallback((data: GroupMember) => {
@@ -630,7 +641,7 @@ export const useGmcpHandlers = ({
         // Also fall back to name comparison in case type is missing
         if (characterName && member.name && member.name.toLowerCase() === characterName.toLowerCase()) return;
         setGroupMembers(prev => {
-            if (prev.find(m => m.id === member.id)) return prev;
+            if (prev.find(m => String(m.id) === String(member.id))) return prev;
             return [...prev, member];
         });
     }, [setGroupMembers, characterName]);
@@ -639,12 +650,15 @@ export const useGmcpHandlers = ({
         console.log('[GMCP] onGroupUpdate raw:', JSON.stringify(data));
         const updates = normalizeGroupMember(data);
         setGroupMembers(prev => prev.map(m => {
-            if (m.id === updates.id) {
-                // Persistent Location Fix: If the update doesn't have a mapid/room but the existing state does, KEEP IT.
-                // MUME often omits location in health/status updates, which was causing dots to vanish.
+            if (String(m.id) === String(updates.id)) {
                 const merged = { ...m, ...updates };
+                // Preserve mapid if the update omits it
                 if (updates.mapid === undefined && m.mapid !== undefined) {
                     merged.mapid = m.mapid;
+                }
+                // Preserve fighting state if the update omits it (MUME only sends this in combat-state packets)
+                if (updates.fighting === undefined && m.fighting !== undefined) {
+                    merged.fighting = m.fighting;
                 }
                 return merged;
             }
@@ -654,7 +668,7 @@ export const useGmcpHandlers = ({
 
     const onGroupRemove = useCallback((id: number) => {
         console.log('[GMCP] onGroupRemove id:', id);
-        setGroupMembers(prev => prev.filter(m => m.id !== id));
+        setGroupMembers(prev => prev.filter(m => String(m.id) !== String(id)));
     }, [setGroupMembers]);
 
     const onGroupSet = useCallback((data: GroupMember[]) => {

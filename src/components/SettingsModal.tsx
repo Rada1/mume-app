@@ -50,6 +50,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setIsCrtEnabled,
     isBloomEnabled,
     setIsBloomEnabled,
+    isSpectateMode,
+    setIsSpectateMode,
 }) => {
     const {
         isMmapperMode, setIsMmapperMode,
@@ -128,6 +130,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setIsCrtEnabled={setIsCrtEnabled}
                                 isBloomEnabled={isBloomEnabled}
                                 setIsBloomEnabled={setIsBloomEnabled}
+                                isSpectateMode={isSpectateMode}
+                                setIsSpectateMode={setIsSpectateMode}
                             />
                             <DataManagement
                                 exportSettings={exportSettings}

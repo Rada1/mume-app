@@ -77,4 +77,5 @@ export interface UseGameParserDeps {
     gameState: import('../../types').GameState;
     isMobile?: boolean;
     playerPosition?: string;
+    isSpectateMode?: boolean;
 }

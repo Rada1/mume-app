@@ -83,6 +83,7 @@ export const useGameProviderState = () => {
     }, []);
 
     const [characterName, setCharacterName] = useState<string | null>(null);
+    const [spectateTargetId, setSpectateTargetId] = useState<number | null>(null);
 
     // Sync Game State with status and characterName
     useEffect(() => {
@@ -533,6 +534,9 @@ export const useGameProviderState = () => {
         isHighlighterEnabled, setIsHighlighterEnabled,
         isCrtEnabled, setIsCrtEnabled,
         isBloomEnabled, setIsBloomEnabled,
+        isSpectateMode: settings.isSpectateMode,
+        setIsSpectateMode: settings.setIsSpectateMode,
+        spectateTargetId, setSpectateTargetId,
         favorites, setFavorites,
         activeDragData, setActiveDragData,
         heldButton, setHeldButton,
@@ -570,7 +574,8 @@ export const useGameProviderState = () => {
         inlineCategories, isHighlighterEnabled, isCrtEnabled, isBloomEnabled, favorites, activeDragData, heldButton,
         parley, whoList, whereList, popoverState, discoveredItems, zoneMusic,
         quests, groupMembers, mumeEditState, handleSaveMumeEdit, executeCommandRef,
-        entities, setEntities, registerEntity, getEntity, clearRegistry, selectedObjectIds, toggleObjectSelection, clearObjectSelection
+        entities, setEntities, registerEntity, getEntity, clearRegistry, selectedObjectIds, toggleObjectSelection, clearObjectSelection,
+        settings.isSpectateMode, settings.setIsSpectateMode, spectateTargetId, setSpectateTargetId
     ]);
 
 

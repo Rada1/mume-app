@@ -87,6 +87,40 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } = s;
 
     const { stats, rumble, hitFlash, deathStage, target, activePrompt } = v;
+    const { isSpectateMode, spectateTargetId, groupMembers } = s;
+
+    const spectateTarget = useMemo(() => {
+        if (!isSpectateMode || spectateTargetId == null) return null;
+        const target = groupMembers.find(m => {
+            const mIdStr = String(m.id);
+            const targetIdStr = String(spectateTargetId);
+            return mIdStr === targetIdStr || m.name === targetIdStr;
+        });
+        if (!target) {
+            console.warn('[Spectate] Target not found in groupMembers!', {
+                spectateTargetId,
+                memberIds: groupMembers.map(m => m.id),
+                memberNames: groupMembers.map(m => m.name)
+            });
+        }
+        return target ?? null;
+    }, [isSpectateMode, spectateTargetId, groupMembers]);
+
+    // Use a ref for the previous target to detect changes
+    const prevSpectateTargetIdRef = useRef<number | null>(null);
+    useEffect(() => {
+        if (spectateTarget && spectateTarget.id !== prevSpectateTargetIdRef.current) {
+            console.log('[Spectate] Switched Target to:', spectateTarget.name,
+                '| HP:', spectateTarget.hp, '| Mana:', spectateTarget.mana,
+                '| Room:', spectateTarget.room, '| MapID:', spectateTarget.mapid,
+                '| Fighting:', spectateTarget.fighting,
+                '| Full:', JSON.stringify(spectateTarget));
+            prevSpectateTargetIdRef.current = spectateTarget.id;
+        } else if (!spectateTarget && prevSpectateTargetIdRef.current !== null) {
+            console.log('[Spectate] Target cleared');
+            prevSpectateTargetIdRef.current = null;
+        }
+    }, [spectateTarget]);
 
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [settingsTab, setSettingsTab] = useState<'general' | 'sound' | 'actions' | 'help'>('general');
@@ -408,7 +442,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         activePrompt: v.activePrompt,
         gameState: s.gameState,
         isMobile: viewport.isMobile,
-        playerPosition: s.playerPosition
+        playerPosition: s.playerPosition,
+        isSpectateMode: s.isSpectateMode
     });
 
 
@@ -589,73 +624,78 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         s.setIsCharacterOpen, s.setIsEquipmentOpen, s.setIsInventoryOpen, s.setIsMapExpanded, s.setIsSetManagerOpen, s.setUI, s.setIsPlayersOpen
     ]);
 
-    const gameValue = useMemo(() => ({
-        ...s,
-        accentColor, setAccentColor,
-        teleportTargets, setTeleportTargets,
-        onRoomInfo: roomInfoFn, setOnRoomInfo: setRoomInfoFn,
-        onRoomUpdateExits: roomExitsFn, setOnRoomUpdateExits: setRoomExitsFn,
-        onCharVitals: charVitalsFn, setOnCharVitals: setCharVitalsFn,
-        onRoomPlayers: roomPlayersFn, setOnRoomPlayers: setRoomPlayersFn,
-        onRoomNpcs: roomNpcsFn, setOnRoomNpcs: setRoomNpcsFn,
-        onRoomItems: roomItemsFn, setOnRoomItems: setRoomItemsFn,
-        onAddPlayer: addPlayerFn, setOnAddPlayer: setAddPlayerFn,
-        onAddNpc: addNpcFn, setOnAddNpc: setAddNpcFn,
-        onRemovePlayer: removePlayerFn, setOnRemovePlayer: setRemovePlayerFn,
-        onRemoveNpc: removeNpcFn, setOnRemoveNpc: setRemoveNpcFn,
-        onOpponentChange: opponentChangeFn, setOnOpponentChange: setOpponentChangeFn,
-        opponentId: v.opponentId, setOpponentId: v.setOpponentId,
-        onGroupAdd: groupAddFn, setOnGroupAdd: setGroupAddFn,
-        onGroupUpdate: groupUpdateFn, setOnGroupUpdate: setGroupUpdateFn,
-        onGroupRemove: groupRemoveFn, setOnGroupRemove: setGroupRemoveFn,
-        onGroupSet: groupSetFn, setOnGroupSet: setGroupSetFn,
-        playSound, playRandomSound, playDoorSound, setPlaySound, triggerHaptic, setTriggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, playTutorialExitSound,
+    const gameValue = useMemo(() => {
+        const base = { ...s };
+        if (isSpectateMode && spectateTarget) {
+            base.roomName = spectateTarget.room || s.roomName;
+            base.characterName = spectateTarget.name || s.characterName;
+            // Use spectated player's fighting state; default to false (not the player's own combat)
+            const isTargetFighting = spectateTarget.fighting || spectateTarget.position?.toLowerCase() === 'fighting';
+            base.inCombat = isTargetFighting ?? false;
+        }
 
+        return {
+            ...base,
+            accentColor, setAccentColor,
+            teleportTargets, setTeleportTargets,
+            onRoomInfo: roomInfoFn, setOnRoomInfo: setRoomInfoFn,
+            onRoomUpdateExits: roomExitsFn, setOnRoomUpdateExits: setRoomExitsFn,
+            onCharVitals: charVitalsFn, setOnCharVitals: setCharVitalsFn,
+            onRoomPlayers: roomPlayersFn, setOnRoomPlayers: setRoomPlayersFn,
+            onRoomNpcs: roomNpcsFn, setOnRoomNpcs: setRoomNpcsFn,
+            onRoomItems: roomItemsFn, setOnRoomItems: setRoomItemsFn,
+            onAddPlayer: addPlayerFn, setOnAddPlayer: setAddPlayerFn,
+            onAddNpc: addNpcFn, setOnAddNpc: setAddNpcFn,
+            onRemovePlayer: removePlayerFn, setOnRemovePlayer: setRemovePlayerFn,
+            onRemoveNpc: removeNpcFn, setOnRemoveNpc: setRemoveNpcFn,
+            onOpponentChange: opponentChangeFn, setOnOpponentChange: setOpponentChangeFn,
+            opponentId: v.opponentId, setOpponentId: v.setOpponentId,
+            onGroupAdd: groupAddFn, setOnGroupAdd: setGroupAddFn,
+            onGroupUpdate: groupUpdateFn, setOnGroupUpdate: setGroupUpdateFn,
+            onGroupRemove: groupRemoveFn, setOnGroupRemove: setGroupRemoveFn,
+            onGroupSet: groupSetFn, setOnGroupSet: setGroupSetFn,
+            playSound, playRandomSound, playDoorSound, setPlaySound, triggerHaptic, setTriggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, playTutorialExitSound,
 
-
-        btn, joystick, editor, containerRef, viewport, env,
-        initAudio,
-        setSettings: btn.setSettings, setSetSettings: btn.setSetSettings,
-        input, setInput,
-        handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
-        handleLogPointerDown, handleLogPointerUp,
-        handleDragStart, handleDragEnd,
-        quests: s.quests, setQuests: s.setQuests,
-        groupMembers: s.groupMembers, setGroupMembers: s.setGroupMembers,
-        mumeEditState: s.mumeEditState, setMumeEditState: s.setMumeEditState,
-        handleSaveMumeEdit,
-        hasSeenOnboarding: s.hasSeenOnboarding, setHasSeenOnboarding: s.setHasSeenOnboarding,
-        mapperRef, ...settings, audioCtxRef,
-        telnet, parser, practice,
-        spatButtons, setSpatButtons,
-        gameState: s.gameState, setGameState: s.setGameState, prepareLoginAttempt,
-        diagnosticLogs, addDiagnosticLog,
-        refreshLogHighlights,
-        addMessage, addSystemMessage,
-        isMendingMode: v.isMendingMode, setIsMendingMode: v.setIsMendingMode,
-        mendingTarget: v.mendingTarget, setMendingTarget: v.setMendingTarget,
-        heldButton: v.heldButton, setHeldButton: v.setHeldButton,
-        accountState: v.accountState, setAccountState: v.setAccountState,
-        keywordOverrides, openKeywordEdit,
-        keywordEditState, setKeywordEditState,
-        setKeywordOverride, removeKeywordOverride,
-        keywordFailureBanner, setKeywordFailureBanner,
-        detectLighting: env.detectLighting,
-        setDetectLighting: (fn: (text: string) => void) => { /* internal use */ }
-    }), [
-        s, accentColor, teleportTargets,
+            btn, joystick, editor, containerRef, viewport, env,
+            initAudio,
+            setSettings: btn.setSettings, setSetSettings: btn.setSetSettings,
+            input, setInput,
+            handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
+            handleLogPointerDown, handleLogPointerUp,
+            handleDragStart, handleDragEnd,
+            quests: s.quests, setQuests: s.setQuests,
+            groupMembers: s.groupMembers, setGroupMembers: s.setGroupMembers,
+            mumeEditState: s.mumeEditState, setMumeEditState: s.setMumeEditState,
+            handleSaveMumeEdit,
+            hasSeenOnboarding: s.hasSeenOnboarding, setHasSeenOnboarding: s.setHasSeenOnboarding,
+            mapperRef, ...settings, audioCtxRef,
+            telnet, parser, practice,
+            spatButtons, setSpatButtons,
+            gameState: s.gameState, setGameState: s.setGameState, prepareLoginAttempt,
+            diagnosticLogs, addDiagnosticLog,
+            refreshLogHighlights,
+            addMessage, addSystemMessage,
+            isMendingMode: v.isMendingMode, setIsMendingMode: v.setIsMendingMode,
+            mendingTarget: v.mendingTarget, setMendingTarget: v.setMendingTarget,
+            heldButton: v.heldButton, setHeldButton: v.setHeldButton,
+            accountState: v.accountState, setAccountState: v.setAccountState,
+            keywordOverrides, openKeywordEdit,
+            keywordEditState, setKeywordEditState,
+            setKeywordOverride, removeKeywordOverride,
+            keywordFailureBanner, setKeywordFailureBanner,
+            detectLighting: env.detectLighting,
+            setDetectLighting: (fn: (text: string) => void) => { /* internal use */ }
+        };
+    }, [
+        s, isSpectateMode, spectateTarget, accentColor, teleportTargets,
         roomInfoFn, roomExitsFn, charVitalsFn, roomPlayersFn, roomNpcsFn, roomItemsFn,
         addPlayerFn, addNpcFn, removePlayerFn, removeNpcFn, opponentChangeFn,
         playSound, triggerHaptic, playCommMessageSound, stopCommMessageSound, playTutorialExitSound,
-
-
-
-        btn, joystick, editor, viewport, env,
+        btn, joystick, editor, viewport, env, v,
         input, handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
         handleDragStart, handleDragEnd,
         settings, audioCtxRef, telnet, parser, spatButtons, diagnosticLogs, addDiagnosticLog,
-        v.isMendingMode, v.setIsMendingMode, v.mendingTarget, v.setMendingTarget,
-        v.heldButton, v.setHeldButton, handleLogPointerDown, handleLogPointerUp,
+        handleLogPointerDown, handleLogPointerUp,
         handleSaveMumeEdit, s.setQuests, addMessage, addSystemMessage,
         s.gameState, s.setGameState, prepareLoginAttempt
     ]);
@@ -683,9 +723,50 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     }, [s.ui.drawer, v.isMendingMode]);
 
+    const effectiveVitals = useMemo(() => {
+        if (!spectateTarget) return v;
+        const isTargetFighting = spectateTarget.fighting || spectateTarget.position?.toLowerCase() === 'fighting';
+        console.log('[Spectate] effectiveVitals override:', {
+            hp: spectateTarget.hp, maxhp: spectateTarget.maxhp,
+            mana: spectateTarget.mana, mv: spectateTarget.mv ?? spectateTarget.mp,
+            fighting: isTargetFighting
+        });
+        return {
+            ...v,
+            stats: {
+                hp: spectateTarget.hp ?? 0,
+                maxHp: spectateTarget.maxhp ?? 100,
+                mana: spectateTarget.mana ?? 0,
+                maxMana: spectateTarget.maxmana ?? 100,
+                move: spectateTarget.mv ?? spectateTarget.mp ?? 0,
+                maxMove: spectateTarget.maxmv ?? spectateTarget.maxmp ?? 100,
+                wimpy: v.stats.wimpy
+            },
+            playerHealthStatus: spectateTarget['hp-string'] ? (spectateTarget['hp-string'] as any) : v.playerHealthStatus,
+            opponentId: isTargetFighting ? null : v.opponentId,
+            opponentName: isTargetFighting ? (v.opponentName || spectateTarget.opponent || 'Opponent') : v.opponentName,
+            opponentHealthStatus: isTargetFighting ? (v.opponentHealthStatus || (spectateTarget['opponent-hp'] as any) || 'Healthy') : v.opponentHealthStatus,
+        };
+    }, [v, spectateTarget]);
+
+    // Spectate Mapper Sync
+    useEffect(() => {
+        if (isSpectateMode && spectateTarget && spectateTarget.mapid !== undefined) {
+            window.dispatchEvent(new CustomEvent('mume-mapper-room-info', {
+                detail: {
+                    num: spectateTarget.mapid,
+                    name: spectateTarget.room || '',
+                    zone: spectateTarget.zone || '',
+                    terrain: spectateTarget.terrain || 'Unknown',
+                    spectating: true
+                }
+            }));
+        }
+    }, [isSpectateMode, spectateTarget?.mapid, spectateTarget?.room, spectateTarget?.zone, spectateTarget?.terrain, spectateTarget?.id]);
+
     return (
         <GameContext.Provider value={gameValue as any}>
-            <VitalsContext.Provider value={v}>
+            <VitalsContext.Provider value={effectiveVitals}>
                 <UIContext.Provider value={uiValue as any}>
                     <LogContext.Provider value={logValue as any}>
                         {children}
