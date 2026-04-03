@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { prepare } from 'pretext';
 
 export function useViewport(
     uiMode: import('../types').UiMode = 'auto',
@@ -163,14 +162,10 @@ export function useViewport(
         return () => resizeObserver.disconnect();
     }, [scrollToBottom]);
 
-    const [logFontSize, setLogFontSize] = useState(() => {
-        const saved = localStorage.getItem('mud-log-font-size');
-        return saved ? parseFloat(saved) : 1.0;
-    });
-
-    useEffect(() => {
-        localStorage.setItem('mud-log-font-size', logFontSize.toString());
-    }, [logFontSize]);
+    // logFontSize is a MULTIPLIER on top of the precision-calculated 80-column base size.
+    // 1.0 = exactly 80 columns; > 1.0 = zoomed in; < 1.0 = zoomed out.
+    // We intentionally do NOT restore from localStorage so every session starts at 80 cols.
+    const [logFontSize, setLogFontSize] = useState(1.0);
 
     const touchDistRef = useRef<number | null>(null);
     const lastUpdateRef = useRef<number>(0);
@@ -232,37 +227,44 @@ export function useViewport(
             const height = logContainer.clientHeight;
             if (width === 0 || height === 0) return;
 
-            // Target dimensions for a classic MUD look
+            // --- Canvas-based character width measurement ---
+            // Canvas measureText() returns advance widths in CSS pixels at the given font-size.
+            // We measure at a large reference size for sub-pixel accuracy.
+            const REF_SIZE = 100; // px
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+
+            // Measure 20 chars for better average (handles hinting, kerning edge cases)
+            ctx.font = `${REF_SIZE}px "Space Mono", monospace`;
+            const sampleText = 'MMMMMMMMMMMMMMMMMMMM'; // 20 chars
+            const totalWidth = ctx.measureText(sampleText).width;
+            const charWidthRatio = (totalWidth / sampleText.length) / REF_SIZE; // width per px of font-size
+
+            // font-size needed so that 80 chars * charWidthRatio * fontSize === usableWidth
             const targetCols = 80;
             const horizontalPadding = 16;
             const usableWidth = Math.max(0, width - horizontalPadding);
 
-            // Measure 'Space Mono' at base size to get true proportions
-            const measure = prepare('160px "Space Mono", monospace');
-            const layout = measure('M').layout(Infinity);
-            const baseCharWidth = layout[0].width / 10; // Scaling by 10 for precision
-            const initialLineHeight = 160 * 1.1; // Based on our 1.1 line-height CSS
+            let calculatedFontSize = usableWidth / (targetCols * charWidthRatio);
 
-            // Calculate exact font size needed to fit 80 columns perfectly
-            let calculatedFontSize = (usableWidth / targetCols) / (baseCharWidth / 160);
-            
-            // Adjust based on user preference (logFontSize)
-            calculatedFontSize = calculatedFontSize * logFontSize;
+            // Apply user zoom multiplier (1.0 = exact 80-col fit)
+            calculatedFontSize *= logFontSize;
 
-            // Safety clamps
-            const safeSize = Math.min(48, Math.max(8, calculatedFontSize));
+            // Safety clamps: never go below 6px or above 48px
+            const safeSize = Math.min(48, Math.max(6, calculatedFontSize));
             document.documentElement.style.setProperty('--dynamic-log-size', `${safeSize}px`);
 
             // Derive final grid metrics for the game server
-            const finalCharWidth = (baseCharWidth / 160) * safeSize;
+            const finalCharWidth = charWidthRatio * safeSize;
             const finalLineHeight = safeSize * 1.1;
-            
+
             const actualCols = Math.floor(usableWidth / finalCharWidth);
             const actualRows = Math.floor(height / finalLineHeight);
 
             setColumns(actualCols);
             setRows(actualRows);
-            console.log(`[Layout] Precision Mode: ${actualCols}x${actualRows} (font: ${safeSize.toFixed(1)}px)`);
+            console.log(`[Layout] charRatio=${charWidthRatio.toFixed(4)} → font=${safeSize.toFixed(1)}px → ${actualCols}x${actualRows}`);
         };
 
         const timer = setTimeout(updateLayout, 10);

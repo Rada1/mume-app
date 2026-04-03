@@ -48,7 +48,7 @@
     -webkit-user-select: text;
     -webkit-touch-callout: default; /* Restores Copy/Paste menu on iOS/Android */
     -webkit-tap-highlight-color: transparent;
-    touch-action: pan-y; /* Removed !important to allow browser gestures like long-press-to-select */
+    touch-action: pan-y pinch-zoom; /* pan-y alone blocks pinch gestures; pinch-zoom re-enables them */
     cursor: default;
     min-height: 0;
     transform-style: preserve-3d;

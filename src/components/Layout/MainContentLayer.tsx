@@ -126,19 +126,6 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
 
             <div className="message-log-container" ref={logContainerRef}>
                 <CombatStatsPanel />
-                {viewport.isMobile && viewport.logFontSize !== 1.0 && (
-                    <button
-                        className="font-reset-btn"
-                        onClick={() => {
-                            triggerHaptic?.(20);
-                            viewport.resetLogFontSize();
-                        }}
-                        style={{ border: '1px solid var(--accent)' }}
-                    >
-                        <RotateCcw size={14} />
-                        RESET FONT
-                    </button>
-                )}
                 <MessageLog
                     onLogClick={handleLogClick}
                     onMouseUp={handleMouseUp}
