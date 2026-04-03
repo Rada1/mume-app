@@ -580,6 +580,20 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         gameState: s.gameState
     });
 
+    // --- Section: Terminal Synchronization ---
+    useEffect(() => {
+        if (s.gameState === 'disconnected') return;
+        if (!viewport.columns) return;
+
+        const timer = setTimeout(() => {
+            console.log(`[Sync] Terminal: ${viewport.columns}x${viewport.rows}`);
+            executeCommand(`change width ${viewport.columns}`, true, true);
+            executeCommand(`change length ${viewport.rows}`, true, true);
+        }, 1000); // 1s debounce
+
+        return () => clearTimeout(timer);
+    }, [viewport.columns, s.gameState, executeCommand]);
+
     // Handle keyboard-triggered visibility for buttons
     useEffect(() => {
         const isKeyboardOpen = viewport.isKeyboardOpen;

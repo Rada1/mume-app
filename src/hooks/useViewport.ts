@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { prepare } from 'pretext';
 
 export function useViewport(
     uiMode: import('../types').UiMode = 'auto',
@@ -8,6 +9,8 @@ export function useViewport(
 ) {
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+    const [columns, setColumns] = useState(80);
+    const [rows, setRows] = useState(24);
 
     // Scroll refs
     const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -219,31 +222,51 @@ export function useViewport(
         };
     }, [isMobile]);
 
-    // --- Dedicated Font Recalibration ---
+    // --- Dedicated Precision Layout Engine ---
     useEffect(() => {
-        if (!isMobile) {
-            document.documentElement.style.setProperty('--dynamic-log-size', `${16 * logFontSize}px`);
-            return;
-        }
-
-        const updateFont = () => {
+        const updateLayout = () => {
             const logContainer = document.querySelector('.message-log-container');
-            if (logContainer) {
-                const width = logContainer.clientWidth;
-                if (width === 0) return; // Not yet rendered
+            if (!logContainer) return;
 
-                // Strict 80-character Space Mono math (Ratio: ~0.6ch per unit width = 48 divisor)
-                const usableWidth = Math.max(0, width - 16);
-                const fontSize = (usableWidth / 48) * logFontSize;
-                const safeSize = Math.min(40, Math.max(6, fontSize));
-                document.documentElement.style.setProperty('--dynamic-log-size', `${safeSize}px`);
-            }
+            const width = logContainer.clientWidth;
+            const height = logContainer.clientHeight;
+            if (width === 0 || height === 0) return;
+
+            // Target dimensions for a classic MUD look
+            const targetCols = 80;
+            const horizontalPadding = 16;
+            const usableWidth = Math.max(0, width - horizontalPadding);
+
+            // Measure 'Space Mono' at base size to get true proportions
+            const measure = prepare('160px "Space Mono", monospace');
+            const layout = measure('M').layout(Infinity);
+            const baseCharWidth = layout[0].width / 10; // Scaling by 10 for precision
+            const initialLineHeight = 160 * 1.1; // Based on our 1.1 line-height CSS
+
+            // Calculate exact font size needed to fit 80 columns perfectly
+            let calculatedFontSize = (usableWidth / targetCols) / (baseCharWidth / 160);
+            
+            // Adjust based on user preference (logFontSize)
+            calculatedFontSize = calculatedFontSize * logFontSize;
+
+            // Safety clamps
+            const safeSize = Math.min(48, Math.max(8, calculatedFontSize));
+            document.documentElement.style.setProperty('--dynamic-log-size', `${safeSize}px`);
+
+            // Derive final grid metrics for the game server
+            const finalCharWidth = (baseCharWidth / 160) * safeSize;
+            const finalLineHeight = safeSize * 1.1;
+            
+            const actualCols = Math.floor(usableWidth / finalCharWidth);
+            const actualRows = Math.floor(height / finalLineHeight);
+
+            setColumns(actualCols);
+            setRows(actualRows);
+            console.log(`[Layout] Precision Mode: ${actualCols}x${actualRows} (font: ${safeSize.toFixed(1)}px)`);
         };
 
-        // Update immediately and also after a short delay to catch browser reflow
-        updateFont();
-        const timer = setTimeout(updateFont, 100);
-        const timer2 = setTimeout(updateFont, 300);
+        const timer = setTimeout(updateLayout, 10);
+        const timer2 = setTimeout(updateLayout, 250); // Final settlement
 
         return () => {
             clearTimeout(timer);
@@ -373,6 +396,8 @@ export function useViewport(
         isMobile,
         isLandscape,
         isKeyboardOpen,
+        columns,
+        rows,
         scrollContainerRef,
         messagesEndRef,
         scrollAnimationRef,
@@ -382,5 +407,5 @@ export function useViewport(
         updateHeight,
         logFontSize,
         resetLogFontSize: () => setLogFontSize(1.0)
-    }), [isMobile, isLandscape, isKeyboardOpen, scrollToBottom, updateHeight, logFontSize]);
+    }), [isMobile, isLandscape, isKeyboardOpen, columns, rows, scrollToBottom, updateHeight, logFontSize]);
 }

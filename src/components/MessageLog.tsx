@@ -180,8 +180,8 @@ const MessageItem = React.memo(({
                         <span className="comm-action"> {msg.commAction}:</span>
                     </div>
                     <div className="comm-content-row">
-                        <div 
-                            className="comm-bubble inline-btn" 
+                        <div
+                            className="comm-bubble inline-btn"
                             style={{ color: msg.commColor, cursor: 'pointer', '--glow-color': msg.commColor } as React.CSSProperties}
                             onClick={triggerParley}
                         >
@@ -268,19 +268,20 @@ const MessageLog: React.FC<MessageLogProps> = ({
             const msg = messagesRef.current[index];
             if (!msg) return 24;
             const isComm = msg.type === 'comm' || msg.isComm;
-            if (isComm && msg.commSender) return 64; 
+            if (isComm && msg.commSender) return 64;
             if (msg.type === 'shop-item') return 120;
             if (msg.type === 'practice-skill') return 84;
             if (msg.type === 'practice-header') return 52;
             if (msg.type === 'practice-class-header') return 32;
             if (msg.type === 'practice-column-header') return 80;
-            
+
             const charCount = (msg.textRaw || msg.commText || '').length;
-            const lineCount = Math.max(1, Math.ceil(charCount / 35));
-            let h = lineCount * 22 + (isComm ? 32 : 4);
+            const cols = viewport.columns || 80;
+            const lineCount = Math.max(1, Math.ceil(charCount / cols));
+            let h = lineCount * (viewport.logFontSize * 16 * 1.1) + (isComm ? 48 : 4);
             if (msg.isCombat) h += 10;
             return h;
-        }, []),
+        }, [viewport.columns, viewport.logFontSize]),
         overscan: 5,
     });
 

@@ -7,6 +7,7 @@ import { getButtonCommand } from '../../utils/buttonUtils';
 import CombatOverlay from '../CombatOverlay';
 import CombatStatsPanel from '../CombatStatsPanel';
 import { MultiSelectToolbar } from '../Popovers/MultiSelectToolbar';
+import { RotateCcw } from 'lucide-react';
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -125,6 +126,19 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
 
             <div className="message-log-container" ref={logContainerRef}>
                 <CombatStatsPanel />
+                {viewport.isMobile && viewport.logFontSize !== 1.0 && (
+                    <button
+                        className="font-reset-btn"
+                        onClick={() => {
+                            triggerHaptic?.(20);
+                            viewport.resetLogFontSize();
+                        }}
+                        style={{ border: '1px solid var(--accent)' }}
+                    >
+                        <RotateCcw size={14} />
+                        RESET FONT
+                    </button>
+                )}
                 <MessageLog
                     onLogClick={handleLogClick}
                     onMouseUp={handleMouseUp}

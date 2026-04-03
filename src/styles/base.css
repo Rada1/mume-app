@@ -6,7 +6,7 @@
     --font-main: 'Space Mono', monospace;
 
     /* Dark Mode (Default) */
-    --bg-app: #000000;
+    --bg-app: #1a1a1a;
     --bg-panel: rgba(10, 13, 21, 0.65);
     --bg-overlay: rgba(0, 0, 0, 0.85);
     --text-primary: #f0f0f0;

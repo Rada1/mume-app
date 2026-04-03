@@ -39,16 +39,26 @@ export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.Muta
 
     /**
      * Resets interaction state and removes global listeners.
+     * Only resets overflow/touchAction inline styles if a drag was actually in progress.
+     * Clearing these styles (rather than setting them to restrictive values) lets the
+     * CSS class rule take precedence, which preserves native long-press-to-select on mobile.
      */
     const cleanupDrag = useCallback(() => {
+        const wasDragging = isLogDraggingRef.current;
         const isMobile = viewport.isMobile;
         const container = document.querySelector('.message-log') as HTMLElement || document.querySelector('.log-card-drawer') as HTMLElement;
         if (container) {
-            container.style.userSelect = 'auto';
-            container.style.webkitUserSelect = 'auto';
+            // Always clear user-select back to CSS-default (removes the inline 'none' set during drag)
+            container.style.userSelect = '';
+            container.style.webkitUserSelect = '';
             if (isMobile) {
-                container.style.overflow = 'auto';
-                container.style.touchAction = 'pan-y';
+                // Only reset overflow/touchAction if we were actually dragging.
+                // Setting these inline after a simple press (including text selection)
+                // overwrites the CSS rule and permanently blocks native selection gestures.
+                if (wasDragging) {
+                    container.style.overflow = '';
+                    container.style.touchAction = '';
+                }
             }
         }
         
