@@ -16,6 +16,7 @@ export function useCommParser(deps: CommParserDeps) {
     const ignoredCommBufferRef = useRef<string | null>(null);
     const lastCommMsgIdRef = useRef<string | null>(null);
     const lastCommTimeRef = useRef<number>(0);
+    const openCommRef = useRef(false); // true when last comm line had no closing quote (server-wrapped message)
 
     const parseComm = useCallback((line: string, textOnly: string, lower: string) => {
         const gmcpComm = pendingGmcpCommRef?.current ?? null;
@@ -89,43 +90,60 @@ export function useCommParser(deps: CommParserDeps) {
             }
         } else {
             const commPatterns: [RegExp, string, boolean][] = [
-                // In MUME, all speech channels (tells, says, yells, etc.) always enclose the message in single quotes.
-                // By enforcing the (['"].*['"]) pattern, we avoid matching lists in help files or game tables.
-                [/^(.+?)\s+(tells? you|tells?|whispers?)\s+(['"].*['"])$/i, 'tell', true],
-                [/^(.+?)\s+(says?|asks?(?:\s+you)?|exclaims?)\s+(['"].*['"])$/i, 'say', true],
-                [/^(.+?)\s+(narrates?)\s+(['"].*['"])$/i, 'narrate', true],
-                [/^(.+?)\s+(shouts?|yells?)\s+(['"].*['"])$/i, 'shout', true],
-                [/^(.+?)\s+(sings?)\s+(['"].*['"])$/i, 'sing', true],
-                [/^(.+?)\s+(prays?)\s+(['"].*['"])$/i, 'pray', true],
+                // Require an opening quote but allow the closing quote to be on a subsequent line
+                // (MUME wraps long messages at ~80 chars, splitting mid-quote across lines).
+                [/^(.+?)\s+(tells? you|tells?|whispers?)\s+(['"].*)$/i, 'tell', true],
+                [/^(.+?)\s+(says?|asks?(?:\s+you)?|exclaims?)\s+(['"].*)$/i, 'say', true],
+                [/^(.+?)\s+(narrates?)\s+(['"].*)$/i, 'narrate', true],
+                [/^(.+?)\s+(shouts?|yells?)\s+(['"].*)$/i, 'shout', true],
+                [/^(.+?)\s+(sings?)\s+(['"].*)$/i, 'sing', true],
+                [/^(.+?)\s+(prays?)\s+(['"].*)$/i, 'pray', true],
             ];
             for (const [re, cmd, hasSender] of commPatterns) {
                 const m = textOnly.match(re);
-                if (m) { 
-                    replyCommand = cmd; 
+                if (m) {
+                    replyCommand = cmd;
                     if (hasSender) {
                         replyTarget = m[1];
                         commSender = m[1];
                         commAction = m[2];
                         commText = m[3];
                     }
-                    break; 
+                    break;
                 }
             }
 
+            if (replyCommand && commText !== undefined) {
+                // Track whether the opening quote was closed on this line.
+                // If not, continuation lines (next server-wrapped segment) must be appended.
+                const trimmedComm = commText.trimEnd();
+                openCommRef.current = !(trimmedComm.endsWith("'") || trimmedComm.endsWith('"') ||
+                    trimmedComm.endsWith("'!") || trimmedComm.endsWith('"!') ||
+                    trimmedComm.endsWith("'.") || trimmedComm.endsWith('".'));
+            }
+
             if (!replyCommand && lastCommMsgIdRef.current && (Date.now() - lastCommTimeRef.current < 500)) {
-                const isLikelyContinuation = textOnly.length > 0 && (
-                    /^[a-z0-9'"]/.test(textOnly) || 
-                    textOnly.endsWith("'") || 
+                // Treat as continuation when the previous comm line had an unclosed quote,
+                // OR the line looks like it continues a comm (starts lowercase / ends with quote).
+                const isLikelyContinuation = openCommRef.current || (textOnly.length > 0 && (
+                    /^[a-z0-9'"]/.test(textOnly) ||
+                    textOnly.endsWith("'") ||
                     textOnly.endsWith('"') ||
                     textOnly.endsWith("'!") ||
                     textOnly.endsWith('"!') ||
                     textOnly.endsWith("'.") ||
                     textOnly.endsWith('".')
-                );
+                ));
 
                 if (isLikelyContinuation) {
                     msgType = 'comm-continue';
                     commText = textOnly;
+                    // If this line closes the quote, mark comm as closed
+                    const t = textOnly.trimEnd();
+                    if (t.endsWith("'") || t.endsWith('"') || t.endsWith("'!") || t.endsWith('"!') ||
+                        t.endsWith("'.") || t.endsWith('".')) {
+                        openCommRef.current = false;
+                    }
                 }
             }
         }

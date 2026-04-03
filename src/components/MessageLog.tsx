@@ -244,11 +244,19 @@ const MessageLog: React.FC<MessageLogProps> = ({
         if (onMouseUp) onMouseUp(e as any);
     }, [onPointerUp, onMouseUp]);
 
+    const isUserScrollingRef = React.useRef(false);
+    const userScrollTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
     const handleScroll = useCallback(() => {
         const container = scrollContainerRef.current;
         if (!container) return;
 
         if (viewport.isAutoScrollingRef.current) return;
+
+        // Track whether the user is actively scrolling to suppress VirtualizerResize corrections
+        isUserScrollingRef.current = true;
+        if (userScrollTimerRef.current) clearTimeout(userScrollTimerRef.current);
+        userScrollTimerRef.current = setTimeout(() => { isUserScrollingRef.current = false; }, 150);
 
         const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 40;
 
@@ -282,7 +290,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             if (msg.isCombat) h += 10;
             return h;
         }, [viewport.columns, viewport.logFontSize]),
-        overscan: 5,
+        overscan: 12,
     });
 
     const lastScrollCallRef = React.useRef(0);
@@ -338,7 +346,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     // useLayoutEffect (not useEffect) fires BEFORE paint so the correction is invisible.
     const totalSize = virtualizer.getTotalSize();
     React.useLayoutEffect(() => {
-        if (viewport.isLockedToBottomRef.current) {
+        if (viewport.isLockedToBottomRef.current && !isUserScrollingRef.current) {
             viewport.scrollToBottom(true, true, 'VirtualizerResize');
         }
     }, [totalSize, viewport]);

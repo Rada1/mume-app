@@ -36,7 +36,7 @@
     color: var(--text-primary);
     word-wrap: break-word;
     overflow-wrap: break-word;
-    -webkit-overflow-scrolling: touch;
+    /* -webkit-overflow-scrolling: touch; — removed: conflicts with programmatic scrollTop changes during momentum, causing jitter */
     overscroll-behavior-y: contain;
     /* scroll-padding-bottom: 20px; - Removed to fix manual scroll math conflicts */
     scrollbar-width: thin;
@@ -51,7 +51,7 @@
     touch-action: pan-y pinch-zoom; /* pan-y alone blocks pinch gestures; pinch-zoom re-enables them */
     cursor: default;
     min-height: 0;
-    transform-style: preserve-3d;
+    /* transform-style: preserve-3d; — removed: forces GPU compositing of every item during scroll, expensive on mobile */
 }
 
 .immersion-mode .message-log {
@@ -217,22 +217,28 @@
 /* Comms Bubble Styles */
 .comm-bubble-wrapper {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
-    /* Tighter gap */
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: 4px;
     margin: 2px 0 4px 0;
-    /* Reduced bottom margin */
-    width: fit-content;
-    max-width: calc(100% - 36px);
-    /* Reserve fixed space for reply button */
+    width: 100%;
+    max-width: 100%;
 }
 
-.comm-content-row,
+.comm-content-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+    /* Bubble fills available width so multi-line text wraps within the border */
+}
+
 .content-row {
     display: flex;
     align-items: flex-end;
     gap: 6px;
-    /* More breathing room for button */
     width: 100%;
 }
 
@@ -241,7 +247,10 @@
     align-items: baseline;
     gap: 4px;
     padding-left: 4px;
+    padding-top: 3px; /* match comm-bubble top padding so text baselines align */
     opacity: 0.9;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .comm-sender {
@@ -257,14 +266,13 @@
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    /* Uniform roundness without the tail */
     padding: 3px 10px;
     color: #fff;
-    max-width: 100%;
-    flex-shrink: 1;
-    align-self: flex-start;
+    flex: 1;
+    min-width: 0;
+    align-self: stretch;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(4px);
     position: relative;
     line-height: 1.1;
     word-break: break-word;
