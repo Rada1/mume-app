@@ -8,12 +8,18 @@ import { DEFAULT_URL } from '../../constants';
 export const useSettingsState = () => {
     const [connectionUrl, setConnectionUrl] = usePersistentState('mud-connection-url', (MASTER_SETTINGS as any).connectionUrl || DEFAULT_URL);
 
-    // Migration: if the user has the old 'ws-proxy' stuck in localStorage, force it to 'ws-play'
+    // Migration: if the user has an old URL stuck in localStorage, force it to the new DEFAULT_URL
     useEffect(() => {
-        if (connectionUrl === 'wss://mume.org/ws-proxy') {
+        const legacyUrls = [
+            'wss://mume.org/ws-proxy',
+            'wss://mume.org/ws-proxy/',
+            'ws://localhost:8081',
+            'wss://mume.org/ws-play'
+        ];
+        if (legacyUrls.includes(connectionUrl)) {
             setConnectionUrl(DEFAULT_URL);
         }
-    }, [connectionUrl, setConnectionUrl]);
+    }, [connectionUrl, setConnectionUrl, DEFAULT_URL]);
 
     const [isNoviceMode, setIsNoviceMode] = usePersistentState('mud-novice-mode', (MASTER_SETTINGS as any).isNoviceMode ?? false);
     const [isSoundEnabled, setIsSoundEnabled] = usePersistentState('mud-sound-enabled', (MASTER_SETTINGS as any).isSoundEnabled ?? true);
@@ -38,8 +44,8 @@ export const useSettingsState = () => {
     const [showOrganicTerrain, setShowOrganicTerrain] = usePersistentState('mud-show-organic-terrain', true);
     const [inlineCategories, setInlineCategories] = usePersistentState<InlineCategoryConfig[]>('mud-inline-categories', (MASTER_SETTINGS as any).inlineCategories || DEFAULT_INLINE_CATEGORIES);
     const [isHighlighterEnabled, setIsHighlighterEnabled] = usePersistentState('mud-highlighter-enabled', true);
-    const [isCrtEnabled, setIsCrtEnabled] = usePersistentState('mud-crt-enabled', true);
-    const [isBloomEnabled, setIsBloomEnabled] = usePersistentState('mud-bloom-enabled', true);
+    const [isCrtEnabled, setIsCrtEnabled] = usePersistentState('mud-crt-enabled', (MASTER_SETTINGS as any).isCrtEnabled ?? false);
+    const [isBloomEnabled, setIsBloomEnabled] = usePersistentState('mud-bloom-enabled', (MASTER_SETTINGS as any).isBloomEnabled ?? false);
     const [isSpectateMode, setIsSpectateMode] = usePersistentState('mud-spectate-mode', false);
     const [favorites, setFavorites] = usePersistentState<string[]>('mud-favorites', []);
     const [zoneMusic, setZoneMusic] = usePersistentState<ZoneMusicMapping[]>('mud-zone-music', [
