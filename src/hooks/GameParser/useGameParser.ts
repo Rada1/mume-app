@@ -150,7 +150,8 @@ export function useGameParser(deps: UseGameParserDeps) {
 
     const processLine = useCallback((line: string) => {
         let cleanLine = line.replace(/\r$/, '').normalize('NFC');
-        if (!cleanLine) return;
+        // We no longer return early on empty lines to allow "compact off" (blank lines) to be visible.
+        // This is crucial for properly rendering the game's spacing when compact mode is disabled.
 
         // --- Spectate Mode (Snoop Filtering) ---
         if (isSpectateMode) {

@@ -169,21 +169,23 @@ export function useMessageLog(
         }
 
         if (isMobileBrevityMode && type === 'game' && !isActuallyRoomName && !isCombat && !isComm && !skipBrevity) {
-            if (textOnly.length === 0) return;
-            const hereMatch = textOnly.match(HERE_REGEX);
-            const npcMatch = textOnly.match(NPC_LINE_REGEX);
+            if (textOnly.length > 0) {
+                const hereMatch = textOnly.match(HERE_REGEX);
+                const npcMatch = textOnly.match(NPC_LINE_REGEX);
 
-            if (hereMatch || npcMatch) {
-                const subject = hereMatch ? hereMatch[1] : (npcMatch ? npcMatch[1] : "");
-                const action = hereMatch ? hereMatch[2] : (npcMatch ? `${npcMatch[2]} ${npcMatch[3]}` : "");
-                roomLineBufferRef.current.push({ subject, action: action.trim(), original: textOnly });
-            } else {
-                roomLineBufferRef.current.push({ subject: "", action: "text-chunk", original: textOnly });
+                if (hereMatch || npcMatch) {
+                    const subject = hereMatch ? hereMatch[1] : (npcMatch ? npcMatch[1] : "");
+                    const action = hereMatch ? hereMatch[2] : (npcMatch ? `${npcMatch[2]} ${npcMatch[3]}` : "");
+                    roomLineBufferRef.current.push({ subject, action: action.trim(), original: textOnly });
+                } else {
+                    roomLineBufferRef.current.push({ subject: "", action: "text-chunk", original: textOnly });
+                }
+
+                if (roomBufferTimeoutRef.current) clearTimeout(roomBufferTimeoutRef.current);
+                roomBufferTimeoutRef.current = setTimeout(flushRoomBuffer, 300);
+                return;
             }
-
-            if (roomBufferTimeoutRef.current) clearTimeout(roomBufferTimeoutRef.current);
-            roomBufferTimeoutRef.current = setTimeout(flushRoomBuffer, 300);
-            return;
+            // Fall through to real message for blank lines (textOnly.length === 0)
         } else {
             flushRoomBuffer();
         }
