@@ -151,7 +151,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         setGameState,
         sendCommand: (cmd: string) => executeCommandRef.current?.(cmd),
         executeCommandRef,
-        isMobile: deps.isMobile
+        isMobile: deps.isMobile,
+        addDiagnosticLog
     });
 
     // --- Account / Prompt Watcher ---
