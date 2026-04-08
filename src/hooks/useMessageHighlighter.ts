@@ -24,7 +24,8 @@ export const useMessageHighlighter = (
     highlightVersion: number = 0,
     discoveredItems: string[] = [],
     keywordOverrides: Record<string, string> = {},
-    selectedObjectIds: Set<string> = new Set()
+    selectedObjectIds: Set<string> = new Set(),
+    inCombat: boolean = false
 ) => {
     const cacheRef = useRef<Map<string, { html: string, htmlRaw: string, deps: string }>>(new Map());
     const regexCacheRef = useRef<Map<string, RegExp>>(new Map());
@@ -97,13 +98,13 @@ export const useMessageHighlighter = (
         const ic = inlineCategories.map(c => `${c.id}:${c.keywords.join(',')}`).join('|');
         const ko = Object.entries(keywordOverrides).map(([k, v]) => `${k}:${v}`).join('|');
         const sel = Array.from(selectedObjectIds).join(',');
-        return `${target || ''}:${rp}:${rn}:${ri}:${di}:${ic}:${ko}:${isHighlighterEnabled}:${highlightVersion}:${sel}`;
-    }, [target, roomPlayers, roomNpcs, roomItems, discoveredItems, inlineCategories, isHighlighterEnabled, highlightVersion, selectedObjectIds, keywordOverrides]);
+        return `${target || ''}:${rp}:${rn}:${ri}:${di}:${ic}:${ko}:${isHighlighterEnabled}:${highlightVersion}:${sel}:${inCombat}`;
+    }, [target, roomPlayers, roomNpcs, roomItems, discoveredItems, inlineCategories, isHighlighterEnabled, highlightVersion, selectedObjectIds, keywordOverrides, inCombat]);
 
     /**
      * Main entry point for processing a message's HTML and applying highlights.
      */
-    const processMessageHtml = useCallback((originalHtml: string, mid: string, isRoomName: boolean, type?: MessageType) => {
+    const processMessageHtml = useCallback((originalHtml: string, mid: string, isRoomName: boolean, type?: MessageType, isCombatMessage: boolean = false, combatSide?: 'player' | 'opponent' | 'groupmate') => {
         if (!isHighlighterEnabled) {
             return originalHtml;
         }
@@ -216,6 +217,7 @@ export const useMessageHighlighter = (
 
         // --- 3.5. Combat Damage Highlighting (Cyan/Red) ---
         // This targets the "[literal-dmg] [combat-verb]" part of the message.
+        // Rule: Only apply if inCombat is active and it's a combat-related line.
         const combatDmgIndicators = 'barely|lightly|strongly|hard|very\\s+hard|extremely\\s+hard';
         const combatVerbs = 'hits?|slashes?|pounds?|cleaves?|pierces?|stabs?|shoots?|smites?|whips?|strikes?|smashes?';
         
@@ -224,8 +226,8 @@ export const useMessageHighlighter = (
         const pAttacking = textOnly.startsWith('You ') && combatVerbRegex.test(textOnly);
         const pTargeted = textOnly.includes(' your ') && combatVerbRegex.test(textOnly);
 
-        if (pAttacking || pTargeted) {
-            const cssClass = pAttacking ? 'combat-dmg-out' : 'combat-dmg-in';
+        if (inCombat && (pAttacking || pTargeted || isCombatMessage)) {
+            const cssClass = (pAttacking || combatSide === 'player' || combatSide === 'groupmate') ? 'combat-dmg-out' : 'combat-dmg-in';
 
             // 1. Absolute Damage + Combat Verb (including standalone 'hit', etc.)
             const combatDmgPattern = `((?:${combatDmgIndicators})\\s+)?(${combatVerbs})`;
@@ -262,7 +264,7 @@ export const useMessageHighlighter = (
             const candidates = buildHighlighterCandidates(
                 mid || 'unknown', target, buttonsRef, roomPlayers, roomNpcs, characterName, 
                 roomItems, discoveredItems, inlineCategories, type, textOnly, keywordOverrides,
-                selectedObjectIds
+                selectedObjectIds, isCombatMessage, inCombat
             );
 
             candidates
@@ -312,7 +314,7 @@ export const useMessageHighlighter = (
         }
 
         return finalHtml;
-    }, [target, buttonsRef, roomPlayers, roomNpcs, characterName, roomItems, inlineCategories, generateDepsHash, highlightVersion, discoveredItems, isHighlighterEnabled, keywordOverrides, selectedObjectIds]);
+    }, [target, buttonsRef, roomPlayers, roomNpcs, characterName, roomItems, inlineCategories, generateDepsHash, highlightVersion, discoveredItems, isHighlighterEnabled, keywordOverrides, selectedObjectIds, inCombat]);
 
     return { processMessageHtml };
 };

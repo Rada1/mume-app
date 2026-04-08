@@ -52,8 +52,6 @@ export function useRoomParser(deps: RoomParserDeps) {
 
         if (isRoomName && captureStage.current === 'none' && !isWaitingForStats.current && !isWaitingForEq.current && !isWaitingForInv.current) {
             captureStage.current = 'none';
-            isDrawerCapture.current = 0;
-            isSilentCapture.current = 0;
 
             const isSameRoom = currentRoomRefValue && (textOnly === currentRoomRefValue || lower === currentRoomRefValue.toLowerCase());
             if (!isSameRoom) {

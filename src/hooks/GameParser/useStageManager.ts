@@ -61,7 +61,7 @@ export function useStageManager(deps: StageManagerDeps) {
         // We handle this before the early 'none' return so background commands (which have no stage)
         // are correctly cleaned up when a prompt arrives.
         if (currentStage === 'none' && isSilentCapture.current > 0) {
-            isSilentCapture.current = 0; // Clear all background silence on a prompt
+            isSilentCapture.current--; // Decrement background silence on a prompt
             return false;
         }
 

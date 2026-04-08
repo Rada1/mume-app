@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import Header from '../Header';
 import MessageLog from '../MessageLog';
 import InputArea from '../InputArea';
-import { useGame, useUI, useVitals } from '../../context/GameContext';
+import { useGame, useUI, useVitals, useLog } from '../../context/GameContext';
 import CombatStatsPanel from '../CombatStatsPanel';
 import { LineCluster } from './HUD/LineCluster';
 import PromptBox from '../PromptBox';
@@ -62,8 +62,10 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         showControls,
         playerPosition,
         isNewbieMode,
-        isRiding
+        isRiding,
+        characterName
     } = useGame();
+    const { processMessageHtml } = useLog();
 
     const prevInCombatRef = React.useRef(false);
     React.useEffect(() => {
@@ -175,12 +177,14 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                 <PromptBox
                     stats={stats}
                     characterInfo={characterInfo}
+                    characterName={characterName}
                     inCombat={inCombat}
                     playerPosition={playerPosition}
                     opponentName={opponentName}
                     opponentHealthStatus={opponentHealthStatus}
                     playerHealthStatus={playerHealthStatus}
                     isRiding={isRiding}
+                    processMessageHtml={processMessageHtml}
                 />
             )}
 

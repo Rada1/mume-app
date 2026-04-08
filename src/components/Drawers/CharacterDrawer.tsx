@@ -105,36 +105,105 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                 }}
                 style={{ touchAction: 'pan-y' }}
             >
-                <div className="drawer-header" style={{ pointerEvents: 'auto' }}>
-                    <div className="drawer-tabs">
-                        <button 
-                            className={`drawer-tab ${activeTab === 'info' ? 'active' : ''}`}
-                            onClick={(e) => { e.stopPropagation(); setActiveTab('info'); }}
-                        >
-                            <User size={14} />
-                            <span>Info</span>
-                        </button>
-                        <button 
-                            className={`drawer-tab ${activeTab === 'practice' ? 'active' : ''}`}
-                            onClick={(e) => { e.stopPropagation(); setActiveTab('practice'); }}
-                        >
-                            <BookOpen size={14} />
-                            <span>Skills/Spells</span>
-                        </button>
-                        <button 
-                            className={`drawer-tab ${activeTab === 'quests' ? 'active' : ''}`}
-                            onClick={(e) => { e.stopPropagation(); setActiveTab('quests'); }}
-                        >
-                            <ScrollText size={14} />
-                            <span>Quests</span>
-                        </button>
-                    </div>
-                    <button className="close-button" onClick={(e) => { e.stopPropagation(); onClose(); }}>
-                        <X size={18} />
+                <div className="drawer-header" style={{ pointerEvents: 'auto', display: 'flex', justifyContent: 'flex-end', padding: '6px 10px', background: 'transparent' }}>
+                    <button 
+                        style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} 
+                        onClick={(e) => { e.stopPropagation(); onClose(); }}
+                    >
+                        <X size={16} />
                     </button>
                 </div>
 
-                <div className="drawer-body" style={{ pointerEvents: 'auto' }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+                {/* Vertical Side Tabs */}
+                <div className="side-tabs-container" style={{
+                    position: 'absolute',
+                    right: '4px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '6px',
+                    zIndex: 100,
+                    pointerEvents: 'auto'
+                }}>
+                    <div 
+                        className={`drawer-tab ${activeTab === 'info' ? 'active' : ''}`}
+                        onClick={(e) => { e.stopPropagation(); setActiveTab('info'); }}
+                        style={{
+                            width: '18px',
+                            height: '50px',
+                            borderRadius: '9px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            background: activeTab === 'info' ? 'var(--accent)' : 'rgba(255,255,255,0.05)',
+                            color: activeTab === 'info' ? '#000' : 'rgba(255,255,255,0.3)',
+                            border: activeTab === 'info' ? 'none' : '1px solid rgba(255,255,255,0.05)',
+                            transition: 'all 0.2s ease',
+                            writingMode: 'vertical-rl',
+                            textOrientation: 'mixed',
+                            fontSize: '7px',
+                            fontWeight: '900',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.2px'
+                        }}
+                    >
+                        Info
+                    </div>
+                    <div 
+                        className={`drawer-tab ${activeTab === 'practice' ? 'active' : ''}`}
+                        onClick={(e) => { e.stopPropagation(); setActiveTab('practice'); }}
+                        style={{
+                            width: '18px',
+                            height: '65px',
+                            borderRadius: '9px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            background: activeTab === 'practice' ? 'var(--accent)' : 'rgba(255,255,255,0.05)',
+                            color: activeTab === 'practice' ? '#000' : 'rgba(255,255,255,0.3)',
+                            border: activeTab === 'practice' ? 'none' : '1px solid rgba(255,255,255,0.05)',
+                            transition: 'all 0.2s ease',
+                            writingMode: 'vertical-rl',
+                            textOrientation: 'mixed',
+                            fontSize: '7px',
+                            fontWeight: '900',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.2px'
+                        }}
+                    >
+                        Skills
+                    </div>
+                    <div 
+                        className={`drawer-tab ${activeTab === 'quests' ? 'active' : ''}`}
+                        onClick={(e) => { e.stopPropagation(); setActiveTab('quests'); }}
+                        style={{
+                            width: '18px',
+                            height: '60px',
+                            borderRadius: '9px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            background: activeTab === 'quests' ? 'var(--accent)' : 'rgba(255,255,255,0.05)',
+                            color: activeTab === 'quests' ? '#000' : 'rgba(255,255,255,0.3)',
+                            border: activeTab === 'quests' ? 'none' : '1px solid rgba(255,255,255,0.05)',
+                            transition: 'all 0.2s ease',
+                            writingMode: 'vertical-rl',
+                            textOrientation: 'mixed',
+                            fontSize: '7px',
+                            fontWeight: '900',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.2px'
+                        }}
+                    >
+                        Quests
+                    </div>
+                </div>
+
+                <div className="drawer-body" style={{ pointerEvents: 'auto', marginRight: '22px' }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
                     {activeTab === 'info' ? (
                         <div className="info-tab">
                             <div className="char-profile">

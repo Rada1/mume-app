@@ -39,14 +39,18 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
                 if (captureStage.current === 'practice') return;
                 if (captureStage.current !== 'none') finalizeCapture();
                 captureStage.current = 'practice';
-                if (practice.isUiRequested || practice.silentSyncPendingRef.current) isSilentCapture.current = 1;
+                if (practice.isUiRequested || practice.silentSyncPendingRef.current) {
+                    if (isSilentCapture.current === 0) isSilentCapture.current = 1;
+                }
             }
         }
         else if (lower.includes('practice sessions left')) {
             if (captureStage.current === 'practice') return;
             if (captureStage.current !== 'none') finalizeCapture();
             captureStage.current = 'practice';
-            if (isCharacterOpen || practice.silentSyncPendingRef.current) isSilentCapture.current = 1;
+            if (isCharacterOpen || practice.silentSyncPendingRef.current) {
+                if (isSilentCapture.current === 0) isSilentCapture.current = 1;
+            }
         }
 
         // 2. Quests
@@ -58,7 +62,9 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
             if (captureStage.current === 'quest') return;
             if (captureStage.current !== 'none') finalizeCapture();
             captureStage.current = 'quest';
-            if (isCharacterOpen) isSilentCapture.current = 1;
+            if (isCharacterOpen) {
+                if (isSilentCapture.current === 0) isSilentCapture.current = 1;
+            }
         }
 
         // 3. Who / Where
@@ -66,13 +72,17 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
             if (captureStage.current === 'who') return;
             if (captureStage.current !== 'none') finalizeCapture();
             captureStage.current = 'who'; setWhoList([]);
-            if (isPlayersOpen) isSilentCapture.current = 1;
+            if (isPlayersOpen) {
+                if (isSilentCapture.current === 0) isSilentCapture.current = 1;
+            }
         }
         else if ((textOnly.startsWith('Player') && textOnly.includes('Room')) || (textOnly.startsWith('Who') && textOnly.includes('Location'))) {
             if (captureStage.current === 'where') return;
             if (captureStage.current !== 'none') finalizeCapture();
             captureStage.current = 'where'; setWhereList([]);
-            if (isPlayersOpen) isSilentCapture.current = 1;
+            if (isPlayersOpen) {
+                if (isSilentCapture.current === 0) isSilentCapture.current = 1;
+            }
         }
 
         // 4. Shop
@@ -91,12 +101,14 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         }
 
         // 6. Stats / Score
-        else if (isWaitingForStats.current && /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) {
+        else if (isWaitingForStats.current && /\b(ob|db|pb|armor|arm|mood|str|exp|level)\b/i.test(lower)) {
             if (captureStage.current === 'stat') return;
             if (captureStage.current !== 'none') finalizeCapture();
             isWaitingForStats.current = false; captureStage.current = 'stat';
             setStatsLines([]);
-            if (isCharacterOpen) isDrawerCapture.current = 1;
+            if (isCharacterOpen) {
+                if (isDrawerCapture.current === 0) isDrawerCapture.current = 1;
+            }
         }
 
         // 7. Equipment
@@ -104,7 +116,9 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
             if (captureStage.current === 'eq') return;
             if (captureStage.current !== 'none') finalizeCapture();
             isWaitingForEq.current = false; captureStage.current = 'eq';
-            if (isEquipmentOpen || isCharacterOpen) isDrawerCapture.current = 1;
+            if (isEquipmentOpen || isCharacterOpen) {
+                if (isDrawerCapture.current === 0) isDrawerCapture.current = 1;
+            }
         }
 
         // 8. Inventory
@@ -112,7 +126,9 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
             if (captureStage.current === 'inv') return;
             if (captureStage.current !== 'none') finalizeCapture();
             isWaitingForInv.current = false; captureStage.current = 'inv';
-            if (isInventoryOpen) isDrawerCapture.current = 1;
+            if (isInventoryOpen) {
+                if (isDrawerCapture.current === 0) isDrawerCapture.current = 1;
+            }
         }
 
         // 9. Info / Whois / Description
@@ -123,14 +139,18 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
             if (captureStage.current !== 'none') finalizeCapture();
             captureStage.current = 'info';
             setCharacterInfo((prev: any) => ({ ...prev, description: '' }));
-            if (isCharacterOpen) isSilentCapture.current = 1;
+            if (isCharacterOpen) {
+                if (isSilentCapture.current === 0) isSilentCapture.current = 1;
+            }
         }
         else if (lower.includes('whois information for') || lower.startsWith('whois:') || lower.startsWith('whois status:')) {
             if (captureStage.current === 'whois') return;
             if (captureStage.current !== 'none') finalizeCapture();
             captureStage.current = 'whois';
             setCharacterInfo((prev: any) => ({ ...prev, whois: '' }));
-            if (isCharacterOpen) isSilentCapture.current = 1;
+            if (isCharacterOpen) {
+                if (isSilentCapture.current === 0) isSilentCapture.current = 1;
+            }
         }
         // NOTE: 'description' captureStage removed — the Room Card handles descriptions
         // via GMCP exclusively. Keeping this stage caused room description lines to silence

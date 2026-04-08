@@ -170,41 +170,112 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                     }
                 }}
                 style={{ touchAction: 'pan-y' }}
-            >                <div className="drawer-header" style={{ pointerEvents: 'auto' }}>
-                    <div className="drawer-tabs">
-                        <button
-                            className={`drawer-tab ${activeTab === 'group' ? 'active' : ''}`}
-                            onClick={(e) => { e.stopPropagation(); setActiveTab('group'); }}
-                        >
-                            <Users size={14} />
-                            <span>Group</span>
-                        </button>
-                        <button
-                            className={`drawer-tab ${activeTab === 'online' ? 'active' : ''}`}
-                            onClick={(e) => { e.stopPropagation(); setActiveTab('online'); executeCommand('who', true, true, true, true); }}
-                        >
-                            <span>Online</span>
-                        </button>
-                        <button
-                            className={`drawer-tab ${activeTab === 'nearby' ? 'active' : ''}`}
-                            onClick={(e) => { e.stopPropagation(); setActiveTab('nearby'); executeCommand('where', true, true, true, true); }}
-                        >
-                            <span>Nearby</span>
-                        </button>
-                    </div>
+            >                <div className="drawer-header" style={{ pointerEvents: 'auto', display: 'flex', justifyContent: 'flex-end', padding: '6px 10px', background: 'transparent', gap: '8px' }}>
                     <button
-                        style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', padding: '4px', marginRight: '4px' }}
+                        style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
                         onClick={handleRefresh}
                         title="Refresh"
                     >
                         <RefreshCw size={14} />
                     </button>
-                    <button className="close-button" onClick={(e) => { e.stopPropagation(); onClose(); }}>
-                        <X size={18} />
+                    <button 
+                        style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} 
+                        onClick={(e) => { e.stopPropagation(); onClose(); }}
+                    >
+                        <X size={16} />
                     </button>
                 </div>
 
-                <div className="drawer-body" style={{ pointerEvents: 'auto' }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+                {/* Vertical Side Tabs */}
+                <div className="side-tabs-container" style={{
+                    position: 'absolute',
+                    right: '4px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '6px',
+                    zIndex: 100,
+                    pointerEvents: 'auto'
+                }}>
+                    <div 
+                        className={`drawer-tab ${activeTab === 'group' ? 'active' : ''}`}
+                        onClick={(e) => { e.stopPropagation(); setActiveTab('group'); triggerHaptic(15); }}
+                        style={{
+                            width: '18px',
+                            height: '50px',
+                            borderRadius: '9px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            background: activeTab === 'group' ? 'var(--accent)' : 'rgba(255,255,255,0.05)',
+                            color: activeTab === 'group' ? '#000' : 'rgba(255,255,255,0.3)',
+                            border: activeTab === 'group' ? 'none' : '1px solid rgba(255,255,255,0.05)',
+                            transition: 'all 0.2s ease',
+                            writingMode: 'vertical-rl',
+                            textOrientation: 'mixed',
+                            fontSize: '7px',
+                            fontWeight: '900',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.2px'
+                        }}
+                    >
+                        Group
+                    </div>
+                    <div 
+                        className={`drawer-tab ${activeTab === 'online' ? 'active' : ''}`}
+                        onClick={(e) => { e.stopPropagation(); setActiveTab('online'); executeCommand('who', true, true, true, true); triggerHaptic(15); }}
+                        style={{
+                            width: '18px',
+                            height: '55px',
+                            borderRadius: '9px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            background: activeTab === 'online' ? 'var(--accent)' : 'rgba(255,255,255,0.05)',
+                            color: activeTab === 'online' ? '#000' : 'rgba(255,255,255,0.3)',
+                            border: activeTab === 'online' ? 'none' : '1px solid rgba(255,255,255,0.05)',
+                            transition: 'all 0.2s ease',
+                            writingMode: 'vertical-rl',
+                            textOrientation: 'mixed',
+                            fontSize: '7px',
+                            fontWeight: '900',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.2px'
+                        }}
+                    >
+                        Online
+                    </div>
+                    <div 
+                        className={`drawer-tab ${activeTab === 'nearby' ? 'active' : ''}`}
+                        onClick={(e) => { e.stopPropagation(); setActiveTab('nearby'); executeCommand('where', true, true, true, true); triggerHaptic(15); }}
+                        style={{
+                            width: '18px',
+                            height: '55px',
+                            borderRadius: '9px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            background: activeTab === 'nearby' ? 'var(--accent)' : 'rgba(255,255,255,0.05)',
+                            color: activeTab === 'nearby' ? '#000' : 'rgba(255,255,255,0.3)',
+                            border: activeTab === 'nearby' ? 'none' : '1px solid rgba(255,255,255,0.05)',
+                            transition: 'all 0.2s ease',
+                            writingMode: 'vertical-rl',
+                            textOrientation: 'mixed',
+                            fontSize: '7px',
+                            fontWeight: '900',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.2px'
+                        }}
+                    >
+                        Nearby
+                    </div>
+                </div>
+
+                <div className="drawer-body" style={{ pointerEvents: 'auto', marginRight: '22px' }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
                     {activeTab === 'group' ? (
                         <div style={{ padding: '8px 0' }}>
                             {groupMembers.length > 0 ? (

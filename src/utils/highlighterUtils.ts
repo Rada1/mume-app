@@ -58,7 +58,9 @@ export const buildHighlighterCandidates = (
     type?: MessageType,
     textOnly: string = '',
     keywordOverrides: Record<string, string> = {},
-    selectedObjectIds: Set<string> = new Set()
+    selectedObjectIds: Set<string> = new Set(),
+    isCombatLine: boolean = false,
+    inCombat: boolean = false
 ): Candidate[] => {
     const candidates: Candidate[] = [];
     // Normalized sets to handle accent mismatches (e.g. Dúnadan vs Dunadan)
@@ -326,16 +328,18 @@ export const buildHighlighterCandidates = (
         });
     });
 
-    // 9. Combat Actions
-    combatActions.forEach(word => {
-        candidates.push({
-            pattern: `\\b${word}(?:s|d|ed|ing)?\\b`,
-            isRegex: true,
-            priority: 10,
-            replacer: (m) => `<span class="keyword-highlight combat-action">${m}</span>`,
-            length: word.length
+    // 9. Combat Actions (Cyan Highlights - only in combat mode and for combat lines)
+    if (inCombat && isCombatLine) {
+        combatActions.forEach(word => {
+            candidates.push({
+                pattern: `\\b${word}(?:s|d|ed|ing)?\\b`,
+                isRegex: true,
+                priority: 10,
+                replacer: (m) => `<span class="keyword-highlight combat-action">${m}</span>`,
+                length: word.length
+            });
         });
-    });
+    }
 
     // 10. Room Exits - Only highlight if this is an exits line
     if (type === 'room-exits') {

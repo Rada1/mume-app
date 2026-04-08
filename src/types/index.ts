@@ -389,6 +389,8 @@ export interface SettingsModalProps {
     setIsNoviceMode: (val: boolean) => void;
     isTimestampEnabled: boolean;
     setIsTimestampEnabled: (val: boolean) => void;
+    fontFamily: string;
+    setFontFamily: (val: string) => void;
 }
 
 export interface ButtonSetSettings {

@@ -118,7 +118,7 @@ const MessageItem = React.memo(({
     isNewbieMode,
 }: {
     msg: Message,
-    processMessageHtml: (html: string, mid?: string, isRoomName?: boolean, type?: MessageType) => string,
+    processMessageHtml: (html: string, mid?: string, isRoomName?: boolean, type?: MessageType, isCombat?: boolean, side?: string) => string,
     executeCommand: (cmd: string, silent?: boolean) => void,
     inCombat: boolean,
     scrollToBottom?: (force?: boolean, immediate?: boolean, source?: string) => void;
@@ -131,7 +131,7 @@ const MessageItem = React.memo(({
     isTimestampEnabled?: boolean;
     isNewbieMode?: boolean;
 }) => {
-    const content = useMemo(() => processMessageHtml(msg.html, msg.id, msg.isRoomName, msg.type), [msg.html, msg.id, msg.isRoomName, msg.type, processMessageHtml]);
+    const content = useMemo(() => processMessageHtml(msg.html, msg.id, msg.isRoomName, msg.type, msg.isCombat, msg.combatSide), [msg.html, msg.id, msg.isRoomName, msg.type, msg.isCombat, msg.combatSide, processMessageHtml]);
     const isRecent = Date.now() - msg.timestamp < 2000;
     const isOldBatchDim = latestBatchId !== undefined && (msg.batchId === undefined || msg.batchId < latestBatchId);
 

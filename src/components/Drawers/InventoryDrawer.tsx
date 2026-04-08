@@ -296,9 +296,9 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
 
             return {
                 id: `empty-${slot}-${idx}`,
-                prefix: `${slot}  `,
-                text: '',
-                html: '',
+                prefix: slot.padEnd(20, ' '),
+                text: 'empty',
+                html: '<span style="opacity: 0.25; font-style: italic;">empty</span>',
                 isItem: false,
                 isHeader: false,
                 isContainer: false,
@@ -320,61 +320,18 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             onClick={onClickInternal}
         >
             <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', padding: activeTab === 'equipment' ? '12px 8px' : '12px 15px' }}>
-                <div className="drawer-section" data-drawer-section={activeTab === 'inventory' ? "inventorylist" : "equipmentlist"}>
+                <div className="drawer-section" style={{ marginRight: '22px' }} data-drawer-section={activeTab === 'inventory' ? "inventorylist" : "equipmentlist"}>
                     <div className="drawer-header" style={{
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '6px 12px 6px 10px',
-                        background: 'rgba(10, 13, 21, 0.65)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        borderRadius: '16px',
-                        margin: '0 0 15px 0',
-                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                        justifyContent: 'flex-end',
+                        padding: '6px 10px',
+                        background: 'transparent',
+                        marginBottom: '4px',
                         pointerEvents: 'auto',
                         position: 'relative',
-                        zIndex: 10,
-                        gap: '8px'
+                        zIndex: 10
                     }}>
-                        <div className="drawer-tabs" style={{ display: 'flex', justifyContent: 'center', gap: '4px', flex: 1 }}>
-                            <div 
-                                className={`drawer-tab ${activeTab === 'equipment' ? 'active' : ''}`}
-                                onClick={() => { triggerHaptic(15); setActiveTab('equipment'); }}
-                                style={{
-                                    padding: '6px 12px',
-                                    borderRadius: '10px',
-                                    fontSize: 'calc(var(--dynamic-log-size, 16px) * 0.7)',
-                                    fontWeight: '900',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '1px',
-                                    cursor: 'pointer',
-                                    background: activeTab === 'equipment' ? 'var(--accent)' : 'rgba(255,255,255,0.05)',
-                                    color: activeTab === 'equipment' ? '#000' : 'rgba(255,255,255,0.5)',
-                                    transition: 'all 0.2s ease'
-                                }}
-                            >
-                                Worn Items
-                            </div>
-                            <div 
-                                className={`drawer-tab ${activeTab === 'inventory' ? 'active' : ''}`}
-                                onClick={() => { triggerHaptic(15); setActiveTab('inventory'); }}
-                                style={{
-                                    padding: '6px 12px',
-                                    borderRadius: '10px',
-                                    fontSize: 'calc(var(--dynamic-log-size, 16px) * 0.7)',
-                                    fontWeight: '900',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '1px',
-                                    cursor: 'pointer',
-                                    background: activeTab === 'inventory' ? 'var(--accent)' : 'rgba(255,255,255,0.05)',
-                                    color: activeTab === 'inventory' ? '#000' : 'rgba(255,255,255,0.5)',
-                                    transition: 'all 0.2s ease'
-                                }}
-                            >
-                                Inventory Items
-                            </div>
-                        </div>
-                        
                         <button 
                             onPointerDown={(e) => e.stopPropagation()}
                             onClick={() => { triggerHaptic(20); onClose(); }} 
@@ -395,6 +352,70 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                         >✕</button>
                     </div>
 
+                    {/* Vertical Side Tabs */}
+                    <div className="side-tabs-container" style={{
+                        position: 'absolute',
+                        right: '4px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '6px',
+                        zIndex: 100,
+                        pointerEvents: 'auto'
+                    }}>
+                        <div 
+                            className={`drawer-tab ${activeTab === 'equipment' ? 'active' : ''}`}
+                            onClick={() => { triggerHaptic(15); setActiveTab('equipment'); }}
+                            style={{
+                                width: '18px',
+                                height: '50px',
+                                borderRadius: '9px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                background: activeTab === 'equipment' ? 'var(--accent)' : 'rgba(255,255,255,0.05)',
+                                color: activeTab === 'equipment' ? '#000' : 'rgba(255,255,255,0.3)',
+                                border: activeTab === 'equipment' ? 'none' : '1px solid rgba(255,255,255,0.05)',
+                                transition: 'all 0.2s ease',
+                                writingMode: 'vertical-rl',
+                                textOrientation: 'mixed',
+                                fontSize: '7px',
+                                fontWeight: '900',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.2px'
+                            }}
+                        >
+                            Worn
+                        </div>
+                        <div 
+                            className={`drawer-tab ${activeTab === 'inventory' ? 'active' : ''}`}
+                            onClick={() => { triggerHaptic(15); setActiveTab('inventory'); }}
+                            style={{
+                                width: '18px',
+                                height: '65px',
+                                borderRadius: '9px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                background: activeTab === 'inventory' ? 'var(--accent)' : 'rgba(255,255,255,0.05)',
+                                color: activeTab === 'inventory' ? '#000' : 'rgba(255,255,255,0.3)',
+                                border: activeTab === 'inventory' ? 'none' : '1px solid rgba(255,255,255,0.05)',
+                                transition: 'all 0.2s ease',
+                                writingMode: 'vertical-rl',
+                                textOrientation: 'mixed',
+                                fontSize: '7px',
+                                fontWeight: '900',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.2px'
+                            }}
+                        >
+                            Inventory
+                        </div>
+                    </div>
+
                     {currentLines?.length === 0 ? (
                         <div className="drawer-empty-state" style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: '40px 0', fontSize: 'var(--dynamic-log-size, 16px)', fontStyle: 'italic' }}>
                             {activeTab === 'inventory' ? 'Inventory is currently empty' : 'No equipment worn'}
@@ -407,6 +428,12 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                             lineHeight: '1.2',
                             whiteSpace: 'pre',
                             overflowX: 'hidden',
+                            background: 'rgba(10, 13, 21, 0.35)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: '16px',
+                            padding: '16px 12px',
+                            boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                            margin: '8px 0'
                         }}>
                             {currentLines?.map(line => (
                                 <DrawerLineItem 
@@ -426,6 +453,12 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                             display: 'flex',
                             flexDirection: 'column',
                             gap: '0',
+                            background: 'rgba(10, 13, 21, 0.35)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: '16px',
+                            padding: '16px 12px',
+                            boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                            margin: '8px 0'
                         }}>
                             {currentLines?.map(line => (
                                 <DrawerLineItem 

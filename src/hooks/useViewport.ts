@@ -4,7 +4,8 @@ export function useViewport(
     uiMode: import('../types').UiMode = 'auto',
     disableSmoothScroll: boolean = false,
     disable3dScroll: boolean = false,
-    isImmersionMode: boolean = true
+    isImmersionMode: boolean = true,
+    fontFamily: string = "'Space Mono', monospace"
 ) {
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
@@ -236,7 +237,7 @@ export function useViewport(
             // (canvas measureText can fall back to system monospace before web fonts load).
             const span = document.createElement('span');
             span.style.cssText = 'position:absolute;visibility:hidden;white-space:pre;' +
-                'font-family:"Space Mono",monospace;font-size:100px;pointer-events:none;';
+                `font-family:${fontFamily},monospace;font-size:100px;pointer-events:none;`;
             span.textContent = 'MMMMMMMMMMMMMMMMMMMM'; // 20 chars at ref size 100px
             document.body.appendChild(span);
             const spanWidth = span.getBoundingClientRect().width;
@@ -291,7 +292,7 @@ export function useViewport(
             clearTimeout(timer2);
             ro?.disconnect();
         };
-    }, [isMobile, isLandscape, logFontSize, windowWidth, isKeyboardOpen]);
+    }, [isMobile, isLandscape, logFontSize, windowWidth, isKeyboardOpen, fontFamily]);
 
     const updateHeight = useCallback(() => {
         const viewport = window.visualViewport;

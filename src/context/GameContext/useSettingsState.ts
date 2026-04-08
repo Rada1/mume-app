@@ -51,6 +51,7 @@ export const useSettingsState = () => {
     const [isSpectateMode, setIsSpectateMode] = usePersistentState('mud-spectate-mode', false);
     const [isTimestampEnabled, setIsTimestampEnabled] = usePersistentState('mud-timestamp-enabled', false);
     const [favorites, setFavorites] = usePersistentState<string[]>('mud-favorites', []);
+    const [fontFamily, setFontFamily] = usePersistentState<string>('mud-font-family', "'Roboto Mono', monospace");
     const [zoneMusic, setZoneMusic] = usePersistentState<ZoneMusicMapping[]>('mud-zone-music', [
         { zone: 'Bree', url: '/assets/Sounds/Zone Sounds/BreeSound.wav' },
         { zone: 'the Shire', url: '/assets/Music/shire.mp3' },
@@ -83,6 +84,7 @@ export const useSettingsState = () => {
         isSpectateMode, setIsSpectateMode,
         isTimestampEnabled, setIsTimestampEnabled,
         favorites, setFavorites,
+        fontFamily, setFontFamily,
         zoneMusic, setZoneMusic
     };
 };

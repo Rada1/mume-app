@@ -46,6 +46,8 @@ interface GeneralSettingsProps {
     setIsTimestampEnabled: (val: boolean) => void;
     isNewbieMode: boolean;
     setIsNewbieMode: (val: boolean) => void;
+    fontFamily: string;
+    setFontFamily: (val: string) => void;
 }
 
 const GeneralSettings: React.FC<GeneralSettingsProps> = ({
@@ -92,6 +94,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setIsTimestampEnabled,
     isNewbieMode,
     setIsNewbieMode,
+    fontFamily,
+    setFontFamily,
 }) => {
     let protocol = 'wss:';
     let host = '';
@@ -377,6 +381,37 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             >{m}</button>
                         ))}
                     </div>
+                </div>
+            </div>
+
+            <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                        <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Main Font Family</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Choose your preferred monospaced typeface.</div>
+                    </div>
+                    <select 
+                        className="setting-input" 
+                        value={fontFamily} 
+                        onChange={(e) => setFontFamily(e.target.value)}
+                        style={{ 
+                            width: 'auto', 
+                            minWidth: '150px',
+                            fontFamily: fontFamily,
+                            fontSize: '0.9rem'
+                        }}
+                    >
+                        <option value="'Menlo', monospace">Menlo</option>
+                        <option value="'Space Mono', monospace">Space Mono</option>
+                        <option value="'Fira Code', monospace">Fira Code</option>
+                        <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+                        <option value="'Roboto Mono', monospace">Roboto Mono</option>
+                        <option value="'Inconsolata', monospace">Inconsolata</option>
+                        <option value="'Source Code Pro', monospace">Source Code Pro</option>
+                        <option value="'Ubuntu Mono', monospace">Ubuntu Mono</option>
+                        <option value="'Courier Prime', monospace">Courier Prime</option>
+                        <option value="'IBM Plex Mono', monospace">IBM Plex Mono</option>
+                    </select>
                 </div>
             </div>
 

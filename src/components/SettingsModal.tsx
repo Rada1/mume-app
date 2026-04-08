@@ -54,6 +54,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setIsSpectateMode,
     isTimestampEnabled,
     setIsTimestampEnabled,
+    fontFamily,
+    setFontFamily,
     isNewbieMode,
     setIsNewbieMode,
     isNoviceMode,
@@ -141,6 +143,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setIsTimestampEnabled={setIsTimestampEnabled}
                                 isNewbieMode={isNewbieMode}
                                 setIsNewbieMode={setIsNewbieMode}
+                                fontFamily={fontFamily}
+                                setFontFamily={setFontFamily}
                             />
                             <DataManagement
                                 exportSettings={exportSettings}

@@ -29,7 +29,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     const { target, activePrompt, stats } = useVitals();
     const { ui, setUI, setPopoverState } = useUI();
     const { isMapFloating, setIsMapFloating } = useMapper();
-    const isExpanded = ui.mapExpanded;
+    const isExpanded = ui.mapExpanded || ui.peekingDrawer === 'map';
     const { isKeyboardOpen } = viewport;
 
     const [isOverDockZone, setIsOverDockZone] = useState(false);
@@ -106,7 +106,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 className={`mobile-bottom-gutter ${isShown ? 'map-expanded' : ''}`}
                 onClick={(e) => e.stopPropagation()} // Prevent log interaction
                 style={{
-                    padding: isShown ? '10px 15px 10px 15px' : '0',
+                    padding: isShown ? '10px 15px 0px 15px' : '0',
                     overflow: 'hidden',
                     display: 'flex',
                     flexDirection: 'column',
@@ -123,7 +123,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         pointerEvents: 'auto',
                         padding: '0',
                         margin: '0',
-                        height: '100%',
+                        minHeight: 0,
                         background: (isShown) ? 'rgba(15, 23, 42, 0.3)' : 'transparent',
                         border: (isShown) ? '1px solid rgba(255, 255, 255, 0.12)' : 'none',
                         borderRadius: (isShown) ? '16px 16px 0 0' : '20px 20px 0 0',

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Inconsolata:wght@200..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=IBM+Plex+Mono:ital,wght@0,100..700;1,100..700&family=Anonymous+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import url('https://fonts.cdnfonts.com/css/aniron');
 
 /* Core Styles */
@@ -106,7 +106,7 @@
     background: rgba(15, 17, 28, 0.55) !important;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    margin: 8px 8px 4px 8px;
+    margin: 8px 8px -0.5rem 8px;
     padding: 12px 10px;
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.12) !important;
@@ -145,11 +145,12 @@
 }
 
 .room-desc {
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-main);
     /* Calculated to fit 80 characters exactly in the remaining space: 
        (ContainerWidth - Padding(20px) - Gap(16px) - Map(140px) - MapPadding(12px) - Buffer(4px)) / (80 chars * 0.6 aspect) 
        = (100cqw - 192px) / 48 */
     font-size: clamp(9px, calc((100cqw - 192px) / 48), 15px);
+    font-style: italic;
     color: #e2e8f0;
     max-width: 80ch;
     line-height: 1.35;

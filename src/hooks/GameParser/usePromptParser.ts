@@ -98,6 +98,7 @@ export function usePromptParser(deps: PromptParserDeps) {
             let name = m[1].trim();
             const status = findStatus(m[2]);
             
+            name = name.replace(/^\[[A-Z\s]+\]\s*/, ''); // strip flags like [R], [CW]
             name = name.replace(/^(?:[A-Z]+\s+)+/, ''); // strip flags like CW, R
             name = name.replace(/\s*\(x\)$/, '').trim();
             
@@ -108,7 +109,7 @@ export function usePromptParser(deps: PromptParserDeps) {
             }
             
             // Strip common prompt symbols that might be captured as part of the name
-            name = name.replace(/^[\]\)\s\!\*\:\+\#\?\=\[>]+/, '').replace(/[\[\(\s\!\*\:\+\#\?\=\]>]+$/, '').trim();
+            name = name.replace(/^[\]\)\s\!\*\:\+\#\?\=\[><\.]+/, '').replace(/[\[\(\s\!\*\:\+\#\?\=\]><\.]+$/, '').trim();
             
             if (name.startsWith('*') && name.endsWith('*')) {
                 name = name.substring(1, name.length-1);

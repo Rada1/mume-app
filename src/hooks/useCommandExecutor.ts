@@ -175,8 +175,8 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         else if (!silent) addMessage('error', 'Not connected.');
 
         // --- 10. Post-Execution Refreshes ---
-        if (!silent && status === 'connected' && /^ch\w*\s+mood\b/i.test(moveCmd)) {
-            setTimeout(() => executeCommand('stat', true, true, false, false), 3000);
+        if (!silent && status === 'connected' && /^(ch\w*\s+)?mood\b/i.test(moveCmd)) {
+            setTimeout(() => executeCommand('stat', true, true, false, false), 1000);
         }
 
     }, [registry]);

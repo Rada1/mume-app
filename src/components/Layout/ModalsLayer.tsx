@@ -114,6 +114,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         gameState,
         accountState,
         viewport,
+        fontFamily,
+        setFontFamily,
     } = useGame() as any;
 
     const { setTarget } = useVitals();
@@ -229,6 +231,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setIsNewbieMode={setIsNewbieMode}
                     isNoviceMode={isNoviceMode}
                     setIsNoviceMode={setIsNoviceMode}
+                    fontFamily={fontFamily}
+                    setFontFamily={setFontFamily}
                 />
             )}
 

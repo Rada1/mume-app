@@ -87,7 +87,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         mood, spellSpeed, alertness, playerPosition,
         isImmersionMode,
         isCrtEnabled,
-        isBloomEnabled
+        isBloomEnabled,
+        fontFamily
     } = s;
 
     const { stats, rumble, target, activePrompt } = v;
@@ -345,7 +346,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const btn = useButtons(abilities, characterClass, s.characterName, v.target, s.inlineCategories);
     const joystick = useJoystick(triggerHaptic, s.roomExits);
     const editor = useButtonEditor(btn, containerRef);
-    const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.disable3dScroll, s.isImmersionMode);
+    const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.disable3dScroll, s.isImmersionMode, s.fontFamily);
 
     const practice = usePracticeHandler(s.setAbilities);
     const shop = useShopHandler();
@@ -375,7 +376,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
 
     const [input, setInput] = useState("");
-    const { processMessageHtml } = useMessageHighlighter(v.target, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems, s.inlineCategories, s.isHighlighterEnabled, highlightVersion, s.discoveredItems, keywordOverrides, s.selectedObjectIds);
+    const { processMessageHtml } = useMessageHighlighter(v.target, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems, s.inlineCategories, s.isHighlighterEnabled, highlightVersion, s.discoveredItems, keywordOverrides, s.selectedObjectIds, s.inCombat);
 
 
     const navIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -523,6 +524,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     });
 
+
+    React.useLayoutEffect(() => {
+        document.documentElement.style.setProperty('--font-main', fontFamily);
+    }, [fontFamily]);
 
     const controllerDeps = React.useMemo(() => ({
         telnet,

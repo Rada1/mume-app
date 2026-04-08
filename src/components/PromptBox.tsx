@@ -14,28 +14,33 @@ import { getCategoryForName, getGlowColorForCategory } from '../utils/categoriza
 interface PromptBoxProps {
     stats: GameStats;
     characterInfo: CharacterInfo;
+    characterName: string | null;
     inCombat: boolean;
     playerPosition: string;
     opponentName: string | null;
     opponentHealthStatus: CombatHealthStatus | null;
     playerHealthStatus: CombatHealthStatus | null;
     isRiding?: boolean;
+    processMessageHtml?: (html: string, mid: string, isRoomName: boolean, type?: string, isCombat?: boolean, side?: string) => string;
 }
 
 const HEALTH_MAP: Record<string, { percent: number; color: string }> = {
     'Healthy': { percent: 100, color: '#22c55e' },
     'Fine': { percent: 90, color: '#4ade80' },
     'Hurt': { percent: 70, color: '#facc15' },
-    'Wounded': { percent: 50, color: '#fb923c' },
-    'Bad': { percent: 30, color: '#f87171' },
-    'Awful': { percent: 15, color: '#ef4444' },
+    'Wounded': { percent: 45, color: '#fb923c' },
+    'Bad': { percent: 25, color: '#f87171' },
+    'Awful': { percent: 12, color: '#ef4444' },
     'Dying': { percent: 5, color: '#991b1b' },
     'Stunned': { percent: 25, color: '#a855f7' },
     'None': { percent: 0, color: '#4b5563' }
 };
 
+const getManaPercent = (current: number, max: number): number => max > 0 ? (current / max) * 100 : 0;
+const getMovePercent = (current: number, max: number): number => max > 0 ? (current / max) * 100 : 0;
+
 const getManaStatus = (current: number, max: number): string => {
-    const p = max > 0 ? (current / max) * 100 : 0;
+    const p = getManaPercent(current, max);
     if (p > 90) return 'Full';
     if (p > 70) return 'High';
     if (p > 40) return 'Half';
@@ -44,7 +49,7 @@ const getManaStatus = (current: number, max: number): string => {
 };
 
 const getMoveStatus = (current: number, max: number): string => {
-    const p = max > 0 ? (current / max) * 100 : 0;
+    const p = getMovePercent(current, max);
     if (p > 90) return 'unwearied';
     if (p > 70) return 'Strong';
     if (p > 40) return 'Tired';
@@ -70,7 +75,7 @@ const ConditionBadge: React.FC<{
 );
 
 // --- Custom Pose Icons ---
-const PoseIcon: React.FC<{ pose: string; size?: number }> = ({ pose, size = 16 }) => {
+const PoseIcon: React.FC<{ pose: string; size?: number }> = ({ pose, size = 14 }) => {
     const strokeWidth = 2.5;
     const color = "currentColor";
 
@@ -131,12 +136,14 @@ const PoseIcon: React.FC<{ pose: string; size?: number }> = ({ pose, size = 16 }
 const PromptBox: FC<PromptBoxProps> = ({
     stats,
     characterInfo,
+    characterName,
     inCombat,
     playerPosition,
     opponentName,
     opponentHealthStatus,
     playerHealthStatus,
-    isRiding
+    isRiding,
+    processMessageHtml
 }) => {
     const { triggerHaptic, executeCommand, setPlayerPosition, inlineCategories } = useGame();
     const { hitFlashEvent, oppHitFlashEvent } = useVitals();
@@ -191,53 +198,70 @@ const PromptBox: FC<PromptBoxProps> = ({
     const stStatus = getMoveStatus(stats.move, stats.maxMove);
 
     const getPositionIcon = () => {
-        if (inCombat) return <Swords size={16} className="combat-divider-icon" />;
-        if (isRiding) return <PoseIcon pose="riding" size={16} />;
-        return <PoseIcon pose={playerPosition} size={16} />;
+        if (inCombat) return <Swords size={14} className="combat-divider-icon" />;
+        if (isRiding) return <PoseIcon pose="riding" size={14} />;
+        return <PoseIcon pose={playerPosition} size={14} />;
+    };
+
+    const renderStyledName = (name: string, isOpponent = false) => {
+        if (!processMessageHtml) return name;
+        // Strip any remaining prompt crud like brackets
+        const clean = name.replace(/^[\[\]<>]+/, '').trim();
+        const html = processMessageHtml(clean, `prompt-${isOpponent ? 'opp' : 'player'}`, false, isOpponent ? 'npc' : 'pc');
+        return <span dangerouslySetInnerHTML={{ __html: html }} />;
     };
 
     return (
         <div className="prompt-box-container" id="prompt-box">
             <div className="prompt-box-content">
-                {/* Unified Vitals Row (Player + Opponent) */}
                 <div className="prompt-vitals-row-ascii">
+                    {/* Player Side */}
                     <div className="vitals-side-container side-left">
-                        <div className="player-stats-group">
-                            <div className={hitFlash ? 'blink-hit' : ''}>
-                                <ConditionBadge
-                                    status={playerHealthStatus || 'Healthy'}
-                                    colorClass="hp"
-                                    onClick={triggerNumbers}
-                                    showAlt={showNumbers}
-                                    altStatus={`${stats.hp}/${stats.maxHp}`}
-                                    flash={hitFlash}
-                                />
+                        <div className="vitals-stack">
+                            {inCombat && (
+                                <div className={`name-label player-name ${hitFlash ? 'blink-hit' : ''}`}>
+                                    {renderStyledName(characterName || 'YOU')}
+                                </div>
+                            )}
+                            <div className="vitals-group-row">
+                                <div className="player-stats-group">
+                                    <ConditionBadge
+                                        status={playerHealthStatus || 'Healthy'}
+                                        colorClass="hp"
+                                        onClick={triggerNumbers}
+                                        showAlt={showNumbers}
+                                        altStatus={`${stats.hp}/${stats.maxHp}`}
+                                    />
+                                    <ConditionBadge 
+                                        status={mpStatus} 
+                                        colorClass="mana" 
+                                        onClick={triggerNumbers}
+                                        showAlt={showNumbers}
+                                        altStatus={`${stats.mana}/${stats.maxMana}`}
+                                    />
+                                    <ConditionBadge 
+                                        status={stStatus} 
+                                        colorClass="move" 
+                                        onClick={triggerNumbers}
+                                        showAlt={showNumbers}
+                                        altStatus={`${stats.move}/${stats.maxMove}`}
+                                    />
+
+                                    <button 
+                                        className={`pos-combat-square-btn ${inCombat ? 'is-fighting' : ''} ${activeSlider === 'pos' ? 'active' : ''}`}
+                                        onClick={handlePosClick}
+                                        title={inCombat ? 'Fighting' : `Position: ${playerPosition}`}
+                                        style={{ marginLeft: '4px' }}
+                                    >
+                                        {getPositionIcon()}
+                                    </button>
+                                </div>
                             </div>
-                            <ConditionBadge 
-                                status={mpStatus} 
-                                colorClass="mana" 
-                                onClick={triggerNumbers}
-                                showAlt={showNumbers}
-                                altStatus={`${stats.mana}/${stats.maxMana}`}
-                            />
-                            <ConditionBadge 
-                                status={stStatus} 
-                                colorClass="move" 
-                                onClick={triggerNumbers}
-                                showAlt={showNumbers}
-                                altStatus={`${stats.move}/${stats.maxMove}`}
-                            />
                         </div>
                     </div>
 
-                    <div className="vitals-center-anchor">
-                        <button 
-                            className={`pos-combat-square-btn ${inCombat ? 'is-fighting' : ''} ${activeSlider === 'pos' ? 'active' : ''}`}
-                            onClick={handlePosClick}
-                            title={inCombat ? 'Fighting' : `Position: ${playerPosition}`}
-                        >
-                            {getPositionIcon()}
-                        </button>
+                    {/* Center Anchor (Empty but kept for layout symmetry if needed) */}
+                    <div className="vitals-center-anchor" style={{ width: inCombat ? '20px' : '0' }}></div>
 
                         {activeSlider === 'pos' && activeButtonRect && (
                             <CombatSliderPopout 
@@ -258,20 +282,22 @@ const PromptBox: FC<PromptBoxProps> = ({
                                 triggerHaptic={triggerHaptic}
                             />
                         )}
-                    </div>
 
+                    {/* Opponent Side */}
                     <div className="vitals-side-container side-right">
                         {opponentName && (
-                            <div
-                                className={`opponent-stats-group animate-combat-mini${oppHitFlash ? ' blink-hit' : ''}`}
-                            >
-                                <span className="opponent-label" style={opponentColor ? { color: opponentColor } : {}}>
-                                    {opponentName}
-                                </span>
-                                <ConditionBadge
-                                    status={opponentHealthStatus || 'Fighting'}
-                                    colorClass="opponent" 
-                                />
+                            <div className="vitals-stack opp-stack animate-combat-mini">
+                                <div className={`name-label opponent-name ${oppHitFlash ? 'blink-hit' : ''}`}>
+                                    {renderStyledName(opponentName, true)}
+                                </div>
+                                <div className="vitals-group-row opp-vitals">
+                                    <div className="opponent-stats-group">
+                                        <ConditionBadge
+                                            status={opponentHealthStatus || 'Fighting'}
+                                            colorClass="opponent" 
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>

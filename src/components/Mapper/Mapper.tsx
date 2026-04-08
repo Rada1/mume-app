@@ -248,6 +248,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 onResetSync={handleResetAndSync}
                 isMapFloating={isMapFloating}
                 onUndock={handleDockUndock}
+                isMobile={isMobile}
             />
 
             {localContextMenu && (

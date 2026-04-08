@@ -33,7 +33,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         playerPosition
     } = deps;
 
-    const determineVisibility = useCallback((lower: string, isImportantMessage: boolean, isRoomName: boolean, isEndPrompt: boolean) => {
+    const determineVisibility = useCallback((lower: string, isImportantMessage: boolean, isRoomName: boolean, isRoomDescription: boolean, isEndPrompt: boolean) => {
         // --- Sleeping Suppression ---
         // If the player is sleeping, suppress weather and lighting updates
         if (playerPosition === 'sleeping') {
@@ -66,7 +66,14 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
             }
         }
 
-        return (isSilentCapture.current === 0 && !isDrawerHiding) || isImportantMessage || isRoomName;
+        // --- Final Visibility Calculation ---
+        // 1. If currently capturing for an open drawer, hide unless it's a critical message/room name
+        if (isDrawerHiding) {
+            return isImportantMessage || isRoomName;
+        }
+
+        // 2. Normal visibility: not silent OR it's a special high-priority message
+        return (isSilentCapture.current === 0) || isImportantMessage || isRoomName || isRoomDescription;
     }, [captureStage, isSilentCapture, isDrawerCapture, isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen, isWaitingForInv, isWaitingForEq, isWaitingForStats, playerPosition]);
 
     const routeMessage = useCallback((msgType: string, textOnly: string, lower: string, cleanLine: string, attachedText: string, isMatch: boolean) => {

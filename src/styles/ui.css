@@ -31,7 +31,7 @@
 }
 
 .title {
-    font-family: 'Aniron', serif;
+    font-family: 'Menlo', monospace;
     font-size: 1.4rem;
     font-weight: 700;
     color: var(--text-primary, #ffffff);

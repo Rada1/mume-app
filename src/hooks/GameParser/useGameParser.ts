@@ -507,10 +507,9 @@ export function useGameParser(deps: UseGameParserDeps) {
         processTriggers(textOnly);
 
         const isImportantMessage = /hits you|receive your share|is dead|tells you|say,|group:|following/i.test(lower);
-        // Always show lines — only isSilentCapture (drawer sync) should hide messages.
-        // Room content (NPCs, exits, items) must not be filtered: pass true as isRoomName
-        // so that the drawer-silent check doesn't swallow non-drawer content.
-        const shouldShow = determineVisibility(lower, isImportantMessage, true, promptInfo.isEndPrompt);
+        // Room content (NPCs, exits, items) should be preserved even during silent captures.
+        const isRoomContent = isRoomName || lower.startsWith('exits:') || lower.includes(' is here.') || lower.includes(' are here.');
+        const shouldShow = determineVisibility(lower, isImportantMessage, isRoomContent, isRoomDescription, promptInfo.isEndPrompt);
 
         const commInfo = parseComm(line, textOnly, lower);
         if (commInfo.isSuppressed) return;

@@ -22,9 +22,9 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
 }) => {
     const {
         mood, setMood, spellSpeed, setSpellSpeed, alertness, setAlertness,
-        playerPosition, setPlayerPosition, triggerHaptic, inCombat
+        triggerHaptic, inCombat
     } = useGame();
-    const [activeSlider, setActiveSlider] = useState<'mood' | 'spell' | 'alert' | 'pos' | null>(null);
+    const [activeSlider, setActiveSlider] = useState<'mood' | 'spell' | 'alert' | null>(null);
     const [activeButtonRect, setActiveButtonRect] = useState<DOMRect | null>(null);
     const { stats, characterInfo } = useVitals();
 
@@ -233,34 +233,6 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                             gridRow="3"
                         />
 
-                        {/* POSITION (Col 1, Row 4) */}
-                        <CombatSettingControl
-                            id="pos"
-                            label="POS"
-                            value={playerPosition}
-                            options={['sleeping', 'resting', 'sitting', 'standing']}
-                            isActive={activeSlider === 'pos'}
-                            activeButtonRect={activeButtonRect}
-                            activeColor={playerPosition === 'standing' ? 'var(--accent)' : '#94a3b8'}
-                            onToggle={(e) => {
-                                triggerHaptic(10); 
-                                const rect = e.currentTarget.getBoundingClientRect();
-                                setActiveButtonRect(rect);
-                                setActiveSlider(activeSlider === 'pos' ? null : 'pos'); 
-                            }}
-                            onSelect={(val, idx) => {
-                                if (playerPosition === 'sleeping' && idx > 0) {
-                                    executeCommand('wake');
-                                }
-                                setPlayerPosition(val);
-                                executeCommand(val === 'sleeping' ? 'sleep' : val === 'resting' ? 'rest' : val === 'sitting' ? 'sit' : 'stand');
-                                triggerHaptic(15);
-                            }}
-                            onClose={() => setActiveSlider(null)}
-                            triggerHaptic={triggerHaptic}
-                            gridColumn="1"
-                            gridRow="4"
-                        />
                     </div>
 
                     {/* Bottom Section: Affected By */}

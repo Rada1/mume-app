@@ -13,7 +13,8 @@ export const useGameProviderState = () => {
     const {
         isNoviceMode, setIsNoviceMode, isNewbieMode, setIsNewbieMode, isSoundEnabled, setIsSoundEnabled, isMmapperMode, setIsMmapperMode, theme, setTheme, showControls, setShowControls, autoConnect, setAutoConnect, hasSeenOnboarding, setHasSeenOnboarding,
         showDebugEchoes, setShowDebugEchoes, uiMode, setUiMode, disable3dScroll, setDisable3dScroll, disableSmoothScroll, setDisableSmoothScroll, isImmersionMode, setIsImmersionMode, isMobileBrevityMode, setIsMobileBrevityMode, showOrganicTerrain, setShowOrganicTerrain, inlineCategories, setInlineCategories, isHighlighterEnabled, setIsHighlighterEnabled,
-        isCrtEnabled, setIsCrtEnabled, isBloomEnabled, setIsBloomEnabled, isTimestampEnabled, setIsTimestampEnabled, favorites, setFavorites, zoneMusic, setZoneMusic
+        isCrtEnabled, setIsCrtEnabled, isBloomEnabled, setIsBloomEnabled, isTimestampEnabled, setIsTimestampEnabled, favorites, setFavorites, zoneMusic, setZoneMusic,
+        fontFamily, setFontFamily
     } = settings;
 
     // Registry
@@ -621,7 +622,8 @@ export const useGameProviderState = () => {
         spectateStats, setSpectateStats,
         spectateHealthStatus, setSpectateHealthStatus,
         spectateOpponentName, setSpectateOpponentName,
-        spectateOpponentStatus, setSpectateOpponentStatus
+        spectateOpponentStatus, setSpectateOpponentStatus,
+        fontFamily, setFontFamily
     }), [
         effectiveInCombat, status, gameState, characterName, mood, spellSpeed, alertness, playerPosition, isRiding,
         isNoviceMode, isNewbieMode, isSoundEnabled, isMmapperMode, theme, showControls,
@@ -638,7 +640,7 @@ export const useGameProviderState = () => {
         isTimestampEnabled, setIsTimestampEnabled,
         spectatePosition, spectateRoomName, spectateInCombat, spectateCharacterName,
         spectateStats, spectateHealthStatus, spectateOpponentName, spectateOpponentStatus,
-        opponentName, opponentId
+        opponentName, opponentId, fontFamily, setFontFamily
     ]);
 
 

@@ -29,7 +29,8 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
     const { viewport, triggerHaptic } = useGame();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    if (isMobile && !isExpanded) return null;
+    // Removed isExpanded check to ensure the toolbar is always visible for troubleshooting
+    // if (isMobile && !isExpanded) return null;
 
     // Use icon-only mode if floating or mobile tray is narrow
     const showLabels = !isMapFloating && isExpanded;
@@ -96,9 +97,9 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
                 className="mapper-minimal-settings"
                 style={{
                     position: 'absolute',
-                    bottom: '8px',
-                    right: '8px',
-                    zIndex: 3000,
+                    bottom: '12px',
+                    right: '12px',
+                    zIndex: 9999,
                     pointerEvents: 'auto'
                 }}
             >
@@ -108,9 +109,9 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
                             position: 'absolute',
                             bottom: '40px',
                             right: '0',
-                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                            backdropFilter: 'blur(20px)',
-                            WebkitBackdropFilter: 'blur(20px)',
+                            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                            backdropFilter: 'blur(30px)',
+                            WebkitBackdropFilter: 'blur(30px)',
                             padding: '8px',
                             borderRadius: '12px',
                             border: '1px solid rgba(255, 255, 255, 0.1)',
@@ -134,22 +135,24 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
                         setIsMenuOpen(!isMenuOpen);
                     }}
                     style={{
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: '16px',
-                        backgroundColor: isMenuOpen ? 'var(--accent, #f9e2af)' : 'rgba(15, 23, 42, 0.4)',
-                        color: isMenuOpen ? '#111' : '#cdd6f4',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '18px',
+                        backgroundColor: isMenuOpen ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                        color: 'var(--accent, #f9e2af)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         cursor: 'pointer',
-                        backdropFilter: 'blur(10px)',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-                        transition: 'all 0.2s'
+                        backdropFilter: 'blur(16px)',
+                        WebkitBackdropFilter: 'blur(16px)',
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
+                        transition: 'all 0.2s',
+                        zIndex: 9000
                     }}
                 >
-                    <MoreVertical size={18} />
+                    <MoreVertical size={20} />
                 </button>
             </div>
         );
