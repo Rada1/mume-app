@@ -28,8 +28,20 @@ export interface VitalsContextType {
     setRumble: (val: boolean) => void;
     deathRoomId: string | null;
     setDeathRoomId: (val: string | null) => void;
-    heldButton: any;
-    setHeldButton: (val: any) => void;
+    heldButton: {
+        isLogDragging?: boolean;
+        x?: number;
+        y?: number;
+        label?: string;
+        baseCommand?: string;
+    } | null;
+    setHeldButton: (val: {
+        isLogDragging?: boolean;
+        x?: number;
+        y?: number;
+        label?: string;
+        baseCommand?: string;
+    } | null) => void;
     isMendingMode: boolean;
     setIsMendingMode: (val: boolean) => void;
     mendingTarget: string | null;
@@ -283,26 +295,26 @@ export interface GameContextType {
     setTeleportTargets: (val: TeleportTarget[] | ((prev: TeleportTarget[]) => TeleportTarget[])) => void;
 
     // GMCP Handlers
-    onRoomInfo?: (data: any) => void;
-    setOnRoomInfo: (fn: (data: any) => void) => void;
-    onRoomUpdateExits?: (data: any) => void;
-    setOnRoomUpdateExits: (fn: (data: any) => void) => void;
-    onCharVitals?: (data: any) => void;
-    setOnCharVitals: (fn: (data: any) => void) => void;
-    onRoomPlayers?: (data: any) => void;
-    setOnRoomPlayers: (fn: (data: any) => void) => void;
-    onRoomNpcs?: (data: any) => void;
-    setOnRoomNpcs: (fn: (data: any) => void) => void;
-    onRoomItems?: (data: any) => void;
-    setOnRoomItems: (fn: (data: any) => void) => void;
-    onAddPlayer?: (data: any) => void;
-    setOnAddPlayer: (fn: (data: any) => void) => void;
-    onAddNpc?: (data: any) => void;
-    setOnAddNpc: (fn: (data: any) => void) => void;
-    onRemovePlayer?: (data: any) => void;
-    setOnRemovePlayer: (fn: (data: any) => void) => void;
-    onRemoveNpc?: (data: any) => void;
-    setOnRemoveNpc: (fn: (data: any) => void) => void;
+    onRoomInfo?: (data: import('../../types').GmcpRoomInfo) => void;
+    setOnRoomInfo: (fn: (data: import('../../types').GmcpRoomInfo) => void) => void;
+    onRoomUpdateExits?: (data: import('../../types').GmcpUpdateExits) => void;
+    setOnRoomUpdateExits: (fn: (data: import('../../types').GmcpUpdateExits) => void) => void;
+    onCharVitals?: (data: import('../../types').GmcpCharVitals) => void;
+    setOnCharVitals: (fn: (data: import('../../types').GmcpCharVitals) => void) => void;
+    onRoomPlayers?: (data: import('../../types').GmcpRoomPlayers) => void;
+    setOnRoomPlayers: (fn: (data: import('../../types').GmcpRoomPlayers) => void) => void;
+    onRoomNpcs?: (data: import('../../types').GmcpRoomNpcs) => void;
+    setOnRoomNpcs: (fn: (data: import('../../types').GmcpRoomNpcs) => void) => void;
+    onRoomItems?: (data: import('../../types').GmcpRoomItems) => void;
+    setOnRoomItems: (fn: (data: import('../../types').GmcpRoomItems) => void) => void;
+    onAddPlayer?: (data: import('../../types').GmcpOccupant | string | number) => void;
+    setOnAddPlayer: (fn: (data: import('../../types').GmcpOccupant | string | number) => void) => void;
+    onAddNpc?: (data: import('../../types').GmcpOccupant | string | number) => void;
+    setOnAddNpc: (fn: (data: import('../../types').GmcpOccupant | string | number) => void) => void;
+    onRemovePlayer?: (data: import('../../types').GmcpOccupant | string | number) => void;
+    setOnRemovePlayer: (fn: (data: import('../../types').GmcpOccupant | string | number) => void) => void;
+    onRemoveNpc?: (data: import('../../types').GmcpOccupant | string | number) => void;
+    setOnRemoveNpc: (fn: (data: import('../../types').GmcpOccupant | string | number) => void) => void;
     onOpponentChange?: (name: string | null) => void;
     setOnOpponentChange: (fn: (name: string | null) => void) => void;
     onGroupAdd?: (data: GroupMember) => void;
@@ -335,7 +347,7 @@ export interface GameContextType {
     newSoundRegex: boolean;
     setNewSoundRegex: Dispatch<SetStateAction<boolean>>;
     handleFileUpload: (e: ChangeEvent<HTMLInputElement>) => void;
-    exportSettings: () => any;
+    exportSettings: () => Record<string, unknown>;
     exportSettingsFile: (buttons: CustomButton[]) => void;
     importSettings: (e: ChangeEvent<HTMLInputElement>, setIsSettingsOpen: (v: boolean) => void) => void;
     handleSoundUpload: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -377,9 +389,9 @@ export interface GameContextType {
     pendingDrawerContainerRef: MutableRefObject<{ containerId: string; cmd: 'inventorylist' | 'equipmentlist'; afterId: string } | null>;
 
     // Network & Parser Engines
-    telnet: any;
-    parser: any;
-    practice: any; // Type-safe version could be ReturnType<typeof usePracticeHandler>
+    telnet: ReturnType<typeof import('../../hooks/useTelnet').useTelnet>;
+    parser: ReturnType<typeof import('../../hooks/GameParser/useGameParser').useGameParser>;
+    practice: ReturnType<typeof import('../../hooks/usePracticeHandler').usePracticeHandler>;
 
     // Sound & Haptics
     playSound: (buffer: AudioBuffer) => void;
@@ -420,8 +432,8 @@ export interface GameContextType {
 
     diagnosticLogs: string[];
     addDiagnosticLog: (msg: string) => void;
-    activeDragData: any;
-    setActiveDragData: Dispatch<SetStateAction<any>>;
+    activeDragData: unknown;
+    setActiveDragData: Dispatch<SetStateAction<unknown>>;
 
     // Selection State
     selectedObjectIds: Set<string>;

@@ -21,7 +21,7 @@ import { usePracticeHandler } from '../hooks/usePracticeHandler';
 import { MapperRef } from '../components/Mapper/mapperTypes';
 
 import { GameContextType, VitalsContextType, LogContextType, UIContextType } from './GameContext/types';
-import { useGmcpHandlers } from '../hooks/useGmcpHandlers';
+import { useGmcpHandlers } from '../hooks/useGmcpHandlers/index';
 import { useShopHandler } from '../hooks/useShopHandler';
 import { useGameProviderState } from './GameContext/state';
 import { useKeywordOverrides } from '../hooks/useKeywordOverrides';
