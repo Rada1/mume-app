@@ -1,5 +1,6 @@
 import React from 'react';
 import { DrawerLine, PopoverState } from '../../types';
+import { sanitizeMumeHtml } from '../../utils/securityUtils';
 
 interface ContainerPopoverProps {
     popoverState: PopoverState;
@@ -51,7 +52,7 @@ export const ContainerPopover: React.FC<ContainerPopoverProps> = ({
                         }}
                         style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', overflow: 'hidden' }}
                     >
-                        <span dangerouslySetInnerHTML={{ __html: item.html }} />
+                        <span dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(item.html) }} />
                     </div>
                 ))
             )}

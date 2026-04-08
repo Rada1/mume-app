@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react';
 import { Message, MessageType } from '../types';
 import { ansiConvert } from '../utils/ansi';
+import { sanitizeMumeHtml } from '../utils/securityUtils';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import ShopItemCard from './ShopItemCard';
 import PracticeSkillCard from './PracticeSkillCard';
@@ -189,7 +190,7 @@ const MessageItem = React.memo(({
                 <div className="comm-bubble-wrapper">
                     {timestampEl}
                     <div className="comm-sender-line" style={{ color: msg.commColor }}>
-                        <span className="comm-sender" dangerouslySetInnerHTML={{ __html: processMessageHtml(msg.commSender || '', msg.id + '-sender', false, 'comm-sender') }} />
+                        <span className="comm-sender" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(msg.commSender || '', msg.id + '-sender', false, 'comm-sender')) }} />
                         <span className="comm-action"> {msg.commAction}:</span>
                     </div>
                     <div className="comm-content-row">
@@ -208,12 +209,12 @@ const MessageItem = React.memo(({
                     {timestampEl}
                     {msg.isCombat && inCombat ? (
                         <div className="combat-bubble">
-                            <div className="message-content" dangerouslySetInnerHTML={{ __html: content }} />
+                            <div className="message-content" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(content) }} />
                         </div>
                     ) : (
                         <>
                             <div className="message-content-wrapper">
-                                <div className="message-content anim-container" dangerouslySetInnerHTML={{ __html: content }} />
+                                <div className="message-content anim-container" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(content) }} />
                             </div>
                             <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
                         </>
@@ -372,7 +373,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
         const promptMid = `prompt-${activePrompt.length}-${activePrompt.replace(/\x1b\[[0-9;]*m/g, '').substring(0, 20)}`;
         return (
             <div className="message prompt msg-latest" style={{ transition: 'none' }}>
-                <div className="message-content" dangerouslySetInnerHTML={{ __html: processMessageHtml(ansiConvert.toHtml(activePrompt), promptMid, false) }} />
+                <div className="message-content" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(activePrompt), promptMid, false)) }} />
             </div>
         );
     }, [activePrompt, processMessageHtml, isSpectateMode]);
@@ -383,9 +384,9 @@ const MessageLog: React.FC<MessageLogProps> = ({
             {isNewbieMode && roomName && (
                 <div className={`sticky-room-header terrain-${(currentTerrain || 'field').toLowerCase()}`} key="newbie-room-header">
                     <div className="room-info-text">
-                        <div className="message-content room-name" dangerouslySetInnerHTML={{ __html: processMessageHtml(ansiConvert.toHtml(`\x1b[1;32m${roomName}\x1b[0m`), 'roomname', true, 'room-name' as any) }} />
+                        <div className="message-content room-name" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(`\x1b[1;32m${roomName}\x1b[0m`), 'roomname', true, 'room-name' as any)) }} />
                         {roomDesc && (
-                            <div className="message-content room-desc" dangerouslySetInnerHTML={{ __html: processMessageHtml(ansiConvert.toHtml(`\x1b[0m${roomDesc}`), 'roomdesc', false, 'room-desc' as any) }} />
+                            <div className="message-content room-desc" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(`\x1b[0m${roomDesc}`), 'roomdesc', false, 'room-desc' as any)) }} />
                         )}
                     </div>
                     <MiniMapRoom />

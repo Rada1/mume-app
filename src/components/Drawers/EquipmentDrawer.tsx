@@ -10,6 +10,7 @@ import { DrawerLine } from '../../types';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
 import { getEffectiveKeyword } from '../../utils/keywordUtils';
 import { isObjectSelected } from '../../utils/selectionUtils';
+import { sanitizeMumeHtml } from '../../utils/securityUtils';
 
 interface EquipmentDrawerProps {
     isOpen: boolean;
@@ -141,7 +142,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         {line.prefixHtml && (
                             <span
                                 className="equipment-location-inline"
-                                dangerouslySetInnerHTML={{ __html: line.prefixHtml }}
+                                dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.prefixHtml) }}
                             />
                         )}
                         <span className="drawer-item-name" style={{ color: itemBrown }}>{displayName}</span>
@@ -154,7 +155,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
         }
 
         return (
-            <div key={line.id} className={`drawer-header-line depth-${depth}`} style={{ paddingLeft: `${depth * 8}px` }} dangerouslySetInnerHTML={{ __html: line.html }} />
+            <div key={line.id} className={`drawer-header-line depth-${depth}`} style={{ paddingLeft: `${depth * 8}px` }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }} />
         );
     };
 
