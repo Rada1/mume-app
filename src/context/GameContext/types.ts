@@ -1,16 +1,20 @@
-import { ReactNode, SetStateAction, Dispatch, RefObject, MutableRefObject, ChangeEvent, FormEvent, MouseEvent } from 'react';
+import React, { ReactNode, SetStateAction, Dispatch, RefObject, MutableRefObject, ChangeEvent, FormEvent, MouseEvent } from 'react';
 import {
     GameStats, PopoverState, Message, MessageType, WeatherType,
     LightingType, SoundTrigger, TeleportTarget, CustomButton,
-    DrawerLine, DeathStage, GameAction, SpatButton, CombatHealthStatus, GroupMember,
-    OptimisticChange
+    DrawerLine, GameAction, SpatButton, CombatHealthStatus, GroupMember,
+    OptimisticChange,
+    SessionLog
 } from '../../types';
+import { useSessionRecorder } from '../../hooks/useSessionRecorder';
 import { useButtons } from '../../hooks/useButtons';
 import { useJoystick } from '../../hooks/useJoystick';
 import { useButtonEditor } from '../../hooks/useButtonEditor';
 import { useViewport } from '../../hooks/useViewport';
 import { useEnvironment } from '../../hooks/useEnvironment';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
+ 
+export type MoveDir = 'n' | 's' | 'e' | 'w' | 'u' | 'd' | 'none';
 
 
 export interface VitalsContextType {
@@ -22,9 +26,6 @@ export interface VitalsContextType {
     setActivePrompt: (prompt: string) => void;
     rumble: boolean;
     setRumble: (val: boolean) => void;
-    hitFlash: boolean;
-    deathStage: DeathStage;
-    setDeathStage: (val: DeathStage) => void;
     deathRoomId: string | null;
     setDeathRoomId: (val: string | null) => void;
     heldButton: any;
@@ -101,6 +102,26 @@ export interface UIContextType {
     setIsMapExpanded: (open: boolean) => void;
     setIsSetManagerOpen: (open: boolean) => void;
     setIsPlayersOpen: (open: boolean) => void;
+    characterName: string | null;
+    isRecording: boolean;
+    duration: number;
+    startRecording: (characterName?: string) => void;
+    stopRecording: () => import('../../hooks/useSessionRecorder').SessionLog;
+    saveLog: (log: import('../../hooks/useSessionRecorder').SessionLog) => void;
+    replayer: {
+        log: import('../../types').SessionLog | null;
+        state: import('../../hooks/useSessionReplayer').ReplayerState;
+        loadLog: (log: import('../../hooks/useSessionRecorder').SessionLog) => void;
+        clearLog: () => void;
+        play: () => void;
+        pause: () => void;
+        seek: (time: number) => void;
+        setSpeed: (speed: number) => void;
+        setIsVisible: (visible: boolean) => void;
+        setPrivacyMode: (active: boolean) => void;
+        startExport: () => Promise<void>;
+        stopExport: () => void;
+    };
 }
 
 export interface GameContextType {
@@ -114,10 +135,14 @@ export interface GameContextType {
     setGameState: Dispatch<SetStateAction<import('../../types').GameState>>;
     characterName: string | null;
     setCharacterName: (name: string | null) => void;
+    popoverState: import('../../types').PopoverState | null;
+    setPopoverState: (val: import('../../types').PopoverState | null) => void;
 
     // Settings & Mode
     isNoviceMode: boolean;
     setIsNoviceMode: (val: boolean) => void;
+    isNewbieMode: boolean;
+    setIsNewbieMode: (val: boolean) => void;
     isSoundEnabled: boolean;
     setIsSoundEnabled: (val: boolean) => void;
     isMmapperMode: boolean;
@@ -146,6 +171,8 @@ export interface GameContextType {
     setIsBloomEnabled: (val: boolean) => void;
     isSpectateMode: boolean;
     setIsSpectateMode: (val: boolean) => void;
+    isTimestampEnabled: boolean;
+    setIsTimestampEnabled: (val: boolean) => void;
     spectateTargetId: number | null;
     setSpectateTargetId: (val: number | null) => void;
     showLegacyButtons: boolean;
@@ -181,7 +208,10 @@ export interface GameContextType {
     setPlayerHealthStatus: (val: CombatHealthStatus | null) => void;
     setOpponentHealthStatus: (val: CombatHealthStatus | null) => void;
     setBufferHealthStatus: (val: CombatHealthStatus | null) => void;
+    opponentName: string | null;
+    opponentId: string | null;
     setOpponentName: (val: string | null) => void;
+    setOpponentId: (val: string | null) => void;
     setBufferName: (val: string | null) => void;
     groupMembers: GroupMember[];
     setGroupMembers: Dispatch<SetStateAction<GroupMember[]>>;
@@ -213,7 +243,16 @@ export interface GameContextType {
     roomZone: string | null;
     setRoomZone: (zone: string | null) => void;
     roomName: string | null;
+    roomDesc: string | null;
+    setRoomName: (name: string | null) => void;
+    setRoomDesc: (desc: string | null) => void;
     roomNameRef: RefObject<string | null>;
+    roomDescRef: RefObject<string | null>;
+    moveDirQueueRef: MutableRefObject<MoveDir[]>;
+    activeMoveDirRef: MutableRefObject<MoveDir>;
+    lastMoveDirRef: MutableRefObject<MoveDir>;
+    lastMoveDir: MoveDir;
+    setLastMoveDir: (val: MoveDir) => void;
 
     accentColor: string;
     setAccentColor: (val: string) => void;
@@ -307,7 +346,7 @@ export interface GameContextType {
     handleSend: (e?: FormEvent) => void;
     handleInputSwipe: (dir: string) => void;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean, fromUi?: boolean }) => void;
-    handleButtonClick: (button: CustomButton, e: MouseEvent, context?: string, isContainer?: boolean) => void;
+    handleButtonClick: (button: CustomButton, e: MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => void;
     handleLogClick: (e: MouseEvent) => void;
     handleLogDoubleClick: (e: MouseEvent) => void;
     handleLogPointerDown: (e: React.PointerEvent) => void;
@@ -388,4 +427,25 @@ export interface GameContextType {
     selectedObjectIds: Set<string>;
     toggleObjectSelection: (id: string, setId?: string, context?: string) => void;
     clearObjectSelection: () => void;
+
+    // Recorder
+    isRecording: boolean;
+    duration: number;
+    startRecording: (characterName?: string) => void;
+    stopRecording: () => import('../../hooks/useSessionRecorder').SessionLog;
+    saveLog: (log: import('../../hooks/useSessionRecorder').SessionLog) => void;
+    replayer: {
+        log: import('../../types').SessionLog | null;
+        state: import('../../hooks/useSessionReplayer').ReplayerState;
+        loadLog: (log: import('../../hooks/useSessionRecorder').SessionLog) => void;
+        clearLog: () => void;
+        play: () => void;
+        pause: () => void;
+        seek: (timeMs: number) => void;
+        setSpeed: (speed: number) => void;
+        setIsVisible: (visible: boolean) => void;
+        startExport: () => Promise<void>;
+        stopExport: () => void;
+    };
 }
+

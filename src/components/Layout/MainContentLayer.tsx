@@ -1,13 +1,11 @@
-import React from 'react';
+import React, { FC } from 'react';
 import Header from '../Header';
 import MessageLog from '../MessageLog';
 import InputArea from '../InputArea';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
-import { getButtonCommand } from '../../utils/buttonUtils';
-import CombatOverlay from '../CombatOverlay';
 import CombatStatsPanel from '../CombatStatsPanel';
-import { MultiSelectToolbar } from '../Popovers/MultiSelectToolbar';
-import { RotateCcw } from 'lucide-react';
+import { LineCluster } from './HUD/LineCluster';
+import PromptBox from '../PromptBox';
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -21,9 +19,11 @@ interface MainContentLayerProps {
     setHeldButton: React.Dispatch<React.SetStateAction<any>>;
     mumeEditState: { isOpen: boolean; title: string; text: string; key: string };
     setMumeEditState: React.Dispatch<React.SetStateAction<{ isOpen: boolean; title: string; text: string; key: string }>>;
+    handleDragStart: (e: any, id: string, type: string) => void;
+    wasDraggingRef: React.MutableRefObject<boolean>;
 }
 
-export const MainContentLayer: React.FC<MainContentLayerProps> = ({
+export const MainContentLayer: FC<MainContentLayerProps> = ({
     handleMouseUp,
     handleLogPointerDown,
     handleLogPointerUp,
@@ -34,8 +34,11 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
     heldButton,
     setHeldButton,
     mumeEditState,
-    setMumeEditState
+    setMumeEditState,
+    handleDragStart,
+    wasDraggingRef
 }) => {
+    const { stats, characterInfo, opponentName, opponentHealthStatus, target, activePrompt, playerHealthStatus } = useVitals();
     const {
         env,
         input,
@@ -47,16 +50,19 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
         viewport,
         handleLogClick,
         handleLogDoubleClick,
-        handleDragStart,
         handleDragEnd,
+        handleButtonClick,
         spatButtons,
         setSpatButtons,
         executeCommand,
-        isImmersionMode,
         parley,
         setParley,
         whoList,
         inCombat,
+        showControls,
+        playerPosition,
+        isNewbieMode,
+        isRiding
     } = useGame();
 
     const prevInCombatRef = React.useRef(false);
@@ -68,7 +74,6 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
         prevInCombatRef.current = inCombat;
     }, [inCombat, executeCommand]);
 
-    const { target } = useVitals();
     const { setPopoverState } = useUI();
     const logContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -105,36 +110,79 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
 
     const onResetMap = () => {
         triggerHaptic(20);
-        btn.setUiPositions(prev => ({
+        btn.setUiPositions((prev: any) => ({
             ...prev,
             mapper: { x: undefined, y: 75, w: 320, h: 320, scale: 1 }
         }));
     };
 
-
     return (
         <div className="content-layer">
-            <CombatOverlay />
-            {true && (
-                <Header
-                    isLandscape={isLandscape}
-                    getLightingIcon={getLightingIcon}
-                    getWeatherIcon={getWeatherIcon}
-                    onResetMap={onResetMap}
+            <Header
+                isLandscape={isLandscape}
+                getLightingIcon={getLightingIcon}
+                getWeatherIcon={getWeatherIcon}
+                onResetMap={onResetMap}
+            />
+
+            <div className="message-log-wrapper" style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative', gap: '8px' }}>
+                <div className="message-log-container" ref={logContainerRef} style={{ flex: 1 }}>
+                    <CombatStatsPanel />
+                    <MessageLog
+                        onLogClick={handleLogClick}
+                        onMouseUp={handleMouseUp}
+                        onPointerDown={handleLogPointerDown}
+                        onPointerUp={handleLogPointerUp}
+                        onDragStart={handleDragStart as any}
+                        onDragEnd={handleDragEnd as any}
+                    />
+                </div>
+
+                {!isMobile && (
+                    <div className={`line-cluster-container desktop-inline ${!showControls && !btn.isEditMode ? 'hud-hidden' : ''}`}>
+                        <LineCluster
+                            isEditMode={btn.isEditMode}
+                            handleDragStart={handleDragStart as any}
+                            buttons={btn.buttons}
+                            selectedButtonIds={btn.selectedButtonIds}
+                            dragState={btn.dragState}
+                            handleButtonClick={handleButtonClick}
+                            wasDraggingRef={wasDraggingRef as any}
+                            triggerHaptic={triggerHaptic}
+                            setPopoverState={setPopoverState}
+                            setEditingButtonId={btn.setEditingButtonId}
+                            setSelectedIds={btn.setSelectedIds}
+                            activePrompt={activePrompt}
+                            executeCommand={executeCommand}
+                            setCommandPreview={setCommandPreview}
+                            heldButton={heldButton}
+                            setHeldButton={setHeldButton}
+                            joystick={joystick}
+                            target={target}
+                            isGridEnabled={btn.isGridEnabled}
+                            gridSize={btn.gridSize}
+                            setActiveSet={btn.setActiveSet}
+                            setButtons={btn.setButtons}
+                            isMobile={isMobile}
+                        />
+                    </div>
+                )}
+
+                {/* Mobile portrait LineCluster is rendered inside MapperCluster (near the map gutter) */}
+            </div>
+
+            {isNewbieMode && (
+                <PromptBox
+                    stats={stats}
+                    characterInfo={characterInfo}
+                    inCombat={inCombat}
+                    playerPosition={playerPosition}
+                    opponentName={opponentName}
+                    opponentHealthStatus={opponentHealthStatus}
+                    playerHealthStatus={playerHealthStatus}
+                    isRiding={isRiding}
                 />
             )}
-
-            <div className="message-log-container" ref={logContainerRef}>
-                <CombatStatsPanel />
-                <MessageLog
-                    onLogClick={handleLogClick}
-                    onMouseUp={handleMouseUp}
-                    onPointerDown={handleLogPointerDown}
-                    onPointerUp={handleLogPointerUp}
-                    onDragStart={handleDragStart}
-                    onDragEnd={handleDragEnd}
-                />
-            </div>
 
             <InputArea
                 input={input}

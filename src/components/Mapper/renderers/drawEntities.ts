@@ -2,6 +2,7 @@ import { RenderContext, getSeed } from './rendererUtils';
 import { GRID_SIZE, DIRS } from '../mapperUtils';
 import { getMemberColor } from '../../../utils/groupUtils';
 import { getGlowColorForCategory, getCategoryForName } from '../../../utils/categorizationUtils';
+import { occupantAnims, OCCUPANT_ANIM_DURATION, getOccupantKey } from '../occupantAnimStore';
 
 
 export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: number, gY2: number) => {
@@ -9,6 +10,8 @@ export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: num
 };
 
 // --- Room Occupants (NPCs / Non-group Players) ---
+// Global tracker for "last known positioning" to ensure smooth exit animations
+const lastPetalPositions = new Map<string, { dx: number, dy: number, isPlayer: boolean }>();
 
 /**
  * Draws small colored orbs for NPCs and players in the current room that are not in your group.
@@ -18,29 +21,27 @@ export const drawRoomOccupants = (
     rCtx: RenderContext,
     playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>
 ) => {
-    const { ctx, currentZ, now, roomPlayers, roomNpcs, groupMembers, camera, inlineCategories, opponentId, opponentName } = rCtx;
-    const playerPos = playerPosRef.current;
-    if (!playerPos || Math.abs(playerPos.z - currentZ) >= 1.0) return;
+    const { ctx, currentZ, now, roomPlayers, roomNpcs, roomItems, groupMembers, camera, inlineCategories, opponentId, opponentName, triggerRender, centerOverride } = rCtx;
+    
+    // Prioritize centerOverride (for MiniMap/specific highlights) over the global playerPosRef
+    const anchor = centerOverride || playerPosRef.current;
+    if (!anchor || Math.abs(anchor.z - currentZ) >= 1.0) return;
 
-    const px = playerPos.x * GRID_SIZE + GRID_SIZE / 2;
-    const py = playerPos.y * GRID_SIZE + GRID_SIZE / 2;
+    const px = anchor.x * GRID_SIZE + GRID_SIZE / 2;
+    const py = anchor.y * GRID_SIZE + GRID_SIZE / 2;
 
     // 1. Gather group member names to avoid double-drawing
     const groupMemberNames = new Set(groupMembers?.map(m => m.name.toLowerCase()));
-    
-    // 2. Prepare all occupants
+
+    // 2. Prepare current live occupants
     const occupants: { name: string, color: string, id?: string | number }[] = [];
-    
-    // Players (non-group)
+
     (roomPlayers || []).forEach(p => {
         const name = typeof p === 'string' ? p : p.name;
-        if (!name) return;
-        const lower = name.toLowerCase();
-        if (groupMemberNames.has(lower)) return;
+        if (!name || groupMemberNames.has(name.toLowerCase())) return;
         occupants.push({ name, color: 'rgba(125, 211, 252, 1)', id: typeof p === 'string' ? undefined : p.id });
     });
 
-    // NPCs
     (roomNpcs || []).forEach(n => {
         const name = typeof n === 'string' ? n : n.name;
         if (!name) return;
@@ -49,44 +50,82 @@ export const drawRoomOccupants = (
         occupants.push({ name, color, id: typeof n === 'string' ? undefined : n.id });
     });
 
-    if (occupants.length === 0) return;
+    // 3. Clean expired anim entries; collect exit-animating occupants
+    //    Exit anims are drawn separately so the remaining petal layout doesn't shift.
+    const exitAnims: { key: string }[] = [];
+    for (const [key, anim] of occupantAnims.entries()) {
+        if (now - anim.startTime >= OCCUPANT_ANIM_DURATION) {
+            occupantAnims.delete(key);
+            continue;
+        }
+        if (anim.type === 'exit') {
+            const stillPresent = occupants.some(o =>
+                getOccupantKey(o.id, o.name) === key ||
+                ('name:' + o.name.toLowerCase()) === key
+            );
+            if (!stillPresent) {
+                // We'll determine the color dynamically in the drawing loop to account for cached status
+                exitAnims.push({ key });
+            }
+        }
+    }
 
-    // 4. Draw petal layout
-    const count = occupants.length;
     const PETAL_RADIUS = 18.0 / (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
     const pulse = (Math.sin(now / 400) + 1) / 2;
 
-    occupants.forEach((occ, index) => {
-        const angle = (index / count) * Math.PI * 2;
-        const ox = Math.cos(angle) * PETAL_RADIUS;
-        const oy = Math.sin(angle) * PETAL_RADIUS;
-
-        const orbX = px + ox;
-        const orbY = py + oy;
-
+    const drawDot = (orbX: number, orbY: number, color: string, alpha: number) => {
         ctx.save();
-        ctx.globalAlpha = 0.85;
-        ctx.fillStyle = occ.color;
-        
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = color;
+        ctx.shadowBlur = 4 + pulse * 4;
+        ctx.shadowColor = color;
         ctx.beginPath();
         ctx.arc(orbX, orbY, 3, 0, Math.PI * 2);
         ctx.fill();
-
-        ctx.shadowBlur = 4 + pulse * 4;
-        ctx.shadowColor = occ.color;
-        ctx.fill();
         ctx.restore();
+    };
 
-        // 5. Opponent Tether Line
-        let isOpponent = false;
-        if (opponentId !== undefined && opponentId !== null && occ.id !== undefined && occ.id !== null) {
-            isOpponent = String(opponentId) === String(occ.id);
-        } else if (opponentName) {
-            const oppNameLower = opponentName.toLowerCase();
-            const occNameLower = occ.name.toLowerCase();
-            isOpponent = oppNameLower === occNameLower || oppNameLower.includes(occNameLower) || occNameLower.includes(oppNameLower);
+    // 4. Draw live occupants in petal layout, with enter-animation offset applied
+    const count = occupants.length;
+    occupants.forEach((occ, index) => {
+        const angle = (index / count) * Math.PI * 2;
+        const petalX = px + Math.cos(angle) * PETAL_RADIUS;
+        const petalY = py + Math.sin(angle) * PETAL_RADIUS;
+
+        const key = getOccupantKey(occ.id, occ.name);
+        
+        // Record current position for future exit animations (Dual-key for robustness)
+        const pos = { dx: petalX - px, dy: petalY - py, isPlayer: occ.color.includes('125, 211, 252') };
+        lastPetalPositions.set(key, pos);
+        lastPetalPositions.set('name:' + occ.name.toLowerCase(), pos);
+
+        const anim = occupantAnims.get(key) ?? occupantAnims.get('name:' + occ.name.toLowerCase());
+
+        let orbX = petalX, orbY = petalY, alpha = 0.85;
+
+        if (anim && anim.type === 'enter' && DIRS[anim.dir]) {
+            const { dx, dy } = DIRS[anim.dir];
+            const t = Math.min((now - anim.startTime) / OCCUPANT_ANIM_DURATION, 1.0);
+            const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+            // Start from the adjacent room centre in the arrival direction
+            const startX = px + dx * GRID_SIZE;
+            const startY = py + dy * GRID_SIZE;
+            orbX = startX + (petalX - startX) * eased;
+            orbY = startY + (petalY - startY) * eased;
+            alpha = 0.2 + 0.65 * eased;
+            if (t < 1.0) triggerRender?.();
         }
 
+        drawDot(orbX, orbY, occ.color, alpha);
+
+        // Opponent tether
+        let isOpponent = false;
+        if (opponentId != null && occ.id != null) {
+            isOpponent = String(opponentId) === String(occ.id);
+        } else if (opponentName) {
+            const ol = opponentName.toLowerCase(), nl = occ.name.toLowerCase();
+            isOpponent = ol === nl || ol.includes(nl) || nl.includes(ol);
+        }
         if (isOpponent) {
             ctx.save();
             ctx.beginPath();
@@ -99,6 +138,59 @@ export const drawRoomOccupants = (
             ctx.restore();
         }
     });
+
+    // 4.5 Draw room items as squares in a line at the bottom
+    if (roomItems && roomItems.length > 0) {
+        const itemSize = 4 / (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
+        const itemGap = 2;
+        const totalWidth = roomItems.length * (itemSize + itemGap) - itemGap;
+        let startX = px - totalWidth / 2;
+        const itemY = py + (GRID_SIZE / 2) - 6; // Position near bottom wall
+
+        roomItems.forEach(item => {
+            ctx.save();
+            ctx.fillStyle = '#ffcc00';
+            ctx.shadowBlur = 4 + pulse * 2;
+            ctx.shadowColor = '#ffcc00';
+            ctx.fillRect(startX, itemY, itemSize, itemSize);
+            ctx.restore();
+            startX += itemSize + itemGap;
+        });
+    }
+
+    // 5. Draw exit-animating occupants: slide from petal edge toward departure direction
+    for (const { key } of exitAnims) {
+        const anim = occupantAnims.get(key);
+        if (!anim || !DIRS[anim.dir]) continue;
+        const { dx, dy } = DIRS[anim.dir];
+        const t = Math.min((now - anim.startTime) / OCCUPANT_ANIM_DURATION, 1.0);
+        const eased = t * t; // ease-in quadratic
+
+        // Start from the specific last known petal position if available
+        if (!anim.startOffset) {
+            let offset = lastPetalPositions.get(key);
+            if (!offset && anim.name) {
+                // Fallback to name-only key if the primary key (id-based) didn't match
+                offset = lastPetalPositions.get('name:' + anim.name.toLowerCase());
+            }
+            anim.startOffset = offset || { dx: 0, dy: 0 };
+        }
+        
+        const isActuallyPlayer = anim.isPlayer || (lastPetalPositions.get(key)?.isPlayer) || (anim.name ? lastPetalPositions.get('name:' + anim.name.toLowerCase())?.isPlayer : false);
+        const color = isActuallyPlayer ? 'rgba(125, 211, 252, 1)' : getGlowColorForCategory(getCategoryForName(anim.name, inlineCategories || []) || 'inlinenpc', inlineCategories || []);
+
+        const startX = px + anim.startOffset.dx;
+        const startY = py + anim.startOffset.dy;
+        
+        const targetX = px + dx * GRID_SIZE;
+        const targetY = py + dy * GRID_SIZE;
+        
+        const orbX = startX + (targetX - startX) * eased;
+        const orbY = startY + (targetY - startY) * eased;
+        const alpha = 0.85 * (1 - t);
+        drawDot(orbX, orbY, color, alpha);
+        triggerRender?.();
+    }
 };
 
 export const drawEntities = (
@@ -107,15 +199,18 @@ export const drawEntities = (
     playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>,
     characterName: string | null
 ) => {
-    const { ctx, currentZ, activeId, allRooms, preloaded } = rCtx;
+    const { ctx, currentZ, activeId, allRooms, preloaded, centerOverride } = rCtx;
+    
+    // Prioritize centerOverride for anchoring
+    const anchor = centerOverride || playerPosRef.current;
     const trail = playerTrailRef.current;
 
     // 1. Player Trail — teardrop streak that retracts tail-first toward the player
     const TRAIL_DURATION = 450; // ms, must match useMapAnimation
     const wallNow = rCtx.now;
-    if (trail.length > 0 && playerPosRef.current && Math.abs(playerPosRef.current.z - currentZ) < 1.0) {
-        const px = playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2;
-        const py = playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2;
+    if (trail.length > 0 && anchor && Math.abs(anchor.z - currentZ) < 1.0) {
+        const px = anchor.x * GRID_SIZE + GRID_SIZE / 2;
+        const py = anchor.y * GRID_SIZE + GRID_SIZE / 2;
 
         for (let i = 0; i < trail.length; i++) {
             const t = trail[i] as any;
@@ -143,7 +238,7 @@ export const drawEntities = (
 
             ctx.save();
             ctx.globalAlpha = 0.65;
-            ctx.fillStyle = '#ef4444';
+            ctx.fillStyle = '#ffffff';
 
             ctx.beginPath();
             ctx.moveTo(tailX, tailY);
@@ -156,12 +251,12 @@ export const drawEntities = (
     }
 
     // 2. Pulsing Player Orb (Authoritative Source)
-    if (playerPosRef.current && Math.abs(playerPosRef.current.z - currentZ) < 1.0) {
-        const px = playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2, py = playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2;
-        const alpha = Math.max(0, 1 - Math.abs(playerPosRef.current.z - currentZ));
+    if (anchor && Math.abs(anchor.z - currentZ) < 1.0) {
+        const px = anchor.x * GRID_SIZE + GRID_SIZE / 2, py = anchor.y * GRID_SIZE + GRID_SIZE / 2;
+        const alpha = Math.max(0, 1 - Math.abs(anchor.z - currentZ));
         
         const pulse = (Math.sin(rCtx.now / 300) + 1) / 2; // 0 to 1 pulse
-        const orbRadius = 8 + (pulse * 2);
+        const orbRadius = 5.5 + (pulse * 1.5);
         
         ctx.save();
         ctx.globalAlpha = alpha;
@@ -189,7 +284,7 @@ export const drawEntities = (
         }
 
         // Solid core for better visibility
-        ctx.fillStyle = '#ef4444';
+        ctx.fillStyle = '#ffffff';
         ctx.globalAlpha = alpha * 0.9;
         ctx.beginPath();
         ctx.arc(px, py, orbRadius * 0.8, 0, Math.PI * 2);
@@ -197,10 +292,10 @@ export const drawEntities = (
 
         // Glowing transparent orb: radial gradient
         const orbGradient = ctx.createRadialGradient(px, py, 0, px, py, orbRadius * 1.3);
-        orbGradient.addColorStop(0,   `rgba(239, 68, 68, ${0.7 + pulse * 0.25})`);
-        orbGradient.addColorStop(0.35, `rgba(239, 68, 68, ${0.45 + pulse * 0.15})`);
-        orbGradient.addColorStop(0.7,  `rgba(239, 68, 68, ${0.2 + pulse * 0.1})`);
-        orbGradient.addColorStop(1,    'rgba(239, 68, 68, 0)');
+        orbGradient.addColorStop(0,   `rgba(255, 255, 255, ${0.7 + pulse * 0.25})`);
+        orbGradient.addColorStop(0.35, `rgba(255, 255, 255, ${0.45 + pulse * 0.15})`);
+        orbGradient.addColorStop(0.7,  `rgba(255, 255, 255, ${0.2 + pulse * 0.1})`);
+        orbGradient.addColorStop(1,    'rgba(255, 255, 255, 0)');
         ctx.globalAlpha = alpha;
         ctx.fillStyle = orbGradient;
         ctx.beginPath();
@@ -223,7 +318,7 @@ export const drawEntities = (
                 // Dashed tether line
                 ctx.save();
                 ctx.globalAlpha = alpha * 0.7;
-                ctx.strokeStyle = '#ef4444';
+                ctx.strokeStyle = '#ffffff';
                 ctx.lineWidth = 1.5 / rCtx.camera.zoom;
                 ctx.setLineDash([4 / rCtx.camera.zoom, 4 / rCtx.camera.zoom]);
                 ctx.beginPath();
@@ -233,10 +328,10 @@ export const drawEntities = (
                 ctx.setLineDash([]);
                 ctx.restore();
 
-                // Red prediction dot
+                // White prediction dot
                 ctx.save();
                 ctx.globalAlpha = alpha;
-                ctx.fillStyle = '#ef4444';
+                ctx.fillStyle = '#ffffff';
                 ctx.beginPath();
                 ctx.arc(toX, toY, 6, 0, Math.PI * 2);
                 ctx.fill();
@@ -333,6 +428,19 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
 
     const pulse = (Math.sin(now / 350) + 1) / 2;
     const ORB_RADIUS = 7;
+
+    // --- Resolve Player Position once ---
+    let prx: number | undefined, pry: number | undefined, prz = 0;
+    if (rCtx.activeId) {
+        const pLocalRoom = allRooms[`m_${rCtx.activeId}`] || allRooms[rCtx.activeId];
+        if (pLocalRoom) {
+            prx = pLocalRoom.x; pry = pLocalRoom.y; prz = pLocalRoom.z || 0;
+        } else {
+            const rawId = rCtx.activeId.startsWith('m_') ? rCtx.activeId.substring(2) : rCtx.activeId;
+            const p = preloaded[rawId];
+            if (p) { prx = p[0]; pry = p[1]; prz = p[2] || 0; }
+        }
+    }
 
     // --- Resolve & Group positions for petal layout ---
     const roomOccupancy = new Map<string, any[]>();
@@ -470,6 +578,18 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
             ctx.shadowColor = color.core;
             ctx.fill();
 
+            const isSameRoom = prx !== undefined && prx === rx && pry === ry && prz === rz;
+            if (!isSameRoom) {
+                // Name plate below arrow
+                ctx.rotate(-angleToMember);
+                ctx.font = 'bold 10px Inter';
+                ctx.fillStyle = color.core;
+                ctx.textAlign = 'center';
+                ctx.shadowBlur = 4;
+                ctx.shadowColor = 'black';
+                ctx.fillText(member.name, 0, 18);
+            }
+
             ctx.restore();
         }
 
@@ -511,6 +631,18 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
         ctx.beginPath();
         ctx.arc(px, py, orbRadius * 0.75, 0, Math.PI * 2);
         ctx.fill();
+
+        const isSameRoom = prx !== undefined && prx === rx && pry === ry && prz === rz;
+        if (!isSameRoom) {
+            ctx.font = `bold ${8 / camera.zoom}px Inter`;
+            ctx.fillStyle = color.core;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.shadowBlur = 4;
+            ctx.shadowColor = 'black';
+            ctx.fillText(member.name, px, py - (orbRadius + 2) / camera.zoom);
+        }
+
         ctx.restore();
 
     });

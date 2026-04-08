@@ -1,7 +1,7 @@
 import { RenderContext } from './rendererUtils';
 import { GRID_SIZE, getTerrainColor, WALL_COLOR, getTerrainName } from '../mapperUtils';
 
-const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: number, s: number, terrain: any, isDarkMode: boolean, processedIconsRef: React.MutableRefObject<Record<string, HTMLCanvasElement>>, imagesRef: React.MutableRefObject<Record<string, HTMLImageElement>>, variant: number = 0) => {
+export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: number, s: number, terrain: any, isDarkMode: boolean, processedIconsRef: React.MutableRefObject<Record<string, HTMLCanvasElement>>, imagesRef: React.MutableRefObject<Record<string, HTMLImageElement>>, variant: number = 0) => {
     const tName = getTerrainName(terrain);
     const variantSpecificTerrains = ['Hills', 'Forest', 'Brush', 'Mountains', 'Field', 'Cavern', 'Tunnel', 'Water', 'Shallows', 'Rapids', 'City', 'Underwater', 'Building'];
     const key = variantSpecificTerrains.includes(tName) ? `${tName}_v${variant}_${isDarkMode}` : `${tName}_${isDarkMode}`;
@@ -228,7 +228,7 @@ const getSourceDirection = (vnum: string, rCtx: RenderContext): string | null =>
     return sourceDir;
 };
 
-const applyRoomShading = (ctx: CanvasRenderingContext2D, r: any, s: number, alphaMul: number, rCtx: RenderContext) => {
+export const applyRoomShading = (ctx: CanvasRenderingContext2D, r: any, s: number, alphaMul: number, rCtx: any) => {
     // baseMapExitsRef (from ardagmcp.xml) is keyed by server_id.
     // preloaded (mume_map_data.json) is keyed by internal sequential id, with server_id at index [6].
     const preloadedEntry = rCtx.preloaded[r.vnum];

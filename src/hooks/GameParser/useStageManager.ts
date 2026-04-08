@@ -47,10 +47,19 @@ export function useStageManager(deps: StageManagerDeps) {
 
     const finalizeCapture = useCallback((targetStage?: CaptureStage) => {
         const currentStage = captureStage.current as CaptureStage;
-        if (currentStage === 'none') return false;
         
         // If targetStage is provided, only finalize if we match
         if (targetStage && currentStage !== targetStage) return false;
+
+        // --- Silent Capture Fallback ---
+        // We handle this before the early 'none' return so background commands (which have no stage)
+        // are correctly cleaned up when a prompt arrives.
+        if (currentStage === 'none' && isSilentCapture.current > 0) {
+            isSilentCapture.current = 0; // Clear all background silence on a prompt
+            return false;
+        }
+
+        if (currentStage === 'none') return false;
 
         const stagesToTerminate: CaptureStage[] = ['who', 'where', 'inv', 'eq', 'stat', 'container', 'shop', 'shop-detail', 'practice', 'description', 'whois', 'info', 'quest'];
         if (stagesToTerminate.includes(currentStage)) {
@@ -99,10 +108,16 @@ export function useStageManager(deps: StageManagerDeps) {
 
             captureStage.current = 'none';
             isDrawerCapture.current = 0;
-            // Decrement silent capture instead of resetting to 0 to support multiple concurrent background commands
+            // Decrement silent capture
             if (isSilentCapture.current > 0) isSilentCapture.current--;
             return true;
         }
+
+        // Final fallback for silent capture
+        if (isSilentCapture.current > 0) {
+            isSilentCapture.current--;
+        }
+
         return false;
     }, [
         captureStage,

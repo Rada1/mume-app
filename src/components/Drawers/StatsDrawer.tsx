@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useGame, useVitals } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
 import { CombatSliderPopout } from './StatsDrawer/CombatSliderPopout';
@@ -23,14 +23,14 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
         mood, setMood, spellSpeed, setSpellSpeed, alertness, setAlertness,
         playerPosition, setPlayerPosition, triggerHaptic, inCombat
     } = useGame();
-    const [activeSlider, setActiveSlider] = React.useState<'mood' | 'spell' | 'alert' | 'pos' | null>(null);
-    const { stats, setStats, characterInfo } = useVitals();
+    const [activeSlider, setActiveSlider] = useState<'mood' | 'spell' | 'alert' | 'pos' | null>(null);
+    const [activeButtonRect, setActiveButtonRect] = useState<DOMRect | null>(null);
+    const { stats, characterInfo } = useVitals();
 
     const activeSpells = useMemo(() => {
         const spells: string[] = [];
         let inSpellsSection = false;
         
-        // 1. Check legacy statsLines
         for (const line of statsLines) {
             const text = line.text.trim();
             if (text.startsWith('Affecting Spells:') || text.startsWith('Affected by:')) {
@@ -49,7 +49,6 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
             }
         }
 
-        // 2. Check modern characterInfo.affectedBy
         if (characterInfo?.affectedBy) {
             characterInfo.affectedBy.forEach(s => {
                 if (!spells.some(existing => existing.toLowerCase() === s.toLowerCase())) {
@@ -60,7 +59,6 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
 
         return spells;
     }, [statsLines, characterInfo?.affectedBy]);
-
 
     return (
         <div
@@ -81,7 +79,6 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                     const absX = Math.abs(deltaX);
                     const absY = Math.abs(deltaY);
                     
-                    // Swipe down OR swipe left to close (since it's on the left edge)
                     if ((deltaY > 50 && absY > absX) || (deltaX < -40 && absX > absY)) {
                         triggerHaptic(40);
                         onClose();
@@ -99,195 +96,257 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                 flex: 1, 
                 overflowY: 'auto', 
                 WebkitOverflowScrolling: 'touch', 
-                padding: isLandscape ? '12px 15px 40px 15px' : '20px', 
+                padding: isLandscape ? '5px 15px 40px 15px' : '20px 15px 40px 15px', 
                 position: 'relative', 
                 touchAction: 'pan-y',
                 display: 'flex',
                 flexDirection: 'column'
             }}>
                 
-                <div className="drawer-header" style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '12px 20px',
-                    background: 'rgba(10, 13, 21, 0.65)',
-                    backdropFilter: 'blur(25px)',
-                    WebkitBackdropFilter: 'blur(25px)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '16px',
-                    margin: '10px 15px 5px 15px',
-                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-                    pointerEvents: 'auto',
-                    position: 'relative',
-                    zIndex: 10
-                }}>
-
-                    <span style={{ fontWeight: '900', fontSize: '0.75rem', letterSpacing: '1.5px', color: '#ffffff', textTransform: 'uppercase' }}>Combat Stats</span>
-                    <button onClick={() => { triggerHaptic(20); onClose(); }} style={{ 
-                        marginLeft: 'auto',
-                        background: 'rgba(255,255,255,0.08)', 
-                        border: 'none', 
-                        color: '#fff', 
-                        width: '30px', 
-                        height: '30px', 
-                        borderRadius: '15px', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center', 
-                        fontSize: '1rem', 
-                        cursor: 'pointer'
-                    }}>✕</button>
-                </div>
-                
-                <div className="drawer-content" style={{ 
+                <div className="inner-container" style={{ 
                     flex: 1, 
-                    overflowY: 'auto', 
-                    padding: '10px 15px 40px 15px', 
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '0'
+                    gap: '20px'
                 }}>
-                    <div className="drawer-main-layout" style={{ 
-                        display: 'flex', 
-                        flexDirection: isLandscape ? 'row' : 'column', 
-                        gap: isLandscape ? '15px' : '0',
-                        flex: 1
+                    {/* Top Section: Settings & Potential in Grid */}
+                    <div style={{ 
+                        display: 'grid', 
+                        gridTemplateColumns: '90px 1fr',
+                        gap: '4px 6px',
+                        alignItems: 'stretch',
+                        paddingTop: '5px'
                     }}>
-                        {/* LEFT COLUMN (or Top in Portrait) */}
-                        <div className="drawer-col-left" style={{ flex: isLandscape ? 1.2 : 'none', display: 'flex', flexDirection: 'column' }}>
+                        {/* MOOD (Col 1, Row 1) */}
+                        <div 
+                            style={{ 
+                                cursor: 'pointer', 
+                                background: 'rgba(255,255,255,0.05)', 
+                                padding: '1px 6px', 
+                                borderRadius: '10px', 
+                                textAlign: 'center', 
+                                position: 'relative', 
+                                zIndex: activeSlider === 'mood' ? 101 : 1, 
+                                border: '1px solid rgba(255,255,255,0.05)',
+                                minHeight: '34px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                gridColumn: '1',
+                                gridRow: '1',
+                                boxSizing: 'border-box'
+                            }}
+                            onClick={(e) => { 
+                                triggerHaptic(10); 
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                setActiveButtonRect(rect);
+                                setActiveSlider(activeSlider === 'mood' ? null : 'mood'); 
+                            }}
+                        >
+                            <div style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: 'rgba(255,255,255,0.3)', fontWeight: 800, textTransform: 'uppercase', lineHeight: '1' }}>MOOD</div>
+                            <div style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: mood === 'berserk' ? '#f87171' : 'var(--accent)', fontWeight: '900', letterSpacing: '0.3px', marginTop: '0px', lineHeight: '1' }}>{mood.toUpperCase()}</div>
 
-                            <div className="drawer-section" style={{ pointerEvents: 'auto', marginBottom: '15px', padding: '10px 15px' }}>
-                                <div className="section-header">Affected By</div>
-                                <EffectIndicators activeSpells={activeSpells} stats={stats} />
-                            </div>
-
+                            {activeSlider === 'mood' && activeButtonRect && (
+                                <CombatSliderPopout 
+                                    label="SET MOOD"
+                                    value={mood}
+                                    options={['wimpy', 'prudent', 'normal', 'brave', 'aggressive', 'berserk']}
+                                    anchorRect={activeButtonRect}
+                                    onSelect={(val) => {
+                                        setMood(val);
+                                        executeCommand(`change mood ${val} `);
+                                        triggerHaptic(15);
+                                    }}
+                                    onClose={() => setActiveSlider(null)}
+                                    triggerHaptic={triggerHaptic}
+                                />
+                            )}
                         </div>
 
-                        {/* RIGHT COLUMN (or Bottom in Portrait) */}
-                        <div className="drawer-col-right" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                            {/* Combat Percentages Section */}
-                            <div className="drawer-section" style={{ pointerEvents: 'auto', marginBottom: '10px', padding: '10px 15px' }}>
-                                <div className="section-header">Combat Potential</div>
-                                <div style={{ 
-                                    display: 'grid',
-                                    gridTemplateColumns: 'repeat(4, 1fr)',
-                                    gap: '8px'
-                                }}>
-                                    {[
-                                        { label: 'OB', value: stats.ob },
-                                        { label: 'DB', value: stats.db },
-                                        { label: 'PB', value: stats.pb },
-                                        { label: 'ARM', value: stats.armour }
-                                    ].map(stat => (
-                                        <div key={stat.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                            <div style={{ fontSize: '0.45rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '0px', fontWeight: 800 }}>{stat.label}</div>
-                                            <div style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: '#4ade80', fontWeight: 'bold', marginTop: '-1px' }}>{stat.value !== undefined ? `${stat.value}%` : '--'}</div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="drawer-section" style={{ pointerEvents: 'auto', marginBottom: '10px', padding: '10px 15px', position: 'relative' }}>
-                                <div className="section-header">Combat Settings</div>
-                                
-                                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', position: 'relative' }}>
-                                    {/* MOOD */}
-                                    <div 
-                                        style={{ flex: 1, cursor: 'pointer', background: 'rgba(255,255,255,0.05)', padding: '6px 4px', borderRadius: '8px', textAlign: 'center', position: 'relative', zIndex: activeSlider === 'mood' ? 101 : 1 }}
-                                        onClick={() => { triggerHaptic(10); setActiveSlider(activeSlider === 'mood' ? null : 'mood'); }}
-                                    >
-                                        <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', fontWeight: 800, marginBottom: '2px' }}>MOOD</div>
-                                        <div style={{ fontSize: '0.7rem', color: mood === 'berserk' ? '#f87171' : 'var(--accent)', fontWeight: 'bold' }}>{mood === 'berserk' ? 'BERSERK' : mood.toUpperCase()}</div>
-                                        {activeSlider === 'mood' && (
-                                            <CombatSliderPopout 
-                                                label="SET MOOD"
-                                                value={mood}
-                                                options={['wimpy', 'prudent', 'normal', 'brave', 'aggressive', 'berserk']}
-                                                onSelect={(val) => {
-                                                    setMood(val);
-                                                    executeCommand(`change mood ${val} `);
-                                                    triggerHaptic(15);
-                                                }}
-                                                onClose={() => setActiveSlider(null)}
-                                                triggerHaptic={triggerHaptic}
-                                            />
-                                        )}
+                        {/* Right: Potential Stats (Col 2, Row 1-4) - We'll keep it next to Mood */}
+                        <div style={{ 
+                            display: 'flex',
+                            flexWrap: 'nowrap',
+                            gap: '4px',
+                            background: 'rgba(255,255,255,0.03)',
+                            padding: '1px 8px',
+                            borderRadius: '12px',
+                            border: '1px solid rgba(255,255,255,0.08)',
+                            justifyContent: 'space-around',
+                            gridRow: '1',
+                            gridColumn: '2',
+                            minHeight: '34px',
+                            alignItems: 'center',
+                            boxSizing: 'border-box'
+                        }}>
+                            {[
+                                { label: 'OB', value: stats.ob },
+                                { label: 'DB', value: stats.db },
+                                { label: 'PB', value: stats.pb },
+                                { label: 'ARM', value: stats.armour }
+                            ].map(stat => {
+                                const valStr = stat.value !== undefined ? String(stat.value) : '--';
+                                return (
+                                    <div key={stat.label} style={{ 
+                                        display: 'flex', 
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        flex: 1
+                                    }}>
+                                        <div style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: 'rgba(255,255,255,0.3)', fontWeight: 800, textTransform: 'uppercase', lineHeight: '1' }}>{stat.label}</div>
+                                        <div style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: '#4ade80', fontWeight: '900', marginTop: '0px', lineHeight: '1' }}>{valStr !== '--' && !valStr.includes('%') ? `${valStr}%` : valStr}</div>
                                     </div>
-
-                                    {/* SPELL SPEED */}
-                                    <div 
-                                        style={{ flex: 1, cursor: 'pointer', background: 'rgba(255,255,255,0.05)', padding: '6px 4px', borderRadius: '8px', textAlign: 'center', position: 'relative', zIndex: activeSlider === 'spell' ? 101 : 1 }}
-                                        onClick={() => { triggerHaptic(10); setActiveSlider(activeSlider === 'spell' ? null : 'spell'); }}
-                                    >
-                                        <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', fontWeight: 800, marginBottom: '2px' }}>SPEED</div>
-                                        <div style={{ fontSize: '0.7rem', color: 'var(--accent)', fontWeight: 'bold' }}>{spellSpeed.toUpperCase()}</div>
-                                        {activeSlider === 'spell' && (
-                                            <CombatSliderPopout 
-                                                label="SPELL SPEED"
-                                                value={spellSpeed}
-                                                options={['quick', 'fast', 'normal', 'careful', 'thorough']}
-                                                onSelect={(val) => {
-                                                    setSpellSpeed(val);
-                                                    executeCommand(`change spell ${val} `);
-                                                    triggerHaptic(15);
-                                                }}
-                                                onClose={() => setActiveSlider(null)}
-                                                triggerHaptic={triggerHaptic}
-                                            />
-                                        )}
-                                    </div>
-
-                                    {/* ALERTNESS */}
-                                    <div 
-                                        style={{ flex: 1, cursor: 'pointer', background: 'rgba(255,255,255,0.05)', padding: '6px 4px', borderRadius: '8px', textAlign: 'center', position: 'relative', zIndex: activeSlider === 'alert' ? 101 : 1 }}
-                                        onClick={() => { triggerHaptic(10); setActiveSlider(activeSlider === 'alert' ? null : 'alert'); }}
-                                    >
-                                        <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', fontWeight: 800, marginBottom: '2px' }}>ALERT</div>
-                                        <div style={{ fontSize: '0.7rem', color: alertness === 'paranoid' ? '#fbbf24' : 'var(--accent)', fontWeight: 'bold' }}>{alertness.toUpperCase()}</div>
-                                        {activeSlider === 'alert' && (
-                                            <CombatSliderPopout 
-                                                label="ALERTNESS"
-                                                value={alertness}
-                                                options={['normal', 'careful', 'attentive', 'vigilant', 'paranoid']}
-                                                onSelect={(val) => {
-                                                    setAlertness(val);
-                                                    executeCommand(`change alert ${val} `);
-                                                    triggerHaptic(15);
-                                                }}
-                                                onClose={() => setActiveSlider(null)}
-                                                triggerHaptic={triggerHaptic}
-                                            />
-                                        )}
-                                    </div>
-
-                                    {/* PLAYER POSITION */}
-                                    <div 
-                                        style={{ flex: 1, cursor: 'pointer', background: 'rgba(255,255,255,0.05)', padding: '6px 2px', borderRadius: '8px', textAlign: 'center', position: 'relative', zIndex: activeSlider === 'pos' ? 101 : 1 }}
-                                        onClick={() => { triggerHaptic(10); setActiveSlider(activeSlider === 'pos' ? null : 'pos'); }}
-                                    >
-                                        <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', fontWeight: 800, marginBottom: '2px', whiteSpace: 'nowrap' }}>POS</div>
-                                        <div style={{ fontSize: '0.62rem', color: playerPosition === 'standing' ? 'var(--accent)' : '#94a3b8', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{playerPosition.toUpperCase()}</div>
-                                        {activeSlider === 'pos' && (
-                                            <CombatSliderPopout 
-                                                label="POSITION"
-                                                value={playerPosition}
-                                                options={['sleeping', 'sitting', 'resting', 'standing']}
-                                                onSelect={(val, idx) => {
-                                                    if (playerPosition === 'sleeping' && idx > 0) {
-                                                        executeCommand('wake');
-                                                    }
-                                                    setPlayerPosition(val);
-                                                    executeCommand(val === 'sleeping' ? 'sleep' : val === 'resting' ? 'rest' : val === 'sitting' ? 'sit' : 'stand');
-                                                    triggerHaptic(15);
-                                                }}
-                                                onClose={() => setActiveSlider(null)}
-                                                triggerHaptic={triggerHaptic}
-                                            />
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
+                                );
+                            })}
                         </div>
+
+                        {/* SPEED (Col 1, Row 2) */}
+                        <div 
+                            style={{ 
+                                cursor: 'pointer', 
+                                background: 'rgba(255,255,255,0.05)', 
+                                padding: '1px 6px', 
+                                borderRadius: '10px', 
+                                textAlign: 'center', 
+                                position: 'relative', 
+                                zIndex: activeSlider === 'spell' ? 101 : 1, 
+                                border: '1px solid rgba(255,255,255,0.05)',
+                                minHeight: '34px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                gridColumn: '1',
+                                gridRow: '2',
+                                boxSizing: 'border-box'
+                            }}
+                            onClick={(e) => { 
+                                triggerHaptic(10); 
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                setActiveButtonRect(rect);
+                                setActiveSlider(activeSlider === 'spell' ? null : 'spell'); 
+                            }}
+                        >
+                            <div style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: 'rgba(255,255,255,0.3)', fontWeight: 800, textTransform: 'uppercase', lineHeight: '1' }}>SPEED</div>
+                            <div style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: 'var(--accent)', fontWeight: '900', letterSpacing: '0.3px', marginTop: '0px', lineHeight: '1' }}>{spellSpeed.toUpperCase()}</div>
+
+                            {activeSlider === 'spell' && activeButtonRect && (
+                                <CombatSliderPopout 
+                                    label="SPELL SPEED"
+                                    value={spellSpeed}
+                                    options={['quick', 'fast', 'normal', 'careful', 'thorough']}
+                                    anchorRect={activeButtonRect}
+                                    onSelect={(val) => {
+                                        setSpellSpeed(val);
+                                        executeCommand(`change spell ${val} `);
+                                        triggerHaptic(15);
+                                    }}
+                                    onClose={() => setActiveSlider(null)}
+                                    triggerHaptic={triggerHaptic}
+                                />
+                            )}
+                        </div>
+
+                        {/* ALERT (Col 1, Row 3) */}
+                        <div 
+                            style={{ 
+                                cursor: 'pointer', 
+                                background: 'rgba(255,255,255,0.05)', 
+                                padding: '1px 6px', 
+                                borderRadius: '10px', 
+                                textAlign: 'center', 
+                                position: 'relative', 
+                                zIndex: activeSlider === 'alert' ? 101 : 1, 
+                                border: '1px solid rgba(255,255,255,0.05)',
+                                minHeight: '34px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                gridColumn: '1',
+                                gridRow: '3',
+                                boxSizing: 'border-box'
+                            }}
+                            onClick={(e) => { 
+                                triggerHaptic(10); 
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                setActiveButtonRect(rect);
+                                setActiveSlider(activeSlider === 'alert' ? null : 'alert'); 
+                            }}
+                        >
+                            <div style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: 'rgba(255,255,255,0.3)', fontWeight: 800, textTransform: 'uppercase', lineHeight: '1' }}>ALERT</div>
+                            <div style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: alertness === 'paranoid' ? '#fbbf24' : 'var(--accent)', fontWeight: '900', letterSpacing: '0.3px', marginTop: '0px', lineHeight: '1' }}>{alertness.toUpperCase()}</div>
+
+                            {activeSlider === 'alert' && activeButtonRect && (
+                                <CombatSliderPopout 
+                                    label="ALERTNESS"
+                                    value={alertness}
+                                    options={['normal', 'careful', 'attentive', 'vigilant', 'paranoid']}
+                                    anchorRect={activeButtonRect}
+                                    onSelect={(val) => {
+                                        setAlertness(val);
+                                        executeCommand(`change alert ${val} `);
+                                        triggerHaptic(15);
+                                    }}
+                                    onClose={() => setActiveSlider(null)}
+                                    triggerHaptic={triggerHaptic}
+                                />
+                            )}
+                        </div>
+
+                        {/* POSITION (Col 1, Row 4) */}
+                        <div 
+                            style={{ 
+                                cursor: 'pointer', 
+                                background: 'rgba(255,255,255,0.05)', 
+                                padding: '1px 6px', 
+                                borderRadius: '10px', 
+                                textAlign: 'center', 
+                                position: 'relative', 
+                                pointerEvents: 'auto', 
+                                zIndex: activeSlider === 'pos' ? 101 : 1, 
+                                border: '1px solid rgba(255,255,255,0.05)',
+                                minHeight: '34px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                gridColumn: '1',
+                                gridRow: '4',
+                                boxSizing: 'border-box'
+                            }}
+                            onClick={(e) => { 
+                                triggerHaptic(10); 
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                setActiveButtonRect(rect);
+                                setActiveSlider(activeSlider === 'pos' ? null : 'pos'); 
+                            }}
+                        >
+                            <div style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: 'rgba(255,255,255,0.3)', fontWeight: 800, textTransform: 'uppercase', lineHeight: '1' }}>POS</div>
+                            <div style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: playerPosition === 'standing' ? 'var(--accent)' : '#94a3b8', fontWeight: '900', letterSpacing: '0.3px', marginTop: '0px', lineHeight: '1' }}>{playerPosition.toUpperCase()}</div>
+
+                            {activeSlider === 'pos' && activeButtonRect && (
+                                <CombatSliderPopout 
+                                    label="POSITION"
+                                    value={playerPosition}
+                                    options={['sleeping', 'resting', 'sitting', 'standing']}
+                                    anchorRect={activeButtonRect}
+                                    onSelect={(val, idx) => {
+                                        if (playerPosition === 'sleeping' && idx > 0) {
+                                            executeCommand('wake');
+                                        }
+                                        setPlayerPosition(val);
+                                        executeCommand(val === 'sleeping' ? 'sleep' : val === 'resting' ? 'rest' : val === 'sitting' ? 'sit' : 'stand');
+                                        triggerHaptic(15);
+                                    }}
+                                    onClose={() => setActiveSlider(null)}
+                                    triggerHaptic={triggerHaptic}
+                                />
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Bottom Section: Affected By */}
+                    <div className="drawer-section" style={{ pointerEvents: 'auto', marginTop: 'auto', padding: '15px 0' }}>
+                        <div className="section-header" style={{ marginBottom: '12px', fontSize: 'var(--dynamic-log-size, 16px)', fontWeight: '800' }}>Affected By</div>
+                        <EffectIndicators activeSpells={activeSpells} stats={stats} />
                     </div>
                 </div>
             </div>

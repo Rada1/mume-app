@@ -20,6 +20,8 @@ export interface RenderContext {
     visitedAtCoord: Record<string, boolean>;
     roomNpcs?: import('../../../types').GmcpOccupant[];
     roomPlayers?: import('../../../types').GmcpOccupant[];
+    roomItems?: import('../../../types').GmcpOccupant[];
+    centerOverride?: { x: number, y: number, z: number };
     inlineCategories?: import('../../../types').InlineCategoryConfig[];
     opponentName?: string | null;
     opponentId?: string | null;

@@ -11,13 +11,13 @@
 /* Mobile Bottom Gutter */
 .mobile-bottom-gutter {
     flex-shrink: 0;
-    height: 280px; /* Taller peek height */
+    height: 300px; /* Taller peek height to meet command bar */
     background: transparent;
     border-top: none;
     box-shadow: none;
     z-index: 3500;
     touch-action: none; /* Block browser gestures */
-    transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
     position: relative;
     overflow: visible; /* Allow sections to float */
     display: flex;
@@ -25,7 +25,19 @@
     pointer-events: none; /* Let clicks pass through empty space */
 }
 
-@media (max-width: 768px) {
+/* Standard mobile drawer/tab area: rounded top corners + top border */
+@media (max-width: 1024px) {
+    .mobile-bottom-gutter:not(.map-expanded) {
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 20px 20px 0 0;
+        overflow: hidden;
+    }
+}
+
+/* Removed .drawer-open-portrait hiding rule so tabs stay visible when drawer is open */
+
+
+@media (max-width: 1024px) {
     .mobile-bottom-gutter.map-expanded {
         height: 75vh; /* Lowered expanded height */
     }
@@ -35,7 +47,7 @@
     .kb-open .joystick-cluster,
     .kb-open .xbox-cluster,
     .kb-open .reset-zoom-fab,
-    .kb-open:not(.is-landscape) .mobile-bottom-gutter {
+    .kb-open .mobile-bottom-gutter {
         display: none !important;
     }
 
@@ -49,37 +61,16 @@
     }
 }
 
-.is-landscape .mobile-bottom-gutter {
-    width: 25vw !important;
-    min-width: 200px !important;
-    max-width: none !important;
-    height: 100% !important;
-    display: flex !important;
-    flex-direction: row !important;
-    border-top: none !important;
-    border-right: none !important;
-    position: relative !important;
-    overflow: visible !important;
-    opacity: 1 !important;
-    transform: none !important;
-    background: transparent;
-    z-index: 2500;
-    flex-shrink: 0;
-    pointer-events: none !important;
-    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
+/* Removed landscape-specific gutter overrides to unify with portrait behavior */
 
-.is-landscape .mobile-bottom-gutter.map-expanded {
-    width: 65vw !important;
-    overflow: visible !important;
-}
-
-/* Hide interactive buttons in portrait mode when map is expanded to prevent toolbar overlap */
-.app-container.is-map-expanded:not(.is-landscape) .spat-container,
-.app-container.is-map-expanded:not(.is-landscape) .line-cluster-container,
-.app-container.is-map-expanded:not(.is-landscape) .hud-clusters-absolute-layer {
-    display: none !important;
-    pointer-events: none !important;
+/* Hide interactive buttons in mobile portrait mode when map is expanded to prevent toolbar overlap.
+   On desktop the map drawer pushes the log aside, so buttons remain visible. */
+@media (max-width: 1024px) {
+    .app-container.is-map-expanded .spat-container,
+    .app-container.is-map-expanded .line-cluster-container,
+    .app-container.is-map-expanded .hud-clusters-absolute-layer {
+        display: none !important;
+    }
 }
 
 /* --- Command Bar & Vitals Split Layout --- */
@@ -120,6 +111,127 @@
     cursor: pointer;
     box-shadow: 0 0 10px rgba(184, 134, 11, 0.5);
 }
+.sticky-room-header {
+    position: relative;
+    top: 0;
+    z-index: 6000;
+    background: transparent !important;
+    margin: 8px 8px 4px 8px;
+    padding: 12px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    container-type: inline-size;
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.room-info-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.room-name {
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.room-desc {
+    font-family: 'Space Mono', monospace;
+    /* Formula: (Width - HeaderPadding - Gap - MapWidth - MapExtras) / (80 chars * 0.6 aspect) */
+    /* (100cqw - 20px - 16px - 64px - 40px) / 48 => (100cqw - 140px) / 48 */
+    font-size: clamp(9px, calc((100cqw - 140px) / 48), 15px);
+    color: #e2e8f0; /* Crisp light gray/white */
+    max-width: 80ch;
+    line-height: 1.35;
+    opacity: 0.95;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.sticky-room-header .tactical-mini-map-container {
+    flex-shrink: 0;
+    margin-left: 8px;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    padding-left: 12px;
+    background: transparent;
+    box-shadow: none;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+    border-radius: 0;
+}
+
+
+
+/* Terrain Glows & Divider Colors */
+.sticky-room-header.terrain-forest {
+    border-color: rgba(34, 197, 94, 0.85) !important;
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.4), inset 0 0 25px rgba(34, 197, 94, 0.2) !important;
+}
+.sticky-room-header.terrain-water {
+    border-color: rgba(56, 189, 248, 0.85) !important;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.4), inset 0 0 25px rgba(56, 189, 248, 0.2) !important;
+}
+.sticky-room-header.terrain-field {
+    border-color: rgba(253, 224, 71, 0.85) !important;
+    box-shadow: 0 0 20px rgba(253, 224, 71, 0.4), inset 0 0 25px rgba(253, 224, 71, 0.2) !important;
+}
+.sticky-room-header.terrain-brush {
+    border-color: rgba(132, 204, 22, 0.85) !important;
+    box-shadow: 0 0 20px rgba(132, 204, 22, 0.4), inset 0 0 25px rgba(132, 204, 22, 0.2) !important;
+}
+.sticky-room-header.terrain-road {
+    border-color: rgba(148, 163, 184, 0.85) !important;
+    box-shadow: 0 0 20px rgba(148, 163, 184, 0.4), inset 0 0 25px rgba(148, 163, 184, 0.2) !important;
+}
+.sticky-room-header.terrain-mountain,
+.sticky-room-header.terrain-hills {
+    border-color: rgba(249, 115, 22, 0.85) !important;
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.4), inset 0 0 25px rgba(249, 115, 22, 0.2) !important;
+}
+.sticky-room-header.terrain-underground {
+    border-color: rgba(113, 113, 122, 0.8) !important;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6), inset 0 0 30px rgba(113, 113, 122, 0.15) !important;
+}
+.sticky-room-header.terrain-city,
+.sticky-room-header.terrain-building {
+    border-color: rgba(34, 211, 238, 0.8) !important;
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.4), inset 0 0 25px rgba(34, 211, 238, 0.2) !important;
+}
+
+.sticky-room-header .message,
+.sticky-room-header .message * {
+    flex: 1;
+    padding-left: 0;
+    margin: 0;
+    background: transparent !important;
+    border: none !important;
+}
+
+.sticky-room-header .tactical-mini-map-container {
+    width: 140px !important;
+    height: 140px !important;
+    flex: 0 0 auto !important;
+    aspect-ratio: 1 / 1;
+}
+
+@media (max-width: 768px) {
+    .sticky-room-header {
+        padding: 8px;
+        gap: 10px;
+    }
+
+    .sticky-room-header .tactical-mini-map-container {
+        width: 60px !important;
+        height: 60px !important;
+    }
+}
 
 .mobile-slider::-moz-range-thumb {
     width: 18px;
@@ -133,7 +245,7 @@
 
 @media (max-width: 768px) {
     .input-area {
-        padding: 0 0 10px 0 !important; /* Zero horizontal padding for absolute edge-to-edge pods */
+        padding: 0 !important; /* Zero padding for absolute flush fit against drawers */
         gap: 6px; 
     }
 }
@@ -166,7 +278,6 @@
 
 .app-container.in-combat .background-layer,
 .app-container.in-combat .atmospheric-layer,
-.app-container.in-combat .stats-cluster,
 .app-container.in-combat .custom-buttons-layer,
 .app-container.in-combat .header,
 .app-container.in-combat .input-area {
@@ -207,24 +318,7 @@
     }
 }
 
-.input-vitals-dock {
-    position: relative;
-    flex-shrink: 0;
-    width: auto; 
-    height: 52px; 
-    padding: 1px 4px; /* Reduced vertical padding */
-    display: flex;
-    align-items: center;
-    background: rgba(15, 23, 42, 0.45);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
-    border-radius: 12px; 
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-sizing: border-box;
-    overflow: visible; /* ALLOW WIMPY LABELS TO POP OUT */
-}
+
 
 .input-form {
     display: flex;
@@ -304,12 +398,7 @@
 }
 
 
-@media (min-width: 769px) {
-    .input-vitals-dock {
-        height: 58px;
-        padding: 2px 6px;
-    }
-}
+
 
 /* Focused state for the command bar pod */
 .input-main-container.focused {
@@ -336,62 +425,52 @@
 }
 
 /* Terrain Specific Glows Applied to Pods */
-.input-area.terrain-forest .input-main-container,
-.input-area.terrain-forest .input-vitals-dock {
+.input-area.terrain-forest .input-main-container {
     border-color: rgba(34, 197, 94, 0.45) !important;
     box-shadow: 0 0 25px rgba(34, 197, 94, 0.2), inset 0 0 40px rgba(34, 197, 94, 0.2), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
 }
 
-.input-area.terrain-water .input-main-container,
-.input-area.terrain-water .input-vitals-dock {
+.input-area.terrain-water .input-main-container {
     border-color: rgba(56, 189, 248, 0.45) !important;
     box-shadow: 0 0 25px rgba(56, 189, 248, 0.2), inset 0 0 40px rgba(56, 189, 248, 0.2), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
 }
 
-.input-area.terrain-field .input-main-container,
-.input-area.terrain-field .input-vitals-dock {
+.input-area.terrain-field .input-main-container {
     border-color: rgba(253, 224, 71, 0.4) !important;
     box-shadow: 0 0 25px rgba(253, 224, 71, 0.15), inset 0 0 40px rgba(253, 224, 71, 0.15), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
 }
 
-.input-area.terrain-brush .input-main-container,
-.input-area.terrain-brush .input-vitals-dock {
+.input-area.terrain-brush .input-main-container {
     border-color: rgba(132, 204, 22, 0.4) !important;
     box-shadow: 0 0 25px rgba(132, 204, 22, 0.15), inset 0 0 40px rgba(132, 204, 22, 0.15), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
 }
 
-.input-area.terrain-road .input-main-container,
-.input-area.terrain-road .input-vitals-dock {
+.input-area.terrain-road .input-main-container {
     border-color: rgba(148, 163, 184, 0.4) !important;
     box-shadow: 0 0 25px rgba(148, 163, 184, 0.15), inset 0 0 40px rgba(148, 163, 184, 0.12), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
 }
 
-.input-area.terrain-mountain .input-main-container,
-.input-area.terrain-mountain .input-vitals-dock {
+.input-area.terrain-mountain .input-main-container {
     border-color: rgba(226, 232, 240, 0.3) !important;
     box-shadow: 0 0 25px rgba(226, 232, 240, 0.15), inset 0 0 40px rgba(226, 232, 240, 0.12), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
 }
 
-.input-area.terrain-hills .input-main-container,
-.input-area.terrain-hills .input-vitals-dock {
+.input-area.terrain-hills .input-main-container {
     border-color: rgba(249, 115, 22, 0.4) !important;
     box-shadow: 0 0 25px rgba(249, 115, 22, 0.15), inset 0 0 40px rgba(249, 115, 22, 0.15), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
 }
 
-.input-area.terrain-underground .input-main-container,
-.input-area.terrain-underground .input-vitals-dock {
+.input-area.terrain-underground .input-main-container {
     border-color: rgba(113, 113, 122, 0.5) !important;
     box-shadow: 0 0 25px rgba(0, 0, 0, 0.6), inset 0 0 40px rgba(113, 113, 122, 0.2), 0 0 10px rgba(255, 255, 255, 0.05) !important;
 }
 
-.input-area.terrain-city .input-main-container,
-.input-area.terrain-city .input-vitals-dock {
+.input-area.terrain-city .input-main-container {
     border-color: rgba(156, 163, 175, 0.4) !important;
     box-shadow: 0 0 25px rgba(156, 163, 175, 0.2), inset 0 0 40px rgba(156, 163, 175, 0.15), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
 }
 
-.input-area.terrain-building .input-main-container,
-.input-area.terrain-building .input-vitals-dock {
+.input-area.terrain-building .input-main-container {
     border-color: rgba(156, 163, 175, 0.4) !important;
     box-shadow: 0 0 25px rgba(156, 163, 175, 0.2), inset 0 0 40px rgba(156, 163, 175, 0.15), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
 }
@@ -412,11 +491,7 @@
 }
 
 
-/* Specific styling for the "vitals" docked bars */
-.input-vitals-dock .modern-vitals-container {
-    padding: 0;
-    width: auto; /* Shrink to fit! */
-}
+
 
 /* --- Global Combat Dimming --- */
 
@@ -441,7 +516,6 @@
 /* Base transition so grayscale fades in AND out smoothly over 1s */
 .app-container .background-layer,
 .app-container .environment-root,
-.app-container .stats-cluster,
 .app-container .mobile-bottom-gutter,
 .app-container .mapper-cluster,
 .app-container .mapper-container,
@@ -455,7 +529,6 @@
 
 .app-container.in-combat .background-layer,
 .app-container.in-combat .environment-root,
-.app-container.in-combat .stats-cluster,
 .app-container.in-combat .custom-buttons-layer,
 .app-container.in-combat .mobile-bottom-gutter,
 .app-container.in-combat .mapper-cluster,
@@ -476,7 +549,8 @@
     transition: filter 0.8s ease, opacity 0.8s ease;
 }
 
-.app-container.in-combat .message.is-combat {
+.app-container.in-combat .message.is-combat,
+.app-container.in-combat .stats-cluster {
     filter: none !important;
 }
 

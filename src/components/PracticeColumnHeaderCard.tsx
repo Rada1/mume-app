@@ -22,8 +22,8 @@ const PracticeColumnHeaderCard: React.FC<PracticeColumnHeaderCardProps> = ({ ses
                 boxShadow: 'inset 0 0 15px rgba(184, 134, 11, 0.05)'
             }}>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.65rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px' }}>Available Sessions</span>
-                    <span style={{ color: 'var(--accent)', fontSize: '1.2rem', fontWeight: '900', textShadow: '0 0 15px rgba(184, 134, 11, 0.3)' }}>{sessionsLeft}</span>
+                    <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 'var(--dynamic-log-size, 16px)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px' }}>Available Sessions</span>
+                    <span style={{ color: 'var(--accent)', fontSize: 'var(--dynamic-log-size, 16px)', fontWeight: '900', textShadow: '0 0 15px rgba(184, 134, 11, 0.3)' }}>{sessionsLeft}</span>
                 </div>
                 <div style={{ 
                     width: '32px', 
@@ -35,7 +35,7 @@ const PracticeColumnHeaderCard: React.FC<PracticeColumnHeaderCardProps> = ({ ses
                     justifyContent: 'center',
                     color: 'var(--accent)'
                 }}>
-                    <span style={{ fontSize: '1rem', fontWeight: '900' }}>!</span>
+                    <span style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontWeight: '900' }}>!</span>
                 </div>
             </div>
         </div>

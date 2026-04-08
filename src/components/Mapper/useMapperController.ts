@@ -13,6 +13,7 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
     const {
         rooms, setRooms, markers, setMarkers, currentRoomId, setCurrentRoomId,
         currentRoomIdRef, roomsRef, preloadedCoordsRef,
+        handleRoomInfo, handleUpdateExits, handleTerrain,
         handleResetAndSync, handleSyncLocation, handleClearMap,
         handleAddRoom, handleDeleteRoom, pushPendingMove,
         handleMoveConfirmed, handleMoveFailure, preMoveRef,
@@ -23,11 +24,11 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
     // Note: allowPersistence and unveilMap are now global in MapperContext
 
     useImperativeHandle(ref, () => ({
-        handleRoomInfo: () => {}, // Handled by context events
+        handleRoomInfo,
         handleAddRoom,
         handleDeleteRoom,
-        handleUpdateExits: () => {}, // Handled by context events
-        handleTerrain: () => {}, // Handled by context events
+        handleUpdateExits,
+        handleTerrain,
         handleResetAndSync,
         handleMoveConfirmed,
         handleMoveFailure,

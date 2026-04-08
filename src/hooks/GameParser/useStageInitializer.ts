@@ -132,13 +132,9 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
             setCharacterInfo((prev: any) => ({ ...prev, whois: '' }));
             if (isCharacterOpen) isSilentCapture.current = 1;
         }
-        else if (lower.includes('described as:') || (lower.startsWith('description') && lower.includes(':'))) {
-            if (captureStage.current === 'description') return;
-            if (captureStage.current !== 'none') finalizeCapture();
-            captureStage.current = 'description';
-            setCharacterInfo((prev: any) => ({ ...prev, description: '' }));
-            if (isCharacterOpen) isSilentCapture.current = 1;
-        }
+        // NOTE: 'description' captureStage removed — the Room Card handles descriptions
+        // via GMCP exclusively. Keeping this stage caused room description lines to silence
+        // all subsequent room content (NPCs, exits, items) until the next prompt.
     }, [
         captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isPlayersOpen,

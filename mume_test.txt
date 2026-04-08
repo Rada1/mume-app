@@ -1,0 +1,2 @@
+["You get a sword .","You","a sword"]
+["You drop a sword.","You","a sword"]

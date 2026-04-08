@@ -52,11 +52,16 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setIsBloomEnabled,
     isSpectateMode,
     setIsSpectateMode,
+    isTimestampEnabled,
+    setIsTimestampEnabled,
+    isNewbieMode,
+    setIsNewbieMode,
+    isNoviceMode,
+    setIsNoviceMode,
 }) => {
     const {
         isMmapperMode, setIsMmapperMode,
         isSoundEnabled, setIsSoundEnabled,
-        isNoviceMode, setIsNoviceMode,
         theme, setTheme,
         actions, setActions,
         status
@@ -132,6 +137,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setIsBloomEnabled={setIsBloomEnabled}
                                 isSpectateMode={isSpectateMode}
                                 setIsSpectateMode={setIsSpectateMode}
+                                isTimestampEnabled={isTimestampEnabled}
+                                setIsTimestampEnabled={setIsTimestampEnabled}
+                                isNewbieMode={isNewbieMode}
+                                setIsNewbieMode={setIsNewbieMode}
                             />
                             <DataManagement
                                 exportSettings={exportSettings}

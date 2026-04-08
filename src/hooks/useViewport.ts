@@ -42,7 +42,7 @@ export function useViewport(
         return isMobile && windowWidth > window.innerHeight;
     }, [isMobile, windowWidth, uiMode]);
 
-    const scrollToBottom = useCallback((force = false, instant = false, source = 'unknown') => {
+    const scrollToBottom = useCallback((force = false, instant = false, _source = 'unknown') => {
         if (!scrollContainerRef.current) return;
         const container = scrollContainerRef.current;
 
@@ -122,11 +122,13 @@ export function useViewport(
                 cancelAnimationFrame(scrollAnimationRef.current);
                 scrollAnimationRef.current = null;
             }
+            // Set isAutoScrollingRef BEFORE scrollTop so the resulting scroll event
+            // is recognized as programmatic — otherwise handleScroll sets isUserScrollingRef=true
+            // for 150ms which blocks VirtualizerResize corrections during rapid text.
+            isAutoScrollingRef.current = true;
             container.scrollTop = targetScroll;
-            isAutoScrollingRef.current = false;
+            requestAnimationFrame(() => { isAutoScrollingRef.current = false; });
         }
-
-        console.log(`[useViewport] scrollToBottom source=${source} force=${force} target=${targetScroll} current=${currentScroll}`);
     }, [disableSmoothScroll, isImmersionMode]);
 
     useEffect(() => {
@@ -220,31 +222,34 @@ export function useViewport(
     // --- Dedicated Precision Layout Engine ---
     useEffect(() => {
         const updateLayout = () => {
-            const logContainer = document.querySelector('.message-log-container');
-            if (!logContainer) return;
+            // Measure the inner scroll element — its clientWidth already excludes the scrollbar.
+            const messageLog = document.querySelector('.message-log') as HTMLElement | null;
+            const logContainer = document.querySelector('.message-log-container') as HTMLElement | null;
+            if (!messageLog || !logContainer) return;
 
-            const width = logContainer.clientWidth;
+            const width = messageLog.clientWidth; // excludes scrollbar
             const height = logContainer.clientHeight;
             if (width === 0 || height === 0) return;
 
-            // --- Canvas-based character width measurement ---
-            // Canvas measureText() returns advance widths in CSS pixels at the given font-size.
-            // We measure at a large reference size for sub-pixel accuracy.
-            const REF_SIZE = 100; // px
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            if (!ctx) return;
+            // --- DOM-based character width measurement ---
+            // Measure a real DOM span so the browser uses the actual loaded font
+            // (canvas measureText can fall back to system monospace before web fonts load).
+            const span = document.createElement('span');
+            span.style.cssText = 'position:absolute;visibility:hidden;white-space:pre;' +
+                'font-family:"Space Mono",monospace;font-size:100px;pointer-events:none;';
+            span.textContent = 'MMMMMMMMMMMMMMMMMMMM'; // 20 chars at ref size 100px
+            document.body.appendChild(span);
+            const spanWidth = span.getBoundingClientRect().width;
+            document.body.removeChild(span);
+            if (spanWidth === 0) return;
 
-            // Measure 20 chars for better average (handles hinting, kerning edge cases)
-            ctx.font = `${REF_SIZE}px "Space Mono", monospace`;
-            const sampleText = 'MMMMMMMMMMMMMMMMMMMM'; // 20 chars
-            const totalWidth = ctx.measureText(sampleText).width;
-            const charWidthRatio = (totalWidth / sampleText.length) / REF_SIZE; // width per px of font-size
+            const REF_SIZE = 100;
+            const charWidthRatio = (spanWidth / 20) / REF_SIZE; // advance width per px of font-size
 
-            // font-size needed so that 80 chars * charWidthRatio * fontSize === usableWidth
+            // font-size needed so that 80 chars fit within the usable text area
             const targetCols = 80;
-            const horizontalPadding = 16;
-            const usableWidth = Math.max(0, width - horizontalPadding);
+            const messagePadding = 36; // Matching .message padding: 24px left + 12px right
+            const usableWidth = Math.max(0, width - messagePadding);
 
             let calculatedFontSize = usableWidth / (targetCols * charWidthRatio);
 
@@ -259,8 +264,8 @@ export function useViewport(
             const finalCharWidth = charWidthRatio * safeSize;
             const finalLineHeight = safeSize * 1.1;
 
-            const actualCols = Math.floor(usableWidth / finalCharWidth);
-            const actualRows = Math.floor(height / finalLineHeight);
+            const actualCols = Math.floor((usableWidth / finalCharWidth) + 0.1);
+            const actualRows = Math.floor((height / finalLineHeight) + 0.1);
 
             setColumns(actualCols);
             setRows(actualRows);
@@ -270,9 +275,21 @@ export function useViewport(
         const timer = setTimeout(updateLayout, 10);
         const timer2 = setTimeout(updateLayout, 250); // Final settlement
 
+        // Re-measure after web fonts finish loading (Space Mono may not be ready at mount)
+        document.fonts.ready.then(updateLayout);
+
+        // Re-measure if the container resizes (drawer opens/closes, orientation change, etc.)
+        const container = document.querySelector('.message-log-container');
+        let ro: ResizeObserver | null = null;
+        if (container) {
+            ro = new ResizeObserver(updateLayout);
+            ro.observe(container);
+        }
+
         return () => {
             clearTimeout(timer);
             clearTimeout(timer2);
+            ro?.disconnect();
         };
     }, [isMobile, isLandscape, logFontSize, windowWidth, isKeyboardOpen]);
 

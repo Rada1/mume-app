@@ -36,8 +36,8 @@ export const EnvControls: React.FC<EnvControlsProps> = ({ getLightingIcon, getWe
                     {isFoggy && <CloudFog size={14} className="text-gray-400" />}
                     {!viewport.isMobile && (
                         <span style={{ fontSize: '0.75rem' }}>
-                            {lighting !== 'none' ? lighting.toUpperCase() : ''}
-                            {weather !== 'none' && weather !== 'clear' ? ` | ${weather.toUpperCase().replace('-', ' ')}` : ''}
+                            {lighting && lighting !== 'none' ? lighting.toUpperCase() : ''}
+                            {weather && weather !== 'none' && weather !== 'clear' ? ` | ${weather.toUpperCase().replace('-', ' ')}` : ''}
                             {isFoggy ? ' | FOG' : ''}
                         </span>
                     )}

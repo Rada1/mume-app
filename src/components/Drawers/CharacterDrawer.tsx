@@ -112,7 +112,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                             onClick={(e) => { e.stopPropagation(); setActiveTab('info'); }}
                         >
                             <User size={14} />
-                            <span>Character</span>
+                            <span>Info</span>
                         </button>
                         <button 
                             className={`drawer-tab ${activeTab === 'practice' ? 'active' : ''}`}
@@ -194,7 +194,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                         </button>
                                     </div>
                                     {characterInfo.alignment && (
-                                        <p style={{ color: 'var(--accent)', opacity: 0.8, fontSize: '0.75rem', marginTop: '4px', fontStyle: 'italic' }}>{characterInfo.alignment}</p>
+                                        <p style={{ color: 'var(--accent)', opacity: 0.8, fontSize: 'var(--dynamic-log-size, 16px)', marginTop: '4px', fontStyle: 'italic' }}>{characterInfo.alignment}</p>
                                     )}
                                 </div>
                             </div>
@@ -222,10 +222,10 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                     <div className="progress-container">
                                         <div className="progress-labels">
                                             <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-                                                <span style={{ color: 'var(--accent)', fontWeight: '800' }}>XP</span>
-                                                <span style={{ fontSize: '0.9rem', color: '#4ade80', fontWeight: 'bold' }}>{formatNumber(info.xp)}</span>
+                                                <span style={{ color: 'var(--accent)', fontWeight: '800', fontSize: 'var(--dynamic-log-size, 16px)' }}>XP</span>
+                                                <span style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: '#4ade80', fontWeight: 'bold' }}>{formatNumber(info.xp)}</span>
                                             </div>
-                                            <span style={{ fontSize: '0.8rem', opacity: 0.9, fontWeight: '800' }}>{Math.floor((info.xp / (info.xpMax || 1)) * 100)}%</span>
+                                            <span style={{ fontSize: 'var(--dynamic-log-size, 16px)', opacity: 0.9, fontWeight: '800' }}>{Math.floor((info.xp / (info.xpMax || 1)) * 100)}%</span>
                                         </div>
                                         <div className="progress-bar-bg">
                                             <div className="progress-bar-fill xp" style={{ width: `${Math.min(100, (info.xp / (info.xpMax || 1)) * 100)}%` }} />
@@ -238,10 +238,10 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                     <div className="progress-container">
                                         <div className="progress-labels">
                                             <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-                                                <span style={{ color: '#60a5fa', fontWeight: '800' }}>TP</span>
-                                                <span style={{ fontSize: '0.9rem', color: '#4ade80', fontWeight: 'bold' }}>{formatNumber(info.tp)}</span>
+                                                <span style={{ color: '#60a5fa', fontWeight: '800', fontSize: 'var(--dynamic-log-size, 16px)' }}>TP</span>
+                                                <span style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: '#4ade80', fontWeight: 'bold' }}>{formatNumber(info.tp)}</span>
                                             </div>
-                                            <span style={{ fontSize: '0.8rem', opacity: 0.9, fontWeight: '800' }}>{Math.floor((info.tp / (info.tpMax || 1)) * 100)}%</span>
+                                            <span style={{ fontSize: 'var(--dynamic-log-size, 16px)', opacity: 0.9, fontWeight: '800' }}>{Math.floor((info.tp / (info.tpMax || 1)) * 100)}%</span>
                                         </div>
                                         <div className="progress-bar-bg">
                                             <div className="progress-bar-fill tp" style={{ width: `${Math.min(100, (info.tp / (info.tpMax || 1)) * 100)}%` }} />
@@ -257,7 +257,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                     ) : activeTab === 'practice' ? (
                         <div className="practice-tab">
                             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
-                                <button className="refresh-button" onClick={() => executeCommand('practice')} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#fff', padding: '4px 10px', borderRadius: '8px', fontSize: '0.7rem', fontWeight: '700' }}>
+                                <button className="refresh-button" onClick={() => executeCommand('practice')} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#fff', padding: '4px 10px', borderRadius: '8px', fontSize: 'var(--dynamic-log-size, 16px)', fontWeight: '700' }}>
                                     Refresh
                                 </button>
                             </div>
@@ -283,17 +283,17 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                             ) : (
                                 <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
                                     <BookOpen size={32} style={{ marginBottom: '10px' }} />
-                                    <p style={{ fontSize: '0.8rem' }}>No practice data available.</p>
+                                    <p style={{ fontSize: 'var(--dynamic-log-size, 16px)' }}>No practice data available.</p>
                                 </div>
                             )}
                         </div>
                     ) : (
                         <div className="quests-tab">
                             <div className="quests-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', padding: '0 5px' }}>
-                                <div className="quests-badge" style={{ background: 'rgba(184, 134, 11, 0.1)', color: '#b8860b', border: '1px solid rgba(184, 134, 11, 0.3)', padding: '4px 12px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: '800' }}>
+                                <div className="quests-badge" style={{ background: 'rgba(184, 134, 11, 0.1)', color: '#b8860b', border: '1px solid rgba(184, 134, 11, 0.3)', padding: '4px 12px', borderRadius: '12px', fontSize: 'var(--dynamic-log-size, 16px)', fontWeight: '800' }}>
                                     {quests.activeQuests.length} Active
                                 </div>
-                                <button className="refresh-button" onClick={() => executeCommand('quest')} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#fff', padding: '4px 10px', borderRadius: '8px', fontSize: '0.7rem', fontWeight: '700' }}>
+                                <button className="refresh-button" onClick={() => executeCommand('quest')} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#fff', padding: '4px 10px', borderRadius: '8px', fontSize: 'var(--dynamic-log-size, 16px)', fontWeight: '700' }}>
                                     Refresh
                                 </button>
                             </div>
@@ -321,8 +321,8 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                             }}
                                         >
                                             <div className="quest-info" style={{ flex: 1 }}>
-                                                <div className="quest-area" style={{ fontSize: '0.65rem', color: '#b8860b', fontWeight: '800', marginBottom: '2px' }}>{quest.area}</div>
-                                                <div className="quest-name" style={{ fontSize: '0.85rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                                <div className="quest-area" style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: '#b8860b', fontWeight: '800', marginBottom: '2px' }}>{quest.area}</div>
+                                                <div className="quest-name" style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '5px' }}>
                                                     {quest.isUnfinished && <span style={{ color: '#fb923c' }}>*</span>}
                                                     {quest.name}
                                                 </div>
@@ -333,7 +333,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                                         background: 'rgba(0,0,0,0.2)',
                                                         borderRadius: '8px',
                                                         borderLeft: '2px solid var(--accent)',
-                                                        fontSize: '0.75rem', 
+                                                        fontSize: 'var(--dynamic-log-size, 16px)', 
                                                         lineHeight: '1.4',
                                                         color: '#e2e8f0',
                                                         boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
@@ -347,7 +347,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                                         )}
                                                     </div>
                                                 ) : (
-                                                    <div className="quest-description" style={{ fontSize: '0.7rem', opacity: 0.5, marginTop: '2px' }}>{quest.description}</div>
+                                                    <div className="quest-description" style={{ fontSize: 'var(--dynamic-log-size, 16px)', opacity: 0.5, marginTop: '2px' }}>{quest.description}</div>
                                                 )}
                                             </div>
                                             <ChevronRight size={14} style={{ opacity: 0.3, transform: selectedQuestId === quest.id ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }} />
@@ -356,7 +356,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                 ) : (
                                     <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
                                         <ScrollText size={32} style={{ marginBottom: '10px' }} />
-                                        <p style={{ fontSize: '0.8rem' }}>No active quests.</p>
+                                        <p style={{ fontSize: 'var(--dynamic-log-size, 16px)' }}>No active quests.</p>
                                     </div>
                                 )}
                             </div>

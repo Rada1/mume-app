@@ -32,7 +32,7 @@ export function isGmcpRoomPlayers(data: any): data is GmcpRoomPlayers {
 }
 
 export function isGmcpRoomItems(data: any): data is GmcpRoomItems {
-    return data && (Array.isArray(data) || (typeof data === 'object' && ('items' in data || 'objects' in data)));
+    return data && (Array.isArray(data) || (typeof data === 'object' && ('items' in data || 'objects' in data || 'obj' in data || 'objs' in data)));
 }
 
 export function isGmcpOccupant(data: any): data is GmcpOccupant {

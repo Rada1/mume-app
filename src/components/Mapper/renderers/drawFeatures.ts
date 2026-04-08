@@ -3,7 +3,7 @@ import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, P
 
 // Pre-render common indicators for performance
 const indicatorIcons: Record<string, HTMLCanvasElement> = {};
-const getIndicatorIcon = (sym: string, color: string) => {
+export const getIndicatorIcon = (sym: string, color: string) => {
     const key = `${sym}_${color}`;
     if (indicatorIcons[key]) return indicatorIcons[key];
     const canvas = document.createElement('canvas');
@@ -28,7 +28,7 @@ const getIndicatorIcon = (sym: string, color: string) => {
     return canvas;
 };
 
-const drawRoomFlagsOptimized = (
+export const drawRoomFlagsOptimized = (
     ctx: CanvasRenderingContext2D,
     anchorX: number,
     anchorY: number,
@@ -173,6 +173,28 @@ export const drawFeatures = (
                                 if (isCurrentRoad && normalizeTerrain(targetData[3] as any) === 'Road') drawLine(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? ROAD_COLOR_DARK : ROAD_COLOR_LIGHT, roadWidth, dpr, invZoom);
                                 else drawLine(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? PATH_COLOR_DARK : PATH_COLOR_LIGHT, pathWidth, dpr, invZoom);
                             }
+
+                            // --- 1.1 Vertical Arrow Connections (Bidirectional Only) ---
+                            if ((dir === 'u' || dir === 'd') && camera.zoom > 0.2) {
+                                const oppDir = dir === 'u' ? 'd' : 'u';
+                                const targetExits = targetData[4];
+                                const pointsBack = targetExits?.[oppDir] && 
+                                    String(targetExits[oppDir].target).replace(/^m_/, '') === String(vnum).replace(/^m_/, '');
+
+                                if (pointsBack) {
+                                    const iconColor = isDarkMode ? '#fab387' : '#e67e22';
+                                    const cOff = 12; // Corner offset
+                                    const startX = anchorX + (dir === 'u' ? -cOff : cOff);
+                                    const startY = anchorY + (dir === 'u' ? -cOff : cOff);
+                                    const endX = tpx + (dir === 'u' ? cOff : -cOff);
+                                    const endY = tpy + (dir === 'u' ? cOff : -cOff);
+                                    
+                                    ctx.save();
+                                    ctx.globalAlpha = isExplored ? exploredAlphaMul * 0.6 : 0.3;
+                                    drawLine(ctx, startX, startY, endX, endY, iconColor, 1.5, dpr, invZoom, true);
+                                    ctx.restore();
+                                }
+                            }
                             ctx.restore();
                         }
                     }
@@ -233,7 +255,7 @@ export const drawFeatures = (
 
                     if (ghostExits && (ghostExits.u || ghostExits.d)) {
                         const iconColor = isDarkMode ? '#fab387' : '#e67e22';
-                        const vOff = 10;
+                        const cOff = 12; // NW/SE Corner displacement
                         const arrowSize = 18;
                         
                         ctx.save();
@@ -242,11 +264,26 @@ export const drawFeatures = (
                         
                         if (ghostExits.u) {
                             const icon = getIndicatorIcon('▲', iconColor);
-                            ctx.drawImage(icon, anchorX - arrowSize/2, anchorY - vOff - arrowSize/2, arrowSize, arrowSize);
+                            ctx.drawImage(icon, anchorX - cOff - arrowSize/2, anchorY - cOff - arrowSize/2, arrowSize, arrowSize);
                         }
                         if (ghostExits.d) {
                             const icon = getIndicatorIcon('▼', iconColor);
-                            ctx.drawImage(icon, anchorX - arrowSize/2, anchorY + vOff - arrowSize/2, arrowSize, arrowSize);
+                            ctx.drawImage(icon, anchorX + cOff - arrowSize/2, anchorY + cOff - arrowSize/2, arrowSize, arrowSize);
+                        }
+
+                        // --- Internal Dotted Connection (Bidirectional Validation) ---
+                        if (ghostExits.u && ghostExits.d) {
+                            const uTargetVnum = String(ghostExits.u.target), dTargetVnum = String(ghostExits.d.target);
+                            const uTarget = preloaded[uTargetVnum], dTarget = preloaded[dTargetVnum];
+                            const uPointsBack = uTarget?.[4]?.d && String(uTarget[4].d.target).replace(/^m_/, '') === String(vnum).replace(/^m_/, '');
+                            const dPointsBack = dTarget?.[4]?.u && String(dTarget[4].u.target).replace(/^m_/, '') === String(vnum).replace(/^m_/, '');
+
+                            if (uPointsBack && dPointsBack) {
+                                ctx.save();
+                                ctx.globalAlpha = isExplored ? exploredAlphaMul * 0.6 : 0.3;
+                                drawLine(ctx, anchorX - cOff, anchorY - cOff, anchorX + cOff, anchorY + cOff, iconColor, 1.5, dpr, invZoom, true);
+                                ctx.restore();
+                            }
                         }
                         
                         ctx.restore();
@@ -308,6 +345,27 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                     if (dx > 1.1 || dy > 1.1 || d === 'u' || d === 'd') {
                         const tpx = n.x * s + s / 2, tpy = n.y * s + s / 2;
                         drawLine(ctx, cX, cY, tpx, tpy, LONG_CONNECTION_COLOR, 2, dpr, invZoom);
+
+                        // --- Local Vertical Arrow Connections (Bidirectional Only) ---
+                        if ((d === 'u' || d === 'd') && camera.zoom > 0.2) {
+                            const oD = d === 'u' ? 'd' : 'u';
+                            const pointsBack = n?.exits?.[oD] && 
+                                String(n.exits[oD].target || n.exits[oD].gmcpDestId || "").replace(/^m_/, '') === String(room.id).replace(/^m_/, '');
+
+                            if (pointsBack) {
+                                const iconColor = isDarkMode ? '#fab387' : '#e67e22';
+                                const cOff = 12;
+                                const startX = cX + (d === 'u' ? -cOff : cOff);
+                                const startY = cY + (d === 'u' ? -cOff : cOff);
+                                const endX = tpx + (d === 'u' ? cOff : -cOff);
+                                const endY = tpy + (d === 'u' ? cOff : -cOff);
+                                
+                                ctx.save();
+                                ctx.globalAlpha = 0.6;
+                                drawLine(ctx, startX, startY, endX, endY, iconColor, 1.5, dpr, invZoom, true);
+                                ctx.restore();
+                            }
+                        }
                     }
                 }
             }
@@ -319,11 +377,30 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
             const arrowSize = 18;
             if (room.exits.u) {
                 const icon = getIndicatorIcon('▲', isDarkMode ? '#fab387' : '#e67e22');
-                ctx.drawImage(icon, cX - arrowSize/2, cY - vOff - arrowSize/2, arrowSize, arrowSize);
+                ctx.drawImage(icon, cX - 12 - arrowSize/2, cY - 12 - arrowSize/2, arrowSize, arrowSize);
             }
             if (room.exits.d) {
                 const icon = getIndicatorIcon('▼', isDarkMode ? '#fab387' : '#e67e22');
-                ctx.drawImage(icon, cX - arrowSize/2, cY + vOff - arrowSize/2, arrowSize, arrowSize);
+                ctx.drawImage(icon, cX + 12 - arrowSize/2, cY + 12 - arrowSize/2, arrowSize, arrowSize);
+            }
+
+            // --- Local Internal Dotted Connection (Bidirectional Validation) ---
+            if (room.exits.u && room.exits.d) {
+                const uTargetId = String(room.exits.u.target || room.exits.u.gmcpDestId || "");
+                const dTargetId = String(room.exits.d.target || room.exits.d.gmcpDestId || "");
+                const uN = allRooms[uTargetId.startsWith('m_') ? uTargetId : `m_${uTargetId}`] || allRooms[uTargetId];
+                const dN = allRooms[dTargetId.startsWith('m_') ? dTargetId : `m_${dTargetId}`] || allRooms[dTargetId];
+                
+                const uPointsBack = uN?.exits?.d && String(uN.exits.d.target || uN.exits.d.gmcpDestId || "").replace(/^m_/, '') === String(room.id).replace(/^m_/, '');
+                const dPointsBack = dN?.exits?.u && String(dN.exits.u.target || dN.exits.u.gmcpDestId || "").replace(/^m_/, '') === String(room.id).replace(/^m_/, '');
+
+                if (uPointsBack && dPointsBack) {
+                    const iconColor = isDarkMode ? '#fab387' : '#e67e22';
+                    ctx.save();
+                    ctx.globalAlpha = 0.6;
+                    drawLine(ctx, cX - 12, cY - 12, cX + 12, cY + 12, iconColor, 1.5, dpr, invZoom, true);
+                    ctx.restore();
+                }
             }
         }
     }

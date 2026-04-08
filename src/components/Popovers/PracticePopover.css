@@ -19,13 +19,13 @@
 
 .header-title h3 {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: var(--dynamic-log-size, 16px);
     color: #a855f7;
     text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
 }
 
 .sessions-badge {
-    font-size: 0.8rem;
+    font-size: var(--dynamic-log-size, 16px);
     color: #aaa;
     display: block;
     margin-top: 2px;
@@ -41,7 +41,7 @@
 .practice-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.85rem;
+    font-size: var(--dynamic-log-size, 16px);
     text-align: left;
 }
 
@@ -103,7 +103,7 @@
 
 .perc-text {
     position: relative;
-    font-size: 0.65rem;
+    font-size: var(--dynamic-log-size, 16px);
     font-weight: bold;
     color: #fff;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
@@ -115,7 +115,7 @@
 }
 
 .skill-diff {
-    font-size: 0.75rem;
+    font-size: var(--dynamic-log-size, 16px);
     text-transform: capitalize;
 }
 
@@ -185,7 +185,7 @@
     align-items: center;
     gap: 0.75rem;
     color: #fff;
-    font-size: 0.95rem;
+    font-size: var(--dynamic-log-size, 16px);
 }
 
 .practice-header-icon {
@@ -196,7 +196,7 @@
 .sessions-count {
     color: #4a90e2;
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: var(--dynamic-log-size, 16px);
 }
 
 .practice-class-header-card {
@@ -208,7 +208,7 @@
     width: 100%;
     max-width: 500px;
     color: #a855f7;
-    font-size: 0.9em;
+    font-size: var(--dynamic-log-size, 16px);
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -221,7 +221,4 @@
     height: 1px;
     background: rgba(168, 85, 247, 0.25);
 }
-
-.practice-class-header-card::before {
-    /* centered header */
-}
+

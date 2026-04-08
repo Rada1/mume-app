@@ -2,7 +2,7 @@ import Convert from 'ansi-to-html';
 
 const generatePalette = () => {
     const names = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
-    const palette: Record<number, string> = {};
+    const palette: string[] = new Array(256).fill('');
 
     // Standard 16 colors (using CSS variables for theme support)
     for (let i = 0; i < 8; i++) {
@@ -31,13 +31,16 @@ const generatePalette = () => {
     return palette;
 };
 
+// Pre-calculate the palette once
+export const ANSI_PALETTE = generatePalette();
+
 const converter = new Convert({
     fg: 'var(--text-primary)',
     bg: 'transparent',
     newline: false,
     escapeXML: true,
-    stream: false, // Must be false when sharing the converter across independent strings
-    colors: generatePalette()
+    stream: false,
+    colors: ANSI_PALETTE
 });
 
 // A simple Map-based cache to avoid re-parsing identical ANSI strings (like prompts or common attacks)
@@ -53,10 +56,38 @@ export const ansiConvert = {
             return result;
         }
 
-        result = converter.toHtml(text);
+        let preprocessed = text;
+        if (preprocessed.includes('&')) {
+            // Translate MUME tags to ANSI escape sequences BEFORE html conversion.
+            // This ensures they override any basic fallback ANSI escapes MUME already sent.
+
+            // 1. &RGB (e.g., &500 for bright red)
+            preprocessed = preprocessed.replace(/&([0-5])([0-5])([0-5])/g, (m, r, g, b) => {
+                const ri = parseInt(r, 10);
+                const gi = parseInt(g, 10);
+                const bi = parseInt(b, 10);
+                const index = 16 + (ri * 36 + gi * 6 + bi);
+                return `\x1b[38;5;${index}m${m}`;
+            });
+
+            // 2. &greyN (e.g., &grey3, &grey35, etc.)
+            preprocessed = preprocessed.replace(/&grey(\d+)/g, (m, g) => {
+                const level = parseInt(g, 10);
+                const index = 232 + Math.floor((level - 3) / 4);
+                if (index >= 232 && index <= 255) {
+                    return `\x1b[38;5;${index}m${m}`;
+                }
+                return m;
+            });
+
+            // MUME reset tag
+            preprocessed = preprocessed.replace(/&n/g, '\x1b[0m&n');
+        }
+
+        // Apply ansi-to-html exactly once on the preprocessed text
+        result = converter.toHtml(preprocessed);
 
         if (cache.size >= MAX_CACHE_SIZE) {
-            // Evict the oldest entry (Map iterates in insertion order)
             const firstKey = cache.keys().next().value;
             if (firstKey !== undefined) cache.delete(firstKey);
         }

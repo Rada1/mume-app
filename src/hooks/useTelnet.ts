@@ -1,6 +1,6 @@
 import { useRef, useCallback, useEffect } from 'react';
 import { IAC, SB, SE, TELNET_GMCP, TELNET_TTYPE, TTYPE_IS, TTYPE_SEND } from '../constants';
-import { MessageType, WeatherType, GameStats, DeathStage, GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant, GmcpExitInfo, GmcpUpdateExits, GmcpRoomNpcs } from '../types';
+import { MessageType, WeatherType, GameStats, GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant, GmcpExitInfo, GmcpUpdateExits, GmcpRoomNpcs } from '../types';
 import { GmcpDecoder } from '../utils/telnet/GmcpDecoder';
 import { ProtocolHandler } from '../utils/telnet/ProtocolHandler';
 
@@ -11,9 +11,6 @@ export interface TelnetHandlers {
     setIsFoggy: React.Dispatch<React.SetStateAction<boolean>>;
     setInCombat: (inCombat: boolean, force?: boolean) => void;
     addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }) => void;
-    setRumble: (rumble: boolean) => void;
-    setHitFlash: (hitFlash: boolean) => void;
-    setDeathStage: (stage: DeathStage) => void;
     detectLighting: (light: string) => void;
     onOpponentChange?: (opponent: string | null) => void;
     onBufferChange?: (buffer: string | null) => void;
@@ -50,19 +47,22 @@ export interface TelnetOptions {
     onCharNameChange?: (name: string | null) => void;
     onPositionChange?: (position: string) => void;
     handlers: TelnetHandlers;
+    recordEntry?: (type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any) => void;
 }
 
 export function useTelnet(options: TelnetOptions) {
-    const { handlers, connectionUrl, processLine, setPrompt } = options;
+    const { handlers, connectionUrl, processLine, setPrompt, recordEntry } = options;
     const socketRef = useRef<WebSocket | null>(null);
     const bufferRef = useRef<string>("");
     const isBackgroundedRef = useRef<boolean>(false);
 
     // Stability fix: use a ref for handlers to avoid stale closures in GmcpDecoder
     const handlersRef = useRef(handlers);
+    const recordEntryRef = useRef(recordEntry);
     useEffect(() => {
         handlersRef.current = handlers;
-    }, [handlers]);
+        recordEntryRef.current = recordEntry;
+    }, [handlers, recordEntry]);
 
     const sendBytes = useCallback((bytes: number[]) => {
         if (socketRef.current?.readyState === WebSocket.OPEN) socketRef.current.send(new Uint8Array(bytes));
@@ -116,6 +116,7 @@ export function useTelnet(options: TelnetOptions) {
             let splitIdx = raw.search(/[\s\{\[]/);
             const pkg = splitIdx > -1 ? raw.substring(0, splitIdx).trim() : raw;
             const json = splitIdx > -1 ? raw.substring(splitIdx).trim() : '';
+            if (recordEntryRef.current) recordEntryRef.current('gmcp', { pkg, data: json });
             gmcpDecoder.current.decode(pkg, json);
         } else if (cmd === TELNET_TTYPE && buffer[1] === TTYPE_SEND) {
             const bytes = [IAC, SB, TELNET_TTYPE, TTYPE_IS, ...Array.from(new TextEncoder().encode("xterm-256color")), IAC, SE];
@@ -215,7 +216,13 @@ export function useTelnet(options: TelnetOptions) {
                 const interval = setInterval(() => { if (ws.readyState === WebSocket.OPEN) sendGMCP('Core.Ping'); }, 30000);
                 (ws as any)._pingInterval = interval;
             };
-            ws.onmessage = (event) => { if (event.data instanceof ArrayBuffer) protocolHandler.current?.handleRawData(new Uint8Array(event.data)); };
+            ws.onmessage = (event) => { 
+                if (event.data instanceof ArrayBuffer) {
+                    const bytes = new Uint8Array(event.data);
+                    if (recordEntryRef.current) recordEntryRef.current('rx', Array.from(bytes));
+                    protocolHandler.current?.handleRawData(bytes); 
+                }
+            };
             ws.onclose = (event) => {
                 const reason = event.reason ? ` Reason: ${event.reason}` : '';
                 const codeDesc = event.code === 1006 ? ' (Abnormal Closure - often firewall/proxy or TLS issue)' : '';
@@ -261,7 +268,12 @@ export function useTelnet(options: TelnetOptions) {
 
     return {
         connect, disconnect: () => socketRef.current?.close(),
-        sendCommand: (cmd: string) => { if (socketRef.current?.readyState === WebSocket.OPEN) socketRef.current.send(new TextEncoder().encode(cmd + '\r\n')); },
+        sendCommand: (cmd: string) => { 
+            if (socketRef.current?.readyState === WebSocket.OPEN) {
+                if (recordEntryRef.current) recordEntryRef.current('tx', cmd);
+                socketRef.current.send(new TextEncoder().encode(cmd + '\r\n')); 
+            }
+        },
         sendGMCP
     };
 }

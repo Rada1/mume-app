@@ -4,7 +4,7 @@
  */
 
 import { useCallback } from 'react';
-import { CombatHealthStatus, CaptureStage } from '../../types';
+import { CombatHealthStatus, CaptureStage, GameStats } from '../../types';
 
 export interface PromptParserDeps {
     captureStage: React.MutableRefObject<CaptureStage>;
@@ -16,6 +16,12 @@ export interface PromptParserDeps {
     setInCombat: (val: boolean, force?: boolean) => void;
     finalizeCapture: (targetStage?: CaptureStage) => boolean;
     isSpectateMode?: boolean;
+    setStats: (stats: GameStats | ((prev: GameStats) => GameStats)) => void;
+    setSpectateStats: (stats: GameStats | ((prev: GameStats) => GameStats)) => void;
+    setSpectateHealthStatus: (status: CombatHealthStatus | null) => void;
+    setSpectateOpponentName: (val: string | null) => void;
+    setSpectateOpponentStatus: (val: CombatHealthStatus | null) => void;
+    setSpectateInCombat: (val: boolean) => void;
 }
 
 const HEALTH_MAP: Record<string, CombatHealthStatus> = {
@@ -23,7 +29,7 @@ const HEALTH_MAP: Record<string, CombatHealthStatus> = {
     'fine': 'Fine',
     'hurt': 'Hurt',
     'wounded': 'Wounded',
-    'bad': 'Badly Wounded',
+    'bad': 'Bad',
     'awful': 'Awful',
     'stunned': 'Stunned',
     'dying': 'Dying',
@@ -40,7 +46,12 @@ export function usePromptParser(deps: PromptParserDeps) {
         setBufferName,
         setInCombat,
         finalizeCapture,
-        isSpectateMode
+        isSpectateMode,
+        setSpectateStats,
+        setSpectateHealthStatus,
+        setSpectateOpponentName,
+        setSpectateOpponentStatus,
+        setSpectateInCombat
     } = deps;
 
     const findStatus = (str: string): CombatHealthStatus | null => {
@@ -60,8 +71,7 @@ export function usePromptParser(deps: PromptParserDeps) {
         const promptPart = textPMatch[0];
         const attachedText = textOnly.slice(promptPart.length).trim();
         
-        const isPager = textOnly.includes('*** Return:') || textOnly.includes('*** [Hit Return to continue]');
-        if (captureStage.current !== 'none' && !attachedText && !isPager) {
+        if (captureStage.current !== 'none' && !attachedText) {
             finalizeCapture();
         }
 
@@ -149,8 +159,34 @@ export function usePromptParser(deps: PromptParserDeps) {
             (/^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>])\s*$/.test(textOnly)) ||
             (textOnly.includes('HP:') && textOnly.includes('MA:') && textOnly.includes('>'));
 
+        // --- Verbose Status Parsing (Spectate Mode / Snooped Stat) ---
+        // Example: "87/98 hits, 46/130 mana, and 100/106 moves."
+        const verboseRegex = /(\d+)\/(\d+)\s+hits,?\s+(\d+)\/(\d+)\s+mana,?\s+and\s+(\d+)\/(\d+)\s+moves/i;
+        const verboseMatch = textOnly.match(verboseRegex);
+        if (verboseMatch) {
+            const stats = {
+                hp: parseInt(verboseMatch[1]),
+                maxHp: parseInt(verboseMatch[2]),
+                mana: parseInt(verboseMatch[3]),
+                maxMana: parseInt(verboseMatch[4]),
+                move: parseInt(verboseMatch[5]),
+                maxMove: parseInt(verboseMatch[6]),
+                wimpy: 0
+            };
+            if (isSpectateMode) {
+                setSpectateStats(stats);
+            } else {
+                deps.setStats(stats);
+            }
+        }
+
         return { isMatch: true, promptPart, attachedText, isEndPrompt };
-    }, [captureStage, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName, setBufferHealthStatus, setBufferName, setInCombat, finalizeCapture]);
+    }, [
+        captureStage, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName, 
+        setBufferHealthStatus, setBufferName, setInCombat, finalizeCapture,
+        isSpectateMode, setSpectateStats, setSpectateHealthStatus, 
+        setSpectateOpponentName, setSpectateOpponentStatus, setSpectateInCombat
+    ]);
 
     return { parsePrompt };
 }

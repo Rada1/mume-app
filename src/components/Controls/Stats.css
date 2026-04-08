@@ -2,7 +2,7 @@
 
 .stats-cluster {
     position: absolute;
-    bottom: 280px;
+    bottom: 300px;
     right: 30px;
     z-index: 200;
     display: flex;

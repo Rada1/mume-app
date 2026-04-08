@@ -1,16 +1,12 @@
 import React from 'react';
-import { LightingType, WeatherType, DeathStage } from '../../types';
-import { DEATH_IMG } from '../../constants';
+import { LightingType, WeatherType } from '../../types';
 import Rain from '../Rain';
 
 interface EnvironmentEffectsProps {
     lighting: LightingType;
     weather: WeatherType;
     isFoggy: boolean;
-    inCombat: boolean;
-    hitFlash: boolean;
     lightning: boolean;
-    deathStage: DeathStage;
     isImmersionMode: boolean;
 }
 
@@ -18,32 +14,28 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     lighting,
     weather,
     isFoggy,
-    inCombat,
-    hitFlash,
     lightning,
-    deathStage,
     isImmersionMode
 }) => {
     return (
         <>
             {/* --- BACK LAYER: Ambient & Lighting [z-index: 1] --- */}
-            <div className={`environment-root back lighting-state-${isImmersionMode ? lighting : 'sun'}`}>
+            <div className={`environment-root back lighting-state-${isImmersionMode ? lighting : 'none'}`}>
                 {isImmersionMode && (
                     <>
                         <div className="lighting-container lighting-sun" style={{ opacity: lighting === 'sun' ? 1 : 0 }}><div className="lighting-inner" /></div>
                         <div className="lighting-container lighting-moon" style={{ opacity: lighting === 'moon' ? 1 : 0 }}><div className="lighting-inner" /></div>
                         <div className="lighting-container lighting-artificial" style={{ opacity: lighting === 'artificial' ? 1 : 0 }}><div className="lighting-inner" /></div>
                         <div className="lighting-container lighting-dark" style={{ opacity: lighting === 'dark' ? 1 : 0 }}><div className="lighting-inner" /></div>
+
+                        <div className="dust-layer" />
+                        <div className="overlay-layer" />
+                        <div className={`storm-overlay-layer ${weather === 'heavy-rain' ? 'active' : ''}`} />
+                        <div className="screen-vignette" />
+
+
                     </>
                 )}
-
-                <div className="dust-layer" />
-                <div className="overlay-layer" />
-                <div className={`storm-overlay-layer ${isImmersionMode && weather === 'heavy-rain' ? 'active' : ''}`} />
-                <div className="screen-vignette" />
-
-                <div className={`combat-grayscale-filter ${inCombat ? 'active' : ''}`} />
-                <div className={`combat-vignette ${inCombat ? 'active' : ''}`} />
             </div>
 
             {/* --- FRONT LAYER: Atmospheric & Interactive [z-index: 4500+] --- */}
@@ -60,14 +52,8 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                 {/* Fog renders regardless of immersion mode — it's a gameplay-relevant state */}
                 <div className={`fog-layer ${isFoggy ? 'fog-active' : ''}`} />
 
-                <div className={`combat-layer-flash ${hitFlash ? 'active' : ''}`} />
                 <div className={`lightning-layer ${lightning ? 'lightning-active' : ''}`} />
 
-                {/* Death Overlay (Highest) */}
-                <div className={`death-overlay ${deathStage !== 'none' ? 'death-active' : ''}`}
-                    style={{ opacity: deathStage === 'fade_in' ? 0 : (deathStage === 'black_hold' ? 1 : undefined) }} />
-                <div className={`death-image-layer ${deathStage === 'flash' ? 'death-flash' : ''}`}
-                    style={{ backgroundImage: `url(${DEATH_IMG})`, opacity: deathStage === 'flash' ? 1 : 0 }} />
             </div>
         </>
     );

@@ -14,6 +14,7 @@ import {
     GmcpMumeEdit
 } from '../types';
 import { MapperRef } from '../components/Mapper/mapperTypes';
+import { occupantAnims, getOccupantKey } from '../components/Mapper/occupantAnimStore';
 
 interface GmcpHandlersProps {
     mapperRef: React.RefObject<MapperRef>;
@@ -26,8 +27,9 @@ interface GmcpHandlersProps {
     setAbilities: React.Dispatch<React.SetStateAction<Record<string, number>>>;
     addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean) => void;
     setCharacterName: (name: string | null) => void;
-    setPlayerPosition: (pos: string) => void;
     setRoomName: (name: string | null) => void;
+    setPlayerPosition: (pos: string) => void;
+    setRoomDesc: (desc: string | null) => void;
     isMobileBrevityMode: boolean;
     setRoomExits: (exits: string[]) => void;
     setRoomZone: (zone: string | null) => void;
@@ -56,10 +58,14 @@ interface GmcpHandlersProps {
     setIsRiding?: (val: boolean) => void;
     isRidingRef?: React.RefObject<boolean>;
     registerEntity?: (id: string, name: string, location: import('../types').EntityLocation, category?: string) => import('../types').GameEntity;
+    roomDescRef?: React.RefObject<string>;
+    setInCombat?: (val: boolean, force?: boolean) => void;
+    isSpectateMode?: boolean;
 }
 
 export const useGmcpHandlers = ({
     mapperRef,
+    roomDescRef,
     setCurrentTerrain,
     setRoomPlayers,
     setRoomNpcs,
@@ -71,6 +77,7 @@ export const useGmcpHandlers = ({
     setCharacterName,
     setPlayerPosition,
     setRoomName,
+    setRoomDesc,
     isMobileBrevityMode,
     setRoomExits,
     setRoomZone,
@@ -97,16 +104,20 @@ export const useGmcpHandlers = ({
     playerPositionRef: propsPlayerPositionRef,
     setIsRiding,
     isRidingRef,
-    registerEntity
+    registerEntity,
+    setInCombat,
+    isSpectateMode
 }: GmcpHandlersProps) => {
 
     const lastRoomNumRef = useRef<number | string | null>(null);
     const lastExitsRef = useRef<Record<string, any>>({});
+    const lastRoomChangeTimeRef = useRef(0);
     const playerPositionRef = propsPlayerPositionRef || useRef('standing');
 
     // --- Room Info & Exits ---
 
     const onRoomInfo = useCallback((data: GmcpRoomInfo) => {
+        if (isSpectateMode) return;
         if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-room-info', { detail: data }));
         
         const roomNum = data.num || data.id || data.vnum;
@@ -116,6 +127,8 @@ export const useGmcpHandlers = ({
         const terrain = data.terrain || data.environment;
         if (terrain) setCurrentTerrain(terrain);
         if (data.name) setRoomName(data.name);
+        if (data.desc !== undefined && setRoomDesc) setRoomDesc(data.desc);
+        if (roomDescRef) (roomDescRef as { current: string }).current = data.desc || '';
         
         let zone = data.zone || data.area;
         if (!zone && roomNum !== undefined && mapperRef.current?.preloadedCoordsRef?.current) {
@@ -128,7 +141,7 @@ export const useGmcpHandlers = ({
         
         // Drive lighting from GMCP Room Info
         const light = data.light ?? data.l;
-        if (light !== undefined && light !== null && detectLighting) {
+        if (light !== undefined && light !== null && detectLighting && !isSpectateMode) {
             detectLighting(light);
         }
 
@@ -137,19 +150,24 @@ export const useGmcpHandlers = ({
             lastExitsRef.current = data.exits;
         }
 
+        // Always clear items on Room.Info to ensure 'look' resyncs objects correctly.
+        setRoomItems([]);
+        setDiscoveredItems([]);
+
         if (roomChanged) {
+            // Only clear occupants when physically moving rooms.
             setRoomPlayers([]);
             setRoomNpcs([]);
-            setRoomItems([]);
-            setDiscoveredItems([]);
+            lastRoomChangeTimeRef.current = Date.now();
             if (playMovementSound) {
                 const isRiding = isRidingRef?.current || playerPositionRef.current === 'riding' || playerPositionRef.current === 'mounted';
                 playMovementSound(isRiding);
             }
         }
-    }, [mapperRef, setCurrentTerrain, setRoomName, setRoomExits, setRoomZone, setRoomPlayers, setRoomNpcs, setRoomItems, setDiscoveredItems, playMovementSound]);
+    }, [mapperRef, setCurrentTerrain, setRoomName, setRoomDesc, setRoomExits, setRoomZone, setRoomPlayers, setRoomNpcs, setRoomItems, setDiscoveredItems, playMovementSound, isSpectateMode]);
 
     const onRoomUpdateExits = useCallback((data: GmcpUpdateExits) => {
+        if (isSpectateMode) return;
         if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-update-exits', { detail: data }));
         if (data.exits) {
             console.log('[GMCP] Room.UpdateExits:', data.exits);
@@ -179,7 +197,7 @@ export const useGmcpHandlers = ({
             lastExitsRef.current = data.exits;
             setRoomExits(Object.keys(data.exits));
         }
-    }, [setRoomExits, playDoorSound]);
+    }, [setRoomExits, playDoorSound, isSpectateMode]);
 
     // --- Character Status ---
 
@@ -190,7 +208,7 @@ export const useGmcpHandlers = ({
         if (s.includes('fine')) return 'Fine';
         if (s.includes('hurt')) return 'Hurt';
         if (s.includes('wounded')) return 'Wounded';
-        if (s.includes('bad')) return 'Badly Wounded';
+        if (s.includes('bad')) return 'Bad';
         if (s.includes('awful')) return 'Awful';
         if (s.includes('stunned')) return 'Stunned';
         if (s.includes('dying') || s.includes('bleeding')) return 'Dying';
@@ -211,14 +229,18 @@ export const useGmcpHandlers = ({
             if (typeof window !== 'undefined') {
                 window.dispatchEvent(new CustomEvent('mume-mapper-terrain', { detail: data.terrain }));
             }
-            setCurrentTerrain(data.terrain);
+            if (!isSpectateMode) {
+                setCurrentTerrain(data.terrain);
+            }
         }
 
         if (data.light !== undefined && data.light !== null && detectLighting) {
-            detectLighting(data.light);
+            if (!isSpectateMode) {
+                detectLighting(data.light);
+            }
         }
 
-        if (data.position) {
+        if (data.position && !isSpectateMode) {
             console.log('[GMCP] Position Update:', data.position);
             // Don't let 'standing' stomp 'riding' because MUME often says 'standing' while mounted.
             const isCurrentlyRiding = playerPositionRef.current === 'riding' || playerPositionRef.current === 'mounted';
@@ -229,6 +251,8 @@ export const useGmcpHandlers = ({
                 playerPositionRef.current = data.position;
             }
         }
+
+        // --- Combat Info via Vitals ---
 
         // --- Combat Info via Vitals ---
         if (data.hp_status) {
@@ -249,7 +273,7 @@ export const useGmcpHandlers = ({
             if (!buffName) setBufferHealthStatus(null);
         }
         console.log('[GMCP] CharVitals:', data);
-    }, [setCurrentTerrain, setPlayerHealthStatus, setOpponentId, setOpponentName, setOpponentHealthStatus, setBufferName, setBufferHealthStatus, setPlayerPosition, roomPlayers, roomNpcs, findStatus, getCharNameFromId]);
+    }, [setCurrentTerrain, setPlayerHealthStatus, setOpponentId, setOpponentName, setOpponentHealthStatus, setBufferName, setBufferHealthStatus, setPlayerPosition, roomPlayers, roomNpcs, findStatus, getCharNameFromId, isSpectateMode, detectLighting]);
 
     const onCharInfo = useCallback((data: GmcpCharInfo) => {
         console.log('[GMCP] CharInfo:', data);
@@ -302,6 +326,7 @@ export const useGmcpHandlers = ({
     // --- Room Occupants & Items ---
 
     const onRoomPlayers = useCallback((data: GmcpRoomPlayers) => {
+        if (isSpectateMode) return;
         let rawList = Array.isArray(data) ? data : ((data as any).players || (data as any).members || (data as any).chars || (data as any).char || (data as any).npcs || []);
         if (rawList && !Array.isArray(rawList)) rawList = [rawList];
         if (!Array.isArray(rawList)) return;
@@ -342,7 +367,7 @@ export const useGmcpHandlers = ({
                 npcList.forEach(n => {
                     const idStr = n.id !== undefined && n.id !== null ? String(n.id) : null;
                     const nameStr = n.name || n.keyword || n.short;
-                    const idx = idStr 
+                    const idx = idStr
                         ? next.findIndex(x => x.id !== undefined && x.id !== null && String(x.id) === idStr)
                         : next.findIndex(x => (x.name || x.keyword || x.short) === nameStr);
                     if (idx >= 0) next[idx] = { ...next[idx], ...n };
@@ -351,9 +376,11 @@ export const useGmcpHandlers = ({
                 return next;
             });
         }
-    }, [setRoomPlayers, setRoomNpcs, characterName, registerEntity]);
+        mapperRef.current?.triggerRender?.();
+    }, [setRoomPlayers, setRoomNpcs, characterName, registerEntity, mapperRef]);
 
     const onRoomNpcs = useCallback((data: GmcpRoomNpcs) => {
+        if (isSpectateMode) return;
         let rawList = Array.isArray(data) ? data : ((data as any).npcs || (data as any).chars || (data as any).members || (data as any).char || (data as any).players || []);
         if (rawList && !Array.isArray(rawList)) rawList = [rawList];
         if (!Array.isArray(rawList)) return;
@@ -395,26 +422,22 @@ export const useGmcpHandlers = ({
         });
 
         setRoomNpcs(npcs);
-        if (players.length > 0) {
-            setRoomPlayers(prev => {
-                const next = [...prev];
-                players.forEach(p => {
-                    const idStr = p.id !== undefined && p.id !== null ? String(p.id) : null;
-                    const nameStr = p.name || p.keyword || p.short;
-                    const idx = idStr 
-                        ? next.findIndex(x => x.id !== undefined && x.id !== null && String(x.id) === idStr)
-                        : next.findIndex(x => (x.name || x.keyword || x.short) === nameStr);
-                    
-                    if (idx >= 0) next[idx] = { ...next[idx], ...p };
-                    else next.push(p);
-                });
-                return next;
-            });
-        }
-    }, [setRoomNpcs, setRoomPlayers, setIsRiding, characterName, registerEntity]);
+        // Always replace roomPlayers from this full-list event — covers the case
+        // where the last player left and players is now empty.
+        setRoomPlayers(players);
+        mapperRef.current?.triggerRender?.();
+    }, [setRoomNpcs, setRoomPlayers, setIsRiding, characterName, registerEntity, isSpectateMode, mapperRef]);
 
     const onRoomItems = useCallback((data: GmcpRoomItems) => {
-        let rawList = Array.isArray(data) ? data : ((data as any).items || (data as any).objects || (data as any).obj || []);
+        if (isSpectateMode) return;
+        
+        // MUME distinguishing between room items and inventory items
+        if ((data as any).location && (data as any).location !== 'room' && (data as any).location !== 'objects') {
+           // This is likely for 'inv' or 'equip', so we don't update roomItems
+           return;
+        }
+
+        let rawList = Array.isArray(data) ? data : ((data as any).items || (data as any).objects || (data as any).obj || (data as any).objs || []);
         if (rawList && !Array.isArray(rawList)) rawList = [rawList];
         if (!Array.isArray(rawList)) return;
 
@@ -427,16 +450,25 @@ export const useGmcpHandlers = ({
             return obj;
         });
         setRoomItems(items);
-    }, [setRoomItems, registerEntity]);
+    }, [setRoomItems, registerEntity, isSpectateMode]);
 
     const onAddPlayer = useCallback((data: any) => {
+        if (isSpectateMode) return;
         if (!data) return;
         const obj: GmcpOccupant = typeof data === 'string' || typeof data === 'number'
-            ? { name: String(data), keyword: String(data), short: String(data) } 
+            ? { name: String(data), keyword: String(data), short: String(data) }
             : { ...data, name: data.name || data.keyword || data.short || data.shortdesc };
-        
+
         if (!obj.name) return;
         if (characterName && obj.name.toLowerCase() === characterName.toLowerCase()) return;
+
+        // Record directional enter animation if the server sent a direction
+        // Suppress animation if we just arrived in the room (pre-existing occupants)
+        if (data?.dir && (Date.now() - lastRoomChangeTimeRef.current) > 300) {
+            const key = getOccupantKey(obj.id, obj.name);
+            occupantAnims.set(key, { dir: String(data.dir).toLowerCase(), type: 'enter', startTime: Date.now(), name: obj.name, id: obj.id, isPlayer: true });
+            mapperRef.current?.triggerRender?.();
+        }
 
         const isExplicitPc = typeof data === 'object' && (data.pc || data.type === 'pc' || data.type === 'player');
         const isExplicitNpc = typeof data === 'object' && (data.npc || data.type === 'npc');
@@ -493,13 +525,22 @@ export const useGmcpHandlers = ({
     }, [setRoomPlayers, setRoomNpcs, characterName, registerEntity]);
 
     const onAddNpc = useCallback((data: any) => {
+        if (isSpectateMode) return;
         if (!data) return;
         const obj: GmcpOccupant = typeof data === 'string' || typeof data === 'number'
-            ? { name: String(data), keyword: String(data), short: String(data) } 
+            ? { name: String(data), keyword: String(data), short: String(data) }
             : { ...data, name: data.name || data.keyword || data.short || data.shortdesc };
-        
+
         if (!obj.name) return;
         if (characterName && obj.name.toLowerCase() === characterName.toLowerCase()) return;
+
+        // Record directional enter animation if the server sent a direction
+        // Suppress animation if we just arrived in the room (pre-existing occupants)
+        if (data?.dir && (Date.now() - lastRoomChangeTimeRef.current) > 300) {
+            const key = getOccupantKey(obj.id, obj.name);
+            occupantAnims.set(key, { dir: String(data.dir).toLowerCase(), type: 'enter', startTime: Date.now(), name: obj.name, id: obj.id, isPlayer: false });
+            mapperRef.current?.triggerRender?.();
+        }
 
         const isExplicitPc = typeof data === 'object' && (data.pc || data.type === 'pc' || data.type === 'player');
 
@@ -555,11 +596,18 @@ export const useGmcpHandlers = ({
     }, [setRoomPlayers, setRoomNpcs, characterName, registerEntity]);
 
     const onRemovePlayer = useCallback((data: any) => {
+        if (isSpectateMode) return;
         if (!data) return;
         const id = (data && typeof data === 'object' && data !== null) ? data.id : data;
         const name = (data && typeof data === 'object' && data !== null) ? (data.name || data.keyword || data.short) : data;
         const idStr = (id !== undefined && id !== null) ? String(id) : null;
         const nameStr = (name !== undefined && name !== null && String(name) !== idStr) ? String(name) : (typeof name === 'string' ? name : null);
+
+        // Record directional exit animation before removing from state
+        if (data?.dir && (idStr || nameStr)) {
+            const key = getOccupantKey(idStr ?? undefined, nameStr ?? '');
+            occupantAnims.set(key, { dir: String(data.dir).toLowerCase(), type: 'exit', startTime: Date.now(), name: nameStr ?? '', id: idStr ?? undefined, isPlayer: true });
+        }
 
         const filterFn = (p: GmcpOccupant) => {
             if (idStr && p.id !== undefined && p.id !== null && String(p.id) === idStr) return false;
@@ -568,19 +616,22 @@ export const useGmcpHandlers = ({
         };
         setRoomPlayers(prev => prev.filter(filterFn));
         setRoomNpcs(prev => prev.filter(filterFn));
-        
-        // Trigger map re-render
-        if (mapperRef.current?.triggerRender) {
-            mapperRef.current.triggerRender();
-        }
+        if (mapperRef.current?.triggerRender) mapperRef.current.triggerRender();
     }, [setRoomPlayers, setRoomNpcs, mapperRef]);
 
     const onRemoveNpc = useCallback((data: any) => {
+        if (isSpectateMode) return;
         if (!data) return;
         const id = (data && typeof data === 'object' && data !== null) ? data.id : data;
         const name = (data && typeof data === 'object' && data !== null) ? (data.name || data.keyword || data.short) : data;
         const idStr = (id !== undefined && id !== null) ? String(id) : null;
         const nameStr = (name !== undefined && name !== null && String(name) !== idStr) ? String(name) : (typeof name === 'string' ? name : null);
+
+        // Record directional exit animation before removing from state
+        if (data?.dir && (idStr || nameStr)) {
+            const key = getOccupantKey(idStr ?? undefined, nameStr ?? '');
+            occupantAnims.set(key, { dir: String(data.dir).toLowerCase(), type: 'exit', startTime: Date.now(), name: nameStr ?? '', id: idStr ?? undefined, isPlayer: false });
+        }
 
         const filterFn = (p: GmcpOccupant) => {
             if (idStr && p.id !== undefined && p.id !== null && String(p.id) === idStr) return false;
@@ -589,11 +640,7 @@ export const useGmcpHandlers = ({
         };
         setRoomPlayers(prev => prev.filter(filterFn));
         setRoomNpcs(prev => prev.filter(filterFn));
-
-        // Trigger map re-render
-        if (mapperRef.current?.triggerRender) {
-            mapperRef.current.triggerRender();
-        }
+        if (mapperRef.current?.triggerRender) mapperRef.current.triggerRender();
     }, [setRoomPlayers, setRoomNpcs, mapperRef]);
 
     // --- Character Identity ---
@@ -665,6 +712,7 @@ export const useGmcpHandlers = ({
             return m;
         }));
     }, [setGroupMembers]);
+
 
     const onGroupRemove = useCallback((id: number) => {
         console.log('[GMCP] onGroupRemove id:', id);

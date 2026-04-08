@@ -29,11 +29,10 @@ const StatRow: React.FC<{
     // Threshold percentages (total 100%)
     const chunks = useMemo(() => {
         return [
-            { id: 'awful', width: 10 },
-            { id: 'bad', width: 15 },
-            { id: 'wounded', width: 20 },
-            { id: 'hurt', width: 25 },
-            { id: 'fine', width: 30 }
+            { id: '1', width: 25 },
+            { id: '2', width: 25 },
+            { id: '3', width: 25 },
+            { id: '4', width: 25 }
         ];
     }, []);
 
@@ -165,7 +164,7 @@ const StatRow: React.FC<{
             <div
                 key={chunk.id}
                 className={`threshold-chunk chunk-${chunk.id}`}
-                style={{ flex: chunk.width }}
+                style={{ flex: 1 }}
             >
                 <div
                     className={`vitals-block filled${inCombat && type === 'hp' ? ' pulse-combat' : ''}`}
@@ -177,6 +176,15 @@ const StatRow: React.FC<{
 
     return (
         <div className={`modern-vitals-row ${type}`}>
+            <div className="modern-vitals-label-group">
+                <span className="stat-label">{label}</span>
+                <div className="modern-vitals-value-column">
+                    <span className="current-value">{value}</span>
+                    <span className="value-separator">/</span>
+                    <span className="max-value">{max}</span>
+                </div>
+            </div>
+            
             <div 
                 ref={trackRef}
                 className="modern-vitals-track"
@@ -191,20 +199,6 @@ const StatRow: React.FC<{
                 {/* Wimpy Slider Elements */}
                 {type === 'hp' && onWimpyChange && (
                     <>
-                        {/* Invisible larger hit area for dragging */}
-                        <div 
-                            style={{
-                                position: 'absolute',
-                                left: `${wimpyRatio * 100}%`,
-                                top: '-15px',
-                                bottom: '-15px',
-                                width: '40px',
-                                transform: 'translateX(-50%)',
-                                zIndex: 35,
-                                cursor: 'ew-resize',
-                                background: 'transparent'
-                            }}
-                        />
                         <div 
                             className="wimpy-tick"
                             style={{ 
@@ -220,36 +214,8 @@ const StatRow: React.FC<{
                                 transform: 'translateX(-50%)'
                             }}
                         />
-                        <div 
-                            className="wimpy-label"
-                            style={{
-                                position: 'absolute',
-                                left: `${wimpyRatio * 100}%`,
-                                bottom: 'calc(100% + 0px)',
-                                transform: 'translateX(-50%)',
-                                background: isDragging ? '#ffffff' : 'rgba(0,0,0,0.8)',
-                                color: isDragging ? '#000000' : '#fff',
-                                padding: '0px 2px',
-                                borderRadius: '1px',
-                                fontSize: '0.45rem',
-                                fontWeight: 'bold',
-                                whiteSpace: 'nowrap',
-                                zIndex: 40,
-                                border: `1px solid ${isDragging ? '#000' : '#ffffff'}`,
-                                pointerEvents: 'none',
-                                opacity: isDragging ? 1 : 0,
-                                transition: 'opacity 0.2s ease'
-                            }}
-                        >
-                            {displayWimpy}
-                        </div>
                     </>
                 )}
-            </div>
-
-            <div className="modern-vitals-value-column">
-                <span className="current-value">{value}</span>
-                <span className="max-value">{max}</span>
             </div>
         </div>
     );

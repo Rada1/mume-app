@@ -67,18 +67,6 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
             return false;
         }
 
-        // 0. Detect Paginator (Progress output)
-        if (cleanLine.includes('[Press return to continue]') ||
-            cleanLine.includes('*** [Hit Return to continue]') ||
-            cleanLine.includes('*** Return:')) {
-            if (isMobileRef.current) {
-                // Use silent non-system so isSilentCapture is NOT incremented
-                executeCommandRef.current?.('', true, false);
-                return true; // Mobile: auto-page and suppress from log
-            }
-            return false; // Desktop: show in log so user can press Enter manually
-        }
-
         // 0. Detect Main Account Menu Prompt (for completion/cancellation)
         if (cleanLine === 'Account>') {
             setGameState('account');

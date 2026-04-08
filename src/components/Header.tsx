@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Crosshair, WifiOff, RefreshCw } from 'lucide-react';
+import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Crosshair, WifiOff, RefreshCw, Circle, Save, X } from 'lucide-react';
 import { EnvControls } from './Layout/EnvControls';
+import { RecorderHUD } from './Layout/HUD/RecorderHUD';
 import { LightingType, WeatherType } from '../types';
 import { useGame, useUI, useVitals } from '../context/GameContext';
+import ModernVitals from './ModernVitals';
 
 interface HeaderProps {
     isLandscape?: boolean;
@@ -28,11 +30,23 @@ const Header: React.FC<HeaderProps> = ({
         setShowControls,
         viewport,
         status,
-        telnet
+        telnet,
+        executeCommand,
+        triggerHaptic
     } = useGame();
 
-    const { target, setTarget } = useVitals();
-    const { ui, setUI, setIsSettingsOpen, setIsSetManagerOpen, setPopoverState } = useUI();
+    const { stats, setStats, target, setTarget } = useVitals();
+    const { 
+        ui, setUI, setIsSettingsOpen, setIsSetManagerOpen, setPopoverState,
+        isRecording, startRecording, stopRecording, saveLog, characterName,
+        replayer
+    } = useUI();
+
+    const handleWimpyChange = (val: number) => {
+        triggerHaptic(10);
+        setStats(prev => ({ ...prev, wimpy: val }));
+        executeCommand(`change wimpy ${val}`);
+    };
 
     const effectiveShowControls = showControls;
     const { activeSet, isEditMode, setIsEditMode, availableSets, setActiveSet } = btn;
@@ -70,18 +84,33 @@ const Header: React.FC<HeaderProps> = ({
         return () => document.removeEventListener('pointerdown', handleClickOutside, { capture: true });
     }, [ui.isMenuOpen, ui.isSetMenuOpen, setIsMenuOpen, setIsSetMenuOpen, setMenuView]);
 
+    const handleReplayUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            console.log('[Header] Replay file loaded');
+            try {
+                if (event.target?.result) {
+                    const log = JSON.parse(event.target.result as string);
+                    console.log('[Header] Parsed log entries:', log.entries?.length);
+                    replayer.loadLog(log);
+                }
+            } catch (err) {
+                console.error('[Header] Failed to parse MUME log:', err);
+            }
+        };
+        reader.readAsText(file);
+        setIsMenuOpen(false);
+    };
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     return (
         <header className={`header ${viewport.isMobile ? 'mobile-header' : ''}`} style={{ flexWrap: 'nowrap', gap: 6 }}>
-            {/* Left: Brand/Logo (Hidden on Mobile Design Mode to save critical space) */}
-            {!isLandscape && (!viewport.isMobile || !isEditMode) && (
-                <div className="title" style={{ flexShrink: 0, fontSize: viewport.isMobile ? '1.1rem' : '1.4rem', color: '#d7a11e' }}>
-                    MUME
-                </div>
-            )}
-
             {/* Middle: Status Indicators (Flexible/Clipped) */}
             <EnvControls getLightingIcon={getLightingIcon} getWeatherIcon={getWeatherIcon} isLandscape={isLandscape} />
+            <RecorderHUD />
 
             {/* Right: Master Controls (Always Visible/Fixed) */}
             <div className="controls" style={{ flexShrink: 0, marginLeft: 'auto', display: 'flex', gap: 6, alignItems: 'center' }}>
@@ -184,6 +213,13 @@ const Header: React.FC<HeaderProps> = ({
                 )}
 
                 <div className="action-menu-wrapper main-menu-dots" ref={menuRef} style={{ flexShrink: 0 }}>
+                    <input 
+                        type="file" 
+                        ref={fileInputRef} 
+                        style={{ display: 'none' }} 
+                        accept=".mume-log,.json" 
+                        onChange={handleReplayUpload}
+                    />
                     <button
                         className={`menu-toggle-btn ${isMenuOpen ? 'active' : ''}`}
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -223,9 +259,67 @@ const Header: React.FC<HeaderProps> = ({
                                             setIsMenuOpen(false);
                                         }}
                                     >
-                                        <Edit3 size={16} />
                                         <span>{isEditMode ? 'Exit Design Mode' : 'Enter Design Mode'}</span>
                                     </div>
+
+                                    <div
+                                        className={`dropdown-item ${isRecording ? 'active' : ''}`}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (isRecording) {
+                                                const log = stopRecording();
+                                                saveLog(log);
+                                            } else {
+                                                startRecording(characterName || undefined);
+                                            }
+                                            setIsMenuOpen(false);
+                                        }}
+                                    >
+                                        {isRecording ? <Save size={16} color="#ff4444" /> : <Circle size={16} color="#ff4444" />}
+                                        <span style={{ color: isRecording ? '#ff4444' : 'inherit' }}>
+                                            {isRecording ? 'Stop & Save Recording' : 'Start Session Recording'}
+                                        </span>
+                                    </div>
+
+                                    <div
+                                        className="dropdown-item"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            fileInputRef.current?.click();
+                                            setIsMenuOpen(false);
+                                        }}
+                                    >
+                                        <FolderOpen size={16} />
+                                        <span>Open Replay (.mume-log)</span>
+                                    </div>
+
+                                    {replayer.log && !replayer.state.isVisible && (
+                                        <div
+                                            className="dropdown-item"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                replayer.setIsVisible(true);
+                                                setIsMenuOpen(false);
+                                            }}
+                                        >
+                                            <Eye size={16} />
+                                            <span>Show Replay Controls</span>
+                                        </div>
+                                    )}
+
+                                    {replayer.log && (
+                                        <div
+                                            className="dropdown-item"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                replayer.clearLog();
+                                                setIsMenuOpen(false);
+                                            }}
+                                        >
+                                            <X size={16} color="#ff4444" />
+                                            <span style={{ color: '#ff4444' }}>Exit Replay Mode</span>
+                                        </div>
+                                    )}
 
                                     <div
                                         className={`dropdown-item ${effectiveShowControls ? 'active' : ''}`}

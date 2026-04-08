@@ -1,7 +1,5 @@
 .players-section {
     background: rgba(10, 13, 21, 0.35);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     padding: 12px;
@@ -54,11 +52,12 @@
 }
 
 .where-room { 
-    font-size: 0.8rem; 
+    font-size: calc(var(--dynamic-log-size, 16px) * 0.8); 
     color: rgba(255, 255, 255, 0.5); 
     flex: 1; 
     font-style: italic;
 }
+
 
 .online-columns {
     display: grid;
@@ -74,7 +73,7 @@
 }
 
 .column-header {
-    font-size: 0.65rem;
+    font-size: calc(var(--dynamic-log-size, 16px) * 0.65);
     font-weight: 800;
     color: rgba(255, 255, 255, 0.4);
     text-transform: uppercase;
@@ -82,6 +81,7 @@
     margin-bottom: 4px;
     padding-left: 4px;
 }
+
 
 .player-row {
     display: flex;
@@ -140,10 +140,11 @@
 .column-empty {
     padding: 20px 0;
     text-align: center;
-    font-size: 0.75rem;
+    font-size: calc(var(--dynamic-log-size, 16px) * 0.75);
     color: rgba(255, 255, 255, 0.2);
     font-style: italic;
 }
+
 
 /* Group Member Styles */
 .group-member-row {
@@ -152,8 +153,6 @@
     gap: 12px;
     padding: 12px 16px;
     background: rgba(10, 13, 21, 0.35);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     margin: 0 16px 8px 16px;
@@ -192,13 +191,14 @@
 }
 
 .member-room {
-    font-size: 0.7rem;
+    font-size: calc(var(--dynamic-log-size, 16px) * 0.7);
     color: rgba(255, 255, 255, 0.4);
     font-style: italic;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 
 .member-bars {
     display: flex;
@@ -259,16 +259,18 @@
 }
 
 .member-numeric-vitals .current {
-    font-size: 0.8rem;
+    font-size: calc(var(--dynamic-log-size, 16px) * 0.8);
     font-weight: 900;
     color: #fff;
 }
 
+
 .member-numeric-vitals .max {
-    font-size: 0.6rem;
+    font-size: calc(var(--dynamic-log-size, 16px) * 0.6);
     font-weight: 500;
     color: rgba(255, 255, 255, 0.4);
 }
+
 
 .member-conditions {
     display: flex;
@@ -278,13 +280,14 @@
 }
 
 .cond-badge {
-    font-size: 0.55rem;
+    font-size: calc(var(--dynamic-log-size, 16px) * 0.55);
     font-weight: 900;
     padding: 2px 6px;
     border-radius: 4px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
+
 
 .cond-badge.bad { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
 .cond-badge.neut { background: rgba(255, 255, 255, 0.06); color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); }

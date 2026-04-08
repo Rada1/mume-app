@@ -24,7 +24,7 @@ import { SpatButtons } from './components/SpatButtons';
 import { useSpatButtons } from './hooks/useSpatButtons';
 import SwipeFeedbackOverlay from './components/SwipeFeedbackOverlay';
 import { MultiSelectToolbar } from './components/Popovers/MultiSelectToolbar';
-import { TransitionLayer } from './components/Layout/TransitionLayer';
+
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
 
@@ -52,7 +52,8 @@ const MudClient = () => {
         setMumeEditState,
         isCrtEnabled,
         isBloomEnabled,
-        inCombat
+        inCombat,
+        isNewbieMode
     } = useGame();
 
     const { rumble, setTarget, heldButton, setHeldButton } = useVitals();
@@ -152,7 +153,7 @@ const MudClient = () => {
 
     return (
         <div
-            className={`app-container ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isCrtEnabled ? 'crt-enabled' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''} ${inCombat ? 'in-combat' : ''}`}
+            className={`app-container ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${isCrtEnabled ? 'crt-enabled' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''}`}
             ref={containerRef}
             onDragOver={(e: React.DragEvent) => {
                 e.preventDefault();
@@ -219,7 +220,7 @@ const MudClient = () => {
             onClick={handleBackgroundClick}
         >
             {isCrtEnabled && <div className="crt-overlay" />}
-            <TransitionLayer />
+
             <div className={`app-content-shaker ${rumble ? 'rumble-active' : ''}`} style={{ flex: 1, position: 'relative' }}>
                 <div className="background-layer" style={{
                     backgroundImage: bgImage ? `url(${bgImage})` : 'none',
@@ -241,6 +242,8 @@ const MudClient = () => {
                     setHeldButton={setHeldButton}
                     mumeEditState={mumeEditState}
                     setMumeEditState={setMumeEditState}
+                    handleDragStart={handleDragStart}
+                    wasDraggingRef={wasDraggingRef}
                 />
 
                 <HUDClustersLayer

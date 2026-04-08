@@ -112,39 +112,45 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             const cat = getCategoryForName(line.text);
 
             return (
-                <div key={line.id} className="equipment-item-row" style={{ marginLeft: `${depth * 8}px`, marginBottom: '6px' }}>
-                    <div className="equipment-item-content">
-                        <div
-                            className={`inline-btn auto-item ${isSelected ? 'selected-item' : ''} ${line.isContainer ? 'is-container' : ''}`}
-                            data-id={fullId}
-                            data-line-id={line.id}
-                            data-context={line.context || line.id}
-                            data-action="menu"
-                            data-category={cat || undefined}
-                            data-cmd="inline-obj-worn"
-                            style={{
-                                marginLeft: '0',
-                                boxShadow: isSelected ? `inset 0 0 12px ${itemBrown}44` : 'none',
-                                borderColor: isSelected ? itemBrown : 'transparent',
-                                '--glow-color': itemBrown,
-                                color: itemBrown,
-                                cursor: 'default'
-                            } as React.CSSProperties}
-                        >
-                            <div className="drawer-item-text-wrapper">
-                                <span className="drawer-item-name" style={{ color: itemBrown }}>{displayName}</span>
-                                {extraInfo && <span className="drawer-item-extra" style={{ color: itemBrown }}>({extraInfo}</span>}
-                            </div>
-                        </div>
+                <div key={line.id} className="equipment-item-row" style={{ marginLeft: `${depth * 8}px`, marginBottom: '2px' }}>
+                    <div
+                        className={`inline-btn auto-item ${isSelected ? 'selected-item' : ''} ${line.isContainer ? 'is-container' : ''}`}
+                        data-id={fullId}
+                        data-line-id={line.id}
+                        data-context={line.context || line.id}
+                        data-action="menu"
+                        data-category={cat || undefined}
+                        data-cmd="inline-obj-worn"
+                        style={{
+                            marginLeft: '0',
+                            boxShadow: isSelected ? `inset 0 0 12px ${itemBrown}44` : 'none',
+                            borderColor: isSelected ? itemBrown : 'transparent',
+                            '--glow-color': itemBrown,
+                            color: itemBrown,
+                            cursor: 'default',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'baseline',
+                            flexWrap: 'wrap',
+                            gap: '6px',
+                            width: '100%',
+                            padding: '2px 6px',
+                            justifyContent: 'flex-start',
+                        } as React.CSSProperties}
+                    >
                         {line.prefixHtml && (
-                            <span 
-                                className="drawer-line-prefix equipment-location"
+                            <span
+                                className="equipment-location-inline"
                                 dangerouslySetInnerHTML={{ __html: line.prefixHtml }}
                             />
                         )}
+                        <span className="drawer-item-name" style={{ color: itemBrown }}>{displayName}</span>
+                        {extraInfo && <span className="drawer-item-extra" style={{ color: itemBrown }}>({extraInfo}</span>}
                     </div>
                 </div>
             );
+
+
         }
 
         return (
@@ -169,8 +175,8 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         justifyContent: 'space-between',
                         padding: '12px 20px',
                         background: 'rgba(10, 13, 21, 0.65)',
-                        backdropFilter: 'blur(25px)',
-                        WebkitBackdropFilter: 'blur(25px)',
+                        backdropFilter: 'none',
+                        WebkitBackdropFilter: 'none',
                         border: '1px solid rgba(255, 255, 255, 0.1)',
                         borderRadius: '16px',
                         margin: '0 0 15px 0',
@@ -180,8 +186,9 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         zIndex: 10
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ fontWeight: '900', fontSize: '0.75rem', letterSpacing: '1.5px', color: '#ffffff', textTransform: 'uppercase' }}>Equipment</span>
+                            <span style={{ fontWeight: '900', fontSize: 'calc(var(--dynamic-log-size, 16px) * 0.75)', letterSpacing: '1.5px', color: '#ffffff', textTransform: 'uppercase' }}>Equipment</span>
                         </div>
+
                         <button 
                             onPointerDown={(e) => e.stopPropagation()}
                             onClick={() => { triggerHaptic(20); onClose(); }} 
@@ -195,10 +202,11 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                                 display: 'flex', 
                                 alignItems: 'center', 
                                 justifyContent: 'center', 
-                                fontSize: '1rem', 
+                                fontSize: 'var(--dynamic-log-size, 16px)', 
                                 cursor: 'pointer'
                             }}
                         >✕</button>
+
                     </div>
                     {eqLines.map(line => renderLine(line))}
                     {eqLines.length === 0 && <div className="drawer-empty-state">No equipment worn</div>}

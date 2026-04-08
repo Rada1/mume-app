@@ -65,7 +65,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
 
     const {
         triggerHaptic, executeCommand, theme, showLegacyButtons, btn, joystick,
-        setIsTrackpadModifierActive, lighting, roomPlayers, roomNpcs, inlineCategories, isFoggy
+        setIsTrackpadModifierActive, lighting, roomPlayers, roomNpcs, roomItems, inlineCategories, isFoggy, isImmersionMode
     } = useGame();
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
     const { addMessage } = useLog();
@@ -149,7 +149,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     }, [isMapFloating, setIsMapFloating, setUI, triggerHaptic]);
 
     return (
-        <div className={`mapper-container lighting-state-${lighting || 'none'} ${isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ 
+        <div className={`mapper-container lighting-state-${isImmersionMode ? (lighting || 'none') : 'none'} ${isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ 
             position: 'relative', 
             width: '100%', 
             height: '100%', 
@@ -202,6 +202,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 serverIdIndexRef={context.serverIdIndexRef}
                 roomPlayers={roomPlayers}
                 roomNpcs={roomNpcs}
+                roomItems={roomItems}
                 inlineCategories={inlineCategories}
                 opponentName={opponentName}
                 opponentId={opponentId}

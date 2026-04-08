@@ -1,4 +1,4 @@
-import { GameStats, WeatherType, DeathStage, GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant, GmcpExitInfo, GmcpUpdateExits, GmcpRoomNpcs, GmcpCharInfo } from '../../types';
+import { GameStats, WeatherType, GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant, GmcpExitInfo, GmcpUpdateExits, GmcpRoomNpcs, GmcpCharInfo } from '../../types';
 import { isGmcpCharVitals, isGmcpRoomInfo, isGmcpRoomPlayers, isGmcpRoomItems, isGmcpExitInfoMap } from '../../utils/gmcpValidation';
 
 export interface GmcpHandlers {
@@ -64,7 +64,7 @@ export class GmcpDecoder {
             this.handleSimpleJson(json, handlers.onRemovePlayer);
         } else if (pkgLower === 'room.removenpc' || pkgLower === 'room.removechar' || pkgLower === 'room.chars.remove' || pkgLower === 'room.char.remove') {
             this.handleSimpleJson(json, handlers.onRemoveNpc);
-        } else if (pkgLower === 'room.items' || pkgLower === 'char.items' || pkgLower === 'char.inv' || pkgLower === 'room.objects' || pkgLower === 'room.items.list' || pkgLower === 'char.items.list' || pkgLower === 'room.items.set' || pkgLower === 'mume.client.inventory' || pkgLower === 'mume.client.equipment' || pkgLower === 'mume.client.roomitems') {
+        } else if (pkgLower.startsWith('room.items') || pkgLower.startsWith('room.objects') || pkgLower === 'char.items' || pkgLower === 'char.inv' || pkgLower === 'room.items.list' || pkgLower === 'char.items.list' || pkgLower === 'room.items.set' || pkgLower === 'mume.client.inventory' || pkgLower === 'mume.client.equipment' || pkgLower === 'mume.client.roomitems') {
             this.handleRoomItems(json);
         } else if (pkgLower === 'char.name') {
             this.handleCharName(json);

@@ -124,16 +124,16 @@
 .lighting-sun .lighting-inner {
     /* Sun origin well off-screen top-right — only the soft falloff reaches the viewport */
     background: radial-gradient(ellipse 90% 160% at 92% -35%,
-            rgba(255, 255, 220, 0.55) 0%,
-            rgba(255, 240, 175, 0.2) 45%,
+            rgba(255, 255, 245, 0.62) 0%,
+            rgba(245, 252, 255, 0.22) 45%,
             transparent 80%);
 }
 
 .is-mobile .lighting-sun .lighting-inner {
     /* Same off-screen origin for mobile — wider ellipse to cover the horizontal span */
     background: radial-gradient(ellipse 160% 130% at 92% -35%,
-            rgba(255, 255, 220, 0.55) 0%,
-            rgba(255, 240, 175, 0.2) 40%,
+            rgba(255, 255, 245, 0.62) 0%,
+            rgba(245, 252, 255, 0.22) 40%,
             transparent 78%);
 }
 
@@ -156,8 +156,8 @@
 }
 
 .is-mobile:not(.is-landscape):not(.kb-open) .lighting-artificial .lighting-inner {
-    /* When keyboard is down, the input bar sits above the 280px mapper gutter */
-    --torch-y: calc(100% - 280px);
+    /* When keyboard is down, the input bar sits above the 300px mapper gutter */
+    --torch-y: calc(100% - 300px);
 }
 
 .is-mobile:not(.is-landscape):not(.kb-open).is-map-expanded .lighting-artificial .lighting-inner {
@@ -257,9 +257,9 @@
 }
 
 /* --- Mobile Portrait: offset fog so it anchors to the log bottom, not the screen bottom --- */
-/* The map drawer peeks at 280px; without this the densest fog is hidden behind the drawer */
+/* The map drawer peeks at 300px; without this the densest fog is hidden behind the drawer */
 .is-mobile:not(.is-landscape) .fog-layer {
-    bottom: 280px;
+    bottom: 300px;
 }
 
 .is-mobile:not(.is-landscape).is-map-expanded .fog-layer {
@@ -310,19 +310,6 @@
     display: none;
 }
 
-.combat-vignette {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at center, transparent 30%, rgba(180, 0, 0, 0.2) 100%);
-    z-index: 12;
-    opacity: 0;
-    transition: opacity 1.2s ease-in-out;
-    pointer-events: none;
-}
-
-.combat-vignette.active {
-    opacity: 1;
-}
 
 .death-overlay {
     position: absolute;
@@ -358,23 +345,6 @@
     animation: death-flicker 1s steps(10) infinite;
 }
 
-.combat-layer-flash {
-    position: absolute;
-    inset: 0;
-    z-index: 20;
-    background: radial-gradient(circle, transparent 45%, rgba(220, 20, 20, 0.25) 100%);
-    box-shadow: inset 0 0 100px rgba(255, 0, 0, 0.3);
-
-
-    opacity: 0;
-    transition: opacity 2.5s ease-out;
-    pointer-events: none;
-}
-
-.combat-layer-flash.active {
-    opacity: 1;
-    transition: opacity 0.05s ease-in;
-}
 
 .rain-container {
     position: absolute;

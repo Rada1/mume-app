@@ -3,7 +3,6 @@ import { MessageCircle, Reply, Repeat, XCircle } from 'lucide-react';
 import { SpatButtons } from './SpatButtons';
 import { SpatButton, PopoverState } from '../types';
 import { useUI, useBaseGame, useVitals, useGame } from '../context/GameContext';
-import ModernVitals from './ModernVitals';
 import XpTicker from './XpTicker';
 
 
@@ -27,24 +26,7 @@ interface InputAreaProps {
     whoList: string[];
 }
 
-const normalizeTerrain = (t: string): string => {
-    t = t.trim();
-    const low = t.toLowerCase();
-
-    // MUME GMCP Symbols & Keywords
-    if (t === 'f' || low.includes('forest') || low.includes('jungle') || low.includes('wood') || low.includes('tree') || low.includes('leaf') || low.includes('thicket')) return 'forest';
-    if (t === '.' || low.includes('field') || low.includes('plain') || low.includes('grass') || low.includes('meadow') || low.includes('heath') || low.includes('tundra')) return 'field';
-    if (t === ':' || low.includes('brush') || low.includes('bush') || low.includes('scrub') || low.includes('shrub') || low.includes('swamp')) return 'brush';
-    if (t === '~' || t === '%' || t === 'W' || t === 'U' || low.includes('water') || low.includes('river') || low.includes('lake') || low.includes('ocean') || low.includes('swim') || low.includes('sea') || low.includes('bog') || low.includes('shallow') || low.includes('rapid') || low.includes('underwater')) return 'water';
-    if (t === '+' || low.includes('road') || low.includes('trail') || low.includes('path') || low.includes('bridge') || low.includes('cobble')) return 'road';
-    if (t === '<' || low.includes('mountain') || low.includes('rock') || low.includes('cliff') || low.includes('peak') || low.includes('glacier')) return 'mountain';
-    if (t === '(' || low.includes('hill')) return 'hills';
-    if (t === '=' || t === '0' || low.includes('tunnel') || low.includes('cave') || low.includes('underground') || low.includes('mine') || low.includes('dark') || low.includes('crypt') || low.includes('cavern')) return 'underground';
-    if (t === '#' || low.includes('city') || low.includes('town') || low.includes('street')) return 'city';
-    if (t === '[' || low.includes('shop') || low.includes('inside') || low.includes('indoor') || low.includes('inn') || low.includes('building') || low.includes('room') || low.includes('stable') || low.includes('tavern') || low.includes('basement') || low.includes('cellar')) return 'building';
-
-    return low.replace(/\s+/g, '-');
-};
+import { normalizeTerrain } from '../utils/terrainUtils';
 
 const InputArea: React.FC<InputAreaProps> = ({
     input, setInput, onSend, terrain, onSwipe, isMobile, isKeyboardOpen, commandPreview,
@@ -52,13 +34,8 @@ const InputArea: React.FC<InputAreaProps> = ({
 }) => {
     const { ui, setUI } = useUI();
     const { viewport } = useBaseGame();
-    const { stats: vitalsStats, setStats: setVitalsStats } = useVitals();
+    const { stats } = useVitals();
     const { inCombat, setActiveDragData, triggerHaptic, playClickSound, isSoundEnabled, initAudio } = useGame();
-    const handleWimpyChange = useCallback((val: number) => {
-        triggerHaptic(10);
-        setVitalsStats(prev => ({ ...prev, wimpy: val }));
-        executeCommand(`change wimpy ${val}`);
-    }, [setVitalsStats, executeCommand, triggerHaptic]);
     const terrainClass = terrain ? `terrain-${normalizeTerrain(terrain)}` : '';
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const startPos = useRef<{ x: number, y: number } | null>(null);
@@ -480,7 +457,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                             <Repeat size={18} />
                         </button>
 
-                        {vitalsStats.conditions?.waiting && (
+                        {stats.conditions?.waiting && (
                             <button
                                 type="button"
                                 className="msg-cancel-btn"
@@ -494,32 +471,23 @@ const InputArea: React.FC<InputAreaProps> = ({
                     </div>
                 </div>
 
-                <div className="input-vitals-dock" style={{ position: 'relative' }}>
-                    {isMobile && isKeyboardOpen && !parley.active && (
-                        <button
-                            type="button"
-                            className="mobile-parley-toggle"
-                            onPointerDown={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setParley(prev => ({ ...prev, active: true }));
-                                // Re-focus the textarea so the keyboard stays open.
-                                // Use rAF to let the button unmount first, then focus.
-                                requestAnimationFrame(() => inputRef.current?.focus());
-                            }}
-                        >
-                            <MessageCircle size={18} />
-                        </button>
-                    )}
-                    <XpTicker isLandscape={viewport.isLandscape} />
-                    <ModernVitals
-                        stats={vitalsStats}
-                        inCombat={inCombat}
-                        onWimpyChange={handleWimpyChange}
-                        onScoreRefresh={() => executeCommand('score')}
-                        triggerHaptic={triggerHaptic}
-                    />
-                </div>
+                {isMobile && isKeyboardOpen && !parley.active && (
+                    <button
+                        type="button"
+                        className="mobile-parley-toggle"
+                        onPointerDown={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setParley(prev => ({ ...prev, active: true }));
+                            // Re-focus the textarea so the keyboard stays open.
+                            // Use rAF to let the button unmount first, then focus.
+                            requestAnimationFrame(() => inputRef.current?.focus());
+                        }}
+                    >
+                        <MessageCircle size={18} />
+                    </button>
+                )}
+                <XpTicker isLandscape={viewport.isLandscape} />
             </div>
         </div>
     );

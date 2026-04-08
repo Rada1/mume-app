@@ -48,6 +48,8 @@ interface UseSettingsDeps {
     setIsCrtEnabled: (val: boolean) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
+    isTimestampEnabled: boolean;
+    setIsTimestampEnabled: (val: boolean) => void;
 }
 
 export function useSettings(deps: UseSettingsDeps) {
@@ -67,7 +69,8 @@ export function useSettings(deps: UseSettingsDeps) {
         inlineCategories, setInlineCategories,
         isHighlighterEnabled, setIsHighlighterEnabled,
         isCrtEnabled, setIsCrtEnabled,
-        isBloomEnabled, setIsBloomEnabled
+        isBloomEnabled, setIsBloomEnabled,
+        isTimestampEnabled, setIsTimestampEnabled
     } = deps;
     const [bgImage, setBgImage] = useState((MASTER_SETTINGS as any).bgImage || DEFAULT_BG);
     const resolveInitialUrl = () => {
@@ -147,7 +150,7 @@ export function useSettings(deps: UseSettingsDeps) {
     const exportSettingsFile = (buttons: CustomButton[]) => {
         const settings: SavedSettings = {
             version: 3, connectionUrl, bgImage, loginName, loginPassword,
-            isCrtEnabled, isBloomEnabled,
+            isCrtEnabled, isBloomEnabled, isTimestampEnabled,
             isSoundEnabled, isNoviceMode,
             buttons: buttons.map(b => ({ ...b, isVisible: undefined } as any)),
             soundTriggers: soundTriggers.map(({ buffer, ...rest }) => rest),
@@ -204,6 +207,7 @@ export function useSettings(deps: UseSettingsDeps) {
                     if (settings.isHighlighterEnabled !== undefined) setIsHighlighterEnabled(settings.isHighlighterEnabled);
                     if (settings.isCrtEnabled !== undefined) setIsCrtEnabled(settings.isCrtEnabled);
                     if (settings.isBloomEnabled !== undefined) setIsBloomEnabled(settings.isBloomEnabled);
+                    if (settings.isTimestampEnabled !== undefined) setIsTimestampEnabled(settings.isTimestampEnabled);
                     if (settings.favorites) setFavorites(settings.favorites);
                     if (settings.buttons) setButtons(settings.buttons.map(b => ({ ...b, isVisible: !b.trigger?.enabled })));
                     if (settings.soundTriggers && audioCtxRef.current) {
@@ -308,6 +312,7 @@ export function useSettings(deps: UseSettingsDeps) {
         isHighlighterEnabled, setIsHighlighterEnabled,
         isCrtEnabled, setIsCrtEnabled,
         isBloomEnabled, setIsBloomEnabled,
+        isTimestampEnabled, setIsTimestampEnabled,
         favorites, setFavorites
     };
 }

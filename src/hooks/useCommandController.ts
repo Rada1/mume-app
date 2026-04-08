@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef, useEffect } from 'react';
 import { mudParser } from '../services/parser/services/mudParser';
 import { useCommandExecutor } from './useCommandExecutor';
 import { useInteractionHandlers } from './useInteractionHandlers';
@@ -28,6 +28,7 @@ export interface CommandControllerDeps {
     status: 'connected' | 'disconnected' | 'connecting';
     target: string | null;
     setTarget: (val: string | null) => void;
+    activePrompt: string;
     finalizeCapture: (targetStage?: CaptureStage) => void;
     popoverState: any;
     setPopoverState: (val: any) => void;
@@ -74,14 +75,22 @@ export interface CommandControllerDeps {
     isSoundEnabled: boolean;
     manualCancelRef?: React.MutableRefObject<boolean>;
     waiting?: boolean;
+    recordEntry?: (type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any) => void;
+    setLastMoveDir: (val: 'n' | 's' | 'e' | 'w' | 'u' | 'd' | 'none') => void;
 }
 
 
 export function useCommandController(deps: CommandControllerDeps) {
-    const { input, setInput, isNoviceMode, viewport, triggerHaptic, setTarget, addMessage, manualCancelRef, waiting } = deps;
+    const { input, setInput, isNoviceMode, viewport, triggerHaptic, setTarget, addMessage, manualCancelRef, waiting, setLastMoveDir } = deps;
 
     const executor = useCommandExecutor(deps);
+    const depsRef = useRef(deps);
+    useEffect(() => { depsRef.current = deps; }, [deps]);
+
     const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, isHistorical = false, fromDrawer = false, options?: { shouldFocus?: boolean, fromUi?: boolean }) => {
+        const d = depsRef.current;
+        const { viewport, waiting, manualCancelRef, isSoundEnabled, playClickSound, recordEntry, practice, shop } = d;
+
         // Manual cancel detection
         if (cmd === '' && waiting && manualCancelRef) {
             console.log('[Controller] Manual cancel detected (newline while waiting)');
@@ -90,8 +99,8 @@ export function useCommandController(deps: CommandControllerDeps) {
 
         if (!isSystem && !silent) {
             // New: Play click sound on command entry (keyboard, numpad, or other non-button sources)
-            if (!options?.fromUi && deps.isSoundEnabled && deps.playClickSound) {
-                deps.playClickSound();
+            if (!options?.fromUi && isSoundEnabled && playClickSound) {
+                playClickSound();
             }
 
             // Defensive focus: only focus elements if explicitly requested or on desktop.
@@ -126,18 +135,37 @@ export function useCommandController(deps: CommandControllerDeps) {
         }
 
         if (cmd.toLowerCase().startsWith('practice ')) {
-            deps.practice.setLastPracticedSkill(cmd.substring(9).trim());
+            practice.setLastPracticedSkill(cmd.substring(9).trim());
         } else if (cmd.toLowerCase() === 'practice') {
-            if (options?.fromUi) deps.practice.setIsUiRequested(true);
+            if (options?.fromUi) practice.setIsUiRequested(true);
             // Silent system practice (e.g. initial connect sync) — flag it so the
             // response stays hidden even if a game prompt fires before it arrives.
-            if (silent && isSystem) deps.practice.setSilentSyncPending(true);
+            if (silent && isSystem) practice.setSilentSyncPending(true);
         } else if (cmd.toLowerCase().startsWith('list') || cmd.toLowerCase().startsWith('browse')) {
-            if (options?.fromUi) deps.shop.setIsUiRequested(true);
+            if (options?.fromUi) shop.setIsUiRequested(true);
         }
 
         executor.executeCommand(cmd, silent, isSystem, isHistorical, fromDrawer);
-    }, [executor, viewport.isMobile]);
+
+        // --- Movement Tracking for Newbie Animations ---
+        if (!silent && !isSystem) {
+            const moveMatch = cmd.toLowerCase().trim().match(/^(n|north|s|south|e|east|w|west|u|up|d|down)$/);
+            if (moveMatch) {
+                let dir = moveMatch[1];
+                if (dir === 'north') dir = 'n';
+                else if (dir === 'south') dir = 's';
+                else if (dir === 'east') dir = 'e';
+                else if (dir === 'west') dir = 'w';
+                else if (dir === 'up') dir = 'u';
+                else if (dir === 'down') dir = 'd';
+                setLastMoveDir(dir as any);
+            }
+        }
+
+        if (!silent && !isSystem && recordEntry) {
+            recordEntry('ui', { event: 'executeCommand', cmd });
+        }
+    }, [executor.executeCommand]);
 
     useNumpadControls(executeCommand);
 

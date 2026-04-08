@@ -44,48 +44,64 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
         });
     };
 
+    const getInternalName = (name: string) => {
+        // If it's a piped name (display|internal), take the internal part
+        const parts = name.split('|');
+        const cleanName = parts.length > 1 ? parts[1] : parts[0];
+        // Strip out [Arnor], <C> etc
+        return cleanName.replace(/^[<\[]\w+[>\]]\s*/, '').split(/\s+/)[0].toLowerCase();
+    };
+
     const toggleFavorite = (e: React.MouseEvent, name: string) => {
         e.stopPropagation();
         triggerHaptic(25);
-        // Favorites should probably be based on the base name
-        const baseName = name.replace(/^[<\[]\w+[>\]]\s*/, '').split(/\s+/)[0].toLowerCase();
+        const internalName = getInternalName(name);
+        if (!internalName) return;
+
         setFavorites(prev => {
-            if (prev.includes(baseName)) {
-                return prev.filter(f => f !== baseName);
+            const current = prev || [];
+            if (current.includes(internalName)) {
+                return current.filter(f => f !== internalName);
             }
-            return [...prev, baseName];
+            return [...current, internalName];
         });
     };
 
     const isFav = (name: string) => {
-        const baseName = name.replace(/^[<\[]\w+[>\]]\s*/, '').split(/\s+/)[0].toLowerCase();
-        return favorites.includes(baseName);
+        const internalName = getInternalName(name);
+        return favorites && favorites.includes(internalName);
     };
 
-    const PlayerRow = ({ name, isFavorite }: { name: string, isFavorite: boolean }) => {
+    const PlayerRow = ({ name, isFavorite, subtitle }: { name: string, isFavorite: boolean, subtitle?: string }) => {
         const [htmlDisplay, baseName] = name.includes('|') ? name.split('|') : [name, name];
         // Strip ansiConvert inline color styles so the button's own color applies uniformly.
         const neutralHtml = htmlDisplay.replace(/ style="[^"]*"/g, '');
 
         return (
             <div className="player-row" data-player-name={baseName}>
-                <button
-                    className="player-name-btn"
-                    onClick={(e) => handlePlayerClick(e, baseName)}
-                    style={{
-                        fontFamily: 'monospace',
-                        whiteSpace: 'pre',
-                        fontSize: '0.85rem',
-                        color: 'rgba(125, 211, 252, 1)'
-                    }}
-                    dangerouslySetInnerHTML={{ __html: neutralHtml }}
-                />
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                    <button
+                        className="player-name-btn"
+                        onClick={(e) => handlePlayerClick(e, baseName)}
+                        style={{
+                            fontFamily: 'monospace',
+                            whiteSpace: 'pre',
+                            fontSize: 'var(--dynamic-log-size, 16px)',
+                            color: 'rgba(125, 211, 252, 1)',
+                            padding: subtitle ? '4px 0 0 0' : '8px 0'
+                        }}
+                        dangerouslySetInnerHTML={{ __html: neutralHtml }}
+                    />
+                    {subtitle && (
+                        <div className="where-room" style={{ paddingBottom: '4px', fontSize: 'calc(var(--dynamic-log-size, 16px) * 0.75)' }}>{subtitle}</div>
+                    )}
+                </div>
                 <button 
                     className={`star-btn ${isFavorite ? 'active' : ''}`}
                     onClick={(e) => toggleFavorite(e, baseName)}
                     title={isFavorite ? "Remove from favorites" : "Add to favorites"}
                 >
-                    <Star size={14} fill={isFavorite ? "currentColor" : "none"} />
+                    <Star size={16} fill={isFavorite ? "currentColor" : "none"} strokeWidth={isFavorite ? 1 : 2} />
                 </button>
             </div>
         );
@@ -223,21 +239,19 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                     ) : (
                         <div className="players-section">
                             {whereList.length > 0 ? (
-                                whereList.map((entry, i) => (
-                                    <div key={i} className="where-entry">
-                                        <span
-                                            className="player-chip"
-                                            onClick={(e) => handlePlayerClick(e, entry.name)}
-                                            style={{ color: 'rgba(37, 99, 235, 0.9)', fontWeight: 'bold' }}
-                                        >
-                                            {entry.name}
-                                        </span>
-                                        <span className="where-room">{entry.room}</span>
-                                    </div>
-                                ))
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    {whereList.map((entry, i) => (
+                                        <PlayerRow 
+                                            key={`nearby-${i}`} 
+                                            name={entry.name} 
+                                            isFavorite={isFav(entry.name)} 
+                                            subtitle={entry.room} 
+                                        />
+                                    ))}
+                                </div>
                             ) : (
                                 <div style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
-                                    <p style={{ fontSize: '0.8rem' }}>No data — tap refresh to load.</p>
+                                    <p style={{ fontSize: 'var(--dynamic-log-size, 16px)' }}>No data — tap refresh to load.</p>
                                 </div>
                             )}
                         </div>

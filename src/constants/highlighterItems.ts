@@ -12,7 +12,8 @@ export const combatActions = [
 ];
 
 export const exitDirections = [
-    'north', 'east', 'south', 'west', 'up', 'down'
+    'north', 'east', 'south', 'west', 'up', 'down',
+    'northwest', 'northeast', 'southwest', 'southeast'
 ];
 
 export const magicKeywords = [

@@ -27,8 +27,8 @@ export const MendingFooter: React.FC<MendingFooterProps> = ({
             display: 'flex',
             gap: '10px',
             background: 'rgba(10, 13, 21, 0.35)',
-            backdropFilter: 'blur(25px)',
-            WebkitBackdropFilter: 'blur(25px)',
+            backdropFilter: 'none',
+            WebkitBackdropFilter: 'none',
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
             pointerEvents: 'auto'
         }}>

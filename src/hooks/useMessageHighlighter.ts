@@ -8,6 +8,7 @@ import { CustomButton, InlineCategoryConfig, MessageType } from '../types';
 import { buildHighlighterCandidates, applyColorTaggedObjects } from '../utils/highlighterUtils';
 import { getGlowColorForCategory } from '../utils/categorizationUtils';
 import { isObjectSelected } from '../utils/selectionUtils';
+import { ARRIVE_REGEX, LEAVE_REGEX } from './useMessageLog';
 
 // --- Logic Section: Message Processing & Highlighting ---
 
@@ -103,8 +104,32 @@ export const useMessageHighlighter = (
      * Main entry point for processing a message's HTML and applying highlights.
      */
     const processMessageHtml = useCallback((originalHtml: string, mid: string, isRoomName: boolean, type?: MessageType) => {
-        // --- 1. Rule: No highlighted words in room names ---
-        if (isRoomName || !isHighlighterEnabled) {
+        if (!isHighlighterEnabled) {
+            return originalHtml;
+        }
+
+        // --- 1. Rule: Specialized Comm Sender Highlighting ---
+        // If the type is 'comm-sender', we treat the entire input as a player name
+        // and wrap it in the same interactive button markup used for PCs.
+        if (type === 'comm-sender') {
+            const name = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
+            const playerGlow = getGlowColorForCategory('inlineplayer');
+            const buttonId = `auto-${name}`;
+            const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'inlineplayer');
+            const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            
+            return `<span class="inline-btn auto-occupant pc-highlighter${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(name)}" data-action="menu" data-menu-display="list" style="--glow-color: ${playerGlow}; color: var(--glow-color); font-weight: 800">${originalHtml}</span>`;
+        }
+
+        // --- 1.1. Rule: No general highlighted words in room names, EXCEPT the active target ---
+        if (isRoomName) {
+            if (target) {
+                const glowColor = '#facc15'; // Target gold
+                const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return safeHighlight(originalHtml, target, false, (m) => {
+                    return `<span class="inline-btn auto-target active-target" draggable="true" data-mid="${mid}" data-cmd="target" data-context="${esc(target)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}">${m}</span>`;
+                });
+            }
             return originalHtml;
         }
 
@@ -140,6 +165,25 @@ export const useMessageHighlighter = (
             .replace(/&#([0-9]+);/g, (_, d) => String.fromCodePoint(parseInt(d, 10)))
             .normalize('NFC');
 
+        // --- 0.5. Movement Highlighting (Arrive/Leave/Enter) ---
+        // Match Arrive/Leave patterns and wrap verb/direction in bright-white spans.
+        const arriveMatch = textOnly.match(ARRIVE_REGEX);
+        const leaveMatch = textOnly.match(LEAVE_REGEX);
+
+        if (arriveMatch || leaveMatch) {
+            const movementMatch = arriveMatch || leaveMatch!;
+            const verb = movementMatch[2];
+            const direction = movementMatch[4];
+
+            if (verb) {
+                newHtml = safeHighlight(newHtml, verb, false, (m) => `<span class="movement-item">${m}</span>`);
+            }
+            if (direction) {
+                newHtml = safeHighlight(newHtml, direction, false, (m) => `<span class="movement-item">${m}</span>`);
+            }
+        }
+
+
         // --- 3. Specialized List Highlighting (WHO/WHERE) ---
         if (type === 'who-list' || type === 'where-list') {
             let cleanText = textOnly.trim();
@@ -168,6 +212,42 @@ export const useMessageHighlighter = (
                     return `<span class="inline-btn auto-occupant pc-highlighter${isSelected ? ' selected' : ''}" draggable="true" data-id="auto-${esc(nameCandidate)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(nameCandidate)}" data-action="menu" data-menu-display="list" style="--glow-color: ${playerGlow}; color: var(--glow-color); font-weight: 800">${m}</span>`;
                 });
             }
+        }
+
+        // --- 3.5. Combat Damage Highlighting (Cyan/Red) ---
+        // This targets the "[literal-dmg] [combat-verb]" part of the message.
+        const combatDmgIndicators = 'barely|lightly|strongly|hard|very\\s+hard|extremely\\s+hard';
+        const combatVerbs = 'hits?|slashes?|pounds?|cleaves?|pierces?|stabs?|shoots?|smites?|whips?|strikes?|smashes?';
+        
+        // Use textOnly to detect context efficiently
+        const combatVerbRegex = new RegExp(` (?:${combatVerbs}) `, 'i');
+        const pAttacking = textOnly.startsWith('You ') && combatVerbRegex.test(textOnly);
+        const pTargeted = textOnly.includes(' your ') && combatVerbRegex.test(textOnly);
+
+        if (pAttacking || pTargeted) {
+            const cssClass = pAttacking ? 'combat-dmg-out' : 'combat-dmg-in';
+
+            // 1. Absolute Damage + Combat Verb
+            const combatDmgPattern = `((?:${combatDmgIndicators})\\s+)?(${combatVerbs})`;
+            newHtml = safeHighlight(newHtml, combatDmgPattern, true, (m) => {
+                return `<span class="${cssClass}">${m}</span>`;
+            });
+
+            // 2. Body Parts
+            const bodyPartsPattern = '(?:right\\s+|left\\s+)?(?:head|body|arm|hand|leg|foot)';
+            newHtml = safeHighlight(newHtml, bodyPartsPattern, true, (m) => {
+                return `<span class="${cssClass}">${m}</span>`;
+            });
+
+            // 3. Relative Damage
+            // Usually follows "and " and precedes " it."
+            const relativeDmgVerbs = 'tickles?|shatters?|hurts?|wounds?|maims?|scratches?|bruises?|massacres?|obliterates?|crushes?|blasts?|stings?';
+            const relativeDmgPattern = `(?:and\\s+)(${relativeDmgVerbs})(?=\\s+it\\b|\\.|$)`;
+            newHtml = safeHighlight(newHtml, relativeDmgPattern, true, (m, match) => {
+                if (!match) return m;
+                const verb = match[0];
+                return `and <span class="${cssClass}">${verb}</span>`;
+            });
         }
 
         if (!isRoomName) {

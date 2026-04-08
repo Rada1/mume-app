@@ -42,6 +42,10 @@ interface GeneralSettingsProps {
     setIsBloomEnabled: (val: boolean) => void;
     isSpectateMode: boolean;
     setIsSpectateMode: (val: boolean) => void;
+    isTimestampEnabled: boolean;
+    setIsTimestampEnabled: (val: boolean) => void;
+    isNewbieMode: boolean;
+    setIsNewbieMode: (val: boolean) => void;
 }
 
 const GeneralSettings: React.FC<GeneralSettingsProps> = ({
@@ -84,6 +88,10 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setIsBloomEnabled,
     isSpectateMode,
     setIsSpectateMode,
+    isTimestampEnabled,
+    setIsTimestampEnabled,
+    isNewbieMode,
+    setIsNewbieMode,
 }) => {
     let protocol = 'wss:';
     let host = '';
@@ -373,6 +381,41 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
             </div>
 
             <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                        <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Show Timestamps</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Display the time for each message (excludes room info).</div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '0.8rem', color: isTimestampEnabled ? 'var(--accent)' : '#64748b' }}>{isTimestampEnabled ? 'ON' : 'OFF'}</span>
+                        <div
+                            onClick={() => setIsTimestampEnabled(!isTimestampEnabled)}
+                            style={{
+                                width: '40px',
+                                height: '20px',
+                                background: isTimestampEnabled ? 'var(--accent)' : 'var(--input-bg)',
+                                borderRadius: '20px',
+                                position: 'relative',
+                                cursor: 'pointer',
+                                transition: 'all 0.3s'
+                            }}
+                        >
+                            <div style={{
+                                width: '16px',
+                                height: '16px',
+                                background: '#fff',
+                                borderRadius: '50%',
+                                position: 'absolute',
+                                top: '2px',
+                                left: isTimestampEnabled ? '22px' : '2px',
+                                transition: 'all 0.3s'
+                            }} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
                     <div style={{ flex: '1 1 200px' }}>
                         <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Immersion Mode</label>
@@ -483,6 +526,32 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                                 fontSize: '0.8rem', fontWeight: 'bold'
                             }}
                         >Light</button>
+                    </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
+                    <div style={{ flex: '1 1 200px' }}>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Newbie Mode</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Toggle the sticky room card, mini-map, and auto-clearing log.</div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '0.8rem', color: isNewbieMode ? '#ec4899' : '#64748b' }}>{isNewbieMode ? 'ON' : 'OFF'}</span>
+                        <button
+                            className={`setting-toggle ${isNewbieMode ? 'active' : ''}`}
+                            onClick={() => setIsNewbieMode(!isNewbieMode)}
+                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isNewbieMode ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                        >
+                            <div style={{
+                                width: '20px',
+                                height: '20px',
+                                background: '#fff',
+                                borderRadius: '50%',
+                                position: 'absolute',
+                                top: '2px',
+                                left: isNewbieMode ? '22px' : '2px',
+                                transition: 'all 0.3s'
+                            }} />
+                        </button>
                     </div>
                 </div>
 

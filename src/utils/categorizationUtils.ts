@@ -11,12 +11,8 @@ const COLOR_PLAYER = 'rgba(125, 211, 252, 0.9)'; // Match who-list/pc-highlighte
 const COLOR_OBJ = 'rgba(180, 100, 50, 0.9)';   // Object Brown
 
 export const DEFAULT_INLINE_CATEGORIES: InlineCategoryConfig[] = [
-    // --- NPCS & SERVICES (Parent: NPC) ---
-    { id: 'innkeeper', keywords: ['innkeeper', 'barman', 'tender', 'lodging'], color: COLOR_NPC },
-    { id: 'shopkeeper', keywords: ['shopkeeper', 'dealer', 'keeper', 'merchant', 'weaponsmith', 'armourer', 'smith', 'trader', 'grocer', 'librarian', 'provisioner', 'alchemist', 'herbalist', 'tailor', 'blacksmith', 'vendor', 'cobbler', 'peddler'], color: COLOR_NPC },
-    { id: 'mounts', keywords: ['horse', 'pony', 'steed', 'donkey', 'mule', 'warg'], color: COLOR_NPC },
-    { id: 'guildmaster', keywords: ['guildmaster', 'teacher', 'master', 'trainer', 'huor'], color: COLOR_NPC },
-    { id: 'npc', keywords: ['orc', 'troll', 'wolf', 'spider', 'goblin', 'warg', 'bandit', 'scout', 'warrior', 'guard', 'citizen', 'deer', 'bear', 'rabbit', 'snake', 'wraith', 'spirit', 'undead', 'zombie', 'skeleton', 'bird', 'eagle', 'hawk', 'owl', 'crow', 'raven', 'rat', 'bat', 'shaman', 'priest', 'cleric', 'mage', 'sorcerer', 'thief', 'assassin', 'mercenary', 'elite', 'veteran', 'captain', 'leader', 'king', 'queen', 'lord', 'lady', 'dúnadan', 'dunadan', 'soldier', 'officer', 'man', 'woman', 'girl', 'boy', 'scholar', 'insolent', 'rugged'], color: COLOR_NPC },
+    // --- TOP PRIORITY: Prevent important objects from being tagged as NPCs ---
+    { id: 'corpses', keywords: ['corpse'], color: COLOR_OBJ },
 
     // --- LIGHT & OBJECTS (Parent: Object) ---
     { id: 'lightsource', keywords: ['hooded', 'torch', 'candle'], color: COLOR_OBJ },
@@ -29,13 +25,20 @@ export const DEFAULT_INLINE_CATEGORIES: InlineCategoryConfig[] = [
     { id: 'fluidcontainer', keywords: ['flask', 'bottle', 'cup', 'skin', 'flagon', 'goblet', 'vial', 'keg', 'barrel', 'waterskin', 'pitcher', 'jug', 'mug', 'stein', 'pot', 'bowl', 'bucket', 'pail', 'calabash', 'gourd'], color: COLOR_OBJ },
     { id: 'water', keywords: ['water', 'fountain', 'pond', 'stream', 'cup', 'skin', 'flagon', 'flask', 'bottle', 'jug', 'vial', 'mug', 'barrel', 'pail', 'goblet', 'pint', 'tincture', 'phial', 'pool', 'well', 'spring', 'lake', 'river', 'sea', 'ocean', 'puddle', 'basin'], color: COLOR_OBJ },
     { id: 'treasure', keywords: ['gem', 'diamond', 'ruby', 'sapphire', 'topaz', 'emerald', 'garnet', 'opal', 'agate', 'onyx', 'citrine', 'spinel', 'carnelian', 'gold', 'silver', 'nugget', 'pearl', 'heirloom', 'treasure', 'medal', 'coin'], color: COLOR_OBJ },
-    { id: 'corpses', keywords: ['corpse'], color: COLOR_OBJ },
     { id: 'misc', keywords: ['map', 'scroll', 'parchment', 'key', 'relic', 'ring', 'amulet', 'necklace', 'charm', 'stone', 'orb', 'pendant', 'wristband', 'bracelet', 'circlet', 'crown', 'cloakpin', 'brooch', 'book', 'journal', 'libram', 'chronicle', 'paper', 'note', 'instrument', 'flute', 'harp', 'lute', 'drums', 'pipes', 'horn', 'rope', 'lockpicks', 'kit', 'sheath', 'harness', 'baldric', 'boat', 'skiff', 'canoe', 'raft', 'stick', 'fetish', 'die', 'top', 'pen', 'quill', 'lamp', 'lantern', 'light', 'street-lamp'], color: COLOR_OBJ },
     { id: 'object-room', keywords: [], color: COLOR_OBJ },
+
+    // --- NPCS & SERVICES (Parent: NPC) - Lower priority to avoid misidentifying objects ---
+    { id: 'innkeeper', keywords: ['innkeeper', 'barman', 'tender', 'lodging'], color: COLOR_NPC },
+    { id: 'shopkeeper', keywords: ['shopkeeper', 'dealer', 'keeper', 'merchant', 'weaponsmith', 'armourer', 'smith', 'trader', 'grocer', 'librarian', 'provisioner', 'alchemist', 'herbalist', 'tailor', 'blacksmith', 'vendor', 'cobbler', 'peddler'], color: COLOR_NPC },
+    { id: 'mounts', keywords: ['horse', 'pony', 'steed', 'donkey', 'mule', 'warg'], color: COLOR_NPC },
+    { id: 'guildmaster', keywords: ['guildmaster', 'teacher', 'master', 'trainer', 'huor'], color: COLOR_NPC },
+    { id: 'npc', keywords: ['orc', 'troll', 'wolf', 'spider', 'goblin', 'warg', 'bandit', 'scout', 'warrior', 'guard', 'citizen', 'deer', 'bear', 'rabbit', 'snake', 'wraith', 'spirit', 'undead', 'zombie', 'skeleton', 'bird', 'eagle', 'hawk', 'owl', 'crow', 'raven', 'rat', 'bat', 'shaman', 'priest', 'cleric', 'mage', 'sorcerer', 'thief', 'assassin', 'mercenary', 'elite', 'veteran', 'captain', 'leader', 'king', 'queen', 'lord', 'lady', 'dúnadan', 'dunadan', 'soldier', 'officer', 'man', 'woman', 'girl', 'boy', 'scholar', 'insolent', 'rugged'], color: COLOR_NPC },
 
     { id: 'exit', keywords: ['north', 'south', 'east', 'west', 'up', 'down'], color: 'rgba(255, 255, 255, 0.9)' },
     { id: 'default', keywords: [], color: COLOR_OBJ }
 ];
+
 
 /**
  * Determines the category for a given name based on keyword matching.
@@ -51,10 +54,9 @@ export function getCategoryForName(name: string, customCategories?: InlineCatego
     for (const cat of categories) {
         if ((cat.keywords || []).some(keyword => {
             const lowKey = keyword.toLowerCase();
-            if (lowKey.length <= 3) {
-                return words.includes(lowKey);
-            }
-            return lowerName.includes(lowKey);
+            // Simple bound check for multi-word or single-word strings
+            const regex = new RegExp(`(^|[^a-z])${lowKey.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^a-z]|$)`, 'i');
+            return regex.test(lowerName);
         })) {
             return `inline-${cat.id}`;
         }
@@ -64,8 +66,8 @@ export function getCategoryForName(name: string, customCategories?: InlineCatego
         for (const cat of DEFAULT_INLINE_CATEGORIES) {
             if (cat.keywords.some(keyword => {
                 const lowKey = keyword.toLowerCase();
-                if (lowKey.length <= 3) return words.includes(lowKey);
-                return lowerName.includes(lowKey);
+                const regex = new RegExp(`(^|[^a-z])${lowKey.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^a-z]|$)`, 'i');
+                return regex.test(lowerName);
             })) {
                 return `inline-${cat.id}`;
             }

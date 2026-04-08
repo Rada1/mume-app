@@ -94,6 +94,12 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setIsBloomEnabled,
         isSpectateMode,
         setIsSpectateMode,
+        isTimestampEnabled,
+        setIsTimestampEnabled,
+        isNewbieMode,
+        setIsNewbieMode,
+        isNoviceMode,
+        setIsNoviceMode,
         parley,
         setParley,
         whoList,
@@ -217,6 +223,12 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setIsBloomEnabled={setIsBloomEnabled}
                     isSpectateMode={isSpectateMode}
                     setIsSpectateMode={setIsSpectateMode}
+                    isTimestampEnabled={isTimestampEnabled}
+                    setIsTimestampEnabled={setIsTimestampEnabled}
+                    isNewbieMode={isNewbieMode}
+                    setIsNewbieMode={setIsNewbieMode}
+                    isNoviceMode={isNoviceMode}
+                    setIsNoviceMode={setIsNoviceMode}
                 />
             )}
 

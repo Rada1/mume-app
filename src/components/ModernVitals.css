@@ -1,84 +1,70 @@
 .modern-vitals-container {
     display: flex;
-    flex-direction: column;
-    gap: 2px; /* Small gap between stat rows */
-
-
-    padding: 0 4px 0 6px; /* Added left padding for skew breathing room */
+    flex-direction: row;
+    gap: 16px;
+    padding: 2px 8px;
     background: transparent;
     border: none;
-    width: 135px; /* Fixed width to allow right-anchoring of numbers */
     box-sizing: border-box;
+    align-items: center;
 }
 
 .modern-vitals-row {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px; /* Slightly more gap between bar and numbers */
-    width: 100%; /* Fill the container width */
-    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 100px;
 }
+
+.modern-vitals-label-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    font-size: 0.65rem;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-weight: 700;
+}
+
+.stat-label {
+    opacity: 0.9;
+    letter-spacing: 0.05em;
+}
+
+.hp .stat-label { color: #ef4444; }
+.mana .stat-label { color: #0ea5e9; }
+.move .stat-label { color: #10b981; }
 
 .modern-vitals-value-column {
     display: flex;
-    align-items: center;
-    flex: 1;
-    justify-content: flex-end; /* Anchor whole block right */
-    min-width: 0;
-    gap: 4px; /* Gap between the two columns */
+    gap: 2px;
+    opacity: 0.6;
+    font-size: 0.6rem;
 }
 
-.current-value {
-    color: var(--text-primary, #fff);
-    font-size: 0.7rem;
+.value-separator {
+    opacity: 0.4;
+}
+
+.current-value, .max-value {
     font-variant-numeric: tabular-nums;
-    font-weight: 800;
-    line-height: 1;
-    text-align: right;
-    min-width: 24px; /* Optimized for 3 digits */
 }
-
-.max-value {
-    color: var(--text-primary, #fff);
-    opacity: 0.45;
-    font-weight: 500;
-    font-size: 0.65rem;
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-    text-align: right;
-    min-width: 24px; /* Optimized for 3 digits */
-}
-
-
 
 .modern-vitals-track {
     position: relative;
-    height: 10px; /* Reduced to 10px to match combat quads */
-    width: 55px; /* Widened slightly from 45px */
-    background: #000;
-    border-radius: 2px; /* Match combat quads */
-
-
-
-
-
-    transform: skewX(-20deg); /* Match combat quads */
+    height: 6px;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 1px;
     box-sizing: border-box;
-    overflow: visible; /* Let wimpy stuff peek out */
-}
-
-@media (max-width: 768px) {
-    .modern-vitals-track {
-        width: 45px !important; /* Widened slightly from 38px */
-    }
+    overflow: hidden;
 }
 
 .modern-vitals-thresholds {
     position: absolute;
     inset: 0;
     display: flex;
-    gap: 0; /* Perfectly continuous */
+    gap: 2px;
     padding: 0;
     pointer-events: none;
 }
@@ -86,69 +72,64 @@
 .threshold-chunk {
     height: 100%;
     display: flex;
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Match combat overlay border */
-    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 1px;
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.1); /* Match combat quad background */
-    border-radius: 2px;
 }
 
 .vitals-block {
     height: 100%;
-    transition: background 0.1s ease;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease;
 }
 
 .vitals-block.pulse-combat {
-    animation: combat-pulse 2s infinite ease-in-out;
+    animation: combat-pulse 1.5s infinite ease-in-out;
 }
 
 @keyframes combat-pulse {
     0% { filter: brightness(1); }
-    50% { filter: brightness(1.4); }
+    50% { filter: brightness(1.6); }
     100% { filter: brightness(1); }
 }
 
-.threshold-chunk .vitals-block.filled {
-    background: var(--base-color, #fff);
+/* HP: Kinetic Red */
+.hp .vitals-block.filled { 
+    background: #ef4444; 
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
 }
 
-/* HP: Solid Red across all chunks */
-.modern-vitals-row.hp .threshold-chunk {
-    filter: drop-shadow(0 0 4px rgba(238, 34, 34, 0.45));
-}
-.modern-vitals-row.hp .vitals-block.filled { 
-    background: #ee2222; 
-    box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3), 0 0 10px rgba(238, 34, 34, 0.6);
+/* Mana: Kinetic Cyan */
+.mana .vitals-block.filled { 
+    background: #0ea5e9; 
+    box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
 }
 
-/* Mana: Solid Purple across all chunks */
-.modern-vitals-row.mana .threshold-chunk {
-    filter: drop-shadow(0 0 4px rgba(153, 51, 255, 0.45));
-}
-.modern-vitals-row.mana .vitals-block.filled { 
-    background: #9933ff; 
-    box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3), 0 0 10px rgba(153, 51, 255, 0.6);
+/* Move: Kinetic Emerald */
+.move .vitals-block.filled { 
+    background: #10b981; 
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
 }
 
-/* Move: Solid Green across all chunks */
-.modern-vitals-row.move .threshold-chunk {
-    filter: drop-shadow(0 0 4px rgba(34, 255, 85, 0.45));
-}
-.modern-vitals-row.move .vitals-block.filled { 
-    background: #22ff55; 
-    box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3), 0 0 10px rgba(34, 255, 85, 0.6);
-}
-
-/* Override landscape width if needed when docked */
-.modern-vitals-container.docked .modern-vitals-track {
-    width: 55px !important;
+/* Wimpy Tick */
+.wimpy-tick {
+    opacity: 0.8;
 }
 
 @media (max-width: 768px) {
-    .modern-vitals-container.docked .modern-vitals-track {
-        width: 45px !important;
+    .modern-vitals-container {
+        gap: 8px;
+        padding: 2px 4px;
+    }
+    
+    .modern-vitals-row {
+        min-width: 70px;
+    }
+    
+    .stat-label {
+        font-size: 0.6rem;
+    }
+    
+    .modern-vitals-value-column {
+        display: none; /* Hide values on very small headers if needed, or just let them shrink */
     }
 }
-
-
-

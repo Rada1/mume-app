@@ -1,0 +1,199 @@
+.prompt-box-container {
+    width: 100%;
+    margin-bottom: 8px;
+    z-index: 50;
+    pointer-events: auto;
+    flex-shrink: 0;
+}
+
+.prompt-box-content {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border-radius: 8px;
+    padding: 6px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: none !important;
+    position: relative;
+    overflow: hidden;
+}
+
+
+/* --- Row 2: Unified Vitals (Horizontal) --- */
+.prompt-vitals-row-ascii {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 0;
+    width: 100%;
+}
+
+.player-stats-group {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.condition-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.status-bracket-wrapper {
+    display: flex;
+    align-items: center;
+    opacity: 0.8;
+}
+
+.bracket {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.status-text {
+    padding: 0 1px;
+    text-transform: lowercase;
+    font-weight: 800;
+}
+
+.hp .status-text { color: #f87171; }
+.mp .status-text { color: #38bdf8; }
+.st .status-text { color: #10b981; }
+
+/* Opponent Mini Display */
+/* Symmetrical Containers for Centering */
+.vitals-side-container {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+}
+
+.vitals-side-container.side-left {
+    justify-content: flex-start;
+}
+
+.vitals-side-container.side-right {
+    justify-content: flex-end;
+}
+
+.vitals-center-anchor {
+    width: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    margin: 0 4px;
+}
+
+.pos-combat-square-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: var(--accent, #3b82f6);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.pos-combat-square-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.pos-combat-square-btn.active {
+    background: var(--accent, #3b82f6);
+    color: #fff;
+    border-color: var(--accent, #3b82f6);
+}
+
+.pos-combat-square-btn.is-fighting {
+    border-color: #ef4444; /* Force red border in combat */
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+}
+
+.combat-divider-icon {
+    opacity: 0.9;
+    animation: combat-pulse 1.5s ease-in-out infinite;
+}
+
+.opponent-stats-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.8rem;
+    opacity: 0.9;
+    flex: 1;
+    min-width: 0;
+    justify-content: flex-end;
+}
+
+.opponent-label {
+    color: #f87171;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    letter-spacing: 0.05em;
+    flex: 1;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.opponent-stats-group .status-text {
+    color: #f87171;
+}
+
+@keyframes combat-pulse {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+}
+
+.animate-combat-mini {
+    animation: combat-fade-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes combat-fade-in {
+    from { opacity: 0; transform: translateX(8px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.blink-hit {
+    animation: blink-hit 0.3s ease-out forwards;
+    filter: brightness(2) saturate(1.5);
+}
+
+@keyframes blink-hit {
+    0% { transform: scale(1); filter: brightness(1) drop-shadow(0 0 0 rgba(239, 68, 68, 0)); }
+    20% { transform: scale(1.1); filter: brightness(2.5) drop-shadow(0 0 15px rgba(255, 255, 255, 0.8)); }
+    100% { transform: scale(1); filter: brightness(1) drop-shadow(0 0 0 rgba(239, 68, 68, 0)); }
+}
+
+@media (max-width: 768px) {
+    .prompt-box-content {
+        padding: 4px 10px;
+    }
+    .player-stats-group {
+        gap: 0px;
+    }
+    .condition-badge {
+        font-size: 0.72rem;
+    }
+    .opponent-stats-wrapper {
+        gap: 6px;
+    }
+}

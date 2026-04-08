@@ -107,24 +107,3 @@
 .light-mode.crt-enabled .background-layer {
   filter: none; /* Keep light mode clean */
 }
-/* --- Transition Overlays --- */
-.screen-transition-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: black;
-  z-index: 99999;
-  pointer-events: none;
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.screen-transition-overlay.fade-out {
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 3.5s cubic-bezier(0.4, 0, 0.2, 1), 
-              visibility 0s linear 3.5s;
-}

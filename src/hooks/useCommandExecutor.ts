@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef, useEffect } from 'react';
 import { Direction, TeleportTarget, MessageType, DrawerLine, GameAction, CaptureStage } from '../types';
 import { extractNoun } from '../utils/gameUtils';
 import { MapperRef } from '../components/Mapper/mapperTypes';
@@ -42,6 +42,7 @@ export interface ExecutorDeps {
     setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'help') => void;
     actions: GameAction[];
     setActions: (val: GameAction[] | ((prev: GameAction[]) => GameAction[])) => void;
+    activePrompt: string;
 }
 
 export const useCommandExecutor = (deps: ExecutorDeps) => {
@@ -51,7 +52,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         setInventoryLines, setStatsLines, setEqLines, setTarget, target,
         setPopoverState, status, setIsCharacterOpen, setIsEquipmentOpen, setIsInventoryOpen,
         setIsSettingsOpen, setSettingsTab,
-        actions, setActions
+        actions, setActions, activePrompt
     } = deps;
 
     // --- Initialize Registry ---
@@ -66,12 +67,19 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         return r;
     }, []);
 
+    // --- Stable Dependencies ---
+    const depsRef = useRef(deps);
+    useEffect(() => { depsRef.current = deps; }, [deps]);
+
     const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, _isHistorical = false, fromDrawer = false) => {
+        const d = depsRef.current;
+        const { telnet, addMessage, initAudio, navIntervalRef, mapperRef, teleportTargets, isDrawerCapture, isSilentCapture, captureStage, status } = d;
+
         initAudio();
         
         // --- 1. Construct Context ---
         const context: CommandContext = {
-            ...deps,
+            ...d,
             executeCommand,
             addMessage: addMessage as any // Cast for extended signature
         };
@@ -104,7 +112,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
                     console.log(`[Executor] Silent capture safety reset (Count: ${isSilentCapture.current}, Cmd: ${finalCmd})`);
                     isSilentCapture.current = 0;
                     if (captureStage.current !== 'container') {
-                        deps.finalizeCapture();
+                        d.finalizeCapture();
                     }
                 }
             }, timeoutMs);
@@ -115,13 +123,19 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             setTimeout(() => {
                 if (isDrawerCapture.current > 0) {
                     isDrawerCapture.current = 0;
-                    if (captureStage.current !== 'container') deps.finalizeCapture();
+                    if (captureStage.current !== 'container') d.finalizeCapture();
                 }
             }, 8000);
         }
 
         // --- 7. Echo to Log ---
-        if (!silent) (addMessage as any)('user', finalCmd, undefined, undefined, undefined, { textOnly: finalCmd, lower: finalCmd.toLowerCase() });
+        if (!silent) {
+            const promptPrefix = activePrompt || '';
+            (addMessage as any)('user', `${promptPrefix}${finalCmd}`, undefined, undefined, undefined, { 
+                textOnly: `${promptPrefix}${finalCmd}`, 
+                lower: `${promptPrefix}${finalCmd}`.toLowerCase() 
+            });
+        }
 
         // --- 8. Mapper Movement Hooks ---
         const moveCmd = finalCmd.toLowerCase().trim();
@@ -165,7 +179,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             setTimeout(() => executeCommand('stat', true, true, false, false), 3000);
         }
 
-    }, [registry, deps, status, target, teleportTargets, initAudio, addMessage, telnet, navIntervalRef, mapperRef, isDrawerCapture, captureStage, isSilentCapture, deps.finalizeCapture]);
+    }, [registry]);
 
     return { executeCommand };
 };

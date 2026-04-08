@@ -16,17 +16,8 @@
     }
 }
 
-@media (min-width: 1024px) {
-    .drawer-backdrop {
-        background: transparent;
-    }
-}
-
-.drawer-backdrop.open {
-    opacity: 1;
-    pointer-events: auto;
-}
-
+/* Base: position: fixed so drawers float over the layout on all screen sizes.
+   Desktop overrides with position: absolute (relative to app-container) below. */
 .log-card-drawer {
     position: fixed;
     top: 50%;
@@ -36,8 +27,8 @@
     max-width: 480px;
     height: auto;
     max-height: 85dvh;
-    background: rgba(10, 13, 21, 0.25);
-    backdrop-filter: blur(4px);
+    background: rgb(10, 13, 21);
+    backdrop-filter: none;
     -webkit-backdrop-filter: blur(4px);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 20px;
@@ -52,8 +43,53 @@
     overflow: hidden;
 }
 
+@media (min-width: 1024px) {
+    .log-card-drawer {
+        position: absolute;
+        top: 20px;
+        bottom: 20px;
+        right: 20px;
+        left: auto;
+        width: 420px;
+        max-width: none;
+        height: auto;
+        max-height: none;
+        
+        background: rgb(10, 13, 21);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        z-index: 3002;
+        
+        transform: translateY(40px);
+        opacity: 0;
+        visibility: hidden;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, visibility 0s 0.4s;
+        
+        display: flex;
+        flex-direction: column;
+        box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+    }
+    
+    .log-card-drawer.open {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, visibility 0s 0s;
+    }
+
+    /* Match map-drawer-desktop width at this breakpoint */
+    @media (max-width: 1024px) {
+        .log-card-drawer {
+            width: 380px;
+        }
+    }
+}
+
 @media (max-width: 768px) {
     .log-card-drawer {
+        /* Landscape Default (Side slide) */
         top: 50%;
         bottom: auto;
         left: auto;
@@ -64,31 +100,102 @@
         transform: translate(100%, -50%) scale(1);
         border-radius: 20px 0 0 20px;
         border-right: none;
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
-        background: rgba(10, 13, 21, 0.25);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background: rgb(10, 13, 21);
         box-shadow: -10px 0 40px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Portrait Override (Bottom anchored above the tab bar) */
+    @media (orientation: portrait) {
+        .log-card-drawer {
+            top: auto;
+            bottom: 52px; /* Sits above the 52px portrait tab bar */
+            left: 0;
+            right: 0;
+            width: 100%;
+            max-width: none;
+            height: 248px; /* 300px gutter − 52px tab bar = visible gutter height */
+            transform: translateY(0);
+            opacity: 0;
+            visibility: hidden;
+            transition: none;
+            border-radius: 20px 20px 0 0;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-bottom: none;
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.4);
+            background: rgb(10, 13, 21);
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+
+        /* Portrait: strip the drawer header down to just its sub-tabs */
+        .log-card-drawer .drawer-header {
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            min-height: 0 !important;
+        }
+
+        /* Hide the title text, close button, and refresh button within the header */
+        .log-card-drawer .drawer-header .close-button,
+        .log-card-drawer .drawer-header > span,
+        .log-card-drawer .drawer-header > button:not(.drawer-tab),
+        .log-card-drawer .drawer-header > div:not(.drawer-tabs) {
+            display: none !important;
+        }
+
+        /* Keep the sub-tabs themselves visible and snug at the top */
+        .log-card-drawer .drawer-header .drawer-tabs {
+            display: flex !important;
+            width: 100%;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 0 8px;
+        }
+
+        /* Fully hide headers that only contain a title/close (no sub-tabs) — e.g. StatsDrawer */
+        .log-card-drawer .drawer-header:not(:has(.drawer-tabs)) {
+            display: none !important;
+        }
     }
 }
 
-.log-card-drawer.open {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-    visibility: visible;
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1), opacity 0.3s ease, visibility 0s 0s;
+
+
+/* Mobile-only fallback open state (desktop uses translateY(0) inside the @media min-width: 1024px block above) */
+@media (max-width: 1023px) {
+    .log-card-drawer.open {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+        visibility: visible;
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1), opacity 0.3s ease, visibility 0s 0s;
+    }
 }
 
 @media (max-width: 768px) {
     .log-card-drawer.open {
         transform: translate(0, -50%);
     }
+
+    @media (orientation: portrait) {
+        .log-card-drawer.open {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+            transition: none;
+        }
+    }
 }
+
 
 .log-card-drawer.peeking {
     transform: translate(-50%, -48%) scale(0.85);
     opacity: 0.45;
     visibility: visible;
-    filter: blur(1px);
+    filter: none;
     pointer-events: none;
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
 }
@@ -103,7 +210,20 @@
     .log-card-drawer.left-drawer.peeking {
         transform: translate(-85%, -50%);
     }
+
+    /* Portrait Override for peeking */
+    @media (orientation: portrait) {
+        .log-card-drawer.peeking {
+            transform: translateY(88%);
+            opacity: 0.75;
+            filter: none;
+        }
+        .log-card-drawer.left-drawer.peeking {
+            transform: translateY(88%);
+        }
+    }
 }
+
 
 /* Left-anchored variant for Stats etc */
 @media (max-width: 768px) {
@@ -120,7 +240,31 @@
     .log-card-drawer.left-drawer.open {
         transform: translate(0, -50%);
     }
+
+    /* Portrait Override for left-drawer */
+    @media (orientation: portrait) {
+        .log-card-drawer.left-drawer {
+            left: 0;
+            right: 0;
+            top: auto;
+            bottom: 52px;
+            transform: translateY(0);
+            opacity: 0;
+            visibility: hidden;
+            transition: none;
+            border-radius: 20px 20px 0 0;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-bottom: none;
+        }
+        .log-card-drawer.left-drawer.open {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+            transition: none;
+        }
+    }
 }
+
 
 /* Inventory Drawer Base */
 
@@ -133,9 +277,9 @@
     /* 50vw - 450px (log half) - 420px (drawer width) - 12px (gap) */
     left: calc(50vw - 450px - 420px - 12px);
     width: 420px;
-    background: rgba(10, 13, 21, 0.3);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgb(10, 13, 21);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     z-index: 3002;
@@ -239,7 +383,7 @@
 }
 
 .select-count {
-    font-size: 0.78rem;
+    font-size: calc(var(--dynamic-log-size, 16px) * 0.75);
     color: rgba(100, 180, 255, 0.8);
     font-weight: 700;
     letter-spacing: 0.5px;
@@ -247,19 +391,21 @@
     margin-right: 4px;
 }
 
+
 .select-action-btn {
     padding: 5px 12px;
     border-radius: 12px;
     border: 1px solid rgba(100, 180, 255, 0.35);
     background: rgba(100, 180, 255, 0.1);
     color: rgba(100, 180, 255, 0.9);
-    font-size: 0.78rem;
+    font-size: calc(var(--dynamic-log-size, 16px) * 0.75);
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
     touch-action: manipulation;
     transition: background 0.1s ease;
 }
+
 
 .select-action-btn:active {
     background: rgba(100, 180, 255, 0.28);
@@ -295,12 +441,13 @@
     transform: translateY(-50%) rotate(-90deg);
     color: var(--accent);
     font-weight: bold;
-    font-size: 0.7rem;
+    font-size: calc(var(--dynamic-log-size, 16px) * 0.65);
     letter-spacing: 2px;
     white-space: nowrap;
     opacity: 0.8;
     pointer-events: none;
 }
+
 
 .drawer-header {
     padding: 15px 20px;
@@ -383,18 +530,18 @@
     color: var(--accent);
     opacity: 0.65;
     transition: all 0.2s ease;
-    user-select: none;
     pointer-events: auto; /* Allow buttons and drop detection */
 }
 
 .drawer-section-drop-zone .drop-hint {
-    font-size: 0.6rem;
+    font-size: calc(var(--dynamic-log-size, 16px) * 0.6);
     letter-spacing: 1px;
     font-weight: 600;
     opacity: 0;
     transform: translateX(6px);
     transition: opacity 0.2s ease, transform 0.2s ease;
 }
+
 
 /* When a log drag is active, reveal the drop hint */
 .right-drawer.deep-peeking .drawer-section-drop-zone .drop-hint {
@@ -447,7 +594,7 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
-    z-index: 2000;
+    z-index: 6000;
     cursor: pointer;
     flex-direction: column;
     align-items: center;
@@ -470,7 +617,7 @@
 .desktop-edge-tab.peeking.right { transform: translateY(-50%) translateX(0) !important; }
 .desktop-edge-tab.peeking.top { transform: translateX(-50%) translateY(0) !important; }
 
-@media (min-width: 1024px) {
+@media (min-width: 769px) {
     .desktop-edge-tab {
         display: flex;
     }
@@ -525,7 +672,7 @@
     user-select: none;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 769px) {
     .desktop-bottom-tab {
         display: flex;
     }
@@ -589,6 +736,104 @@
         display: flex;
     }
 }
+
+/* --- Portrait Tab Bar (all tabs, bottom of map) --- */
+
+.portrait-tab-bar {
+    display: none; /* Hidden by default on mobile landscape */
+    pointer-events: none;
+}
+
+/* On desktop, make the container visible (but transparent) so fixed children can show */
+@media (min-width: 769px) {
+    .portrait-tab-bar {
+        display: block;
+        pointer-events: none;
+    }
+    /* Individual tabs inside the container need their own pointer events */
+    .portrait-tab-bar .desktop-edge-tab {
+        pointer-events: auto;
+    }
+}
+
+@media (max-width: 1024px) {
+    .portrait-tab-bar.portrait-visible {
+        display: flex;
+        flex-direction: row; /* Horizontal for all mobile layouts */
+        align-items: center;
+        justify-content: space-around;
+        height: 52px;
+        width: 100%;
+        background: rgba(10, 13, 21, 0.95);
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        z-index: 4500; /* Must be higher than drawer-backdrop (3000) and drawers (4000) */
+        pointer-events: auto;
+    }
+
+    /* Removed landscape-specific vertical orientation to keep navigation at the bottom as requested */
+
+    /* Reset edge tabs for use in the mobile bar */
+    .portrait-tab-bar .desktop-edge-tab {
+        display: flex !important;
+        position: static !important;
+        transform: none !important;
+        width: auto !important;
+        height: 100% !important;
+        flex: 1 !important;
+        min-width: 0 !important;
+        padding: 6px 0 !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 2px !important;
+        border-radius: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        color: rgba(255, 255, 255, 0.45);
+        cursor: pointer;
+    }
+
+    /* Removed landscape-specific tab sizing to allow horizontal flex */
+
+    .portrait-tab-bar .desktop-edge-tab::after {
+        display: none !important;
+    }
+
+    .portrait-tab-bar .desktop-edge-tab .tab-text {
+        display: block !important;
+        writing-mode: horizontal-tb !important;
+        font-size: 0.55rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 1px !important;
+        opacity: 1 !important;
+        margin: 0 !important;
+        text-transform: uppercase;
+    }
+
+    .portrait-tab-bar .desktop-edge-tab .tab-icon {
+        width: 20px !important;
+        height: 20px !important;
+        margin: 0 !important;
+        opacity: 0.6;
+    }
+
+    /* Active tab gets the accent treatment */
+    .portrait-tab-bar .desktop-edge-tab.active {
+        color: var(--accent) !important;
+        background: rgba(74, 222, 128, 0.08) !important;
+    }
+
+    .portrait-tab-bar .desktop-edge-tab.active .tab-icon {
+        opacity: 1;
+    }
+}
+
+
+
+
+
+
+
 
 /* Drag & Drop Feedback */
 .inline-btn[draggable="true"] {
@@ -739,38 +984,33 @@
     line-height: 1.1;
 }
 
-/* Equipment Drawer Specific Centering */
-.equipment-drawer .equipment-item-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    gap: 0;
-}
+/* Equipment Drawer — left-aligned to match game text format */
 
-.equipment-drawer .equipment-location {
-    width: auto !important;
-    margin-right: 0 !important;
-    text-align: center;
-    font-size: 0.72rem !important;
-    opacity: 0.45;
-    color: #fff;
-    margin-top: -1px; /* Pull it slightly closer to the item name button */
+/* Worn-as label sits to the LEFT of the item name, matching game text style */
+.equipment-location-inline {
+    font-size: inherit;
+    opacity: 0.5;
+    color: rgba(255, 255, 255, 0.6);
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-right: 2px;
 }
 
 .equipment-drawer .inline-btn {
     width: 100%;
     display: flex !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
     padding: 3px 10px !important;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.03);
 }
 
 .equipment-drawer .drawer-item-text-wrapper {
-    justify-content: center;
-    text-align: center;
+    justify-content: flex-start;
+    text-align: left;
 }
+
+
 
 .drawer-container-toggle {
     font-size: 0.7rem;

@@ -5,6 +5,7 @@ import { getEffectiveKeyword } from '../../utils/keywordUtils';
 import { DEFAULT_INLINE_CATEGORIES, getCategoryForName } from '../../utils/categorizationUtils';
 import { getHierarchyChain } from '../../utils/buttonHierarchyUtils';
 import { isButtonValidForEntity } from '../../utils/actionUtils';
+import { CircleHelp } from 'lucide-react';
 
 interface StandardMenuProps {
     popoverState: PopoverState;
@@ -151,26 +152,54 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                     {depth > 0 && <span style={{ opacity: 0.3, marginRight: '8px', fontSize: '0.8rem' }}>﹂</span>}
                     {button.label.replace(/%n/g, popoverState.context || '').replace(/%p/g, popoverState.parentNoun || '')}
                 </span>
-                <div 
-                    className={`favorite-star ${isFav ? 'active' : ''}`}
-                    onClick={(e) => toggleFavorite(e, button.command)}
-                    style={{ 
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        opacity: isFav ? 1 : 0.3, 
-                        color: isFav ? '#ffd700' : 'inherit',
-                        fontSize: '1.2rem',
-                        transition: 'all 0.2s ease',
-                        padding: '16px 20px', 
-                        margin: '-16px -16px -16px auto', 
-                        cursor: 'pointer',
-                        userSelect: 'none',
-                        WebkitTapHighlightColor: 'transparent',
-                        zIndex: 10
-                    }}
-                >
-                    {isFav ? '★' : '☆'}
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    {popoverState.context && (
+                        <div 
+                            title={`Help for ${button.command.split(' ')[0]}`}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                triggerHaptic?.(20);
+                                const keyword = button.command.split(' ')[0] || button.label.toLowerCase();
+                                executeCommand(`help ${keyword}`, false, false, false, false, { fromUi: true });
+                                setPopoverState(null);
+                            }}
+                            style={{ 
+                                padding: '8px', 
+                                opacity: 0.4, 
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'opacity 0.2s ease',
+                                WebkitTapHighlightColor: 'transparent'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                            onMouseLeave={(e) => e.currentTarget.style.opacity = '0.4'}
+                        >
+                            <CircleHelp size={14} />
+                        </div>
+                    )}
+                    <div 
+                        className={`favorite-star ${isFav ? 'active' : ''}`}
+                        onClick={(e) => toggleFavorite(e, button.command)}
+                        style={{ 
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            opacity: isFav ? 1 : 0.3, 
+                            color: isFav ? '#ffd700' : 'inherit',
+                            fontSize: '1.2rem',
+                            transition: 'all 0.2s ease',
+                            padding: '16px 14px', 
+                            margin: '-16px -16px -16px auto', 
+                            cursor: 'pointer',
+                            userSelect: 'none',
+                            WebkitTapHighlightColor: 'transparent',
+                            zIndex: 10
+                        }}
+                    >
+                        {isFav ? '★' : '☆'}
+                    </div>
                 </div>
             </div>
         );
@@ -224,19 +253,50 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                     </span>
                 </div>
                 {!isSetManager && (popoverState.setId.startsWith('inline-') || ['inlinenpc', 'inlineplayer'].includes(popoverState.setId)) && (
-                    <div 
-                        onClick={(e) => { e.stopPropagation(); setIsChoosingCategory(!isChoosingCategory); }}
-                        style={{ 
-                            marginLeft: '8px', 
-                            padding: '4px 8px', 
-                            fontSize: '0.65rem', 
-                            background: isChoosingCategory ? 'var(--accent)' : 'rgba(255,255,255,0.1)', 
-                            color: isChoosingCategory ? '#000' : 'var(--accent)', 
-                            borderRadius: '4px',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        TAG
+                    <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
+                        {popoverState.context && (
+                            <div 
+                                title={`Help for ${popoverState.context}`}
+                                onClick={(e) => { 
+                                    e.stopPropagation(); 
+                                    triggerHaptic?.(20);
+                                    executeCommand(`help ${popoverState.context}`, false, false, false, false, { fromUi: true });
+                                    setPopoverState(null);
+                                }}
+                                style={{ 
+                                    padding: '4px', 
+                                    color: 'var(--accent)', 
+                                    borderRadius: '50%',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    background: 'rgba(255,255,255,0.05)',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    transition: 'all 0.2s ease'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+                            >
+                                <CircleHelp size={16} />
+                            </div>
+                        )}
+                        <div 
+                            onClick={(e) => { e.stopPropagation(); setIsChoosingCategory(!isChoosingCategory); }}
+                            style={{ 
+                                padding: '4px 8px', 
+                                fontSize: '0.65rem', 
+                                background: isChoosingCategory ? 'var(--accent)' : 'rgba(255,255,255,0.1)', 
+                                color: isChoosingCategory ? '#000' : 'var(--accent)', 
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                height: '24px',
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}
+                        >
+                            TAG
+                        </div>
                     </div>
                 )}
             </div>

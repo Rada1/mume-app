@@ -1,16 +1,18 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { MessageType, Message } from '../types';
 import { ansiConvert } from '../utils/ansi';
-import { numToWord, pluralizeMumeSubject, pluralizeVerb, pluralizeRest, extractNoun, simplifyDescription } from '../utils/gameUtils';
+import { numToWord, pluralizeMumeSubject, pluralizeVerb, pluralizeRest } from '../utils/gameUtils';
 
 // ---------------------------------------------------------------------------
 // Regex constants
 // ---------------------------------------------------------------------------
 
-export const ARRIVE_REGEX = /^(.+)\s+(has arrived from|arrives from)\s+(the\s+)?(.+)\.?$/i;
-export const LEAVE_REGEX = /^(.+)\s+leaves\s+(the\s+)?(.+)\.?$/i;
-export const HERE_REGEX = /^(.+?)\s+(is [\w\s,]+? here|stands? here|sits? here|rests? here|sleeps? here)(?:.*)?$/i;
+export const ARRIVE_REGEX = /^(.+?)\s+(has arrived from|arrives from|enters from)\s+(the\s+)?(.+?)\.?$/i;
+export const LEAVE_REGEX = /^(.+?)\s+(leaves|enters)\s+(the\s+)?(.+?)\.?$/i;
+export const HERE_REGEX = /^(.+?)\s+(is(?:\s+[\w\s,]+)?\s+here|stands? here|sits? here|rests? here|sleeps? here)(?:.*)?$/i;
 export const NPC_LINE_REGEX = /^((?:A|An|The|Some)?\s*[\w\s,-]+?)\s+(\w+s)\b\s*(.*)$/i;
+
+export const ROOM_EXIT_REGEX = /^(North|South|East|West|Up|Down|North|Southwest|Northeast|Southwest|Southeast)\s+-\s+/i;
 
 // ---------------------------------------------------------------------------
 // Hook
@@ -22,7 +24,11 @@ export function useMessageLog(
     inCombatRef: React.RefObject<boolean>,
     isMobileBrevityMode: boolean,
     roomContext: { players: import('../types').GmcpOccupant[], npcs: import('../types').GmcpOccupant[], items: import('../types').GmcpOccupant[], roomName?: string | null },
-    lastCommIdBySenderRef: React.MutableRefObject<Map<string, string>>
+    lastCommIdBySenderRef: React.MutableRefObject<Map<string, string>>,
+    isNewbieMode: boolean,
+    moveDirQueueRef: React.MutableRefObject<import('../context/GameContext/types').MoveDir[]>,
+    activeMoveDirRef: React.MutableRefObject<import('../context/GameContext/types').MoveDir>,
+    recordEntry?: (type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any) => void
 ) {
     const [messages, setMessages] = useState<Message[]>([]);
     const lastMessageRef = useRef<Message | null>(null);
@@ -39,7 +45,11 @@ export function useMessageLog(
                lower.includes(' scratches ') || lower.includes(' bruises ') || 
                lower.includes(' smashes ') || lower.includes(' cleaves ') || 
                lower.includes(' pierces ') || lower.includes(' crushes ') ||
-               lower.includes(' massacres ') || lower.includes(' obliterates ');
+               lower.includes(' massacres ') || lower.includes(' obliterates ') ||
+               lower.includes(' stabs ') || lower.includes(' slashes ') ||
+               lower.includes(' whips ') || lower.includes(' blasts ') ||
+               lower.includes(' stings ') || lower.includes(' fails to ') ||
+               lower.includes(' strongly ') || lower.includes(' barely ');
     }, []);
 
     const flushMessages = useCallback(() => {
@@ -48,13 +58,27 @@ export function useMessageLog(
         batchIdRef.current += 1;
         const currentBatchId = batchIdRef.current;
 
-        const pending = messageBufferRef.current.map(m => ({ ...m, batchId: currentBatchId }));
+        const hasRoomInBatch = messageBufferRef.current.some(m => m.isRoomName);
+        const containsPrompt = messageBufferRef.current.some(m => m.type === 'prompt');
+        
+        let pending = messageBufferRef.current.map((m, idx) => {
+            const prev = idx > 0 ? messageBufferRef.current[idx - 1] : lastMessageRef.current;
+            const isRoomBlockStart = m.isRoomBlock && (!prev || !prev.isRoomBlock);
+            return { ...m, batchId: currentBatchId, inRoomBatch: hasRoomInBatch, isRoomBlockStart };
+        });
+
+        if (containsPrompt) {
+            const lastRoomIdx = pending.findLastIndex(m => m.isRoomBlock);
+            if (lastRoomIdx !== -1) {
+                pending[lastRoomIdx].isRoomBlockEnd = true;
+            }
+        }
+
         messageBufferRef.current = [];
-        // Move 'prompt' type messages to the end — server sends prompt before room info,
-        // but we want it displayed after all room content in the same packet.
         const nonPrompts = pending.filter(m => m.type !== 'prompt');
         const prompts = pending.filter(m => m.type === 'prompt');
         const ordered = nonPrompts.length > 0 ? [...nonPrompts, ...prompts] : pending;
+        if (ordered.length > 0) ordered[ordered.length - 1] = { ...ordered[ordered.length - 1], isBatchEnd: true };
         setMessages(prev => {
             const nextMessages = [...prev, ...ordered];
             return nextMessages.length >= 500 ? nextMessages.slice(nextMessages.length - 500) : nextMessages;
@@ -134,7 +158,8 @@ export function useMessageLog(
         commAction?: string,
         commText?: string,
         commColor?: string,
-        providedCombatSide?: 'player' | 'opponent' | 'groupmate'
+        providedCombatSide?: 'player' | 'opponent' | 'groupmate',
+        providedMoveDir?: 'n' | 's' | 'e' | 'w' | 'u' | 'd' | 'none'
     ) => {
         const textOnly = precalculated?.textOnly || text.replace(/\x1b\[[0-9;]*m/g, '').trim();
         const textLower = precalculated?.lower || textOnly.toLowerCase();
@@ -145,28 +170,72 @@ export function useMessageLog(
         const combatSide = isCombat
             ? (providedCombatSide || ((textLower.startsWith('you ') || textLower.startsWith('your ')) ? 'player' : 'opponent'))
             : undefined;
-
         const isComm = type === 'comm' || !!replyCommand;
-
-        const robustRoomAnsi = /^\s*(?:\x1b\[[0-9;]*m)*\x1b\[[0-9;]*3[0-7]m/.test(text) &&
-            textOnly.length < 80 && !textOnly.includes(' - ');
+        const isNarrate = textLower.includes('narrate') || replyCommand === 'narrate';
         const curRoom = roomContext.roomName;
-        const isActuallyRoomName = isRoomName || robustRoomAnsi || (curRoom && (
-            textOnly === curRoom ||
-            textLower === curRoom.toLowerCase() ||
-            textOnly === curRoom + '.' ||
-            textLower === curRoom.toLowerCase() + '.' ||
-            (textOnly.length < curRoom.length + 8 && (textOnly.startsWith(curRoom) || textLower.startsWith(curRoom.toLowerCase())))
-        ));
+        // Only suppress the line if it exactly matches the authoritative GMCP room name.
+        // We no longer use ANSI color heuristics — those caused too many false positives.
+        const isActuallyRoomName = !isCombat && !isComm && type !== 'room-description' && type !== 'prompt' && (
+            isRoomName === true ||
+            (curRoom && !replyCommand && (
+                textOnly === curRoom ||
+                textLower === curRoom.toLowerCase() ||
+                textOnly === curRoom + '.' ||
+                textLower === curRoom.toLowerCase() + '.'
+            ))
+        );
 
         if (textLower === 'you are hungry.' || textLower === 'you are thirsty.') {
             return;
         }
 
-        if (isActuallyRoomName) {
-            flushRoomBuffer();
-            skipBrevity = true;
+        const isArriveLeave = ARRIVE_REGEX.test(textOnly) ||
+            LEAVE_REGEX.test(textOnly) ||
+            textLower.includes('arrives from') ||
+            textLower.includes('has arrived from') ||
+            textLower.includes(' leaves ') ||
+            textLower.includes(' leave ');
+
+        const isLiveEvent = isCombat || isComm || isArriveLeave || type === 'user';
+
+        // Check for movement failure messages to clear the queue
+        const isMoveFail = textLower.includes("alas, you cannot go that way") ||
+            textLower.includes("you can't go that way") ||
+            textLower.includes("the door is closed") ||
+            textLower.includes("it's closed");
+
+        if (isMoveFail && moveDirQueueRef.current.length > 0) {
+            moveDirQueueRef.current.shift();
         }
+
+        if (isActuallyRoomName) {
+            // Consume next direction from queue when a new room is entered
+            if (moveDirQueueRef.current.length > 0) {
+                activeMoveDirRef.current = moveDirQueueRef.current.shift()!;
+            } else {
+                activeMoveDirRef.current = 'none';
+            }
+            flushRoomBuffer();
+
+            // Clear all previous messages when we first arrive in a new room (Newbie Mode ONLY)
+            if (isNewbieMode) {
+                setMessages([]);
+                messageBufferRef.current = [];
+                // RETURN EARLY: We don't want the Room Name in the log if it's already in the header.
+                return;
+            }
+        }
+
+        // RETURN EARLY: The description is already shown in the authoritative GMCP header.
+        if (type === 'room-description' && isNewbieMode) {
+            return;
+        }
+
+        if ((type === 'prompt' || isLiveEvent) && activeMoveDirRef.current !== 'none') {
+            activeMoveDirRef.current = 'none';
+        }
+
+        let currentMoveDir: import('../context/GameContext/types').MoveDir = providedMoveDir || activeMoveDirRef.current;
 
         if (isMobileBrevityMode && type === 'game' && !isActuallyRoomName && !isCombat && !isComm && !skipBrevity) {
             if (textOnly.length > 0) {
@@ -186,22 +255,31 @@ export function useMessageLog(
                 return;
             }
             // Fall through to real message for blank lines (textOnly.length === 0)
+            // But we MUST flush whatever is already in the buffer first so the blank
+            // line appears after the buffered text, not before it.
+            flushRoomBuffer();
         } else {
             flushRoomBuffer();
         }
 
         addMessageRef.current = addMessage;
 
-        const isArriveLeave = ARRIVE_REGEX.test(textOnly) ||
-            LEAVE_REGEX.test(textOnly) ||
-            textLower.includes('arrives from') ||
-            textLower.includes('has arrived from') ||
-            textLower.includes(' leaves ') ||
-            textLower.includes(' leave ');
-
         const isUrgent = isArriveLeave ||
             textLower.includes('strange incantations') ||
-            textLower.includes('utters the words');
+            textLower.includes('utters the words') ||
+            textLower.includes('is dead! r.i.p.') ||
+            textLower.includes('is standing.') ||
+            textLower.includes('is sitting.') ||
+            textLower.includes('is resting.') ||
+            textLower.includes('is sleeping.');
+
+        // Final Type Polish: If this looks like a prompt, force it to 'prompt'
+        // This ensures the black background is applied correctly even if the socket 
+        // sent it as part of a game-text batch.
+        let finalType = type;
+        if (textOnly.startsWith('!') || textOnly.startsWith('*') || textOnly.startsWith(':') || textOnly.includes('[>')) {
+            if (textOnly.trim().length < 15 && textOnly.includes('>')) finalType = 'prompt';
+        }
 
         const dimmedInCombat = inCombatRef.current && !isCombat && !isUrgent;
         let stackId = '';
@@ -214,7 +292,7 @@ export function useMessageLog(
             const npcMatch = textOnly.match(NPC_LINE_REGEX);
 
             if (arriveMatch) { subject = arriveMatch[1]; actionText = arriveMatch[2]; direction = arriveMatch[4]; stackId = `arrive:${subject.toLowerCase()}:${actionText.toLowerCase()}:${direction.toLowerCase()}`; }
-            else if (leaveMatch) { subject = leaveMatch[1]; actionText = 'leaves'; direction = leaveMatch[3]; stackId = `leave:${subject.toLowerCase()}:${direction.toLowerCase()}`; }
+            else if (leaveMatch) { subject = leaveMatch[1]; actionText = leaveMatch[2]; direction = leaveMatch[4]; stackId = `leave:${subject.toLowerCase()}:${actionText.toLowerCase()}:${direction.toLowerCase()}`; }
             else if (hereMatch) { subject = hereMatch[1]; actionText = hereMatch[2]; stackId = `here:${subject.toLowerCase()}:${actionText.toLowerCase()}`; }
             else if (npcMatch) { subject = npcMatch[1]; actionText = npcMatch[2]; direction = npcMatch[3]; stackId = `npc:${textOnly.toLowerCase()}`; }
         }
@@ -276,31 +354,102 @@ export function useMessageLog(
             return;
         }
 
-        const html = ansiConvert.toHtml(text);
+        // Room description lines are merged into the preceding room-name message
+        // so they render as one unified DOM element with no subpixel gaps.
+        if (type === 'room-description') {
+            const descHtml = ansiConvert.toHtml(text);
+            const buffer = messageBufferRef.current;
+            const lastRoomIdx = buffer.findLastIndex(m => m.isRoomName);
+            
+            if (lastRoomIdx !== -1) {
+                // Case 1: Room name is still in the pending buffer
+                buffer[lastRoomIdx] = {
+                    ...buffer[lastRoomIdx],
+                    html: buffer[lastRoomIdx].html + `<div class="room-desc-line">${descHtml}</div>`,
+                };
+                lastMessageRef.current = buffer[lastRoomIdx];
+                if (!flushTimeoutRef.current) {
+                    flushTimeoutRef.current = setTimeout(flushMessages, 50);
+                }
+            } else {
+                // Case 2: Room name has already been flushed to the messages state
+                setMessages(prev => {
+                    const lastRoomStateIdx = [...prev].reverse().findIndex(m => m.isRoomName);
+                    if (lastRoomStateIdx === -1) return prev;
+                    
+                    const actualIdx = (prev.length - 1) - lastRoomStateIdx;
+                    const next = [...prev];
+                    next[actualIdx] = {
+                        ...next[actualIdx],
+                        html: next[actualIdx].html + `<div class="room-desc-line">${descHtml}</div>`,
+                    };
+                    return next;
+                });
+            }
+            return;
+        }
+
+        const CHARACTER_AGENCY_VERBS = [
+            'says', 'tells', 'whispers', 'shouts', 'asks', 'exclaims', 'narrates', 'talks',
+            'say', 'tell', 'whisper', 'shout', 'ask', 'exclaim', 'narrate', 'talk',
+            'smiles', 'laughs', 'nods', 'points', 'grins', 'chuckles', 'stares',
+            'smile', 'laugh', 'nod', 'point', 'grin', 'chuckle', 'stare',
+            'hits', 'misses', 'stabs', 'cleaves', 'stings', 'lashes', 'scratches', 'bruises', 'dodges',
+            'hit', 'miss', 'stab', 'cleave', 'sting', 'lash', 'scratch', 'bruise', 'dodge',
+            'gets', 'takes', 'drops', 'puts', 'gives', 'opens', 'closes', 'locks', 'unlocks',
+            'get', 'take', 'drop', 'put', 'give', 'open', 'close', 'lock', 'unlock',
+            'arrives', 'leaves', 'enters'
+        ];
+
+        let processedText = text;
+        const isEmpty = textOnly.length === 0;
+        if (isNewbieMode && !isActuallyRoomName && type !== 'prompt' && !isEmpty) {
+            // Check for NPC/Player actions: Subject + Whitelisted Verb
+            const npcMatch = textOnly.match(NPC_LINE_REGEX);
+            const isNPCActor = npcMatch && CHARACTER_AGENCY_VERBS.includes(npcMatch[2].toLowerCase());
+
+            // Check for User actions: "You" + Whitelisted Verb
+            const userMatch = textOnly.match(/^You\s+(\w+)\b/i);
+            const isUserActor = userMatch && CHARACTER_AGENCY_VERBS.includes(userMatch[1].toLowerCase());
+
+            // Check for Comms (Tells, Says)
+            const isPlayerActor = isComm && !textOnly.startsWith('[') && !textOnly.startsWith('(') && !textOnly.startsWith('*');
+
+            if (isNPCActor || isUserActor || isPlayerActor) {
+                processedText = `> ${text}`;
+            }
+        }
+
+        const html = ansiConvert.toHtml(processedText);
 
         const msg: Message = {
             id: mid || Math.random().toString(36).substring(7),
             html,
-            textRaw: text,
-            type,
+            textRaw: processedText,
+            type: finalType,
             timestamp: Date.now(),
             isCombat,
             combatSide,
             dimmedInCombat,
             isUrgent,
+            isEmpty,
             stackId: stackId || undefined,
             stackCount: 1,
             isComm,
             replyTarget,
             replyCommand,
             isRoomName: isActuallyRoomName,
+            isRoomBlock: isActuallyRoomName,
+            isRoomBlockStart: isActuallyRoomName,
+            isNarrate,
             shopItem,
             practiceSkill,
             practiceHeader,
             commSender,
             commAction,
             commText,
-            commColor
+            commColor,
+            moveDir: currentMoveDir !== 'none' ? currentMoveDir : undefined
         };
 
         if (isCombat) {
@@ -342,5 +491,20 @@ export function useMessageLog(
         }
     }, [inCombatRef, setMessages, flushMessages, isMobileBrevityMode, roomContext, flushRoomBuffer]);
 
-    return { messages, setMessages, addMessage, flushMessages, isCombatLine };
+    const addSystemMessage = useCallback((text: string) => {
+        const msg: Message = {
+            id: Math.random().toString(36).substring(7),
+            type: 'system',
+            html: text,
+            textRaw: text,
+            timestamp: Date.now(),
+            isUrgent: true
+        };
+        setMessages(prev => {
+            const nextMessages = [...prev, msg];
+            return nextMessages.length >= 500 ? nextMessages.slice(nextMessages.length - 500) : nextMessages;
+        });
+    }, [setMessages]);
+
+    return { messages, setMessages, addMessage, addSystemMessage, flushMessages, isCombatLine };
 }

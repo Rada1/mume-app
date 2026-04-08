@@ -4,7 +4,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.4);
+    background: transparent;
     z-index: 3100;
     opacity: 0;
     visibility: hidden;
@@ -22,7 +22,7 @@
     left: 0;
     right: 0;
     height: 90vh;
-    background: transparent;
+    background: rgb(10, 13, 21);
     transform: translateY(-100%);
     transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
@@ -39,8 +39,6 @@
     align-items: center;
     padding: 12px 20px;
     background: rgba(10, 13, 21, 0.65);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     margin: 10px 15px 5px 15px;
@@ -52,6 +50,7 @@
 
 .drawer-tabs {
     display: flex;
+    justify-content: center;
     gap: 8px;
     flex: 1;
     min-width: 0;
@@ -65,7 +64,7 @@
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.05);
     color: rgba(255, 255, 255, 0.8);
-    font-size: 0.8rem;
+    font-size: var(--dynamic-log-size, 16px);
     cursor: pointer;
     border-radius: 10px;
     transition: all 0.2s ease;
@@ -74,6 +73,7 @@
     flex-shrink: 1;
     min-width: 0;
 }
+
 
 @media (max-width: 420px) {
     .drawer-header {
@@ -84,7 +84,7 @@
     }
     .drawer-tab {
         padding: 6px 8px;
-        font-size: 0.72rem;
+        font-size: var(--dynamic-log-size, 16px);
         gap: 4px;
     }
     .drawer-tab svg {
@@ -92,6 +92,7 @@
         height: 12px;
     }
 }
+
 
 .drawer-tab.active {
     background: #b8860b;
@@ -128,8 +129,6 @@
 /* Glass Section Container */
 .char-profile, .stats-grid > div, .details-section, .skill-group, .info-section-glass {
     background: rgba(10, 13, 21, 0.35);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     padding: 15px;
@@ -145,28 +144,31 @@
 
 .char-main-info h2 {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: calc(var(--dynamic-log-size, 16px) * 1.25);
     color: #ffffff;
     font-weight: 800;
     letter-spacing: -0.5px;
 }
 
+
 .char-main-info p {
     margin: 2px 0;
     color: rgba(255, 255, 255, 0.5);
-    font-size: 0.85rem;
+    font-size: var(--dynamic-log-size, 16px);
     font-weight: 500;
 }
+
 
 .level-badge {
     padding: 2px 10px;
     background: var(--accent);
     color: #000;
     border-radius: 20px;
-    font-size: 0.7rem;
+    font-size: var(--dynamic-log-size, 16px);
     font-weight: 900;
     text-transform: uppercase;
 }
+
 
 .char-meta-row {
     display: flex;
@@ -189,7 +191,7 @@
 }
 
 .stat-label {
-    font-size: 0.75rem;
+    font-size: var(--dynamic-log-size, 16px);
     color: rgba(255, 215, 0, 0.8);
     font-weight: 800;
     text-transform: uppercase;
@@ -199,15 +201,17 @@
     gap: 6px;
 }
 
+
 .stat-value {
-    font-size: 1.1rem;
+    font-size: var(--dynamic-log-size, 16px);
     font-weight: 800;
     color: #fff;
 }
 
+
 .base-stats-section h3, .war-info-section h3, .details-section h3, .stat-section h3 {
     margin: 0 0 10px 0;
-    font-size: 0.65rem;
+    font-size: var(--dynamic-log-size, 16px);
     color: #ffffff;
     text-transform: uppercase;
     letter-spacing: 1.5px;
@@ -215,6 +219,7 @@
     border-bottom: 1px solid #b8860b;
     padding-bottom: 4px;
 }
+
 
 .base-stats-grid {
     display: grid;
@@ -226,16 +231,18 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-size: 0.9rem;
+    font-size: var(--dynamic-log-size, 16px);
     color: #fff;
 }
+
 
 .base-stat-item span {
     color: rgba(255, 255, 255, 0.4);
     font-weight: 800;
-    font-size: 0.55rem;
+    font-size: var(--dynamic-log-size, 16px);
     text-transform: uppercase;
 }
+
 
 .progress-container {
     display: flex;
@@ -246,7 +253,7 @@
 .progress-labels {
     display: flex;
     justify-content: space-between;
-    font-size: 0.7rem;
+    font-size: var(--dynamic-log-size, 16px);
     color: rgba(255, 255, 255, 0.6);
     font-weight: 600;
 }
@@ -273,20 +280,20 @@
 }
 
 .total-label {
-    font-size: 0.65rem;
+    font-size: var(--dynamic-log-size, 16px);
     color: rgba(255, 255, 255, 0.4);
     font-weight: 600;
 }
 
 .needed-label {
-    font-size: 0.65rem;
+    font-size: var(--dynamic-log-size, 16px);
     color: rgba(255, 255, 255, 0.6);
     text-align: right;
     font-weight: 800;
 }
 
 .description-box, .whois-box {
-    font-size: 0.85rem;
+    font-size: var(--dynamic-log-size, 16px);
     color: rgba(255, 255, 255, 0.8);
     line-height: 1.5;
     background: rgba(0, 0, 0, 0.2);
@@ -295,11 +302,12 @@
     border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+
 .edit-section-button {
     background: rgba(255, 255, 255, 0.05);
     border: none;
     color: rgba(255, 255, 255, 0.5);
-    font-size: 0.65rem;
+    font-size: var(--dynamic-log-size, 16px);
     padding: 4px 8px;
     border-radius: 6px;
     font-weight: 700;
@@ -317,8 +325,6 @@
 
 .skill-item, .quest-item {
     background: rgba(10, 13, 21, 0.35);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     padding: 10px 12px;
@@ -358,7 +364,7 @@
 }
 
 .skill-group-header {
-    font-size: 0.65rem;
+    font-size: var(--dynamic-log-size, 16px);
     font-weight: 800;
     color: var(--accent);
     text-transform: uppercase;
@@ -367,21 +373,34 @@
     opacity: 0.6;
 }
 
-@media (max-width: 768px) {
+
+@media (max-width: 768px) and (orientation: portrait) {
     .character-drawer-content.log-card-drawer {
-        top: 0;
-        left: 50%;
-        right: auto;
-        width: 92vw;
-        max-width: 480px;
-        transform: translate(-50%, -100%);
-        border-radius: 0 0 20px 20px;
+        top: auto;
+        bottom: 52px;
+        left: 0;
+        right: 0;
+        width: 100vw;
+        max-width: none;
+        height: 248px; /* 300px gutter − 52px tab bar = visible gutter height */
+        transform: translateY(0);
+        opacity: 0;
+        visibility: hidden;
+        transition: none;
+        border-radius: 20px 20px 0 0;
+        background: rgb(10, 13, 21);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
     }
-    
+
     .character-drawer-content.log-card-drawer.open {
-        transform: translate(-50%, 0);
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+        transition: none;
     }
 }
+
 
 @media (min-width: 769px) {
     .character-drawer-content {
@@ -390,8 +409,27 @@
         transform: translate(-50%, -100%);
         border-radius: 0 0 20px 20px;
     }
-    
+
     .character-drawer-content.open {
         transform: translate(-50%, 0);
+    }
+}
+
+/* On full desktop, log-card-drawer drawers (including PlayersDrawer) use the right-side card
+   layout from Drawers.css. Reset the top-slide animation that the 769px rule applies. */
+@media (min-width: 1024px) {
+    .character-drawer-content.log-card-drawer {
+        width: 420px;
+        left: auto;
+        right: 20px;
+        top: 20px;
+        bottom: 20px;
+        height: auto;
+        transform: translateY(40px);
+        border-radius: 20px;
+    }
+
+    .character-drawer-content.log-card-drawer.open {
+        transform: translateY(0);
     }
 }

@@ -32,6 +32,9 @@ interface MapperContextType {
     handleResetAndSync: () => void;
     handleClearMap: (force?: boolean) => void;
     handleSyncLocation: (wx: number, wy: number) => void;
+    handleRoomInfo: (data: any) => void;
+    handleUpdateExits: (data: any) => void;
+    handleTerrain: (t: string) => void;
     handleAddRoom: (wx: number, wy: number, z: number) => string;
     handleDeleteRoom: (id: string) => void;
     pushPendingMove: (dir: string) => void;
@@ -479,6 +482,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         currentRoomIdRef, roomsRef, preloadedCoordsRef, baseMapExitsRef,
         unveilMap, setUnveilMap, allowPersistence, setAllowPersistence,
         handleResetAndSync, handleClearMap, handleSyncLocation,
+        handleRoomInfo, handleUpdateExits, handleTerrain,
         handleAddRoom, handleDeleteRoom, pushPendingMove,
         handleMoveConfirmed, handleMoveFailure, preMoveRef, clientPredictionsRef,
         triggerRender, renderVersion,
@@ -489,6 +493,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }), [
         rooms, markers, currentRoomId, unveilMap, allowPersistence, handleResetAndSync,
         handleClearMap, handleSyncLocation, handleAddRoom, handleDeleteRoom,
+        handleRoomInfo, handleUpdateExits, handleTerrain,
         pushPendingMove, handleMoveConfirmed, handleMoveFailure, renderVersion,
         currentRoomIdRef, roomsRef, preloadedCoordsRef, baseMapExitsRef, preMoveRef,
         spatialIndexRef, firstExploredAtRef, serverIdIndexRef, triggerRender, setCurrentRoomId,

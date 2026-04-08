@@ -42,13 +42,13 @@
     display: flex;
     flex-direction: column;
     flex: 1;
-    max-width: 900px;
+    max-width: 850px;
     margin: 0 auto;
     width: 100%;
     padding: 10px;
     padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
     overflow: hidden;
-    z-index: 1000;
+    z-index: 5500;
     pointer-events: none;
 }
 
@@ -63,9 +63,17 @@
     }
 }
 
+/* Portrait: no extra padding needed — the tab bar sits below the 280px map gutter,
+   not below the content layer, so it doesn't overlap the input area. */
+@media (max-width: 768px) and (orientation: portrait) {
+    .content-layer {
+        padding-bottom: 0 !important;
+    }
+}
+
 /* Force Desktop Overrides */
 .force-desktop .content-layer {
-    max-width: 900px !important;
+    max-width: 850px !important;
     padding: 10px !important;
     padding-bottom: 10px !important;
 }
@@ -89,12 +97,19 @@
     }
 }
 
-/* Map drawer push: only applies when the map sits flush-left (≤1800px).
-   At wider screens the map is already positioned clear of the log. */
-@media (min-width: 1024px) and (max-width: 1800px) {
+/* Map drawer push (left side) */
+@media (min-width: 1024px) and (max-width: 1850px) {
     body.map-drawer-open .app-content-shaker {
         /* 420px drawer + 20px left offset + 12px gap */
         padding-left: calc(420px + 20px + 12px);
+    }
+}
+
+/* Utility drawer push (right side) — matches map drawer push exactly */
+@media (min-width: 1024px) and (max-width: 1850px) {
+    body.utility-drawer-open .app-content-shaker {
+        /* 420px drawer + 20px right offset + 12px gap (mirrors map-drawer padding-left) */
+        padding-right: calc(420px + 20px + 12px);
     }
 }
 
@@ -114,8 +129,8 @@
     position: relative !important;
     display: flex !important;
     flex-direction: column !important;
-    z-index: 60;
-    padding: 0 8px 0 0 !important; /* right padding so log doesn't flush to screen edge */
+    z-index: 5500;
+    padding: 0 8px !important; /* Symmetric padding for balanced layout */
 }
 
 .dragging,
@@ -129,12 +144,74 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    z-index: 4200;
+    z-index: 6000;
     overflow: hidden;
 }
 
 .hud-clusters-absolute-layer > * {
     pointer-events: auto;
+}
+
+/* Desktop edge tabs (Map, Stats, etc.) */
+.desktop-edge-tab {
+    position: fixed;
+    z-index: 5000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 12px 6px;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    user-select: none;
+}
+
+.desktop-edge-tab.left {
+    left: 0;
+    border-left: none;
+    border-radius: 0 12px 12px 0;
+    padding-left: 8px;
+}
+
+.desktop-edge-tab.right {
+    right: 0;
+    border-right: none;
+    border-radius: 12px 0 0 12px;
+    padding-right: 8px;
+}
+
+.desktop-edge-tab:hover {
+    background: rgba(30, 41, 59, 0.6);
+    color: var(--text-primary);
+    padding-inline: 12px;
+}
+
+.desktop-edge-tab.active {
+    background: var(--accent);
+    color: #000;
+    box-shadow: 0 0 20px var(--accent-glow);
+    border-color: var(--accent);
+}
+
+.desktop-edge-tab .tab-icon {
+    width: 20px;
+    height: 20px;
+}
+
+@media (max-width: 768px) {
+    .desktop-edge-tab {
+        display: none !important;
+    }
 }
 
 /* --- Multi-Select Drawer Styles --- */

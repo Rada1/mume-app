@@ -22,6 +22,7 @@ export const useSettingsState = () => {
     }, [connectionUrl, setConnectionUrl, DEFAULT_URL]);
 
     const [isNoviceMode, setIsNoviceMode] = usePersistentState('mud-novice-mode', (MASTER_SETTINGS as any).isNoviceMode ?? false);
+    const [isNewbieMode, setIsNewbieMode] = usePersistentState('mud-newbie-mode', true);
     const [isSoundEnabled, setIsSoundEnabled] = usePersistentState('mud-sound-enabled', (MASTER_SETTINGS as any).isSoundEnabled ?? true);
     const [isMmapperMode, setIsMmapperMode] = usePersistentState('mud-mmapper-mode', false);
     const [theme, setTheme] = usePersistentState<'light' | 'dark'>('mud-theme', 'dark');
@@ -29,7 +30,8 @@ export const useSettingsState = () => {
         const stored = typeof window !== 'undefined' ? localStorage.getItem('mud-show-controls') : null;
         if (stored !== null) return JSON.parse(stored) as boolean;
         if (typeof window !== 'undefined') {
-            return window.matchMedia('(pointer: coarse)').matches;
+            // Default show HUD on desktop (fine pointer) OR mobile (coarse pointer)
+            return true;
         }
         return false;
     })());
@@ -47,6 +49,7 @@ export const useSettingsState = () => {
     const [isCrtEnabled, setIsCrtEnabled] = usePersistentState('mud-crt-enabled', (MASTER_SETTINGS as any).isCrtEnabled ?? false);
     const [isBloomEnabled, setIsBloomEnabled] = usePersistentState('mud-bloom-enabled', (MASTER_SETTINGS as any).isBloomEnabled ?? false);
     const [isSpectateMode, setIsSpectateMode] = usePersistentState('mud-spectate-mode', false);
+    const [isTimestampEnabled, setIsTimestampEnabled] = usePersistentState('mud-timestamp-enabled', false);
     const [favorites, setFavorites] = usePersistentState<string[]>('mud-favorites', []);
     const [zoneMusic, setZoneMusic] = usePersistentState<ZoneMusicMapping[]>('mud-zone-music', [
         { zone: 'Bree', url: '/assets/Sounds/Zone Sounds/BreeSound.wav' },
@@ -59,6 +62,7 @@ export const useSettingsState = () => {
     return {
         connectionUrl, setConnectionUrl,
         isNoviceMode, setIsNoviceMode,
+        isNewbieMode, setIsNewbieMode,
         isSoundEnabled, setIsSoundEnabled,
         isMmapperMode, setIsMmapperMode,
         theme, setTheme,
@@ -77,6 +81,7 @@ export const useSettingsState = () => {
         isCrtEnabled, setIsCrtEnabled,
         isBloomEnabled, setIsBloomEnabled,
         isSpectateMode, setIsSpectateMode,
+        isTimestampEnabled, setIsTimestampEnabled,
         favorites, setFavorites,
         zoneMusic, setZoneMusic
     };

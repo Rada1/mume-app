@@ -16,7 +16,7 @@ const getQuadCount = (status: CombatHealthStatus | null): number => {
         case 'Fine': return 5;
         case 'Hurt': return 4;
         case 'Wounded': return 3;
-        case 'Badly Wounded': return 2;
+        case 'Bad': return 2;
         case 'Awful': return 1;
         case 'Stunned': return 0;
         case 'Dying': return 0;

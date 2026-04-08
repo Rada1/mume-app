@@ -47,6 +47,7 @@ interface MapCanvasProps {
     serverIdIndexRef?: React.MutableRefObject<Record<string, string>>;
     roomPlayers?: import('../../types').GmcpOccupant[];
     roomNpcs?: import('../../types').GmcpOccupant[];
+    roomItems?: import('../../types').GmcpOccupant[];
     inlineCategories?: import('../../types').InlineCategoryConfig[];
     opponentName?: string | null;
     opponentId?: string | null;
@@ -66,7 +67,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
-        roomPlayers, roomNpcs, inlineCategories, opponentName, opponentId,
+        roomPlayers, roomNpcs, roomItems, inlineCategories, opponentName, opponentId,
         deathRoomId
     } = props;
 
@@ -77,7 +78,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
-        roomPlayers, roomNpcs, inlineCategories, opponentName, opponentId,
+        roomPlayers, roomNpcs, roomItems, inlineCategories, opponentName, opponentId,
         deathRoomId
     });
 

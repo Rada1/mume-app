@@ -2,10 +2,9 @@ import React from 'react';
 import { InventoryDrawer } from './InventoryDrawer';
 import { StatsDrawer } from './StatsDrawer';
 import { CharacterDrawer } from './CharacterDrawer';
-import { EquipmentDrawer } from './EquipmentDrawer';
 import { PlayersDrawer } from './PlayersDrawer';
 import { Mapper } from '../Mapper/Mapper';
-import { User, Shield, Package, Map as MapIcon, Users, Backpack } from 'lucide-react';
+import { User, Shield, Map as MapIcon, Users, Backpack, BarChart2 } from 'lucide-react';
 
 
 import { DrawerLine, CustomButton, SoundTrigger } from '../../types';
@@ -103,15 +102,24 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         pendingDrawerContainerRef, inlineCategories, entities, keywordOverrides 
     } = useGame() as any;
 
-    // On desktop, push the log right so the map drawer sits beside it instead of over it
+    // On desktop, push the log right/left so side drawers sit beside it instead of over it
     React.useEffect(() => {
-        if (!viewport.isMobile && ui.mapExpanded) {
-            document.body.classList.add('map-drawer-open');
+        if (!viewport.isMobile) {
+            if (ui.mapExpanded) document.body.classList.add('map-drawer-open');
+            else document.body.classList.remove('map-drawer-open');
+
+            if (ui.drawer !== 'none') document.body.classList.add('utility-drawer-open');
+            else document.body.classList.remove('utility-drawer-open');
         } else {
             document.body.classList.remove('map-drawer-open');
+            document.body.classList.remove('utility-drawer-open');
         }
-        return () => { document.body.classList.remove('map-drawer-open'); };
-    }, [ui.mapExpanded, viewport.isMobile]);
+
+        return () => { 
+            document.body.classList.remove('map-drawer-open'); 
+            document.body.classList.remove('utility-drawer-open'); 
+        };
+    }, [ui.mapExpanded, ui.drawer, viewport.isMobile]);
     const { isMapFloating, setIsMapFloating } = useMapper();
     const isMapDrawerOpen = ui.mapExpanded && !viewport.isMobile;
     // Map Tray should not have a backdrop on mobile as it blocks the rest of the UI
@@ -123,7 +131,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         setUI(prev => ({ ...prev, mapExpanded: false }));
     };
 
-    const handleTabClick = (drawer: 'stats' | 'character' | 'equipment' | 'inventory' | 'players') => {
+    const handleTabClick = (drawer: 'stats' | 'character' | 'inventory' | 'players') => {
         triggerHaptic(30);
         if (ui.drawer === drawer) {
             setUI(prev => ({ ...prev, drawer: 'none' }));
@@ -141,10 +149,9 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                 setTimeout(() => executeCommand('whois', true, true, true, true), 400);
                 setTimeout(() => executeCommand('quest', true, true, true, true), 500);
                 setTimeout(() => executeCommand('practice', true, true, true, true), 600);
-            } else if (drawer === 'equipment') {
-                executeCommand('eq', true, true, true, true);
             } else if (drawer === 'inventory') {
-                executeCommand('inv', true, true, true, true);
+                executeCommand('eq', true, true, true, true);
+                setTimeout(() => executeCommand('inv', true, true, true, true), 100);
             } else if (drawer === 'players') {
                 executeCommand('who', true, true, true, true);
                 setTimeout(() => executeCommand('where', true, true, true, true), 150);
@@ -154,10 +161,10 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 
     return (
         <>
-            {/* Desktop Edge Tabs */}
+            {/* Desktop Edge Tabs — all on the right edge */}
             <div
-                className={`desktop-edge-tab left ${ui.drawer === 'stats' ? 'active' : ''} ${ui.peekingDrawer === 'stats' ? 'peeking' : ''}`}
-                style={{ top: '25%' }}
+                className={`desktop-edge-tab right ${ui.drawer === 'stats' ? 'active' : ''} ${ui.peekingDrawer === 'stats' ? 'peeking' : ''}`}
+                style={{ top: '15%' }}
                 onClick={() => handleTabClick('stats')}
                 title="Combat Statistics"
             >
@@ -166,50 +173,28 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             </div>
 
             <div
-                className={`desktop-edge-tab top ${ui.drawer === 'character' ? 'active' : ''} ${ui.peekingDrawer === 'character' ? 'peeking' : ''}`}
-                style={{ top: '0', left: '50%', transform: 'translateX(-50%)', width: '120px', height: '28px', borderRadius: '0 0 10px 10px', flexDirection: 'row', gap: '8px' }}
+                className={`desktop-edge-tab right ${ui.drawer === 'character' ? 'active' : ''} ${ui.peekingDrawer === 'character' ? 'peeking' : ''}`}
+                style={{ top: '30%' }}
                 onClick={() => handleTabClick('character')}
                 title="Character Sheet"
             >
-                <User className="tab-icon" style={{ width: '14px', height: '14px' }} />
-                <span className="tab-text" style={{ writingMode: 'horizontal-tb', fontSize: '0.7rem' }}>Character</span>
+                <User className="tab-icon" />
+                <span className="tab-text">Char</span>
             </div>
 
             <div
-                className={`desktop-edge-tab right ${ui.drawer === 'equipment' ? 'active' : ''} ${ui.peekingDrawer === 'equipment' ? 'peeking' : ''}`}
-                style={{ top: '25%' }}
-                onClick={() => handleTabClick('equipment')}
-                onDragOver={(e) => {
-                    e.preventDefault();
-                    if (ui.peekingDrawer !== 'equipment') {
-                        setUI(prev => ({ ...prev, peekingDrawer: 'equipment', isDrawerPeeking: true, peekingSource: 'none' }));
-                    }
-                }}
-                onDragLeave={() => {
-                    setUI(prev => ({ ...prev, peekingDrawer: 'none', isDrawerPeeking: false, peekingSource: 'none' }));
-                }}
-                onDrop={(e) => {
-                    e.preventDefault();
-                    setUI(prev => ({ ...prev, peekingDrawer: 'none', isDrawerPeeking: false, peekingSource: 'none' }));
-                    const dataStr = e.dataTransfer.getData('application/json') || e.dataTransfer.getData('text/plain');
-                    if (!dataStr) return;
-                    try {
-                        const data = JSON.parse(dataStr);
-                        if (data && data.context) {
-                            triggerHaptic(40);
-                            executeCommand(`wear ${data.context}`);
-                        }
-                    } catch (err) {}
-                }}
-                title="Equipment"
+                className={`desktop-edge-tab right ${ui.drawer === 'players' ? 'active' : ''} ${ui.peekingDrawer === 'players' ? 'peeking' : ''}`}
+                style={{ top: '45%' }}
+                onClick={() => handleTabClick('players')}
+                title="Players & Group"
             >
-                <Backpack className="tab-icon" />
-                <span className="tab-text">Gear</span>
+                <Users className="tab-icon" />
+                <span className="tab-text">Players</span>
             </div>
 
             <div
                 className={`desktop-edge-tab right ${ui.drawer === 'inventory' ? 'active' : ''} ${ui.peekingDrawer === 'inventory' ? 'peeking' : ''}`}
-                style={{ top: '45%' }}
+                style={{ top: '60%' }}
                 onClick={() => handleTabClick('inventory')}
                 onDragOver={(e) => {
                     e.preventDefault();
@@ -237,32 +222,23 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                         }
                     } catch (err) {}
                 }}
-                title="Inventory"
+                title="Gear"
             >
-                <Package className="tab-icon" />
-                <span className="tab-text">Inv</span>
+                <Backpack className="tab-icon" />
+                <span className="tab-text">Gear</span>
             </div>
 
             <div
                 id="drawer-tab-map"
-                className={`desktop-bottom-tab ${ui.mapExpanded ? 'active' : ''} ${ui.peekingDrawer === 'map' ? 'peeking' : ''}`}
-                style={{ left: 'calc(50vw - 450px - 110px)' }}
+                className={`desktop-edge-tab right ${ui.mapExpanded ? 'active' : ''} ${ui.peekingDrawer === 'map' ? 'peeking' : ''}`}
+                style={{ top: '75%' }}
                 onClick={() => setUI(prev => ({ ...prev, mapExpanded: !prev.mapExpanded, peekingSource: 'none' }))}
-                title="Map View"
+                title="World Map"
             >
                 <MapIcon className="tab-icon" />
                 <span className="tab-text">Map</span>
             </div>
 
-            <div
-                className={`desktop-edge-tab left ${ui.drawer === 'players' ? 'active' : ''} ${ui.peekingDrawer === 'players' ? 'peeking' : ''}`}
-                style={{ top: '45%' }}
-                onClick={() => setUI(prev => ({ ...prev, drawer: prev.drawer === 'players' ? 'none' : 'players', peekingSource: 'none' }))}
-                title="Players & Group"
-            >
-                <Users className="tab-icon" />
-                <span className="tab-text">Players</span>
-            </div>
 
             <div
                 className={`drawer-backdrop ${showBackdrop && ui.drawer !== 'character' && ui.drawer !== 'players' ? 'open' : ''}`}
@@ -316,26 +292,13 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                 executeCommand={executeCommand}
             />
 
-            <EquipmentDrawer
-                isOpen={ui.drawer === 'equipment'}
-                isPeeking={ui.isDrawerPeeking && ui.peekingDrawer === 'equipment'}
-                onClose={() => setUI(prev => ({ ...prev, drawer: 'none', peekingSource: 'none' }))}
-                eqLines={eqLines}
-                handleButtonClick={handleButtonClick}
-                triggerHaptic={triggerHaptic}
-                isLandscape={viewport.isLandscape}
-                executeCommand={executeCommand}
-                pendingDrawerContainerRef={pendingDrawerContainerRef}
-                inlineCategories={inlineCategories}
-                entities={entities}
-                keywordOverrides={keywordOverrides}
-            />
 
             <InventoryDrawer
                 isOpen={ui.drawer === 'inventory'}
                 isPeeking={ui.isDrawerPeeking && ui.peekingDrawer === 'inventory'}
                 onClose={() => setUI(prev => ({ ...prev, drawer: 'none', peekingSource: 'none' }))}
                 inventoryLines={inventoryLines}
+                eqLines={eqLines}
                 handleButtonClick={handleButtonClick}
                 triggerHaptic={triggerHaptic}
                 executeCommand={executeCommand}

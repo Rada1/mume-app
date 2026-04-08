@@ -247,7 +247,13 @@ export const buildHighlighterCandidates = (
         const noun = getEffectiveKeyword(itemName, undefined, undefined, keywordOverrides);
         if (!noun) return;
 
-        const category = getCategoryForName(itemName, inlineCategories);
+        let category = getCategoryForName(itemName, inlineCategories);
+        
+        // Force objects to stay objects even if they contain NPC keywords (e.g. "corpse of an orc")
+        if (category && category.includes('npc')) {
+            category = 'inline-obj-room';
+        }
+        
         const glowColor = getGlowColorForCategory(category || 'inline-obj-room', inlineCategories);
         const command = 'inline-obj-room';
 
@@ -486,7 +492,7 @@ export const applyColorTaggedObjects = (
         const keyword = keywordBase.replace(/\s+/g, '-');
         const finalContext = getEffectiveKeyword(displayName, undefined, undefined, keywordOverrides);
 
-        const category = getCategoryForName(displayName, inlineCategories);
+        let category = getCategoryForName(displayName, inlineCategories);
         let finalCmd = cmd;
         
         // Priority: If it matches a room NPC/PC by name, use 그 command
@@ -497,8 +503,11 @@ export const applyColorTaggedObjects = (
             finalCmd = 'inlinenpc';
         } else if (normalizedPcSet.has(normalizedName) || normalizedPcSet.has(normalizedStripped)) {
             finalCmd = 'inlineplayer';
-        } else if (category === 'inline-npc') {
-            finalCmd = 'inlinenpc';
+        }
+        
+        // Prevent objects from inheriting NPC colors just because their name contains an NPC keyword
+        if (finalCmd.startsWith('inline-obj') && category && category.includes('npc')) {
+            category = 'inline-obj-room'; // Force object styling
         }
         
         const baseGlow = getGlowColorForCategory(category || finalCmd, inlineCategories);

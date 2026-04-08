@@ -11,7 +11,6 @@ export interface AtmosphereParserDeps {
     setWeather: (w: WeatherType) => void;
     setIsFoggy: (f: boolean) => void;
     setLightningEnabled: (f: boolean) => void;
-    setRumble: (val: boolean) => void;
     triggerHaptic: (ms: number) => void;
     playDoorSound: (isOpen: boolean) => void;
     setPlayerPosition: (pos: string) => void;
@@ -22,7 +21,6 @@ export function useAtmosphereParser(deps: AtmosphereParserDeps) {
         setWeather,
         setIsFoggy,
         setLightningEnabled,
-        setRumble,
         triggerHaptic,
         playDoorSound,
         setPlayerPosition
@@ -58,12 +56,10 @@ export function useAtmosphereParser(deps: AtmosphereParserDeps) {
             lower.includes("your mount refuses to go there");
 
         if (stopMovementMsg) {
-            setRumble(true);
             triggerHaptic(100);
             if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-move-fail'));
-            setTimeout(() => setRumble(false), 300);
         }
-    }, [setWeather, setIsFoggy, setLightningEnabled, setRumble, triggerHaptic, playDoorSound, setPlayerPosition]);
+    }, [setWeather, setIsFoggy, setLightningEnabled, triggerHaptic, playDoorSound, setPlayerPosition]);
 
     return { parseAtmosphere };
 }

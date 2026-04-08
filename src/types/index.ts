@@ -1,16 +1,16 @@
 import { LucideIcon } from 'lucide-react';
 
-export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt' | 'comm' | 'comm-continue' | 'shop-item' | 'practice-skill' | 'practice-header' | 'practice-class-header' | 'practice-column-header' | 'who-list' | 'where-list' | 'room-description' | 'equipment-list' | 'inventory-list' | 'room-exits';
+export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt' | 'comm' | 'comm-continue' | 'comm-sender' | 'shop-item' | 'practice-skill' | 'practice-header' | 'practice-class-header' | 'practice-column-header' | 'who-list' | 'where-list' | 'room-description' | 'equipment-list' | 'inventory-list' | 'room-exits';
 export type LightingType = 'sun' | 'artificial' | 'moon' | 'dark' | 'none';
 export type WeatherType = 'clear' | 'cloud' | 'rain' | 'heavy-rain' | 'snow' | 'none';
 export type Direction = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | 'u' | 'd';
 export type SwipeDirection = 'up' | 'down' | 'left' | 'right' | 'ne' | 'nw' | 'se' | 'sw';
-export type DeathStage = 'none' | 'fade_to_black' | 'flash' | 'black_hold' | 'fade_in' | 'blood_vignette';
+
 export type TriggerAction = 'show' | 'switch_set';
 export type UiMode = 'auto' | 'desktop' | 'portrait' | 'landscape';
 export type GameState = 'disconnected' | 'account' | 'playing';
 export type CaptureStage = 'none' | 'who' | 'where' | 'inv' | 'eq' | 'stat' | 'container' | 'shop' | 'shop-detail' | 'practice' | 'whois' | 'description' | 'info' | 'quest' | 'account';
-export type CombatHealthStatus = 'Healthy' | 'Fine' | 'Hurt' | 'Wounded' | 'Badly Wounded' | 'Awful' | 'Dying' | 'Stunned' | 'None';
+export type CombatHealthStatus = 'Healthy' | 'Fine' | 'Hurt' | 'Wounded' | 'Bad' | 'Awful' | 'Dying' | 'Stunned' | 'None';
 export type ExecuteCommand = (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean, fromUi?: boolean }) => void;
 
 
@@ -40,10 +40,15 @@ export interface Message {
     stackCount?: number; // How many copies of this message are stacked
     stackId?: string; // Identifier for the type of stack (e.g. "arrival:a black wolf:south")
     isComm?: boolean; // True if this is a communication message (says, tells, etc.)
-    isUrgent?: boolean; // True if this is a critical non-combat message (arrive/leave/spell)
     replyTarget?: string; // Sender name for comm messages — enables the inline reply button
     replyCommand?: string; // Channel command for the reply button (e.g. 'tell', 'say', 'narrate')
     isRoomName?: boolean; // True if this line is a room title/name
+    isRoomBlock?: boolean; // True if this line is a room name (with embedded description)
+    isRoomBlockStart?: boolean;
+    isRoomBlockEnd?: boolean;
+    isEmpty?: boolean;
+    isNarrate?: boolean;
+    isUrgent?: boolean; // True if this is a critical non-combat message (arrive/leave/spell)
     shopItem?: ShopItem; // Optional structured shop item data
     practiceSkill?: PracticeSkill; // Optional structured practice skill data
     practiceHeader?: { sessionsLeft: number }; // Optional practice header data
@@ -52,6 +57,9 @@ export interface Message {
     commText?: string; // Structured message text
     commColor?: string;
     batchId?: number;
+    isBatchEnd?: boolean;
+    inRoomBatch?: boolean;
+    moveDir?: 'n' | 's' | 'e' | 'w' | 'u' | 'd' | 'none';
 }
 
 export interface ShopItem {
@@ -376,6 +384,12 @@ export interface SettingsModalProps {
     setIsSpectateMode: (val: boolean) => void;
     showLegacyButtons: boolean;
     setShowLegacyButtons: (val: boolean) => void;
+    isNewbieMode: boolean;
+    setIsNewbieMode: (val: boolean) => void;
+    isNoviceMode: boolean;
+    setIsNoviceMode: (val: boolean) => void;
+    isTimestampEnabled: boolean;
+    setIsTimestampEnabled: (val: boolean) => void;
 }
 
 export interface ButtonSetSettings {
@@ -411,6 +425,8 @@ export interface SavedSettings {
     isHighlighterEnabled?: boolean;
     isCrtEnabled?: boolean;
     isBloomEnabled?: boolean;
+    isNewbieMode?: boolean;
+    isTimestampEnabled?: boolean;
 }
 
 export interface RoomNode {
@@ -648,6 +664,25 @@ export interface CreationPrompt {
     description: string;
     options: CreationOption[];
     footer?: string;
+}
+
+export type LogEntryType = 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys';
+
+export interface LogEntry {
+  t: number; // timestamp offset from start in ms
+  typ: LogEntryType;
+  d: any; // data
+}
+
+export interface SessionLog {
+  version: number;
+  startTime: string;
+  entries: LogEntry[];
+  metadata: {
+    client: string;
+    version: string;
+    character?: string;
+  };
 }
 
 export interface AccountState {

@@ -2,12 +2,13 @@ import { GameButton } from "../Controls/GameButton/GameButton";
 
 import { DpadCluster } from "../Mapper/DpadCluster";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, X, RotateCcw, Grid } from 'lucide-react';
 import { MapperCluster } from './HUD/MapperCluster';
 import { GridOverlay } from '../Grid/GridOverlay';
 import { StatsCluster } from './HUD/StatsCluster';
 import { LineCluster } from './HUD/LineCluster';
+import { ReplayHUD } from './HUD/ReplayHUD';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/useMapper';
 import { MumeEditor } from '../MumeEditor';
@@ -70,19 +71,13 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
             )}
 
             <div className="hud-clusters-absolute-layer">
-                <StatsCluster
-                    uiPositions={btn.uiPositions}
-                    isEditMode={btn.isEditMode}
-                    dragState={btn.dragState}
-                    handleDragStart={handleDragStart}
-                    isLandscape={isLandscape}
-                    isMobile={isMobile}
-                />
 
 
                 {(effectiveShowControls || btn.isEditMode) && (
                     <>
-                        {(!isMobile || isLandscape || isMapFloating) && (
+                        {/* LineCluster is rendered beside the log in MainContentLayer on desktop.
+                            Here we only render it for landscape/mobile overlay modes. */}
+                        {(isLandscape) && (
                             <div className={`line-cluster-container ${(!showControls || isKeyboardOpen) && !btn.isEditMode ? 'hud-hidden' : ''}`}>
                                 <LineCluster
                                     isEditMode={btn.isEditMode}
@@ -143,6 +138,7 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
             )}
 
             <MumeEditor />
+            <ReplayHUD />
         </>
     );
 };

@@ -20,20 +20,20 @@ export const EffectIndicators: React.FC<EffectIndicatorsProps> = ({
     const purpleSpells = ['armour', 'shield', 'strength', 'sanctuary', 'shroud', 'bless', 'detect magic', 'detect evil', 'sense life'];
 
     if (activeConds.length === 0 && activeSpells.length === 0) {
-        return <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', fontStyle: 'italic' }}>No active effects</div>;
+        return <div style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: 'rgba(255,255,255,0.4)', fontStyle: 'italic' }}>No active effects</div>;
     }
 
     return (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {activeConds.map(c => (
                 <div key={c} style={{
-                    padding: '3px 8px',
+                    padding: '4px 10px',
                     background: 'rgba(239, 68, 68, 0.2)',
                     border: '1px solid rgba(239, 68, 68, 0.4)',
-                    borderRadius: '10px',
+                    borderRadius: '12px',
                     color: '#fca5a5',
-                    fontSize: '0.68rem',
-                    fontWeight: 'bold',
+                    fontSize: 'var(--dynamic-log-size, 16px)',
+                    fontWeight: '800',
                     textTransform: 'uppercase'
                 }}>
                     {c}
@@ -46,13 +46,13 @@ export const EffectIndicators: React.FC<EffectIndicatorsProps> = ({
                 
                 return (
                     <div key={s} style={{
-                        padding: '3px 8px',
+                        padding: '4px 10px',
                         background: bg,
                         border: `1px solid ${border}`,
-                        borderRadius: '10px',
+                        borderRadius: '12px',
                         color: color,
-                        fontSize: '0.68rem',
-                        fontWeight: 'bold',
+                        fontSize: 'var(--dynamic-log-size, 16px)',
+                        fontWeight: '800',
                         textTransform: 'uppercase'
                     }}>
                         {s}

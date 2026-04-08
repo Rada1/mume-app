@@ -40,7 +40,7 @@ const PracticeSkillCard: React.FC<PracticeSkillCardProps> = ({ skill: initialSki
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ 
                     fontWeight: 'bold', 
-                    fontSize: '0.95rem', 
+                    fontSize: 'var(--dynamic-log-size, 16px)', 
                     color: '#fff',
                     letterSpacing: '0.5px'
                 }}>
@@ -50,11 +50,11 @@ const PracticeSkillCard: React.FC<PracticeSkillCardProps> = ({ skill: initialSki
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     {currentSkill.sessions && (
                         <span style={{ 
-                            fontSize: '0.75rem', 
+                            fontSize: 'var(--dynamic-log-size, 16px)', 
                             color: 'rgba(255,255,255,0.4)', 
                             fontWeight: '600' 
                         }}>
-                             {currentSkill.sessions} <span style={{fontSize: '0.65rem', opacity: 0.6}}>SESS</span>
+                             {currentSkill.sessions} <span style={{fontSize: 'var(--dynamic-log-size, 16px)', opacity: 0.6}}>SESS</span>
                         </span>
                     )}
 
@@ -99,7 +99,7 @@ const PracticeSkillCard: React.FC<PracticeSkillCardProps> = ({ skill: initialSki
                     }} />
                 </div>
                 <span style={{ 
-                    fontSize: '0.8rem', 
+                    fontSize: 'var(--dynamic-log-size, 16px)', 
                     fontWeight: '800', 
                     color: isMaxed ? '#4ade80' : 'var(--accent)',
                     minWidth: '40px',
@@ -115,7 +115,7 @@ const PracticeSkillCard: React.FC<PracticeSkillCardProps> = ({ skill: initialSki
                     right: '0', 
                     bottom: '0', 
                     padding: '2px 8px', 
-                    fontSize: '0.55rem', 
+                    fontSize: 'var(--dynamic-log-size, 16px)', 
                     textTransform: 'uppercase', 
                     fontWeight: '800', 
                     opacity: 0.2,

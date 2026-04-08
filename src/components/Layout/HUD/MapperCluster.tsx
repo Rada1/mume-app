@@ -3,7 +3,7 @@ import { Mapper } from '../../Mapper/Mapper';
 import { LineCluster } from './LineCluster';
 import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { useMapper } from '../../../context/useMapper';
-import { GripHorizontal } from 'lucide-react';
+import { GripHorizontal, Map as MapIcon, User, Shield, Users, Backpack, BarChart2 } from 'lucide-react';
 
 interface MapperClusterProps {
     uiPositions: any;
@@ -72,61 +72,56 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
 
     // Mobile DOCKED (Gutter) Mode
     if (isMobile && !isMapFloating) {
+        const handleTabClick = (drawer: 'stats' | 'character' | 'inventory' | 'players') => {
+            triggerHaptic(30);
+            if (ui.drawer === drawer) {
+                setUI(prev => ({ ...prev, drawer: 'none' }));
+            } else {
+                setUI(prev => ({ ...prev, drawer }));
+                // Fetch fresh data when opening
+                if (drawer === 'stats') {
+                   executeCommand('stat', true, true, true, true);
+                   setTimeout(() => executeCommand('at', true, true, true, true), 100);
+                } else if (drawer === 'character') {
+                    executeCommand('info', true, true, true, true);
+                    setTimeout(() => executeCommand('score', true, true, true, true), 100);
+                    setTimeout(() => executeCommand('look self', true, true, true, true), 300);
+                } else if (drawer === 'inventory') {
+                    executeCommand('eq', true, true, true, true);
+                    setTimeout(() => executeCommand('inv', true, true, true, true), 100);
+                } else if (drawer === 'players') {
+                    executeCommand('who', true, true, true, true);
+                }
+            }
+        };
+
         return (
             <div 
                 className={`mobile-bottom-gutter ${isExpanded ? 'map-expanded' : ''}`}
                 onClick={(e) => e.stopPropagation()} // Prevent log interaction
                 style={{
-                    padding: isLandscape ? '10px' : (isExpanded ? '10px 15px 40px 15px' : '0'),
-                    overflow: isExpanded ? 'auto' : 'visible',
+                    padding: isExpanded ? '10px 15px 10px 15px' : '0',
+                    overflow: 'hidden',
                     display: 'flex',
-                    flexDirection: isLandscape ? 'row' : 'column',
+                    flexDirection: 'column',
                     gap: '10px'
                 }}
             >
-                {(isEditMode || (showControls && !isKeyboardOpen)) && !isLandscape && !isExpanded && (
-                    <div className="line-cluster-container" style={{ pointerEvents: 'auto' }}>
-                        <LineCluster
-                            isEditMode={isEditMode}
-                            handleDragStart={handleDragStart}
-                            buttons={btn.buttons.filter(b => b.setId === 'Tactical')}
-                            selectedButtonIds={btn.selectedButtonIds}
-                            dragState={dragState}
-                            handleButtonClick={handleButtonClick}
-                            wasDraggingRef={wasDraggingRef}
-                            triggerHaptic={triggerHaptic}
-                            setPopoverState={setPopoverState}
-                            setEditingButtonId={btn.setEditingButtonId}
-                            setSelectedIds={btn.setSelectedIds}
-                            activePrompt={activePrompt}
-                            executeCommand={executeCommand}
-                            setCommandPreview={setCommandPreview}
-                            heldButton={heldButton}
-                            setHeldButton={setHeldButton}
-                            joystick={joystick}
-                            target={target}
-                            isGridEnabled={btn.isGridEnabled}
-                            gridSize={btn.gridSize}
-                            setActiveSet={btn.setActiveSet}
-                            setButtons={btn.setButtons}
-                            isMobile={isMobile}
-                        />
-                    </div>
-                )}
+                {/* Map Area */}
                 <div 
-                    className={`mobile-mapper-touch-surface ${(isExpanded || isLandscape) ? "drawer-section" : ""}`} 
+                    className={`mobile-mapper-touch-surface ${(isExpanded) ? "drawer-section" : ""}`} 
                     style={{ 
                         flex: 1, 
                         position: 'relative', 
                         overflow: 'hidden', 
                         pointerEvents: 'auto',
-                        padding: (isExpanded && !isLandscape) ? '10px' : '0',
-                        margin: (isExpanded && !isLandscape) ? '5px 0' : '0',
+                        padding: '0',
+                        margin: '0',
                         height: '100%',
-                        background: (isExpanded || isLandscape) ? 'rgba(15, 23, 42, 0.3)' : 'transparent',
-                        border: (isExpanded || isLandscape) ? '1px solid rgba(255, 255, 255, 0.12)' : 'none',
-                        borderRadius: (isExpanded || isLandscape) ? '16px' : '0',
-                        boxShadow: (isExpanded || isLandscape) ? '0 8px 32px rgba(0, 0, 0, 0.4)' : 'none',
+                        background: (isExpanded) ? 'rgba(15, 23, 42, 0.3)' : 'transparent',
+                        border: (isExpanded) ? '1px solid rgba(255, 255, 255, 0.12)' : 'none',
+                        borderRadius: (isExpanded) ? '16px 16px 0 0' : '20px 20px 0 0',
+                        boxShadow: (isExpanded) ? '0 8px 32px rgba(0, 0, 0, 0.4)' : 'none',
                         touchAction: 'none'
                     }}
                 >
@@ -149,6 +144,45 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         setHeldButton={setHeldButton}
                         setCommandPreview={setCommandPreview}
                     />
+                </div>
+
+                {/* Unified Tab Bar for both orientations - Now at the bottom */}
+                <div className="portrait-tab-bar portrait-visible">
+                    <div
+                        className={`desktop-edge-tab right ${ui.drawer === 'stats' ? 'active' : ''}`}
+                        onClick={() => handleTabClick('stats')}
+                    >
+                        <BarChart2 className="tab-icon" />
+                        <span className="tab-text">Stats</span>
+                    </div>
+                    <div
+                        className={`desktop-edge-tab right ${ui.drawer === 'character' ? 'active' : ''}`}
+                        onClick={() => handleTabClick('character')}
+                    >
+                        <User className="tab-icon" />
+                        <span className="tab-text">Char</span>
+                    </div>
+                    <div
+                        className={`desktop-edge-tab right ${ui.drawer === 'players' ? 'active' : ''}`}
+                        onClick={() => handleTabClick('players')}
+                    >
+                        <Users className="tab-icon" />
+                        <span className="tab-text">Players</span>
+                    </div>
+                    <div
+                        className={`desktop-edge-tab right ${ui.drawer === 'inventory' ? 'active' : ''}`}
+                        onClick={() => handleTabClick('inventory')}
+                    >
+                        <Backpack className="tab-icon" />
+                        <span className="tab-text">Gear</span>
+                    </div>
+                    <div
+                        className={`desktop-edge-tab right ${ui.drawer === 'none' ? 'active' : ''}`}
+                        onClick={() => setUI(prev => ({ ...prev, drawer: 'none', peekingSource: 'none' }))}
+                    >
+                        <MapIcon className="tab-icon" />
+                        <span className="tab-text">Map</span>
+                    </div>
                 </div>
             </div>
         );
@@ -181,52 +215,71 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     };
 
     return (
-        <div
-            id="cluster-mapper"
-            className={`mapper-cluster ${isOverDockZone ? 'magnetic-dock-active' : ''}`}
-            style={style}
-            onPointerDown={(e) => { if (isEditMode) handleDragStart(e, 'mapper', 'cluster'); }}
-        >
-            <div 
-                className="drawer-section"
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    margin: 0,
-                    padding: 0,
-                    overflow: 'hidden',
-                    pointerEvents: 'auto',
-                    background: 'transparent',
-                    border: isOverDockZone ? '2px solid var(--accent)' : '1px solid rgba(255, 255, 255, 0.1)',
-                }}
-            >
-                <Mapper 
-                    ref={mapperRef} 
-                    isDesignMode={isEditMode} 
-                    characterName={characterName} 
-                    isMmapperMode={isMmapperMode} 
-                    isMobile={isMobile}
-                    isExpanded={true} // Floating window is always "expanded" internally
-                />
-            </div>
-            {isEditMode && <div className="resize-handle" style={{ zIndex: 101, touchAction: 'none' }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'mapper', 'cluster-resize'); }} />}
-            
-            {/* Draggable Handle at bottom (available outside of design mode) */}
-            {!isEditMode && isMapFloating && (
+        <>
+            {/* Desktop Map Toggle Tab (Visible on left edge when docked) */}
+            {!isMobile && !isMapFloating && (
                 <div 
-                    className="mapper-drag-handle" 
-                    style={{ 
-                        position: 'absolute', bottom: '-24px', left: '0', right: '0', height: '32px', 
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'grab',
-                        background: 'transparent', borderRadius: '0 0 16px 16px', 
-                        border: '1px solid rgba(255,255,255,0.1)', borderTop: 'none',
-                        zIndex: 100, pointerEvents: 'auto', touchAction: 'none'
+                    id="drawer-tab-map"
+                    className={`desktop-edge-tab left ${isExpanded ? 'active' : ''}`}
+                    style={{ top: '65%' }}
+                    onClick={() => {
+                        triggerHaptic(30);
+                        setUI(prev => ({ ...prev, mapExpanded: !prev.mapExpanded }));
                     }}
-                    onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'mapper', 'cluster', true); }}
+                    title="Toggle World Map"
                 >
-                    <GripHorizontal size={16} color="var(--accent)" />
+                    <MapIcon className="tab-icon" />
+                    <span className="tab-text">Map</span>
                 </div>
             )}
-        </div>
+
+            <div
+                id="cluster-mapper"
+                className={`mapper-cluster ${isOverDockZone ? 'magnetic-dock-active' : ''}`}
+                style={style}
+                onPointerDown={(e) => { if (isEditMode) handleDragStart(e, 'mapper', 'cluster'); }}
+            >
+                <div 
+                    className="drawer-section"
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        margin: 0,
+                        padding: 0,
+                        overflow: 'hidden',
+                        pointerEvents: 'auto',
+                        background: 'transparent',
+                        border: isOverDockZone ? '2px solid var(--accent)' : '1px solid rgba(255, 255, 255, 0.1)',
+                    }}
+                >
+                    <Mapper 
+                        ref={mapperRef} 
+                        isDesignMode={isEditMode} 
+                        characterName={characterName} 
+                        isMmapperMode={isMmapperMode} 
+                        isMobile={isMobile}
+                        isExpanded={true} // Floating window is always "expanded" internally
+                    />
+                </div>
+                {isEditMode && <div className="resize-handle" style={{ zIndex: 101, touchAction: 'none' }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'mapper', 'cluster-resize'); }} />}
+                
+                {/* Draggable Handle at bottom (available outside of design mode) */}
+                {!isEditMode && isMapFloating && (
+                    <div 
+                        className="mapper-drag-handle" 
+                        style={{ 
+                            position: 'absolute', bottom: '-24px', left: '0', right: '0', height: '32px', 
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'grab',
+                            background: 'transparent', borderRadius: '0 0 16px 16px', 
+                            border: '1px solid rgba(255,255,255,0.1)', borderTop: 'none',
+                            zIndex: 100, pointerEvents: 'auto', touchAction: 'none'
+                        }}
+                        onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'mapper', 'cluster', true); }}
+                    >
+                        <GripHorizontal size={16} color="var(--accent)" />
+                    </div>
+                )}
+            </div>
+        </>
     );
 };

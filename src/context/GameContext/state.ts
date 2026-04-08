@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { usePersistentState } from '../../hooks/usePersistentState';
-import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, GameAction, ParleyState, PopoverState, CombatHealthStatus, QuestData, GroupMember, OptimisticChange } from '../../types';
+import { GameStats, LightingType, WeatherType, DrawerLine, GameAction, ParleyState, PopoverState, CombatHealthStatus, QuestData, GroupMember, OptimisticChange } from '../../types';
 import MASTER_SETTINGS from '../../constants/mastersettings.json';
 import { extractNoun, extractColorTaggedKeyword, sanitizeGameTarget } from '../../utils/gameUtils';
 import { useSettingsState } from './useSettingsState';
@@ -11,9 +11,9 @@ export const useGameProviderState = () => {
     // Settings & Mode
     const settings = useSettingsState();
     const {
-        isNoviceMode, setIsNoviceMode, isSoundEnabled, setIsSoundEnabled, isMmapperMode, setIsMmapperMode, theme, setTheme, showControls, setShowControls, autoConnect, setAutoConnect, hasSeenOnboarding, setHasSeenOnboarding,
+        isNoviceMode, setIsNoviceMode, isNewbieMode, setIsNewbieMode, isSoundEnabled, setIsSoundEnabled, isMmapperMode, setIsMmapperMode, theme, setTheme, showControls, setShowControls, autoConnect, setAutoConnect, hasSeenOnboarding, setHasSeenOnboarding,
         showDebugEchoes, setShowDebugEchoes, uiMode, setUiMode, disable3dScroll, setDisable3dScroll, disableSmoothScroll, setDisableSmoothScroll, isImmersionMode, setIsImmersionMode, isMobileBrevityMode, setIsMobileBrevityMode, showOrganicTerrain, setShowOrganicTerrain, inlineCategories, setInlineCategories, isHighlighterEnabled, setIsHighlighterEnabled,
-        isCrtEnabled, setIsCrtEnabled, isBloomEnabled, setIsBloomEnabled, favorites, setFavorites, zoneMusic, setZoneMusic
+        isCrtEnabled, setIsCrtEnabled, isBloomEnabled, setIsBloomEnabled, isTimestampEnabled, setIsTimestampEnabled, favorites, setFavorites, zoneMusic, setZoneMusic
     } = settings;
 
     // Registry
@@ -34,8 +34,8 @@ export const useGameProviderState = () => {
         move: 0, maxMove: 1,
         wimpy: 0
     });
-    const [inCombat, _setInCombat] = useState(false);
-    const inCombatRef = useRef(false);
+    const [rawInCombat, _setInCombat] = useState(false);
+    const rawInCombatRef = useRef(false);
     const combatTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     // After a force-clear (flee/slay), treat any setInCombat(false) as forced
     // for a short window. This prevents stale GMCP packets from re-enabling
@@ -65,8 +65,10 @@ export const useGameProviderState = () => {
             _setInCombat(false);
             forceClearUntilRef.current = Date.now() + 2000;
         } else if (!combatTimeoutRef.current) {
-            // Start the exit latch only if one isn't already running.
-            // This prevents repeated no-opponent prompt calls from resetting the clock.
+            // Start the exit latch only if one isn't already running AND we aren't spectating.
+            // Spectate combat is driven strictly by snooped GMCP.
+            if (settings.isSpectateMode) return;
+
             combatTimeoutRef.current = setTimeout(() => {
                 _setInCombat(false);
                 combatTimeoutRef.current = null;
@@ -74,7 +76,7 @@ export const useGameProviderState = () => {
         }
     }, []);
 
-    useEffect(() => { inCombatRef.current = inCombat; }, [inCombat]);
+    useEffect(() => { rawInCombatRef.current = rawInCombat; }, [rawInCombat]);
 
     useEffect(() => {
         return () => {
@@ -107,6 +109,7 @@ export const useGameProviderState = () => {
     const [roomItems, setRoomItems] = useState<import('../../types').GmcpOccupant[]>([]);
     const [currentTerrain, setCurrentTerrain] = useState<string>('city');
     const [roomName, _setRoomName] = useState<string | null>(null);
+    const [roomDesc, _setRoomDesc] = useState<string | null>(null);
     const [roomExits, setRoomExits] = useState<string[]>([]);
     const [roomZone, setRoomZone] = useState<string | null>(null);
     const roomNameRef = useRef<string | null>(null);
@@ -114,8 +117,15 @@ export const useGameProviderState = () => {
         roomNameRef.current = name;
         _setRoomName(name);
     }, []);
+    const roomDescRef = useRef<string | null>(null);
+    const setRoomDesc = useCallback((desc: string | null) => {
+        roomDescRef.current = desc;
+        _setRoomDesc(desc);
+    }, []);
     // Still keep the effect for sync if needed by other components
     useEffect(() => { roomNameRef.current = roomName; }, [roomName]);
+    useEffect(() => { roomDescRef.current = roomDesc; }, [roomDesc]);
+
 
     const executeCommandRef = useRef<(cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void>(() => { });
 
@@ -189,8 +199,6 @@ export const useGameProviderState = () => {
     const actionsRef = useRef(actions);
     useEffect(() => { actionsRef.current = actions; }, [actions]);
     const [rumble, setRumble] = useState(false);
-    const [hitFlash, setHitFlash] = useState(false);
-    const [deathStage, setDeathStage] = useState<DeathStage>('none');
     const [mood, setMood] = useState('normal');
     const [spellSpeed, setSpellSpeed] = useState('normal');
     const [alertness, setAlertness] = useState('normal');
@@ -210,6 +218,30 @@ export const useGameProviderState = () => {
     }, []);
 
     const [popoverState, setPopoverState] = useState<PopoverState | null>(null);
+    const moveDirQueueRef = useRef<import('./types').MoveDir[]>([]);
+    const activeMoveDirRef = useRef<import('./types').MoveDir>('none');
+    const lastMoveDirRef = useRef<import('./types').MoveDir>('none');
+    const setLastMoveDir = useCallback((val: import('./types').MoveDir) => {
+        if (val !== 'none') {
+            moveDirQueueRef.current.push(val);
+        }
+        lastMoveDirRef.current = val;
+    }, []);
+
+    // Virtual Spectate State (for Textual GMCP/Prompt parsing)
+    const [spectateStats, setSpectateStats] = useState<GameStats>({
+        hp: 0, maxHp: 1,
+        mana: 0, maxMana: 1,
+        move: 0, maxMove: 1,
+        wimpy: 0
+    });
+    const [spectateHealthStatus, setSpectateHealthStatus] = useState<CombatHealthStatus | null>(null);
+    const [spectateOpponentName, setSpectateOpponentName] = useState<string | null>(null);
+    const [spectateOpponentStatus, setSpectateOpponentStatus] = useState<CombatHealthStatus | null>(null);
+    const [spectatePosition, setSpectatePosition] = useState<string>('standing');
+    const [spectateRoomName, setSpectateRoomName] = useState<string | null>(null);
+    const [spectateInCombat, setSpectateInCombat] = useState(false);
+    const [spectateCharacterName, setSpectateCharacterName] = useState<string | null>(null);
 
     // Global listener for replaying onboarding
     useEffect(() => {
@@ -429,12 +461,20 @@ export const useGameProviderState = () => {
             return prev;
         });
     }, [characterInfo.xp]);
+
     const [mumeEditState, setMumeEditState] = useState({
         isOpen: false,
         title: '',
         text: '',
         key: ''
     });
+
+    const effectiveInCombat = useMemo(() => {
+        return settings.isSpectateMode ? spectateInCombat : rawInCombat;
+    }, [settings.isSpectateMode, spectateInCombat, rawInCombat]);
+
+    const inCombatRef = useRef(effectiveInCombat);
+    useEffect(() => { inCombatRef.current = effectiveInCombat; }, [effectiveInCombat]);
 
     // Account Selection State
     const [accountState, setAccountState] = useState<import('../../types').AccountState>({
@@ -459,8 +499,6 @@ export const useGameProviderState = () => {
         target, setTarget,
         activePrompt, setActivePrompt,
         rumble, setRumble,
-        hitFlash, setHitFlash,
-        deathStage, setDeathStage,
         deathRoomId, setDeathRoomId,
         heldButton, setHeldButton,
         isMendingMode, setIsMendingMode,
@@ -474,22 +512,29 @@ export const useGameProviderState = () => {
         characterInfo, setCharacterInfo,
         groupMembers, setGroupMembers,
         xpHistory, xpEvent, triggerXpTicker,
-        accountState, setAccountState
-    }), [stats, target, activePrompt, rumble, hitFlash, deathStage, deathRoomId, heldButton, isMendingMode, mendingTarget,
+        accountState, setAccountState,
+        spectateStats, setSpectateStats,
+        spectateHealthStatus, setSpectateHealthStatus,
+        spectateOpponentName, setSpectateOpponentName,
+        spectateOpponentStatus, setSpectateOpponentStatus
+    }), [stats, target, activePrompt, rumble, deathRoomId, heldButton, isMendingMode, mendingTarget,
         playerHealthStatus, opponentHealthStatus, opponentName, opponentId, bufferHealthStatus, bufferName, characterInfo, groupMembers,
-        xpHistory, xpEvent, triggerXpTicker, accountState]);
+        xpHistory, xpEvent, triggerXpTicker, accountState,
+        spectateStats, spectateHealthStatus, spectateOpponentName, spectateOpponentStatus]);
 
     const game = useMemo(() => ({
-        inCombat, setInCombat,
+        inCombat: effectiveInCombat, setInCombat,
         status, setStatus,
         gameState, setGameState,
         characterName, setCharacterName,
         mood, setMood,
         spellSpeed, setSpellSpeed,
         alertness, setAlertness,
-        playerPosition, setPlayerPosition, playerPositionRef,
+        playerPosition: settings.isSpectateMode ? spectatePosition : playerPosition, 
+        setPlayerPosition, playerPositionRef,
         isRiding, setIsRiding, isRidingRef,
         isNoviceMode, setIsNoviceMode,
+        isNewbieMode, setIsNewbieMode,
         isSoundEnabled, setIsSoundEnabled,
         isMmapperMode, setIsMmapperMode,
         theme, setTheme,
@@ -528,12 +573,14 @@ export const useGameProviderState = () => {
         whoList, setWhoList,
         whereList, setWhereList,
         roomName, setRoomName, roomNameRef,
+        roomDesc, setRoomDesc, roomDescRef,
         roomExits, setRoomExits,
         roomZone, setRoomZone,
         inlineCategories, setInlineCategories,
         isHighlighterEnabled, setIsHighlighterEnabled,
         isCrtEnabled, setIsCrtEnabled,
         isBloomEnabled, setIsBloomEnabled,
+        isTimestampEnabled, setIsTimestampEnabled,
         isSpectateMode: settings.isSpectateMode,
         setIsSpectateMode: settings.setIsSpectateMode,
         spectateTargetId, setSpectateTargetId,
@@ -547,7 +594,10 @@ export const useGameProviderState = () => {
         setPlayerHealthStatus: vitals.setPlayerHealthStatus,
         setOpponentHealthStatus: vitals.setOpponentHealthStatus,
         setBufferHealthStatus: vitals.setBufferHealthStatus,
-        setOpponentName: vitals.setOpponentName,
+        opponentName,
+        opponentId,
+        setOpponentName,
+        setOpponentId,
         setBufferName: vitals.setBufferName,
         setQuests,
         quests,
@@ -563,19 +613,36 @@ export const useGameProviderState = () => {
         getEntity,
         clearRegistry,
         selectedObjectIds, toggleObjectSelection, clearObjectSelection,
+        spectatePosition, setSpectatePosition,
+        spectateRoomName, setSpectateRoomName,
+        spectateInCombat, setSpectateInCombat,
+        spectateCharacterName, setSpectateCharacterName,
+        moveDirQueueRef,
+        activeMoveDirRef,
+        lastMoveDirRef,
+        lastMoveDir: lastMoveDirRef.current,
+        setLastMoveDir,
+        spectateStats, setSpectateStats,
+        spectateHealthStatus, setSpectateHealthStatus,
+        spectateOpponentName, setSpectateOpponentName,
+        spectateOpponentStatus, setSpectateOpponentStatus
     }), [
-        inCombat, status, gameState, characterName, mood, spellSpeed, alertness, playerPosition, isRiding,
-        isNoviceMode, isSoundEnabled, isMmapperMode, theme, showControls,
+        effectiveInCombat, status, gameState, characterName, mood, spellSpeed, alertness, playerPosition, isRiding,
+        isNoviceMode, isNewbieMode, isSoundEnabled, isMmapperMode, theme, showControls,
         roomPlayers, roomNpcs, roomItems, currentTerrain, ui, setIsCharacterOpen,
         setIsEquipmentOpen, setIsInventoryOpen, setIsMapExpanded, setIsSetManagerOpen, lighting,
         lightningEnabled, weather, isFoggy, abilities, characterClass, actions,
         inventoryLines, statsLines, eqLines, optimisticInventoryLines, optimisticEqLines, applyOptimisticChange, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
-        disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, roomName, roomExits, roomZone,
+        disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, roomName, roomDesc, roomExits, roomZone,
         inlineCategories, isHighlighterEnabled, isCrtEnabled, isBloomEnabled, favorites, activeDragData, heldButton,
         parley, whoList, whereList, popoverState, discoveredItems, zoneMusic,
         quests, groupMembers, mumeEditState, handleSaveMumeEdit, executeCommandRef,
         entities, setEntities, registerEntity, getEntity, clearRegistry, selectedObjectIds, toggleObjectSelection, clearObjectSelection,
-        settings.isSpectateMode, settings.setIsSpectateMode, spectateTargetId, setSpectateTargetId
+        settings.isSpectateMode, settings.setIsSpectateMode, spectateTargetId, setSpectateTargetId,
+        isTimestampEnabled, setIsTimestampEnabled,
+        spectatePosition, spectateRoomName, spectateInCombat, spectateCharacterName,
+        spectateStats, spectateHealthStatus, spectateOpponentName, spectateOpponentStatus,
+        opponentName, opponentId
     ]);
 
 

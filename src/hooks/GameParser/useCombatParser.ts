@@ -38,22 +38,25 @@ export function useCombatParser(deps: CombatParserDeps) {
         // Exclude specific flavor text that shouldn't be combat
         if (lower.includes('hissing shriek') || lower.includes('the nine')) return { isMatch: false };
 
-        const isSpecificCharge = /^you charge\b/i.test(lower) || /\bcharges (?:at|towards) you\b/i.test(lower) || /\bcharge (?:at|towards) you\b/i.test(lower);
-        const isMatch = COMBAT_REGEX.test(lower) || isSpecificCharge || ((lower.includes('dodge') || lower.includes('parry') || lower.includes('flee')) && inCombatRef.current);
+        // Strip leading spaces and asterisks (damage indicators in MUME)
+        const cleanLower = lower.replace(/^[\s\*]+/, '');
+
+        const isSpecificCharge = /^you charge\b/i.test(cleanLower) || /\bcharges (?:at|towards) you\b/i.test(cleanLower) || /\bcharge (?:at|towards) you\b/i.test(cleanLower);
+        const isMatch = COMBAT_REGEX.test(cleanLower) || isSpecificCharge || ((cleanLower.includes('dodge') || cleanLower.includes('parry') || cleanLower.includes('flee')) && inCombatRef.current);
         
         if (!isMatch) return { isMatch: false };
 
 
-        const impactVerbs = ['hit', 'pierce', 'slash', 'smite', 'crush', 'pound', 'stab', 'cleave'];
-        const isImpact = impactVerbs.some(verb => lower.includes(` ${verb} `) || lower.includes(` ${verb}s `) || lower.includes(`${verb} you`) || lower.includes(`${verb}s you`));
+        const impactVerbs = ['hit', 'pierce', 'slash', 'smite', 'crush', 'pound', 'stab', 'cleave', 'wound', 'maul', 'strike', 'backstab', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shoot', 'shock'];
+        const isImpact = impactVerbs.some(verb => cleanLower.includes(` ${verb} `) || cleanLower.includes(` ${verb}s `) || cleanLower.includes(`${verb} you`) || cleanLower.includes(`${verb}s you`));
 
         // Determine side
         let side: 'player' | 'opponent' | 'groupmate' | undefined = undefined;
-        if (lower.startsWith('you ') || lower.startsWith('your ')) {
+        if (cleanLower.startsWith('you ') || cleanLower.startsWith('your ')) {
             side = 'player';
         } else {
             // Check if any group member name starts the line
-            const groupNameMatch = groupMembers.find(m => m.name && lower.startsWith(m.name.toLowerCase() + ' '));
+            const groupNameMatch = groupMembers.find(m => m.name && cleanLower.startsWith(m.name.toLowerCase() + ' '));
             if (groupNameMatch) {
                 side = 'groupmate';
             } else {

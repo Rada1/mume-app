@@ -89,6 +89,8 @@ export const useButtonGestures = ({
 
     // --- Interaction Start ---
     const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+        if (e.buttons !== 1 && e.pointerType === 'mouse') return;
+
         if (isEditMode) {
             if (button.setId === 'Tactical') {
                 if (wasDraggingRef) wasDraggingRef.current = false;
@@ -100,6 +102,8 @@ export const useButtonGestures = ({
             if (e.cancelable) e.preventDefault();
             initAudio(); 
             const el = e.currentTarget as any;
+            try { el.setPointerCapture(e.pointerId); } catch(err) {}
+
             const rect = el.getBoundingClientRect();
             el._startX = e.clientX;
             el._startY = e.clientY;
@@ -141,6 +145,14 @@ export const useButtonGestures = ({
         if (isEditMode) return;
         const el = e.currentTarget as any;
         if (!el._startX) return;
+
+        // Failsafe for desktop: if no buttons are pressed, clean up orphaned state
+        if (e.buttons === 0) {
+            setHeldButton(null);
+            el._startX = null;
+            el._startY = null;
+            return;
+        }
 
         if (heldButton?.id === button.id && heldButton.didFire) {
             return;
@@ -282,6 +294,8 @@ export const useButtonGestures = ({
     const onPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         if (e.cancelable) e.preventDefault();
         const el = e.currentTarget as any;
+        try { el.releasePointerCapture(e.pointerId); } catch(err) {}
+        
         if (isEditMode) return;
         console.log(`[useButtonGestures] onPointerUp: button=${button.id}, maxDist=${el._maxDist?.toFixed(1)}, heldButtonOwner=${heldButton?.id}`);
 
@@ -403,6 +417,8 @@ export const useButtonGestures = ({
 
     const onPointerCancel = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         const el = e.currentTarget as any;
+        try { el.releasePointerCapture(e.pointerId); } catch(err) {}
+        
         setHeldButton(null);
         setCommandPreview(null);
         document.documentElement.style.removeProperty('--preview-glow-color');
