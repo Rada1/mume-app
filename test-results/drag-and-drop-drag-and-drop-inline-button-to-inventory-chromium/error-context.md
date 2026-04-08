@@ -1,0 +1,120 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic:
+      - banner [ref=e4]:
+        - generic [ref=e5]:
+          - generic "No Target" [ref=e6] [cursor=pointer]:
+            - img [ref=e7]
+            - generic [ref=e9]: NO TARGET
+          - button "More Actions" [ref=e11] [cursor=pointer]:
+            - img [ref=e12]
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - generic:
+            - generic:
+              - generic: OB
+              - generic: —
+            - generic:
+              - generic: DB
+              - generic: —
+            - generic:
+              - generic: PB
+              - generic: —
+            - generic:
+              - generic: ARM
+              - generic: —
+            - generic [ref=e18] [cursor=pointer]:
+              - generic [ref=e19]: MOOD
+              - generic [ref=e20]: NORM
+          - generic [ref=e23]:
+            - generic [ref=e28]: Connecting to wss://mume.org/ws-play/...
+            - generic [ref=e33]: Connected! Negotiating...
+            - generic [ref=e38]: GMCP negotiated. Requesting data...
+            - generic [ref=e47]: "*** MUME IX ***"
+            - generic [ref=e56]: In progress at FIRE
+            - generic [ref=e61]: (Free Internet Roleplay Experiences)
+            - generic [ref=e66]: Hosted at HEIG-VD (www.heig-vd.ch)
+            - generic [ref=e75]: Adapted from J.R.R. Tolkien's Middle-earth world and
+            - generic [ref=e80]: maintained by CryHavoc, Manwe, and Nada.
+            - generic [ref=e89]: "Original code DikuMUD I (help credits), created by:"
+            - generic [ref=e94]: S. Hammer, T. Madsen, K. Nyboe, M. Seifert, and H.H. Staerfeldt.
+            - generic [ref=e103]: If you have never played MUME before, type NEW to create a new character,
+            - generic [ref=e108]: or ? for help.
+            - generic [ref=e117]: By what name do you wish to be known? Illegal name, please try another.
+            - generic [ref=e126]: By what name do you wish to be known?
+            - generic [ref=e131]: Illegal name, please try another.
+          - generic [ref=e137]: "[Test Item]"
+        - generic [ref=e139]:
+          - generic [ref=e140] [cursor=pointer]:
+            - img "Ranger"
+          - generic [ref=e141] [cursor=pointer]:
+            - img "Warrior"
+          - generic [ref=e142] [cursor=pointer]:
+            - img "Doors"
+      - generic [ref=e145]:
+        - generic [ref=e147]:
+          - generic [ref=e150] [cursor=pointer]:
+            - generic [ref=e151]: "|"
+            - generic [ref=e152]: healthy
+            - generic [ref=e153]: "|"
+          - generic [ref=e155] [cursor=pointer]:
+            - generic [ref=e156]: "|"
+            - generic [ref=e157]: empty
+            - generic [ref=e158]: "|"
+          - generic [ref=e160] [cursor=pointer]:
+            - generic [ref=e161]: "|"
+            - generic [ref=e162]: fainting
+            - generic [ref=e163]: "|"
+        - 'button "Position: standing" [ref=e165] [cursor=pointer]':
+          - img [ref=e166]
+      - generic [ref=e171]:
+        - generic [ref=e172]:
+          - generic [ref=e173]: ">"
+          - textbox "Enter command..." [ref=e175]
+        - button "Repeat Last Command (!)" [ref=e177] [cursor=pointer]:
+          - img [ref=e178]
+  - generic "Combat Statistics" [ref=e183] [cursor=pointer]:
+    - img [ref=e184]
+    - generic [ref=e186]: Stats
+  - generic "Character Sheet" [ref=e187] [cursor=pointer]:
+    - img [ref=e188]
+    - generic [ref=e191]: Char
+  - generic "Players & Group" [ref=e192] [cursor=pointer]:
+    - img [ref=e193]
+    - generic [ref=e198]: Players
+  - generic "Gear" [ref=e199] [cursor=pointer]:
+    - img [ref=e200]
+    - generic [ref=e204]: Gear
+  - generic "World Map" [ref=e205] [cursor=pointer]:
+    - img [ref=e206]
+    - generic [ref=e208]: Map
+  - generic [ref=e209]:
+    - generic [ref=e210]:
+      - generic [ref=e211]: World Map
+      - button "✕" [ref=e212] [cursor=pointer]
+    - generic [ref=e214]:
+      - generic [ref=e216]:
+        - generic [ref=e217]:
+          - button "Edit" [ref=e218] [cursor=pointer]
+          - button "Play" [ref=e219] [cursor=pointer]
+        - button "Center" [ref=e221] [cursor=pointer]:
+          - img [ref=e222]
+          - text: Center
+        - button "Menu" [ref=e226] [cursor=pointer]:
+          - img [ref=e227]
+          - text: Menu
+      - generic: "Z: 0.0"
+  - generic [ref=e229]:
+    - button [ref=e230] [cursor=pointer]:
+      - img [ref=e231]
+    - generic [ref=e234]:
+      - heading "Middle-earth Awaits" [level=2] [ref=e235]
+      - paragraph [ref=e236]: Welcome to MUME! This walkthrough covers some of the important features of this client.
+    - button "Next" [ref=e250] [cursor=pointer]:
+      - text: Next
+      - img [ref=e251]
+    - generic [ref=e253]: 1 / 10
+```

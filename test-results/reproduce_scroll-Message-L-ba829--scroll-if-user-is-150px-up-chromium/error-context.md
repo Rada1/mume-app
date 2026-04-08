@@ -1,0 +1,125 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic:
+      - banner [ref=e4]:
+        - generic [ref=e5]:
+          - generic "No Target" [ref=e6] [cursor=pointer]:
+            - img [ref=e7]
+            - generic [ref=e9]: NO TARGET
+          - button "More Actions" [ref=e11] [cursor=pointer]:
+            - img [ref=e12]
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - generic:
+            - generic:
+              - generic: OB
+              - generic: —
+            - generic:
+              - generic: DB
+              - generic: —
+            - generic:
+              - generic: PB
+              - generic: —
+            - generic:
+              - generic: ARM
+              - generic: —
+            - generic [ref=e18] [cursor=pointer]:
+              - generic [ref=e19]: MOOD
+              - generic [ref=e20]: NORM
+          - generic [ref=e23]:
+            - generic [ref=e34]: prefill 5
+            - generic [ref=e43]: By what name do you wish to be known?
+            - generic [ref=e48]: Illegal name, please try another.
+            - generic [ref=e55]: prefill 6
+            - generic [ref=e58]: prefill 7
+            - generic [ref=e61]: prefill 8
+            - generic [ref=e64]: prefill 9
+            - generic [ref=e69]: By what name do you wish to be known? Illegal name, please try another.
+            - generic [ref=e76]: prefill 10
+            - generic [ref=e79]: prefill 11
+            - generic [ref=e86]: prefill 12
+            - generic [ref=e89]: prefill 13
+            - generic [ref=e96]: prefill 14
+            - generic [ref=e113]: By what name do you wish to be known?
+            - generic [ref=e118]: Illegal name, please try another.
+            - generic [ref=e127]: Illegal name, please try another.
+            - generic [ref=e136]: Illegal name, please try another.
+            - generic [ref=e145]: Illegal name, please try another.
+            - generic [ref=e154]: Illegal name, please try another.
+            - generic [ref=e163]: Illegal name, please try another.
+            - generic [ref=e170]: don't scroll me!
+            - generic [ref=e175]: By what name do you wish to be known? Illegal name, please try another.
+        - generic [ref=e182]:
+          - generic [ref=e183] [cursor=pointer]:
+            - img "Ranger"
+          - generic [ref=e184] [cursor=pointer]:
+            - img "Warrior"
+          - generic [ref=e185] [cursor=pointer]:
+            - img "Doors"
+      - generic [ref=e188]:
+        - generic [ref=e190]:
+          - generic [ref=e193] [cursor=pointer]:
+            - generic [ref=e194]: "|"
+            - generic [ref=e195]: healthy
+            - generic [ref=e196]: "|"
+          - generic [ref=e198] [cursor=pointer]:
+            - generic [ref=e199]: "|"
+            - generic [ref=e200]: empty
+            - generic [ref=e201]: "|"
+          - generic [ref=e203] [cursor=pointer]:
+            - generic [ref=e204]: "|"
+            - generic [ref=e205]: fainting
+            - generic [ref=e206]: "|"
+        - 'button "Position: standing" [ref=e208] [cursor=pointer]':
+          - img [ref=e209]
+      - generic [ref=e214]:
+        - generic [ref=e215]:
+          - generic [ref=e216]: ">"
+          - textbox "Enter command..." [active] [ref=e218]
+        - button "Repeat Last Command (!)" [ref=e220] [cursor=pointer]:
+          - img [ref=e221]
+  - generic "Combat Statistics" [ref=e226] [cursor=pointer]:
+    - img [ref=e227]
+    - generic [ref=e229]: Stats
+  - generic "Character Sheet" [ref=e230] [cursor=pointer]:
+    - img [ref=e231]
+    - generic [ref=e234]: Char
+  - generic "Players & Group" [ref=e235] [cursor=pointer]:
+    - img [ref=e236]
+    - generic [ref=e241]: Players
+  - generic "Gear" [ref=e242] [cursor=pointer]:
+    - img [ref=e243]
+    - generic [ref=e247]: Gear
+  - generic "World Map" [ref=e248] [cursor=pointer]:
+    - img [ref=e249]
+    - generic [ref=e251]: Map
+  - generic [ref=e252]:
+    - generic [ref=e253]:
+      - generic [ref=e254]: World Map
+      - button "✕" [ref=e255] [cursor=pointer]
+    - generic [ref=e257]:
+      - generic [ref=e259]:
+        - generic [ref=e260]:
+          - button "Edit" [ref=e261] [cursor=pointer]
+          - button "Play" [ref=e262] [cursor=pointer]
+        - button "Center" [ref=e264] [cursor=pointer]:
+          - img [ref=e265]
+          - text: Center
+        - button "Menu" [ref=e269] [cursor=pointer]:
+          - img [ref=e270]
+          - text: Menu
+      - generic: "Z: 0.0"
+  - generic [ref=e272]:
+    - button [ref=e273] [cursor=pointer]:
+      - img [ref=e274]
+    - generic [ref=e277]:
+      - heading "Middle-earth Awaits" [level=2] [ref=e278]
+      - paragraph [ref=e279]: Welcome to MUME! This walkthrough covers some of the important features of this client.
+    - button "Next" [ref=e293] [cursor=pointer]:
+      - text: Next
+      - img [ref=e294]
+    - generic [ref=e296]: 1 / 10
+```
