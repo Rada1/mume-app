@@ -3,6 +3,34 @@ import { GmcpOccupant } from '../../types';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
 import { occupantAnims, getOccupantKey } from '../../components/Mapper/occupantAnimStore';
 
+const parseOccupant = (data: any, characterName: string | null): GmcpOccupant | null => {
+    if (!data) return null;
+    const obj: GmcpOccupant = typeof data === 'string' || typeof data === 'number'
+        ? { name: String(data), keyword: String(data), short: String(data) }
+        : { ...data, name: data.name || data.keyword || data.short || data.shortdesc };
+    if (!obj.name) return null;
+    if (characterName && obj.name.toLowerCase() === characterName.toLowerCase()) return null;
+    return obj;
+};
+
+const createFilterFn = (idStr: string | null, nameStr: string | null) => (p: GmcpOccupant) => {
+    if (idStr && p.id !== undefined && p.id !== null && String(p.id) === idStr) return false;
+    if (nameStr && (p.name || p.keyword || p.short) === nameStr) return false;
+    return true;
+};
+
+const updateList = (prev: GmcpOccupant[], obj: GmcpOccupant, idStr: string | null, nameStr: string | null) => {
+    const idx = idStr
+        ? prev.findIndex(x => x.id !== undefined && x.id !== null && String(x.id) === idStr)
+        : prev.findIndex(x => (x.name || x.keyword || x.short) === nameStr);
+    if (idx >= 0) {
+        const next = [...prev];
+        next[idx] = { ...next[idx], ...obj };
+        return next;
+    }
+    return [...prev, obj];
+};
+
 interface UseGmcpOccupantsProps {
     mapperRef: React.RefObject<MapperRef>;
     setRoomPlayers: React.Dispatch<React.SetStateAction<GmcpOccupant[]>>;
@@ -27,106 +55,54 @@ export const useGmcpOccupants = ({
     lastRoomChangeTimeRef
 }: UseGmcpOccupantsProps) => {
 
-    const onRoomPlayers = useCallback((data: any) => {
+    const handleRoomList = useCallback((data: any, isPlayersList: boolean) => {
         if (isSpectateMode) return;
-        let rawList = Array.isArray(data) ? data : ((data as any).players || (data as any).members || (data as any).chars || (data as any).char || (data as any).npcs || []);
+        let rawList = Array.isArray(data) ? data : (data.players || data.members || data.chars || data.char || data.npcs || []);
         if (rawList && !Array.isArray(rawList)) rawList = [rawList];
         if (!Array.isArray(rawList)) return;
-
-        console.log('[GMCP] Room.Players parsed:', rawList.length, 'items');
 
         const pcList: GmcpOccupant[] = [];
         const npcList: GmcpOccupant[] = [];
 
         rawList.forEach(p => {
-            const obj: GmcpOccupant = typeof p === 'string' || typeof p === 'number'
-                ? { name: String(p), keyword: String(p), short: String(p) }
-                : { ...p, name: p.name || p.keyword || p.short || p.shortdesc };
-            if (!obj.name) return;
-            if (characterName && obj.name.toLowerCase() === characterName.toLowerCase()) return;
+            if (!isPlayersList && setIsRiding) {
+                const shortStr = (typeof p === 'string' ? p : (p.short || p.shortdesc || p.name || '')).toLowerCase();
+                if (shortStr.includes('ridden by you')) setIsRiding(true);
+            }
+
+            const obj = parseOccupant(p, characterName);
+            if (!obj) return;
 
             const isPc = typeof p !== 'string' && typeof p !== 'number' && (p.pc || p.type === 'pc' || p.type === 'player');
             if (isPc) {
                 pcList.push(obj);
-                if (registerEntity) {
-                    const id = obj.id ? String(obj.id) : `roomplayers:${obj.name}`;
-                    registerEntity(id, obj.name, 'roomplayers', 'inlineplayer');
-                }
-            }
-            else {
+                if (registerEntity) registerEntity(obj.id ? String(obj.id) : `roomplayers:${obj.name}`, obj.name, 'roomplayers', 'inlineplayer');
+            } else {
                 npcList.push(obj);
-                if (registerEntity) {
-                    const id = obj.id ? String(obj.id) : `roomnpcs:${obj.name}`;
-                    registerEntity(id, obj.name, 'roomnpcs', 'inlinenpc');
-                }
+                if (registerEntity) registerEntity(obj.id ? String(obj.id) : `roomnpcs:${obj.name}`, obj.name, 'roomnpcs', 'inlinenpc');
             }
         });
 
-        setRoomPlayers(pcList);
-        if (npcList.length > 0) {
-            setRoomNpcs(prev => {
-                const next = [...prev];
-                npcList.forEach(n => {
-                    const idStr = n.id !== undefined && n.id !== null ? String(n.id) : null;
-                    const nameStr = n.name || n.keyword || n.short;
-                    const idx = idStr
-                        ? next.findIndex(x => x.id !== undefined && x.id !== null && String(x.id) === idStr)
-                        : next.findIndex(x => (x.name || x.keyword || x.short) === nameStr);
-                    if (idx >= 0) next[idx] = { ...next[idx], ...n };
-                    else next.push(n);
+        if (isPlayersList) {
+            setRoomPlayers(pcList);
+            if (npcList.length > 0) {
+                setRoomNpcs(prev => {
+                    let next = [...prev];
+                    npcList.forEach(n => {
+                        next = updateList(next, n, n.id !== undefined && n.id !== null ? String(n.id) : null, n.name || n.keyword || n.short || null);
+                    });
+                    return next;
                 });
-                return next;
-            });
+            }
+        } else {
+            setRoomNpcs(npcList);
+            setRoomPlayers(pcList);
         }
         mapperRef.current?.triggerRender?.();
-    }, [setRoomPlayers, setRoomNpcs, characterName, registerEntity, mapperRef, isSpectateMode]);
+    }, [setRoomPlayers, setRoomNpcs, setIsRiding, characterName, registerEntity, mapperRef, isSpectateMode]);
 
-    const onRoomNpcs = useCallback((data: any) => {
-        if (isSpectateMode) return;
-        let rawList = Array.isArray(data) ? data : ((data as any).npcs || (data as any).chars || (data as any).members || (data as any).char || (data as any).players || []);
-        if (rawList && !Array.isArray(rawList)) rawList = [rawList];
-        if (!Array.isArray(rawList)) return;
-
-        console.log('[GMCP] Room.Npcs parsed:', rawList.length, 'items');
-
-        const npcs: GmcpOccupant[] = [];
-        const players: GmcpOccupant[] = [];
-
-        rawList.forEach(p => {
-            const shortStr = (typeof p === 'string' ? p : (p.short || p.shortdesc || p.name || '')).toLowerCase();
-            if (shortStr.includes('ridden by you')) {
-                console.log('[GMCP] Detected Riding from NPC:', shortStr);
-                if (setIsRiding) setIsRiding(true);
-            }
-
-            const obj: GmcpOccupant = typeof p === 'string' || typeof p === 'number'
-                ? { name: String(p), keyword: String(p), short: String(p) }
-                : { ...p, name: p.name || p.keyword || p.short || p.shortdesc };
-
-            if (!obj.name) return;
-            if (characterName && obj.name.toLowerCase() === characterName.toLowerCase()) return;
-
-            const isPc = typeof p !== 'string' && typeof p !== 'number' && (p.pc || p.type === 'pc' || p.type === 'player');
-            if (isPc) {
-                players.push(obj);
-                if (registerEntity) {
-                    const id = obj.id ? String(obj.id) : `roomplayers:${obj.name}`;
-                    registerEntity(id, obj.name, 'roomplayers', 'inlineplayer');
-                }
-            }
-            else {
-                npcs.push(obj);
-                if (registerEntity) {
-                    const id = obj.id ? String(obj.id) : `roomnpcs:${obj.name}`;
-                    registerEntity(id, obj.name, 'roomnpcs', 'inlinenpc');
-                }
-            }
-        });
-
-        setRoomNpcs(npcs);
-        setRoomPlayers(players);
-        mapperRef.current?.triggerRender?.();
-    }, [setRoomNpcs, setRoomPlayers, setIsRiding, characterName, registerEntity, isSpectateMode, mapperRef]);
+    const onRoomPlayers = useCallback((data: any) => handleRoomList(data, true), [handleRoomList]);
+    const onRoomNpcs = useCallback((data: any) => handleRoomList(data, false), [handleRoomList]);
 
     const onRoomItems = useCallback((data: any) => {
         if (isSpectateMode) return;
@@ -151,188 +127,59 @@ export const useGmcpOccupants = ({
         setRoomItems(items);
     }, [setRoomItems, registerEntity, isSpectateMode]);
 
-    const onAddPlayer = useCallback((data: any) => {
-        if (isSpectateMode) return;
-        if (!data) return;
-        const obj: GmcpOccupant = typeof data === 'string' || typeof data === 'number'
-            ? { name: String(data), keyword: String(data), short: String(data) }
-            : { ...data, name: data.name || data.keyword || data.short || data.shortdesc };
-
-        if (!obj.name) return;
-        if (characterName && obj.name.toLowerCase() === characterName.toLowerCase()) return;
+    const handleAdd = useCallback((data: any, isPlayerDefault: boolean) => {
+        if (isSpectateMode || !data) return;
+        const obj = parseOccupant(data, characterName);
+        if (!obj) return;
 
         if (data?.dir && (Date.now() - lastRoomChangeTimeRef.current) > 300) {
             const key = getOccupantKey(obj.id, obj.name);
-            occupantAnims.set(key, { dir: String(data.dir).toLowerCase(), type: 'enter', startTime: Date.now(), name: obj.name, id: obj.id, isPlayer: true });
+            occupantAnims.set(key, { dir: String(data.dir).toLowerCase(), type: 'enter', startTime: Date.now(), name: obj.name, id: obj.id, isPlayer: isPlayerDefault });
             mapperRef.current?.triggerRender?.();
         }
 
         const isExplicitPc = typeof data === 'object' && (data.pc || data.type === 'pc' || data.type === 'player');
         const isExplicitNpc = typeof data === 'object' && (data.npc || data.type === 'npc');
 
-        const idStr = (obj.id !== undefined && obj.id !== null) ? String(obj.id) : null;
-        const nameStr = obj.name || obj.keyword || obj.short;
-
-        const filterFn = (p: GmcpOccupant) => {
-            if (idStr && p.id !== undefined && p.id !== null && String(p.id) === idStr) return false;
-            if (nameStr && (p.name || p.keyword || p.short) === nameStr) return false;
-            return true;
-        };
-
-        if (isExplicitNpc && !isExplicitPc) {
-            setRoomPlayers(prev => prev.filter(filterFn));
-            if (registerEntity) {
-                const id = idStr || `roomnpcs:${obj.name}`;
-                registerEntity(id, obj.name, 'roomnpcs', 'inlinenpc');
-            }
-            setRoomNpcs(prev => {
-                const idx = idStr
-                    ? prev.findIndex(x => x.id !== undefined && x.id !== null && String(x.id) === idStr)
-                    : prev.findIndex(x => (x.name || x.keyword || x.short) === nameStr);
-                if (idx >= 0) {
-                    const next = [...prev];
-                    next[idx] = { ...next[idx], ...obj };
-                    return next;
-                }
-                return [...prev, obj];
-            });
-            return;
-        }
-
-        setRoomNpcs(prev => prev.filter(filterFn));
-
-        if (registerEntity && obj.name) {
-            const id = idStr || `roomplayers:${obj.name}`;
-            registerEntity(id, obj.name, 'roomplayers', 'inlineplayer');
-        }
-
-        setRoomPlayers(prev => {
-            const idx = idStr
-                ? prev.findIndex(x => x.id !== undefined && x.id !== null && String(x.id) === idStr)
-                : prev.findIndex(x => (x.name || x.keyword || x.short) === nameStr);
-
-            if (idx >= 0) {
-                const next = [...prev];
-                next[idx] = { ...next[idx], ...obj };
-                return next;
-            }
-            return [...prev, obj];
-        });
-    }, [setRoomPlayers, setRoomNpcs, characterName, registerEntity, isSpectateMode, lastRoomChangeTimeRef, mapperRef]);
-
-    const onAddNpc = useCallback((data: any) => {
-        if (isSpectateMode) return;
-        if (!data) return;
-        const obj: GmcpOccupant = typeof data === 'string' || typeof data === 'number'
-            ? { name: String(data), keyword: String(data), short: String(data) }
-            : { ...data, name: data.name || data.keyword || data.short || data.shortdesc };
-
-        if (!obj.name) return;
-        if (characterName && obj.name.toLowerCase() === characterName.toLowerCase()) return;
-
-        if (data?.dir && (Date.now() - lastRoomChangeTimeRef.current) > 300) {
-            const key = getOccupantKey(obj.id, obj.name);
-            occupantAnims.set(key, { dir: String(data.dir).toLowerCase(), type: 'enter', startTime: Date.now(), name: obj.name, id: obj.id, isPlayer: false });
-            mapperRef.current?.triggerRender?.();
-        }
-
-        const isExplicitPc = typeof data === 'object' && (data.pc || data.type === 'pc' || data.type === 'player');
+        const isPc = isExplicitPc || (isPlayerDefault && !isExplicitNpc);
 
         const idStr = (obj.id !== undefined && obj.id !== null) ? String(obj.id) : null;
-        const nameStr = obj.name || obj.keyword || obj.short;
+        const nameStr = obj.name || obj.keyword || obj.short || null;
+        const filterFn = createFilterFn(idStr, nameStr);
 
-        const filterFn = (p: GmcpOccupant) => {
-            if (idStr && p.id !== undefined && p.id !== null && String(p.id) === idStr) return false;
-            if (nameStr && (p.name || p.keyword || p.short) === nameStr) return false;
-            return true;
-        };
-
-        if (isExplicitPc) {
+        if (isPc) {
             setRoomNpcs(prev => prev.filter(filterFn));
-            if (registerEntity) {
-                const id = idStr || `roomplayers:${obj.name}`;
-                registerEntity(id, obj.name, 'roomplayers', 'inlineplayer');
-            }
-            setRoomPlayers(prev => {
-                const idx = idStr
-                    ? prev.findIndex(x => x.id !== undefined && x.id !== null && String(x.id) === idStr)
-                    : prev.findIndex(x => (x.name || x.keyword || x.short) === nameStr);
-                if (idx >= 0) {
-                    const next = [...prev];
-                    next[idx] = { ...next[idx], ...obj };
-                    return next;
-                }
-                return [...prev, obj];
-            });
-            return;
+            if (registerEntity) registerEntity(idStr || `roomplayers:${obj.name}`, obj.name, 'roomplayers', 'inlineplayer');
+            setRoomPlayers(prev => updateList(prev, obj, idStr, nameStr));
+        } else {
+            setRoomPlayers(prev => prev.filter(filterFn));
+            if (registerEntity) registerEntity(idStr || `roomnpcs:${obj.name}`, obj.name, 'roomnpcs', 'inlinenpc');
+            setRoomNpcs(prev => updateList(prev, obj, idStr, nameStr));
         }
-
-        setRoomPlayers(prev => prev.filter(filterFn));
-
-        if (registerEntity && obj.name) {
-            const id = idStr || `roomnpcs:${obj.name}`;
-            registerEntity(id, obj.name, 'roomnpcs', 'inlinenpc');
-        }
-
-        setRoomNpcs(prev => {
-            const idx = idStr
-                ? prev.findIndex(x => x.id !== undefined && x.id !== null && String(x.id) === idStr)
-                : prev.findIndex(x => (x.name || x.keyword || x.short) === nameStr);
-
-            if (idx >= 0) {
-                const next = [...prev];
-                next[idx] = { ...next[idx], ...obj };
-                return next;
-            }
-            return [...prev, obj];
-        });
     }, [setRoomPlayers, setRoomNpcs, characterName, registerEntity, isSpectateMode, lastRoomChangeTimeRef, mapperRef]);
 
-    const onRemovePlayer = useCallback((data: any) => {
-        if (isSpectateMode) return;
-        if (!data) return;
-        const id = (data && typeof data === 'object' && data !== null) ? data.id : data;
-        const name = (data && typeof data === 'object' && data !== null) ? (data.name || data.keyword || data.short) : data;
+    const handleRemove = useCallback((data: any, isPlayerDefault: boolean) => {
+        if (isSpectateMode || !data) return;
+        const id = (data && typeof data === 'object') ? data.id : data;
+        const name = (data && typeof data === 'object') ? (data.name || data.keyword || data.short) : data;
         const idStr = (id !== undefined && id !== null) ? String(id) : null;
         const nameStr = (name !== undefined && name !== null && String(name) !== idStr) ? String(name) : (typeof name === 'string' ? name : null);
 
         if (data?.dir && (idStr || nameStr)) {
             const key = getOccupantKey(idStr ?? undefined, nameStr ?? '');
-            occupantAnims.set(key, { dir: String(data.dir).toLowerCase(), type: 'exit', startTime: Date.now(), name: nameStr ?? '', id: idStr ?? undefined, isPlayer: true });
+            occupantAnims.set(key, { dir: String(data.dir).toLowerCase(), type: 'exit', startTime: Date.now(), name: nameStr ?? '', id: idStr ?? undefined, isPlayer: isPlayerDefault });
         }
 
-        const filterFn = (p: GmcpOccupant) => {
-            if (idStr && p.id !== undefined && p.id !== null && String(p.id) === idStr) return false;
-            if (nameStr && (p.name || p.keyword || p.short) === nameStr) return false;
-            return true;
-        };
+        const filterFn = createFilterFn(idStr, nameStr);
         setRoomPlayers(prev => prev.filter(filterFn));
         setRoomNpcs(prev => prev.filter(filterFn));
-        if (mapperRef.current?.triggerRender) mapperRef.current.triggerRender();
+        mapperRef.current?.triggerRender?.();
     }, [setRoomPlayers, setRoomNpcs, mapperRef, isSpectateMode]);
 
-    const onRemoveNpc = useCallback((data: any) => {
-        if (isSpectateMode) return;
-        if (!data) return;
-        const id = (data && typeof data === 'object' && data !== null) ? data.id : data;
-        const name = (data && typeof data === 'object' && data !== null) ? (data.name || data.keyword || data.short) : data;
-        const idStr = (id !== undefined && id !== null) ? String(id) : null;
-        const nameStr = (name !== undefined && name !== null && String(name) !== idStr) ? String(name) : (typeof name === 'string' ? name : null);
-
-        if (data?.dir && (idStr || nameStr)) {
-            const key = getOccupantKey(idStr ?? undefined, nameStr ?? '');
-            occupantAnims.set(key, { dir: String(data.dir).toLowerCase(), type: 'exit', startTime: Date.now(), name: nameStr ?? '', id: idStr ?? undefined, isPlayer: false });
-        }
-
-        const filterFn = (p: GmcpOccupant) => {
-            if (idStr && p.id !== undefined && p.id !== null && String(p.id) === idStr) return false;
-            if (nameStr && (p.name || p.keyword || p.short) === nameStr) return false;
-            return true;
-        };
-        setRoomPlayers(prev => prev.filter(filterFn));
-        setRoomNpcs(prev => prev.filter(filterFn));
-        if (mapperRef.current?.triggerRender) mapperRef.current.triggerRender();
-    }, [setRoomPlayers, setRoomNpcs, mapperRef, isSpectateMode]);
+    const onAddPlayer = useCallback((data: any) => handleAdd(data, true), [handleAdd]);
+    const onAddNpc = useCallback((data: any) => handleAdd(data, false), [handleAdd]);
+    const onRemovePlayer = useCallback((data: any) => handleRemove(data, true), [handleRemove]);
+    const onRemoveNpc = useCallback((data: any) => handleRemove(data, false), [handleRemove]);
 
     return {
         onRoomPlayers,

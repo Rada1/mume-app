@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Message Log Scrolling', () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto('http://localhost:3000/'); // Match vite.config.ts
+        await page.goto('/');
         await page.waitForSelector('.message-log', { timeout: 15000 });
     });
 

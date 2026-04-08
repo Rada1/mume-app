@@ -153,6 +153,11 @@ export const useSmartWalk = (
         if (isWalking && isHoldActiveRef.current && currentRoomId && currentRoomId !== lastRoomIdRef.current) {
             lastRoomIdRef.current = currentRoomId;
 
+            if (!targetRoomIdRef.current) {
+                stopWalking();
+                return;
+            }
+
             // Check if we reached the goal (using normalized IDs for stability)
             const normCurrent = normalizeId(currentRoomId);
             const normTarget = normalizeId(targetRoomIdRef.current);
@@ -162,15 +167,15 @@ export const useSmartWalk = (
             }
 
             // Recalculate path from current position
-            const newPath = findPath(currentRoomId, targetRoomIdRef.current!);
+            const newPath = findPath(currentRoomId, targetRoomIdRef.current);
             if (newPath && newPath.dirs.length > 0) {
                 setWalkPath(newPath.ids);
                 executeCommand(newPath.dirs[0], false, false, false, false, { fromUi: true });
             } else {
                 // If path is temporarily lost (e.g. room loading lag), wait ONE frame before stopping
                 setTimeout(() => {
-                    if (isHoldActiveRef.current && isWalking) {
-                        const retryPath = findPath(currentRoomId, targetRoomIdRef.current!);
+                    if (isHoldActiveRef.current && isWalking && targetRoomIdRef.current) {
+                        const retryPath = findPath(currentRoomId, targetRoomIdRef.current);
                         if (retryPath && retryPath.dirs.length > 0) {
                             setWalkPath(retryPath.ids);
                             executeCommand(retryPath.dirs[0], false, false, false, false, { fromUi: true });
