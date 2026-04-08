@@ -6,6 +6,7 @@ import { DEFAULT_INLINE_CATEGORIES, getCategoryForName } from '../../utils/categ
 import { getHierarchyChain } from '../../utils/buttonHierarchyUtils';
 import { isButtonValidForEntity } from '../../utils/actionUtils';
 import { CircleHelp } from 'lucide-react';
+import { sanitizeMumeHtml } from '../../utils/securityUtils';
 
 interface StandardMenuProps {
     popoverState: PopoverState;
@@ -529,7 +530,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                 {entry === null ? label : (
                                     <span 
                                         style={{ fontFamily: 'monospace', whiteSpace: 'pre', fontSize: '0.85rem' }} 
-                                        dangerouslySetInnerHTML={{ __html: htmlDisplay! }} 
+                                        dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(htmlDisplay!) }}
                                     />
                                 )}
                             </span>

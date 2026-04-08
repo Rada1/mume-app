@@ -8,6 +8,7 @@ import { useGame } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
 import { getCategoryForName } from '../../utils/categorizationUtils';
 import { isObjectSelected } from '../../utils/selectionUtils';
+import { sanitizeMumeHtml } from '../../utils/securityUtils';
 
 interface InventoryDrawerProps {
     isOpen: boolean;
@@ -199,7 +200,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             return (
                 <div style={{ display: 'block', whiteSpace: 'pre', lineHeight: '1.2', padding: '0', color: 'rgba(255,255,255,0.6)', fontSize: eqFontSize }}>
                     {line.prefix && <span style={{ color: dim }}>{line.prefix}</span>}
-                    <span dangerouslySetInnerHTML={{ __html: line.html || '' }} />
+                    <span dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html || '') }} />
                 </div>
             );
         }
@@ -247,7 +248,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
         }
 
         return (
-            <div style={{ paddingLeft: `${depth * 8}px`, lineHeight: '1.2', whiteSpace: 'pre-wrap' }} dangerouslySetInnerHTML={{ __html: line.html }} />
+            <div style={{ paddingLeft: `${depth * 8}px`, lineHeight: '1.2', whiteSpace: 'pre-wrap' }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }} />
         );
     });
 

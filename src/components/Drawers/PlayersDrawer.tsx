@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { X, Users, RefreshCw, Star } from 'lucide-react';
 import { useGame, useUI } from '../../context/GameContext';
 import { MemberRow } from './MemberRow';
+import { escapeHtml, sanitizeMumeHtml } from '../../utils/securityUtils';
 import './CharacterDrawer.css';
 import './PlayersDrawer.css';
 
@@ -73,9 +74,13 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
     };
 
     const PlayerRow = ({ name, isFavorite, subtitle }: { name: string, isFavorite: boolean, subtitle?: string }) => {
-        const [htmlDisplay, baseName] = name.includes('|') ? name.split('|') : [name, name];
-        // Strip ansiConvert inline color styles so the button's own color applies uniformly.
-        const neutralHtml = htmlDisplay.replace(/ style="[^"]*"/g, '');
+        const isHtml = name.includes('|');
+        const [htmlDisplay, baseName] = isHtml ? name.split('|') : [name, name];
+
+        // If it's HTML (from whoList), sanitize it; if raw text (from whereList), escape it.
+        const neutralHtml = isHtml
+            ? sanitizeMumeHtml(htmlDisplay.replace(/ style="[^"]*"/g, ''))
+            : escapeHtml(htmlDisplay);
 
         return (
             <div className="player-row" data-player-name={baseName}>

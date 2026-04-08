@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Book, ChevronRight, MessageSquare, Map, MousePointer2 } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
+import { escapeHtml } from '../../utils/securityUtils';
 
 // Import markdown files as raw strings (Vite feature)
 // @ts-ignore
@@ -31,13 +32,13 @@ const HelpGuides: React.FC = () => {
             if (line.trim() === '') return <br key={i} />;
 
             // Bold
-            let parts: (string | React.JSX.Element)[] = [line];
             const boldRegex = /\*\*(.*?)\*\*/g;
-            let match;
-            while ((match = boldRegex.exec(line)) !== null) {
+            if (boldRegex.test(line)) {
                 // This is a very basic parser, better to use real one but for now:
+                // Escape the line first to prevent XSS from raw markdown
+                const safeLine = escapeHtml(line);
                 return <p key={i} dangerouslySetInnerHTML={{
-                    __html: line
+                    __html: safeLine
                         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                         .replace(/`(.*?)`/g, '<code>$1</code>')
                 }} />;
