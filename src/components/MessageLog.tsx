@@ -9,6 +9,7 @@ import PracticeHeaderCard from './PracticeHeaderCard';
 import PracticeClassHeaderCard from './PracticeClassHeaderCard';
 import PracticeColumnHeaderCard from './PracticeColumnHeaderCard';
 import MiniMapRoom from './Layout/MiniMapRoom';
+import { CloudFog } from 'lucide-react';
 
 const formatTimestamp = (ts: number) => {
     const date = new Date(ts);
@@ -167,10 +168,12 @@ const MessageItem = React.memo(({
 
     return (
         <div
-            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${(isNewbieMode && msg.moveDir) ? ` move-dir-${msg.moveDir}` : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide && inCombat ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
+            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide && inCombat ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
         >
             {msg.type === 'user' ? (
-                <span>{timestampEl} {msg.textRaw}</span>
+                <div className="user-command-bubble">
+                    {timestampEl} {msg.textRaw}
+                </div>
             ) : msg.type === 'prompt' ? (
                 <span>{msg.textRaw}</span>
             ) : msg.type === 'shop-item' && msg.shopItem ? (
@@ -213,9 +216,7 @@ const MessageItem = React.memo(({
                         </div>
                     ) : (
                         <>
-                            <div className="message-content-wrapper">
-                                <div className="message-content anim-container" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(content) }} />
-                            </div>
+                            <div className="message-content" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(content) }} />
                             <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
                         </>
                     )}
@@ -233,10 +234,10 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onDragStart,
     onDragEnd
 }) => {
-    const { inCombat, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, isTimestampEnabled, isNewbieMode, isSpectateMode } = useBaseGame();
+    const { inCombat, inCombatRef, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, isTimestampEnabled, isNewbieMode, isSpectateMode } = useBaseGame();
     const { messages, processMessageHtml } = useLog();
-    const { activePrompt, setTarget } = useVitals();
-    const { currentTerrain, roomName, roomDesc } = useGame();
+    const { activePrompt, setTarget, target, opponentName, opponentHealthStatus } = useVitals();
+    const { roomName, roomDesc, roomPlayers, roomNpcs, roomItems, currentTerrain, env, lighting, weather, isFoggy } = useGame();
     const { scrollContainerRef, messagesEndRef, scrollToBottom } = viewport;
 
     const processedMessages = useMemo(() => messages, [messages]);
@@ -383,13 +384,22 @@ const MessageLog: React.FC<MessageLogProps> = ({
             {/* Sticky Room Header (Newbie Mode ONLY) - Outside scroll container to avoid masking/darkening */}
             {isNewbieMode && roomName && (
                 <div className={`sticky-room-header terrain-${(currentTerrain || 'field').toLowerCase()}`} key="newbie-room-header">
+                    {(lighting !== 'none' || weather !== 'none' || isFoggy) && (
+                        <div className="room-card-env-indicators">
+                            {env.getLightingIcon()}
+                            {env.getWeatherIcon()}
+                            {isFoggy && <CloudFog size={14} className="text-gray-400" />}
+                        </div>
+                    )}
                     <div className="room-info-text">
                         <div className="message-content room-name" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(`\x1b[1;32m${roomName}\x1b[0m`), 'roomname', true, 'room-name' as any)) }} />
                         {roomDesc && (
                             <div className="message-content room-desc" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(`\x1b[0m${roomDesc}`), 'roomdesc', false, 'room-desc' as any)) }} />
                         )}
                     </div>
-                    <MiniMapRoom />
+                    <div className="room-header-meta">
+                        <MiniMapRoom />
+                    </div>
                 </div>
             )}
 

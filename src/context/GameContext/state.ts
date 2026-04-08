@@ -218,15 +218,7 @@ export const useGameProviderState = () => {
     }, []);
 
     const [popoverState, setPopoverState] = useState<PopoverState | null>(null);
-    const moveDirQueueRef = useRef<import('./types').MoveDir[]>([]);
-    const activeMoveDirRef = useRef<import('./types').MoveDir>('none');
-    const lastMoveDirRef = useRef<import('./types').MoveDir>('none');
-    const setLastMoveDir = useCallback((val: import('./types').MoveDir) => {
-        if (val !== 'none') {
-            moveDirQueueRef.current.push(val);
-        }
-        lastMoveDirRef.current = val;
-    }, []);
+
 
     // Virtual Spectate State (for Textual GMCP/Prompt parsing)
     const [spectateStats, setSpectateStats] = useState<GameStats>({
@@ -429,6 +421,7 @@ export const useGameProviderState = () => {
     const [opponentId, setOpponentId] = useState<string | null>(null);
     const [bufferHealthStatus, setBufferHealthStatus] = useState<CombatHealthStatus | null>(null);
     const [bufferName, setBufferName] = useState<string | null>(null);
+    const [pendingMove, setPendingMove] = useState<{ dir: string; timestamp: number } | null>(null);
 
     const [characterInfo, setCharacterInfo] = useState<import('../../types').CharacterInfo>({
         name: null, level: 0, xp: 0, xpMax: 0, tp: 0, tpMax: 0,
@@ -450,6 +443,11 @@ export const useGameProviderState = () => {
     const triggerXpTicker = useCallback(() => {
         setXpEvent(Date.now());
     }, []);
+
+    const [hitFlashEvent, setHitFlashEvent] = useState(0);
+    const [oppHitFlashEvent, setOppHitFlashEvent] = useState(0);
+    const triggerHitFlash = useCallback(() => setHitFlashEvent(c => c + 1), []);
+    const triggerOppHitFlash = useCallback(() => setOppHitFlashEvent(c => c + 1), []);
 
     useEffect(() => {
         setXpHistory(prev => {
@@ -509,17 +507,19 @@ export const useGameProviderState = () => {
         opponentId, setOpponentId,
         bufferHealthStatus, setBufferHealthStatus,
         bufferName, setBufferName,
+        pendingMove, setPendingMove,
         characterInfo, setCharacterInfo,
         groupMembers, setGroupMembers,
         xpHistory, xpEvent, triggerXpTicker,
+        hitFlashEvent, oppHitFlashEvent, triggerHitFlash, triggerOppHitFlash,
         accountState, setAccountState,
         spectateStats, setSpectateStats,
         spectateHealthStatus, setSpectateHealthStatus,
         spectateOpponentName, setSpectateOpponentName,
         spectateOpponentStatus, setSpectateOpponentStatus
     }), [stats, target, activePrompt, rumble, deathRoomId, heldButton, isMendingMode, mendingTarget,
-        playerHealthStatus, opponentHealthStatus, opponentName, opponentId, bufferHealthStatus, bufferName, characterInfo, groupMembers,
-        xpHistory, xpEvent, triggerXpTicker, accountState,
+        playerHealthStatus, opponentHealthStatus, opponentName, opponentId, bufferHealthStatus, bufferName, pendingMove, characterInfo, groupMembers,
+        xpHistory, xpEvent, triggerXpTicker, hitFlashEvent, oppHitFlashEvent, accountState,
         spectateStats, spectateHealthStatus, spectateOpponentName, spectateOpponentStatus]);
 
     const game = useMemo(() => ({
@@ -617,11 +617,7 @@ export const useGameProviderState = () => {
         spectateRoomName, setSpectateRoomName,
         spectateInCombat, setSpectateInCombat,
         spectateCharacterName, setSpectateCharacterName,
-        moveDirQueueRef,
-        activeMoveDirRef,
-        lastMoveDirRef,
-        lastMoveDir: lastMoveDirRef.current,
-        setLastMoveDir,
+
         spectateStats, setSpectateStats,
         spectateHealthStatus, setSpectateHealthStatus,
         spectateOpponentName, setSpectateOpponentName,

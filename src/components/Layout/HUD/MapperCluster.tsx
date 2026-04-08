@@ -3,7 +3,7 @@ import { Mapper } from '../../Mapper/Mapper';
 import { LineCluster } from './LineCluster';
 import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { useMapper } from '../../../context/useMapper';
-import { GripHorizontal, Map as MapIcon, User, Shield, Users, Backpack, BarChart2 } from 'lucide-react';
+import { GripHorizontal, Map as MapIcon, User, Shield, Users, BarChart2 } from 'lucide-react';
 
 interface MapperClusterProps {
     uiPositions: any;
@@ -72,6 +72,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
 
     // Mobile DOCKED (Gutter) Mode
     if (isMobile && !isMapFloating) {
+        const isShown = ui.mapExpanded || (ui.peekingDrawer === 'map');
+        
         const handleTabClick = (drawer: 'stats' | 'character' | 'inventory' | 'players') => {
             triggerHaptic(30);
             if (ui.drawer === drawer) {
@@ -85,7 +87,11 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 } else if (drawer === 'character') {
                     executeCommand('info', true, true, true, true);
                     setTimeout(() => executeCommand('score', true, true, true, true), 100);
+                    setTimeout(() => executeCommand('at', true, true, true, true), 200);
                     setTimeout(() => executeCommand('look self', true, true, true, true), 300);
+                    setTimeout(() => executeCommand('whois', true, true, true, true), 400);
+                    setTimeout(() => executeCommand('quest', true, true, true, true), 500);
+                    setTimeout(() => executeCommand('practice', true, true, true, true), 600);
                 } else if (drawer === 'inventory') {
                     executeCommand('eq', true, true, true, true);
                     setTimeout(() => executeCommand('inv', true, true, true, true), 100);
@@ -97,10 +103,10 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
 
         return (
             <div 
-                className={`mobile-bottom-gutter ${isExpanded ? 'map-expanded' : ''}`}
+                className={`mobile-bottom-gutter ${isShown ? 'map-expanded' : ''}`}
                 onClick={(e) => e.stopPropagation()} // Prevent log interaction
                 style={{
-                    padding: isExpanded ? '10px 15px 10px 15px' : '0',
+                    padding: isShown ? '10px 15px 10px 15px' : '0',
                     overflow: 'hidden',
                     display: 'flex',
                     flexDirection: 'column',
@@ -109,7 +115,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
             >
                 {/* Map Area */}
                 <div 
-                    className={`mobile-mapper-touch-surface ${(isExpanded) ? "drawer-section" : ""}`} 
+                    className={`mobile-mapper-touch-surface ${(isShown) ? "drawer-section" : ""}`} 
                     style={{ 
                         flex: 1, 
                         position: 'relative', 
@@ -118,13 +124,52 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         padding: '0',
                         margin: '0',
                         height: '100%',
-                        background: (isExpanded) ? 'rgba(15, 23, 42, 0.3)' : 'transparent',
-                        border: (isExpanded) ? '1px solid rgba(255, 255, 255, 0.12)' : 'none',
-                        borderRadius: (isExpanded) ? '16px 16px 0 0' : '20px 20px 0 0',
-                        boxShadow: (isExpanded) ? '0 8px 32px rgba(0, 0, 0, 0.4)' : 'none',
+                        background: (isShown) ? 'rgba(15, 23, 42, 0.3)' : 'transparent',
+                        border: (isShown) ? '1px solid rgba(255, 255, 255, 0.12)' : 'none',
+                        borderRadius: (isShown) ? '16px 16px 0 0' : '20px 20px 0 0',
+                        boxShadow: (isShown) ? '0 8px 32px rgba(0, 0, 0, 0.4)' : 'none',
                         touchAction: 'none'
                     }}
                 >
+                    {/* Tactical Line Buttons (Overlaid on Map) */}
+                    <div 
+                        className="line-cluster-wrapper portrait-visible"
+                        style={{
+                            position: 'absolute',
+                            top: '8px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            zIndex: 10,
+                            pointerEvents: 'auto'
+                        }}
+                    >
+                        <LineCluster
+                            isEditMode={isEditMode}
+                            handleDragStart={handleDragStart}
+                            buttons={btn.buttons}
+                            selectedButtonIds={btn.selectedButtonIds}
+                            dragState={btn.dragState}
+                            handleButtonClick={handleButtonClick}
+                            wasDraggingRef={wasDraggingRef}
+                            triggerHaptic={triggerHaptic}
+                            setPopoverState={setPopoverState}
+                            setEditingButtonId={btn.setEditingButtonId}
+                            setSelectedIds={btn.setSelectedIds}
+                            activePrompt={activePrompt}
+                            executeCommand={executeCommand}
+                            setCommandPreview={setCommandPreview}
+                            heldButton={heldButton}
+                            setHeldButton={setHeldButton}
+                            joystick={joystick}
+                            target={target}
+                            isGridEnabled={btn.isGridEnabled}
+                            gridSize={btn.gridSize}
+                            setActiveSet={btn.setActiveSet}
+                            setButtons={btn.setButtons}
+                            isMobile={isMobile}
+                        />
+                    </div>
+
                     <Mapper
                         ref={mapperRef}
                         isDesignMode={isEditMode}
@@ -173,7 +218,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         className={`desktop-edge-tab right ${ui.drawer === 'inventory' ? 'active' : ''}`}
                         onClick={() => handleTabClick('inventory')}
                     >
-                        <Backpack className="tab-icon" />
+                        <Shield className="tab-icon" />
                         <span className="tab-text">Gear</span>
                     </div>
                     <div
@@ -216,22 +261,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
 
     return (
         <>
-            {/* Desktop Map Toggle Tab (Visible on left edge when docked) */}
-            {!isMobile && !isMapFloating && (
-                <div 
-                    id="drawer-tab-map"
-                    className={`desktop-edge-tab left ${isExpanded ? 'active' : ''}`}
-                    style={{ top: '65%' }}
-                    onClick={() => {
-                        triggerHaptic(30);
-                        setUI(prev => ({ ...prev, mapExpanded: !prev.mapExpanded }));
-                    }}
-                    title="Toggle World Map"
-                >
-                    <MapIcon className="tab-icon" />
-                    <span className="tab-text">Map</span>
-                </div>
-            )}
+            {/* Desktop Map Toggle Tab removed — now part of the unified bottom bar in DrawerManager */}
+
 
             <div
                 id="cluster-mapper"

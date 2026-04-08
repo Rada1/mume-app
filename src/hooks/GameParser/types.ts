@@ -61,6 +61,8 @@ export interface UseGameParserDeps {
     setMumeEditState: React.Dispatch<React.SetStateAction<{ isOpen: boolean; title: string; text: string; key: string }>>;
     shop: any;
     triggerXpTicker?: () => void;
+    triggerHitFlash?: () => void;
+    triggerOppHitFlash?: () => void;
     groupMembers: import('../../types').GroupMember[];
     deathRoomId: string | null;
     setDeathRoomId: (val: string | null) => void;

@@ -4,7 +4,11 @@
       "Bash(xargs grep:*)",
       "Read(//mnt/c/Users/pwetz/Downloads/**)",
       "Bash(2)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Read(//c/Users/pwetz/Downloads/mume/ app/src/hooks/**)",
+      "Read(//c/Users/pwetz/Downloads/mume/ app/src/utils/**)",
+      "Read(//c/Users/pwetz/Downloads/mume/ app/src/types/**)",
+      "Read(//c/Users/pwetz/Downloads/mume/ app/src/components/**)"
     ]
   }
 }

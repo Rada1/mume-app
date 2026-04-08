@@ -85,7 +85,8 @@ export const buildHighlighterCandidates = (
             }
         }
         // Use a simpler word boundary for MUD text
-        return `(?:^|(?<=[\\s\\.,:;\\!]))${res}(?=[\\s\\.,:;\\!]|$)`;
+        // Include ' and its HTML entities (&#x27; &#39; &apos;) so possessives like "orc-guard's" match
+        return `(?:^|(?<=[\\s\\.,:;\\!']))${res}(?=[\\s\\.,:;\\!'&]|&#(?:x27|39|apos);|$)`;
     };
 
     const pcNames = roomPlayers.map(p => typeof p === 'string' ? p : p.name).filter((name): name is string => !!name && name !== characterName);

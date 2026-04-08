@@ -227,19 +227,26 @@ export const useMessageHighlighter = (
         if (pAttacking || pTargeted) {
             const cssClass = pAttacking ? 'combat-dmg-out' : 'combat-dmg-in';
 
-            // 1. Absolute Damage + Combat Verb
+            // 1. Absolute Damage + Combat Verb (including standalone 'hit', etc.)
             const combatDmgPattern = `((?:${combatDmgIndicators})\\s+)?(${combatVerbs})`;
             newHtml = safeHighlight(newHtml, combatDmgPattern, true, (m) => {
                 return `<span class="${cssClass}">${m}</span>`;
             });
 
-            // 2. Body Parts
+            // 2. Standalone Combat Verbs (for cases where they are not part of a damage phrase)
+            // This ensures "hit" in "You hit the orc" is highlighted even if not "hard"
+            const standaloneVerbs = `\\b(${combatVerbs})\\b`;
+            newHtml = safeHighlight(newHtml, standaloneVerbs, true, (m) => {
+                return `<span class="${cssClass}">${m}</span>`;
+            });
+
+            // 3. Body Parts
             const bodyPartsPattern = '(?:right\\s+|left\\s+)?(?:head|body|arm|hand|leg|foot)';
             newHtml = safeHighlight(newHtml, bodyPartsPattern, true, (m) => {
                 return `<span class="${cssClass}">${m}</span>`;
             });
 
-            // 3. Relative Damage
+            // 4. Relative Damage
             // Usually follows "and " and precedes " it."
             const relativeDmgVerbs = 'tickles?|shatters?|hurts?|wounds?|maims?|scratches?|bruises?|massacres?|obliterates?|crushes?|blasts?|stings?';
             const relativeDmgPattern = `(?:and\\s+)(${relativeDmgVerbs})(?=\\s+it\\b|\\.|$)`;
@@ -253,7 +260,7 @@ export const useMessageHighlighter = (
         if (!isRoomName) {
             // Build and sort candidates using utility
             const candidates = buildHighlighterCandidates(
-                mid, target, buttonsRef, roomPlayers, roomNpcs, characterName, 
+                mid || 'unknown', target, buttonsRef, roomPlayers, roomNpcs, characterName, 
                 roomItems, discoveredItems, inlineCategories, type, textOnly, keywordOverrides,
                 selectedObjectIds
             );

@@ -10,25 +10,31 @@ import { numToWord, pluralizeMumeSubject, pluralizeVerb, pluralizeRest } from '.
 export const ARRIVE_REGEX = /^(.+?)\s+(has arrived from|arrives from|enters from)\s+(the\s+)?(.+?)\.?$/i;
 export const LEAVE_REGEX = /^(.+?)\s+(leaves|enters)\s+(the\s+)?(.+?)\.?$/i;
 export const HERE_REGEX = /^(.+?)\s+(is(?:\s+[\w\s,]+)?\s+here|stands? here|sits? here|rests? here|sleeps? here)(?:.*)?$/i;
-export const NPC_LINE_REGEX = /^((?:A|An|The|Some)?\s*[\w\s,-]+?)\s+(\w+s)\b\s*(.*)$/i;
+export const NPC_LINE_REGEX = /^((?:A|An|The|Some)?\s*[\w\s,-]+?'?s?)\s+(\w+s)\b\s*(.*)$/i;
 
 export const ROOM_EXIT_REGEX = /^(North|South|East|West|Up|Down|North|Southwest|Northeast|Southwest|Southeast)\s+-\s+/i;
 
-// ---------------------------------------------------------------------------
-// Hook
-// ---------------------------------------------------------------------------
+export const MOVE_FAILURE_REGEX = /^(The .+ seems to be closed\.|Alas, you cannot go that way\.|You can't go there\.|You are too exhausted\.|You cannot go that way\.|It's closed\.|You can't see to go that way\.|You need a boat\.|It's too dark\.)/i;
 
+// ---------------------------------------------------------------------------
 let lastVibrateTime = 0;
 
 export function useMessageLog(
     inCombatRef: React.RefObject<boolean>,
     isMobileBrevityMode: boolean,
-    roomContext: { players: import('../types').GmcpOccupant[], npcs: import('../types').GmcpOccupant[], items: import('../types').GmcpOccupant[], roomName?: string | null },
+    roomContext: {
+        players: import('../types').GmcpOccupant[],
+        npcs: import('../types').GmcpOccupant[],
+        items: import('../types').GmcpOccupant[],
+        roomName?: string | null,
+        roomDesc?: string | null
+    },
     lastCommIdBySenderRef: React.MutableRefObject<Map<string, string>>,
     isNewbieMode: boolean,
-    moveDirQueueRef: React.MutableRefObject<import('../context/GameContext/types').MoveDir[]>,
-    activeMoveDirRef: React.MutableRefObject<import('../context/GameContext/types').MoveDir>,
-    recordEntry?: (type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any) => void
+    recordEntry?: (type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any) => void,
+    roomDescRef?: React.RefObject<string | null>,
+    pendingMove?: { dir: string; timestamp: number } | null,
+    setPendingMove?: (val: { dir: string; timestamp: number } | null) => void
 ) {
     const [messages, setMessages] = useState<Message[]>([]);
     const lastMessageRef = useRef<Message | null>(null);
@@ -158,70 +164,94 @@ export function useMessageLog(
         commAction?: string,
         commText?: string,
         commColor?: string,
-        providedCombatSide?: 'player' | 'opponent' | 'groupmate',
-        providedMoveDir?: 'n' | 's' | 'e' | 'w' | 'u' | 'd' | 'none'
+        providedCombatSide?: 'player' | 'opponent' | 'groupmate'
     ) => {
-        const textOnly = precalculated?.textOnly || text.replace(/\x1b\[[0-9;]*m/g, '').trim();
-        const textLower = precalculated?.lower || textOnly.toLowerCase();
+        let currentText = text;
+        let currentTextOnly = precalculated?.textOnly || text.replace(/\x1b\[[0-9;]*m/g, '').trim();
+        let currentTextLower = precalculated?.lower || currentTextOnly.toLowerCase();
 
         // If combatOverride is provided directly (from parser), trust it.
         // The parser handles inCombat context for ambiguous verbs like 'dodge'.
         const isCombat = !!combatOverride;
         const combatSide = isCombat
-            ? (providedCombatSide || ((textLower.startsWith('you ') || textLower.startsWith('your ')) ? 'player' : 'opponent'))
+            ? (providedCombatSide || ((currentTextLower.startsWith('you ') || currentTextLower.startsWith('your ')) ? 'player' : 'opponent'))
             : undefined;
         const isComm = type === 'comm' || !!replyCommand;
-        const isNarrate = textLower.includes('narrate') || replyCommand === 'narrate';
+        const isNarrate = currentTextLower.includes('narrate') || replyCommand === 'narrate';
         const curRoom = roomContext.roomName;
+        const curDesc = roomContext.roomDesc;
+
+        // --- SURGICAL SILENCE (Newbie Mode) ---
+        // If the description is already in the authoritative header, we strip it from the log.
+        // We use a robust normalization to handle line wraps or minor spacing differences.
+        // Use the ref (synchronous, always current) over state (may lag behind GMCP).
+        const descSource = roomDescRef?.current || curDesc;
+        if (isNewbieMode && descSource && currentTextOnly.length > 0) {
+            const normDesc = descSource.replace(/\s+/g, ' ').trim().toLowerCase();
+            const normLine = currentTextOnly.replace(/\s+/g, ' ').trim().toLowerCase();
+
+            // Strip to alphanumeric for fuzzy matching (handles terminal wrapping, punctuation diffs)
+            const strippedDesc = normDesc.replace(/[^a-z0-9]/g, '');
+            const strippedLine = normLine.replace(/[^a-z0-9]/g, '');
+
+            if (normLine.startsWith(normDesc)) {
+                // Line starts with full description — either exact match or desc + extra text
+                if (normLine === normDesc) return;
+                const descEndIdx = currentTextOnly.indexOf(descSource.substring(Math.max(0, descSource.length - 10)));
+                if (descEndIdx !== -1) {
+                    const cutPoint = descEndIdx + (descSource.length - Math.max(0, descSource.length - 10));
+                    const remainingRaw = currentTextOnly.substring(cutPoint).trim();
+                    if (remainingRaw.length === 0) return;
+                    const remainingSuffix = remainingRaw.substring(0, 20);
+                    const rawIndex = currentText.indexOf(remainingSuffix);
+                    if (rawIndex !== -1) {
+                        currentText = currentText.substring(rawIndex);
+                        currentTextOnly = currentText.replace(/\x1b\[[0-9;]*m/g, '').trim();
+                        currentTextLower = currentTextOnly.toLowerCase();
+                    }
+                }
+            } else if (strippedLine.length >= 20 && strippedDesc.includes(strippedLine)) {
+                // Line is a substantial fragment of the description (e.g. a terminal-wrapped line).
+                // The >=20 threshold prevents false positives with short common phrases.
+                // No type check needed — this catches lines even when detectRoom missed them
+                // due to GMCP/text packet ordering.
+                return;
+            }
+        }
         // Only suppress the line if it exactly matches the authoritative GMCP room name.
         // We no longer use ANSI color heuristics — those caused too many false positives.
         const isActuallyRoomName = !isCombat && !isComm && type !== 'room-description' && type !== 'prompt' && (
             isRoomName === true ||
             (curRoom && !replyCommand && (
-                textOnly === curRoom ||
-                textLower === curRoom.toLowerCase() ||
-                textOnly === curRoom + '.' ||
-                textLower === curRoom.toLowerCase() + '.'
+                currentTextOnly === curRoom ||
+                currentTextLower === curRoom.toLowerCase() ||
+                currentTextOnly === curRoom + '.' ||
+                currentTextLower === curRoom.toLowerCase() + '.'
             ))
         );
 
-        if (textLower === 'you are hungry.' || textLower === 'you are thirsty.') {
+        if (currentTextLower === 'you are hungry.' || currentTextLower === 'you are thirsty.') {
             return;
         }
 
-        const isArriveLeave = ARRIVE_REGEX.test(textOnly) ||
-            LEAVE_REGEX.test(textOnly) ||
-            textLower.includes('arrives from') ||
-            textLower.includes('has arrived from') ||
-            textLower.includes(' leaves ') ||
-            textLower.includes(' leave ');
+        const isArriveLeave = ARRIVE_REGEX.test(currentTextOnly) ||
+            LEAVE_REGEX.test(currentTextOnly) ||
+            currentTextLower.includes('arrives from') ||
+            currentTextLower.includes('has arrived from') ||
+            currentTextLower.includes(' leaves ') ||
+            currentTextLower.includes(' leave ');
 
         const isLiveEvent = isCombat || isComm || isArriveLeave || type === 'user';
 
-        // Check for movement failure messages to clear the queue
-        const isMoveFail = textLower.includes("alas, you cannot go that way") ||
-            textLower.includes("you can't go that way") ||
-            textLower.includes("the door is closed") ||
-            textLower.includes("it's closed");
 
-        if (isMoveFail && moveDirQueueRef.current.length > 0) {
-            moveDirQueueRef.current.shift();
-        }
 
         if (isActuallyRoomName) {
-            // Consume next direction from queue when a new room is entered
-            if (moveDirQueueRef.current.length > 0) {
-                activeMoveDirRef.current = moveDirQueueRef.current.shift()!;
-            } else {
-                activeMoveDirRef.current = 'none';
-            }
             flushRoomBuffer();
 
             // Clear all previous messages when we first arrive in a new room (Newbie Mode ONLY)
             if (isNewbieMode) {
                 setMessages([]);
                 messageBufferRef.current = [];
-                // RETURN EARLY: We don't want the Room Name in the log if it's already in the header.
                 return;
             }
         }
@@ -231,30 +261,28 @@ export function useMessageLog(
             return;
         }
 
-        if ((type === 'prompt' || isLiveEvent) && activeMoveDirRef.current !== 'none') {
-            activeMoveDirRef.current = 'none';
-        }
 
-        let currentMoveDir: import('../context/GameContext/types').MoveDir = providedMoveDir || activeMoveDirRef.current;
+
+
 
         if (isMobileBrevityMode && type === 'game' && !isActuallyRoomName && !isCombat && !isComm && !skipBrevity) {
-            if (textOnly.length > 0) {
-                const hereMatch = textOnly.match(HERE_REGEX);
-                const npcMatch = textOnly.match(NPC_LINE_REGEX);
+            if (currentTextOnly.length > 0) {
+                const hereMatch = currentTextOnly.match(HERE_REGEX);
+                const npcMatch = currentTextOnly.match(NPC_LINE_REGEX);
 
                 if (hereMatch || npcMatch) {
                     const subject = hereMatch ? hereMatch[1] : (npcMatch ? npcMatch[1] : "");
                     const action = hereMatch ? hereMatch[2] : (npcMatch ? `${npcMatch[2]} ${npcMatch[3]}` : "");
-                    roomLineBufferRef.current.push({ subject, action: action.trim(), original: textOnly });
+                    roomLineBufferRef.current.push({ subject, action: action.trim(), original: currentTextOnly });
                 } else {
-                    roomLineBufferRef.current.push({ subject: "", action: "text-chunk", original: textOnly });
+                    roomLineBufferRef.current.push({ subject: "", action: "text-chunk", original: currentTextOnly });
                 }
 
                 if (roomBufferTimeoutRef.current) clearTimeout(roomBufferTimeoutRef.current);
                 roomBufferTimeoutRef.current = setTimeout(flushRoomBuffer, 300);
                 return;
             }
-            // Fall through to real message for blank lines (textOnly.length === 0)
+            // Fall through to real message for blank lines (currentTextOnly.length === 0)
             // But we MUST flush whatever is already in the buffer first so the blank
             // line appears after the buffered text, not before it.
             flushRoomBuffer();
@@ -265,20 +293,20 @@ export function useMessageLog(
         addMessageRef.current = addMessage;
 
         const isUrgent = isArriveLeave ||
-            textLower.includes('strange incantations') ||
-            textLower.includes('utters the words') ||
-            textLower.includes('is dead! r.i.p.') ||
-            textLower.includes('is standing.') ||
-            textLower.includes('is sitting.') ||
-            textLower.includes('is resting.') ||
-            textLower.includes('is sleeping.');
+            currentTextLower.includes('strange incantations') ||
+            currentTextLower.includes('utters the words') ||
+            currentTextLower.includes('is dead! r.i.p.') ||
+            currentTextLower.includes('is standing.') ||
+            currentTextLower.includes('is sitting.') ||
+            currentTextLower.includes('is resting.') ||
+            currentTextLower.includes('is sleeping.');
 
         // Final Type Polish: If this looks like a prompt, force it to 'prompt'
         // This ensures the black background is applied correctly even if the socket 
         // sent it as part of a game-text batch.
         let finalType = type;
-        if (textOnly.startsWith('!') || textOnly.startsWith('*') || textOnly.startsWith(':') || textOnly.includes('[>')) {
-            if (textOnly.trim().length < 15 && textOnly.includes('>')) finalType = 'prompt';
+        if (currentTextOnly.startsWith('!') || currentTextOnly.startsWith('*') || currentTextOnly.startsWith(':') || currentTextOnly.includes('[>')) {
+            if (currentTextOnly.trim().length < 15 && currentTextOnly.includes('>')) finalType = 'prompt';
         }
 
         const dimmedInCombat = inCombatRef.current && !isCombat && !isUrgent;
@@ -286,15 +314,15 @@ export function useMessageLog(
         let subject = '', actionText = '', direction = '';
 
         if (isMobileBrevityMode) {
-            const arriveMatch = textOnly.match(ARRIVE_REGEX);
-            const leaveMatch = textOnly.match(LEAVE_REGEX);
-            const hereMatch = textOnly.match(HERE_REGEX);
-            const npcMatch = textOnly.match(NPC_LINE_REGEX);
+            const arriveMatch = currentTextOnly.match(ARRIVE_REGEX);
+            const leaveMatch = currentTextOnly.match(LEAVE_REGEX);
+            const hereMatch = currentTextOnly.match(HERE_REGEX);
+            const npcMatch = currentTextOnly.match(NPC_LINE_REGEX);
 
             if (arriveMatch) { subject = arriveMatch[1]; actionText = arriveMatch[2]; direction = arriveMatch[4]; stackId = `arrive:${subject.toLowerCase()}:${actionText.toLowerCase()}:${direction.toLowerCase()}`; }
             else if (leaveMatch) { subject = leaveMatch[1]; actionText = leaveMatch[2]; direction = leaveMatch[4]; stackId = `leave:${subject.toLowerCase()}:${actionText.toLowerCase()}:${direction.toLowerCase()}`; }
             else if (hereMatch) { subject = hereMatch[1]; actionText = hereMatch[2]; stackId = `here:${subject.toLowerCase()}:${actionText.toLowerCase()}`; }
-            else if (npcMatch) { subject = npcMatch[1]; actionText = npcMatch[2]; direction = npcMatch[3]; stackId = `npc:${textOnly.toLowerCase()}`; }
+            else if (npcMatch) { subject = npcMatch[1]; actionText = npcMatch[2]; direction = npcMatch[3]; stackId = `npc:${currentTextOnly.toLowerCase()}`; }
         }
 
         const lastMsg = lastMessageRef.current;
@@ -401,22 +429,22 @@ export function useMessageLog(
             'arrives', 'leaves', 'enters'
         ];
 
-        let processedText = text;
-        const isEmpty = textOnly.length === 0;
+        let processedText = currentText;
+        const isEmpty = currentTextOnly.length === 0;
         if (isNewbieMode && !isActuallyRoomName && type !== 'prompt' && !isEmpty) {
             // Check for NPC/Player actions: Subject + Whitelisted Verb
-            const npcMatch = textOnly.match(NPC_LINE_REGEX);
+            const npcMatch = currentTextOnly.match(NPC_LINE_REGEX);
             const isNPCActor = npcMatch && CHARACTER_AGENCY_VERBS.includes(npcMatch[2].toLowerCase());
 
             // Check for User actions: "You" + Whitelisted Verb
-            const userMatch = textOnly.match(/^You\s+(\w+)\b/i);
+            const userMatch = currentTextOnly.match(/^You\s+(\w+)\b/i);
             const isUserActor = userMatch && CHARACTER_AGENCY_VERBS.includes(userMatch[1].toLowerCase());
 
             // Check for Comms (Tells, Says)
-            const isPlayerActor = isComm && !textOnly.startsWith('[') && !textOnly.startsWith('(') && !textOnly.startsWith('*');
+            const isPlayerActor = isComm && !currentTextOnly.startsWith('[') && !currentTextOnly.startsWith('(') && !currentTextOnly.startsWith('*');
 
-            if (isNPCActor || isUserActor || isPlayerActor) {
-                processedText = `> ${text}`;
+            if (isNPCActor || isUserActor || isPlayerActor || isCombat) {
+                processedText = currentText;
             }
         }
 
@@ -449,7 +477,7 @@ export function useMessageLog(
             commAction,
             commText,
             commColor,
-            moveDir: currentMoveDir !== 'none' ? currentMoveDir : undefined
+
         };
 
         if (isCombat) {

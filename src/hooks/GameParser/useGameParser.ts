@@ -48,7 +48,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         setDiscoveredItems, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName,
         setBufferHealthStatus, setBufferName, setCharacterInfo, setQuests, quests,
         mumeEditState, setMumeEditState, isPlayersOpen, isInventoryOpen, isEquipmentOpen,
-        triggerXpTicker, pendingGmcpCommRef, lastCommIdBySenderRef, groupMembers,
+        triggerXpTicker, triggerHitFlash, triggerOppHitFlash, pendingGmcpCommRef, lastCommIdBySenderRef, groupMembers,
         shop, practice, registerEntity, setEntities, setPlayerPosition,
         isCharacterOpen, isStatsOpen,
         accountState, setAccountState, setGameState,
@@ -73,7 +73,8 @@ export function useGameParser(deps: UseGameParserDeps) {
 
     // Initialize Specialized Hooks
     const { finalizeCapture } = useStageManager({
-        captureStage, isDrawerCapture, isSilentCapture, addDiagnosticLog, addMessage,
+        captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
+        addDiagnosticLog, addMessage,
         setPopoverState, setEqLines, setInventoryLines, registerEntity, setEntities,
         practice, shop, quests, finalizeQuests,
         tempEqRef, tempInvRef, tempEntitiesRef
@@ -351,9 +352,9 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (combatInfo.isMatch && combatInfo.isImpact) {
             if (combatInfo.side === 'player') {
                 playHitImpactSound?.();
-                // opponent hit flash removed
+                triggerOppHitFlash?.();
             } else if (combatInfo.side === 'opponent') {
-                // hit flash removed
+                triggerHitFlash?.();
             }
         }
 

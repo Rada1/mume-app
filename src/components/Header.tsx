@@ -124,6 +124,7 @@ const Header: React.FC<HeaderProps> = ({
                         {viewport.isMobile ? '' : 'RECONNECT'}
                     </button>
                 )}
+
                 <div
                     className="status-indicator"
                     style={{

@@ -25,9 +25,11 @@ export interface CommandControllerDeps {
     input: string;
     setInput: (val: string) => void;
     isNoviceMode: boolean;
+    isNewbieMode: boolean;
     status: 'connected' | 'disconnected' | 'connecting';
     target: string | null;
     setTarget: (val: string | null) => void;
+    setPendingMove: (val: { dir: string; timestamp: number } | null) => void;
     activePrompt: string;
     finalizeCapture: (targetStage?: CaptureStage) => void;
     popoverState: any;
@@ -76,12 +78,12 @@ export interface CommandControllerDeps {
     manualCancelRef?: React.MutableRefObject<boolean>;
     waiting?: boolean;
     recordEntry?: (type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any) => void;
-    setLastMoveDir: (val: 'n' | 's' | 'e' | 'w' | 'u' | 'd' | 'none') => void;
+
 }
 
 
 export function useCommandController(deps: CommandControllerDeps) {
-    const { input, setInput, isNoviceMode, viewport, triggerHaptic, setTarget, addMessage, manualCancelRef, waiting, setLastMoveDir } = deps;
+    const { input, setInput, isNoviceMode, isNewbieMode, viewport, triggerHaptic, setTarget, setPendingMove, addMessage, manualCancelRef, waiting } = deps;
 
     const executor = useCommandExecutor(deps);
     const depsRef = useRef(deps);
@@ -146,21 +148,6 @@ export function useCommandController(deps: CommandControllerDeps) {
         }
 
         executor.executeCommand(cmd, silent, isSystem, isHistorical, fromDrawer);
-
-        // --- Movement Tracking for Newbie Animations ---
-        if (!silent && !isSystem) {
-            const moveMatch = cmd.toLowerCase().trim().match(/^(n|north|s|south|e|east|w|west|u|up|d|down)$/);
-            if (moveMatch) {
-                let dir = moveMatch[1];
-                if (dir === 'north') dir = 'n';
-                else if (dir === 'south') dir = 's';
-                else if (dir === 'east') dir = 'e';
-                else if (dir === 'west') dir = 'w';
-                else if (dir === 'up') dir = 'u';
-                else if (dir === 'down') dir = 'd';
-                setLastMoveDir(dir as any);
-            }
-        }
 
         if (!silent && !isSystem && recordEntry) {
             recordEntry('ui', { event: 'executeCommand', cmd });

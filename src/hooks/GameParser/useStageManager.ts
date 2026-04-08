@@ -10,6 +10,9 @@ export interface StageManagerDeps {
     captureStage: React.MutableRefObject<CaptureStage>;
     isDrawerCapture: React.MutableRefObject<number>;
     isSilentCapture: React.MutableRefObject<number>;
+    isWaitingForStats: React.MutableRefObject<boolean>;
+    isWaitingForEq: React.MutableRefObject<boolean>;
+    isWaitingForInv: React.MutableRefObject<boolean>;
     addDiagnosticLog?: (msg: string) => void;
     addMessage: (type: MessageType, text: string, ...args: any[]) => void;
     setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
@@ -31,6 +34,9 @@ export function useStageManager(deps: StageManagerDeps) {
         captureStage,
         isDrawerCapture,
         isSilentCapture,
+        isWaitingForStats,
+        isWaitingForEq,
+        isWaitingForInv,
         addDiagnosticLog,
         addMessage,
         setPopoverState,
@@ -47,7 +53,7 @@ export function useStageManager(deps: StageManagerDeps) {
 
     const finalizeCapture = useCallback((targetStage?: CaptureStage) => {
         const currentStage = captureStage.current as CaptureStage;
-        
+
         // If targetStage is provided, only finalize if we match
         if (targetStage && currentStage !== targetStage) return false;
 
@@ -59,7 +65,16 @@ export function useStageManager(deps: StageManagerDeps) {
             return false;
         }
 
-        if (currentStage === 'none') return false;
+        if (currentStage === 'none') {
+            // Clear stale waiting flags when a prompt arrives but no capture stage was
+            // initialized. This happens when e.g. "score" output doesn't match the
+            // expected stats header pattern — isWaitingForStats stays true forever,
+            // blocking room name detection in useRoomParser.
+            if (isWaitingForStats) isWaitingForStats.current = false;
+            if (isWaitingForEq) isWaitingForEq.current = false;
+            if (isWaitingForInv) isWaitingForInv.current = false;
+            return false;
+        }
 
         const stagesToTerminate: CaptureStage[] = ['who', 'where', 'inv', 'eq', 'stat', 'container', 'shop', 'shop-detail', 'practice', 'description', 'whois', 'info', 'quest'];
         if (stagesToTerminate.includes(currentStage)) {
@@ -123,6 +138,9 @@ export function useStageManager(deps: StageManagerDeps) {
         captureStage,
         isDrawerCapture,
         isSilentCapture,
+        isWaitingForStats,
+        isWaitingForEq,
+        isWaitingForInv,
         addDiagnosticLog,
         addMessage,
         setPopoverState,

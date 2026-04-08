@@ -59,7 +59,6 @@ export interface Message {
     batchId?: number;
     isBatchEnd?: boolean;
     inRoomBatch?: boolean;
-    moveDir?: 'n' | 's' | 'e' | 'w' | 'u' | 'd' | 'none';
 }
 
 export interface ShopItem {

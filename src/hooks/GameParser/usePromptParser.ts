@@ -107,7 +107,8 @@ export function usePromptParser(deps: PromptParserDeps) {
                 name = name.replace(/^\(/, '');
             }
             
-            name = name.replace(/^[\)\s]+/, '').replace(/[\(\)\s]+$/, '').trim();
+            // Strip common prompt symbols that might be captured as part of the name
+            name = name.replace(/^[\]\)\s\!\*\:\+\#\?\=\[>]+/, '').replace(/[\[\(\s\!\*\:\+\#\?\=\]>]+$/, '').trim();
             
             if (name.startsWith('*') && name.endsWith('*')) {
                 name = name.substring(1, name.length-1);

@@ -84,7 +84,11 @@ export const useUIState = (executeCommandRef: React.MutableRefObject<(cmd: strin
         setUI(prev => ({ ...prev, drawer: open ? 'players' : 'none', peekingSource: 'none' }));
     }, []);
 
-    const setIsMapExpanded = useCallback((open: boolean) => setUI(prev => ({ ...prev, mapExpanded: open, peekingSource: 'none' })), []);
+    const setIsMapExpanded = useCallback((open: boolean) => setUI(prev => {
+        const isDesktop = window.innerWidth > 1024;
+        if (isDesktop && !open) return prev;
+        return { ...prev, mapExpanded: open, peekingSource: 'none' };
+    }), []);
     const setIsSetManagerOpen = useCallback((open: boolean) => setUI(prev => ({ ...prev, setManagerOpen: open, peekingSource: 'none' })), []);
 
     return {

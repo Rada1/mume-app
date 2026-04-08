@@ -14,7 +14,7 @@ import { useViewport } from '../../hooks/useViewport';
 import { useEnvironment } from '../../hooks/useEnvironment';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
  
-export type MoveDir = 'n' | 's' | 'e' | 'w' | 'u' | 'd' | 'none';
+
 
 
 export interface VitalsContextType {
@@ -61,6 +61,10 @@ export interface VitalsContextType {
     xpHistory: { old: number; new: number };
     xpEvent: number;
     triggerXpTicker: () => void;
+    hitFlashEvent: number;
+    oppHitFlashEvent: number;
+    triggerHitFlash: () => void;
+    triggerOppHitFlash: () => void;
 }
 
 export interface LogContextType {
@@ -260,11 +264,7 @@ export interface GameContextType {
     setRoomDesc: (desc: string | null) => void;
     roomNameRef: RefObject<string | null>;
     roomDescRef: RefObject<string | null>;
-    moveDirQueueRef: MutableRefObject<MoveDir[]>;
-    activeMoveDirRef: MutableRefObject<MoveDir>;
-    lastMoveDirRef: MutableRefObject<MoveDir>;
-    lastMoveDir: MoveDir;
-    setLastMoveDir: (val: MoveDir) => void;
+
 
     accentColor: string;
     setAccentColor: (val: string) => void;

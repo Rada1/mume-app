@@ -64,7 +64,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                     else if (dx > 15 && dy < -15) peek = 'stats'; // NE -> reveal SW
                     else if (dx < -15 && dy > 15) peek = 'equipment'; // SW -> reveal NE
                     else if (dx > 15 && dy > 15) peek = 'players'; // SE -> reveal NW
-                    else if (Math.abs(dy) > Math.abs(dx)) peek = dy < 0 ? 'map' : 'character';
+                    else if (Math.abs(dy) > Math.abs(dx)) peek = dy < 0 ? 'none' : 'character';
                     else peek = dx < 0 ? 'equipment' : 'stats';
                     
                     if (ui.peekingDrawer !== peek) {
@@ -208,227 +208,110 @@ const InputArea: React.FC<InputAreaProps> = ({
     const shouldShowSpat = viewport.isLandscape || !ui.mapExpanded;
 
     return (
-        <div
-            className={`input-area ${terrainClass} input-container`}
-            onPointerDown={(e) => {
-                const targetElement = e.target as HTMLElement;
-                // Allow prompt, target badge, and parley indicators to be clicked normally
-                if (
-                    targetElement.classList.contains('cmd-prompt') || 
-                    targetElement.closest('.parley-indicator') ||
-                    targetElement.closest('.parley-clear-btn')
-                ) return;
-
-                startPos.current = { x: e.clientX, y: e.clientY };
-                isSwiping.current = true;
-
-                // For input field, we don't capture immediately to allow focus, 
-                // but we still record startPos to detect the bubble-up swipe.
-                if (targetElement.tagName !== 'INPUT' && targetElement.tagName !== 'TEXTAREA') {
-                    if (e.cancelable) e.preventDefault();
-                    e.stopPropagation();
-                    e.currentTarget.setPointerCapture(e.pointerId);
-                }
-            }}
-            onPointerMove={(e) => {
-                if (isSwiping.current && startPos.current) {
-                    const dx = e.clientX - startPos.current.x;
-                    const dy = e.clientY - startPos.current.y;
-                    const absX = Math.abs(dx);
-                    const absY = Math.abs(dy);
-
-                    // Full circular visual feedback (30px radius)
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    const maxDist = 30;
-                    const ox = dist > maxDist ? (dx / dist) * maxDist : dx;
-                    const oy = dist > maxDist ? (dy / dist) * maxDist : dy;
-                    setOffset({ x: ox, y: oy });
-
-                    if (Math.max(absX, absY) > 20) {
-                        let peek: any = 'none';
-                        if (dx < -15 && dy < -15) peek = 'inventory'; // NW -> reveal SE
-                        else if (dx > 15 && dy < -15) peek = 'stats'; // NE -> reveal SW
-                        else if (dx < -15 && dy > 15) peek = 'equipment'; // SW -> reveal NE
-                        else if (dx > 15 && dy > 15) peek = 'players'; // SE -> reveal NW
-                        else if (absY > absX) peek = dy < 0 ? 'map' : 'character';
-                        else peek = dx < 0 ? 'equipment' : 'stats';
+        <div className={`input-area ${terrainClass} input-container`}>
+            <div className="input-main-container">
+                <form className="input-form" onSubmit={onSend}>
+                    <span className="cmd-prompt">{'>'}</span>
+                    
+                    {parley.active && (() => {
+                        const isTargetless = TARGETLESS_COMMANDS.includes(parley.command);
                         
-                        if (ui.peekingDrawer !== peek) {
-                            setUI(prev => ({ ...prev, peekingDrawer: peek }));
-                        }
-                    } else if (ui.peekingDrawer !== 'none') {
-                        setUI(prev => ({ ...prev, peekingDrawer: 'none' }));
-                    }
-                }
-            }}
-            onPointerUp={(e) => {
-                isSwiping.current = false;
-                if (ui.peekingDrawer !== 'none') {
-                    setUI(prev => ({ ...prev, peekingDrawer: 'none' }));
-                }
-                if (startPos.current) {
-                    const deltaX = e.clientX - startPos.current.x;
-                    const deltaY = e.clientY - startPos.current.y;
-                    const absX = Math.abs(deltaX);
-                    const absY = Math.abs(deltaY);
+                        const PARLEY_COLORS: Record<string, string> = {
+                            tell: '#22c55e',    // green
+                            whisper: '#22c55e', // also green often
+                            say: '#06b6d4',     // cyan
+                            yell: '#a855f7',    // purple
+                            shout: '#ef4444',   // red often? User didn't ask but good to have
+                            narrate: '#eab308', // yellow
+                            sing: '#f472b6'     // pink?
+                        };
+                        const commandColor = PARLEY_COLORS[parley.command.toLowerCase()] || 'inherit';
 
-                    // High sensitivity threshold (35px) for quick flicks
-                    const deltaDist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-                    if (deltaDist > 35) {
-                        if (deltaX < -25 && deltaY > 25) onSwipe?.('sw');
-                        else if (deltaX > 25 && deltaY < -25) onSwipe?.('ne');
-                        else if (deltaX > 25 && deltaY > 25) onSwipe?.('se');
-                        else if (deltaX < -25 && deltaY < -25) onSwipe?.('nw');
-                        else if (Math.abs(deltaY) > Math.abs(deltaX)) onSwipe?.(deltaY < 0 ? 'up' : 'down');
-                        else onSwipe?.(deltaX < 0 ? 'left' : 'right');
-                    }
-                    startPos.current = null;
-                }
-                setOffset({ x: 0, y: 0 });
-            }}
-            onPointerCancel={() => {
-                isSwiping.current = false;
-                if (ui.peekingDrawer !== 'none') {
-                    setUI(prev => ({ ...prev, peekingDrawer: 'none' }));
-                }
-                startPos.current = null;
-                setOffset({ x: 0, y: 0 });
-            }}
-            onDrop={handleNativeDrop}
-            style={{
-                touchAction: 'none'
-            }}
-        >
-            <div 
-                className="input-floating-wrapper"
-                style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    gap: '12px',
-                    alignItems: 'flex-end',
-                    width: '100%',
-                    transform: `translate3d(${offset.x}px, ${offset.y}px, 0)`,
-                    transition: isSwiping.current ? 'none' : 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)',
-                    willChange: 'transform'
-                }}
-            >
-                <div className={`input-main-container${commandPreview ? ' command-preview-active' : ''}`}>
-                    <div className="swipe-handle" style={{
-                        position: 'absolute',
-                        top: '4px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        width: '40px',
-                        height: '4px',
-                        background: 'var(--text-faded, rgba(255, 255, 255, 0.2))',
-                        borderRadius: '2px',
-                        pointerEvents: 'none'
-                    }} />
-                    <form className="input-form" onSubmit={onSend}>
-                        <span className="cmd-prompt">{'>'}</span>
-                        
-                        {parley.active && (() => {
-                            const isTargetless = TARGETLESS_COMMANDS.includes(parley.command);
-                            
-                            const PARLEY_COLORS: Record<string, string> = {
-                                tell: '#22c55e',    // green
-                                whisper: '#22c55e', // also green often
-                                say: '#06b6d4',     // cyan
-                                yell: '#a855f7',    // purple
-                                shout: '#ef4444',   // red often? User didn't ask but good to have
-                                narrate: '#eab308', // yellow
-                                sing: '#f472b6'     // pink?
-                            };
-                            const commandColor = PARLEY_COLORS[parley.command.toLowerCase()] || 'inherit';
-
-                            return (
-                                <div className="parley-indicator-container">
-                                    <div 
-                                        className="parley-indicator parley-command" 
-                                        onClick={handleParleyCommandClick}
-                                        style={{ color: commandColor, borderColor: commandColor !== 'inherit' ? commandColor : undefined }}
-                                    >
-                                        {parley.command}
-                                    </div>
-                                    <div
-                                        className="parley-indicator parley-target"
-                                        onClick={handleParleyTargetClick}
-                                        title={isTargetless ? 'This command has no target' : undefined}
-                                    >
-                                        {isTargetless ? '' : (parley.target ?? '')}
-                                    </div>
-                                    <button 
-                                        type="button"
-                                        className="parley-clear-btn" 
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            handleParleyClear();
-                                        }}
-                                    >
-                                        ×
-                                    </button>
+                        return (
+                            <div className="parley-indicator-container">
+                                <div 
+                                    className="parley-indicator parley-command" 
+                                    onClick={handleParleyCommandClick}
+                                    style={{ color: commandColor, borderColor: commandColor !== 'inherit' ? commandColor : undefined }}
+                                >
+                                    {parley.command}
                                 </div>
-                            );
-                        })()}
-                        <div 
-                            onClick={() => inputRef.current?.focus()}
-                            style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', cursor: 'text' }}
-                        >
-                            {commandPreview && !input && (
-                                <div style={{
-                                    position: 'absolute',
-                                    left: '0',
-                                    color: 'var(--accent)',
-                                    opacity: 0.9,
-                                    fontWeight: '500',
-                                    pointerEvents: 'none',
-                                    fontFamily: 'inherit',
-                                    fontSize: 'inherit',
-                                    padding: '0',
-                                    marginLeft: '0'
-                                }}>
-                                    {commandPreview}
+                                <div
+                                    className="parley-indicator parley-target"
+                                    onClick={handleParleyTargetClick}
+                                    title={isTargetless ? 'This command has no target' : undefined}
+                                >
+                                    {isTargetless ? '' : (parley.target ?? '')}
                                 </div>
-                            )}
-                            <textarea
-                                ref={inputRef}
-                                className="input-field"
-                                value={input}
-                                rows={1}
-                                onChange={(e) => {
-                                    setInput(e.target.value);
-                                    // Auto-resize logic
-                                    const target = e.target as HTMLTextAreaElement;
-                                    target.style.height = 'auto';
-                                    target.style.height = `${target.scrollHeight}px`;
-                                }}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                <button 
+                                    type="button"
+                                    className="parley-clear-btn" 
+                                    onClick={(e) => {
                                         e.preventDefault();
-                                        onSend();
-                                    }
-                                }}
-                                onFocus={(e) => {
-                                    // Clear startPos on focus to prevent the 'keyboard pop-up' 
-                                    // from being detected as a swipe-up.
-                                    startPos.current = null;
-                                    e.currentTarget.parentElement?.parentElement?.classList.add('focused');
-                                }}
-                                onBlur={(e) => {
-                                    e.currentTarget.parentElement?.parentElement?.classList.remove('focused');
-                                }}
-                                onClick={(e) => {
-                                    if (isMobile && inputRef.current) {
-                                        inputRef.current.focus();
-                                    }
-                                }}
-                                placeholder={commandPreview ? "" : "Enter command..."}
-                            />
-                        </div>
+                                        e.stopPropagation();
+                                        handleParleyClear();
+                                    }}
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        );
+                    })()}
+                    <div 
+                        onClick={() => inputRef.current?.focus()}
+                        style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', cursor: 'text' }}
+                    >
+                        {commandPreview && !input && (
+                            <div style={{
+                                position: 'absolute',
+                                left: '0',
+                                color: 'var(--accent)',
+                                opacity: 0.9,
+                                fontWeight: '500',
+                                pointerEvents: 'none',
+                                fontFamily: 'inherit',
+                                fontSize: 'inherit',
+                                padding: '0',
+                                marginLeft: '0'
+                            }}>
+                                {commandPreview}
+                            </div>
+                        )}
+                        <textarea
+                            ref={inputRef}
+                            className="input-field"
+                            value={input}
+                            rows={1}
+                            onChange={(e) => {
+                                setInput(e.target.value);
+                                // Auto-resize logic
+                                const target = e.target as HTMLTextAreaElement;
+                                target.style.height = 'auto';
+                                target.style.height = `${target.scrollHeight}px`;
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    onSend();
+                                }
+                            }}
+                            onFocus={(e) => {
+                                e.currentTarget.parentElement?.parentElement?.classList.add('focused');
+                            }}
+                            onBlur={(e) => {
+                                e.currentTarget.parentElement?.parentElement?.classList.remove('focused');
+                            }}
+                            onClick={(e) => {
+                                if (isMobile && inputRef.current) {
+                                    inputRef.current.focus();
+                                }
+                            }}
+                            placeholder={commandPreview ? "" : "Enter command..."}
+                        />
+                    </div>
 
-                        <button type="submit" style={{ display: 'none' }}>Send</button>
-                    </form>
+                    <button type="submit" style={{ display: 'none' }}>Send</button>
+                </form>
 
                     <div className="input-actions-container">
                         {shouldShowSpat && (
@@ -479,8 +362,6 @@ const InputArea: React.FC<InputAreaProps> = ({
                             e.preventDefault();
                             e.stopPropagation();
                             setParley(prev => ({ ...prev, active: true }));
-                            // Re-focus the textarea so the keyboard stays open.
-                            // Use rAF to let the button unmount first, then focus.
                             requestAnimationFrame(() => inputRef.current?.focus());
                         }}
                     >
@@ -489,8 +370,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                 )}
                 <XpTicker isLandscape={viewport.isLandscape} />
             </div>
-        </div>
-    );
+        );
 };
 
 export default React.memo(InputArea);

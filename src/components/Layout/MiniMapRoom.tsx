@@ -4,7 +4,7 @@
  */
 
 import React, { useMemo, useEffect, useRef, useCallback } from 'react';
-import { useBaseGame, useGame } from '../../context/GameContext';
+import { useBaseGame, useGame, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/useMapper';
 import { getTerrainColor, WALL_COLOR, getGateState, GRID_SIZE } from '../Mapper/mapperUtils';
 import { drawTerrainIcon, applyRoomShading } from '../Mapper/renderers/drawTerrains';
@@ -143,7 +143,7 @@ export const MiniMapRoom: React.FC = () => {
 
         ctx.clearRect(0, 0, size, size);
 
-        const zoom = 1.6;
+        const zoom = 2.2;
         const center = size / 2;
         const gridS = GRID_SIZE;
 
@@ -254,18 +254,8 @@ export const MiniMapRoom: React.FC = () => {
             ctx.restore();
         });
 
-        // 2. Cinematic Vignette (Balanced spotlight)
-        const vX = cameraRef.current.x * gridS + gridS/2;
-        const vY = cameraRef.current.y * gridS + gridS/2;
-        // Balanced spotlight: covers the center room well, fades smoothly into neighbors
-        const vignette = ctx.createRadialGradient(vX, vY, gridS * 0.3, vX, vY, gridS * 1.0);
-        vignette.addColorStop(0, 'rgba(0, 0, 0, 0)');
-        vignette.addColorStop(0.5, 'rgba(0, 0, 0, 0)');
-        vignette.addColorStop(0.85, 'rgba(0, 0, 0, 0.7)');
-        vignette.addColorStop(1, 'rgba(0, 0, 0, 1)');
-        
-        ctx.fillStyle = vignette;
-        ctx.fillRect(vX - gridS * 2, vY - gridS * 2, gridS * 4, gridS * 4);
+        // 2. Cinematic Vignette removed per user request
+
 
         // 3. Draw Occupants & Group (Brightly on top)
         const pRef = { current: { x: cameraRef.current.x, y: cameraRef.current.y, z: currentRoom.z || 0 } };

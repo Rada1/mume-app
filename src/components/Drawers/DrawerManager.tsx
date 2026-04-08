@@ -4,7 +4,7 @@ import { StatsDrawer } from './StatsDrawer';
 import { CharacterDrawer } from './CharacterDrawer';
 import { PlayersDrawer } from './PlayersDrawer';
 import { Mapper } from '../Mapper/Mapper';
-import { User, Shield, Map as MapIcon, Users, Backpack, BarChart2 } from 'lucide-react';
+import { User, Shield, Map as MapIcon, Users, BarChart2 } from 'lucide-react';
 
 
 import { DrawerLine, CustomButton, SoundTrigger } from '../../types';
@@ -161,83 +161,8 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 
     return (
         <>
-            {/* Desktop Edge Tabs — all on the right edge */}
-            <div
-                className={`desktop-edge-tab right ${ui.drawer === 'stats' ? 'active' : ''} ${ui.peekingDrawer === 'stats' ? 'peeking' : ''}`}
-                style={{ top: '15%' }}
-                onClick={() => handleTabClick('stats')}
-                title="Combat Statistics"
-            >
-                <Shield className="tab-icon" />
-                <span className="tab-text">Stats</span>
-            </div>
+            {/* Vertical tabs removed — moved to map drawer bottom */}
 
-            <div
-                className={`desktop-edge-tab right ${ui.drawer === 'character' ? 'active' : ''} ${ui.peekingDrawer === 'character' ? 'peeking' : ''}`}
-                style={{ top: '30%' }}
-                onClick={() => handleTabClick('character')}
-                title="Character Sheet"
-            >
-                <User className="tab-icon" />
-                <span className="tab-text">Char</span>
-            </div>
-
-            <div
-                className={`desktop-edge-tab right ${ui.drawer === 'players' ? 'active' : ''} ${ui.peekingDrawer === 'players' ? 'peeking' : ''}`}
-                style={{ top: '45%' }}
-                onClick={() => handleTabClick('players')}
-                title="Players & Group"
-            >
-                <Users className="tab-icon" />
-                <span className="tab-text">Players</span>
-            </div>
-
-            <div
-                className={`desktop-edge-tab right ${ui.drawer === 'inventory' ? 'active' : ''} ${ui.peekingDrawer === 'inventory' ? 'peeking' : ''}`}
-                style={{ top: '60%' }}
-                onClick={() => handleTabClick('inventory')}
-                onDragOver={(e) => {
-                    e.preventDefault();
-                    if (ui.peekingDrawer !== 'inventory') {
-                        setUI(prev => ({ ...prev, peekingDrawer: 'inventory', isDrawerPeeking: true, peekingSource: 'none' }));
-                    }
-                }}
-                onDragLeave={() => {
-                    setUI(prev => ({ ...prev, peekingDrawer: 'none', isDrawerPeeking: false, peekingSource: 'none' }));
-                }}
-                onDrop={(e) => {
-                    e.preventDefault();
-                    setUI(prev => ({ ...prev, peekingDrawer: 'none', isDrawerPeeking: false, peekingSource: 'none' }));
-                    const dataStr = e.dataTransfer.getData('application/json') || e.dataTransfer.getData('text/plain');
-                    if (!dataStr) return;
-                    try {
-                        const data = JSON.parse(dataStr);
-                        if (data && data.context) {
-                            triggerHaptic(40);
-                            if (data.cmd === 'equipmentlist') {
-                                executeCommand(`remove ${data.context}`);
-                            } else {
-                                executeCommand(`get ${data.context}`);
-                            }
-                        }
-                    } catch (err) {}
-                }}
-                title="Gear"
-            >
-                <Backpack className="tab-icon" />
-                <span className="tab-text">Gear</span>
-            </div>
-
-            <div
-                id="drawer-tab-map"
-                className={`desktop-edge-tab right ${ui.mapExpanded ? 'active' : ''} ${ui.peekingDrawer === 'map' ? 'peeking' : ''}`}
-                style={{ top: '75%' }}
-                onClick={() => setUI(prev => ({ ...prev, mapExpanded: !prev.mapExpanded, peekingSource: 'none' }))}
-                title="World Map"
-            >
-                <MapIcon className="tab-icon" />
-                <span className="tab-text">Map</span>
-            </div>
 
 
             <div
@@ -256,10 +181,6 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                     className={`map-drawer-desktop ${ui.mapExpanded ? 'open' : ''}`}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    <div className="drawer-header" style={{ height: '60px', padding: '0 20px', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.03)' }}>
-                        <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>World Map</span>
-                        <button onClick={() => { triggerHaptic(20); setUI(prev => ({ ...prev, mapExpanded: false, peekingSource: 'none' })); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer' }}>✕</button>
-                    </div>
                     <div className="drawer-content" style={{ flex: 1, padding: 0, position: 'relative', overflow: 'hidden' }}>
                         <MapperDockedGate
                             mapperRef={mapperRef}
@@ -267,6 +188,52 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                             isMobile={viewport.isMobile}
                             onUndock={handleUndock}
                         />
+                    </div>
+
+                    {/* Unified Desktop Tab Bar — at the bottom of the map drawer */}
+                    <div className="portrait-tab-bar portrait-visible" style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                        <div
+                            className={`desktop-edge-tab right ${ui.drawer === 'stats' ? 'active' : ''}`}
+                            onClick={() => handleTabClick('stats')}
+                        >
+                            <BarChart2 className="tab-icon" />
+                            <span className="tab-text">Stats</span>
+                        </div>
+                        <div
+                            className={`desktop-edge-tab right ${ui.drawer === 'character' ? 'active' : ''}`}
+                            onClick={() => handleTabClick('character')}
+                        >
+                            <User className="tab-icon" />
+                            <span className="tab-text">Char</span>
+                        </div>
+                        <div
+                            className={`desktop-edge-tab right ${ui.drawer === 'players' ? 'active' : ''}`}
+                            onClick={() => handleTabClick('players')}
+                        >
+                            <Users className="tab-icon" />
+                            <span className="tab-text">Players</span>
+                        </div>
+                        <div
+                            className={`desktop-edge-tab right ${ui.drawer === 'inventory' ? 'active' : ''}`}
+                            onClick={() => handleTabClick('inventory')}
+                        >
+                            <Shield className="tab-icon" />
+                            <span className="tab-text">Gear</span>
+                        </div>
+                        <div
+                            id="drawer-tab-map"
+                            className={`desktop-edge-tab right ${ui.mapExpanded ? 'active' : ''}`}
+                            onClick={() => {
+                                if (viewport.isMobile) {
+                                    triggerHaptic(30);
+                                    setUI(prev => ({ ...prev, mapExpanded: !prev.mapExpanded, peekingSource: 'none' }));
+                                }
+                            }}
+                            style={{ opacity: viewport.isMobile ? 1 : 0.6, cursor: viewport.isMobile ? 'pointer' : 'default' }}
+                        >
+                            <MapIcon className="tab-icon" />
+                            <span className="tab-text">Map</span>
+                        </div>
                     </div>
                 </div>
             )}

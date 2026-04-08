@@ -71,9 +71,9 @@
 
 .newbie-mode .message-log {
     background: transparent !important;
-    border: 1px solid rgba(255, 255, 255, 0.4) !important;
-    border-radius: 12px;
-    margin: 0 8px 8px 8px; /* Removed top margin for tighter gap */
+    border: none !important;
+    border-radius: 0;
+    margin: 0;
     padding: 12px 10px !important;
     box-shadow: none !important;
     mask-image: none !important; /* Keep top border sharp */
@@ -297,6 +297,11 @@
     color: #ff9d00 !important;
     /* Vivid Orange */
     text-transform: uppercase;
+}
+
+.keyword-highlight.combat-action {
+    color: #22d3ee !important; /* tactical cyan */
+    font-weight: bold;
 }
 
 .keyword-highlight.status-word {
@@ -574,10 +579,31 @@
 }
 
 .message.user {
-    margin: 0 !important;
-    color: var(--accent);
-    font-weight: bold;
-    line-height: 1.0 !important;
+    margin: 4px 0 !important;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.user-command-bubble {
+    background: rgba(30, 30, 32, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    padding: 2px 12px;
+    width: fit-content;
+    color: #e2e8f0;
+    font-weight: 600;
+    font-family: var(--font-main);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.0;
+}
+
+.user-command-bubble .message-timestamp {
+    opacity: 0.5;
+    font-weight: normal;
+    font-size: 0.75em;
 }
 
 .message.system {
@@ -1247,79 +1273,7 @@ span.inline-btn {
 }
 
 
-/* --- Newbie Mode: Directional Movement Animations --- */
-.message-content-wrapper {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden; /* Mask the sliding text within the card */
-}
 
-.anim-container {
-    display: inline-block;
-    width: 100%;
-    will-change: transform;
-}
-
-/* West: Move Right (Text comes from Left) */
-.move-dir-w .anim-container {
-    animation: content-slide-right 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* East: Move Left (Text comes from Right) */
-.move-dir-e .anim-container {
-    animation: content-slide-left 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* North: Move Down (Text comes from Top) */
-.move-dir-n .anim-container {
-    animation: content-slide-down 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* South: Move Up (Text comes from Bottom) */
-.move-dir-s .anim-container {
-    animation: content-slide-up 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Up: Zoom In */
-.move-dir-u .anim-container {
-    animation: content-zoom-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Down: Zoom Out */
-.move-dir-d .anim-container {
-    animation: content-zoom-out 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes content-slide-right {
-    from { transform: translateX(-100%); opacity: 0.5; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes content-slide-left {
-    from { transform: translateX(100%); opacity: 0.5; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes content-slide-up {
-    from { transform: translateY(100%); opacity: 0.5; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes content-slide-down {
-    from { transform: translateY(-100%); opacity: 0.5; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes content-zoom-in {
-    from { transform: scale(0.8); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-}
-
-@keyframes content-zoom-out {
-    from { transform: scale(1.2); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-}
 
 .clear-btn {
     background: none;

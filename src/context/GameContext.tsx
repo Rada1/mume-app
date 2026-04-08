@@ -181,8 +181,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         players: s.roomPlayers,
         npcs: s.roomNpcs,
         items: s.roomItems,
-        roomName: s.roomName
-    }), [s.roomPlayers, s.roomNpcs, s.roomItems, s.roomName]);
+        roomName: s.roomName,
+        roomDesc: s.roomDesc
+    }), [s.roomPlayers, s.roomNpcs, s.roomItems, s.roomName, s.roomDesc]);
 
     const sanitizedRecordEntry = useCallback((type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any) => {
         const isSensitive = s.gameState !== 'playing';
@@ -195,9 +196,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         roomContext,
         lastCommIdBySenderRef,
         isNewbieMode,
-        s.moveDirQueueRef,
-        s.activeMoveDirRef,
-        sanitizedRecordEntry
+        sanitizedRecordEntry,
+        s.roomDescRef,
+        v.pendingMove,
+        v.setPendingMove
     );
     const addSystemMessage = useCallback((text: string) => addMessage('system', text, undefined, undefined, undefined, { textOnly: text, lower: text.toLowerCase() }, undefined, undefined, undefined, true), [addMessage]);
 
@@ -452,6 +454,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         mumeEditState: s.mumeEditState,
         setMumeEditState: s.setMumeEditState,
         triggerXpTicker: v.triggerXpTicker,
+        triggerHitFlash: v.triggerHitFlash,
+        triggerOppHitFlash: v.triggerOppHitFlash,
         addSystemMessage,
         pendingGmcpCommRef,
         lastCommIdBySenderRef,
@@ -539,10 +543,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setCommandPreview: () => { },
         input,
         setInput,
-        isNoviceMode,
+        isNoviceMode: s.isNoviceMode,
+        isNewbieMode: s.isNewbieMode,
         status: s.status,
         target: v.target,
         setTarget: v.setTarget,
+        setPendingMove: v.setPendingMove,
+        activePrompt: v.activePrompt,
         finalizeCapture: parser.finalizeCapture,
         popoverState: s.popoverState,
         setPopoverState: s.setPopoverState,
@@ -584,12 +591,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isSoundEnabled: s.isSoundEnabled,
         waiting: !!v.stats.conditions?.waiting,
         recordEntry: sanitizedRecordEntry,
-        activePrompt: v.activePrompt,
-        setLastMoveDir: s.setLastMoveDir
+
     }), [
         telnet, addMessage, initAudio, mapperRef, teleportTargets, s.isDrawerCapture, s.isSilentCapture, s.captureStage,
         s.isWaitingForStats, s.isWaitingForEq, s.isWaitingForInv, s.setInventoryLines, s.setStatsLines, s.setEqLines,
-        input, setInput, isNoviceMode, s.status, v.target, v.setTarget, parser.finalizeCapture, s.popoverState,
+        input, setInput, isNoviceMode, s.isNewbieMode, s.status, v.target, v.setTarget, v.setPendingMove, parser.finalizeCapture, s.popoverState,
         s.setPopoverState, s.setIsCharacterOpen, s.setIsStatsOpen, s.setIsEquipmentOpen, s.setIsInventoryOpen,
         s.setIsPlayersOpen, setIsSettingsOpen, setSettingsTab, s.setIsMapExpanded, s.setUI, viewport, triggerHaptic,
         btn, joystick, editor.wasDraggingRef, s.ui, s.actions, s.setActions, s.setActiveDragData, s.activeDragData,

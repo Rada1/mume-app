@@ -3,12 +3,13 @@
  * @description Enhanced prompt display with custom person-pose icons.
  */
 
-import React, { memo, FC, useState, useRef, useCallback } from 'react';
+import React, { memo, FC, useState, useRef, useCallback, useEffect } from 'react';
 import { Swords } from 'lucide-react';
 import './PromptBox.css';
 import { GameStats, CharacterInfo, CombatHealthStatus } from '../types';
 import { useGame, useVitals } from '../context/GameContext';
 import { CombatSliderPopout } from './Drawers/StatsDrawer/CombatSliderPopout';
+import { getCategoryForName, getGlowColorForCategory } from '../utils/categorizationUtils';
 
 interface PromptBoxProps {
     stats: GameStats;
@@ -137,11 +138,37 @@ const PromptBox: FC<PromptBoxProps> = ({
     playerHealthStatus,
     isRiding
 }) => {
-    const { triggerHaptic, executeCommand, setPlayerPosition } = useGame();
+    const { triggerHaptic, executeCommand, setPlayerPosition, inlineCategories } = useGame();
+    const { hitFlashEvent, oppHitFlashEvent } = useVitals();
     const [activeSlider, setActiveSlider] = useState<'pos' | null>(null);
     const [activeButtonRect, setActiveButtonRect] = useState<DOMRect | null>(null);
     const [showNumbers, setShowNumbers] = useState(false);
     const numbersTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Dynamic color for opponent (NPC/Player/etc) to match log higlighter
+    const opponentColor = React.useMemo(() => {
+        if (!opponentName) return undefined;
+        const cat = getCategoryForName(opponentName, inlineCategories);
+        return getGlowColorForCategory(cat, inlineCategories) || undefined;
+    }, [opponentName, inlineCategories]);
+
+    // Flash on combat impact (triggered by parser on each hit)
+    const [hitFlash, setHitFlash] = useState(false);
+    const [oppHitFlash, setOppHitFlash] = useState(false);
+
+    useEffect(() => {
+        if (hitFlashEvent === 0) return;
+        setHitFlash(true);
+        const t = setTimeout(() => setHitFlash(false), 350);
+        return () => clearTimeout(t);
+    }, [hitFlashEvent]);
+
+    useEffect(() => {
+        if (oppHitFlashEvent === 0) return;
+        setOppHitFlash(true);
+        const t = setTimeout(() => setOppHitFlash(false), 350);
+        return () => clearTimeout(t);
+    }, [oppHitFlashEvent]);
 
     const triggerNumbers = useCallback(() => {
         triggerHaptic(15);
@@ -176,14 +203,14 @@ const PromptBox: FC<PromptBoxProps> = ({
                 <div className="prompt-vitals-row-ascii">
                     <div className="vitals-side-container side-left">
                         <div className="player-stats-group">
-                            <div className="">
-                                <ConditionBadge 
-                                    status={playerHealthStatus || 'Healthy'} 
-                                    colorClass="hp" 
+                            <div className={hitFlash ? 'blink-hit' : ''}>
+                                <ConditionBadge
+                                    status={playerHealthStatus || 'Healthy'}
+                                    colorClass="hp"
                                     onClick={triggerNumbers}
                                     showAlt={showNumbers}
                                     altStatus={`${stats.hp}/${stats.maxHp}`}
-                                    flash={false}
+                                    flash={hitFlash}
                                 />
                             </div>
                             <ConditionBadge 
@@ -234,18 +261,17 @@ const PromptBox: FC<PromptBoxProps> = ({
                     </div>
 
                     <div className="vitals-side-container side-right">
-                        {(inCombat || opponentName) && (
-                            <div className="animate-combat-mini" style={{ display: 'flex', width: '100%', justifyContent: 'flex-end' }}>
-                                <div 
-                                    className={`opponent-stats-group`}
-                                >
-                                    <span className="opponent-label">{opponentName || 'target'}</span>
-                                    <span className="status-bracket-wrapper">
-                                        <span className="bracket">|</span>
-                                        <span className="status-text">{opponentHealthStatus?.toLowerCase() || 'targeting'}</span>
-                                        <span className="bracket">|</span>
-                                    </span>
-                                </div>
+                        {opponentName && (
+                            <div
+                                className={`opponent-stats-group animate-combat-mini${oppHitFlash ? ' blink-hit' : ''}`}
+                            >
+                                <span className="opponent-label" style={opponentColor ? { color: opponentColor } : {}}>
+                                    {opponentName}
+                                </span>
+                                <ConditionBadge
+                                    status={opponentHealthStatus || 'Fighting'}
+                                    colorClass="opponent" 
+                                />
                             </div>
                         )}
                     </div>

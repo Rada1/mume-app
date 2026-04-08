@@ -9,7 +9,7 @@ interface EnvControlsProps {
 }
 
 export const EnvControls: React.FC<EnvControlsProps> = ({ getLightingIcon, getWeatherIcon, isLandscape }) => {
-    const { lighting, weather, isFoggy, inCombat, teleportTargets, viewport } = useGame();
+    const { lighting, weather, isFoggy, inCombat, teleportTargets, viewport, isNewbieMode } = useGame();
     const { target, setTarget } = useVitals();
     const { setPopoverState } = useUI();
     const teleportTargetsCount = teleportTargets.length;
@@ -25,7 +25,7 @@ export const EnvControls: React.FC<EnvControlsProps> = ({ getLightingIcon, getWe
 
     return (
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', flex: 1, minWidth: 0, justifyContent: 'center' }}>
-            {(lighting !== 'none' || weather !== 'none' || isFoggy) && (
+            {(lighting !== 'none' || weather !== 'none' || isFoggy) && !isNewbieMode && (
                 <div
                     className="status-indicator"
                     style={{ color: 'var(--text-primary)', gap: 4, padding: '4px 6px' }}
