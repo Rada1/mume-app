@@ -138,7 +138,6 @@ const PromptBox: FC<PromptBoxProps> = ({
     isRiding
 }) => {
     const { triggerHaptic, executeCommand, setPlayerPosition } = useGame();
-    const { hitFlash, opponentHitFlash, hitFlashCounter, opponentHitFlashCounter } = useVitals();
     const [activeSlider, setActiveSlider] = useState<'pos' | null>(null);
     const [activeButtonRect, setActiveButtonRect] = useState<DOMRect | null>(null);
     const [showNumbers, setShowNumbers] = useState(false);
@@ -177,14 +176,14 @@ const PromptBox: FC<PromptBoxProps> = ({
                 <div className="prompt-vitals-row-ascii">
                     <div className="vitals-side-container side-left">
                         <div className="player-stats-group">
-                            <div key={`hp-flash-${hitFlashCounter}`} className={hitFlash ? 'blink-hit' : ''}>
+                            <div className="">
                                 <ConditionBadge 
                                     status={playerHealthStatus || 'Healthy'} 
                                     colorClass="hp" 
                                     onClick={triggerNumbers}
                                     showAlt={showNumbers}
                                     altStatus={`${stats.hp}/${stats.maxHp}`}
-                                    flash={hitFlash}
+                                    flash={false}
                                 />
                             </div>
                             <ConditionBadge 
@@ -238,8 +237,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                         {(inCombat || opponentName) && (
                             <div className="animate-combat-mini" style={{ display: 'flex', width: '100%', justifyContent: 'flex-end' }}>
                                 <div 
-                                    key={`opp-hit-${opponentHitFlashCounter}`}
-                                    className={`opponent-stats-group ${opponentHitFlash ? 'blink-hit' : ''}`}
+                                    className={`opponent-stats-group`}
                                 >
                                     <span className="opponent-label">{opponentName || 'target'}</span>
                                     <span className="status-bracket-wrapper">

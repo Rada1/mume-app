@@ -1,18 +1,24 @@
-# Hooks Directory
+# Hooks Directory (`src/hooks/`)
 
-This directory contains custom React hooks that encapsulate the business logic of the MUME client.
+## 🧠 Mental Model
+The `hooks/` directory contains all of the application's **headless business logic**. If a component requires complex logic, networking, or parsing, that logic must be encapsulated here. Components should be "thin" and primarily responsible for rendering.
 
-## Key Hooks
+## 🗂️ Key Domains
 
-- **`useTelnet.ts`**: Low-level networking and protocol handling.
-- **`useCommandController.ts`**: High-level command logic and target substitution.
-- **`useGmcpHandlers.ts`**: Handlers for GMCP data packets (Room Info, Vitals, etc.).
-- **`useGameParser.ts`**: Parsers for raw text output from the game.
-- **`useButtons.ts` / `useButtonPersistence.ts`**: Management and storage of custom buttons.
-- **`useMapperController.ts`**: Logic for interacting with and updating the map.
+### Core Game Loop
+*   `useGameParser.ts`: The main text parsing engine for MUD output.
+*   `useCommandController.ts`: Handles all outgoing user commands and interactions.
+*   `useTelnet.ts`: Manages the WebSocket/Telnet connection to the server.
 
-## Guidelines
+### Network Parsing (GMCP)
+*   `useGmcpHandlers/`: Contains handlers for all Out-of-Band (GMCP) data.
+    *   *Note:* This was refactored into sub-hooks (`useGmcpRoom`, `useGmcpVitals`, etc.) to adhere to the 300-Line Mandate. Always modify the specific sub-hook rather than a monolithic file.
 
-- **Logic Separation**: Each hook should have a single, clear responsibility.
-- **Type Safety**: Avoid `any`. Use strict interfaces for data structures, especially GMCP.
-- **Visual Chunking**: Use `// --- Section Name ---` separators to organize code within hooks.
+### User Interface & Input
+*   `useViewport.ts`: Manages screen dimensions, scroll states, and keyboard visibility.
+*   `useButtons.ts` & `useJoystick.ts`: Logic for the dynamic on-screen controls.
+*   `useMessageLog.ts`: Performance-critical hook for managing the virtualized text output buffer.
+
+## ⚠️ AI Agent Guidelines
+*   **Performance:** Hooks that update frequently (like `useMessageLog` or parsing hooks) should aggressively use `useRef` and `useCallback` to prevent unnecessary React re-renders.
+*   **Separation of Concerns:** Do not put UI styling or JSX elements inside hooks. Return raw data or state toggle functions.
