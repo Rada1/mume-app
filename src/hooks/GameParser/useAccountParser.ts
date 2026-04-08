@@ -1,5 +1,13 @@
+/**
+ * @file useAccountParser.ts
+ * @description Specialized hook for parsing MUME account-level output, including login,
+ * character selection, and the mobile character creation flow.
+ */
+
 import { useCallback, useRef } from 'react';
 import { CharacterEntry, AccountStage, CreationPrompt } from '../../types';
+
+// --- Logic Section: Types ---
 
 interface UseAccountParserProps {
     accountState: import('../../types').AccountState;
@@ -9,13 +17,17 @@ interface UseAccountParserProps {
     sendCommand: (cmd: string) => void;
     executeCommandRef: React.MutableRefObject<((cmd: string, silent?: boolean, isEnter?: boolean) => void) | undefined>;
     isMobile?: boolean;
+    addDiagnosticLog?: (msg: string) => void;
 }
 
 // --- Logic Section: Character Creation Ref ---
+
 // Module-level ref ensures persistence across hook re-renders during creation flow
 const creationPromptRef: { current: CreationPrompt | null } = { current: null };
 
-export function useAccountParser({ accountState, setAccountState, gameState, setGameState, sendCommand, executeCommandRef, isMobile }: UseAccountParserProps) {
+// --- Logic Section: Hook Implementation ---
+
+export function useAccountParser({ accountState, setAccountState, gameState, setGameState, sendCommand, executeCommandRef, isMobile, addDiagnosticLog }: UseAccountParserProps) {
     // Use Refs to keep parseAccountLine stable and avoid re-render loops
     const stageRef = useRef(accountState.stage);
     stageRef.current = accountState.stage;
@@ -53,7 +65,6 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
                 // Description already accumulated in creationPromptRef.current.description is preserved.
                 currentChunkLinesRef.current = [cleanLine];
             }
-            console.log(`[AccountParser] New chunk started with line: ${cleanLine}`);
         }
 
         // During gameplay, skip all account parsing except detecting return to Account>
@@ -71,11 +82,11 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
         if (cleanLine === 'Account>') {
             setGameState('account');
             setAccountState(prev => {
-                console.log(`[AccountParser] Account> updater fired: prev.stage = "${prev.stage}", stageRef = "${stageRef.current}"`);
+                addDiagnosticLog?.(`[AccountParser] Account> prompt detected. stage=${prev.stage}`);
                 
                 // If we just finished creating a character, auto-play it
                 if (prev.lastCreatedCharacterName) {
-                    console.log(`[AccountParser] Auto-playing newly created character: ${prev.lastCreatedCharacterName}`);
+                    addDiagnosticLog?.(`[AccountParser] Auto-playing character: ${prev.lastCreatedCharacterName}`);
                     executeCommandRef.current?.(`play ${prev.lastCreatedCharacterName}`, false, true);
                     return { ...prev, stage: 'none', lastCreatedCharacterName: undefined, creationPrompt: null };
                 }
@@ -91,7 +102,7 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
         const lowerLine = cleanLine.toLowerCase();
 
         if (lowerLine.includes('welcome to mume!') || lowerLine.includes('another account on mume')) {
-            console.log(`[AccountParser] Matched New Account prompt: ${cleanLine}`);
+            addDiagnosticLog?.(`[AccountParser] New Account prompt detected`);
             if (isMobileRef.current) {
                 creationPromptRef.current = {
                     title: 'New Account',
@@ -113,7 +124,7 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
         }
 
         if (lowerLine.includes('enter new account name') || lowerLine.includes('account name:')) {
-            console.log(`[AccountParser] Matched Account Name prompt: ${cleanLine}`);
+            addDiagnosticLog?.(`[AccountParser] Account Name prompt detected`);
             if (isMobileRef.current) {
                 creationPromptRef.current = {
                     title: 'Account Name',
@@ -136,7 +147,7 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
             lowerLine.startsWith('pick your account password') ||
             lowerLine.startsWith('enter password') ||
             lowerLine.startsWith('enter your password')) {
-            console.log(`[AccountParser] Matched Set Password prompt: ${cleanLine}`);
+            addDiagnosticLog?.(`[AccountParser] Set Password prompt detected`);
             if (isMobileRef.current) {
                 creationPromptRef.current = {
                     title: 'Set Password',
@@ -159,7 +170,7 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
             lowerLine.includes('confirm password') ||
             lowerLine.includes('re-type') ||
             lowerLine.includes('verify it matches')) {
-            console.log(`[AccountParser] Matched Verify prompt: ${cleanLine}`);
+            addDiagnosticLog?.(`[AccountParser] Verify prompt detected`);
             if (isMobileRef.current) {
                 creationPromptRef.current = {
                     title: 'Verify Password',
@@ -438,7 +449,7 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
             const rawLine = line.replace(/\x1b\[[0-9;]*m/g, '');
             const cleanName = cleanLine.split(/\s+/)[0];
             const nameValid = /^[a-zA-Z\u00C0-\u024F]{2,15}$/.test(cleanName);
-            console.log(`[AccountParser] Section4: cleanName="${cleanName}" nameValid=${nameValid} logon="${logonMatchLine[1]}" stage=${stageRef.current} line="${cleanLine.substring(0, 50)}"`);
+
             // Allow accented characters (e.g. Rogóring, Hédir, Lúsifér)
             if (!nameValid) return false;
 
