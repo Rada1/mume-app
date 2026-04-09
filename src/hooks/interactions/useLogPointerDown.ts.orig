@@ -24,8 +24,7 @@ export const useLogPointerDown = (
     } = deps;
 
     const handleLogPointerDown = useCallback((e: React.PointerEvent, startDrag: (e: React.PointerEvent, targetEl: HTMLElement, label: string, contextStr: string) => void) => {
-        const targetNode = e.target as Node;
-        const targetEl = (targetNode.nodeType === 3 ? targetNode.parentElement : targetNode as Element)?.closest('.inline-btn') as HTMLElement;
+        const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
         const isShopItem = targetEl?.getAttribute('data-cmd') === 'inline-shopitem';
         const label = targetEl?.innerText.trim() || '';
 
@@ -59,8 +58,8 @@ export const useLogPointerDown = (
                 triggerHaptic(60);
                 return;
             }
-        } 
-        
+        }
+
         // --- 2. Modifier Hotkeys (Look) ---
         else if (targetEl && (joystick.isTargetModifierActive || isTrackpadModifierActive)) {
              if (contextStr) {
@@ -76,7 +75,7 @@ export const useLogPointerDown = (
         // --- 3. Interaction State Setup ---
         if (targetEl) targetEl.classList.add('pressed');
         if (logLongPressTimerRef.current) clearTimeout(logLongPressTimerRef.current);
-        
+
         logDragStartPosRef.current = { x: e.clientX, y: e.clientY };
         isLogDraggingRef.current = false;
 
@@ -99,13 +98,15 @@ export const useLogPointerDown = (
                     }
                 }
 
-                startDrag(e, targetEl, label, contextStr);
+                // --- DRAG-AND-DROP DISABLED ---
+                // To re-enable, uncomment the line below:
+                // startDrag(e, targetEl, label, contextStr);
             }
         }, isMobile ? 350 : 500);
 
     }, [
-        btn, joystick, target, executeCommand, triggerHaptic, setHeldButton, heldButton, 
-        viewport, lastCommandContextRef, keywordOverrides, isTrackpadModifierActive, 
+        btn, joystick, target, executeCommand, triggerHaptic, setHeldButton, heldButton,
+        viewport, lastCommandContextRef, keywordOverrides, isTrackpadModifierActive,
         selectedObjectIds, toggleObjectSelection, lookModFiredRef,
         logLongPressTimerRef, logDragStartPosRef, isLogDraggingRef
     ]);

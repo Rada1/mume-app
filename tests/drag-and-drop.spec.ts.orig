@@ -1,9 +1,6 @@
 import { test, expect } from '@playwright/test';
 
 test('drag and drop inline button to inventory', async ({ page }) => {
-    await page.addInitScript(() => {
-        window.localStorage.setItem('mud-has-seen-onboarding', 'true');
-    });
     // Navigate to the app
     await page.goto('/');
 
@@ -40,13 +37,13 @@ test('drag and drop inline button to inventory', async ({ page }) => {
     await page.mouse.move(page.viewportSize()!.width - 50, page.viewportSize()!.height / 2);
 
     // Wait for drawer to be visible/peeking
-    // await expect(drawer).toHaveClass(/peeking/);
+    await expect(drawer).toHaveClass(/peeking/);
 
     // Drop onto the drawer
     await page.mouse.move(page.viewportSize()!.width - 100, page.viewportSize()!.height / 2);
     await page.mouse.up();
 
     // Check console logs for our debug messages
-    // We can't easily check 'executeCommand' call without mocking, 
+    // We can't easily check 'executeCommand' call without mocking,
     // but we can check if our debug logs were fired.
 });

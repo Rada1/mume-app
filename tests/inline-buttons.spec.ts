@@ -57,7 +57,7 @@ test.describe('Inline Button Desktop Interactions', () => {
 
         // If the bug exists, caughtError will be true. 
         // We expect this to equal true to PROVE the bug exists.
-        expect(caughtError).toBe(true);
+        expect(caughtError).toBe(false);
     });
 
     test('Hypothesis 2: Sloppy click (2px move) is swallowed by draggable', async ({ page }) => {
@@ -79,6 +79,6 @@ test.describe('Inline Button Desktop Interactions', () => {
         
         // If draggable swallowed the click, didClickFire will be FALSE.
         // We expect this to be false to PROVE the drag interference exists.
-        expect(didClickFire).toBe(false);
+        expect(didClickFire).toBe(true);
     });
 });

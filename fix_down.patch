@@ -1,0 +1,22 @@
+--- src/hooks/interactions/useLogPointerDown.ts
++++ src/hooks/interactions/useLogPointerDown.ts
+@@ -19,7 +19,8 @@
+     } = deps;
+
+     const handleLogPointerDown = useCallback((e: React.PointerEvent, startDrag: (e: React.PointerEvent, targetEl: HTMLElement, label: string, contextStr: string) => void) => {
+-        const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
++        const targetNode = e.target as Node;
++        const targetEl = (targetNode.nodeType === 3 ? targetNode.parentElement : targetNode as Element)?.closest('.inline-btn') as HTMLElement;
+         const isShopItem = targetEl?.getAttribute('data-cmd') === 'inline-shopitem';
+         const label = targetEl?.innerText.trim() || '';
+
+@@ -87,9 +88,7 @@
+                     }
+                 }
+
+-                // --- DRAG-AND-DROP DISABLED ---
+-                // To re-enable, uncomment the line below:
+-                // startDrag(e, targetEl, label, contextStr);
++                startDrag(e, targetEl, label, contextStr);
+             }
+         }, isMobile ? 350 : 500);

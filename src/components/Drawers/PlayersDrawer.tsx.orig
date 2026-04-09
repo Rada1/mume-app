@@ -101,7 +101,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                         <div className="where-room" style={{ paddingBottom: '4px', fontSize: 'calc(var(--dynamic-log-size, 16px) * 0.75)' }}>{subtitle}</div>
                     )}
                 </div>
-                <button 
+                <button
                     className={`star-btn ${isFavorite ? 'active' : ''}`}
                     onClick={(e) => toggleFavorite(e, baseName)}
                     title={isFavorite ? "Remove from favorites" : "Add to favorites"}
@@ -129,11 +129,11 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
         return () => ro.disconnect();
     }, [activeTab, isOpen]);
 
-    const DrawerLineItem = React.memo(({ 
-        line, 
-        fontSize 
-    }: { 
-        line: import('../../types').DrawerLine, 
+    const DrawerLineItem = React.memo(({
+        line,
+        fontSize
+    }: {
+        line: import('../../types').DrawerLine,
         fontSize: string
     }) => {
         return (
@@ -142,7 +142,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
     });
 
     return (
-        <div 
+        <div
             className={`character-drawer-overlay ${isOpen ? 'open' : ''}`}
             onClick={handleBackdropClick}
         >
@@ -150,9 +150,8 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                 className={`character-drawer-content log-card-drawer left-drawer ${isOpen ? 'open' : ''}`}
                 onClick={(e) => { if (e.target === e.currentTarget) onClose(); else e.stopPropagation(); }}
                 onPointerDown={(e) => {
-                    const targetNode = e.target as Node;
-                    const target = (targetNode.nodeType === 3 ? targetNode.parentElement : targetNode) as HTMLElement;
-                    if (target?.closest('button') || target?.closest('a') || target?.closest('.inline-btn') || target?.tagName === 'INPUT' || target?.closest('.group-member-row')) return;
+                    const target = e.target as HTMLElement;
+                    if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT' || target.closest('.group-member-row')) return;
                     swipePos.current = { x: e.clientX, y: e.clientY };
                     e.currentTarget.setPointerCapture(e.pointerId);
                 }}
@@ -199,8 +198,8 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                 }}
                 style={{ touchAction: 'pan-y' }}
             >                <div className="drawer-header" style={{ pointerEvents: 'auto', display: 'flex', justifyContent: 'flex-end', padding: '6px 10px', background: 'transparent', gap: '8px' }}>
-                    <button 
-                        style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} 
+                    <button
+                        style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
                         onClick={(e) => { e.stopPropagation(); onClose(); }}
                     >
                         <X size={16} />
@@ -219,7 +218,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                     zIndex: 100,
                     pointerEvents: 'auto'
                 }}>
-                    <div 
+                    <div
                         className={`drawer-tab ${activeTab === 'group' ? 'active' : ''}`}
                         onClick={(e) => { e.stopPropagation(); setActiveTab('group'); triggerHaptic(15); }}
                         style={{
@@ -244,7 +243,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                     >
                         Group
                     </div>
-                    <div 
+                    <div
                         className={`drawer-tab ${activeTab === 'online' ? 'active' : ''}`}
                         onClick={(e) => { e.stopPropagation(); setActiveTab('online'); executeCommand('who', true, true, true, true); triggerHaptic(15); }}
                         style={{
@@ -269,7 +268,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                     >
                         Online
                     </div>
-                    <div 
+                    <div
                         className={`drawer-tab ${activeTab === 'nearby' ? 'active' : ''}`}
                         onClick={(e) => { e.stopPropagation(); setActiveTab('nearby'); executeCommand('where', true, true, true, true); triggerHaptic(15); }}
                         style={{
@@ -326,19 +325,19 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                                 position: 'relative',
                                 minHeight: '120px'
                             }}>
-                                <button className="refresh-button" 
+                                <button className="refresh-button"
                                     onClick={handleRefresh}
-                                    style={{ 
+                                    style={{
                                         position: 'absolute',
                                         top: '12px',
                                         right: '12px',
                                         zIndex: 10,
-                                        background: 'rgba(255,255,255,0.08)', 
-                                        border: '1px solid rgba(255,255,255,0.1)', 
-                                        color: 'rgba(255,255,255,0.6)', 
+                                        background: 'rgba(255,255,255,0.08)',
+                                        border: '1px solid rgba(255,255,255,0.1)',
+                                        color: 'rgba(255,255,255,0.6)',
                                         width: '32px',
                                         height: '32px',
-                                        borderRadius: '16px', 
+                                        borderRadius: '16px',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
@@ -361,10 +360,10 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
 
                                 {whoLines?.length > 0 ? (
                                     whoLines.map(line => (
-                                        <DrawerLineItem 
-                                            key={line.id} 
-                                            line={line} 
-                                            fontSize={infoFontSize} 
+                                        <DrawerLineItem
+                                            key={line.id}
+                                            line={line}
+                                            fontSize={infoFontSize}
                                         />
                                     ))
                                 ) : (
@@ -392,19 +391,19 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                                 position: 'relative',
                                 minHeight: '120px'
                             }}>
-                                <button className="refresh-button" 
+                                <button className="refresh-button"
                                     onClick={handleRefresh}
-                                    style={{ 
+                                    style={{
                                         position: 'absolute',
                                         top: '12px',
                                         right: '12px',
                                         zIndex: 10,
-                                        background: 'rgba(255,255,255,0.08)', 
-                                        border: '1px solid rgba(255,255,255,0.1)', 
-                                        color: 'rgba(255,255,255,0.6)', 
+                                        background: 'rgba(255,255,255,0.08)',
+                                        border: '1px solid rgba(255,255,255,0.1)',
+                                        color: 'rgba(255,255,255,0.6)',
                                         width: '32px',
                                         height: '32px',
-                                        borderRadius: '16px', 
+                                        borderRadius: '16px',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
@@ -427,10 +426,10 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
 
                                 {whereLines?.length > 0 ? (
                                     whereLines.map(line => (
-                                        <DrawerLineItem 
-                                            key={line.id} 
-                                            line={line} 
-                                            fontSize={infoFontSize} 
+                                        <DrawerLineItem
+                                            key={line.id}
+                                            line={line}
+                                            fontSize={infoFontSize}
                                         />
                                     ))
                                 ) : (
