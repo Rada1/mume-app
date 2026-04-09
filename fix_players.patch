@@ -1,0 +1,13 @@
+--- src/components/Drawers/PlayersDrawer.tsx
++++ src/components/Drawers/PlayersDrawer.tsx
+@@ -150,7 +150,8 @@
+                 className={`character-drawer-content log-card-drawer left-drawer ${isOpen ? 'open' : ''}`}
+                 onClick={(e) => { if (e.target === e.currentTarget) onClose(); else e.stopPropagation(); }}
+                 onPointerDown={(e) => {
+-                    const target = e.target as HTMLElement;
+-                    if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT' || target.closest('.group-member-row')) return;
++                    const targetNode = e.target as Node;
++                    const target = (targetNode.nodeType === 3 ? targetNode.parentElement : targetNode) as HTMLElement;
++                    if (target?.closest('button') || target?.closest('a') || target?.closest('.inline-btn') || target?.tagName === 'INPUT' || target?.closest('.group-member-row')) return;
+                     swipePos.current = { x: e.clientX, y: e.clientY };
+                     e.currentTarget.setPointerCapture(e.pointerId);

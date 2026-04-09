@@ -127,7 +127,8 @@ export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.Muta
 
     const handleLogPointerDown = useCallback((e: React.PointerEvent) => {
         initAudio(); // Sound fix
-        const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
+        const targetNode = e.target as Node;
+        const targetEl = (targetNode.nodeType === 3 ? targetNode.parentElement : targetNode as Element)?.closest('.inline-btn') as HTMLElement;
         activeTargetElRef.current = targetEl;
         activePressedRectRef.current = targetEl ? targetEl.getBoundingClientRect() : null;
         isShopItemRef.current = targetEl?.getAttribute('data-cmd') === 'inline-shopitem';

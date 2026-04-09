@@ -1,0 +1,21 @@
+--- src/hooks/interactions/useLogClicks.ts
++++ src/hooks/interactions/useLogClicks.ts
+@@ -28,7 +28,8 @@
+     const handleLogDoubleClick = useCallback((e: React.MouseEvent) => {
+         let selection = window.getSelection()?.toString().trim();
+
+         if (!selection) {
+-            const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
++            const targetNode = e.target as Node;
++            const targetEl = (targetNode.nodeType === 3 ? targetNode.parentElement : targetNode as Element)?.closest('.inline-btn') as HTMLElement;
+             if (targetEl) {
+                 selection = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
+@@ -94,7 +95,8 @@
+         if (ui.mapExpanded && viewport.isMobile) return;
+
+         const now = Date.now();
+-        const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
++        const targetNode = e.target as Node;
++        const targetEl = (targetNode.nodeType === 3 ? targetNode.parentElement : targetNode as Element)?.closest('.inline-btn') as HTMLElement;
+
+         const doubleTapThreshold = viewport.isMobile ? 400 : 300;

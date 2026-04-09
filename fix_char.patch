@@ -1,0 +1,24 @@
+--- src/components/Drawers/CharacterDrawer.tsx
++++ src/components/Drawers/CharacterDrawer.tsx
+@@ -149,7 +149,8 @@
+             <div
+                 className={`character-drawer-content log-card-drawer ${isOpen ? 'open' : ''}`}
+                 onClick={(e) => {
+-                    const target = e.target as HTMLElement;
+-                    if (target.closest('.inline-btn')) {
++                    const targetNode = e.target as Node;
++                    const target = (targetNode.nodeType === 3 ? targetNode.parentElement : targetNode) as HTMLElement;
++                    if (target?.closest('.inline-btn')) {
+                         handleLogClick(e);
+                     } else if (e.target === e.currentTarget) {
+@@ -159,7 +160,8 @@
+                     }
+                 }}
+                 onPointerDown={(e) => {
+-                    const target = e.target as HTMLElement;
+-                    if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT') return;
++                    const targetNode = e.target as Node;
++                    const target = (targetNode.nodeType === 3 ? targetNode.parentElement : targetNode) as HTMLElement;
++                    if (target?.closest('button') || target?.closest('a') || target?.closest('.inline-btn') || target?.tagName === 'INPUT') return;
+                     swipePos.current = { x: e.clientX, y: e.clientY };
+                     e.currentTarget.setPointerCapture(e.pointerId);

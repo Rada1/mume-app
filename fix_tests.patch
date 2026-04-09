@@ -1,0 +1,11 @@
+--- tests/ui.spec.ts
++++ tests/ui.spec.ts
+@@ -3,6 +3,9 @@
+ test.describe('UI Components', () => {
+     test.beforeEach(async ({ page }) => {
++        await page.addInitScript(() => {
++            window.localStorage.setItem('mud-has-seen-onboarding', 'true');
++        });
+         await page.goto('/');
+         await page.waitForSelector('.app-container', { timeout: 15000 });
+     });

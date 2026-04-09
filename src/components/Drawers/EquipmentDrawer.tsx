@@ -53,9 +53,10 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     const drawerRef = React.useRef<HTMLDivElement>(null);
 
     const onPointerDownInternal = (e: React.PointerEvent) => {
-        const target = e.target as HTMLElement;
+        const targetNode = e.target as Node;
+        const target = (targetNode.nodeType === 3 ? targetNode.parentElement : targetNode) as HTMLElement;
         const container = e.currentTarget as HTMLElement;
-        if (target.closest('.inline-btn')) {
+        if (target?.closest('.inline-btn')) {
             handleLogPointerDown(e);
             return;
         }
@@ -66,9 +67,10 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     };
 
     const onPointerUpInternal = (e: React.PointerEvent) => {
-        const target = e.target as HTMLElement;
+        const targetNode = e.target as Node;
+        const target = (targetNode.nodeType === 3 ? targetNode.parentElement : targetNode) as HTMLElement;
         const container = e.currentTarget as HTMLElement;
-        if (target.closest('.inline-btn')) {
+        if (target?.closest('.inline-btn')) {
             handleLogPointerUp(e);
             return;
         }
@@ -89,8 +91,9 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     };
 
     const onClickInternal = (e: React.MouseEvent) => {
-        const target = e.target as HTMLElement;
-        const btn = target.closest('.inline-btn') as HTMLElement;
+        const targetNode = e.target as Node;
+        const target = (targetNode.nodeType === 3 ? targetNode.parentElement : targetNode) as HTMLElement;
+        const btn = target?.closest('.inline-btn') as HTMLElement;
         if (btn) {
             handleLogClick(e);
         } else {

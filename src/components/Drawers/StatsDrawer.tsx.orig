@@ -31,7 +31,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
     const activeSpells = useMemo(() => {
         const spells: string[] = [];
         let inSpellsSection = false;
-        
+
         for (const line of statsLines) {
             const text = line.text.trim();
             if (text.startsWith('Affecting Spells:') || text.startsWith('Affected by:')) {
@@ -65,9 +65,8 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
         <div
             className={`stats-drawer log-card-drawer left-drawer ${isOpen ? 'open' : ''} ${isLandscape ? 'landscape-mode' : ''}`}
             onPointerDown={(e) => {
-                const targetNode = e.target as Node;
-                const target = (targetNode.nodeType === 3 ? targetNode.parentElement : targetNode) as HTMLElement;
-                if (target?.closest('button') || target?.closest('a') || target?.closest('.inline-btn') || target?.tagName === 'INPUT') return;
+                const target = e.target as HTMLElement;
+                if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT') return;
                 e.currentTarget.setPointerCapture(e.pointerId);
                 (e.currentTarget as any)._startX = e.clientX;
                 (e.currentTarget as any)._startY = e.clientY;
@@ -80,7 +79,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                     const deltaY = e.clientY - (startY || 0);
                     const absX = Math.abs(deltaX);
                     const absY = Math.abs(deltaY);
-                    
+
                     if ((deltaY > 50 && absY > absX) || (deltaX < -40 && absX > absY)) {
                         triggerHaptic(40);
                         onClose();
@@ -94,26 +93,26 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
             }}
             style={{ touchAction: 'pan-y' }}
         >
-            <div className="drawer-content" style={{ 
-                flex: 1, 
-                overflowY: 'auto', 
-                WebkitOverflowScrolling: 'touch', 
-                padding: isLandscape ? '5px 15px 40px 15px' : '20px 15px 40px 15px', 
-                position: 'relative', 
+            <div className="drawer-content" style={{
+                flex: 1,
+                overflowY: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                padding: isLandscape ? '5px 15px 40px 15px' : '20px 15px 40px 15px',
+                position: 'relative',
                 touchAction: 'pan-y',
                 display: 'flex',
                 flexDirection: 'column'
             }}>
-                
-                <div className="inner-container" style={{ 
-                    flex: 1, 
+
+                <div className="inner-container" style={{
+                    flex: 1,
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '20px'
                 }}>
                     {/* Top Section: Settings & Potential in Grid */}
-                    <div style={{ 
-                        display: 'grid', 
+                    <div style={{
+                        display: 'grid',
                         gridTemplateColumns: '90px 1fr',
                         gap: '4px 6px',
                         alignItems: 'stretch',
@@ -129,10 +128,10 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                             activeButtonRect={activeButtonRect}
                             activeColor={mood === 'berserk' ? '#f87171' : 'var(--accent)'}
                             onToggle={(e) => {
-                                triggerHaptic(10); 
+                                triggerHaptic(10);
                                 const rect = e.currentTarget.getBoundingClientRect();
                                 setActiveButtonRect(rect);
-                                setActiveSlider(activeSlider === 'mood' ? null : 'mood'); 
+                                setActiveSlider(activeSlider === 'mood' ? null : 'mood');
                             }}
                             onSelect={(val) => {
                                 setMood(val);
@@ -146,7 +145,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                         />
 
                         {/* Right: Potential Stats (Col 2, Row 1-4) - We'll keep it next to Mood */}
-                        <div style={{ 
+                        <div style={{
                             display: 'flex',
                             flexWrap: 'nowrap',
                             gap: '4px',
@@ -169,8 +168,8 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                             ].map(stat => {
                                 const valStr = stat.value !== undefined ? String(stat.value) : '--';
                                 return (
-                                    <div key={stat.label} style={{ 
-                                        display: 'flex', 
+                                    <div key={stat.label} style={{
+                                        display: 'flex',
                                         flexDirection: 'column',
                                         alignItems: 'center',
                                         flex: 1
@@ -192,10 +191,10 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                             activeButtonRect={activeButtonRect}
                             activeColor="var(--accent)"
                             onToggle={(e) => {
-                                triggerHaptic(10); 
+                                triggerHaptic(10);
                                 const rect = e.currentTarget.getBoundingClientRect();
                                 setActiveButtonRect(rect);
-                                setActiveSlider(activeSlider === 'spell' ? null : 'spell'); 
+                                setActiveSlider(activeSlider === 'spell' ? null : 'spell');
                             }}
                             onSelect={(val) => {
                                 setSpellSpeed(val);
@@ -218,10 +217,10 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                             activeButtonRect={activeButtonRect}
                             activeColor={alertness === 'paranoid' ? '#fbbf24' : 'var(--accent)'}
                             onToggle={(e) => {
-                                triggerHaptic(10); 
+                                triggerHaptic(10);
                                 const rect = e.currentTarget.getBoundingClientRect();
                                 setActiveButtonRect(rect);
-                                setActiveSlider(activeSlider === 'alert' ? null : 'alert'); 
+                                setActiveSlider(activeSlider === 'alert' ? null : 'alert');
                             }}
                             onSelect={(val) => {
                                 setAlertness(val);

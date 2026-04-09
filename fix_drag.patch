@@ -1,0 +1,10 @@
+--- tests/drag-and-drop.spec.ts
++++ tests/drag-and-drop.spec.ts
+@@ -2,6 +2,9 @@
+
+ test('drag and drop inline button to inventory', async ({ page }) => {
++    await page.addInitScript(() => {
++        window.localStorage.setItem('mud-has-seen-onboarding', 'true');
++    });
+     // Navigate to the app
+     await page.goto('/');

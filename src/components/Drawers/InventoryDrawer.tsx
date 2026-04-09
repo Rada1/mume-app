@@ -91,10 +91,11 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     };
 
     const onPointerDownInternal = (e: React.PointerEvent) => {
-        const target = e.target as HTMLElement;
+        const targetNode = e.target as Node;
+        const target = (targetNode.nodeType === 3 ? targetNode.parentElement : targetNode) as HTMLElement;
         const container = e.currentTarget as HTMLElement;
-        if (target.closest('.inline-btn') || target.closest('.drawer-tab')) {
-            if (target.closest('.inline-btn')) handleLogPointerDown(e);
+        if (target?.closest('.inline-btn') || target?.closest('.drawer-tab')) {
+            if (target?.closest('.inline-btn')) handleLogPointerDown(e);
             return;
         }
         container.dataset.swipeX = e.clientX.toString();
@@ -103,10 +104,11 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     };
 
     const onPointerUpInternal = (e: React.PointerEvent) => {
-        const target = e.target as HTMLElement;
+        const targetNode = e.target as Node;
+        const target = (targetNode.nodeType === 3 ? targetNode.parentElement : targetNode) as HTMLElement;
         const container = e.currentTarget as HTMLElement;
-        if (target.closest('.inline-btn') || target.closest('.drawer-tab')) {
-            if (target.closest('.inline-btn')) handleLogPointerUp(e);
+        if (target?.closest('.inline-btn') || target?.closest('.drawer-tab')) {
+            if (target?.closest('.inline-btn')) handleLogPointerUp(e);
             return;
         }
         const sx = parseFloat(container.dataset.swipeX || "0");
@@ -125,11 +127,12 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     };
 
     const onClickInternal = (e: React.MouseEvent) => {
-        const target = e.target as HTMLElement;
-        const btn = target.closest('.inline-btn') as HTMLElement;
+        const targetNode = e.target as Node;
+        const target = (targetNode.nodeType === 3 ? targetNode.parentElement : targetNode) as HTMLElement;
+        const btn = target?.closest('.inline-btn') as HTMLElement;
         if (btn) {
             handleLogClick(e);
-        } else if (!target.closest('.drawer-tab')) {
+        } else if (!target?.closest('.drawer-tab')) {
             if (selectedObjectIds.size > 0) clearObjectSelection();
         }
     };

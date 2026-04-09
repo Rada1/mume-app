@@ -29,8 +29,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         let selection = window.getSelection()?.toString().trim();
 
         if (!selection) {
-            const targetNode = e.target as Node;
-            const targetEl = (targetNode.nodeType === 3 ? targetNode.parentElement : targetNode as Element)?.closest('.inline-btn') as HTMLElement;
+            const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
             if (targetEl) {
                 selection = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
             } else {
@@ -95,8 +94,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         if (ui.mapExpanded && viewport.isMobile) return;
 
         const now = Date.now();
-        const targetNode = e.target as Node;
-        const targetEl = (targetNode.nodeType === 3 ? targetNode.parentElement : targetNode as Element)?.closest('.inline-btn') as HTMLElement;
+        const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
 
         const doubleTapThreshold = viewport.isMobile ? 400 : 300;
 
@@ -129,10 +127,10 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             lastLogClickRef.current = now;
             return;
         }
-        
+
         const isLong = isJoystickTargetActiveRef.current;
         const isMod = isTrackpadModifierActiveRef.current;
- 
+
         if (selectedObjectIds.size > 0 && targetEl && !isLong && !isMod) {
             // Absorb the click that always fires after a long-press selection to
             // prevent it from immediately un-toggling the item that was just added.
@@ -220,7 +218,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             let x = e.clientX;
             let y = e.clientY;
 
-            // If coordinates are 0 (can happen on some mobile interactions), 
+            // If coordinates are 0 (can happen on some mobile interactions),
             // fallback to the element's position or the native event.
             if (!x && !y) {
                 const native = e.nativeEvent as MouseEvent;
