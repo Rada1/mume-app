@@ -25,7 +25,10 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     uiPositions, isEditMode, handleDragStart, characterName, isMmapperMode, isMobile, mapperRef,
     dragState, isLandscape, wasDraggingRef, heldButton, setHeldButton, setCommandPreview
 }) => {
-    const { triggerHaptic, showControls, viewport, btn, handleButtonClick, executeCommand, joystick } = useGame();
+    const { 
+        triggerHaptic, showControls, viewport, btn, handleButtonClick, executeCommand, joystick,
+        handleTabClick, toggleMap 
+    } = useGame();
     const { target, activePrompt, stats } = useVitals();
     const { ui, setUI, setPopoverState } = useUI();
     const { isMapFloating, setIsMapFloating } = useMapper();
@@ -74,33 +77,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     if (isMobile && !isMapFloating) {
         const isShown = ui.mapExpanded || (ui.peekingDrawer === 'map');
         
-        const handleTabClick = (drawer: 'stats' | 'character' | 'inventory' | 'players') => {
-            triggerHaptic(30);
-            if (ui.drawer === drawer) {
-                setUI(prev => ({ ...prev, drawer: 'none' }));
-            } else {
-                setUI(prev => ({ ...prev, drawer }));
-                // Fetch fresh data when opening
-                if (drawer === 'stats') {
-                   executeCommand('stat', true, true, true, true);
-                   setTimeout(() => executeCommand('at', true, true, true, true), 100);
-                } else if (drawer === 'character') {
-                    executeCommand('info', true, true, true, true);
-                    setTimeout(() => executeCommand('score', true, true, true, true), 100);
-                    setTimeout(() => executeCommand('at', true, true, true, true), 200);
-                    setTimeout(() => executeCommand('look self', true, true, true, true), 300);
-                    setTimeout(() => executeCommand('whois', true, true, true, true), 400);
-                    setTimeout(() => executeCommand('quest', true, true, true, true), 500);
-                    setTimeout(() => executeCommand('practice', true, true, true, true), 600);
-                } else if (drawer === 'inventory') {
-                    executeCommand('eq', true, true, true, true);
-                    setTimeout(() => executeCommand('inv', true, true, true, true), 100);
-                } else if (drawer === 'players') {
-                    executeCommand('who', true, true, true, true);
-                }
-            }
-        };
-
         return (
             <div 
                 className={`mobile-bottom-gutter ${isShown ? 'map-expanded' : ''}`}
@@ -223,7 +199,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     </div>
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'none' ? 'active' : ''}`}
-                        onClick={() => setUI(prev => ({ ...prev, drawer: 'none', peekingSource: 'none' }))}
+                        onClick={() => toggleMap()}
                     >
                         <MapIcon className="tab-icon" />
                         <span className="tab-text">Map</span>

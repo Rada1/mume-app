@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { X, User, Activity, BookOpen, Coins, ChevronRight, RefreshCw, ScrollText, Edit3, HelpCircle, Save, RotateCcw } from 'lucide-react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { X, BookOpen, ChevronRight, RefreshCw, ScrollText, Save, RotateCcw } from 'lucide-react';
 import { useGame, useVitals } from '../../context/GameContext';
-import { PracticeSkill } from '../../types';
-import PracticeColumnHeaderCard from '../PracticeColumnHeaderCard';
-import PracticeClassHeaderCard from '../PracticeClassHeaderCard';
-import PracticeSkillCard from '../PracticeSkillCard';
+import { DrawerLine } from '../../types';
+import { isObjectSelected } from '../../utils/selectionUtils';
+import { getCategoryForName } from '../../utils/categorizationUtils';
+import { sanitizeMumeHtml } from '../../utils/securityUtils';
 import './CharacterDrawer.css';
 
 interface CharacterDrawerProps {
@@ -19,7 +19,15 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
     executeCommand: propsExecuteCommand
 }) => {
     const [activeTab, setActiveTab] = useState<'info' | 'practice' | 'quests'>('info');
-    const { practice, quests, executeCommand: contextExecuteCommand } = useGame();
+    const { 
+        practice, 
+        quests, 
+        executeCommand: contextExecuteCommand,
+        statsLines,
+        practiceLines,
+        selectedObjectIds,
+        handleLogClick
+    } = useGame();
     const { characterInfo } = useVitals();
     
     // Prioritize context executeCommand if available, fallback to props
@@ -33,44 +41,108 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
     const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
     const questPointerStartRef = useRef<{ x: number; y: number; id: string } | null>(null);
 
+    const infoContainerRef = useRef<HTMLDivElement>(null);
+    const [infoFontSize, setInfoFontSize] = useState<string>('inherit');
+
+    useEffect(() => {
+        if (!infoContainerRef.current || (activeTab !== 'info' && activeTab !== 'practice')) return;
+        const measure = () => {
+            const width = infoContainerRef.current?.clientWidth;
+            if (width) setInfoFontSize(`${width / 48}px`);
+        };
+        measure();
+        const ro = new ResizeObserver(measure);
+        ro.observe(infoContainerRef.current);
+        return () => ro.disconnect();
+    }, [activeTab, isOpen]);
+
     useEffect(() => {
         if (isOpen && characterInfo) {
             if (!isEditingTitle) setTempTitle(characterInfo.name || '');
         }
     }, [isOpen, characterInfo, isEditingTitle]);
 
-    const [isSelectingClass, setIsSelectingClass] = useState(false);
-    const classes = ['Adventurer', 'Apprentice', 'Pilferer', 'Recruit', 'Sentry'];
-
     const handleSaveTitle = () => {
         executeCommand(`change title ${tempTitle}`);
         setIsEditingTitle(false);
-    };
-
-    const info = characterInfo || {
-        name: 'Unknown', level: 0, xp: 0, xpMax: 0, tp: 0, tpMax: 0,
-        race: 'Unknown', subclass: 'None', subrace: 'None', gold: 0,
-        alignment: '', warPoints: 0, actsForWar: 0,
-        stats: { str: 0, int: 0, wis: 0, dex: 0, con: 0, wil: 0, per: 0 }
     };
 
     const handleBackdropClick = (e: React.MouseEvent) => {
         if (e.target === e.currentTarget) onClose();
     };
 
-    const formatNumber = (num: number) => new Intl.NumberFormat().format(num);
-
     const handleRefresh = (e: React.MouseEvent) => {
         e.stopPropagation();
         executeCommand('info', true);
         executeCommand('score', true);
-        executeCommand('at', true);
-        executeCommand('look self', true);
-        executeCommand('whois', true);
         executeCommand('quest', true);
     };
 
     const swipePos = useRef<{ x: number, y: number } | null>(null);
+
+    const DrawerLineItem = React.memo(({ 
+        line, 
+        selectedObjectIds, 
+        fontSize 
+    }: { 
+        line: DrawerLine, 
+        selectedObjectIds: Set<string>,
+        fontSize: string
+    }) => {
+        const depth = line.depth || 0;
+        const prefixId = 'statsLines';
+        const cmdId = 'inline-obj-char';
+        const fullId = `${prefixId}:${line.entityId || line.id}:${line.context || line.id}`;
+        const isSelected = isObjectSelected(selectedObjectIds, fullId, cmdId);
+
+        const cat = getCategoryForName(line.text);
+        const isActuallyContainer = line.isContainer || cat === 'inline-containers';
+        const brown = 'rgba(180, 100, 50, 0.9)';
+        const dim = 'rgba(255,255,255,0.4)';
+
+        if (line.isItem) {
+            const articleMatch = line.text.match(/^(a |an |the |some )/i);
+            const article = articleMatch ? articleMatch[1] : '';
+            const afterArticle = line.text.slice(article.length);
+            const condMatch = afterArticle.match(/\s+(\((flawless|well-maintained|worn|scratched|damaged|beaten|battered|beaten and battered|shabby|sub-standard|poor|fragmented|broken|shattered)\))$/i);
+            const condition = condMatch ? condMatch[1] : '';
+            const itemName = condMatch ? afterArticle.slice(0, afterArticle.length - condMatch[0].length) : afterArticle;
+
+            return (
+                <div style={{ display: 'block', whiteSpace: 'pre', lineHeight: '1.2', margin: '0', padding: '0', paddingLeft: `${depth * 8}px`, fontSize }}>
+                    {line.prefix && <span style={{ color: dim }}>{line.prefix}</span>}
+                    <span style={{ color: dim }}>{article}</span>
+                    <span
+                        className={`inline-btn auto-item ${isSelected ? 'selected-item' : ''} ${isActuallyContainer ? 'is-container' : ''}`}
+                        data-id={fullId}
+                        data-line-id={line.id}
+                        data-context={line.context || line.id}
+                        data-action="menu"
+                        data-category={cat || undefined}
+                        data-cmd={cmdId}
+                        style={{
+                            display: 'inline',
+                            lineHeight: '1.2',
+                            padding: '0',
+                            margin: '0',
+                            background: isSelected ? `rgba(180,100,50,0.15)` : 'transparent',
+                            border: 'none',
+                            borderRadius: '0',
+                            boxShadow: 'none',
+                            cursor: 'default',
+                            color: brown,
+                            whiteSpace: 'pre',
+                        }}
+                    >{itemName}</span>
+                    {condition && <span style={{ color: dim }}> {condition}</span>}
+                </div>
+            );
+        }
+
+        return (
+            <div style={{ paddingLeft: `${depth * 8}px`, lineHeight: '1.2', whiteSpace: 'pre-wrap', fontSize }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }} />
+        );
+    });
 
     return (
         <div 
@@ -79,7 +151,16 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
         >
             <div
                 className={`character-drawer-content log-card-drawer ${isOpen ? 'open' : ''}`}
-                onClick={(e) => { if (e.target === e.currentTarget) onClose(); else e.stopPropagation(); }}
+                onClick={(e) => { 
+                    const target = e.target as HTMLElement;
+                    if (target.closest('.inline-btn')) {
+                        handleLogClick(e);
+                    } else if (e.target === e.currentTarget) {
+                        onClose();
+                    } else {
+                        e.stopPropagation(); 
+                    }
+                }}
                 onPointerDown={(e) => {
                     const target = e.target as HTMLElement;
                     if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT') return;
@@ -93,7 +174,6 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                         const absX = Math.abs(deltaX);
                         const absY = Math.abs(deltaY);
 
-                        // Swipe down OR swipe right to close
                         if ((deltaY > 50 && absY > absX) || (deltaX > 40 && absX > absY)) {
                             onClose();
                         }
@@ -114,7 +194,6 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                     </button>
                 </div>
 
-                {/* Vertical Side Tabs */}
                 <div className="side-tabs-container" style={{
                     position: 'absolute',
                     right: '4px',
@@ -205,156 +284,138 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
 
                 <div className="drawer-body" style={{ pointerEvents: 'auto', marginRight: '22px' }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
                     {activeTab === 'info' ? (
-                        <div className="info-tab">
-                            <div className="char-profile">
-                                <div className="char-main-info">
-                                    <div className="char-name-row">
-                                        {isEditingTitle ? (
-                                            <div className="inline-title-editor">
-                                                <input 
-                                                    type="text" 
-                                                    value={tempTitle}
-                                                    onChange={(e) => setTempTitle(e.target.value)}
-                                                    autoFocus
-                                                />
-                                                <button className="save-icon-button" onClick={handleSaveTitle}><Save size={16} /></button>
-                                                <button className="cancel-icon-button" onClick={() => setIsEditingTitle(false)}><RotateCcw size={16} /></button>
-                                            </div>
-                                        ) : (
-                                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                                                <h2>{info.name || 'Unknown Traveler'}</h2>
-                                                <span className="level-badge">Lv {characterInfo.level}</span>
-                                            </div>
-                                        )}
-                                    </div>
-                                    <p style={{ marginTop: '2px' }}>{characterInfo.race} {characterInfo.subrace} {characterInfo.subclass || characterInfo.class}</p>
-                                    <div className="char-meta-row">
-                                        {characterInfo.level < 21 ? (
-                                            <div className="class-selection-container">
-                                                <button 
-                                                    className="change-class-button"
-                                                    onClick={() => setIsSelectingClass(!isSelectingClass)}
-                                                >
-                                                    {isSelectingClass ? 'Cancel' : 'Change Class'}
-                                                </button>
-                                                {isSelectingClass && (
-                                                    <div className="class-menu">
-                                                        {classes.map(cls => (
-                                                            <button 
-                                                                key={cls} 
-                                                                onClick={() => {
-                                                                    executeCommand(`change class ${cls.toLowerCase()}`);
-                                                                    setIsSelectingClass(false);
-                                                                }}
-                                                            >
-                                                                {cls}
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ) : (
-                                            <button className="edit-section-button" onClick={() => setIsEditingTitle(true)}>
-                                                <Edit3 size={12} /> Custom Title
-                                            </button>
-                                        )}
-                                        <button className="refresh-info-button" onClick={handleRefresh} style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', padding: '4px' }}>
-                                            <RefreshCw size={14} />
-                                        </button>
-                                    </div>
-                                    {characterInfo.alignment && (
-                                        <p style={{ color: 'var(--accent)', opacity: 0.8, fontSize: 'var(--dynamic-log-size, 16px)', marginTop: '4px', fontStyle: 'italic' }}>{characterInfo.alignment}</p>
-                                    )}
-                                </div>
-                            </div>
+                        <div className="info-tab" style={{ position: 'relative' }}>
+                            <div ref={infoContainerRef} style={{
+                                fontFamily: 'var(--font-main, monospace)',
+                                fontSize: infoFontSize,
+                                lineHeight: '1.2',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '0',
+                                background: 'rgba(10, 13, 21, 0.35)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                borderRadius: '16px',
+                                padding: '16px 12px',
+                                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                                margin: '8px 0',
+                                position: 'relative',
+                                minHeight: '120px'
+                            }}>
+                                <button className="refresh-button" 
+                                    onClick={(e) => { handleRefresh(e); practice.setSilentSyncPending(false); }} 
+                                    style={{ 
+                                        position: 'absolute',
+                                        top: '12px',
+                                        right: '12px',
+                                        zIndex: 10,
+                                        background: 'rgba(255,255,255,0.08)', 
+                                        border: '1px solid rgba(255,255,255,0.1)', 
+                                        color: 'rgba(255,255,255,0.6)', 
+                                        width: '32px',
+                                        height: '32px',
+                                        borderRadius: '16px', 
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease',
+                                        backdropFilter: 'blur(4px)'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
+                                        e.currentTarget.style.color = '#fff';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+                                        e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+                                    }}
+                                    title="Refresh"
+                                >
+                                    <RefreshCw size={16} />
+                                </button>
 
-                            <div className="stats-grid">
-                                <div className="stat-card gold info-section-glass">
-                                    <div className="stat-label"><Coins size={14} /> Gold</div>
-                                    <div className="stat-value" style={{ color: '#4ade80' }}>{formatNumber(info.gold)}</div>
-                                </div>
-                                
-                                <div className="base-stats-section info-section-glass">
-                                    <h3>Base Stats</h3>
-                                    <div className="base-stats-grid">
-                                        <div className="base-stat-item"><span>Str</span> <strong style={{ color: '#4ade80' }}>{info.stats?.str || 0}</strong></div>
-                                        <div className="base-stat-item"><span>Int</span> <strong style={{ color: '#4ade80' }}>{info.stats?.int || 0}</strong></div>
-                                        <div className="base-stat-item"><span>Wis</span> <strong style={{ color: '#4ade80' }}>{info.stats?.wis || 0}</strong></div>
-                                        <div className="base-stat-item"><span>Dex</span> <strong style={{ color: '#4ade80' }}>{info.stats?.dex || 0}</strong></div>
-                                        <div className="base-stat-item"><span>Con</span> <strong style={{ color: '#4ade80' }}>{info.stats?.con || 0}</strong></div>
-                                        <div className="base-stat-item"><span>Wil</span> <strong style={{ color: '#4ade80' }}>{info.stats?.wil || 0}</strong></div>
-                                        <div className="base-stat-item"><span>Per</span> <strong style={{ color: '#4ade80' }}>{info.stats?.per || 0}</strong></div>
+                                {statsLines?.length > 0 ? (
+                                    statsLines.map(line => (
+                                        <DrawerLineItem 
+                                            key={line.id} 
+                                            line={line} 
+                                            selectedObjectIds={selectedObjectIds} 
+                                            fontSize={infoFontSize} 
+                                        />
+                                    ))
+                                ) : (
+                                    <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
+                                        <p style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontStyle: 'italic' }}>No character data captured.</p>
                                     </div>
-                                </div>
-
-                                <div className="stat-section info-section-glass" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
-                                    <div className="progress-container">
-                                        <div className="progress-labels">
-                                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-                                                <span style={{ color: 'var(--accent)', fontWeight: '800', fontSize: 'var(--dynamic-log-size, 16px)' }}>XP</span>
-                                                <span style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: '#4ade80', fontWeight: 'bold' }}>{formatNumber(info.xp)}</span>
-                                            </div>
-                                            <span style={{ fontSize: 'var(--dynamic-log-size, 16px)', opacity: 0.9, fontWeight: '800' }}>{Math.floor((info.xp / (info.xpMax || 1)) * 100)}%</span>
-                                        </div>
-                                        <div className="progress-bar-bg">
-                                            <div className="progress-bar-fill xp" style={{ width: `${Math.min(100, (info.xp / (info.xpMax || 1)) * 100)}%` }} />
-                                        </div>
-                                        <div className="progress-footer">
-                                            <span className="total-label" style={{ color: '#fff', opacity: 1 }}>Target: {formatNumber(info.xpMax)}</span>
-                                            <span className="needed-label">Needed: <span style={{ color: '#4ade80' }}>+{formatNumber(Math.max(0, info.xpMax - info.xp))}</span></span>
-                                        </div>
-                                    </div>
-                                    <div className="progress-container">
-                                        <div className="progress-labels">
-                                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-                                                <span style={{ color: '#60a5fa', fontWeight: '800', fontSize: 'var(--dynamic-log-size, 16px)' }}>TP</span>
-                                                <span style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: '#4ade80', fontWeight: 'bold' }}>{formatNumber(info.tp)}</span>
-                                            </div>
-                                            <span style={{ fontSize: 'var(--dynamic-log-size, 16px)', opacity: 0.9, fontWeight: '800' }}>{Math.floor((info.tp / (info.tpMax || 1)) * 100)}%</span>
-                                        </div>
-                                        <div className="progress-bar-bg">
-                                            <div className="progress-bar-fill tp" style={{ width: `${Math.min(100, (info.tp / (info.tpMax || 1)) * 100)}%` }} />
-                                        </div>
-                                        <div className="progress-footer">
-                                            <span className="total-label" style={{ color: '#fff', opacity: 1 }}>Target: {formatNumber(info.tpMax)}</span>
-                                            <span className="needed-label">Needed: <span style={{ color: '#4ade80' }}>+{formatNumber(Math.max(0, info.tpMax - info.tp))}</span></span>
-                                        </div>
-                                    </div>
-                                </div>
+                                )}
                             </div>
                         </div>
                     ) : activeTab === 'practice' ? (
-                        <div className="practice-tab">
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
-                                <button className="refresh-button" onClick={() => executeCommand('practice')} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#fff', padding: '4px 10px', borderRadius: '8px', fontSize: 'var(--dynamic-log-size, 16px)', fontWeight: '700' }}>
-                                    Refresh
+                        <div className="practice-tab" style={{ position: 'relative' }}>
+                            <div ref={infoContainerRef} style={{
+                                fontFamily: 'var(--font-main, monospace)',
+                                fontSize: infoFontSize,
+                                lineHeight: '1.2',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '0',
+                                background: 'rgba(10, 13, 21, 0.35)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                borderRadius: '16px',
+                                padding: '16px 12px',
+                                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                                margin: '8px 0',
+                                position: 'relative',
+                                minHeight: '120px'
+                            }}>
+                                <button className="refresh-button" 
+                                    onClick={() => { practice.setIsUiRequested(true); executeCommand('practice'); }} 
+                                    style={{ 
+                                        position: 'absolute',
+                                        top: '12px',
+                                        right: '12px',
+                                        zIndex: 10,
+                                        background: 'rgba(255,255,255,0.08)', 
+                                        border: '1px solid rgba(255,255,255,0.1)', 
+                                        color: 'rgba(255,255,255,0.6)', 
+                                        width: '32px',
+                                        height: '32px',
+                                        borderRadius: '16px', 
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease',
+                                        backdropFilter: 'blur(4px)'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
+                                        e.currentTarget.style.color = '#fff';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+                                        e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+                                    }}
+                                    title="Refresh"
+                                >
+                                    <RefreshCw size={16} />
                                 </button>
+
+                                {practiceLines?.length > 0 ? (
+                                    practiceLines.map(line => (
+                                        <DrawerLineItem 
+                                            key={line.id} 
+                                            line={line} 
+                                            selectedObjectIds={selectedObjectIds} 
+                                            fontSize={infoFontSize} 
+                                        />
+                                    ))
+                                ) : (
+                                    <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
+                                        <p style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontStyle: 'italic' }}>No practice data captured.</p>
+                                    </div>
+                                )}
                             </div>
-                            {practiceData?.skills && practiceData.skills.length > 0 ? (
-                                <>
-                                    <PracticeColumnHeaderCard />
-                                    {Object.entries(
-                                        practiceData.skills.reduce((acc: Record<string, PracticeSkill[]>, skill: PracticeSkill) => {
-                                            const category = skill.skillClass || 'Known';
-                                            if (!acc[category]) acc[category] = [];
-                                            acc[category].push(skill);
-                                            return acc;
-                                        }, {})
-                                    ).map(([category, skills]) => (
-                                        <React.Fragment key={category}>
-                                            <PracticeClassHeaderCard label={category} />
-                                            {(skills as PracticeSkill[]).map((skill, idx) => (
-                                                <PracticeSkillCard key={idx} skill={skill} />
-                                            ))}
-                                        </React.Fragment>
-                                    ))}
-                                </>
-                            ) : (
-                                <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
-                                    <BookOpen size={32} style={{ marginBottom: '10px' }} />
-                                    <p style={{ fontSize: 'var(--dynamic-log-size, 16px)' }}>No practice data available.</p>
-                                </div>
-                            )}
                         </div>
                     ) : (
                         <div className="quests-tab">
@@ -362,8 +423,33 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                 <div className="quests-badge" style={{ background: 'rgba(184, 134, 11, 0.1)', color: '#b8860b', border: '1px solid rgba(184, 134, 11, 0.3)', padding: '4px 12px', borderRadius: '12px', fontSize: 'var(--dynamic-log-size, 16px)', fontWeight: '800' }}>
                                     {quests.activeQuests.length} Active
                                 </div>
-                                <button className="refresh-button" onClick={() => executeCommand('quest')} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#fff', padding: '4px 10px', borderRadius: '8px', fontSize: 'var(--dynamic-log-size, 16px)', fontWeight: '700' }}>
-                                    Refresh
+                                <button className="refresh-button" 
+                                    onClick={() => executeCommand('quest')} 
+                                    style={{ 
+                                        background: 'rgba(255,255,255,0.08)', 
+                                        border: '1px solid rgba(255,255,255,0.1)', 
+                                        color: 'rgba(255,255,255,0.6)', 
+                                        width: '32px',
+                                        height: '32px',
+                                        borderRadius: '16px', 
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease',
+                                        backdropFilter: 'blur(4px)'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
+                                        e.currentTarget.style.color = '#fff';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+                                        e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+                                    }}
+                                    title="Refresh"
+                                >
+                                    <RefreshCw size={16} />
                                 </button>
                             </div>
 
@@ -387,6 +473,14 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                                     setSelectedQuestId(isExpanding ? quest.id : null);
                                                     if (isExpanding) executeCommand(`quest ${quest.name.split(' ')[0].toLowerCase()}`);
                                                 }
+                                            }}
+                                            style={{
+                                                background: 'rgba(10, 13, 21, 0.35)',
+                                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                                borderRadius: '16px',
+                                                padding: '15px',
+                                                marginBottom: '8px',
+                                                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
                                             }}
                                         >
                                             <div className="quest-info" style={{ flex: 1 }}>

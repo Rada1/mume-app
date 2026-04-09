@@ -60,7 +60,8 @@ export const buildHighlighterCandidates = (
     keywordOverrides: Record<string, string> = {},
     selectedObjectIds: Set<string> = new Set(),
     isCombatLine: boolean = false,
-    inCombat: boolean = false
+    inCombat: boolean = false,
+    combatSide?: 'player' | 'opponent' | 'groupmate'
 ): Candidate[] => {
     const candidates: Candidate[] = [];
     // Normalized sets to handle accent mismatches (e.g. Dúnadan vs Dunadan)
@@ -76,7 +77,7 @@ export const buildHighlighterCandidates = (
         'c': '[c\u00e7]'
     };
 
-    const toAccentAgnostic = (s: string) => {
+    const toAccentAgnosticCore = (s: string) => {
         let res = '';
         const norm = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
         for (const char of norm) {
@@ -86,9 +87,16 @@ export const buildHighlighterCandidates = (
                 res += char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             }
         }
+        return res;
+    };
+
+    const WORD_BOUNDARY_START = `(?:^|(?<=[\\s\\.,:;\\!']))`;
+    const WORD_BOUNDARY_END = `(?=[\\s\\.,:;\\!'&]|&#(?:x27|39|apos);|$)`;
+
+    const toAccentAgnostic = (s: string) => {
         // Use a simpler word boundary for MUD text
         // Include ' and its HTML entities (&#x27; &#39; &apos;) so possessives like "orc-guard's" match
-        return `(?:^|(?<=[\\s\\.,:;\\!']))${res}(?=[\\s\\.,:;\\!'&]|&#(?:x27|39|apos);|$)`;
+        return `${WORD_BOUNDARY_START}${toAccentAgnosticCore(s)}${WORD_BOUNDARY_END}`;
     };
 
     const pcNames = roomPlayers.map(p => typeof p === 'string' ? p : p.name).filter((name): name is string => !!name && name !== characterName);
@@ -175,6 +183,28 @@ export const buildHighlighterCandidates = (
     const pSet = new Set(Array.from(pcNamesSet).map(p => p.toLowerCase()));
     if (characterName) pSet.add(characterName.toLowerCase());
 
+    const corpseGlowColor = getGlowColorForCategory('inline-corpses', inlineCategories) || 'rgba(180, 100, 50, 0.9)';
+
+    // Pre-detect which NPC names appear in "corpse of ..." context in this message.
+    // MUME often splits "corpse of a pack horse" across HTML color spans, so we can't
+    // rely on a single regex matching the full phrase in safeHighlight. Instead, check
+    // the tag-stripped textOnly and restyle NPC matches as corpses when appropriate.
+    const lowerTextOnly = textOnly.toLowerCase();
+    const isCorpseLine = lowerTextOnly.includes('corpse');
+    const corpseNpcNames = new Set<string>(); // normalized NPC names that appear in corpse context
+    if (isCorpseLine) {
+        npcOccupants.forEach(occupant => {
+            const name = typeof occupant === 'string' ? occupant : occupant.name;
+            if (!name) return;
+            const stripped = name.replace(/^(A|An|The|Some)\s+/i, '').toLowerCase();
+            // Check all substrings: "corpse of a pack horse", "corpse of pack horse", etc.
+            const corpseRe = new RegExp(`corpses?\\s+of\\s+(?:a |an |the |some )?${stripped.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+            if (corpseRe.test(lowerTextOnly)) {
+                corpseNpcNames.add(normalize(stripped));
+            }
+        });
+    }
+
     npcOccupants.forEach(occupant => {
         const originalName = typeof occupant === 'string' ? occupant : occupant.name;
         if (!originalName) return;
@@ -185,12 +215,16 @@ export const buildHighlighterCandidates = (
         const normalizedOriginal = normalize(originalName);
         const normalizedStripped = normalize(stripped);
 
-        // MUME sometimes sends the full description (e.g., "An experienced Dûnadan officer") 
+        // If this NPC name appears in a corpse context in this message,
+        // render it as a corpse/object instead of an NPC.
+        const isCorpseContext = corpseNpcNames.has(normalizedStripped);
+
+        // MUME sometimes sends the full description (e.g., "An experienced Dûnadan officer")
         // in room.npcs as the .name property. We need to match this exactly.
         const patterns = new Set([
-            originalName, 
-            stripped, 
-            pluralizeMumeSubject(originalName), 
+            originalName,
+            stripped,
+            pluralizeMumeSubject(originalName),
             pluralizeMumeSubject(stripped),
             normalizedOriginal,
             normalizedStripped,
@@ -206,29 +240,43 @@ export const buildHighlighterCandidates = (
         }
 
         patterns.forEach(p => {
-            const category = getCategoryForName(originalName, inlineCategories);
-            // Default to 'inlinenpc' which is Magenta.
-            const glowColor = getGlowColorForCategory(category || 'inlinenpc', inlineCategories);
-            const command = 'inlinenpc';
-            const context = getEffectiveKeyword(originalName, undefined, undefined, keywordOverrides);
+            if (isCorpseContext) {
+                // Corpse context: style as corpse/object instead of NPC
+                const context = getEffectiveKeyword(originalName, undefined, undefined, keywordOverrides);
+                candidates.push({
+                    pattern: toAccentAgnostic(p),
+                    isRegex: true,
+                    priority: 6,
+                    replacer: (m, _match) => {
+                        const isSelected = isObjectSelected(selectedObjectIds, 'auto-corpse', 'inline-corpses');
+                        return `<span class="inline-btn auto-item${isSelected ? ' selected' : ''}" draggable="true" data-id="auto-corpse" data-mid="${mid}" data-cmd="inline-corpses" data-context="${esc(context)}" data-action="menu" data-menu-display="list" style="--glow-color: ${corpseGlowColor}">${m.replace(/,/g, '')}</span>`;
+                    },
+                    length: p.length
+                });
+            } else {
+                const category = getCategoryForName(originalName, inlineCategories);
+                // Default to 'inlinenpc' which is Magenta.
+                const glowColor = getGlowColorForCategory(category || 'inlinenpc', inlineCategories);
+                const command = 'inlinenpc';
+                const context = getEffectiveKeyword(originalName, undefined, undefined, keywordOverrides);
 
-            candidates.push({
-                pattern: toAccentAgnostic(p),
-                isRegex: true,
-                priority: 6, // Slightly higher than items to favor NPC match in ambiguous cases
-                replacer: (m, _match) => {
-                    const { glow, classExtra } = getTargetAwareStyles(m, originalName, glowColor, target);
-                    const buttonId = `auto-npc-${originalName}`;
-                    const isSelected = isObjectSelected(selectedObjectIds, buttonId, command);
-                    return `<span class="inline-btn auto-npc npc-highlighter${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(context)}" data-category="${esc(category || '')}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}">${m.replace(/,/g, '')}</span>`;
-                },
-                length: p.length
-            });
+                candidates.push({
+                    pattern: toAccentAgnostic(p),
+                    isRegex: true,
+                    priority: 6, // Slightly higher than items to favor NPC match in ambiguous cases
+                    replacer: (m, _match) => {
+                        const { glow, classExtra } = getTargetAwareStyles(m, originalName, glowColor, target);
+                        const buttonId = `auto-npc-${originalName}`;
+                        const isSelected = isObjectSelected(selectedObjectIds, buttonId, command);
+                        return `<span class="inline-btn auto-npc npc-highlighter${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(context)}" data-category="${esc(category || '')}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}">${m.replace(/,/g, '')}</span>`;
+                    },
+                    length: p.length
+                });
+            }
         });
     });
 
-    // 4.5. Corpses (Recategorized as Objects)
-    const corpseGlowColor = getGlowColorForCategory('inline-corpses', inlineCategories) || 'rgba(180, 100, 50, 0.9)';
+    // 4.5. Corpses (generic fallback for corpses not matching any NPC)
     ['corpse', 'corpses'].forEach(p => {
         candidates.push({
             pattern: p,
@@ -318,10 +366,12 @@ export const buildHighlighterCandidates = (
         length: 5
     });
 
-    // 8. Key Status Words
-    statusKeywords.forEach(word => {
+    // 8. Key Status Words & Experience
+    const allStatusWords = [...statusKeywords, 'receive your share of experience', 'receive \\d+ experience'];
+    allStatusWords.forEach(word => {
         candidates.push({
-            pattern: word,
+            pattern: word.includes('\\d+') ? word : `\\b${word}\\b`,
+            isRegex: word.includes('\\d+'),
             priority: 10,
             replacer: (m) => `<span class="keyword-highlight status-word">${m}</span>`,
             length: word.length
@@ -329,7 +379,8 @@ export const buildHighlighterCandidates = (
     });
 
     // 9. Combat Actions (Cyan Highlights - only in combat mode and for combat lines)
-    if (inCombat && isCombatLine) {
+    // Rule: Skip these if we already applies side-specific (player/opponent/groupmate) damage highlights
+    if (inCombat && isCombatLine && !combatSide) {
         combatActions.forEach(word => {
             candidates.push({
                 pattern: `\\b${word}(?:s|d|ed|ing)?\\b`,
@@ -500,11 +551,13 @@ export const applyColorTaggedObjects = (
         let category = getCategoryForName(displayName, inlineCategories);
         let finalCmd = cmd;
         
-        // Priority: If it matches a room NPC/PC by name, use 그 command
+        // Priority: If it matches a room NPC/PC by name, use that command
+        // Exception: if this is a corpse line, keep the NPC name as an object
         const normalizedName = normalize(name);
         const normalizedStripped = normalize(keywordBase);
-        
-        if (normalizedNpcSet.has(normalizedName) || normalizedNpcSet.has(normalizedStripped)) {
+        const isCorpseLineColor = lowerHtml.includes('corpse');
+
+        if ((normalizedNpcSet.has(normalizedName) || normalizedNpcSet.has(normalizedStripped)) && !isCorpseLineColor) {
             finalCmd = 'inlinenpc';
         } else if (normalizedPcSet.has(normalizedName) || normalizedPcSet.has(normalizedStripped)) {
             finalCmd = 'inlineplayer';

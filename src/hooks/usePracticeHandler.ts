@@ -185,56 +185,6 @@ export function usePracticeHandler(
                 return next;
             });
 
-            if (setPopoverState && skillsToSet.length > 0) {
-                const headerMsg = logBuffer.find(m => m.type === 'header' && m.data && typeof m.data === 'object' && 'sessionsLeft' in m.data);
-                const sessionsLeft = headerMsg ? (headerMsg.data as any).sessionsLeft : 0;
-                setPopoverState({
-                    type: 'practice-card',
-                    x: window.innerWidth / 2 - 150,
-                    y: window.innerHeight / 2 - 200,
-                    setId: 'practice',
-                    practiceData: { sessionsLeft, skills: skillsToSet, isAtGuildmaster: isAtGuildmasterRef.current }
-                });
-            } else if (addMessage && logBuffer.length > 0) {
-                setTimeout(() => {
-                    const now = Date.now();
-
-                    // Column header (includes session count extracted from the log buffer)
-                    const headerMsg = logBuffer.find(m => m.type === 'header' && m.data && typeof m.data === 'object' && 'sessionsLeft' in m.data);
-                    const sessionsLeft = headerMsg ? (headerMsg.data as any).sessionsLeft : 0;
-                    
-                    console.log(`[PracticeHandler] Finalizing UI. Sessions from buffer: ${sessionsLeft}`, { hasHeader: !!headerMsg });
-                    
-                    addMessage('practice-column-header' as any, '', undefined, `prac-col-hdr-${now}`, false, undefined, undefined, undefined, { sessionsLeft }, true);
-
-                    // Group skill entries by class, preserving encounter order
-                    const classOrder: string[] = [];
-                    const byClass: Record<string, typeof logBuffer> = {};
-                    logBuffer
-                        .filter(m => m.type === 'skill')
-                        .forEach(msg => {
-                            const cls: string = (msg.data as { skillClass?: string }).skillClass || 'General';
-                            if (!byClass[cls]) {
-                                classOrder.push(cls);
-                                byClass[cls] = [];
-                            }
-                            byClass[cls].push(msg);
-                        });
-
-                    // Only show class dividers when skills actually span multiple real classes
-                    const showClassHeaders = classOrder.length > 1 || (classOrder.length === 1 && classOrder[0] !== 'General');
-
-                    classOrder.forEach(cls => {
-                        if (showClassHeaders) {
-                            addMessage('practice-class-header' as any, cls, undefined, `prac-cls-${cls}-${now}`, false, undefined, undefined, undefined, undefined, true);
-                        }
-                        byClass[cls].forEach((msg, idx) => {
-                            addMessage('practice-skill', msg.text, undefined, `prac-${msg.data.name}-${now}-${idx}`, false, undefined, undefined, msg.data);
-                        });
-                    });
-                }, 10);
-            }
-
             // CRITICAL: Clear the buffer after we've processed it
             parsedSkillsRef.current = [];
         }

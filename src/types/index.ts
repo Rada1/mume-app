@@ -583,6 +583,16 @@ export interface CharacterInfo {
         wil: number;
         per: number;
     };
+    perception?: {
+        vision: string;
+        hearing: string;
+        smell: string;
+    };
+    age?: string;
+    weight?: string;
+    eqWeight?: string;
+    alertness?: string;
+    session?: string;
     affectedBy?: string[];
     spells?: string[];
 }

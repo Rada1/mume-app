@@ -131,7 +131,11 @@ export const useGameProviderState = () => {
     const executeCommandRef = useRef<(cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void>(() => { });
 
     // UI state
-    const { ui, setUI, setIsStatsOpen, setIsCharacterOpen, setIsEquipmentOpen, setIsInventoryOpen, setIsPlayersOpen, setIsMapExpanded, setIsSetManagerOpen } = useUIState(executeCommandRef);
+    const { 
+        ui, setUI, setIsStatsOpen, setIsCharacterOpen, setIsEquipmentOpen, setIsInventoryOpen, 
+        setIsPlayersOpen, setIsMapExpanded, setIsSetManagerOpen,
+        handleTabClick, toggleMap 
+    } = useUIState(executeCommandRef);
 
     // Environmental state
     const [lighting, setLighting] = useState<LightingType>('none');
@@ -259,6 +263,9 @@ export const useGameProviderState = () => {
     // Parser State
     const [inventoryLines, setInventoryLines] = useState<DrawerLine[]>([]);
     const [statsLines, setStatsLines] = useState<DrawerLine[]>([]);
+    const [practiceLines, setPracticeLines] = useState<DrawerLine[]>([]);
+    const [whoLines, setWhoLines] = useState<DrawerLine[]>([]);
+    const [whereLines, setWhereLines] = useState<DrawerLine[]>([]);
     const [eqLines, setEqLines] = useState<DrawerLine[]>([]);
     const captureStage = useRef<import('../../types').CaptureStage>('none');
 
@@ -556,6 +563,9 @@ export const useGameProviderState = () => {
         actions, setActions, actionsRef,
         inventoryLines, setInventoryLines,
         statsLines, setStatsLines,
+        practiceLines, setPracticeLines,
+        whoLines, setWhoLines,
+        whereLines, setWhereLines,
         eqLines, setEqLines,
         displayInventoryLines: optimisticInventoryLines ?? inventoryLines,
         displayEqLines: optimisticEqLines ?? eqLines,
@@ -618,6 +628,7 @@ export const useGameProviderState = () => {
         spectateRoomName, setSpectateRoomName,
         spectateInCombat, setSpectateInCombat,
         spectateCharacterName, setSpectateCharacterName,
+        handleTabClick, toggleMap,
 
         spectateStats, setSpectateStats,
         spectateHealthStatus, setSpectateHealthStatus,
@@ -629,9 +640,10 @@ export const useGameProviderState = () => {
         isNoviceMode, isNewbieMode, isSoundEnabled, isMmapperMode, theme, showControls,
         roomPlayers, roomNpcs, roomItems, currentTerrain, ui, setIsCharacterOpen,
         setIsEquipmentOpen, setIsInventoryOpen, setIsMapExpanded, setIsSetManagerOpen, lighting,
-        lightningEnabled, weather, isFoggy, abilities, characterClass, actions,
-        inventoryLines, statsLines, eqLines, optimisticInventoryLines, optimisticEqLines, applyOptimisticChange, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
+        lightningEnabled, weather, isFoggy, abilities, characterClass, actions, handleTabClick, toggleMap,
+        inventoryLines, statsLines, practiceLines, whoLines, whereLines, eqLines, optimisticInventoryLines, optimisticEqLines, applyOptimisticChange, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
         disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, roomName, roomDesc, roomExits, roomZone,
+        handleTabClick, toggleMap,
         inlineCategories, isHighlighterEnabled, isCrtEnabled, isBloomEnabled, favorites, activeDragData, heldButton,
         parley, whoList, whereList, popoverState, discoveredItems, zoneMusic,
         quests, groupMembers, mumeEditState, handleSaveMumeEdit, executeCommandRef,

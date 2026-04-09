@@ -127,7 +127,7 @@
 }
 
 /* Glass Section Container */
-.char-profile, .stats-grid > div, .details-section, .skill-group, .info-section-glass, .practice-tab, .quests-tab {
+.char-profile, .stats-grid > div, .details-section, .skill-group, .info-section-glass {
     background: rgba(10, 13, 21, 0.35);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;

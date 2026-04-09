@@ -88,7 +88,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isImmersionMode,
         isCrtEnabled,
         isBloomEnabled,
-        fontFamily
+        fontFamily,
+        handleTabClick,
+        toggleMap
     } = s;
 
     const { stats, rumble, target, activePrompt } = v;
@@ -415,6 +417,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         executeCommandRef: s.executeCommandRef,
         setInventoryLines: s.setInventoryLines,
         setStatsLines: s.setStatsLines,
+        setPracticeLines: s.setPracticeLines,
+        setWhoLines: s.setWhoLines,
+        setWhereLines: s.setWhereLines,
         setEqLines: s.setEqLines,
         setWhoList: s.setWhoList,
         setWhereList: s.setWhereList,
@@ -477,6 +482,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isMobile: viewport.isMobile,
         playerPosition: s.playerPosition,
         isSpectateMode: s.isSpectateMode,
+        processMessageHtml: processMessageHtml,
         spectateTarget,
         setRoomPlayers: s.setRoomPlayers,
         setRoomNpcs: s.setRoomNpcs,
@@ -848,6 +854,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsSetManagerOpen: s.setIsSetManagerOpen,
         setIsPlayersOpen: s.setIsPlayersOpen,
         characterName: s.characterName,
+        handleTabClick: s.handleTabClick,
+        toggleMap: s.toggleMap,
         isRecording: recorder.isRecording,
         duration: recorder.duration,
         startRecording: recorder.startRecording,
@@ -857,6 +865,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }), [
         s.ui, s.popoverState, s.setPopoverState, isSettingsOpen, settingsTab,
         s.setIsCharacterOpen, s.setIsEquipmentOpen, s.setIsInventoryOpen, s.setIsMapExpanded, s.setIsSetManagerOpen, s.setUI, s.setIsPlayersOpen,
+        s.handleTabClick, s.toggleMap,
         recorder.isRecording, recorder.duration, recorder.startRecording, recorder.stopRecording, recorder.saveLog,
         replayer.log, replayer.state, replayer.loadLog, replayer.clearLog, replayer.play, replayer.pause, replayer.seek, replayer.setSpeed,
         replayer.setIsVisible, replayer.setPrivacyMode, replayer.startExport, replayer.stopExport

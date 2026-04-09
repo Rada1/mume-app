@@ -19,6 +19,9 @@ interface StageInitializerDeps {
     setWhereList: (val: any[]) => void;
     setPopoverState: (val: any) => void;
     setStatsLines: (val: any[]) => void;
+    setPracticeLines: (val: any[]) => void;
+    setWhoLines: (val: any[]) => void;
+    setWhereLines: (val: any[]) => void;
     finalizeCapture: () => void;
 }
 
@@ -26,7 +29,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
     const {
         captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isPlayersOpen,
-        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines,
+        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines, setPracticeLines, setWhoLines, setWhereLines,
         finalizeCapture
     } = deps;
 
@@ -34,11 +37,12 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         const strippedLower = (attachedText || textOnly).toLowerCase();
 
         // 1. Practice
-        if (lower.includes('skill') && lower.includes('knowledge') && lower.includes('difficulty')) {
-            if (practice.isUiRequested || lower.includes('class') || practice.silentSyncPendingRef.current) {
+        if (lower.includes('skill') && lower.includes('knowledge')) {
+            if (practice.isUiRequested || isCharacterOpen || lower.includes('class') || practice.silentSyncPendingRef.current) {
                 if (captureStage.current === 'practice') return;
                 if (captureStage.current !== 'none') finalizeCapture();
                 captureStage.current = 'practice';
+                setPracticeLines([]);
                 if (practice.isUiRequested || practice.silentSyncPendingRef.current) {
                     if (isSilentCapture.current === 0) isSilentCapture.current = 1;
                 }
@@ -48,6 +52,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
             if (captureStage.current === 'practice') return;
             if (captureStage.current !== 'none') finalizeCapture();
             captureStage.current = 'practice';
+            setPracticeLines([]);
             if (isCharacterOpen || practice.silentSyncPendingRef.current) {
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
             }
@@ -71,7 +76,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         else if (strippedLower === 'who' || strippedLower === 'who:' || strippedLower === 'players' || strippedLower === 'allies' || strippedLower === 'minions' || strippedLower.startsWith("who's online") || strippedLower.startsWith("allies online") || strippedLower.startsWith("minions online")) {
             if (captureStage.current === 'who') return;
             if (captureStage.current !== 'none') finalizeCapture();
-            captureStage.current = 'who'; setWhoList([]);
+            captureStage.current = 'who'; setWhoList([]); setWhoLines([]);
             if (isPlayersOpen) {
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
             }
@@ -79,7 +84,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         else if ((textOnly.startsWith('Player') && textOnly.includes('Room')) || (textOnly.startsWith('Who') && textOnly.includes('Location'))) {
             if (captureStage.current === 'where') return;
             if (captureStage.current !== 'none') finalizeCapture();
-            captureStage.current = 'where'; setWhereList([]);
+            captureStage.current = 'where'; setWhereList([]); setWhereLines([]);
             if (isPlayersOpen) {
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
             }
@@ -132,12 +137,21 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         }
 
         // 9. Info / Whois / Description
-        else if ((lower.startsWith('you are a ') && (lower.includes('person') || lower.includes('being'))) || 
+        else if (lower.startsWith('you are a ') || 
+                 lower.includes('old.') ||
+                 lower.includes('real time') ||
+                 lower.includes('ranks you as') ||
+                 lower.includes('weigh') ||
+                 lower.includes('vision (') ||
+                 lower.includes('alertness:') ||
                  (lower.includes('exp:') && (lower.includes('level:') || lower.includes('tnl:'))) || 
-                 (lower.includes('str:') && lower.includes('int:'))) {
+                 (lower.includes('str:') && lower.includes('int:')) ||
+                 lower.startsWith('you are welcome in the ') ||
+                 lower.includes('your equipment weighs ')) {
             if (captureStage.current === 'info') return;
             if (captureStage.current !== 'none') finalizeCapture();
             captureStage.current = 'info';
+            setStatsLines([]);
             setCharacterInfo((prev: any) => ({ ...prev, description: '' }));
             if (isCharacterOpen) {
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
@@ -158,7 +172,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
     }, [
         captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isPlayersOpen,
-        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines,
+        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines, setPracticeLines, setWhoLines, setWhereLines,
         finalizeCapture
     ]);
 

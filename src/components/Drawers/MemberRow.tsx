@@ -26,31 +26,19 @@ export const MemberRow: React.FC<MemberRowProps> = ({ member, index }) => {
     
     const isFighting = member.fighting || member.position?.toLowerCase() === 'fighting';
 
-    const renderSegmentedBar = (percent: number, type: 'hp' | 'mana' | 'move') => {
-        const segments = [10, 15, 20, 25, 30]; // Matches main HUD chunks
-        let remaining = percent;
-
-        return (
-            <div className={`member-stat-track ${type}`} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <div className="member-stat-segments" style={{ flex: 1 }}>
-                    {segments.map((segWidth, i) => {
-                        const chunkWeight = remaining / segWidth;
-                        const fill = Math.max(0, Math.min(100, chunkWeight * 100));
-                        remaining = Math.max(0, remaining - segWidth);
-
-                        return (
-                            <div key={i} className="member-stat-segment" style={{ flex: segWidth }}>
-                                <div className="member-stat-fill" style={{ width: `${fill}%` }} />
-                            </div>
-                        );
-                    })}
+    const renderBar = (percent: number, type: 'hp' | 'mana' | 'move') => (
+        <div className={`member-bar ${type}`}>
+            <div className="member-bar-segment">
+                <div className="member-bar-fill" style={{ width: `${Math.max(0, Math.min(100, percent))}%` }} />
+                <div className="member-bar-dividers">
+                    <div className="member-bar-divider" />
+                    <div className="member-bar-divider" />
+                    <div className="member-bar-divider" />
+                    <div className="member-bar-divider" />
                 </div>
-                <span style={{ fontSize: '0.6rem', opacity: 0.6, minWidth: '28px', textAlign: 'right', fontFamily: 'monospace' }}>
-                    {percent}%
-                </span>
             </div>
-        );
-    };
+        </div>
+    );
 
     const handleClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -109,9 +97,9 @@ export const MemberRow: React.FC<MemberRowProps> = ({ member, index }) => {
                 </div>
 
                 <div className="member-bars">
-                    {renderSegmentedBar(hp, 'hp')}
-                    {mana !== undefined && renderSegmentedBar(mana, 'mana')}
-                    {moves !== undefined && renderSegmentedBar(moves, 'move')}
+                    {renderBar(hp, 'hp')}
+                    {mana !== undefined && renderBar(mana, 'mana')}
+                    {moves !== undefined && renderBar(moves, 'move')}
                 </div>
 
                 <div className="member-conditions">

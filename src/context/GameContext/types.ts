@@ -118,6 +118,8 @@ export interface UIContextType {
     setIsMapExpanded: (open: boolean) => void;
     setIsSetManagerOpen: (open: boolean) => void;
     setIsPlayersOpen: (open: boolean) => void;
+    handleTabClick: (drawer: 'stats' | 'character' | 'inventory' | 'players') => void;
+    toggleMap: () => void;
     characterName: string | null;
     isRecording: boolean;
     duration: number;
@@ -366,16 +368,24 @@ export interface GameContextType {
     handleDragStart: (e: React.DragEvent) => void;
     handleDragEnd: (e: React.DragEvent) => void;
     mapperRef: RefObject<MapperRef>;
+    handleTabClick: (drawer: 'stats' | 'character' | 'inventory' | 'players') => void;
+    toggleMap: () => void;
 
     // Parser State
     inventoryLines: DrawerLine[];
     statsLines: DrawerLine[];
+    practiceLines: DrawerLine[];
+    whoLines: DrawerLine[];
+    whereLines: DrawerLine[];
     eqLines: DrawerLine[];
     displayInventoryLines: DrawerLine[];
     displayEqLines: DrawerLine[];
     applyOptimisticChange: (change: OptimisticChange) => void;
     setInventoryLines: Dispatch<SetStateAction<DrawerLine[]>>;
     setStatsLines: Dispatch<SetStateAction<DrawerLine[]>>;
+    setPracticeLines: Dispatch<SetStateAction<DrawerLine[]>>;
+    setWhoLines: Dispatch<SetStateAction<DrawerLine[]>>;
+    setWhereLines: Dispatch<SetStateAction<DrawerLine[]>>;
     setEqLines: Dispatch<SetStateAction<DrawerLine[]>>;
     quests: import('../../types').QuestData;
     setQuests: Dispatch<SetStateAction<import('../../types').QuestData>>;

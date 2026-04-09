@@ -42,7 +42,7 @@ export function useGameParser(deps: UseGameParserDeps) {
  playDoorSound, triggerHaptic, setStats, setWeather, setIsFoggy, 
         setLightningEnabled, setAbilities, setCharacterClass, 
         setInCombat, inCombatRef, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, 
-        executeCommandRef, setInventoryLines, setStatsLines, setEqLines, setWhoList, setWhereList, setRoomItems, 
+        executeCommandRef, setInventoryLines, setStatsLines, setPracticeLines, setWhoLines, setWhereLines, setEqLines, setWhoList, setWhereList, setRoomItems, 
         captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         keywordOverrides, roomNameRef, roomDescRef, setRoomName, setRoomDesc, showDebugEchoes, addDiagnosticLog, popoverState, setPopoverState,
         setDiscoveredItems, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName,
@@ -54,7 +54,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         accountState, setAccountState, setGameState,
         isSpectateMode,
         setSpectateStats, setSpectateHealthStatus, setSpectateOpponentName, setSpectateOpponentStatus,
-        setSpectatePosition, setSpectateRoomName, setSpectateInCombat, setSpectateCharacterName
+        setSpectatePosition, setSpectateRoomName, setSpectateInCombat, setSpectateCharacterName,
+        processMessageHtml
     } = deps;
 
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef, playRandomSound });
@@ -133,7 +134,7 @@ export function useGameParser(deps: UseGameParserDeps) {
     const { initializeStage } = useStageInitializer({
         captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isPlayersOpen,
-        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines,
+        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines, setPracticeLines, setWhoLines, setWhereLines,
         finalizeCapture
     });
 
@@ -238,6 +239,15 @@ export function useGameParser(deps: UseGameParserDeps) {
                 }
                 return;
             }
+            
+            // If we have attached text on the SAME LINE as a prompt, we MUST process it.
+            // If the attached text starts an 'info' capture, we need to capture it.
+            initializeStage(attachedText, attachedText.toLowerCase(), attachedText, attachedText.toLowerCase(), attachedText);
+            
+            if (captureStage.current === 'info') {
+                setStatsLines(p => [...p, { id: Math.random().toString(36).substring(7), text: attachedText, html: ansiConvert.toHtml(attachedText) }]);
+            }
+
             content = attachedText;
             contentLower = content.toLowerCase();
             cleanLine = cleanLine.replace(/^(?:\x1b\[[0-9;]*m)*[^>]*>/, '').trim();
@@ -439,15 +449,21 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
         parseAtmosphere(lower);
 
-        if (['inv', 'eq', 'stat', 'container', 'practice', 'shop', 'shop-detail'].includes(captureStage.current)) {
+        if (['inv', 'eq', 'stat', 'container', 'practice', 'shop', 'shop-detail', 'info', 'whois', 'who', 'where'].includes(captureStage.current)) {
             if (captureStage.current === 'inv') {
                 tempInvRef.current.push(...createLines(cleanLine, textOnly, lower, 'inventorylist'));
             } else if (captureStage.current === 'eq') {
                 if (textOnly.length > 0) tempEqRef.current.push(...createLines(cleanLine, textOnly, lower, 'equipmentlist'));
             } else if (captureStage.current === 'practice') {
                 if (textOnly.trim().length > 0) {
-                    const skill = practice.parsePracticeLine(textOnly);
-                    practice.addToLogBuffer(typeof skill === 'object' && 'name' in skill ? 'skill' : 'header', skill, cleanLine);
+                    practice.parsePracticeLine(textOnly);
+                    setPracticeLines(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
+                }
+            } else if (captureStage.current === 'who' || captureStage.current === 'where') {
+                if (textOnly.trim().length > 0) {
+                    const html = processMessageHtml ? processMessageHtml(ansiConvert.toHtml(cleanLine), 'players-line-' + Math.random(), false, captureStage.current === 'who' ? 'who-list' : 'where-list') : ansiConvert.toHtml(cleanLine);
+                    const setter = captureStage.current === 'who' ? setWhoLines : setWhereLines;
+                    setter(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html }]);
                 }
             } else if (captureStage.current === 'shop') {
                 if (textOnly.trim().length > 0) {
@@ -498,7 +514,7 @@ export function useGameParser(deps: UseGameParserDeps) {
                     });
                 }
                 if (isDrawerCapture.current || isSilentCapture.current) return;
-            } else {
+            } else if (captureStage.current === 'stat' || captureStage.current === 'info') {
                 setStatsLines(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
             }
         }
@@ -539,7 +555,7 @@ export function useGameParser(deps: UseGameParserDeps) {
 
 
         if (promptInfo.isEndPrompt) finalizeCapture();
-    }, [addMessage, setInventoryLines, setStatsLines, setEqLines, setWhoList, setWhereList, deps, processTriggers, roomNameRef, setPopoverState, finalizeCapture, parsePrompt, checkCombatMatch, handleCombatExit, handleXpTicker, parseGlobalStatus, parseDetailedScore, detectRoom, parseAtmosphere, trackAction, parseComm, createLines, resetNounCounts, resetContainerStack, practice, shop, quests, setCharacterInfo, setDiscoveredItems, executeCommandRef, captureStage, ansiConvert, extractNoun, initializeStage, determineVisibility, routeMessage, detectItemsInRoom, mumeEditState.isOpen, setMumeEditState]);
+    }, [addMessage, setInventoryLines, setStatsLines, setPracticeLines, setWhoLines, setWhereLines, setEqLines, setWhoList, setWhereList, deps, processTriggers, roomNameRef, setPopoverState, finalizeCapture, parsePrompt, checkCombatMatch, handleCombatExit, handleXpTicker, parseGlobalStatus, parseDetailedScore, detectRoom, parseAtmosphere, trackAction, parseComm, createLines, resetNounCounts, resetContainerStack, practice, shop, quests, setCharacterInfo, setDiscoveredItems, executeCommandRef, captureStage, ansiConvert, extractNoun, initializeStage, determineVisibility, routeMessage, detectItemsInRoom, mumeEditState.isOpen, setMumeEditState]);
 
     return { processLine, finalizeCapture };
 }

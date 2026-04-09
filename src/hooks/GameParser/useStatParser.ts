@@ -119,8 +119,12 @@ export function useStatParser(deps: StatParserDeps) {
             const levelMatch = textOnly.match(/level:\s*(\d+)/i);
             const xpMatch = textOnly.match(/exp(?:erience)?:\s*([\d,]+)/i);
             const tnlMatch = textOnly.match(/tnl:\s*([\d,]+)/i);
+            const ageMatch = textOnly.match(/You are ([\d\s\w,]+) old\./i);
+            const weightMatch = textOnly.match(/weigh ([\d\s\w]+)\./i);
+            const eqWeightMatch = textOnly.match(/equipment weighs ([\d\s\w]+)\./i);
+            const alertnessMatch = textOnly.match(/Alertness:\s*(\w+)/i);
             
-            if (levelMatch || xpMatch || tnlMatch) {
+            if (levelMatch || xpMatch || tnlMatch || ageMatch || weightMatch || eqWeightMatch || alertnessMatch) {
                 const levelVal = levelMatch ? parseInt(levelMatch[1]) : undefined;
                 const xpVal = xpMatch ? parseInt(xpMatch[1].replace(/,/g, '')) : undefined;
                 const xpMaxVal = (xpVal !== undefined && tnlMatch) ? (xpVal + parseInt(tnlMatch[1].replace(/,/g, ''))) : undefined;
@@ -129,8 +133,29 @@ export function useStatParser(deps: StatParserDeps) {
                     ...prev,
                     ...(levelVal !== undefined && { level: levelVal }),
                     ...(xpVal !== undefined && { xp: xpVal }),
-                    ...(xpMaxVal !== undefined && { xpMax: xpMaxVal })
+                    ...(xpMaxVal !== undefined && { xpMax: xpMaxVal }),
+                    ...(ageMatch && { age: ageMatch[1].trim() }),
+                    ...(weightMatch && { weight: weightMatch[1].trim() }),
+                    ...(eqWeightMatch && { eqWeight: eqWeightMatch[1].trim() }),
+                    ...(alertnessMatch && { alertness: alertnessMatch[1].toLowerCase() })
                 }));
+            }
+
+            // Parse Perception
+            if (lower.includes('perception:')) {
+                const visionMatch = textOnly.match(/vision\s*\((\d+)\/(\d+)\)/i);
+                const hearingMatch = textOnly.match(/hearing\s*\((\d+)\/(\d+)\)/i);
+                const smellMatch = textOnly.match(/smell\s*\((\d+)\/(\d+)\)/i);
+                if (visionMatch || hearingMatch || smellMatch) {
+                    setCharacterInfo(prev => ({
+                        ...prev,
+                        perception: {
+                            vision: visionMatch ? `${visionMatch[1]}/${visionMatch[2]}` : (prev.perception?.vision || '100/100'),
+                            hearing: hearingMatch ? `${hearingMatch[1]}/${hearingMatch[2]}` : (prev.perception?.hearing || '100/100'),
+                            smell: smellMatch ? `${smellMatch[1]}/${smellMatch[2]}` : (prev.perception?.smell || '100/100'),
+                        }
+                    }));
+                }
             }
 
             // Parse War Info

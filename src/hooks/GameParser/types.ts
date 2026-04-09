@@ -34,6 +34,9 @@ export interface UseGameParserDeps {
     characterInfo: import('../../types').CharacterInfo;
     setInventoryLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setStatsLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
+    setPracticeLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
+    setWhoLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
+    setWhereLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setEqLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setEntities: React.Dispatch<React.SetStateAction<Record<string, GameEntity>>>;
     setWhoList: React.Dispatch<React.SetStateAction<string[]>>;
@@ -99,4 +102,5 @@ export interface UseGameParserDeps {
     setInCombat: (val: boolean, force?: boolean) => void;
     inCombatRef: React.RefObject<boolean>;
     setLightningEnabled: (val: boolean) => void;
+    processMessageHtml?: (originalHtml: string, mid: string, isRoomName: boolean, type?: import('../../types').MessageType, isCombatMessage?: boolean, combatSide?: 'player' | 'opponent' | 'groupmate') => string;
 }

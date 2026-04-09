@@ -52,7 +52,7 @@ interface DrawerManagerProps {
     setSoundTriggers: React.Dispatch<React.SetStateAction<SoundTrigger[]>>;
 }
 
-import { useGame } from '../../context/GameContext';
+import { useGame, useUI } from '../../context/GameContext';
 import { useMapper } from '../../context/useMapper';
 
 const MapperDockedGate: React.FC<{ 
@@ -89,7 +89,6 @@ const MapperDockedGate: React.FC<{
 };
 
 export const DrawerManager: React.FC<DrawerManagerProps> = ({
-    ui, setUI,
     inventoryLines, statsLines, eqLines,
     executeCommand, handleButtonClick,
     loginName, setLoginName, loginPassword, setLoginPassword,
@@ -101,6 +100,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         triggerHaptic, characterName, viewport, mapperRef, 
         pendingDrawerContainerRef, inlineCategories, entities, keywordOverrides 
     } = useGame() as any;
+    const { ui, setUI, handleTabClick, toggleMap } = useUI();
 
     // On desktop, push the log right/left so side drawers sit beside it instead of over it
     React.useEffect(() => {
@@ -131,33 +131,6 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         setUI(prev => ({ ...prev, mapExpanded: false }));
     };
 
-    const handleTabClick = (drawer: 'stats' | 'character' | 'inventory' | 'players') => {
-        triggerHaptic(30);
-        if (ui.drawer === drawer) {
-            setUI(prev => ({ ...prev, drawer: 'none' }));
-        } else {
-            setUI(prev => ({ ...prev, drawer }));
-            // Fetch fresh data when opening
-            if (drawer === 'stats') {
-               executeCommand('stat', true, true, true, true);
-               setTimeout(() => executeCommand('at', true, true, true, true), 100);
-            } else if (drawer === 'character') {
-                executeCommand('info', true, true, true, true);
-                setTimeout(() => executeCommand('score', true, true, true, true), 100);
-                setTimeout(() => executeCommand('at', true, true, true, true), 200);
-                setTimeout(() => executeCommand('look self', true, true, true, true), 300);
-                setTimeout(() => executeCommand('whois', true, true, true, true), 400);
-                setTimeout(() => executeCommand('quest', true, true, true, true), 500);
-                setTimeout(() => executeCommand('practice', true, true, true, true), 600);
-            } else if (drawer === 'inventory') {
-                executeCommand('eq', true, true, true, true);
-                setTimeout(() => executeCommand('inv', true, true, true, true), 100);
-            } else if (drawer === 'players') {
-                executeCommand('who', true, true, true, true);
-                setTimeout(() => executeCommand('where', true, true, true, true), 150);
-            }
-        }
-    };
 
     return (
         <>
@@ -189,51 +162,56 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                             onUndock={handleUndock}
                         />
                     </div>
+                </div>
+            )}
 
-                    {/* Unified Desktop Tab Bar — at the bottom of the map drawer */}
-                    <div className="portrait-tab-bar portrait-visible" style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                        <div
-                            className={`desktop-edge-tab right ${ui.drawer === 'stats' ? 'active' : ''}`}
-                            onClick={() => handleTabClick('stats')}
-                        >
-                            <BarChart2 className="tab-icon" />
-                            <span className="tab-text">Stats</span>
-                        </div>
-                        <div
-                            className={`desktop-edge-tab right ${ui.drawer === 'character' ? 'active' : ''}`}
-                            onClick={() => handleTabClick('character')}
-                        >
-                            <User className="tab-icon" />
-                            <span className="tab-text">Char</span>
-                        </div>
-                        <div
-                            className={`desktop-edge-tab right ${ui.drawer === 'players' ? 'active' : ''}`}
-                            onClick={() => handleTabClick('players')}
-                        >
-                            <Users className="tab-icon" />
-                            <span className="tab-text">Players</span>
-                        </div>
-                        <div
-                            className={`desktop-edge-tab right ${ui.drawer === 'inventory' ? 'active' : ''}`}
-                            onClick={() => handleTabClick('inventory')}
-                        >
-                            <Shield className="tab-icon" />
-                            <span className="tab-text">Gear</span>
-                        </div>
-                        <div
-                            id="drawer-tab-map"
-                            className={`desktop-edge-tab right ${ui.mapExpanded ? 'active' : ''}`}
-                            onClick={() => {
-                                if (viewport.isMobile) {
-                                    triggerHaptic(30);
-                                    setUI(prev => ({ ...prev, mapExpanded: !prev.mapExpanded, peekingSource: 'none' }));
-                                }
-                            }}
-                            style={{ opacity: viewport.isMobile ? 1 : 0.6, cursor: viewport.isMobile ? 'pointer' : 'default' }}
-                        >
-                            <MapIcon className="tab-icon" />
-                            <span className="tab-text">Map</span>
-                        </div>
+            {/* Persistent Desktop Tab Sidebar (Right Edge) */}
+            {!viewport.isMobile && (
+                <div className="desktop-side-tabs" style={{ 
+                    position: 'fixed', 
+                    right: 0, 
+                    top: '50%', 
+                    transform: 'translateY(-50%)',
+                    zIndex: 5000, 
+                    display: 'flex', 
+                    flexDirection: 'column',
+                    gap: '4px'
+                }}>
+                    <div
+                        className={`desktop-edge-tab right ${ui.drawer === 'stats' ? 'active' : ''}`}
+                        onClick={() => handleTabClick('stats')}
+                    >
+                        <BarChart2 className="tab-icon" />
+                        <span className="tab-text">Stats</span>
+                    </div>
+                    <div
+                        className={`desktop-edge-tab right ${ui.drawer === 'character' ? 'active' : ''}`}
+                        onClick={() => handleTabClick('character')}
+                    >
+                        <User className="tab-icon" />
+                        <span className="tab-text">Char</span>
+                    </div>
+                    <div
+                        className={`desktop-edge-tab right ${ui.drawer === 'players' ? 'active' : ''}`}
+                        onClick={() => handleTabClick('players')}
+                    >
+                        <Users className="tab-icon" />
+                        <span className="tab-text">Players</span>
+                    </div>
+                    <div
+                        className={`desktop-edge-tab right ${ui.drawer === 'inventory' ? 'active' : ''}`}
+                        onClick={() => handleTabClick('inventory')}
+                    >
+                        <Shield className="tab-icon" />
+                        <span className="tab-text">Gear</span>
+                    </div>
+                    <div
+                        id="drawer-tab-map"
+                        className={`desktop-edge-tab right ${ui.mapExpanded && ui.drawer === 'none' ? 'active' : ''}`}
+                        onClick={() => toggleMap()}
+                    >
+                        <MapIcon className="tab-icon" />
+                        <span className="tab-text">Map</span>
                     </div>
                 </div>
             )}

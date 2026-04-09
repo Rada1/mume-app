@@ -48,8 +48,8 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
             if (stage === 'inv' && isInventoryOpen) isDrawerHiding = true;
             else if (stage === 'eq' && (isInventoryOpen || isEquipmentOpen || isCharacterOpen)) isDrawerHiding = true;
             else if (stage === 'stat' && (isStatsOpen || isCharacterOpen)) isDrawerHiding = true;
-            else if (stage === 'practice') isDrawerHiding = true;
             else if (['info', 'quest', 'whois'].includes(stage) && isCharacterOpen) isDrawerHiding = true;
+            else if (stage === 'practice' && (isCharacterOpen || isSilentCapture.current > 0 || isDrawerCapture.current > 0)) isDrawerHiding = true;
             else if (stage === 'container' && (isDrawerCapture.current > 0 || isSilentCapture.current > 0)) isDrawerHiding = true;
             else if (['who', 'where'].includes(stage) && isPlayersOpen) isDrawerHiding = true;
             else if (stage === 'shop') isDrawerHiding = true;

@@ -14,7 +14,7 @@ interface PlayersDrawerProps {
 
 export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, executeCommand: propsExecuteCommand }) => {
     const [activeTab, setActiveTab] = useState<'group' | 'online' | 'nearby'>('group');
-    const { whoList, whereList, groupMembers, triggerHaptic, favorites, setFavorites, executeCommand: contextExecuteCommand } = useGame();
+    const { whoList, whoLines, whereList, whereLines, groupMembers, triggerHaptic, favorites, setFavorites, executeCommand: contextExecuteCommand, selectedObjectIds } = useGame();
     const { setPopoverState } = useUI();
 
     const executeCommand = contextExecuteCommand || propsExecuteCommand;
@@ -114,6 +114,33 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
 
     const swipePos = useRef<{ x: number, y: number } | null>(null);
 
+    const infoContainerRef = useRef<HTMLDivElement>(null);
+    const [infoFontSize, setInfoFontSize] = useState<string>('inherit');
+
+    React.useEffect(() => {
+        if (!infoContainerRef.current || (activeTab !== 'online' && activeTab !== 'nearby')) return;
+        const measure = () => {
+            const width = infoContainerRef.current?.clientWidth;
+            if (width) setInfoFontSize(`${width / 48}px`);
+        };
+        measure();
+        const ro = new ResizeObserver(measure);
+        ro.observe(infoContainerRef.current);
+        return () => ro.disconnect();
+    }, [activeTab, isOpen]);
+
+    const DrawerLineItem = React.memo(({ 
+        line, 
+        fontSize 
+    }: { 
+        line: import('../../types').DrawerLine, 
+        fontSize: string
+    }) => {
+        return (
+            <div style={{ lineHeight: '1.2', whiteSpace: 'pre-wrap', fontSize }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }} />
+        );
+    });
+
     return (
         <div 
             className={`character-drawer-overlay ${isOpen ? 'open' : ''}`}
@@ -171,13 +198,6 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                 }}
                 style={{ touchAction: 'pan-y' }}
             >                <div className="drawer-header" style={{ pointerEvents: 'auto', display: 'flex', justifyContent: 'flex-end', padding: '6px 10px', background: 'transparent', gap: '8px' }}>
-                    <button
-                        style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-                        onClick={handleRefresh}
-                        title="Refresh"
-                    >
-                        <RefreshCw size={14} />
-                    </button>
                     <button 
                         style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} 
                         onClick={(e) => { e.stopPropagation(); onClose(); }}
@@ -288,48 +308,136 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                             )}
                         </div>
                     ) : activeTab === 'online' ? (
-                        <div className="players-section">
-                            <div className="online-columns">
-                                <div className="online-column">
-                                    <div className="column-header">Favorites</div>
-                                    {whoList.filter(n => isFav(n)).length > 0 ? (
-                                        whoList.filter(n => isFav(n)).map((name, i) => (
-                                            <PlayerRow key={`fav-${i}`} name={name} isFavorite={true} />
-                                        ))
-                                    ) : (
-                                        <div className="column-empty">No favorites online</div>
-                                    )}
-                                </div>
-                                <div className="online-column">
-                                    <div className="column-header">All</div>
-                                    {whoList.length > 0 ? (
-                                        whoList.map((name, i) => (
-                                            <PlayerRow key={`all-${i}`} name={name} isFavorite={isFav(name)} />
-                                        ))
-                                    ) : (
-                                        <div className="column-empty">No data</div>
-                                    )}
-                                </div>
+                        <div className="online-tab" style={{ position: 'relative' }}>
+                            <div ref={infoContainerRef} style={{
+                                fontFamily: 'var(--font-main, monospace)',
+                                fontSize: infoFontSize,
+                                lineHeight: '1.2',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '0',
+                                background: 'rgba(10, 13, 21, 0.35)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                borderRadius: '16px',
+                                padding: '16px 12px',
+                                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                                margin: '8px 0',
+                                position: 'relative',
+                                minHeight: '120px'
+                            }}>
+                                <button className="refresh-button" 
+                                    onClick={handleRefresh}
+                                    style={{ 
+                                        position: 'absolute',
+                                        top: '12px',
+                                        right: '12px',
+                                        zIndex: 10,
+                                        background: 'rgba(255,255,255,0.08)', 
+                                        border: '1px solid rgba(255,255,255,0.1)', 
+                                        color: 'rgba(255,255,255,0.6)', 
+                                        width: '32px',
+                                        height: '32px',
+                                        borderRadius: '16px', 
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease',
+                                        backdropFilter: 'blur(4px)'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
+                                        e.currentTarget.style.color = '#fff';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+                                        e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+                                    }}
+                                    title="Refresh"
+                                >
+                                    <RefreshCw size={16} />
+                                </button>
+
+                                {whoLines?.length > 0 ? (
+                                    whoLines.map(line => (
+                                        <DrawerLineItem 
+                                            key={line.id} 
+                                            line={line} 
+                                            fontSize={infoFontSize} 
+                                        />
+                                    ))
+                                ) : (
+                                    <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
+                                        <p style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontStyle: 'italic' }}>No player data captured.</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ) : (
-                        <div className="players-section">
-                            {whereList.length > 0 ? (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                    {whereList.map((entry, i) => (
-                                        <PlayerRow 
-                                            key={`nearby-${i}`} 
-                                            name={entry.name} 
-                                            isFavorite={isFav(entry.name)} 
-                                            subtitle={entry.room} 
+                        <div className="nearby-tab" style={{ position: 'relative' }}>
+                            <div ref={infoContainerRef} style={{
+                                fontFamily: 'var(--font-main, monospace)',
+                                fontSize: infoFontSize,
+                                lineHeight: '1.2',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '0',
+                                background: 'rgba(10, 13, 21, 0.35)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                borderRadius: '16px',
+                                padding: '16px 12px',
+                                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                                margin: '8px 0',
+                                position: 'relative',
+                                minHeight: '120px'
+                            }}>
+                                <button className="refresh-button" 
+                                    onClick={handleRefresh}
+                                    style={{ 
+                                        position: 'absolute',
+                                        top: '12px',
+                                        right: '12px',
+                                        zIndex: 10,
+                                        background: 'rgba(255,255,255,0.08)', 
+                                        border: '1px solid rgba(255,255,255,0.1)', 
+                                        color: 'rgba(255,255,255,0.6)', 
+                                        width: '32px',
+                                        height: '32px',
+                                        borderRadius: '16px', 
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease',
+                                        backdropFilter: 'blur(4px)'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
+                                        e.currentTarget.style.color = '#fff';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+                                        e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+                                    }}
+                                    title="Refresh"
+                                >
+                                    <RefreshCw size={16} />
+                                </button>
+
+                                {whereLines?.length > 0 ? (
+                                    whereLines.map(line => (
+                                        <DrawerLineItem 
+                                            key={line.id} 
+                                            line={line} 
+                                            fontSize={infoFontSize} 
                                         />
-                                    ))}
-                                </div>
-                            ) : (
-                                <div style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
-                                    <p style={{ fontSize: 'var(--dynamic-log-size, 16px)' }}>No data — tap refresh to load.</p>
-                                </div>
-                            )}
+                                    ))
+                                ) : (
+                                    <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
+                                        <p style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontStyle: 'italic' }}>No player data captured.</p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>

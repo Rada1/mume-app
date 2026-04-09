@@ -202,55 +202,61 @@
 
 .member-bars {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    align-items: center;
+    gap: 6px;
     margin-top: 2px;
 }
 
-.member-stat-track {
-    height: 8px;
-    background: rgba(0, 0, 0, 0.4);
-    border-radius: 2px;
-    transform: skewX(-20deg);
-    overflow: visible;
-    width: 100%;
-    max-width: 140px;
-}
-
-.member-stat-segments {
+.member-bar {
     display: flex;
-    gap: 1.5px;
-    height: 100%;
+    align-items: center;
 }
 
-.member-stat-segment {
-    height: 100%;
+.member-bar-segment {
+    position: relative;
+    display: flex;
+    align-items: center;
     background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 1px;
+    border-radius: 0;
+    height: 6px;
+    width: 45px;
     overflow: hidden;
+    transform: skewX(-15deg);
+    margin: 0 1px;
 }
 
-.member-stat-fill {
-    height: 100%;
+.member-bar-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.85;
+    box-shadow: 0 0 6px currentColor;
+    filter: saturate(2) brightness(1.3);
 }
 
-/* Color logic matching ModernVitals */
-.member-stat-track.hp .member-stat-fill {
-    background: #ee2222;
-    box-shadow: 0 0 8px rgba(238, 34, 34, 0.3);
+.member-bar-dividers {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: space-evenly;
+    pointer-events: none;
+    z-index: 5;
 }
 
-.member-stat-track.mana .member-stat-fill {
-    background: #9933ff;
-    box-shadow: 0 0 8px rgba(153, 51, 255, 0.3);
+.member-bar-divider {
+    width: 1px;
+    height: 100%;
+    background: rgba(10, 10, 10, 1);
 }
 
-.member-stat-track.move .member-stat-fill {
-    background: #22ff55;
-    box-shadow: 0 0 8px rgba(34, 255, 85, 0.3);
-}
+.member-bar.hp .member-bar-fill { color: #ff2d2d; background-color: currentColor; }
+.member-bar.mana .member-bar-fill { color: #0084ff; background-color: currentColor; }
+.member-bar.move .member-bar-fill { color: #00ff6a; background-color: currentColor; }
 
 .member-numeric-vitals {
     display: flex;

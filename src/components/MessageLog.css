@@ -294,8 +294,8 @@
 }
 
 .keyword-highlight.combat-verb {
-    color: #ff9d00 !important;
-    /* Vivid Orange */
+    color: #ffffff !important;
+    font-weight: bold;
     text-transform: uppercase;
 }
 
@@ -305,8 +305,8 @@
 }
 
 .keyword-highlight.status-word {
-    color: #ff4d4d !important;
-    /* Urgent Red */
+    color: #ffffff !important;
+    font-weight: bold;
 }
 
 .combat-dmg-out {
@@ -316,6 +316,11 @@
 
 .combat-dmg-in {
     color: #f87171 !important; /* tactical red */
+    font-weight: bold;
+}
+
+.combat-dmg-group {
+    color: #bcedf2 !important; /* washed-out tactical cyan */
     font-weight: bold;
 }
 

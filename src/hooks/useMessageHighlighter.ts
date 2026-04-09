@@ -227,7 +227,9 @@ export const useMessageHighlighter = (
         const pTargeted = textOnly.includes(' your ') && combatVerbRegex.test(textOnly);
 
         if (inCombat && (pAttacking || pTargeted || isCombatMessage)) {
-            const cssClass = (pAttacking || combatSide === 'player' || combatSide === 'groupmate') ? 'combat-dmg-out' : 'combat-dmg-in';
+            const cssClass = (pAttacking || combatSide === 'player') 
+                ? 'combat-dmg-out' 
+                : (combatSide === 'groupmate' ? 'combat-dmg-group' : 'combat-dmg-in');
 
             // 1. Absolute Damage + Combat Verb (including standalone 'hit', etc.)
             const combatDmgPattern = `((?:${combatDmgIndicators})\\s+)?(${combatVerbs})`;
@@ -264,7 +266,7 @@ export const useMessageHighlighter = (
             const candidates = buildHighlighterCandidates(
                 mid || 'unknown', target, buttonsRef, roomPlayers, roomNpcs, characterName, 
                 roomItems, discoveredItems, inlineCategories, type, textOnly, keywordOverrides,
-                selectedObjectIds, isCombatMessage, inCombat
+                selectedObjectIds, isCombatMessage, inCombat, combatSide
             );
 
             candidates

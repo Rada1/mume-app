@@ -28,61 +28,77 @@ export const useUIState = (executeCommandRef: React.MutableRefObject<(cmd: strin
         };
     });
 
-    const setIsStatsOpen = useCallback((open: boolean) => {
+    const handleTabClick = useCallback((drawer: 'stats' | 'character' | 'inventory' | 'players') => {
+        executeCommandRef.current?.('click-sound', true, true);
         setUI(prev => {
-            if (open && prev.drawer !== 'stats') {
+            if (prev.drawer === drawer) {
+                // Toggle off to map if clicking the same one
+                return { ...prev, drawer: 'none', mapExpanded: true, peekingSource: 'none' };
+            } else {
+                // Fetch fresh data when opening
                 setTimeout(() => {
-                    executeCommandRef.current?.('stat', true, true, true, true);
-                    setTimeout(() => executeCommandRef.current?.('at', true, true, true, true), 100);
+                    if (drawer === 'stats') {
+                        executeCommandRef.current?.('stat', true, true, true, true);
+                        setTimeout(() => executeCommandRef.current?.('at', true, true, true, true), 100);
+                    } else if (drawer === 'character') {
+                        executeCommandRef.current?.('info', true, true, true, true);
+                        setTimeout(() => executeCommandRef.current?.('score', true, true, true, true), 100);
+                        setTimeout(() => executeCommandRef.current?.('at', true, true, true, true), 200);
+                        setTimeout(() => executeCommandRef.current?.('look self', true, true, true, true), 300);
+                        setTimeout(() => executeCommandRef.current?.('whois', true, true, true, true), 400);
+                        setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 500);
+                        setTimeout(() => executeCommandRef.current?.('practice', true, true, true, true), 600);
+                    } else if (drawer === 'inventory') {
+                        executeCommandRef.current?.('eq', true, true, true, true);
+                        setTimeout(() => executeCommandRef.current?.('inv', true, true, true, true), 100);
+                    } else if (drawer === 'players') {
+                        executeCommandRef.current?.('who', true, true, true, true);
+                        setTimeout(() => executeCommandRef.current?.('where', true, true, true, true), 150);
+                    }
                 }, 50);
+                // Switch directly to the new drawer, forcing map closed for symmetry
+                return { ...prev, drawer, mapExpanded: false, peekingSource: 'none' };
             }
-            return { ...prev, drawer: open ? 'stats' : 'none' };
         });
     }, [executeCommandRef]);
+
+    const toggleMap = useCallback(() => {
+        executeCommandRef.current?.('click-sound', true, true);
+        setUI(prev => {
+            if (prev.drawer !== 'none') {
+                // If any utility drawer is open, close it and show the map instead
+                return { ...prev, drawer: 'none', mapExpanded: true, peekingSource: 'none' };
+            } else {
+                // Otherwise toggle map expansion
+                return { ...prev, mapExpanded: !prev.mapExpanded, peekingSource: 'none' };
+            }
+        });
+    }, [executeCommandRef]);
+
+    const setIsStatsOpen = useCallback((open: boolean) => {
+        if (open) handleTabClick('stats');
+        else setUI(prev => ({ ...prev, drawer: 'none' }));
+    }, [handleTabClick]);
 
     const setIsCharacterOpen = useCallback((open: boolean) => {
-        setUI(prev => {
-            if (open && prev.drawer !== 'character') {
-                setTimeout(() => {
-                    executeCommandRef.current?.('info', true, true, true, true);
-                    setTimeout(() => executeCommandRef.current?.('score', true, true, true, true), 100);
-                    setTimeout(() => executeCommandRef.current?.('at', true, true, true, true), 200);
-                    setTimeout(() => executeCommandRef.current?.('look self', true, true, true, true), 300);
-                    setTimeout(() => executeCommandRef.current?.('whois', true, true, true, true), 400);
-                    setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 500);
-                    setTimeout(() => executeCommandRef.current?.('practice', true, true, true, true), 600);
-                }, 50);
-            }
-            return { ...prev, drawer: open ? 'character' : 'none' };
-        });
-    }, [executeCommandRef]);
+        if (open) handleTabClick('character');
+        else setUI(prev => ({ ...prev, drawer: 'none' }));
+    }, [handleTabClick]);
 
     const setIsEquipmentOpen = useCallback((open: boolean) => {
-        setUI(prev => {
-            if (open && prev.drawer !== 'equipment') {
-                setTimeout(() => {
-                    executeCommandRef.current?.('eq', true, true, true, true);
-                    setTimeout(() => executeCommandRef.current?.('at', true, true, true, true), 150);
-                }, 50);
-            }
-            return { ...prev, drawer: open ? 'equipment' : 'none' };
-        });
-    }, [executeCommandRef]);
+        if (open) handleTabClick('inventory'); // Equipment is now part of inventory drawer
+        else setUI(prev => ({ ...prev, drawer: 'none' }));
+    }, [handleTabClick]);
 
     const setIsInventoryOpen = useCallback((open: boolean) => {
-        setUI(prev => {
-            if (open && prev.drawer !== 'inventory') {
-                setTimeout(() => {
-                    executeCommandRef.current?.('inv', true, true, true, true);
-                }, 50);
-            }
-            return { ...prev, drawer: open ? 'inventory' : 'none' };
-        });
-    }, [executeCommandRef]);
+        if (open) handleTabClick('inventory');
+        else setUI(prev => ({ ...prev, drawer: 'none' }));
+    }, [handleTabClick]);
 
     const setIsPlayersOpen = useCallback((open: boolean) => {
-        setUI(prev => ({ ...prev, drawer: open ? 'players' : 'none', peekingSource: 'none' }));
-    }, []);
+        if (open) handleTabClick('players');
+        else setUI(prev => ({ ...prev, drawer: 'none' }));
+    }, [handleTabClick]);
 
     const setIsMapExpanded = useCallback((open: boolean) => setUI(prev => {
         const isDesktop = window.innerWidth > 1024;
@@ -94,6 +110,7 @@ export const useUIState = (executeCommandRef: React.MutableRefObject<(cmd: strin
     return {
         ui, setUI,
         setIsStatsOpen, setIsCharacterOpen, setIsEquipmentOpen, setIsInventoryOpen,
-        setIsPlayersOpen, setIsMapExpanded, setIsSetManagerOpen
+        setIsPlayersOpen, setIsMapExpanded, setIsSetManagerOpen,
+        handleTabClick, toggleMap
     };
 };

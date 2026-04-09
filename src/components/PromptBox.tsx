@@ -59,18 +59,29 @@ const getMoveStatus = (current: number, max: number): string => {
 
 const ConditionBadge: React.FC<{ 
     status: string; 
+    percent: number;
     colorClass: string; 
     onClick?: () => void;
     altStatus?: string;
     showAlt?: boolean;
     flash?: boolean;
-}> = ({ status, colorClass, onClick, altStatus, showAlt, flash }) => (
-    <div className={`condition-badge ${colorClass} ${flash ? 'blink-hit' : ''}`} onClick={onClick} style={{ cursor: 'pointer' }}>
-        <span className="status-bracket-wrapper">
-            <span className="bracket">|</span>
-            <span className="status-text">{showAlt && altStatus ? altStatus : status.toLowerCase()}</span>
-            <span className="bracket">|</span>
-        </span>
+}> = ({ status, percent, colorClass, onClick, altStatus, showAlt, flash }) => (
+    <div className={`condition-badge ${colorClass} ${flash ? 'blink-hit' : ''}`} onClick={onClick}>
+        <div className="status-bar-segment">
+            <div 
+                className="status-bar-fill" 
+                style={{ 
+                    width: `${Math.max(0, Math.min(100, percent))}%`,
+                }} 
+            />
+            <div className="status-bar-dividers">
+                <div className="bar-divider" />
+                <div className="bar-divider" />
+                <div className="bar-divider" />
+                <div className="bar-divider" />
+            </div>
+            <span className="status-text">{showAlt && altStatus ? altStatus : ""}</span>
+        </div>
     </div>
 );
 
@@ -214,94 +225,96 @@ const PromptBox: FC<PromptBoxProps> = ({
     return (
         <div className="prompt-box-container" id="prompt-box">
             <div className="prompt-box-content">
+                {/* Names Row — only shown in combat */}
+                {inCombat && (
+                    <div className="vitals-names-row">
+                        <div className={`name-label player-name ${hitFlash ? 'blink-hit' : ''}`}>
+                            {renderStyledName(characterName || 'YOU')}
+                        </div>
+                        {opponentName && (
+                            <div className={`name-label opponent-name ${oppHitFlash ? 'blink-hit' : ''} animate-combat-mini`}>
+                                {renderStyledName(opponentName, true)}
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 <div className="prompt-vitals-row-ascii">
                     {/* Player Side */}
                     <div className="vitals-side-container side-left">
-                        <div className="vitals-stack">
-                            {inCombat && (
-                                <div className={`name-label player-name ${hitFlash ? 'blink-hit' : ''}`}>
-                                    {renderStyledName(characterName || 'YOU')}
-                                </div>
-                            )}
-                            <div className="vitals-group-row">
-                                <div className="player-stats-group">
-                                    <ConditionBadge
-                                        status={playerHealthStatus || 'Healthy'}
-                                        colorClass="hp"
-                                        onClick={triggerNumbers}
-                                        showAlt={showNumbers}
-                                        altStatus={`${stats.hp}/${stats.maxHp}`}
-                                    />
-                                    <ConditionBadge 
-                                        status={mpStatus} 
-                                        colorClass="mana" 
-                                        onClick={triggerNumbers}
-                                        showAlt={showNumbers}
-                                        altStatus={`${stats.mana}/${stats.maxMana}`}
-                                    />
-                                    <ConditionBadge 
-                                        status={stStatus} 
-                                        colorClass="move" 
-                                        onClick={triggerNumbers}
-                                        showAlt={showNumbers}
-                                        altStatus={`${stats.move}/${stats.maxMove}`}
-                                    />
+                        <div className="player-stats-group">
+                            <ConditionBadge
+                                status={playerHealthStatus || 'Healthy'}
+                                percent={stats.maxHp > 0 ? (stats.hp / stats.maxHp) * 100 : (HEALTH_MAP[playerHealthStatus || 'Healthy']?.percent || 0)}
+                                colorClass="hp"
+                                onClick={triggerNumbers}
+                                showAlt={showNumbers}
+                                altStatus={`${stats.hp}/${stats.maxHp}`}
+                            />
+                            <ConditionBadge 
+                                status={mpStatus} 
+                                percent={getManaPercent(stats.mana, stats.maxMana)}
+                                colorClass="mana" 
+                                onClick={triggerNumbers}
+                                showAlt={showNumbers}
+                                altStatus={`${stats.mana}/${stats.maxMana}`}
+                            />
+                            <ConditionBadge 
+                                status={stStatus} 
+                                percent={getMovePercent(stats.move, stats.maxMove)}
+                                colorClass="move" 
+                                onClick={triggerNumbers}
+                                showAlt={showNumbers}
+                                altStatus={`${stats.move}/${stats.maxMove}`}
+                            />
 
-                                    <button 
-                                        className={`pos-combat-square-btn ${inCombat ? 'is-fighting' : ''} ${activeSlider === 'pos' ? 'active' : ''}`}
-                                        onClick={handlePosClick}
-                                        title={inCombat ? 'Fighting' : `Position: ${playerPosition}`}
-                                        style={{ marginLeft: '4px' }}
-                                    >
-                                        {getPositionIcon()}
-                                    </button>
-                                </div>
-                            </div>
+                            <button 
+                                className={`pos-combat-square-btn ${inCombat ? 'is-fighting' : ''} ${activeSlider === 'pos' ? 'active' : ''}`}
+                                onClick={handlePosClick}
+                                title={inCombat ? 'Fighting' : `Position: ${playerPosition}`}
+                                style={{ marginLeft: '4px' }}
+                            >
+                                {getPositionIcon()}
+                            </button>
                         </div>
                     </div>
 
-                    {/* Center Anchor (Empty but kept for layout symmetry if needed) */}
+                    {/* Center Anchor */}
                     <div className="vitals-center-anchor" style={{ width: inCombat ? '20px' : '0' }}></div>
-
-                        {activeSlider === 'pos' && activeButtonRect && (
-                            <CombatSliderPopout 
-                                label="POSITION"
-                                value={playerPosition}
-                                options={['sleeping', 'resting', 'sitting', 'standing']}
-                                anchorRect={activeButtonRect}
-                                onSelect={(val, idx) => {
-                                    if (playerPosition === 'sleeping' && idx > 0) {
-                                        executeCommand('wake');
-                                    }
-                                    setPlayerPosition(val);
-                                    executeCommand(val === 'sleeping' ? 'sleep' : val === 'resting' ? 'rest' : val === 'sitting' ? 'sit' : 'stand');
-                                    triggerHaptic(15);
-                                    setActiveSlider(null);
-                                }}
-                                onClose={() => setActiveSlider(null)}
-                                triggerHaptic={triggerHaptic}
-                            />
-                        )}
 
                     {/* Opponent Side */}
                     <div className="vitals-side-container side-right">
                         {opponentName && (
-                            <div className="vitals-stack opp-stack animate-combat-mini">
-                                <div className={`name-label opponent-name ${oppHitFlash ? 'blink-hit' : ''}`}>
-                                    {renderStyledName(opponentName, true)}
-                                </div>
-                                <div className="vitals-group-row opp-vitals">
-                                    <div className="opponent-stats-group">
-                                        <ConditionBadge
-                                            status={opponentHealthStatus || 'Fighting'}
-                                            colorClass="opponent" 
-                                        />
-                                    </div>
-                                </div>
+                            <div className="opponent-stats-group animate-combat-mini">
+                                <ConditionBadge
+                                    status={opponentHealthStatus || 'Fighting'}
+                                    percent={HEALTH_MAP[opponentHealthStatus || 'Healthy']?.percent || 50}
+                                    colorClass="opponent" 
+                                />
                             </div>
                         )}
                     </div>
                 </div>
+
+                {activeSlider === 'pos' && activeButtonRect && (
+                    <CombatSliderPopout 
+                        label="POSITION"
+                        value={playerPosition}
+                        options={['sleeping', 'resting', 'sitting', 'standing']}
+                        anchorRect={activeButtonRect}
+                        onSelect={(val, idx) => {
+                            if (playerPosition === 'sleeping' && idx > 0) {
+                                executeCommand('wake');
+                            }
+                            setPlayerPosition(val);
+                            executeCommand(val === 'sleeping' ? 'sleep' : val === 'resting' ? 'rest' : val === 'sitting' ? 'sit' : 'stand');
+                            triggerHaptic(15);
+                            setActiveSlider(null);
+                        }}
+                        onClose={() => setActiveSlider(null)}
+                        triggerHaptic={triggerHaptic}
+                    />
+                )}
             </div>
         </div>
     );

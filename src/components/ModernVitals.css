@@ -32,7 +32,7 @@
 }
 
 .hp .stat-label { color: #ef4444; }
-.mana .stat-label { color: #0ea5e9; }
+.mana .stat-label { color: #a855f7; }
 .move .stat-label { color: #10b981; }
 
 .modern-vitals-value-column {
@@ -98,10 +98,10 @@
     box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
 }
 
-/* Mana: Kinetic Cyan */
+/* Mana: Kinetic Purple */
 .mana .vitals-block.filled { 
-    background: #0ea5e9; 
-    box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+    background: #a855f7; 
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
 }
 
 /* Move: Kinetic Emerald */

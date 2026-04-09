@@ -25,10 +25,18 @@
 /* --- Row 2: Unified Vitals (Horizontal) --- */
 .prompt-vitals-row-ascii {
     display: flex;
-    align-items: flex-end; /* Align to bottom of bars */
+    align-items: center; /* Align all bars horizontally on the same line */
     gap: 8px;
     padding: 2px 0;
     width: 100%;
+}
+
+.vitals-names-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 2px;
 }
 
 .vitals-stack {
@@ -72,7 +80,7 @@
 .player-stats-group {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 6px; /* Increased gap for breathing room */
 }
 
 .condition-badge {
@@ -95,16 +103,65 @@
 }
 
 .status-text {
-    padding: 0 1px;
+    padding: 0 2px;
     text-transform: lowercase;
-    font-weight: 800;
+    font-weight: 900;
+    font-size: 0.55rem; /* Smaller numbers */
+    position: relative;
+    z-index: 10;
+    white-space: nowrap;
 }
 
-.hp .status-text,
-.mp .status-text,
-.move .status-text,
-.opponent .status-text { 
-    color: #ffffff !important; 
+.status-bar-segment {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 0; /* Fully flat */
+    height: 6px; /* Slightly taller */
+    width: 45px;
+    overflow: hidden;
+    transform: skewX(-15deg);
+    margin: 0 1px;
+}
+
+.status-bar-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.85; /* More vibrant */
+    box-shadow: 0 0 6px currentColor; /* Slightly tighter glow for thinner bar */
+    filter: saturate(2) brightness(1.3);
+}
+
+.hp .status-bar-fill { color: #ff2d2d; background-color: currentColor; }
+.mana .status-bar-fill { color: #a855f7; background-color: currentColor; }
+.move .status-bar-fill { color: #00ff6a; background-color: currentColor; }
+.opponent .status-bar-fill { color: #ff2d2d; background-color: currentColor; }
+
+.hp .status-text { color: #ffffff !important; text-shadow: 0 0 3px rgba(0,0,0,0.8); }
+.mana .status-text { color: #ffffff !important; text-shadow: 0 0 3px rgba(0,0,0,0.8); }
+.move .status-text { color: #ffffff !important; text-shadow: 0 0 3px rgba(0,0,0,0.8); }
+.opponent .status-text { color: #ffffff !important; text-shadow: 0 0 3px rgba(0,0,0,0.8); }
+
+.status-bar-dividers {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: space-evenly;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.bar-divider {
+    width: 1px; /* Thinner space for smaller bars */
+    height: 100%;
+    background: rgba(10, 10, 10, 1);
 }
 
 /* Opponent Mini Display */
@@ -210,7 +267,7 @@
         padding: 4px 10px;
     }
     .player-stats-group {
-        gap: 0px;
+        gap: 4px;
     }
     .condition-badge {
         font-size: 0.7rem;
