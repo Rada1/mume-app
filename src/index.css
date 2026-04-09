@@ -146,10 +146,7 @@
 
 .room-desc {
     font-family: var(--font-main);
-    /* Calculated to fit 80 characters exactly in the remaining space: 
-       (ContainerWidth - Padding(20px) - Gap(16px) - Map(140px) - MapPadding(12px) - Buffer(4px)) / (80 chars * 0.6 aspect) 
-       = (100cqw - 192px) / 48 */
-    font-size: clamp(9px, calc((100cqw - 192px) / 48), 15px);
+    font-size: 0.8rem;
     font-style: italic;
     color: #e2e8f0;
     max-width: 80ch;
@@ -273,26 +270,20 @@
 @media (max-width: 768px) {
     .sticky-room-header {
         padding: 8px;
+        margin-top: calc(env(safe-area-inset-top, 0px) + 40px);
         gap: 2px;
     }
 
-    .sticky-room-header .tactical-mini-map-container {
-        width: 60px !important;
-        height: 60px !important;
-    }
-
     .room-name {
-        font-size: 0.70rem !important; /* Even smaller to be safe */
+        font-size: 0.85rem !important;
         letter-spacing: 0.3px;
         margin-bottom: 2px;
     }
 
     .room-desc {
-        /* Mobile: Ultra-compact scaling to fit 80 chars next to map.
-           Clamp: 6.5px to 8.2px */
-        font-size: clamp(6.5px, 1.5vw, 8.2px) !important;
-        line-height: 1.1;
-        letter-spacing: -0.1px;
+        font-size: 0.48rem !important;
+        line-height: 1.25;
+        letter-spacing: normal;
     }
 }
 

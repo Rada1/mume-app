@@ -42,7 +42,7 @@ export function useGameParser(deps: UseGameParserDeps) {
  playDoorSound, triggerHaptic, setStats, setWeather, setIsFoggy, 
         setLightningEnabled, setAbilities, setCharacterClass, 
         setInCombat, inCombatRef, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, 
-        executeCommandRef, setInventoryLines, setStatsLines, setPracticeLines, setWhoLines, setWhereLines, setEqLines, setWhoList, setWhereList, setRoomItems, 
+        executeCommandRef, setInventoryLines, setStatsLines, setInfoLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines, setEqLines, setWhoList, setWhereList, setRoomItems, 
         captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         keywordOverrides, roomNameRef, roomDescRef, setRoomName, setRoomDesc, showDebugEchoes, addDiagnosticLog, popoverState, setPopoverState,
         setDiscoveredItems, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName,
@@ -134,7 +134,7 @@ export function useGameParser(deps: UseGameParserDeps) {
     const { initializeStage } = useStageInitializer({
         captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isPlayersOpen,
-        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines, setPracticeLines, setWhoLines, setWhereLines,
+        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines, setInfoLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines,
         finalizeCapture
     });
 
@@ -243,10 +243,6 @@ export function useGameParser(deps: UseGameParserDeps) {
             // If we have attached text on the SAME LINE as a prompt, we MUST process it.
             // If the attached text starts an 'info' capture, we need to capture it.
             initializeStage(attachedText, attachedText.toLowerCase(), attachedText, attachedText.toLowerCase(), attachedText);
-            
-            if (captureStage.current === 'info') {
-                setStatsLines(p => [...p, { id: Math.random().toString(36).substring(7), text: attachedText, html: ansiConvert.toHtml(attachedText) }]);
-            }
 
             content = attachedText;
             contentLower = content.toLowerCase();
@@ -418,7 +414,10 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (captureStage.current !== 'none') {
             if (captureStage.current === 'quest') {
                 const textToParse = attachedText || textOnly;
-                if (textToParse.length > 0) parseQuestLine(textToParse);
+                if (textToParse.length > 0) {
+                    parseQuestLine(textToParse);
+                    setQuestLines((p: any) => [...p, { id: Math.random().toString(36).substring(7), text: textToParse, html: ansiConvert.toHtml(cleanLine) }]);
+                }
                 if (promptInfo.isEndPrompt && !attachedText) finalizeCapture();
                 return;
             }
@@ -514,8 +513,10 @@ export function useGameParser(deps: UseGameParserDeps) {
                     });
                 }
                 if (isDrawerCapture.current || isSilentCapture.current) return;
-            } else if (captureStage.current === 'stat' || captureStage.current === 'info') {
+            } else if (captureStage.current === 'stat') {
                 setStatsLines(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
+            } else if (captureStage.current === 'info') {
+                setInfoLines((p: any) => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
             }
         }
 

@@ -374,6 +374,8 @@ export interface GameContextType {
     // Parser State
     inventoryLines: DrawerLine[];
     statsLines: DrawerLine[];
+    infoLines: DrawerLine[];
+    questLines: DrawerLine[];
     practiceLines: DrawerLine[];
     whoLines: DrawerLine[];
     whereLines: DrawerLine[];

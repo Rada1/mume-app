@@ -417,6 +417,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         executeCommandRef: s.executeCommandRef,
         setInventoryLines: s.setInventoryLines,
         setStatsLines: s.setStatsLines,
+        setInfoLines: s.setInfoLines,
+        setQuestLines: s.setQuestLines,
         setPracticeLines: s.setPracticeLines,
         setWhoLines: s.setWhoLines,
         setWhereLines: s.setWhereLines,

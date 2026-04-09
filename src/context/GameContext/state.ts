@@ -263,6 +263,8 @@ export const useGameProviderState = () => {
     // Parser State
     const [inventoryLines, setInventoryLines] = useState<DrawerLine[]>([]);
     const [statsLines, setStatsLines] = useState<DrawerLine[]>([]);
+    const [infoLines, setInfoLines] = useState<DrawerLine[]>([]);
+    const [questLines, setQuestLines] = useState<DrawerLine[]>([]);
     const [practiceLines, setPracticeLines] = useState<DrawerLine[]>([]);
     const [whoLines, setWhoLines] = useState<DrawerLine[]>([]);
     const [whereLines, setWhereLines] = useState<DrawerLine[]>([]);
@@ -563,6 +565,8 @@ export const useGameProviderState = () => {
         actions, setActions, actionsRef,
         inventoryLines, setInventoryLines,
         statsLines, setStatsLines,
+        infoLines, setInfoLines,
+        questLines, setQuestLines,
         practiceLines, setPracticeLines,
         whoLines, setWhoLines,
         whereLines, setWhereLines,
@@ -641,7 +645,7 @@ export const useGameProviderState = () => {
         roomPlayers, roomNpcs, roomItems, currentTerrain, ui, setIsCharacterOpen,
         setIsEquipmentOpen, setIsInventoryOpen, setIsMapExpanded, setIsSetManagerOpen, lighting,
         lightningEnabled, weather, isFoggy, abilities, characterClass, actions, handleTabClick, toggleMap,
-        inventoryLines, statsLines, practiceLines, whoLines, whereLines, eqLines, optimisticInventoryLines, optimisticEqLines, applyOptimisticChange, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
+        inventoryLines, statsLines, infoLines, questLines, practiceLines, whoLines, whereLines, eqLines, optimisticInventoryLines, optimisticEqLines, applyOptimisticChange, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
         disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, roomName, roomDesc, roomExits, roomZone,
         handleTabClick, toggleMap,
         inlineCategories, isHighlighterEnabled, isCrtEnabled, isBloomEnabled, favorites, activeDragData, heldButton,

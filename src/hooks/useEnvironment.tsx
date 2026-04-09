@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { Sun, Moon, Zap, EyeOff, CloudRain, CloudLightning, Snowflake, CloudFog, Cloud } from 'lucide-react';
+import { Sun, Moon, Flame, EyeOff, CloudRain, CloudLightning, Snowflake, CloudFog, Cloud } from 'lucide-react';
 import { LightingType } from '../types';
 
 interface EnvironmentDeps {
@@ -92,7 +92,7 @@ export function useEnvironment(deps: EnvironmentDeps) {
         switch (lighting) {
             case 'sun': return <Sun size={16} className="text-yellow-400" />;
             case 'moon': return <Moon size={16} className="text-blue-300" />;
-            case 'artificial': return <Zap size={16} className="text-orange-400" />;
+            case 'artificial': return <Flame size={16} className="text-orange-400" />;
             case 'dark': return <EyeOff size={16} className="text-gray-500" />;
             default: return null;
         }

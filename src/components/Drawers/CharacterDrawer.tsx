@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { X, BookOpen, ChevronRight, RefreshCw, ScrollText, Save, RotateCcw } from 'lucide-react';
+import { X, BookOpen, RefreshCw } from 'lucide-react';
 import { useGame, useVitals } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
 import { isObjectSelected } from '../../utils/selectionUtils';
@@ -20,10 +20,10 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
 }) => {
     const [activeTab, setActiveTab] = useState<'info' | 'practice' | 'quests'>('info');
     const { 
-        practice, 
-        quests, 
+        practice,
         executeCommand: contextExecuteCommand,
-        statsLines,
+        infoLines,
+        questLines,
         practiceLines,
         selectedObjectIds,
         handleLogClick
@@ -37,9 +37,6 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
     
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [tempTitle, setTempTitle] = useState('');
-
-    const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
-    const questPointerStartRef = useRef<{ x: number; y: number; id: string } | null>(null);
 
     const infoContainerRef = useRef<HTMLDivElement>(null);
     const [infoFontSize, setInfoFontSize] = useState<string>('inherit');
@@ -74,7 +71,6 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
     const handleRefresh = (e: React.MouseEvent) => {
         e.stopPropagation();
         executeCommand('info', true);
-        executeCommand('score', true);
         executeCommand('quest', true);
     };
 
@@ -334,8 +330,8 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                     <RefreshCw size={16} />
                                 </button>
 
-                                {statsLines?.length > 0 ? (
-                                    statsLines.map(line => (
+                                {infoLines?.length > 0 ? (
+                                    infoLines.map(line => (
                                         <DrawerLineItem 
                                             key={line.id} 
                                             line={line} 
@@ -418,20 +414,36 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                             </div>
                         </div>
                     ) : (
-                        <div className="quests-tab">
-                            <div className="quests-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', padding: '0 5px' }}>
-                                <div className="quests-badge" style={{ background: 'rgba(184, 134, 11, 0.1)', color: '#b8860b', border: '1px solid rgba(184, 134, 11, 0.3)', padding: '4px 12px', borderRadius: '12px', fontSize: 'var(--dynamic-log-size, 16px)', fontWeight: '800' }}>
-                                    {quests.activeQuests.length} Active
-                                </div>
-                                <button className="refresh-button" 
-                                    onClick={() => executeCommand('quest')} 
-                                    style={{ 
-                                        background: 'rgba(255,255,255,0.08)', 
-                                        border: '1px solid rgba(255,255,255,0.1)', 
-                                        color: 'rgba(255,255,255,0.6)', 
+                        <div className="quests-tab" style={{ position: 'relative' }}>
+                            <div ref={infoContainerRef} style={{
+                                fontFamily: 'var(--font-main, monospace)',
+                                fontSize: infoFontSize,
+                                lineHeight: '1.2',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '0',
+                                background: 'rgba(10, 13, 21, 0.35)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                borderRadius: '16px',
+                                padding: '16px 12px',
+                                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                                margin: '8px 0',
+                                position: 'relative',
+                                minHeight: '120px'
+                            }}>
+                                <button className="refresh-button"
+                                    onClick={() => executeCommand('quest', true)}
+                                    style={{
+                                        position: 'absolute',
+                                        top: '12px',
+                                        right: '12px',
+                                        zIndex: 10,
+                                        background: 'rgba(255,255,255,0.08)',
+                                        border: '1px solid rgba(255,255,255,0.1)',
+                                        color: 'rgba(255,255,255,0.6)',
                                         width: '32px',
                                         height: '32px',
-                                        borderRadius: '16px', 
+                                        borderRadius: '16px',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
@@ -451,75 +463,14 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                 >
                                     <RefreshCw size={16} />
                                 </button>
-                            </div>
 
-                            <div className="quests-list">
-                                {quests.activeQuests && quests.activeQuests.length > 0 ? (
-                                    quests.activeQuests.map((quest) => (
-                                        <div
-                                            key={quest.id}
-                                            className={`quest-item ${selectedQuestId === quest.id ? 'selected' : ''}`}
-                                            onPointerDown={(e) => {
-                                                questPointerStartRef.current = { x: e.clientX, y: e.clientY, id: quest.id };
-                                            }}
-                                            onPointerUp={(e) => {
-                                                const start = questPointerStartRef.current;
-                                                if (!start || start.id !== quest.id) return;
-                                                const dx = Math.abs(e.clientX - start.x);
-                                                const dy = Math.abs(e.clientY - start.y);
-                                                questPointerStartRef.current = null;
-                                                if (dx < 10 && dy < 10) {
-                                                    const isExpanding = quest.id !== selectedQuestId;
-                                                    setSelectedQuestId(isExpanding ? quest.id : null);
-                                                    if (isExpanding) executeCommand(`quest ${quest.name.split(' ')[0].toLowerCase()}`);
-                                                }
-                                            }}
-                                            style={{
-                                                background: 'rgba(10, 13, 21, 0.35)',
-                                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                                borderRadius: '16px',
-                                                padding: '15px',
-                                                marginBottom: '8px',
-                                                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
-                                            }}
-                                        >
-                                            <div className="quest-info" style={{ flex: 1 }}>
-                                                <div className="quest-area" style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: '#b8860b', fontWeight: '800', marginBottom: '2px' }}>{quest.area}</div>
-                                                <div className="quest-name" style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                                    {quest.isUnfinished && <span style={{ color: '#fb923c' }}>*</span>}
-                                                    {quest.name}
-                                                </div>
-                                                {selectedQuestId === quest.id ? (
-                                                    <div className="quest-full-text" style={{ 
-                                                        marginTop: '12px', 
-                                                        padding: '12px',
-                                                        background: 'rgba(0,0,0,0.2)',
-                                                        borderRadius: '8px',
-                                                        borderLeft: '2px solid var(--accent)',
-                                                        fontSize: 'var(--dynamic-log-size, 16px)', 
-                                                        lineHeight: '1.4',
-                                                        color: '#e2e8f0',
-                                                        boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
-                                                    }}>
-                                                        {quest.fullText ? quest.fullText.split('\n').map((line, i) => (
-                                                            <p key={i} style={{ marginBottom: '8px' }}>{line}</p>
-                                                        )) : (
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', opacity: 0.5, fontStyle: 'italic' }}>
-                                                                Fetching details...
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                ) : (
-                                                    <div className="quest-description" style={{ fontSize: 'var(--dynamic-log-size, 16px)', opacity: 0.5, marginTop: '2px' }}>{quest.description}</div>
-                                                )}
-                                            </div>
-                                            <ChevronRight size={14} style={{ opacity: 0.3, transform: selectedQuestId === quest.id ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }} />
-                                        </div>
+                                {questLines?.length > 0 ? (
+                                    questLines.map((line: any) => (
+                                        <div key={line.id} style={{ lineHeight: '1.2', whiteSpace: 'pre-wrap', fontSize: infoFontSize }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }} />
                                     ))
                                 ) : (
                                     <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
-                                        <ScrollText size={32} style={{ marginBottom: '10px' }} />
-                                        <p style={{ fontSize: 'var(--dynamic-log-size, 16px)' }}>No active quests.</p>
+                                        <p style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontStyle: 'italic' }}>No quest data captured.</p>
                                     </div>
                                 )}
                             </div>

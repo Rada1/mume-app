@@ -34,6 +34,8 @@ export interface UseGameParserDeps {
     characterInfo: import('../../types').CharacterInfo;
     setInventoryLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setStatsLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
+    setInfoLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
+    setQuestLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setPracticeLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setWhoLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setWhereLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;

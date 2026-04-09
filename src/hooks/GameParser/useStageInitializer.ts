@@ -19,6 +19,8 @@ interface StageInitializerDeps {
     setWhereList: (val: any[]) => void;
     setPopoverState: (val: any) => void;
     setStatsLines: (val: any[]) => void;
+    setInfoLines: (val: any) => void;
+    setQuestLines: (val: any) => void;
     setPracticeLines: (val: any[]) => void;
     setWhoLines: (val: any[]) => void;
     setWhereLines: (val: any[]) => void;
@@ -29,7 +31,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
     const {
         captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isPlayersOpen,
-        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines, setPracticeLines, setWhoLines, setWhereLines,
+        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines, setInfoLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines,
         finalizeCapture
     } = deps;
 
@@ -67,6 +69,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
             if (captureStage.current === 'quest') return;
             if (captureStage.current !== 'none') finalizeCapture();
             captureStage.current = 'quest';
+            setQuestLines([]);
             if (isCharacterOpen) {
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
             }
@@ -151,7 +154,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
             if (captureStage.current === 'info') return;
             if (captureStage.current !== 'none') finalizeCapture();
             captureStage.current = 'info';
-            setStatsLines([]);
+            setInfoLines([]);
             setCharacterInfo((prev: any) => ({ ...prev, description: '' }));
             if (isCharacterOpen) {
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
@@ -172,7 +175,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
     }, [
         captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isPlayersOpen,
-        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines, setPracticeLines, setWhoLines, setWhereLines,
+        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines, setInfoLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines,
         finalizeCapture
     ]);
 

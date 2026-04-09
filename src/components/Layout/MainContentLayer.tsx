@@ -6,6 +6,8 @@ import { useGame, useUI, useVitals, useLog } from '../../context/GameContext';
 import CombatStatsPanel from '../CombatStatsPanel';
 import { LineCluster } from './HUD/LineCluster';
 import PromptBox from '../PromptBox';
+import { ansiConvert } from '../../utils/ansi';
+import { sanitizeMumeHtml } from '../../utils/securityUtils';
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -48,6 +50,8 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         joystick,
         currentTerrain,
         viewport,
+        roomName,
+        roomDesc,
         handleLogClick,
         handleLogDoubleClick,
         handleDragEnd,
@@ -129,6 +133,16 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
             <div className="message-log-wrapper" style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative', gap: '8px' }}>
                 <div className="message-log-container" ref={logContainerRef} style={{ flex: 1 }}>
+                    {isNewbieMode && roomName && (
+                        <div className={`sticky-room-header terrain-${(currentTerrain || 'field').toLowerCase()}`} key="newbie-room-header">
+                            <div className="room-info-text">
+                                <div className="message-content room-name" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(`\x1b[1;32m${roomName}\x1b[0m`), 'roomname', true, 'room-name' as any)) }} />
+                                {roomDesc && (
+                                    <div className="message-content room-desc" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(`\x1b[0m${roomDesc}`), 'roomdesc', false, 'room-desc' as any)) }} />
+                                )}
+                            </div>
+                        </div>
+                    )}
                     <CombatStatsPanel />
                     <MessageLog
                         onLogClick={handleLogClick}

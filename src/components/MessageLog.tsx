@@ -8,8 +8,6 @@ import PracticeSkillCard from './PracticeSkillCard';
 import PracticeHeaderCard from './PracticeHeaderCard';
 import PracticeClassHeaderCard from './PracticeClassHeaderCard';
 import PracticeColumnHeaderCard from './PracticeColumnHeaderCard';
-import MiniMapRoom from './Layout/MiniMapRoom';
-import { CloudFog } from 'lucide-react';
 
 const formatTimestamp = (ts: number) => {
     const date = new Date(ts);
@@ -91,7 +89,7 @@ const Typewriter = ({ msgId, text, isRecent, playCommMessageSound, stopCommMessa
 
 
 
-import { useBaseGame, useVitals, useLog, useGame } from '../context/GameContext';
+import { useBaseGame, useVitals, useLog } from '../context/GameContext';
 
 interface MessageLogProps {
     onLogClick: (e: React.MouseEvent) => void;
@@ -237,7 +235,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const { inCombat, inCombatRef, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, isTimestampEnabled, isNewbieMode, isSpectateMode } = useBaseGame();
     const { messages, processMessageHtml } = useLog();
     const { activePrompt, setTarget, target, opponentName, opponentHealthStatus } = useVitals();
-    const { roomName, roomDesc, roomPlayers, roomNpcs, roomItems, currentTerrain, env, lighting, weather, isFoggy } = useGame();
     const { scrollContainerRef, messagesEndRef, scrollToBottom } = viewport;
 
     const processedMessages = useMemo(() => messages, [messages]);
@@ -381,28 +378,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
     return (
         <div className="message-log-layout" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden' }}>
-            {/* Sticky Room Header (Newbie Mode ONLY) - Outside scroll container to avoid masking/darkening */}
-            {isNewbieMode && roomName && (
-                <div className={`sticky-room-header terrain-${(currentTerrain || 'field').toLowerCase()}`} key="newbie-room-header">
-                    {(lighting !== 'none' || weather !== 'none' || isFoggy) && (
-                        <div className="room-card-env-indicators">
-                            {env.getLightingIcon()}
-                            {env.getWeatherIcon()}
-                            {isFoggy && <CloudFog size={14} className="text-gray-400" />}
-                        </div>
-                    )}
-                    <div className="room-info-text">
-                        <div className="message-content room-name" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(`\x1b[1;32m${roomName}\x1b[0m`), 'roomname', true, 'room-name' as any)) }} />
-                        {roomDesc && (
-                            <div className="message-content room-desc" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(`\x1b[0m${roomDesc}`), 'roomdesc', false, 'room-desc' as any)) }} />
-                        )}
-                    </div>
-                    <div className="room-header-meta">
-                        <MiniMapRoom />
-                    </div>
-                </div>
-            )}
-
             <div
                 className={`message-log${inCombat ? ' combat-mode' : ''}`}
                 ref={scrollContainerRef}

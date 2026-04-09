@@ -42,12 +42,8 @@ export const useUIState = (executeCommandRef: React.MutableRefObject<(cmd: strin
                         setTimeout(() => executeCommandRef.current?.('at', true, true, true, true), 100);
                     } else if (drawer === 'character') {
                         executeCommandRef.current?.('info', true, true, true, true);
-                        setTimeout(() => executeCommandRef.current?.('score', true, true, true, true), 100);
-                        setTimeout(() => executeCommandRef.current?.('at', true, true, true, true), 200);
-                        setTimeout(() => executeCommandRef.current?.('look self', true, true, true, true), 300);
-                        setTimeout(() => executeCommandRef.current?.('whois', true, true, true, true), 400);
-                        setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 500);
-                        setTimeout(() => executeCommandRef.current?.('practice', true, true, true, true), 600);
+                        setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 100);
+                        setTimeout(() => executeCommandRef.current?.('practice', true, true, true, true), 200);
                     } else if (drawer === 'inventory') {
                         executeCommandRef.current?.('eq', true, true, true, true);
                         setTimeout(() => executeCommandRef.current?.('inv', true, true, true, true), 100);
