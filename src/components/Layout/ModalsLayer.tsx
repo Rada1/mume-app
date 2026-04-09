@@ -141,7 +141,10 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
             const target = event.target as Node;
 
             // Don't close if clicking inside the popover
+            // Don't close if clicking inside the popover or on an inline button
             if (popoverRef.current && popoverRef.current.contains(target)) return;
+            if (target instanceof HTMLElement && target.closest('.inline-btn')) return;
+
 
             console.log('[DEBUG] handleClickOutside triggered', { 
                 targetTag: (target as HTMLElement).tagName,

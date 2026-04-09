@@ -7,10 +7,11 @@ import { sanitizeGameTarget } from '../../utils/gameUtils';
 export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>, longPressJustFiredRef?: React.MutableRefObject<boolean>) => {
     const {
         executeCommand, setInput, setTarget, triggerHaptic, btn, joystick, target,
-        setPopoverState, viewport, ui, heldButton, setHeldButton,
+        setPopoverState, popoverState, viewport, ui, heldButton, setHeldButton,
         isTrackpadModifierActive, keywordOverrides, lastCommandContextRef,
         entities, selectedObjectIds, toggleObjectSelection, clearObjectSelection,
         playClickSound, isSoundEnabled, initAudio
+
     } = deps;
 
     const lastLogClickRef = useRef<number>(0);
@@ -206,9 +207,35 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             const glowColor = targetEl.style.getPropertyValue('--glow-color').trim();
             const accentColor = glowColor || targetEl.style.color || undefined;
 
+            // Toggle logic: If clicking the same button, close the popover
+            if (popoverState && popoverState.entityId === entityId && popoverState.setId === (cmd || 'selection')) {
+                setPopoverState(null);
+                triggerHaptic(10);
+                return;
+            }
+
+            // Coordinate acquisition with safety fallbacks
+            let x = e.clientX;
+            let y = e.clientY;
+
+            // If coordinates are 0 (can happen on some mobile interactions), 
+            // fallback to the element's position or the native event.
+            if (!x && !y) {
+                const native = e.nativeEvent as MouseEvent;
+                x = native.clientX;
+                y = native.clientY;
+            }
+
+            // Absolute fallback: button center
+            if (!x && !y) {
+                const rect = targetEl.getBoundingClientRect();
+                x = rect.left + rect.width / 2;
+                y = rect.top + rect.height / 2;
+            }
+
             setPopoverState({
-                x: e.clientX || (e.nativeEvent as MouseEvent).clientX,
-                y: e.clientY || (e.nativeEvent as MouseEvent).clientY,
+                x,
+                y,
                 setId: cmd || 'selection',
                 category: category || undefined,
                 context: context || undefined,
@@ -218,6 +245,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             });
             targetEl.classList.add('menu-active');
             triggerHaptic(20);
+
         } else if ((action === 'command' || action === 'preload') && cmd) {
             let finalCmd = cmd;
             if (context) {

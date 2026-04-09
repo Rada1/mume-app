@@ -220,7 +220,8 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
         return false;
     });
 
-    const isInlineMenu = (popoverState.setId.startsWith('inline-') || popoverState.setId === 'inlinenpc' || popoverState.setId === 'inventorylist' || popoverState.setId === 'equipmentlist') && popoverState.setId !== 'inlineplayer';
+    const isInlineMenu = popoverState.setId.startsWith('inline') || popoverState.setId === 'inventorylist' || popoverState.setId === 'equipmentlist';
+
 
     return (
         <>
