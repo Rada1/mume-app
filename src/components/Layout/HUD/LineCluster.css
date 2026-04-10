@@ -5,7 +5,7 @@
     align-items: center;
     justify-content: center;
     padding: 12px;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgb(35, 35, 40);
     backdrop-filter: blur(8px);
     border-radius: 40px;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -40,7 +40,7 @@
 }
 
 .line-cluster-container.desktop-inline .line-cluster {
-    background: rgba(15, 23, 42, 0.4);
+    background: rgb(35, 35, 40);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 }
@@ -142,7 +142,7 @@
 /* Specific override for when it's inside the MapperCluster gutter */
 .mobile-bottom-gutter .line-cluster-container {
     position: absolute !important;
-    top: 5px !important;
+    top: 4px !important;
     left: 50% !important;
     right: auto !important;
     bottom: auto !important;
@@ -155,24 +155,30 @@
     flex-direction: row !important;
     width: max-content !important;
     gap: 16px !important;
-    /* Increased padding between buttons */
     padding: 4px 14px !important;
     min-height: unset !important;
-    border-radius: 16px !important;
+    border-radius: 12px !important;
 }
 
 .mobile-bottom-gutter .line-cluster .custom-btn {
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
-    min-height: 32px !important;
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    min-height: 16px !important;
 }
 
 .mobile-bottom-gutter .line-cluster .custom-btn .button-icon {
-    font-size: 1.1rem !important;
+    font-size: 0.6rem !important;
 }
 
 .mobile-bottom-gutter .line-cluster .custom-btn .button-label {
-    font-size: 0.5rem !important;
-    max-width: 32px;
+    font-size: 0.35rem !important;
+    max-width: 16px;
+}
+
+.mobile-bottom-gutter .line-cluster .custom-btn:active,
+.mobile-bottom-gutter .line-cluster .custom-btn.is-swiping {
+    transform: rotate(45deg) scale(2.0) !important;
+    z-index: 100 !important;
+    transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
 }

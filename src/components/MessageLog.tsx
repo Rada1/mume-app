@@ -114,6 +114,7 @@ const MessageItem = React.memo(({
     latestBatchId,
     isTimestampEnabled,
     isNewbieMode,
+    currentRoomName,
 }: {
     msg: Message,
     processMessageHtml: (html: string, mid?: string, isRoomName?: boolean, type?: MessageType, isCombat?: boolean, side?: string) => string,
@@ -128,6 +129,7 @@ const MessageItem = React.memo(({
     latestBatchId?: number;
     isTimestampEnabled?: boolean;
     isNewbieMode?: boolean;
+    currentRoomName?: string | null;
 }) => {
     const content = useMemo(() => processMessageHtml(msg.html, msg.id, msg.isRoomName, msg.type, msg.isCombat, msg.combatSide), [msg.html, msg.id, msg.isRoomName, msg.type, msg.isCombat, msg.combatSide, processMessageHtml]);
     const isRecent = Date.now() - msg.timestamp < 2000;
@@ -164,9 +166,12 @@ const MessageItem = React.memo(({
     ) : null;
 
 
+    const isOutdatedRoom = isNewbieMode && msg.isRoomName && currentRoomName && 
+        msg.textRaw?.replace(/\x1b\[[0-9;]*m/g, '').trim() !== currentRoomName;
+
     return (
         <div
-            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide && inCombat ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
+            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${isOutdatedRoom ? ' is-outdated-room' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide && inCombat ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
         >
             {msg.type === 'user' ? (
                 <div className="user-command-bubble">
@@ -232,7 +237,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onDragStart,
     onDragEnd
 }) => {
-    const { inCombat, inCombatRef, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, isTimestampEnabled, isNewbieMode, isSpectateMode } = useBaseGame();
+    const { inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, isTimestampEnabled, isNewbieMode, isSpectateMode } = useBaseGame();
     const { messages, processMessageHtml } = useLog();
     const { activePrompt, setTarget, target, opponentName, opponentHealthStatus } = useVitals();
     const { scrollContainerRef, messagesEndRef, scrollToBottom } = viewport;
@@ -251,10 +256,17 @@ const MessageLog: React.FC<MessageLogProps> = ({
         // If Newbie Mode is OFF, we show everything in the log (classic mode)
         if (!isNewbieMode) return messages;
 
-        // In Newbie Mode, we hide ALL instances of isRoomName and type === 'prompt' 
-        // from the scrollable log to keep the timeline "clean" and focused on action.
-        return messages.filter(m => !m.isRoomName && m.type !== 'prompt');
+        // In Newbie Mode, we show most action but hide prompts (handled by HUD/Input).
+        // We now allow room names to show so they act as markers in the persistent history.
+        return messages.filter(m => m.type !== 'prompt');
     }, [messages, isNewbieMode]);
+
+    const lastUserMsgIndex = useMemo(() => {
+        for (let i = displayMessages.length - 1; i >= 0; i--) {
+            if (displayMessages[i].type === 'user') return i;
+        }
+        return -1;
+    }, [displayMessages]);
 
     const handlePointerDownInternal = useCallback((e: React.PointerEvent) => {
         if (onPointerDown) onPointerDown(e);
@@ -307,6 +319,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             const cols = viewport.columns || 80;
             const lineCount = Math.max(1, Math.ceil(charCount / cols));
             let h = lineCount * (viewport.logFontSize * 16 * 1.1) + (isComm ? 48 : 4);
+            if (msg.type === 'user') h += 24; // Condensed bubble height estimate
             if (msg.isCombat) h += 10;
             return h;
         }, [viewport.columns, viewport.logFontSize, displayMessages]),
@@ -338,7 +351,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                 viewport.scrollToBottom(true, false, 'LayoutEffect');
             });
         }
-    }, [messages, activePrompt, viewport]);
+    }, [messages, activePrompt, viewport, isNewbieMode, lastUserMsgIndex, virtualizer]);
 
     React.useEffect(() => {
         const container = scrollContainerRef.current;
@@ -361,7 +374,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
         if (viewport.isLockedToBottomRef.current && !isUserScrollingRef.current) {
             viewport.scrollToBottom(true, true, 'VirtualizerResize');
         }
-    }, [totalSize, viewport]);
+    }, [totalSize, viewport, virtualizer]);
 
     const virtualItems = virtualizer.getVirtualItems();
 
@@ -427,6 +440,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                     latestBatchId={latestBatchId}
                                     isTimestampEnabled={isTimestampEnabled}
                                     isNewbieMode={isNewbieMode}
+                                    currentRoomName={roomName}
                                 />
                             </div>
                         );

@@ -10,6 +10,12 @@
     flex-direction: column;
     background: var(--bg-app);
     perspective: 1200px;
+    --mobile-gutter-height: 140px;
+}
+
+.app-container.is-map-expanded,
+.app-container.has-drawer-open {
+    --mobile-gutter-height: 400px;
 }
 
 .background-layer {
@@ -50,6 +56,7 @@
     overflow: hidden;
     z-index: 5500;
     pointer-events: none;
+    transition: padding-bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .content-layer>* {
@@ -67,7 +74,10 @@
    not below the content layer, so it doesn't overlap the input area. */
 @media (max-width: 768px) and (orientation: portrait) {
     .content-layer {
-        padding-bottom: 0 !important;
+        padding-bottom: var(--mobile-gutter-height) !important;
+    }
+    .content-layer > .input-container {
+        display: none !important;
     }
 }
 

@@ -419,7 +419,7 @@ export function useGameParser(deps: UseGameParserDeps) {
                     setQuestLines((p: any) => [...p, { id: Math.random().toString(36).substring(7), text: textToParse, html: ansiConvert.toHtml(cleanLine) }]);
                 }
                 if (promptInfo.isEndPrompt && !attachedText) finalizeCapture();
-                return;
+                if (isDrawerCapture.current || isSilentCapture.current) return;
             }
             parseDetailedScore(textOnly, lower);
         }

@@ -122,6 +122,8 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     }, [ui.mapExpanded, ui.drawer, viewport.isMobile]);
     const { isMapFloating, setIsMapFloating } = useMapper();
     const isMapDrawerOpen = ui.mapExpanded && !viewport.isMobile;
+    // On mobile portrait, drawers are rendered inside the gutter (MapperCluster), not here
+    const isMobilePortrait = viewport.isMobile && !viewport.isLandscape;
     // Map Tray should not have a backdrop on mobile as it blocks the rest of the UI
     const showBackdrop = ui.drawer !== 'none';
 
@@ -141,11 +143,12 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             <div
                 className={`drawer-backdrop ${showBackdrop && ui.drawer !== 'character' && ui.drawer !== 'players' ? 'open' : ''}`}
                 style={{ background: 'rgba(0,0,0,0.2)' }}
-                onClick={() => setUI(prev => ({ 
-                    ...prev, 
-                    drawer: 'none',
-                    peekingSource: 'none'
-                }))}
+                onClick={() => {
+                    // Only allow backdrop closure on desktop
+                    if (!viewport.isMobile) {
+                        setUI(prev => ({ ...prev, drawer: 'none', peekingSource: 'none' }));
+                    }
+                }}
             />
 
             {/* Map Drawer (Side View - Desktop Only) */}
@@ -217,41 +220,45 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             )}
 
 
-            <StatsDrawer
-                isOpen={ui.drawer === 'stats'}
-                onClose={() => setUI(prev => ({ ...prev, drawer: 'none' }))}
-                statsLines={statsLines}
-                executeCommand={executeCommand}
-                isLandscape={viewport.isLandscape}
-            />
+            {/* On mobile portrait, drawers are rendered inside the gutter (MapperCluster) */}
+            {!isMobilePortrait && (
+                <>
+                    <StatsDrawer
+                        isOpen={ui.drawer === 'stats'}
+                        onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none' })); }}
+                        statsLines={statsLines}
+                        executeCommand={executeCommand}
+                        isLandscape={viewport.isLandscape}
+                    />
 
-            <CharacterDrawer
-                isOpen={ui.drawer === 'character'}
-                onClose={() => setUI(prev => ({ ...prev, drawer: 'none' }))}
-                executeCommand={executeCommand}
-            />
+                    <CharacterDrawer
+                        isOpen={ui.drawer === 'character'}
+                        onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none' })); }}
+                        executeCommand={executeCommand}
+                    />
 
-            <PlayersDrawer
-                isOpen={ui.drawer === 'players'}
-                onClose={() => setUI(prev => ({ ...prev, drawer: 'none', peekingSource: 'none' }))}
-                executeCommand={executeCommand}
-            />
+                    <PlayersDrawer
+                        isOpen={ui.drawer === 'players'}
+                        onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none', peekingSource: 'none' })); }}
+                        executeCommand={executeCommand}
+                    />
 
-
-            <InventoryDrawer
-                isOpen={ui.drawer === 'inventory'}
-                isPeeking={ui.isDrawerPeeking && ui.peekingDrawer === 'inventory'}
-                onClose={() => setUI(prev => ({ ...prev, drawer: 'none', peekingSource: 'none' }))}
-                inventoryLines={inventoryLines}
-                eqLines={eqLines}
-                handleButtonClick={handleButtonClick}
-                triggerHaptic={triggerHaptic}
-                executeCommand={executeCommand}
-                pendingDrawerContainerRef={pendingDrawerContainerRef}
-                inlineCategories={inlineCategories}
-                entities={entities}
-                keywordOverrides={keywordOverrides}
-            />
+                    <InventoryDrawer
+                        isOpen={ui.drawer === 'inventory'}
+                        isPeeking={ui.isDrawerPeeking && ui.peekingDrawer === 'inventory'}
+                        onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none', peekingSource: 'none' })); }}
+                        inventoryLines={inventoryLines}
+                        eqLines={eqLines}
+                        handleButtonClick={handleButtonClick}
+                        triggerHaptic={triggerHaptic}
+                        executeCommand={executeCommand}
+                        pendingDrawerContainerRef={pendingDrawerContainerRef}
+                        inlineCategories={inlineCategories}
+                        entities={entities}
+                        keywordOverrides={keywordOverrides}
+                    />
+                </>
+            )}
         </>
     );
 };

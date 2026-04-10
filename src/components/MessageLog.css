@@ -74,9 +74,12 @@
     border: none !important;
     border-radius: 0;
     margin: 0;
-    padding: 12px 10px !important;
+    padding-top: 8px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    padding-bottom: 12px !important;
     box-shadow: none !important;
-    mask-image: none !important; /* Keep top border sharp */
+    mask-image: none;
 }
 
 /* Offset log mask for mobile header in portrait */
@@ -126,9 +129,20 @@
     transform: none !important;
 }
 
+.newbie-mode .message {
+    animation: none !important;
+    transition: none !important;
+}
+
 
 .message.is-empty {
     min-height: 1em;
+}
+
+.message.is-outdated-room {
+    opacity: 0.45 !important;
+    filter: saturate(0.5);
+    transition: opacity 0.5s ease, filter 0.5s ease;
 }
 
 .log-bottom-spacer {
@@ -186,19 +200,19 @@
     font-weight: 400;
     font-style: italic;
     font-size: var(--dynamic-log-size, 16px);
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 1);
     text-align: left;
     width: 100%;
 }
 
 .newbie-mode .message.is-room-name {
-    align-items: center;
-    text-align: center;
+    align-items: flex-start;
+    text-align: left;
 }
 
 .newbie-mode .message.room-description,
 .newbie-mode .message.is-room-name .room-desc-line {
-    text-align: center;
+    text-align: left;
 }
 
 
@@ -219,11 +233,24 @@
 .message-content {
     flex: 1;
     min-width: 0;
-    opacity: 1;
     /* Container must be 1 to allow children to be 1 */
-    color: var(--text-dim);
-    /* Dim raw text nodes by default */
-    transition: color 0.2s ease;
+    color: var(--text-primary);
+    transition: filter 0.3s ease, color 0.2s ease;
+}
+
+/* Dim everything in combat unless it's an urgent line or combat output */
+.dimmedInCombat .message-content {
+    filter: opacity(0.25);
+}
+
+/* Pop keywords and interactive elements to full brightness even when dimmed */
+.message-content .inline-btn,
+.message-content b,
+.message-content strong,
+.message-content .keyword-highlight,
+.message-content .pc-highlighter,
+.message-content .npc-highlighter {
+    filter: opacity(1) brightness(1.3);
 }
 
 /* Inherit regular message styling for room names is handled above now */
@@ -238,22 +265,6 @@
 /* Standard text occupies full brightness by default */
 .message-content span {
     opacity: 1;
-}
-
-/* Pop keywords and interactive elements to full brightness */
-.message-content .inline-btn,
-.message-content b,
-.message-content strong,
-.message-content .keyword-highlight,
-.message-content .pc-highlighter,
-.message-content .npc-highlighter {
-    opacity: 1 !important;
-}
-
-/* Ensure nested spans in buttons don't inherit dimness */
-.message-content .inline-btn span,
-.message-content .keyword-highlight span {
-    opacity: 1 !important;
 }
 
 /* Force category color or inheritance in nested contexts */
@@ -389,7 +400,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 2px;
-    margin: 2px 0 4px 0;
+    margin: 8px 8px -3px 8px;
     width: 100%;
     max-width: 100%;
 }
@@ -524,7 +535,7 @@
 }
 
 .message.old-batch-dim {
-    opacity: 0.85;
+    opacity: 1;
     transition: opacity 0.5s ease;
 }
 
@@ -584,25 +595,29 @@
 }
 
 .message.user {
-    margin: 4px 0 !important;
+    margin: 8px 0 !important; /* Tightened from 12px for better tactical flow */
     display: flex;
-    justify-content: flex-start;
+    justify-content: flex-end;
 }
 
 .user-command-bubble {
-    background: rgba(30, 30, 32, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 18px;
-    padding: 2px 12px;
+    background: rgb(35, 35, 40);
+    border: none;
+    border-radius: 20px 20px 6px 20px;
+    padding: 3px 10px;
     width: fit-content;
-    color: #e2e8f0;
-    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 500;
+    font-size: 0.95em;
     font-family: var(--font-main);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     display: flex;
-    align-items: center;
-    gap: 8px;
-    line-height: 1.0;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    line-height: 1.4;
+    margin-right: 8px;
+    max-width: 85%;
 }
 
 .user-command-bubble .message-timestamp {
@@ -626,9 +641,9 @@
 .message.prompt {
     background: transparent !important; /* Excluded from backgrounder */
     margin: 0 !important;
-    color: var(--text-dim);
+    color: var(--text-primary);
     font-weight: bold;
-    opacity: 0.7;
+    opacity: 1;
     line-height: 1.0 !important;
     padding-top: 1px !important;
     padding-bottom: 1px !important;
@@ -641,6 +656,18 @@
     opacity: 1;
     background: transparent !important;
     box-shadow: none !important;
+}
+
+.sticky-room-header {
+    position: relative;
+    top: 0;
+    z-index: 5200; /* Lowered from 6000 to clear HUD clusters and popovers */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: auto;
+    display: flex;
+    align-items: flex-end;
+    pointer-events: auto;
+    mask-image: none;
 }
 
 .input-area {
@@ -1028,7 +1055,8 @@ span.inline-btn {
 }
 
 .shop-item-card.recent-entry {
-    animation: smooth-enter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
+    animation: none !important;
+    opacity: 1 !important;
 }
 
 .shop-item-id {

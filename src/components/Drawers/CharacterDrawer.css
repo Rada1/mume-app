@@ -22,7 +22,7 @@
     left: 0;
     right: 0;
     height: 90vh;
-    background: rgb(10, 13, 21);
+    background: rgb(35, 35, 40);
     transform: translateY(-100%);
     transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
@@ -128,7 +128,7 @@
 
 /* Glass Section Container */
 .char-profile, .stats-grid > div, .details-section, .skill-group, .info-section-glass {
-    background: rgba(10, 13, 21, 0.35);
+    background: rgb(0, 0, 0);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     padding: 15px;
@@ -324,7 +324,7 @@
 }
 
 .skill-item, .quest-item {
-    background: rgba(10, 13, 21, 0.35);
+    background: rgb(0, 0, 0);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     padding: 10px 12px;
@@ -377,20 +377,22 @@
 @media (max-width: 768px) and (orientation: portrait) {
     .character-drawer-content.log-card-drawer {
         top: auto;
-        bottom: 52px;
-        left: 0;
-        right: 0;
-        width: 100vw;
+        bottom: 60px;
+        left: 12px;
+        right: 12px;
+        width: auto;
         max-width: none;
-        height: 248px; /* 300px gutter − 52px tab bar = visible gutter height */
+        height: 248px; 
         transform: translateY(0);
         opacity: 0;
         visibility: hidden;
         transition: none;
-        border-radius: 20px 20px 0 0;
-        background: rgb(10, 13, 21);
+        border-radius: 18px;
+        background: rgb(0, 0, 0) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15);
         backdrop-filter: none;
         -webkit-backdrop-filter: none;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
     }
 
     .character-drawer-content.log-card-drawer.open {
@@ -398,6 +400,14 @@
         opacity: 1;
         visibility: visible;
         transition: none;
+    }
+
+    .character-drawer-overlay {
+        pointer-events: none;
+    }
+
+    .character-drawer-content {
+        pointer-events: auto;
     }
 }
 

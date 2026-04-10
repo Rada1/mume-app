@@ -22,10 +22,15 @@ interface HUDClustersLayerProps {
     setHeldButton: React.Dispatch<React.SetStateAction<any>>;
     btnGlow: { up: boolean, down: boolean };
     setBtnGlow: React.Dispatch<React.SetStateAction<{ up: boolean, down: boolean }>>;
+    input: string;
+    setInput: (val: string) => void;
+    handleSend: (e?: React.FormEvent) => void;
+    handleInputSwipe: (dir: any) => void;
 }
 
 export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
-    handleDragStart, wasDraggingRef, commandPreview, setCommandPreview, heldButton, setHeldButton, btnGlow, setBtnGlow
+    handleDragStart, wasDraggingRef, commandPreview, setCommandPreview, heldButton, setHeldButton, btnGlow, setBtnGlow,
+    input, setInput, handleSend, handleInputSwipe
 }) => {
     const { characterName, isMmapperMode, btn, joystick, mapperRef, triggerHaptic, executeCommand, handleButtonClick, viewport, showControls, showLegacyButtons } = useGame();
     const { target, stats, activePrompt } = useVitals();
@@ -67,6 +72,10 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
                     heldButton={heldButton}
                     setHeldButton={setHeldButton}
                     setCommandPreview={setCommandPreview}
+                    input={input}
+                    setInput={setInput}
+                    handleSend={handleSend}
+                    handleInputSwipe={handleInputSwipe}
                 />
             )}
 

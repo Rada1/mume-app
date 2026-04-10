@@ -4,6 +4,11 @@ import { LineCluster } from './LineCluster';
 import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { useMapper } from '../../../context/useMapper';
 import { GripHorizontal, Map as MapIcon, User, Shield, Users, BarChart2 } from 'lucide-react';
+import InputArea from '../../InputArea';
+import { StatsDrawer } from '../../Drawers/StatsDrawer';
+import { CharacterDrawer } from '../../Drawers/CharacterDrawer';
+import { PlayersDrawer } from '../../Drawers/PlayersDrawer';
+import { InventoryDrawer } from '../../Drawers/InventoryDrawer';
 
 interface MapperClusterProps {
     uiPositions: any;
@@ -19,16 +24,23 @@ interface MapperClusterProps {
     heldButton: any;
     setHeldButton: React.Dispatch<React.SetStateAction<any>>;
     setCommandPreview: React.Dispatch<React.SetStateAction<string | null>>;
+    input: string;
+    setInput: (val: string) => void;
+    handleSend: (e?: React.FormEvent) => void;
+    handleInputSwipe: (dir: any) => void;
 }
 
 export const MapperCluster: React.FC<MapperClusterProps> = ({
     uiPositions, isEditMode, handleDragStart, characterName, isMmapperMode, isMobile, mapperRef,
-    dragState, isLandscape, wasDraggingRef, heldButton, setHeldButton, setCommandPreview
+    dragState, isLandscape, wasDraggingRef, heldButton, setHeldButton, setCommandPreview,
+    input, setInput, handleSend, handleInputSwipe
 }) => {
-    const { 
+    const {
         triggerHaptic, showControls, viewport, btn, handleButtonClick, executeCommand, joystick,
-        handleTabClick, toggleMap 
-    } = useGame();
+        handleTabClick, toggleMap, spatButtons, setSpatButtons, parley, setParley, whoList,
+        statsLines, displayInventoryLines, displayEqLines,
+        pendingDrawerContainerRef, inlineCategories, entities, keywordOverrides
+    } = useGame() as any;
     const { target, activePrompt, stats } = useVitals();
     const { ui, setUI, setPopoverState } = useUI();
     const { isMapFloating, setIsMapFloating } = useMapper();
@@ -78,53 +90,61 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         const isShown = ui.mapExpanded || (ui.peekingDrawer === 'map');
         
         return (
-            <div 
+            <div
                 className={`mobile-bottom-gutter ${isShown ? 'map-expanded' : ''}`}
                 onClick={(e) => e.stopPropagation()} // Prevent log interaction
                 style={{
-                    padding: isShown ? '10px 15px 0px 15px' : '0',
-                    overflow: 'hidden',
+                    padding: '0',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '10px'
+                    gap: '0'
                 }}
             >
-                {/* Map Area */}
-                <div 
-                    className={`mobile-mapper-touch-surface ${(isShown) ? "drawer-section" : ""}`} 
-                    style={{ 
-                        flex: 1, 
-                        position: 'relative', 
-                        overflow: 'hidden', 
-                        pointerEvents: 'auto',
-                        padding: '0',
-                        margin: '0',
-                        minHeight: 0,
-                        background: (isShown) ? 'rgba(15, 23, 42, 0.3)' : 'transparent',
-                        border: (isShown) ? '1px solid rgba(255, 255, 255, 0.12)' : 'none',
-                        borderRadius: (isShown) ? '16px 16px 0 0' : '20px 20px 0 0',
-                        boxShadow: (isShown) ? '0 8px 32px rgba(0, 0, 0, 0.4)' : 'none',
-                        touchAction: 'none'
+                {/* Command Bar at the TOP of the gutter */}
+                <div
+                    className="mobile-gutter-input-wrapper"
+                    style={{
+                        padding: '6px 4px 0 4px',
+                        flexShrink: 0,
+                        marginBottom: (isShown || ui.drawer !== 'none') ? '24px' : '0'
                     }}
                 >
-                    {/* Tactical Line Buttons (Overlaid on Map) */}
-                    <div 
-                        className="line-cluster-wrapper portrait-visible"
-                        style={{
-                            position: 'absolute',
-                            top: '8px',
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            zIndex: 10,
-                            pointerEvents: 'auto'
-                        }}
-                    >
+                    <InputArea
+                        input={input}
+                        setInput={setInput}
+                        onSend={handleSend}
+                        onSwipe={handleInputSwipe}
+                        isMobile={isMobile}
+                        isKeyboardOpen={viewport.isKeyboardOpen}
+                        commandPreview={null} // Keep it clean in the gutter
+                        spatButtons={spatButtons}
+                        setActiveSet={btn.setActiveSet}
+                        executeCommand={executeCommand}
+                        setSpatButtons={setSpatButtons}
+                        setPopoverState={setPopoverState}
+                        parley={parley}
+                        setParley={setParley}
+                        whoList={whoList}
+                    />
+                </div>
+
+                {/* Map Area — uses same gutter-panel-card class as drawer panels */}
+                <div
+                    className="mobile-mapper-touch-surface gutter-panel-card"
+                    style={{
+                        display: isShown ? 'block' : 'none',
+                        pointerEvents: isShown ? 'auto' : 'none',
+                        opacity: isShown ? 1 : 0,
+                        touchAction: 'none',
+                    }}
+                >
+                    <div className={`line-cluster-container ${(!showControls || isKeyboardOpen) && !btn.isEditMode ? 'hud-hidden' : ''}`}>
                         <LineCluster
                             isEditMode={isEditMode}
                             handleDragStart={handleDragStart}
                             buttons={btn.buttons}
                             selectedButtonIds={btn.selectedButtonIds}
-                            dragState={btn.dragState}
+                            dragState={dragState}
                             handleButtonClick={handleButtonClick}
                             wasDraggingRef={wasDraggingRef}
                             triggerHaptic={triggerHaptic}
@@ -167,8 +187,51 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     />
                 </div>
 
+                {/* Drawer Area - shown when a utility drawer tab is active */}
+                {!isShown && ui.drawer !== 'none' && (
+                    <div className="gutter-drawer-container gutter-panel-card">
+                        {ui.drawer === 'stats' && (
+                            <StatsDrawer
+                                isOpen={true}
+                                onClose={() => {}}
+                                statsLines={statsLines}
+                                executeCommand={executeCommand}
+                            />
+                        )}
+                        {ui.drawer === 'character' && (
+                            <CharacterDrawer
+                                isOpen={true}
+                                onClose={() => {}}
+                                executeCommand={executeCommand}
+                            />
+                        )}
+                        {ui.drawer === 'players' && (
+                            <PlayersDrawer
+                                isOpen={true}
+                                onClose={() => {}}
+                                executeCommand={executeCommand}
+                            />
+                        )}
+                        {ui.drawer === 'inventory' && (
+                            <InventoryDrawer
+                                isOpen={true}
+                                onClose={() => {}}
+                                inventoryLines={displayInventoryLines}
+                                eqLines={displayEqLines}
+                                handleButtonClick={handleButtonClick}
+                                triggerHaptic={triggerHaptic}
+                                executeCommand={executeCommand}
+                                pendingDrawerContainerRef={pendingDrawerContainerRef}
+                                inlineCategories={inlineCategories}
+                                entities={entities}
+                                keywordOverrides={keywordOverrides}
+                            />
+                        )}
+                    </div>
+                )}
+
                 {/* Unified Tab Bar for both orientations - Now at the bottom */}
-                <div className="portrait-tab-bar portrait-visible">
+                <div className="portrait-tab-bar">
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'stats' ? 'active' : ''}`}
                         onClick={() => handleTabClick('stats')}

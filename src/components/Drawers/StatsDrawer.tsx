@@ -82,7 +82,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                     
                     if ((deltaY > 50 && absY > absX) || (deltaX < -40 && absX > absY)) {
                         triggerHaptic(40);
-                        onClose();
+                        if (!viewport.isMobile) onClose();
                     }
                 }
                 (e.currentTarget as any)._startX = null;
@@ -149,7 +149,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                             display: 'flex',
                             flexWrap: 'nowrap',
                             gap: '4px',
-                            background: 'rgba(255,255,255,0.03)',
+                            background: 'rgb(0, 0, 0)',
                             padding: '1px 8px',
                             borderRadius: '12px',
                             border: '1px solid rgba(255,255,255,0.08)',

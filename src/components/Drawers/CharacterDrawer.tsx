@@ -26,7 +26,10 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
         questLines,
         practiceLines,
         selectedObjectIds,
-        handleLogClick
+        handleLogPointerDown,
+        handleLogPointerUp,
+        handleLogClick,
+        clearObjectSelection
     } = useGame();
     const { characterInfo } = useVitals();
     
@@ -65,7 +68,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
     };
 
     const handleBackdropClick = (e: React.MouseEvent) => {
-        if (e.target === e.currentTarget) onClose();
+        if (e.target === e.currentTarget && window.innerWidth > 1024) onClose();
     };
 
     const handleRefresh = (e: React.MouseEvent) => {
@@ -75,6 +78,52 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
     };
 
     const swipePos = useRef<{ x: number, y: number } | null>(null);
+
+    const onPointerDownInternal = (e: React.PointerEvent) => {
+        const target = e.target as HTMLElement;
+        const container = e.currentTarget as HTMLElement;
+        if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT' || target.closest('.drawer-tab')) {
+            if (target.closest('.inline-btn')) handleLogPointerDown(e);
+            return;
+        }
+        swipePos.current = { x: e.clientX, y: e.clientY };
+        container.setPointerCapture(e.pointerId);
+    };
+
+    const onPointerUpInternal = (e: React.PointerEvent) => {
+        const target = e.target as HTMLElement;
+        const container = e.currentTarget as HTMLElement;
+        if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT' || target.closest('.drawer-tab')) {
+            if (target.closest('.inline-btn')) handleLogPointerUp(e);
+            return;
+        }
+        if (swipePos.current) {
+            const deltaX = e.clientX - swipePos.current.x;
+            const deltaY = e.clientY - swipePos.current.y;
+            const absX = Math.abs(deltaX);
+            const absY = Math.abs(deltaY);
+
+            if ((deltaY > 50 && absY > absX) || (deltaX > 40 && absX > absY)) {
+                if (window.innerWidth > 1024) onClose();
+            }
+        }
+        swipePos.current = null;
+    };
+
+    const onClickInternal = (e: React.MouseEvent) => {
+        const target = e.target as HTMLElement;
+        const btn = target.closest('.inline-btn') as HTMLElement;
+        if (btn) {
+            handleLogClick(e);
+        } else if (!target.closest('.drawer-tab')) {
+            if (selectedObjectIds.size > 0) {
+                clearObjectSelection();
+                triggerHaptic(20);
+            } else if (e.target === e.currentTarget) {
+                if (window.innerWidth > 1024) onClose();
+            }
+        }
+    };
 
     const DrawerLineItem = React.memo(({ 
         line, 
@@ -94,13 +143,13 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
         const cat = getCategoryForName(line.text);
         const isActuallyContainer = line.isContainer || cat === 'inline-containers';
         const brown = 'rgba(180, 100, 50, 0.9)';
-        const dim = 'rgba(255,255,255,0.4)';
+        const dim = 'var(--text-primary)';
 
         if (line.isItem) {
             const articleMatch = line.text.match(/^(a |an |the |some )/i);
             const article = articleMatch ? articleMatch[1] : '';
             const afterArticle = line.text.slice(article.length);
-            const condMatch = afterArticle.match(/\s+(\((flawless|well-maintained|worn|scratched|damaged|beaten|battered|beaten and battered|shabby|sub-standard|poor|fragmented|broken|shattered)\))$/i);
+            const condMatch = afterArticle.match(/\s+(\(.*\))$/i);
             const condition = condMatch ? condMatch[1] : '';
             const itemName = condMatch ? afterArticle.slice(0, afterArticle.length - condMatch[0].length) : afterArticle;
 
@@ -147,140 +196,26 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
         >
             <div
                 className={`character-drawer-content log-card-drawer ${isOpen ? 'open' : ''}`}
-                onClick={(e) => { 
-                    const target = e.target as HTMLElement;
-                    if (target.closest('.inline-btn')) {
-                        handleLogClick(e);
-                    } else if (e.target === e.currentTarget) {
-                        onClose();
-                    } else {
-                        e.stopPropagation(); 
-                    }
-                }}
-                onPointerDown={(e) => {
-                    const target = e.target as HTMLElement;
-                    if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT') return;
-                    swipePos.current = { x: e.clientX, y: e.clientY };
-                    e.currentTarget.setPointerCapture(e.pointerId);
-                }}
-                onPointerUp={(e) => {
-                    if (swipePos.current) {
-                        const deltaX = e.clientX - swipePos.current.x;
-                        const deltaY = e.clientY - swipePos.current.y;
-                        const absX = Math.abs(deltaX);
-                        const absY = Math.abs(deltaY);
-
-                        if ((deltaY > 50 && absY > absX) || (deltaX > 40 && absX > absY)) {
-                            onClose();
-                        }
-                    }
-                    swipePos.current = null;
-                }}
-                onPointerCancel={() => {
-                    swipePos.current = null;
-                }}
+                onClick={onClickInternal}
+                onPointerDown={onPointerDownInternal}
+                onPointerUp={onPointerUpInternal}
+                onPointerCancel={onPointerUpInternal}
                 style={{ touchAction: 'pan-y' }}
             >
                 <div className="drawer-header" style={{ pointerEvents: 'auto', display: 'flex', justifyContent: 'flex-end', padding: '6px 10px', background: 'transparent' }}>
-                    <button 
-                        style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} 
-                        onClick={(e) => { e.stopPropagation(); onClose(); }}
-                    >
-                        <X size={16} />
-                    </button>
+                    {window.innerWidth > 1024 && (
+                        <button 
+                            style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} 
+                            onClick={(e) => { e.stopPropagation(); onClose(); }}
+                        >
+                            <X size={16} />
+                        </button>
+                    )}
                 </div>
 
-                <div className="side-tabs-container" style={{
-                    position: 'absolute',
-                    right: '4px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '6px',
-                    zIndex: 100,
-                    pointerEvents: 'auto'
-                }}>
-                    <div 
-                        className={`drawer-tab ${activeTab === 'info' ? 'active' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); setActiveTab('info'); }}
-                        style={{
-                            width: '18px',
-                            height: '50px',
-                            borderRadius: '9px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            background: activeTab === 'info' ? 'var(--accent)' : 'rgba(255,255,255,0.05)',
-                            color: activeTab === 'info' ? '#000' : 'rgba(255,255,255,0.3)',
-                            border: activeTab === 'info' ? 'none' : '1px solid rgba(255,255,255,0.05)',
-                            transition: 'all 0.2s ease',
-                            writingMode: 'vertical-rl',
-                            textOrientation: 'mixed',
-                            fontSize: '7px',
-                            fontWeight: '900',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.2px'
-                        }}
-                    >
-                        Info
-                    </div>
-                    <div 
-                        className={`drawer-tab ${activeTab === 'practice' ? 'active' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); setActiveTab('practice'); }}
-                        style={{
-                            width: '18px',
-                            height: '65px',
-                            borderRadius: '9px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            background: activeTab === 'practice' ? 'var(--accent)' : 'rgba(255,255,255,0.05)',
-                            color: activeTab === 'practice' ? '#000' : 'rgba(255,255,255,0.3)',
-                            border: activeTab === 'practice' ? 'none' : '1px solid rgba(255,255,255,0.05)',
-                            transition: 'all 0.2s ease',
-                            writingMode: 'vertical-rl',
-                            textOrientation: 'mixed',
-                            fontSize: '7px',
-                            fontWeight: '900',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.2px'
-                        }}
-                    >
-                        Skills
-                    </div>
-                    <div 
-                        className={`drawer-tab ${activeTab === 'quests' ? 'active' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); setActiveTab('quests'); }}
-                        style={{
-                            width: '18px',
-                            height: '60px',
-                            borderRadius: '9px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            background: activeTab === 'quests' ? 'var(--accent)' : 'rgba(255,255,255,0.05)',
-                            color: activeTab === 'quests' ? '#000' : 'rgba(255,255,255,0.3)',
-                            border: activeTab === 'quests' ? 'none' : '1px solid rgba(255,255,255,0.05)',
-                            transition: 'all 0.2s ease',
-                            writingMode: 'vertical-rl',
-                            textOrientation: 'mixed',
-                            fontSize: '7px',
-                            fontWeight: '900',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.2px'
-                        }}
-                    >
-                        Quests
-                    </div>
-                </div>
-
-                <div className="drawer-body" style={{ pointerEvents: 'auto', marginRight: '22px' }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+                <div className="drawer-body" style={{ pointerEvents: 'auto', flex: 1, marginRight: '0', overflowY: 'auto', position: 'relative', padding: 0 }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
                     {activeTab === 'info' ? (
-                        <div className="info-tab" style={{ position: 'relative' }}>
+                        <div className="info-tab" style={{ position: 'relative', paddingBottom: '60px', height: '100%', display: 'flex', flexDirection: 'column' }}>
                             <div ref={infoContainerRef} style={{
                                 fontFamily: 'var(--font-main, monospace)',
                                 fontSize: infoFontSize,
@@ -288,47 +223,15 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                 display: 'flex',
                                 flexDirection: 'column',
                                 gap: '0',
-                                background: 'rgba(10, 13, 21, 0.35)',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                borderRadius: '16px',
-                                padding: '16px 12px',
-                                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-                                margin: '8px 0',
+                                background: 'transparent',
+                                border: 'none',
+                                borderRadius: '0',
+                                padding: '8px 12px',
+                                boxShadow: 'none',
+                                margin: '0',
                                 position: 'relative',
                                 minHeight: '120px'
                             }}>
-                                <button className="refresh-button" 
-                                    onClick={(e) => { handleRefresh(e); practice.setSilentSyncPending(false); }} 
-                                    style={{ 
-                                        position: 'absolute',
-                                        top: '12px',
-                                        right: '12px',
-                                        zIndex: 10,
-                                        background: 'rgba(255,255,255,0.08)', 
-                                        border: '1px solid rgba(255,255,255,0.1)', 
-                                        color: 'rgba(255,255,255,0.6)', 
-                                        width: '32px',
-                                        height: '32px',
-                                        borderRadius: '16px', 
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s ease',
-                                        backdropFilter: 'blur(4px)'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
-                                        e.currentTarget.style.color = '#fff';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-                                        e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
-                                    }}
-                                    title="Refresh"
-                                >
-                                    <RefreshCw size={16} />
-                                </button>
 
                                 {infoLines?.length > 0 ? (
                                     infoLines.map(line => (
@@ -347,7 +250,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                             </div>
                         </div>
                     ) : activeTab === 'practice' ? (
-                        <div className="practice-tab" style={{ position: 'relative' }}>
+                        <div className="practice-tab" style={{ position: 'relative', paddingBottom: '60px', height: '100%', display: 'flex', flexDirection: 'column' }}>
                             <div ref={infoContainerRef} style={{
                                 fontFamily: 'var(--font-main, monospace)',
                                 fontSize: infoFontSize,
@@ -355,47 +258,15 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                 display: 'flex',
                                 flexDirection: 'column',
                                 gap: '0',
-                                background: 'rgba(10, 13, 21, 0.35)',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                borderRadius: '16px',
-                                padding: '16px 12px',
-                                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-                                margin: '8px 0',
+                                background: 'transparent',
+                                border: 'none',
+                                borderRadius: '0',
+                                padding: '8px 12px',
+                                boxShadow: 'none',
+                                margin: '0',
                                 position: 'relative',
                                 minHeight: '120px'
                             }}>
-                                <button className="refresh-button" 
-                                    onClick={() => { practice.setIsUiRequested(true); executeCommand('practice'); }} 
-                                    style={{ 
-                                        position: 'absolute',
-                                        top: '12px',
-                                        right: '12px',
-                                        zIndex: 10,
-                                        background: 'rgba(255,255,255,0.08)', 
-                                        border: '1px solid rgba(255,255,255,0.1)', 
-                                        color: 'rgba(255,255,255,0.6)', 
-                                        width: '32px',
-                                        height: '32px',
-                                        borderRadius: '16px', 
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s ease',
-                                        backdropFilter: 'blur(4px)'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
-                                        e.currentTarget.style.color = '#fff';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-                                        e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
-                                    }}
-                                    title="Refresh"
-                                >
-                                    <RefreshCw size={16} />
-                                </button>
 
                                 {practiceLines?.length > 0 ? (
                                     practiceLines.map(line => (
@@ -414,7 +285,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                             </div>
                         </div>
                     ) : (
-                        <div className="quests-tab" style={{ position: 'relative' }}>
+                        <div className="quests-tab" style={{ position: 'relative', paddingBottom: '60px', height: '100%', display: 'flex', flexDirection: 'column' }}>
                             <div ref={infoContainerRef} style={{
                                 fontFamily: 'var(--font-main, monospace)',
                                 fontSize: infoFontSize,
@@ -422,47 +293,15 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                 display: 'flex',
                                 flexDirection: 'column',
                                 gap: '0',
-                                background: 'rgba(10, 13, 21, 0.35)',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                borderRadius: '16px',
-                                padding: '16px 12px',
-                                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-                                margin: '8px 0',
+                                background: 'transparent',
+                                border: 'none',
+                                borderRadius: '0',
+                                padding: '8px 12px',
+                                boxShadow: 'none',
+                                margin: '0',
                                 position: 'relative',
                                 minHeight: '120px'
                             }}>
-                                <button className="refresh-button"
-                                    onClick={() => executeCommand('quest', true)}
-                                    style={{
-                                        position: 'absolute',
-                                        top: '12px',
-                                        right: '12px',
-                                        zIndex: 10,
-                                        background: 'rgba(255,255,255,0.08)',
-                                        border: '1px solid rgba(255,255,255,0.1)',
-                                        color: 'rgba(255,255,255,0.6)',
-                                        width: '32px',
-                                        height: '32px',
-                                        borderRadius: '16px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s ease',
-                                        backdropFilter: 'blur(4px)'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
-                                        e.currentTarget.style.color = '#fff';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
-                                        e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
-                                    }}
-                                    title="Refresh"
-                                >
-                                    <RefreshCw size={16} />
-                                </button>
 
                                 {questLines?.length > 0 ? (
                                     questLines.map((line: any) => (
@@ -476,6 +315,147 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                             </div>
                         </div>
                     )}
+                </div>
+
+                {/* Individual Floating Frosted Tabs */}
+                <div className="utility-nav-tabs" style={{
+                    position: 'absolute',
+                    bottom: '12px',
+                    left: '0',
+                    right: '0',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    gap: '10px',
+                    zIndex: 100,
+                    pointerEvents: 'none',
+                    justifyContent: 'center',
+                    background: 'transparent',
+                    border: 'none',
+                    boxShadow: 'none',
+                    padding: '0 10px'
+                }}>
+                    <div 
+                        className={`drawer-tab ${activeTab === 'info' ? 'active' : ''}`}
+                        onClick={(e) => { e.stopPropagation(); setActiveTab('info'); triggerHaptic(15); }}
+                        style={{
+                            padding: '6px 14px',
+                            minWidth: '50px',
+                            height: '24px',
+                            borderRadius: '16px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            pointerEvents: 'auto',
+                            background: activeTab === 'info' ? 'var(--accent)' : 'rgba(28, 28, 30, 0.4)',
+                            backdropFilter: activeTab === 'info' ? 'none' : 'blur(10px) saturate(160%)',
+                            WebkitBackdropFilter: activeTab === 'info' ? 'none' : 'blur(10px) saturate(160%)',
+                            color: activeTab === 'info' ? '#000' : 'rgba(255,255,255,0.4)',
+                            border: activeTab === 'info' ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
+                            boxShadow: activeTab === 'info' ? '0 0 15px var(--accent-glow)' : '0 4px 12px rgba(0,0,0,0.3)',
+                            transition: 'all 0.2s ease',
+                            fontSize: '9px',
+                            fontWeight: '900',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.8px'
+                        }}
+                    >
+                        Info
+                    </div>
+                    <div 
+                        className={`drawer-tab ${activeTab === 'practice' ? 'active' : ''}`}
+                        onClick={(e) => { e.stopPropagation(); setActiveTab('practice'); triggerHaptic(15); }}
+                        style={{
+                            padding: '6px 14px',
+                            minWidth: '55px',
+                            height: '24px',
+                            borderRadius: '16px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            pointerEvents: 'auto',
+                            background: activeTab === 'practice' ? 'var(--accent)' : 'rgba(28, 28, 30, 0.4)',
+                            backdropFilter: activeTab === 'practice' ? 'none' : 'blur(10px) saturate(160%)',
+                            WebkitBackdropFilter: activeTab === 'practice' ? 'none' : 'blur(10px) saturate(160%)',
+                            color: activeTab === 'practice' ? '#000' : 'rgba(255,255,255,0.4)',
+                            border: activeTab === 'practice' ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
+                            boxShadow: activeTab === 'practice' ? '0 0 15px var(--accent-glow)' : '0 4px 12px rgba(0,0,0,0.3)',
+                            transition: 'all 0.2s ease',
+                            fontSize: '9px',
+                            fontWeight: '900',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.8px'
+                        }}
+                    >
+                        Skills
+                    </div>
+                    <div 
+                        className={`drawer-tab ${activeTab === 'quests' ? 'active' : ''}`}
+                        onClick={(e) => { e.stopPropagation(); setActiveTab('quests'); triggerHaptic(15); }}
+                        style={{
+                            padding: '6px 14px',
+                            minWidth: '55px',
+                            height: '24px',
+                            borderRadius: '16px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            pointerEvents: 'auto',
+                            background: activeTab === 'quests' ? 'var(--accent)' : 'rgba(28, 28, 30, 0.4)',
+                            backdropFilter: activeTab === 'quests' ? 'none' : 'blur(10px) saturate(160%)',
+                            WebkitBackdropFilter: activeTab === 'quests' ? 'none' : 'blur(10px) saturate(160%)',
+                            color: activeTab === 'quests' ? '#000' : 'rgba(255,255,255,0.4)',
+                            border: activeTab === 'quests' ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
+                            boxShadow: activeTab === 'quests' ? '0 0 15px var(--accent-glow)' : '0 4px 12px rgba(0,0,0,0.3)',
+                            transition: 'all 0.2s ease',
+                            fontSize: '9px',
+                            fontWeight: '900',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.8px'
+                        }}
+                    >
+                        Quests
+                    </div>
+                <button 
+                    className="refresh-button floating-refresh"
+                    title="Refresh"
+                    onClick={(e) => {
+                        triggerHaptic(15);
+                        if (activeTab === 'info') { 
+                            handleRefresh(e); 
+                            practice.setSilentSyncPending(false); 
+                        } else if (activeTab === 'practice') {
+                            practice.setIsUiRequested(true);
+                            executeCommand('practice');
+                        } else {
+                            executeCommand('quest', true);
+                        }
+                    }}
+                    style={{
+                        position: 'absolute',
+                        bottom: '8px',
+                        right: '8px',
+                        zIndex: 110,
+                        background: 'rgba(40, 40, 45, 0.4)',
+                        backdropFilter: 'blur(10px) saturate(160%)',
+                        WebkitBackdropFilter: 'blur(10px) saturate(160%)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        color: 'rgba(255,255,255,0.8)',
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
+                        pointerEvents: 'auto'
+                    }}
+                >
+                    <RefreshCw size={16} />
+                </button>
                 </div>
             </div>
         </div>

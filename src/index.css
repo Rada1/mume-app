@@ -10,52 +10,82 @@
 
 /* Mobile Bottom Gutter */
 .mobile-bottom-gutter {
-    flex-shrink: 0;
-    height: 300px; /* Taller peek height to meet command bar */
-    background: transparent;
-    border-top: none;
-    box-shadow: none;
-    z-index: 3500;
-    touch-action: none; /* Block browser gestures */
-    transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
-    position: relative;
-    overflow: visible; /* Allow sections to float */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--mobile-gutter-height);
+    background: rgb(0, 0, 0);
+    z-index: 6000;
+    touch-action: none;
+    transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    overflow: visible; 
     display: flex;
     flex-direction: column;
-    pointer-events: none; /* Let clicks pass through empty space */
+    pointer-events: auto; 
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px 20px 0 0;
 }
+
+/* Shared card style for all gutter content panels (map + drawers) */
+.gutter-panel-card {
+    margin: 0;
+    flex: 1;
+    min-height: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Expanded height removal — now handled via central variable on the parent container */
 
 @media (max-width: 1024px) {
     .mobile-bottom-gutter {
         border-top: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 20px 20px 0 0;
-        overflow: hidden;
+        overflow: visible;
     }
 
     .kb-open .hud-clusters-absolute-layer,
     .kb-open .custom-buttons-layer,
     .kb-open .joystick-cluster,
     .kb-open .xbox-cluster,
-    .kb-open .reset-zoom-fab,
-    .kb-open .mobile-bottom-gutter {
+    .kb-open .reset-zoom-fab {
         display: none !important;
     }
 
-    .hud-clusters-absolute-layer {
-        display: block;
-        pointer-events: none;
+    /* Shrink gutter to just the input bar when keyboard is open */
+    .kb-open .mobile-bottom-gutter {
+        height: 70px !important;
+        border-radius: 0;
+        z-index: 9999;
     }
 
-    .hud-clusters-absolute-layer > * {
-        pointer-events: auto;
+    .kb-open .mobile-bottom-gutter .mobile-mapper-touch-surface {
+        display: none !important;
     }
+}
+
+.hud-clusters-absolute-layer {
+    display: block;
+    pointer-events: none;
+}
+
+.hud-clusters-absolute-layer > * {
+    pointer-events: auto;
 }
 
 /* Landscape-specific gutter overrides unified with portrait behavior */
 
 /* Hide interactive buttons in mobile portrait mode when map is open to prevent toolbar overlap. */
+/* Hide OTHER interactive layers in mobile portrait mode when map is open */
 @media (max-width: 1024px) {
-    .app-container.is-map-expanded .hud-clusters-absolute-layer {
+    .app-container.is-map-expanded .custom-buttons-layer,
+    .app-container.is-map-expanded .stats-cluster {
         display: none !important;
     }
 }
@@ -101,12 +131,9 @@
 }
 .sticky-room-header {
     position: relative;
-    top: 0;
-    z-index: 6000;
-    background: rgba(15, 17, 28, 0.55) !important;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    margin: 8px 8px -0.5rem 8px;
+    z-index: 5200; /* Lowered from 6000 to clear HUD clusters and popovers */
+    background: rgba(15, 17, 28, 0.97) !important;
+    margin: 8px 8px 0 8px;
     padding: 12px 10px;
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.12) !important;
@@ -146,7 +173,9 @@
 
 .room-desc {
     font-family: var(--font-main);
-    font-size: 0.8rem;
+    /* Scale font so 80 monospace chars fit the container width (minus padding).
+       Monospace char ≈ 0.6em wide → 80 chars = 48em → fontSize = availableWidth / 48 */
+    font-size: clamp(9px, calc((100cqw - 24px) / 48), 16px);
     font-style: italic;
     color: #e2e8f0;
     max-width: 80ch;
@@ -281,7 +310,7 @@
     }
 
     .room-desc {
-        font-size: 0.48rem !important;
+        font-size: clamp(7px, calc((100cqw - 16px) / 48), 14px) !important;
         line-height: 1.25;
         letter-spacing: normal;
     }
@@ -350,7 +379,7 @@
 
 .input-main-container {
     flex: 1;
-    min-height: 52px; /* Slightly shorter on mobile/standard */
+    min-height: 52px;
     padding: 0 8px;
     display: flex;
     align-items: center;
@@ -363,7 +392,43 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     box-sizing: border-box;
-    min-width: 0; /* Allow shrinking */
+    min-width: 0; 
+}
+
+/* Standalone Command Bar pod (Pocket) */
+.mobile-gutter-input-wrapper .input-main-container {
+    background: rgb(35, 35, 40) !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 18px; 
+    margin: 0 12px;
+    padding: 0 15px;
+    min-height: 44px;
+}
+
+/* Restore Drawer internal card styling for portrait mode */
+@media (max-width: 768px) and (orientation: portrait) {
+    .log-card-drawer .drawer-header {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 14px !important;
+        margin: 0 0 15px 0 !important;
+        min-height: 48px !important;
+        padding: 8px 15px !important;
+    }
+
+    .log-card-drawer .drawer-content {
+        padding: 12px 15px !important;
+    }
+
+    /* Restore individual section cards */
+    .players-section, .inventory-section, .character-section {
+        background: rgb(0, 0, 0) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 16px !important;
+        margin: 8px 0 !important;
+        padding: 12px !important;
+    }
 }
 
 @media (min-width: 769px) {
@@ -536,12 +601,14 @@
     color: var(--accent);
     margin-right: 12px;
     user-select: none;
-    font-size: 1.1rem;
+    font-size: var(--dynamic-log-size, 16px);
 }
 
 .input-field {
     min-height: 20px;
     padding: 0 !important;
+    font-size: var(--dynamic-log-size, 16px);
+    font-family: inherit;
 }
 
 

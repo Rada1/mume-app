@@ -247,13 +247,6 @@ export function useMessageLog(
 
         if (isActuallyRoomName) {
             flushRoomBuffer();
-
-            // Clear all previous messages when we first arrive in a new room (Newbie Mode ONLY)
-            if (isNewbieMode) {
-                setMessages([]);
-                messageBufferRef.current = [];
-                return;
-            }
         }
 
         // RETURN EARLY: The description is already shown in the authoritative GMCP header.

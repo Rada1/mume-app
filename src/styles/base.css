@@ -9,9 +9,9 @@
     --bg-app: #000000;
     --bg-panel: rgba(10, 13, 21, 0.65);
     --bg-overlay: rgba(0, 0, 0, 0.85);
-    --text-primary: #f0f0f0;
-    --text-dim: #9ca3af;
-    --text-faded: #4b5563;
+    --text-primary: #d1d5db;   /* Cool Gray 300 - Softer than pure white */
+    --text-dim: #9ca3af;       /* Gray 400 */
+    --text-faded: #6b7280;     /* Gray 500 */
     --border-color: rgba(255, 255, 255, 0.1);
     --input-bg: rgba(0, 0, 0, 0.6);
     --header-bg: rgba(0, 0, 0, 0.75);

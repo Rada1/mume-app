@@ -82,6 +82,36 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
     const { setPopoverState } = useUI();
     const logContainerRef = React.useRef<HTMLDivElement>(null);
+    const [headerHeight, setHeaderHeight] = React.useState(0);
+
+
+    // --- Dynamic Room Card Spacing ---
+    // In Newbie Mode, the room card is sticky. We need to measure it
+    // so the message log can add appropriate top padding to prevent text overlap.
+    React.useLayoutEffect(() => {
+        if (!isNewbieMode) {
+            document.documentElement.style.setProperty('--room-card-height', '0px');
+            return;
+        }
+
+        const updateHeight = () => {
+            const header = document.querySelector('.sticky-room-header');
+            if (header) {
+                const height = header.getBoundingClientRect().height;
+                setHeaderHeight(height);
+                document.documentElement.style.setProperty('--room-card-height', `${height}px`);
+            }
+        };
+
+        const observer = new ResizeObserver(updateHeight);
+        const header = document.querySelector('.sticky-room-header');
+        if (header) {
+            observer.observe(header);
+            updateHeight();
+        }
+
+        return () => observer.disconnect();
+    }, [isNewbieMode, roomName, roomDesc]);
 
     React.useLayoutEffect(() => {
         const updateCenter = () => {
@@ -202,25 +232,26 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                 />
             )}
 
-            <InputArea
-                input={input}
-                setInput={setInput}
-                onSend={handleSend}
-                onSwipe={handleInputSwipe}
-                isMobile={isMobile}
-                isKeyboardOpen={viewport.isKeyboardOpen}
-                commandPreview={commandPreview}
-                terrain={currentTerrain}
-                spatButtons={spatButtons}
-                setActiveSet={btn.setActiveSet}
-                executeCommand={executeCommand}
-                setSpatButtons={setSpatButtons}
-                setPopoverState={setPopoverState}
-                parley={parley}
-                setParley={setParley}
-                whoList={whoList}
-            />
-
+            {(!isMobile || isLandscape) && (
+                <InputArea
+                    input={input}
+                    setInput={setInput}
+                    onSend={handleSend}
+                    onSwipe={handleInputSwipe}
+                    isMobile={isMobile}
+                    isKeyboardOpen={viewport.isKeyboardOpen}
+                    commandPreview={commandPreview}
+                    terrain={currentTerrain}
+                    spatButtons={spatButtons}
+                    setActiveSet={btn.setActiveSet}
+                    executeCommand={executeCommand}
+                    setSpatButtons={setSpatButtons}
+                    setPopoverState={setPopoverState}
+                    parley={parley}
+                    setParley={setParley}
+                    whoList={whoList}
+                />
+            )}
         </div>
     );
 };

@@ -53,7 +53,9 @@ const MudClient = () => {
         isCrtEnabled,
         isBloomEnabled,
         inCombat,
-        isNewbieMode
+        isNewbieMode,
+        input,
+        setInput
     } = useGame();
 
     const { rumble, setTarget, heldButton, setHeldButton } = useVitals();
@@ -112,12 +114,6 @@ const MudClient = () => {
         }
     }, [btn.editingButtonId, returnToManager, setIsSetManagerOpen]);
 
-    // Minimize map in portrait when keyboard is open
-    useEffect(() => {
-        if (isKeyboardOpen && !isLandscape && ui.mapExpanded) {
-            setUI(prev => ({ ...prev, mapExpanded: false }));
-        }
-    }, [isKeyboardOpen, isLandscape, ui.mapExpanded, setUI]);
 
     const hasAutoConnected = useRef(false);
     useEffect(() => {
@@ -255,6 +251,10 @@ const MudClient = () => {
                     setHeldButton={setHeldButton}
                     btnGlow={btnGlow}
                     setBtnGlow={setBtnGlow}
+                    input={input}
+                    setInput={setInput}
+                    handleSend={handleSendCallback}
+                    handleInputSwipe={handleInputSwipe}
                 />
             </div>
 

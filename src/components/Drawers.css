@@ -27,12 +27,12 @@
     max-width: 480px;
     height: auto;
     max-height: 85dvh;
-    background: rgb(10, 13, 21);
+    background: rgb(35, 35, 40);
     backdrop-filter: none;
     -webkit-backdrop-filter: blur(4px);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 20px;
-    z-index: 4000;
+    z-index: 6000;
     opacity: 0;
     visibility: hidden;
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, visibility 0s 0.4s;
@@ -110,21 +110,20 @@
     @media (orientation: portrait) {
         .log-card-drawer {
             top: auto;
-            bottom: 52px; /* Sits above the 52px portrait tab bar */
-            left: 0;
-            right: 0;
-            width: 100%;
+            bottom: 60px; /* Lifted to float above the 52px tab bar */
+            left: 12px;
+            right: 12px;
+            width: auto;
             max-width: none;
-            height: 248px; /* 300px gutter − 52px tab bar = visible gutter height */
+            height: 248px; /* Restored to original pre-integration height */
             transform: translateY(0);
             opacity: 0;
             visibility: hidden;
             transition: none;
-            border-radius: 20px 20px 0 0;
+            border-radius: 18px;
             border: 1px solid rgba(255, 255, 255, 0.15);
-            border-bottom: none;
-            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.4);
-            background: rgb(10, 13, 21);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            background: rgb(0, 0, 0) !important;
             backdrop-filter: none;
             -webkit-backdrop-filter: none;
         }
@@ -247,14 +246,19 @@
             left: 0;
             right: 0;
             top: auto;
-            bottom: 52px;
+            bottom: 60px;
+            left: 12px;
+            right: 12px;
+            width: auto;
+            height: 248px;
             transform: translateY(0);
             opacity: 0;
             visibility: hidden;
             transition: none;
-            border-radius: 20px 20px 0 0;
+            border-radius: 18px;
             border: 1px solid rgba(255, 255, 255, 0.15);
-            border-bottom: none;
+            background: rgb(0, 0, 0) !important;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
         }
         .log-card-drawer.left-drawer.open {
             transform: translateY(0);
@@ -745,8 +749,9 @@
     align-items: center;
     justify-content: space-around;
     height: 52px;
+    flex-shrink: 0;
     width: 100%;
-    background: rgba(10, 13, 21, 0.95);
+    background: rgb(35, 35, 40);
     border-top: 1px solid rgba(255, 255, 255, 0.12);
     z-index: 4500;
     pointer-events: auto;
@@ -793,9 +798,13 @@
 }
 
 .portrait-tab-bar .desktop-edge-tab.active {
-    background: rgba(var(--accent-rgb), 0.15) !important;
+    background: rgba(var(--accent-rgb), 0.2) !important;
     color: var(--accent) !important;
-    box-shadow: inset 0 -2px 0 var(--accent);
+    box-shadow: inset 0 -3px 0 var(--accent) !important;
+}
+
+.portrait-tab-bar .desktop-edge-tab.active .tab-icon {
+    filter: drop-shadow(0 0 5px var(--accent));
 }
 
 .portrait-tab-bar .desktop-edge-tab .tab-icon {
@@ -832,6 +841,78 @@
 
 
 
+
+/* --- Gutter-Integrated Drawers (mobile portrait) --- */
+/* When drawers render inside the gutter container, strip all overlay/fixed positioning
+   so they flow inline and match the map surface layout exactly. */
+
+.gutter-drawer-container > .log-card-drawer,
+.gutter-drawer-container > .character-drawer-overlay .character-drawer-content.log-card-drawer {
+    position: relative !important;
+    top: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    max-width: none !important;
+    transform: none !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    background: transparent !important;
+    z-index: auto !important;
+    transition: none !important;
+}
+
+.gutter-drawer-container > .character-drawer-overlay {
+    position: relative !important;
+    top: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    background: transparent !important;
+    z-index: auto !important;
+    transition: none !important;
+}
+
+.gutter-drawer-container .character-drawer-content {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    transform: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+}
+
+/* Ensure drawer-content inside gutter fills available space and scrolls */
+.gutter-drawer-container .drawer-content {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+.gutter-drawer-container .drawer-body {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Hide close buttons inside gutter (tabs handle navigation) */
+.gutter-drawer-container .drawer-header button,
+.gutter-drawer-container .drawer-header .close-button {
+    display: none !important;
+}
 
 /* Drag & Drop Feedback */
 .inline-btn[draggable="true"] {
