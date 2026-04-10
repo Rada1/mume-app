@@ -8,9 +8,11 @@ interface StageInitializerDeps {
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
+    isWaitingForInfo: React.MutableRefObject<boolean>;
     isInventoryOpen: boolean;
     isEquipmentOpen: boolean;
     isCharacterOpen: boolean;
+    isStatsOpen: boolean;
     isPlayersOpen: boolean;
     practice: any;
     quests: QuestData;
@@ -19,7 +21,8 @@ interface StageInitializerDeps {
     setWhereList: (val: any[]) => void;
     setPopoverState: (val: any) => void;
     setStatsLines: (val: any[]) => void;
-    setInfoLines: (val: any) => void;
+    setInfoLines: (val: any[]) => void;
+    setScoreLines: (val: any) => void;
     setQuestLines: (val: any) => void;
     setPracticeLines: (val: any[]) => void;
     setWhoLines: (val: any[]) => void;
@@ -29,14 +32,18 @@ interface StageInitializerDeps {
 
 export const useStageInitializer = (deps: StageInitializerDeps) => {
     const {
-        captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
-        isInventoryOpen, isEquipmentOpen, isCharacterOpen, isPlayersOpen,
-        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines, setInfoLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines,
+        captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
+        isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
+        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines, setInfoLines, setScoreLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines,
         finalizeCapture
     } = deps;
 
     const initializeStage = useCallback((textOnly: string, lower: string, content: string, contentLower: string, attachedText?: string) => {
-        const strippedLower = (attachedText || textOnly).toLowerCase();
+        const strippedLower = (attachedText || textOnly).trim().toLowerCase();
+        
+        if (lower.length > 0) {
+            console.log(`[StageInit] Testing: "${lower.substring(0, 50)}..." (stripped: "${strippedLower}")`);
+        }
 
         // 1. Practice
         if (lower.includes('skill') && lower.includes('knowledge')) {
@@ -108,13 +115,23 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
             // isDrawerCapture logic handled by orchestrator via pending refs
         }
 
-        // 6. Stats / Score
-        else if (isWaitingForStats.current && /\b(ob|db|pb|armor|arm|mood|str|exp|level)\b/i.test(lower)) {
-            if (captureStage.current === 'stat') return;
+        // 6. Stats / Score / Spell Speed / Affects
+        else if (isWaitingForStats.current && /\b(stat|score|st|sc|at|ob|db|pb|armor|armour|arm|mood|str|int|wis|dex|con|wil|exp|level|hits|mana|moves|spell|speed|vision|gold|qp|tnl)\b/i.test(lower)) {
+            // Is it just the simple vitals line (score command)?
+            const isScoreCommand = /\d+\/\d+ hits, \d+\/\d+ mana, and \d+\/\d+ moves/i.test(lower);
+            const targetStage = isScoreCommand ? 'score' : 'stat';
+            
+            if (captureStage.current === targetStage) return;
             if (captureStage.current !== 'none') finalizeCapture();
-            isWaitingForStats.current = false; captureStage.current = 'stat';
+            
+            isWaitingForStats.current = false; 
+            captureStage.current = targetStage;
+            
+            setScoreLines([]);
             setStatsLines([]);
-            if (isCharacterOpen) {
+            
+            console.log(`[StageInit] Triggered ${targetStage.toUpperCase()} stage! Line: "${lower.substring(0, 40)}"`);
+            if (isCharacterOpen || isStatsOpen) {
                 if (isDrawerCapture.current === 0) isDrawerCapture.current = 1;
             }
         }
@@ -140,7 +157,9 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         }
 
         // 9. Info / Whois / Description
-        else if (lower.startsWith('you are a ') || 
+        else if ((isWaitingForInfo.current || isCharacterOpen) && (
+                 lower.includes(', a level ') || 
+                 lower.startsWith('you are a ') ||
                  lower.includes('old.') ||
                  lower.includes('real time') ||
                  lower.includes('ranks you as') ||
@@ -150,13 +169,19 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
                  (lower.includes('exp:') && (lower.includes('level:') || lower.includes('tnl:'))) || 
                  (lower.includes('str:') && lower.includes('int:')) ||
                  lower.startsWith('you are welcome in the ') ||
-                 lower.includes('your equipment weighs ')) {
+                 lower.includes('your equipment weighs ')
+        )) {
             if (captureStage.current === 'info') return;
             if (captureStage.current !== 'none') finalizeCapture();
             captureStage.current = 'info';
-            setInfoLines([]);
+            if (typeof setInfoLines === 'function') {
+                setInfoLines([]);
+            } else {
+                console.error('[StageInit] setInfoLines is not a function!', deps);
+            }
             setCharacterInfo((prev: any) => ({ ...prev, description: '' }));
-            if (isCharacterOpen) {
+            if (isCharacterOpen || isStatsOpen) {
+                console.log(`[StageInit] Triggered INFO stage! Line: "${lower.substring(0, 40)}"`);
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
             }
         }
@@ -173,9 +198,9 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         // via GMCP exclusively. Keeping this stage caused room description lines to silence
         // all subsequent room content (NPCs, exits, items) until the next prompt.
     }, [
-        captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
-        isInventoryOpen, isEquipmentOpen, isCharacterOpen, isPlayersOpen,
-        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines, setInfoLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines,
+        captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
+        isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
+        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines, setScoreLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines,
         finalizeCapture
     ]);
 

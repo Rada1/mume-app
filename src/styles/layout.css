@@ -75,8 +75,14 @@
 @media (max-width: 768px) and (orientation: portrait) {
     .content-layer {
         padding-bottom: var(--mobile-gutter-height) !important;
+        transition: padding-bottom 0.4s ease;
     }
-    .content-layer > .input-container {
+    
+    .state-account .content-layer {
+        padding-bottom: 70px !important; /* Just enough for the floating prompt */
+    }
+
+    .app-container:not(.state-account) .content-layer > .input-container {
         display: none !important;
     }
 }

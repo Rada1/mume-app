@@ -35,6 +35,7 @@ export interface UseGameParserDeps {
     setInventoryLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setStatsLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setInfoLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
+    setScoreLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setQuestLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setPracticeLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setWhoLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
@@ -50,6 +51,7 @@ export interface UseGameParserDeps {
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
+    isWaitingForInfo: React.MutableRefObject<boolean>;
     keywordOverrides: Record<string, string>;
     roomNameRef: React.RefObject<string | null>;
     roomDescRef?: React.RefObject<string>;
@@ -104,5 +106,7 @@ export interface UseGameParserDeps {
     setInCombat: (val: boolean, force?: boolean) => void;
     inCombatRef: React.RefObject<boolean>;
     setLightningEnabled: (val: boolean) => void;
+    setMessages: React.Dispatch<React.SetStateAction<import('../../types').Message[]>>;
+    clearLog: () => void;
     processMessageHtml?: (originalHtml: string, mid: string, isRoomName: boolean, type?: import('../../types').MessageType, isCombatMessage?: boolean, combatSide?: 'player' | 'opponent' | 'groupmate') => string;
 }

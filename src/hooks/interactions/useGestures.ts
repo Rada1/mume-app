@@ -21,13 +21,12 @@ export const useGestures = (deps: InteractionDeps) => {
             if (ui.mapExpanded) {
                 setIsMapExpanded(false);
             } else {
-                executeCommand('info', true, true, true, true);
+                console.log('[Gestures] Triggering CHARACTER sequence (stat, score, info %m, quest, practice)');
+                executeCommand('stat', true, true, true, true);
                 setTimeout(() => executeCommand('score', true, true, true, true), 100);
-                setTimeout(() => executeCommand('at', true, true, true, true), 200);
-                setTimeout(() => executeCommand('look self', true, true, true, true), 300);
-                setTimeout(() => executeCommand('whois', true, true, true, true), 400);
-                setTimeout(() => executeCommand('quest', true, true, true, true), 500);
-                setTimeout(() => executeCommand('practice', true, true, true, true), 600);
+                setTimeout(() => executeCommand('info %m', true, true, true, true), 200);
+                setTimeout(() => executeCommand('quest', true, true, true, true), 300);
+                setTimeout(() => executeCommand('practice', true, true, true, true), 400);
                 setIsCharacterOpen(true);
             }
         } else if (dir === 'sw') {
@@ -35,8 +34,10 @@ export const useGestures = (deps: InteractionDeps) => {
             setTimeout(() => executeCommand('eq', true, true, true, true), 150);
             setIsInventoryOpen(true);
         } else if (dir === 'right') {
+            console.log('[Gestures] Triggering STAT sequence (stat, score, info %m)');
             executeCommand('stat', true, true, true, true);
-            setTimeout(() => executeCommand('at', true, true, true, true), 100);
+            setTimeout(() => executeCommand('score', true, true, true, true), 100);
+            setTimeout(() => executeCommand('info %m', true, true, true, true), 200);
             setIsStatsOpen(true);
         } else if (dir === 'left') {
             executeCommand('inv', true, true, true, true);

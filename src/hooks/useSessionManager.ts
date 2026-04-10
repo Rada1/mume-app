@@ -64,12 +64,15 @@ export const useSessionManager = ({
         const currentName = loginNameRef.current;
         const currentPassword = loginPasswordRef.current;
 
+        // If no saved credentials, do nothing — let the user type manually
+        if (!currentName && !currentPassword) return;
+
         const isNamePrompt = lower.includes("by what name do you wish to be known?") || lower.includes("what is your name?") || lower.includes("character's name");
+        const isIllegalName = lower.includes("illegal name");
 
         // Handle Name Prompt
-        if (isNamePrompt) {
-            // Server is starting a fresh login cycle — reset passwordSent so it can be
-            // sent again on the upcoming "Password:" prompt (handles wrong-name retries)
+        if (isNamePrompt && !isIllegalName) {
+            // Only reset passwordSent on a CLEAN name prompt (not after a rejection)
             autoLoginSessionRef.current.passwordSent = false;
 
             if (currentName && !autoLoginSessionRef.current.nameSent) {

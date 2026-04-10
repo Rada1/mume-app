@@ -32,6 +32,7 @@ interface DrawerManagerProps {
     }>>;
     inventoryLines: DrawerLine[];
     statsLines: DrawerLine[];
+    scoreLines: DrawerLine[];
     eqLines: DrawerLine[];
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
     handleButtonClick: (button: CustomButton, e: React.MouseEvent, context?: string) => void;
@@ -89,8 +90,12 @@ const MapperDockedGate: React.FC<{
 };
 
 export const DrawerManager: React.FC<DrawerManagerProps> = ({
-    inventoryLines, statsLines, eqLines,
-    executeCommand, handleButtonClick,
+    inventoryLines,
+    statsLines,
+    scoreLines,
+    eqLines,
+    executeCommand,
+    handleButtonClick,
     loginName, setLoginName, loginPassword, setLoginPassword,
     bgImage, handleFileUpload,
     soundTriggers, newSoundPattern, setNewSoundPattern, newSoundRegex, setNewSoundRegex,
@@ -182,28 +187,28 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                 }}>
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'stats' ? 'active' : ''}`}
-                        onClick={() => handleTabClick('stats')}
+                        onClick={() => { triggerHaptic(15); handleTabClick('stats'); }}
                     >
                         <BarChart2 className="tab-icon" />
                         <span className="tab-text">Stats</span>
                     </div>
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'character' ? 'active' : ''}`}
-                        onClick={() => handleTabClick('character')}
+                        onClick={() => { triggerHaptic(15); handleTabClick('character'); }}
                     >
                         <User className="tab-icon" />
                         <span className="tab-text">Char</span>
                     </div>
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'players' ? 'active' : ''}`}
-                        onClick={() => handleTabClick('players')}
+                        onClick={() => { triggerHaptic(15); handleTabClick('players'); }}
                     >
                         <Users className="tab-icon" />
                         <span className="tab-text">Players</span>
                     </div>
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'inventory' ? 'active' : ''}`}
-                        onClick={() => handleTabClick('inventory')}
+                        onClick={() => { triggerHaptic(15); handleTabClick('inventory'); }}
                     >
                         <Shield className="tab-icon" />
                         <span className="tab-text">Gear</span>
@@ -211,7 +216,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                     <div
                         id="drawer-tab-map"
                         className={`desktop-edge-tab right ${ui.mapExpanded && ui.drawer === 'none' ? 'active' : ''}`}
-                        onClick={() => toggleMap()}
+                        onClick={() => { triggerHaptic(15); toggleMap(); }}
                     >
                         <MapIcon className="tab-icon" />
                         <span className="tab-text">Map</span>
@@ -227,6 +232,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                         isOpen={ui.drawer === 'stats'}
                         onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none' })); }}
                         statsLines={statsLines}
+                        scoreLines={scoreLines}
                         executeCommand={executeCommand}
                         isLandscape={viewport.isLandscape}
                     />

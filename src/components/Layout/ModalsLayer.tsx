@@ -7,7 +7,7 @@ import { DrawerManager } from '../Drawers/DrawerManager';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { OnboardingOverlay } from '../OnboardingOverlay';
 import { KeywordEditModal } from '../KeywordEditModal';
-import { AccountScreen } from '../Account/AccountScreen';
+
 
 interface ModalsLayerProps {
     isLoading: boolean;
@@ -51,6 +51,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         btn,
         displayInventoryLines,
         statsLines,
+        scoreLines,
         displayEqLines,
         executeCommand,
         handleButtonClick,
@@ -347,6 +348,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 setUI={setUI}
                 inventoryLines={displayInventoryLines}
                 statsLines={statsLines}
+                scoreLines={scoreLines}
                 eqLines={displayEqLines}
                 executeCommand={executeCommand}
                 handleButtonClick={handleButtonClick}
@@ -395,9 +397,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     ⚠ Keyword "{keywordFailureBanner.context}" not found — tap to fix
                 </div>
             )}
-            {gameState === 'account' && accountState.stage !== 'none' && viewport.isMobile && (
-                <AccountScreen />
-            )}
+
         </>
     );
 };

@@ -638,6 +638,119 @@
     padding: 5px;
 }
 
+/* --- Section: Account / Login UI --- */
+.message.account-prompt {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 40px 0 !important;
+    margin: 10px 0;
+    border: none !important;
+    animation: none !important;
+    transform: none !important;
+}
+
+.account-prompt-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 500px;
+    gap: 15px;
+    padding: 20px;
+}
+
+.account-prompt-container .message-content {
+    text-align: center;
+    font-size: inherit !important;
+    line-height: inherit;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    opacity: 1;
+    transform: none !important;
+    animation: none !important;
+}
+
+.account-input-trigger {
+    margin-top: 15px;
+    padding: 12px 24px;
+    min-width: 200px;
+    background: rgba(var(--accent-rgb), 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(var(--accent-rgb), 0.2);
+    border-radius: 8px;
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 0.85rem;
+    font-family: var(--font-mono);
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    outline: none;
+}
+
+.account-input-trigger::placeholder {
+    color: var(--accent);
+    opacity: 0.5;
+    font-size: 0.75rem;
+}
+
+.account-input-trigger:hover {
+    background: rgba(var(--accent-rgb), 0.08);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.account-input-trigger:active {
+    transform: scale(0.96) translateY(1px);
+    background: rgba(var(--accent-rgb), 0.12);
+}
+
+.account-input-trigger.has-input {
+    background: rgba(var(--accent-rgb), 0.05);
+    border-color: var(--accent);
+    color: #fff;
+    text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.3);
+    text-transform: none;
+}
+
+.account-new-char-btn {
+    background: rgba(var(--accent-rgb), 0.05);
+    border: 1px solid rgba(var(--accent-rgb), 0.2);
+    border-radius: 6px;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    margin-top: 15px;
+    padding: 8px 16px;
+    transition: all 0.2s ease;
+    opacity: 0.9;
+}
+
+.account-new-char-btn:hover {
+    background: rgba(var(--accent-rgb), 0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+    opacity: 1;
+    transform: translateY(-1px);
+}
+
+.account-new-char-btn:active {
+    transform: scale(0.95);
+}
+
 .message.prompt {
     background: transparent !important; /* Excluded from backgrounder */
     margin: 0 !important;

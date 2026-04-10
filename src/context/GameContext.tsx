@@ -193,7 +193,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         recorder.recordEntry(type, data, { mask: isSensitive });
     }, [s.gameState, recorder.recordEntry]);
 
-    const { messages, setMessages, addMessage, flushMessages, isCombatLine } = useMessageLog(
+    const isAccountModeRef = useRef(s.gameState === 'account');
+    useEffect(() => { isAccountModeRef.current = s.gameState === 'account'; }, [s.gameState]);
+
+    const { messages, setMessages, addMessage, flushMessages, isCombatLine, clearLog } = useMessageLog(
         inCombatHookRef,
         s.isMobileBrevityMode,
         roomContext,
@@ -202,7 +205,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         sanitizedRecordEntry,
         s.roomDescRef,
         v.pendingMove,
-        v.setPendingMove
+        v.setPendingMove,
+        isAccountModeRef
     );
     const addSystemMessage = useCallback((text: string) => addMessage('system', text, undefined, undefined, undefined, { textOnly: text, lower: text.toLowerCase() }, undefined, undefined, undefined, true), [addMessage]);
 
@@ -418,6 +422,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setInventoryLines: s.setInventoryLines,
         setStatsLines: s.setStatsLines,
         setInfoLines: s.setInfoLines,
+        setScoreLines: s.setScoreLines,
         setQuestLines: s.setQuestLines,
         setPracticeLines: s.setPracticeLines,
         setWhoLines: s.setWhoLines,
@@ -433,6 +438,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isWaitingForStats: s.isWaitingForStats,
         isWaitingForEq: s.isWaitingForEq,
         isWaitingForInv: s.isWaitingForInv,
+        isWaitingForInfo: s.isWaitingForInfo,
         roomNameRef: s.roomNameRef,
         roomDescRef,
         roomName: s.roomName,
@@ -528,6 +534,18 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             onGroupRemove: (id) => { gmcpHandlers.onGroupRemove(id); groupRemoveFn?.(id); },
             onGroupSet: (data) => { gmcpHandlers.onGroupSet(data); groupSetFn?.(data); },
             onCharRide: gmcpHandlers.onCharRide,
+            onDisconnect: () => {
+                console.log('[GameContext] Disconnect! Clearing tactical buffers.');
+                s.setStatsLines([]);
+                s.setScoreLines([]);
+                s.setInfoLines([]);
+                s.setInventoryLines([]);
+                s.setEqLines([]);
+                s.setWhoLines([]);
+                s.setWhereLines([]);
+                s.setQuestLines([]);
+                s.setPracticeLines([]);
+            },
             addDiagnosticLog
         }
     });
@@ -550,8 +568,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isWaitingForStats: s.isWaitingForStats,
         isWaitingForEq: s.isWaitingForEq,
         isWaitingForInv: s.isWaitingForInv,
+        isWaitingForInfo: s.isWaitingForInfo,
         setInventoryLines: s.setInventoryLines,
         setStatsLines: s.setStatsLines,
+        setInfoLines: s.setInfoLines,
+        setScoreLines: s.setScoreLines,
         setEqLines: s.setEqLines,
         setCommandPreview: () => { },
         input,
@@ -604,10 +625,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isSoundEnabled: s.isSoundEnabled,
         waiting: !!v.stats.conditions?.waiting,
         recordEntry: sanitizedRecordEntry,
+        clearLog,
+        gameState: s.gameState,
 
     }), [
         telnet, addMessage, initAudio, mapperRef, teleportTargets, s.isDrawerCapture, s.isSilentCapture, s.captureStage,
-        s.isWaitingForStats, s.isWaitingForEq, s.isWaitingForInv, s.setInventoryLines, s.setStatsLines, s.setEqLines,
+        s.isWaitingForStats, s.isWaitingForEq, s.isWaitingForInv, s.isWaitingForInfo, s.setInventoryLines, s.setStatsLines, s.setEqLines,
         input, setInput, isNoviceMode, s.isNewbieMode, s.status, v.target, v.setTarget, v.setPendingMove, parser.finalizeCapture, s.popoverState,
         s.setPopoverState, s.setIsCharacterOpen, s.setIsStatsOpen, s.setIsEquipmentOpen, s.setIsInventoryOpen,
         s.setIsPlayersOpen, setIsSettingsOpen, setSettingsTab, s.setIsMapExpanded, s.setUI, viewport, triggerHaptic,
@@ -615,7 +638,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         practice, v.heldButton, v.setHeldButton, s.parley, s.setParley, s.isTrackpadModifierActive, shop,
         keywordOverrides, openKeywordEdit, lastCommandContextRef, s.entities, s.applyOptimisticChange,
         s.selectedObjectIds, s.toggleObjectSelection, s.clearObjectSelection, playClickSound, s.isSoundEnabled,
-        vitals.stats.conditions?.waiting, sanitizedRecordEntry, v.activePrompt
+        vitals.stats.conditions?.waiting, sanitizedRecordEntry, v.activePrompt, clearLog, s.gameState
     ]);
 
     const controller = useCommandController(controllerDeps);
@@ -793,7 +816,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // --- Section: Terminal Synchronization ---
     const lastSyncRef = useRef({ cols: 0, rows: 0 });
     useEffect(() => {
-        if (s.gameState === 'disconnected' || !viewport.columns || !viewport.rows) return;
+        if (s.gameState === 'disconnected' || s.gameState === 'account' || !viewport.columns || !viewport.rows) return;
 
         // Skip if dimensions haven't changed since last SUCCESSFUL sync command
         if (viewport.columns === lastSyncRef.current.cols &&

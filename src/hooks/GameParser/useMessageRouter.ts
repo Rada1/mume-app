@@ -13,6 +13,7 @@ interface MessageRouterDeps {
     isWaitingForInv: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForStats: React.MutableRefObject<boolean>;
+    isWaitingForInfo: React.MutableRefObject<boolean>;
     setWhoList: (val: string[] | ((prev: string[]) => string[])) => void;
     setWhereList: (val: any[] | ((prev: any[]) => any[])) => void;
     setRoomItems: React.Dispatch<React.SetStateAction<import('../../types').GmcpOccupant[]>>;
@@ -28,7 +29,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
     const {
         captureStage, isSilentCapture, isDrawerCapture,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
-        isWaitingForInv, isWaitingForEq, isWaitingForStats,
+        isWaitingForInv, isWaitingForEq, isWaitingForStats, isWaitingForInfo,
         setWhoList, setWhereList, setRoomItems, registerEntity, setCharacterInfo, setDiscoveredItems, extractNoun, ansiConvert,
         playerPosition
     } = deps;
@@ -60,7 +61,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
             if ((lower === 'who' || lower === 'where') && isPlayersOpen) isDrawerHiding = true;
             if (isEndPrompt) {
                  if ((isInventoryOpen || isEquipmentOpen) && (isWaitingForInv.current || isWaitingForEq.current)) isDrawerHiding = true;
-                 if (isCharacterOpen && (isWaitingForStats.current || isWaitingForEq.current || captureStage.current === 'practice' || captureStage.current === 'info' || captureStage.current === 'quest' || captureStage.current === 'shop')) isDrawerHiding = true;
+                 if (isCharacterOpen && (isWaitingForStats.current || isWaitingForEq.current || isWaitingForInfo.current || captureStage.current === 'practice' || captureStage.current === 'info' || captureStage.current === 'quest' || captureStage.current === 'shop')) isDrawerHiding = true;
                  if (isStatsOpen && isWaitingForStats.current) isDrawerHiding = true;
                  if (isPlayersOpen && captureStage.current === 'none') isDrawerHiding = true;
             }
@@ -74,7 +75,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
 
         // 2. Normal visibility: not silent OR it's a special high-priority message
         return (isSilentCapture.current === 0) || isImportantMessage || isRoomName || isRoomDescription;
-    }, [captureStage, isSilentCapture, isDrawerCapture, isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen, isWaitingForInv, isWaitingForEq, isWaitingForStats, playerPosition]);
+    }, [captureStage, isSilentCapture, isDrawerCapture, isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen, isWaitingForInv, isWaitingForEq, isWaitingForStats, isWaitingForInfo, playerPosition]);
 
     const routeMessage = useCallback((msgType: string, textOnly: string, lower: string, cleanLine: string, attachedText: string, isMatch: boolean) => {
         let finalType = msgType;

@@ -125,8 +125,11 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
     React.useEffect(() => {
         if (!infoContainerRef.current || (activeTab !== 'online' && activeTab !== 'nearby')) return;
         const measure = () => {
-            const width = infoContainerRef.current?.clientWidth;
-            if (width) setInfoFontSize(`${width / 48}px`);
+            const el = infoContainerRef.current;
+            if (!el) return;
+            const cs = getComputedStyle(el);
+            const innerWidth = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+            if (innerWidth > 0) setInfoFontSize(`${innerWidth / 48}px`);
         };
         measure();
         const ro = new ResizeObserver(measure);
@@ -196,8 +199,28 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
         line: import('../../types').DrawerLine, 
         fontSize: string
     }) => {
+        const isHeader = !!line.isHeader;
+        const rowBg = isHeader ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.6)';
+        const depth = line.depth || 0;
+
         return (
-            <div style={{ lineHeight: '1.2', whiteSpace: 'pre-wrap', fontSize }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }} />
+            <div style={{ 
+                background: rowBg,
+                borderRadius: '4px',
+                margin: '0.5px 0',
+                padding: '1px 8px',
+                paddingLeft: `${depth * 8 + 8}px`,
+                width: '100%',
+                boxSizing: 'border-box',
+                display: 'block',
+                color: '#ffffff',
+                minHeight: '16px',
+                lineHeight: '1.15',
+                whiteSpace: 'pre', 
+                overflow: isHeader ? 'visible' : 'hidden',
+                textOverflow: 'ellipsis',
+                fontSize 
+            }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }} />
         );
     });
 

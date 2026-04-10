@@ -74,9 +74,12 @@ export function usePracticeHandler(
                 const sessionsStr = hasSessionsCol ? parts[1].trim().replace(/\s+/g, '') : '';
                 const knowledgeStr = (hasSessionsCol ? parts[2] : parts[1])?.trim() || '';
                 const difficulty    = (hasSessionsCol ? parts[3] : parts[2])?.trim() || '';
-                let skillClass      = (hasSessionsCol ? parts[4] : parts[3])?.trim() || 'Ranger';
+                const rawClass = (hasSessionsCol ? parts[4] : parts[3])?.trim();
+                const isExplicitNone = rawClass?.toLowerCase() === 'none';
+                let skillClass = rawClass || 'Ranger';
+
                 // Multi-word values (e.g. "Easy to improve") are advice, not a class name
-                if (!skillClass || skillClass.toLowerCase() === 'none' || skillClass.includes(' ')) skillClass = 'Ranger';
+                if (!skillClass || isExplicitNone || skillClass.includes(' ')) skillClass = 'Ranger';
 
                 const knowledgeMap: Record<string, string> = {
                     'awful': '15%', 'bad': '30%', 'poor': '45%', 'average': '60%', 'fair': '70%', 'good': '80%', 'very good': '90%', 'excellent': '98%', 'superb': '100%',
@@ -94,8 +97,9 @@ export function usePracticeHandler(
                 const clericSkills = ['pray', 'bless', 'healing', 'percieve'];
                 const thiefSkills = ['hide', 'sneak', 'steal', 'backstab', 'pick lock', 'search', 'climb', 'trap'];
 
-                // If it came in as Ranger (our default) or missing, try more specific heuristics
-                if (skillClass === 'Ranger' || !skillClass) {
+                // If it came in as Ranger (our default) or missing, try more specific heuristics,
+                // BUT only if it wasn't explicitly labeled as "None" by the game.
+                if (!isExplicitNone && (skillClass === 'Ranger' || !rawClass)) {
                     if (warriorSkills.some(s => skillNameLower.includes(s))) skillClass = 'Warrior';
                     else if (mageSkills.some(s => skillNameLower.includes(s))) skillClass = 'Mage';
                     else if (clericSkills.some(s => skillNameLower.includes(s))) skillClass = 'Cleric';

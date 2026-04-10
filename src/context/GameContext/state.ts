@@ -263,7 +263,8 @@ export const useGameProviderState = () => {
     // Parser State
     const [inventoryLines, setInventoryLines] = useState<DrawerLine[]>([]);
     const [statsLines, setStatsLines] = useState<DrawerLine[]>([]);
-    const [infoLines, setInfoLines] = useState<DrawerLine[]>([]);
+    const [infoLines, setInfoLines] = useState<DrawerLine[]>([]); 
+    const [scoreLines, setScoreLines] = useState<DrawerLine[]>([]); 
     const [questLines, setQuestLines] = useState<DrawerLine[]>([]);
     const [practiceLines, setPracticeLines] = useState<DrawerLine[]>([]);
     const [whoLines, setWhoLines] = useState<DrawerLine[]>([]);
@@ -375,6 +376,7 @@ export const useGameProviderState = () => {
     const isWaitingForStats = useRef<boolean>(false);
     const isWaitingForEq = useRef<boolean>(false);
     const isWaitingForInv = useRef<boolean>(false);
+    const isWaitingForInfo = useRef<boolean>(false);
     // Signals parser to inject container contents into a drawer instead of popover
     const pendingDrawerContainerRef = useRef<{ containerId: string; cmd: 'inventorylist' | 'equipmentlist'; afterId: string } | null>(null);
     const [activeDragData, setActiveDragData] = useState<any>(null);
@@ -566,6 +568,7 @@ export const useGameProviderState = () => {
         inventoryLines, setInventoryLines,
         statsLines, setStatsLines,
         infoLines, setInfoLines,
+        scoreLines, setScoreLines,
         questLines, setQuestLines,
         practiceLines, setPracticeLines,
         whoLines, setWhoLines,
@@ -574,7 +577,7 @@ export const useGameProviderState = () => {
         displayInventoryLines: optimisticInventoryLines ?? inventoryLines,
         displayEqLines: optimisticEqLines ?? eqLines,
         applyOptimisticChange,
-        captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, pendingDrawerContainerRef,
+        captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, pendingDrawerContainerRef,
         autoConnect, setAutoConnect,
         hasSeenOnboarding, setHasSeenOnboarding,
         showDebugEchoes, setShowDebugEchoes,
@@ -645,7 +648,7 @@ export const useGameProviderState = () => {
         roomPlayers, roomNpcs, roomItems, currentTerrain, ui, setIsCharacterOpen,
         setIsEquipmentOpen, setIsInventoryOpen, setIsMapExpanded, setIsSetManagerOpen, lighting,
         lightningEnabled, weather, isFoggy, abilities, characterClass, actions, handleTabClick, toggleMap,
-        inventoryLines, statsLines, infoLines, questLines, practiceLines, whoLines, whereLines, eqLines, optimisticInventoryLines, optimisticEqLines, applyOptimisticChange, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
+        inventoryLines, statsLines, scoreLines, questLines, practiceLines, whoLines, whereLines, eqLines, optimisticInventoryLines, optimisticEqLines, applyOptimisticChange, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
         disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, roomName, roomDesc, roomExits, roomZone,
         handleTabClick, toggleMap,
         inlineCategories, isHighlighterEnabled, isCrtEnabled, isBloomEnabled, favorites, activeDragData, heldButton,

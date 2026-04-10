@@ -38,23 +38,23 @@ export const CombatSliderPopout: React.FC<CombatSliderPopoutProps> = ({
             <div 
                 style={{ 
                     position: 'fixed', 
-                    top: anchorRect.top + (anchorRect.height / 2), 
-                    left: anchorRect.right + 15, 
-                    transform: 'translateY(-50%)', 
-                    background: 'rgba(10, 13, 21, 0.5)', 
+                    bottom: (window.innerHeight - anchorRect.top) + 12, 
+                    left: anchorRect.left + (anchorRect.width / 2), 
+                    transform: 'translateX(-50%)', 
+                    background: 'rgba(10, 13, 21, 0.75)', 
                     border: '1px solid rgba(255,255,255,0.1)', 
-                    padding: '15px 12px', 
-                    borderRadius: '20px', 
-                    backdropFilter: 'blur(16px) saturate(180%)', 
-                    WebkitBackdropFilter: 'blur(16px) saturate(180%)',
-                    boxShadow: '0 20px 60px rgba(0,0,0,0.6)', 
+                    padding: '24px 16px 16px 16px', 
+                    borderRadius: '24px', 
+                    backdropFilter: 'blur(20px) saturate(160%)', 
+                    WebkitBackdropFilter: 'blur(20px) saturate(160%)',
+                    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.7)', 
                     zIndex: 3501, 
                     display: 'flex', 
                     flexDirection: 'row', 
                     alignItems: 'stretch', 
-                    height: '180px',
-                    width: '140px',
-                    gap: '10px',
+                    height: '240px',
+                    width: '160px',
+                    gap: '12px',
                     pointerEvents: 'auto'
                 }}
                 onClick={(e) => e.stopPropagation()}
@@ -124,19 +124,19 @@ export const CombatSliderPopout: React.FC<CombatSliderPopoutProps> = ({
                 {/* Header Label at top */}
                 <div style={{
                     position: 'absolute',
-                    top: '-14px',
+                    top: '-12px',
                     left: '50%',
                     transform: 'translateX(-50%)',
                     background: 'var(--accent)',
                     color: '#000',
-                    fontSize: 'var(--dynamic-log-size, 16px)',
+                    fontSize: '11px',
                     lineHeight: '1',
                     fontWeight: 900,
-                    padding: '4px 12px',
-                    borderRadius: '10px',
+                    padding: '6px 14px',
+                    borderRadius: '20px',
                     textTransform: 'uppercase',
-                    letterSpacing: '1px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+                    letterSpacing: '1.2px',
+                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.4)',
                     whiteSpace: 'nowrap'
                 }}>
                     {label}

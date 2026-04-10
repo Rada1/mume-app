@@ -124,6 +124,8 @@ export function useTelnet(options: TelnetOptions) {
         }
     }, [sendBytes]);
 
+    const lastProcessedPromptRef = useRef<string>("");
+
     const processText = useCallback((text: string) => {
         bufferRef.current += text;
 
@@ -133,7 +135,14 @@ export function useTelnet(options: TelnetOptions) {
 
         // Process all COMPLETE lines first
         for (let i = 0; i < lines.length; i++) {
-            processLine(lines[i]);
+            const line = lines[i];
+            // De-duplication: if this line was previously processed as an optimistic prompt
+            // (e.g. "By what name...?"), don't process it again now that it has a newline.
+            if (i === 0 && line === lastProcessedPromptRef.current) {
+                lastProcessedPromptRef.current = "";
+                continue;
+            }
+            processLine(line);
         }
 
         // ONLY after all lines are added to the message log, update the prompt
@@ -144,18 +153,22 @@ export function useTelnet(options: TelnetOptions) {
         if (remaining) {
             const cleanPrompt = remaining.replace(/\x1b\[[0-9;]*m/g, '').trim();
             // Any incomplete buffer ending with '>' is a prompt — always parse it.
-            // The parser returns early if no vitals/opponent are found, so false
-            // positives are harmless. Previously this check was too strict and
-            // missed prompts like "*(- a fallow deer:Hurt>" (no HP:/MA: tokens),
-            // causing opponent health to never be extracted.
-            const isLikelyPrompt = cleanPrompt.endsWith('>') || cleanPrompt.endsWith(':');
+            const isLikelyPrompt = cleanPrompt.endsWith('>');
 
             if (isLikelyPrompt) {
+                // Track this prompt so we don't double-process it if a newline follows
+                lastProcessedPromptRef.current = remaining;
                 processLine(remaining);
 
                 if (handlers.detectLighting) handlers.detectLighting(cleanPrompt);
                 if (handlers.flushMessages) handlers.flushMessages();
+            } else {
+                // If it's no longer a 'likely prompt', clear the tracking
+                lastProcessedPromptRef.current = "";
             }
+        } else {
+            // Buffer is empty, clear the tracking
+            lastProcessedPromptRef.current = "";
         }
     }, [processLine, setPrompt, handlers]);
 

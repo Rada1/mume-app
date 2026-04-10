@@ -27,8 +27,11 @@ export interface ExecutorDeps {
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
+    isWaitingForInfo: React.MutableRefObject<boolean>;
     setInventoryLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setStatsLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
+    setInfoLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
+    setScoreLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setEqLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setTarget: (val: string | null) => void;
     finalizeCapture: (targetStage?: CaptureStage) => void;
@@ -48,8 +51,8 @@ export interface ExecutorDeps {
 export const useCommandExecutor = (deps: ExecutorDeps) => {
     const {
         telnet, addMessage, initAudio, navIntervalRef, mapperRef, teleportTargets,
-        isDrawerCapture, isSilentCapture, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv,
-        setInventoryLines, setStatsLines, setEqLines, setTarget, target,
+        isDrawerCapture, isSilentCapture, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
+        setInventoryLines, setStatsLines, setScoreLines, setEqLines, setTarget, target,
         setPopoverState, status, setIsCharacterOpen, setIsEquipmentOpen, setIsInventoryOpen,
         setIsSettingsOpen, setSettingsTab,
         actions, setActions, activePrompt
@@ -73,7 +76,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
 
     const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, _isHistorical = false, fromDrawer = false) => {
         const d = depsRef.current;
-        const { telnet, addMessage, initAudio, navIntervalRef, mapperRef, teleportTargets, isDrawerCapture, isSilentCapture, captureStage, status } = d;
+        const { telnet, addMessage, initAudio, navIntervalRef, mapperRef, teleportTargets, isDrawerCapture, isSilentCapture, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, status } = d;
 
         initAudio();
         

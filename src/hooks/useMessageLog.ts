@@ -34,7 +34,8 @@ export function useMessageLog(
     recordEntry?: (type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any) => void,
     roomDescRef?: React.RefObject<string | null>,
     pendingMove?: { dir: string; timestamp: number } | null,
-    setPendingMove?: (val: { dir: string; timestamp: number } | null) => void
+    setPendingMove?: (val: { dir: string; timestamp: number } | null) => void,
+    isAccountModeRef?: React.RefObject<boolean>
 ) {
     const [messages, setMessages] = useState<Message[]>([]);
     const lastMessageRef = useRef<Message | null>(null);
@@ -510,7 +511,17 @@ export function useMessageLog(
                 flushTimeoutRef.current = setTimeout(flushMessages, 50);
             }
         }
-    }, [inCombatRef, setMessages, flushMessages, isMobileBrevityMode, roomContext, flushRoomBuffer]);
+    }, [inCombatRef, setMessages, flushMessages, isMobileBrevityMode, roomContext, flushRoomBuffer, isAccountModeRef]);
+
+    const clearLog = useCallback(() => {
+        messageBufferRef.current = [];
+        roomLineBufferRef.current = [];
+        if (flushTimeoutRef.current) {
+            clearTimeout(flushTimeoutRef.current);
+            flushTimeoutRef.current = null;
+        }
+        setMessages([]);
+    }, []);
 
     const addSystemMessage = useCallback((text: string) => {
         const msg: Message = {
@@ -527,5 +538,5 @@ export function useMessageLog(
         });
     }, [setMessages]);
 
-    return { messages, setMessages, addMessage, addSystemMessage, flushMessages, isCombatLine };
+    return { messages, setMessages, addMessage, addSystemMessage, flushMessages, isCombatLine, clearLog };
 }

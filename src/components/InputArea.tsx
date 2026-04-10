@@ -24,13 +24,14 @@ interface InputAreaProps {
     parley: import('../types').ParleyState;
     setParley: React.Dispatch<React.SetStateAction<import('../types').ParleyState>>;
     whoList: string[];
+    gameState: import('../types').GameState;
 }
 
 import { normalizeTerrain } from '../utils/terrainUtils';
 
 const InputArea: React.FC<InputAreaProps> = ({
     input, setInput, onSend, terrain, onSwipe, isMobile, isKeyboardOpen, commandPreview,
-    spatButtons, setActiveSet, executeCommand, setSpatButtons, setPopoverState, parley, setParley, whoList
+    spatButtons, setActiveSet, executeCommand, setSpatButtons, setPopoverState, parley, setParley, whoList, gameState
 }) => {
     const { ui, setUI } = useUI();
     const { viewport } = useBaseGame();
@@ -313,22 +314,23 @@ const InputArea: React.FC<InputAreaProps> = ({
                     <button type="submit" style={{ display: 'none' }}>Send</button>
                 </form>
 
-                    <div className="input-actions-container">
-                        {shouldShowSpat && (
-                            <SpatButtons
-                                spatButtons={spatButtons}
-                                isMobile={!!isMobile}
-                                isKeyboardOpen={isKeyboardOpen}
-                                setActiveSet={setActiveSet}
-                                executeCommand={executeCommand}
-                                setSpatButtons={setSpatButtons}
-                                setPopoverState={setPopoverState}
-                                playClickSound={playClickSound}
-                                triggerHaptic={triggerHaptic}
-                                initAudio={initAudio}
-                                isSoundEnabled={isSoundEnabled}
-                            />
-                        )}
+                    {gameState !== 'account' && (
+                        <div className="input-actions-container">
+                            {shouldShowSpat && (
+                                <SpatButtons
+                                    spatButtons={spatButtons}
+                                    isMobile={!!isMobile}
+                                    isKeyboardOpen={isKeyboardOpen}
+                                    setActiveSet={setActiveSet}
+                                    executeCommand={executeCommand}
+                                    setSpatButtons={setSpatButtons}
+                                    setPopoverState={setPopoverState}
+                                    playClickSound={playClickSound}
+                                    triggerHaptic={triggerHaptic}
+                                    initAudio={initAudio}
+                                    isSoundEnabled={isSoundEnabled}
+                                />
+                            )}
 
                         <button
                             type="button"
@@ -352,6 +354,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                             </button>
                         )}
                     </div>
+                )}
                 </div>
 
                 {isMobile && isKeyboardOpen && !parley.active && (

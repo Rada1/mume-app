@@ -3,7 +3,7 @@ import { Mapper } from '../../Mapper/Mapper';
 import { LineCluster } from './LineCluster';
 import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { useMapper } from '../../../context/useMapper';
-import { GripHorizontal, Map as MapIcon, User, Shield, Users, BarChart2 } from 'lucide-react';
+import { GripHorizontal, Map as MapIcon, User, Shield, Users, BarChart2, CloudFog } from 'lucide-react';
 import InputArea from '../../InputArea';
 import { StatsDrawer } from '../../Drawers/StatsDrawer';
 import { CharacterDrawer } from '../../Drawers/CharacterDrawer';
@@ -38,11 +38,13 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     const {
         triggerHaptic, showControls, viewport, btn, handleButtonClick, executeCommand, joystick,
         handleTabClick, toggleMap, spatButtons, setSpatButtons, parley, setParley, whoList,
-        statsLines, displayInventoryLines, displayEqLines,
-        pendingDrawerContainerRef, inlineCategories, entities, keywordOverrides
+        statsLines, scoreLines, displayInventoryLines, displayEqLines,
+        pendingDrawerContainerRef, inlineCategories, entities, keywordOverrides,
+        env, isFoggy, gameState
     } = useGame() as any;
     const { target, activePrompt, stats } = useVitals();
     const { ui, setUI, setPopoverState } = useUI();
+    const { getLightingIcon, getWeatherIcon, lighting, weather } = env;
     const { isMapFloating, setIsMapFloating } = useMapper();
     const isExpanded = ui.mapExpanded || ui.peekingDrawer === 'map';
     const { isKeyboardOpen } = viewport;
@@ -136,8 +138,27 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         pointerEvents: isShown ? 'auto' : 'none',
                         opacity: isShown ? 1 : 0,
                         touchAction: 'none',
+                        position: 'relative'
                     }}
                 >
+                    {/* Environmental Status Icons — moved here from tactical buttons bubble */}
+                    {(lighting !== 'none' || weather !== 'none' || isFoggy) && (
+                        <div className="map-status-overlay" style={{
+                            position: 'absolute',
+                            top: '12px',
+                            left: '12px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '8px',
+                            zIndex: 2700,
+                            pointerEvents: 'none',
+                            color: 'var(--text-faded)'
+                        }}>
+                            {getLightingIcon()}
+                            {getWeatherIcon()}
+                            {isFoggy && <CloudFog size={16} style={{ opacity: 0.6 }} />}
+                        </div>
+                    )}
                     <div className={`line-cluster-container ${(!showControls || isKeyboardOpen) && !btn.isEditMode ? 'hud-hidden' : ''}`}>
                         <LineCluster
                             isEditMode={isEditMode}
@@ -195,6 +216,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                 isOpen={true}
                                 onClose={() => {}}
                                 statsLines={statsLines}
+                                scoreLines={scoreLines}
                                 executeCommand={executeCommand}
                             />
                         )}
@@ -234,35 +256,35 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 <div className="portrait-tab-bar">
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'stats' ? 'active' : ''}`}
-                        onClick={() => handleTabClick('stats')}
+                        onClick={() => { triggerHaptic(15); handleTabClick('stats'); }}
                     >
                         <BarChart2 className="tab-icon" />
                         <span className="tab-text">Stats</span>
                     </div>
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'character' ? 'active' : ''}`}
-                        onClick={() => handleTabClick('character')}
+                        onClick={() => { triggerHaptic(15); handleTabClick('character'); }}
                     >
                         <User className="tab-icon" />
                         <span className="tab-text">Char</span>
                     </div>
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'players' ? 'active' : ''}`}
-                        onClick={() => handleTabClick('players')}
+                        onClick={() => { triggerHaptic(15); handleTabClick('players'); }}
                     >
                         <Users className="tab-icon" />
                         <span className="tab-text">Players</span>
                     </div>
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'inventory' ? 'active' : ''}`}
-                        onClick={() => handleTabClick('inventory')}
+                        onClick={() => { triggerHaptic(15); handleTabClick('inventory'); }}
                     >
                         <Shield className="tab-icon" />
                         <span className="tab-text">Gear</span>
                     </div>
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'none' ? 'active' : ''}`}
-                        onClick={() => toggleMap()}
+                        onClick={() => { triggerHaptic(15); toggleMap(); }}
                     >
                         <MapIcon className="tab-icon" />
                         <span className="tab-text">Map</span>

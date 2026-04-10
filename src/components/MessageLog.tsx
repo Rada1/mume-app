@@ -115,6 +115,8 @@ const MessageItem = React.memo(({
     isTimestampEnabled,
     isNewbieMode,
     currentRoomName,
+    input,
+    setInput,
 }: {
     msg: Message,
     processMessageHtml: (html: string, mid?: string, isRoomName?: boolean, type?: MessageType, isCombat?: boolean, side?: string) => string,
@@ -129,7 +131,10 @@ const MessageItem = React.memo(({
     latestBatchId?: number;
     isTimestampEnabled?: boolean;
     isNewbieMode?: boolean;
-    currentRoomName?: string | null;
+    currentRoomName?: string | null,
+    input?: string,
+    setInput?: (val: string) => void,
+    viewport: any,
 }) => {
     const content = useMemo(() => processMessageHtml(msg.html, msg.id, msg.isRoomName, msg.type, msg.isCombat, msg.combatSide), [msg.html, msg.id, msg.isRoomName, msg.type, msg.isCombat, msg.combatSide, processMessageHtml]);
     const isRecent = Date.now() - msg.timestamp < 2000;
@@ -192,6 +197,40 @@ const MessageItem = React.memo(({
                 <PracticeColumnHeaderCard sessionsLeft={msg.practiceHeader?.sessionsLeft} />
             ) : msg.type === 'practice-class-header' ? (
                 <PracticeClassHeaderCard label={msg.textRaw} />
+            ) : msg.type === 'account-prompt' ? (
+                <div className="account-prompt-container">
+                    <div className="message-content" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(content) }} />
+                    <input 
+                        className={`account-input-trigger ${input ? 'has-input' : ''}`}
+                        type={msg.textRaw?.toLowerCase().includes('password') ? 'password' : 'text'}
+                        value={input || ''}
+                        onChange={(e) => setInput?.(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                executeCommand(input || '');
+                                setInput?.('');
+                            }
+                        }}
+                        placeholder={msg.textRaw?.toLowerCase().includes('password') ? 'TYPE PASSWORD' : 'TYPE NAME'}
+                        autoFocus={viewport.isMobile}
+                        inputMode={msg.textRaw?.toLowerCase().includes('password') ? 'text' : 'email'} 
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                        spellCheck="false"
+                    />
+
+                    {!msg.textRaw?.toLowerCase().includes('password') && (
+                        <button 
+                            className="account-new-char-btn"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                executeCommand('new');
+                            }}
+                        >
+                            New Player
+                        </button>
+                    )}
+                </div>
             ) : (msg.type === 'comm' || msg.isComm) && msg.commSender ? (
                 <div className="comm-bubble-wrapper">
                     {timestampEl}
@@ -237,7 +276,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onDragStart,
     onDragEnd
 }) => {
-    const { inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, isTimestampEnabled, isNewbieMode, isSpectateMode } = useBaseGame();
+    const { inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, isTimestampEnabled, isNewbieMode, isSpectateMode, input, setInput } = useBaseGame();
     const { messages, processMessageHtml } = useLog();
     const { activePrompt, setTarget, target, opponentName, opponentHealthStatus } = useVitals();
     const { scrollContainerRef, messagesEndRef, scrollToBottom } = viewport;
@@ -441,6 +480,9 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                     isTimestampEnabled={isTimestampEnabled}
                                     isNewbieMode={isNewbieMode}
                                     currentRoomName={roomName}
+                                    input={input}
+                                    setInput={setInput}
+                                    viewport={viewport}
                                 />
                             </div>
                         );

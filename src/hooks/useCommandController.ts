@@ -18,8 +18,11 @@ export interface CommandControllerDeps {
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
+    isWaitingForInfo: React.MutableRefObject<boolean>;
     setInventoryLines: (val: any) => void;
     setStatsLines: (val: any) => void;
+    setInfoLines: (val: any) => void;
+    setScoreLines: (val: any) => void;
     setEqLines: (val: any) => void;
     setCommandPreview: (val: string | null) => void;
     input: string;
@@ -78,7 +81,8 @@ export interface CommandControllerDeps {
     manualCancelRef?: React.MutableRefObject<boolean>;
     waiting?: boolean;
     recordEntry?: (type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any) => void;
-
+    clearLog: () => void;
+    gameState: import('../types').GameState;
 }
 
 

@@ -375,6 +375,7 @@ export interface GameContextType {
     inventoryLines: DrawerLine[];
     statsLines: DrawerLine[];
     infoLines: DrawerLine[];
+    scoreLines: DrawerLine[];
     questLines: DrawerLine[];
     practiceLines: DrawerLine[];
     whoLines: DrawerLine[];
@@ -385,6 +386,7 @@ export interface GameContextType {
     applyOptimisticChange: (change: OptimisticChange) => void;
     setInventoryLines: Dispatch<SetStateAction<DrawerLine[]>>;
     setStatsLines: Dispatch<SetStateAction<DrawerLine[]>>;
+    setInfoLines: Dispatch<SetStateAction<DrawerLine[]>>;
     setPracticeLines: Dispatch<SetStateAction<DrawerLine[]>>;
     setWhoLines: Dispatch<SetStateAction<DrawerLine[]>>;
     setWhereLines: Dispatch<SetStateAction<DrawerLine[]>>;

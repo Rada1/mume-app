@@ -119,6 +119,7 @@ export interface DrawerLine {
     parentItemId?: string;
     parentItemNoun?: string;
     entityId?: string;
+    practiceSkill?: PracticeSkill;
 }
 
 export type EntityLocation = 'room' | 'inv' | 'eq' | string; // string for 'container:<id>'

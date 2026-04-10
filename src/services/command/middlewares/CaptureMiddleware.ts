@@ -6,9 +6,10 @@
 import { CommandMiddleware } from '../types';
 
 export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isSystem, fromDrawer }) => {
-    const { 
-        isSilentCapture, captureStage, isWaitingForInv, isWaitingForEq, 
-        isWaitingForStats, setStatsLines, isDrawerCapture, setPopoverState, finalizeCapture 
+    const {
+        isSilentCapture, captureStage, isWaitingForInv, isWaitingForEq,
+        isWaitingForStats, setStatsLines, setInfoLines, setScoreLines, isDrawerCapture, setPopoverState, finalizeCapture,
+        isWaitingForInfo
     } = context;
     const lowerCmd = cmd.toLowerCase().trim();
 
@@ -43,14 +44,20 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
     if (lowerCmd === 'inventory' || lowerCmd === 'inv' || lowerCmd === 'i') {
         isWaitingForInv.current = true;
         captureStage.current = 'none';
-    } else if (lowerCmd === 'stat' || lowerCmd === 'st' || lowerCmd === 'status' || lowerCmd === 'score' || lowerCmd === 'sc' || lowerCmd === 'at') {
+    } else if (lowerCmd === 'stat' || lowerCmd === 'st' || lowerCmd === 'status' || lowerCmd === 'score' || lowerCmd === 'sc' || lowerCmd === 'at' || lowerCmd.startsWith('info %m')) {
+        console.log(`[Middleware] Setting isWaitingForStats! Cmd: "${cmd}" (Matches: stat/score/at/info)`);
         isWaitingForStats.current = true;
         captureStage.current = 'none';
         setStatsLines([]);
+        setScoreLines([]);
     } else if (lowerCmd === 'eq' || lowerCmd === 'equipment') {
         isWaitingForEq.current = true;
         captureStage.current = 'none';
+    } else if (lowerCmd === 'info') {
+        isWaitingForInfo.current = true;
+        setInfoLines([]);
     } else if (lowerCmd === 'practice' || lowerCmd === 'prac') {
+        // Practice detection is also handled by useStageInitializer
         captureStage.current = 'practice';
     }
 

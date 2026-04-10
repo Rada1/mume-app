@@ -379,16 +379,12 @@
 
 .input-main-container {
     flex: 1;
-    min-height: 52px;
-    padding: 0 8px;
+    min-height: 46px;
+    padding: 0 20px;
     display: flex;
     align-items: center;
-    background: rgba(15, 23, 42, 0.45);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
-    border-radius: 12px; 
+    background: rgb(35, 35, 40);
+    border-radius: 24px; 
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     box-sizing: border-box;
@@ -407,35 +403,9 @@
 }
 
 /* Restore Drawer internal card styling for portrait mode */
-@media (max-width: 768px) and (orientation: portrait) {
-    .log-card-drawer .drawer-header {
-        background: rgba(255, 255, 255, 0.05) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 14px !important;
-        margin: 0 0 15px 0 !important;
-        min-height: 48px !important;
-        padding: 8px 15px !important;
-    }
+/* Legacy drawer overrides removed for modern Pocketed Hardware look */
 
-    .log-card-drawer .drawer-content {
-        padding: 12px 15px !important;
-    }
 
-    /* Restore individual section cards */
-    .players-section, .inventory-section, .character-section {
-        background: rgb(0, 0, 0) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 16px !important;
-        margin: 8px 0 !important;
-        padding: 12px !important;
-    }
-}
-
-@media (min-width: 769px) {
-    .input-main-container {
-        min-height: 58px;
-    }
-}
 
 
 

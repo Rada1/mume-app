@@ -13,6 +13,7 @@ export interface StageManagerDeps {
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
+    isWaitingForInfo: React.MutableRefObject<boolean>;
     addDiagnosticLog?: (msg: string) => void;
     addMessage: (type: MessageType, text: string, ...args: any[]) => void;
     setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
@@ -36,7 +37,7 @@ export function useStageManager(deps: StageManagerDeps) {
         isSilentCapture,
         isWaitingForStats,
         isWaitingForEq,
-        isWaitingForInv,
+        isWaitingForInv, isWaitingForInfo,
         addDiagnosticLog,
         addMessage,
         setPopoverState,
@@ -70,9 +71,13 @@ export function useStageManager(deps: StageManagerDeps) {
             // initialized. This happens when e.g. "score" output doesn't match the
             // expected stats header pattern — isWaitingForStats stays true forever,
             // blocking room name detection in useRoomParser.
-            if (isWaitingForStats) isWaitingForStats.current = false;
-            if (isWaitingForEq) isWaitingForEq.current = false;
-            if (isWaitingForInv) isWaitingForInv.current = false;
+            if (isWaitingForStats.current) {
+                console.log('[StageManager] Clearing stale isWaitingForStats flag on prompt');
+                isWaitingForStats.current = false;
+            }
+            if (isWaitingForEq.current) isWaitingForEq.current = false;
+            if (isWaitingForInv.current) isWaitingForInv.current = false;
+            if (isWaitingForInfo.current) isWaitingForInfo.current = false;
             return false;
         }
 
@@ -140,7 +145,7 @@ export function useStageManager(deps: StageManagerDeps) {
         isSilentCapture,
         isWaitingForStats,
         isWaitingForEq,
-        isWaitingForInv,
+        isWaitingForInv, isWaitingForInfo,
         addDiagnosticLog,
         addMessage,
         setPopoverState,

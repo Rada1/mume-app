@@ -25,7 +25,7 @@ export const EnvControls: React.FC<EnvControlsProps> = ({ getLightingIcon, getWe
 
     return (
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', flex: 1, minWidth: 0, justifyContent: 'flex-start' }}>
-            {(lighting !== 'none' || weather !== 'none' || isFoggy) && (
+            {((lighting !== 'none' || weather !== 'none' || isFoggy) && !viewport.isMobile) && (
                 <div
                     className="status-indicator"
                     style={{ color: 'var(--text-primary)', gap: 4, padding: '4px 6px' }}
@@ -34,13 +34,11 @@ export const EnvControls: React.FC<EnvControlsProps> = ({ getLightingIcon, getWe
                     {getLightingIcon()}
                     {getWeatherIcon()}
                     {isFoggy && <CloudFog size={14} className="text-gray-400" />}
-                    {!viewport.isMobile && (
-                        <span style={{ fontSize: '0.75rem' }}>
-                            {lighting && lighting !== 'none' ? lighting.toUpperCase() : ''}
-                            {weather && weather !== 'none' && weather !== 'clear' ? ` | ${weather.toUpperCase().replace('-', ' ')}` : ''}
-                            {isFoggy ? ' | FOG' : ''}
-                        </span>
-                    )}
+                    <span style={{ fontSize: '0.75rem' }}>
+                        {lighting && lighting !== 'none' ? lighting.toUpperCase() : ''}
+                        {weather && weather !== 'none' && weather !== 'clear' ? ` | ${weather.toUpperCase().replace('-', ' ')}` : ''}
+                        {isFoggy ? ' | FOG' : ''}
+                    </span>
                 </div>
             )}
             {inCombat && (

@@ -1,14 +1,18 @@
-import React, { useMemo, useState } from 'react';
+import React, { useRef, useState } from 'react';
+import { RefreshCw, X } from 'lucide-react';
 import { useGame, useVitals } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
 import { CombatSliderPopout } from './StatsDrawer/CombatSliderPopout';
-import { EffectIndicators } from './StatsDrawer/EffectIndicators';
 import { CombatSettingControl } from './StatsDrawer/CombatSettingControl';
+import { isObjectSelected } from '../../utils/selectionUtils';
+import { getCategoryForName } from '../../utils/categorizationUtils';
+import { sanitizeMumeHtml } from '../../utils/securityUtils';
 
 interface CharacterDrawerProps {
     isOpen: boolean;
     onClose: () => void;
     statsLines: DrawerLine[];
+    scoreLines: DrawerLine[];
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
     isLandscape?: boolean;
 }
@@ -17,108 +21,204 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
     isOpen,
     onClose,
     statsLines,
-    executeCommand,
+    scoreLines = [],
+    executeCommand: propsExecuteCommand,
     isLandscape = false
 }) => {
     const {
         mood, setMood, spellSpeed, setSpellSpeed, alertness, setAlertness,
-        triggerHaptic, inCombat
+        triggerHaptic, 
+        handleLogPointerDown,
+        handleLogPointerUp,
+        handleLogClick,
+        selectedObjectIds,
+        clearObjectSelection,
+        executeCommand: contextExecuteCommand
     } = useGame();
+    const executeCommand = contextExecuteCommand || propsExecuteCommand;
     const [activeSlider, setActiveSlider] = useState<'mood' | 'spell' | 'alert' | null>(null);
     const [activeButtonRect, setActiveButtonRect] = useState<DOMRect | null>(null);
-    const { stats, characterInfo } = useVitals();
 
-    const activeSpells = useMemo(() => {
-        const spells: string[] = [];
-        let inSpellsSection = false;
-        
-        for (const line of statsLines) {
-            const text = line.text.trim();
-            if (text.startsWith('Affecting Spells:') || text.startsWith('Affected by:')) {
-                inSpellsSection = true;
-                continue;
-            }
-            if (inSpellsSection) {
-                if (text.startsWith('- ')) {
-                    const spell = text.substring(2).trim();
-                    if (!spells.some(s => s.toLowerCase() === spell.toLowerCase())) {
-                        spells.push(spell);
-                    }
-                } else if (text.length > 0) {
-                    inSpellsSection = false;
-                }
+    const drawerRef = useRef<HTMLDivElement>(null);
+    const swipePos = useRef<{ x: number, y: number } | null>(null);
+
+    const onPointerDownInternal = (e: React.PointerEvent) => {
+        const target = e.target as HTMLElement;
+        const container = e.currentTarget as HTMLElement;
+        if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT' || target.closest('.drawer-tab')) {
+            if (target.closest('.inline-btn')) handleLogPointerDown(e);
+            return;
+        }
+        swipePos.current = { x: e.clientX, y: e.clientY };
+        container.setPointerCapture(e.pointerId);
+    };
+
+    const onPointerUpInternal = (e: React.PointerEvent) => {
+        const target = e.target as HTMLElement;
+        if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT' || target.closest('.drawer-tab')) {
+            if (target.closest('.inline-btn')) handleLogPointerUp(e);
+            return;
+        }
+        if (swipePos.current) {
+            const deltaX = e.clientX - swipePos.current.x;
+            const deltaY = e.clientY - swipePos.current.y;
+            const absX = Math.abs(deltaX);
+            const absY = Math.abs(deltaY);
+
+            if ((deltaY > 50 && absY > absX) || (deltaX < -40 && absX > absY)) {
+                onClose();
             }
         }
+        swipePos.current = null;
+    };
 
-        if (characterInfo?.affectedBy) {
-            characterInfo.affectedBy.forEach(s => {
-                if (!spells.some(existing => existing.toLowerCase() === s.toLowerCase())) {
-                    spells.push(s);
-                }
-            });
+    const onClickInternal = (e: React.MouseEvent) => {
+        const target = e.target as HTMLElement;
+        const btn = target.closest('.inline-btn') as HTMLElement;
+        if (btn) {
+            handleLogClick(e);
+        } else if (!target.closest('.drawer-tab')) {
+            if (selectedObjectIds.size > 0) {
+                clearObjectSelection();
+                triggerHaptic(20);
+            } else if (e.target === e.currentTarget) {
+                onClose();
+            }
         }
-
-        return spells;
-    }, [statsLines, characterInfo?.affectedBy]);
+    };
 
     return (
-        <div
-            className={`stats-drawer log-card-drawer left-drawer ${isOpen ? 'open' : ''} ${isLandscape ? 'landscape-mode' : ''}`}
-            onPointerDown={(e) => {
-                const target = e.target as HTMLElement;
-                if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT') return;
-                e.currentTarget.setPointerCapture(e.pointerId);
-                (e.currentTarget as any)._startX = e.clientX;
-                (e.currentTarget as any)._startY = e.clientY;
-            }}
-            onPointerUp={(e) => {
-                const startX = (e.currentTarget as any)._startX;
-                const startY = (e.currentTarget as any)._startY;
-                if (startX !== undefined && startX !== null) {
-                    const deltaX = e.clientX - startX;
-                    const deltaY = e.clientY - (startY || 0);
-                    const absX = Math.abs(deltaX);
-                    const absY = Math.abs(deltaY);
-                    
-                    if ((deltaY > 50 && absY > absX) || (deltaX < -40 && absX > absY)) {
-                        triggerHaptic(40);
-                        if (!viewport.isMobile) onClose();
-                    }
-                }
-                (e.currentTarget as any)._startX = null;
-                (e.currentTarget as any)._startY = null;
-            }}
-            onPointerCancel={(e) => {
-                (e.currentTarget as any)._startX = null;
-            }}
-            style={{ touchAction: 'pan-y' }}
+        <div 
+            className={`character-drawer-overlay ${isOpen ? 'open' : ''}`}
+            onClick={(e) => { if (e.target === e.currentTarget && window.innerWidth > 1024) onClose(); }}
         >
-            <div className="drawer-content" style={{ 
-                flex: 1, 
-                overflowY: 'auto', 
-                WebkitOverflowScrolling: 'touch', 
-                padding: isLandscape ? '5px 15px 40px 15px' : '20px 15px 40px 15px', 
-                position: 'relative', 
-                touchAction: 'pan-y',
-                display: 'flex',
-                flexDirection: 'column'
-            }}>
-                
-                <div className="inner-container" style={{ 
+            <div
+                ref={drawerRef}
+                className={`stats-drawer log-card-drawer left-drawer ${isOpen ? 'open' : ''}`}
+                onPointerDown={onPointerDownInternal}
+                onPointerUp={onPointerUpInternal}
+                onPointerCancel={onPointerUpInternal}
+                onClick={onClickInternal}
+                style={{ touchAction: 'pan-y' }}
+            >
+                <div className="drawer-header" style={{ pointerEvents: 'auto', display: 'flex', justifyContent: 'flex-end', padding: '6px 10px', background: 'transparent' }}>
+                    {window.innerWidth > 1024 && (
+                        <button 
+                            style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} 
+                            onClick={(e) => { e.stopPropagation(); onClose(); }}
+                        >
+                            <X size={16} />
+                        </button>
+                    )}
+                </div>
+
+                <div className="drawer-body" style={{ 
                     flex: 1, 
+                    overflowY: 'auto', 
+                    padding: 0, 
+                    position: 'relative',
                     display: 'flex',
-                    flexDirection: 'column',
-                    gap: '20px'
+                    flexDirection: 'column'
                 }}>
-                    {/* Top Section: Settings & Potential in Grid */}
-                    <div style={{ 
-                        display: 'grid', 
-                        gridTemplateColumns: '90px 1fr',
-                        gap: '4px 6px',
-                        alignItems: 'stretch',
-                        paddingTop: '5px'
+                    <div style={{
+                        fontFamily: 'var(--font-main, monospace)',
+                        fontSize: 'var(--dynamic-log-size, 16px)',
+                        lineHeight: '1.2',
+                        padding: '10px 8px 100px 8px',
+                        flex: 1,
+                        textAlign: 'center'
                     }}>
-                        {/* MOOD (Col 1, Row 1) */}
+                        {/* 1. Score / Vitals Section */}
+                        {scoreLines.length > 0 && (
+                            <div className="info-block" style={{ marginBottom: '24px' }}>
+                                <div style={{ color: '#ffffff', fontFamily: 'var(--font-main, monospace)', fontSize: 'var(--dynamic-log-size, 16px)', opacity: 0.9, marginBottom: '0px' }}>score</div>
+                                <div style={{ color: 'rgba(255,255,255,0.15)', fontSize: '0.8rem', letterSpacing: '1px', marginBottom: '12px' }}>-------</div>
+                                {scoreLines.map(line => (
+                                    <div
+                                        key={line.id}
+                                        className="stat-line"
+                                        style={{
+                                            padding: '4px 0',
+                                            width: '100%',
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            textAlign: 'center',
+                                            whiteSpace: 'nowrap'
+                                        }}
+                                        dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html.trim()) }}
+                                    />
+                                ))}
+                            </div>
+                        )}
+
+                        {/* 2. Stats / Combat Section */}
+                        {statsLines.length > 0 ? (
+                            <div className="stats-block">
+                                <div style={{ color: '#ffffff', fontFamily: 'var(--font-main, monospace)', fontSize: 'var(--dynamic-log-size, 16px)', opacity: 0.9, marginBottom: '0px' }}>stat</div>
+                                <div style={{ color: 'rgba(255,255,255,0.15)', fontSize: '0.8rem', letterSpacing: '1px', marginBottom: '12px' }}>-------</div>
+                                {statsLines.map(line => {
+                                    // Skip redundant tags that keep getting captured
+                                    const lowerText = line.text.toLowerCase().trim();
+                                    if (lowerText === '[stat]' || lowerText === '[at]' || lowerText === 'at' || lowerText === 'ok.') return null;
+
+                                    return (
+                                        <div
+                                            key={line.id}
+                                            className="stat-line"
+                                            style={{
+                                                padding: '4px 0',
+                                                width: '100%',
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                                textAlign: 'center',
+                                                whiteSpace: 'nowrap'
+                                            }}
+                                            dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html.trim()) }}
+                                        />
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            scoreLines.length === 0 && (
+                                <div className="empty-stats" style={{
+                                    textAlign: 'center',
+                                    color: 'rgba(255, 255, 255, 0.3)',
+                                    fontSize: '0.9rem',
+                                    marginTop: '40px',
+                                    fontStyle: 'italic'
+                                }}>
+                                    No character stats data captured. Tap refresh to update.
+                                </div>
+                            )
+                        )}
+                    </div>
+                </div>
+
+                {/* Bottom Section: Action Buttons in Floating Tabs style */}
+                <div style={{
+                    position: 'absolute',
+                    bottom: '12px',
+                    left: '12px',
+                    right: '12px',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '10px',
+                    zIndex: 100,
+                    pointerEvents: 'none'
+                }}>
+                    <div style={{ 
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: '6px',
+                        pointerEvents: 'auto',
+                        maxWidth: '90%'
+                    }}>
                         <CombatSettingControl
                             id="mood"
                             label="MOOD"
@@ -140,48 +240,8 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                             }}
                             onClose={() => setActiveSlider(null)}
                             triggerHaptic={triggerHaptic}
-                            gridColumn="1"
-                            gridRow="1"
                         />
 
-                        {/* Right: Potential Stats (Col 2, Row 1-4) - We'll keep it next to Mood */}
-                        <div style={{ 
-                            display: 'flex',
-                            flexWrap: 'nowrap',
-                            gap: '4px',
-                            background: 'rgb(0, 0, 0)',
-                            padding: '1px 8px',
-                            borderRadius: '12px',
-                            border: '1px solid rgba(255,255,255,0.08)',
-                            justifyContent: 'space-around',
-                            gridRow: '1',
-                            gridColumn: '2',
-                            minHeight: '34px',
-                            alignItems: 'center',
-                            boxSizing: 'border-box'
-                        }}>
-                            {[
-                                { label: 'OB', value: stats.ob },
-                                { label: 'DB', value: stats.db },
-                                { label: 'PB', value: stats.pb },
-                                { label: 'ARM', value: stats.armour }
-                            ].map(stat => {
-                                const valStr = stat.value !== undefined ? String(stat.value) : '--';
-                                return (
-                                    <div key={stat.label} style={{ 
-                                        display: 'flex', 
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        flex: 1
-                                    }}>
-                                        <div style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: 'rgba(255,255,255,0.3)', fontWeight: 800, textTransform: 'uppercase', lineHeight: '1' }}>{stat.label}</div>
-                                        <div style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: '#4ade80', fontWeight: '900', marginTop: '0px', lineHeight: '1' }}>{valStr !== '--' && !valStr.includes('%') ? `${valStr}%` : valStr}</div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-
-                        {/* SPEED (Col 1, Row 2) */}
                         <CombatSettingControl
                             id="spell"
                             label="SPEED"
@@ -203,11 +263,8 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                             }}
                             onClose={() => setActiveSlider(null)}
                             triggerHaptic={triggerHaptic}
-                            gridColumn="1"
-                            gridRow="2"
                         />
 
-                        {/* ALERT (Col 1, Row 3) */}
                         <CombatSettingControl
                             id="alert"
                             label="ALERT"
@@ -229,18 +286,43 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                             }}
                             onClose={() => setActiveSlider(null)}
                             triggerHaptic={triggerHaptic}
-                            gridColumn="1"
-                            gridRow="3"
                         />
-
-                    </div>
-
-                    {/* Bottom Section: Affected By */}
-                    <div className="drawer-section" style={{ pointerEvents: 'auto', marginTop: 'auto', padding: '15px 0' }}>
-                        <div className="section-header" style={{ marginBottom: '12px', fontSize: 'var(--dynamic-log-size, 16px)', fontWeight: '800' }}>Affected By</div>
-                        <EffectIndicators activeSpells={activeSpells} stats={stats} />
                     </div>
                 </div>
+
+                <button 
+                    className="refresh-button floating-refresh"
+                    title="Refresh Stats"
+                    onClick={(e) => {
+                        triggerHaptic(15);
+                        console.log('[StatsDrawer] Manual refresh triggered (stat, score, info %m)');
+                        executeCommand('stat', true);
+                        executeCommand('score', true);
+                        executeCommand('info %m', true);
+                    }}
+                    style={{
+                        position: 'absolute',
+                        bottom: '8px',
+                        right: '8px',
+                        zIndex: 110,
+                        background: 'rgba(40, 40, 45, 0.4)',
+                        backdropFilter: 'blur(10px) saturate(160%)',
+                        WebkitBackdropFilter: 'blur(10px) saturate(160%)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        color: 'rgba(255,255,255,0.8)',
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
+                        pointerEvents: 'auto'
+                    }}
+                >
+                    <RefreshCw size={16} />
+                </button>
             </div>
         </div>
     );

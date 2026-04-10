@@ -22,6 +22,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
     const { 
         practice,
         executeCommand: contextExecuteCommand,
+        scoreLines,
         infoLines,
         questLines,
         practiceLines,
@@ -29,7 +30,8 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
         handleLogPointerDown,
         handleLogPointerUp,
         handleLogClick,
-        clearObjectSelection
+        clearObjectSelection,
+        triggerHaptic
     } = useGame();
     const { characterInfo } = useVitals();
     
@@ -42,19 +44,26 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
     const [tempTitle, setTempTitle] = useState('');
 
     const infoContainerRef = useRef<HTMLDivElement>(null);
-    const [infoFontSize, setInfoFontSize] = useState<string>('inherit');
+    const [tabFontSize, setTabFontSize] = useState<string>('var(--dynamic-log-size, 14px)');
 
     useEffect(() => {
-        if (!infoContainerRef.current || (activeTab !== 'info' && activeTab !== 'practice')) return;
+        if (!infoContainerRef.current) return;
         const measure = () => {
             const width = infoContainerRef.current?.clientWidth;
-            if (width) setInfoFontSize(`${width / 48}px`);
+            // Scale font so 80 monospace chars fit safely
+            if (width) setTabFontSize(`${width / 48}px`);
         };
         measure();
         const ro = new ResizeObserver(measure);
         ro.observe(infoContainerRef.current);
         return () => ro.disconnect();
     }, [activeTab, isOpen]);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        // The info tab now uses a stable terminal style with left-alignment 
+        // to preserve original MUME formatting.
+    }, [isOpen]);
 
     useEffect(() => {
         if (isOpen && characterInfo) {
@@ -128,11 +137,13 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
     const DrawerLineItem = React.memo(({ 
         line, 
         selectedObjectIds, 
-        fontSize 
+        fontSize,
+        centered = false
     }: { 
         line: DrawerLine, 
         selectedObjectIds: Set<string>,
-        fontSize: string
+        fontSize: string,
+        centered?: boolean
     }) => {
         const depth = line.depth || 0;
         const prefixId = 'statsLines';
@@ -154,7 +165,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
             const itemName = condMatch ? afterArticle.slice(0, afterArticle.length - condMatch[0].length) : afterArticle;
 
             return (
-                <div style={{ display: 'block', whiteSpace: 'pre', lineHeight: '1.2', margin: '0', padding: '0', paddingLeft: `${depth * 8}px`, fontSize }}>
+                <div style={{ display: 'block', whiteSpace: 'pre-wrap', textAlign: centered ? 'center' : 'left', lineHeight: '1.2', margin: '0', padding: '0', paddingLeft: centered ? '0' : `${depth * 8}px`, fontSize }}>
                     {line.prefix && <span style={{ color: dim }}>{line.prefix}</span>}
                     <span style={{ color: dim }}>{article}</span>
                     <span
@@ -184,8 +195,36 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
             );
         }
 
+        const getClassColor = (skillClass?: string) => {
+            if (!skillClass) return 'transparent';
+            const cls = skillClass.toLowerCase();
+            if (cls === 'warrior') return 'rgba(239, 68, 68, 0.15)'; // Red
+            if (cls === 'none' || cls === 'ranger') return 'rgba(34, 197, 94, 0.15)'; // Green
+            if (cls === 'cleric') return 'rgba(234, 179, 8, 0.22)'; // Holy Yellow
+            if (cls === 'thief') return 'rgba(148, 163, 184, 0.15)'; // Silver/Grey
+            if (cls === 'mage') return 'rgba(59, 130, 246, 0.22)'; // Arcane Blue
+            return 'transparent';
+        };
+
+        const bg = getClassColor(line.practiceSkill?.skillClass);
+
         return (
-            <div style={{ paddingLeft: `${depth * 8}px`, lineHeight: '1.2', whiteSpace: 'pre-wrap', fontSize }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }} />
+            <div style={{ 
+                textAlign: centered ? 'center' : 'left', 
+                paddingLeft: centered ? '0' : `${depth * 8 + 8}px`, 
+                paddingRight: '8px',
+                lineHeight: '1.6', 
+                whiteSpace: 'pre-wrap', 
+                fontSize,
+                background: bg,
+                margin: bg !== 'transparent' ? '2px 0' : '0',
+                paddingTop: bg !== 'transparent' ? '4px' : '0',
+                paddingBottom: bg !== 'transparent' ? '4px' : '0',
+                borderRadius: '4px',
+                borderLeft: 'none',
+                width: '100%',
+                boxSizing: 'border-box'
+            }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }} />
         );
     });
 
@@ -218,7 +257,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                         <div className="info-tab" style={{ position: 'relative', paddingBottom: '60px', height: '100%', display: 'flex', flexDirection: 'column' }}>
                             <div ref={infoContainerRef} style={{
                                 fontFamily: 'var(--font-main, monospace)',
-                                fontSize: infoFontSize,
+                                fontSize: tabFontSize,
                                 lineHeight: '1.2',
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -239,7 +278,8 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                             key={line.id} 
                                             line={line} 
                                             selectedObjectIds={selectedObjectIds} 
-                                            fontSize={infoFontSize} 
+                                            fontSize="inherit"
+                                            centered={false}
                                         />
                                     ))
                                 ) : (
@@ -253,7 +293,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                         <div className="practice-tab" style={{ position: 'relative', paddingBottom: '60px', height: '100%', display: 'flex', flexDirection: 'column' }}>
                             <div ref={infoContainerRef} style={{
                                 fontFamily: 'var(--font-main, monospace)',
-                                fontSize: infoFontSize,
+                                fontSize: tabFontSize,
                                 lineHeight: '1.2',
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -274,7 +314,8 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                             key={line.id} 
                                             line={line} 
                                             selectedObjectIds={selectedObjectIds} 
-                                            fontSize={infoFontSize} 
+                                            fontSize="inherit"
+                                            centered={false}
                                         />
                                     ))
                                 ) : (
@@ -288,7 +329,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                         <div className="quests-tab" style={{ position: 'relative', paddingBottom: '60px', height: '100%', display: 'flex', flexDirection: 'column' }}>
                             <div ref={infoContainerRef} style={{
                                 fontFamily: 'var(--font-main, monospace)',
-                                fontSize: infoFontSize,
+                                fontSize: tabFontSize,
                                 lineHeight: '1.2',
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -305,7 +346,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
 
                                 {questLines?.length > 0 ? (
                                     questLines.map((line: any) => (
-                                        <div key={line.id} style={{ lineHeight: '1.2', whiteSpace: 'pre-wrap', fontSize: infoFontSize }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }} />
+                                        <div key={line.id} style={{ textAlign: 'left', lineHeight: '1.2', whiteSpace: 'pre-wrap', fontSize: 'inherit' }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }} />
                                     ))
                                 ) : (
                                     <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>

@@ -39,7 +39,8 @@ export const useUIState = (executeCommandRef: React.MutableRefObject<(cmd: strin
                 setTimeout(() => {
                     if (drawer === 'stats') {
                         executeCommandRef.current?.('stat', true, true, true, true);
-                        setTimeout(() => executeCommandRef.current?.('at', true, true, true, true), 100);
+                        setTimeout(() => executeCommandRef.current?.('score', true, true, true, true), 100);
+                        setTimeout(() => executeCommandRef.current?.('info %m', true, true, true, true), 200);
                     } else if (drawer === 'character') {
                         executeCommandRef.current?.('info', true, true, true, true);
                         setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 100);

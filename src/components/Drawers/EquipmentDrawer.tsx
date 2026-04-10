@@ -51,6 +51,20 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     } = useGame();
     const { setUI, ui } = useUI();
     const drawerRef = React.useRef<HTMLDivElement>(null);
+    const infoContainerRef = React.useRef<HTMLDivElement>(null);
+    const [infoFontSize, setInfoFontSize] = React.useState<string>('inherit');
+
+    React.useEffect(() => {
+        if (!infoContainerRef.current || !isOpen) return;
+        const measure = () => {
+            const width = infoContainerRef.current?.clientWidth;
+            if (width) setInfoFontSize(`${width / 48}px`);
+        };
+        measure();
+        const ro = new ResizeObserver(measure);
+        ro.observe(infoContainerRef.current);
+        return () => ro.disconnect();
+    }, [isOpen]);
 
     const onPointerDownInternal = (e: React.PointerEvent) => {
         const target = e.target as HTMLElement;
@@ -103,8 +117,25 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
         const fullId = `equipmentlist:${line.entityId || line.id}:${line.context || line.id}`;
         const isSelected = isObjectSelected(selectedObjectIds, fullId, 'inline-obj-worn');
         
+        const rowBg = 'rgba(180, 180, 180, 0.18)'; // More visible silver-gray
+        const accentColor = 'rgba(180, 180, 180, 0.5)'; // Stronger silver accent
+
+        const rowStyle: React.CSSProperties = {
+            background: rowBg,
+            borderRadius: '6px',
+            borderLeft: `4px solid ${accentColor}`,
+            margin: '3px 0',
+            padding: '6px 10px',
+            paddingLeft: `${depth * 8 + 10}px`,
+            width: '100%',
+            boxSizing: 'border-box',
+            display: 'flex',
+            alignItems: 'baseline',
+            minHeight: '28px'
+        };
+
         if (line.isItem) {
-            const conditionRegex = /\s?\((flawless|well-maintained|worn|scratched|damaged|beaten|battered|beaten and battered|shabby|sub-standard|poor|fragmented|broken|shattered)\)/gi;
+            const conditionRegex = /\s?\(.*\)/gi;
             const cleanedText = line.text.replace(conditionRegex, '').trim();
             const displayName = cleanedText.includes(' (') ? cleanedText.split(' (')[0] : cleanedText;
             const extraInfo = cleanedText.includes(' (') ? cleanedText.split(' (')[1] : null;
@@ -113,7 +144,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             const cat = getCategoryForName(line.text);
 
             return (
-                <div key={line.id} className="equipment-item-row" style={{ marginLeft: `${depth * 8}px`, marginBottom: '2px' }}>
+                <div key={line.id} style={rowStyle}>
                     <div
                         className={`inline-btn auto-item ${isSelected ? 'selected-item' : ''} ${line.isContainer ? 'is-container' : ''}`}
                         data-id={fullId}
@@ -123,7 +154,6 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         data-category={cat || undefined}
                         data-cmd="inline-obj-worn"
                         style={{
-                            marginLeft: '0',
                             boxShadow: isSelected ? `inset 0 0 12px ${itemBrown}44` : 'none',
                             borderColor: isSelected ? itemBrown : 'transparent',
                             '--glow-color': itemBrown,
@@ -134,28 +164,27 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                             alignItems: 'baseline',
                             flexWrap: 'wrap',
                             gap: '6px',
-                            width: '100%',
-                            padding: '2px 6px',
+                            width: 'fit-content',
+                            padding: '0 6px',
                             justifyContent: 'flex-start',
                         } as React.CSSProperties}
                     >
                         {line.prefixHtml && (
                             <span
                                 className="equipment-location-inline"
+                                style={{ marginRight: '8px' }}
                                 dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.prefixHtml) }}
                             />
                         )}
                         <span className="drawer-item-name" style={{ color: itemBrown }}>{displayName}</span>
-                        {extraInfo && <span className="drawer-item-extra" style={{ color: itemBrown }}>({extraInfo}</span>}
+                        {extraInfo && <span className="drawer-item-extra" style={{ color: 'var(--text-primary)' }}>({extraInfo}</span>}
                     </div>
                 </div>
             );
-
-
         }
 
         return (
-            <div key={line.id} className={`drawer-header-line depth-${depth}`} style={{ paddingLeft: `${depth * 8}px` }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }} />
+            <div key={line.id} style={rowStyle} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }} />
         );
     };
 
@@ -209,8 +238,14 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         >✕</button>
 
                     </div>
-                    {eqLines.map(line => renderLine(line))}
-                    {eqLines.length === 0 && <div className="drawer-empty-state">No equipment worn</div>}
+                    <div ref={infoContainerRef} style={{
+                        fontFamily: 'var(--font-main, monospace)',
+                        fontSize: infoFontSize,
+                        lineHeight: '1.2'
+                    }}>
+                        {eqLines.map(line => renderLine(line))}
+                        {eqLines.length === 0 && <div className="drawer-empty-state" style={{ textAlign: 'center', padding: '20px', opacity: 0.5 }}>No equipment worn</div>}
+                    </div>
                 </div>
             </div>
         </div>

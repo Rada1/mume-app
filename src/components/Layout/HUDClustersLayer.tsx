@@ -32,7 +32,7 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
     handleDragStart, wasDraggingRef, commandPreview, setCommandPreview, heldButton, setHeldButton, btnGlow, setBtnGlow,
     input, setInput, handleSend, handleInputSwipe
 }) => {
-    const { characterName, isMmapperMode, btn, joystick, mapperRef, triggerHaptic, executeCommand, handleButtonClick, viewport, showControls, showLegacyButtons } = useGame();
+    const { characterName, isMmapperMode, btn, joystick, mapperRef, triggerHaptic, executeCommand, handleButtonClick, viewport, showControls, showLegacyButtons, gameState } = useGame();
     const { target, stats, activePrompt } = useVitals();
     const { setPopoverState } = useUI();
     const { isMapFloating } = useMapper();
@@ -82,7 +82,7 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
             <div className="hud-clusters-absolute-layer">
 
 
-                {(effectiveShowControls || btn.isEditMode) && (
+                {(effectiveShowControls || btn.isEditMode) && gameState !== 'account' && (
                     <>
                         {/* LineCluster is rendered beside the log in MainContentLayer on desktop.
                             Here we only render it for landscape/mobile overlay modes. */}

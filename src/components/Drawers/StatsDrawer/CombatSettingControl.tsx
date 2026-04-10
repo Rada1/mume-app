@@ -14,8 +14,8 @@ interface CombatSettingControlProps {
     onSelect: (val: string, idx: number) => void;
     onClose: () => void;
     triggerHaptic: (ms: number) => void;
-    gridColumn: string;
-    gridRow: string;
+    gridColumn?: string;
+    gridRow?: string;
 }
 
 export const CombatSettingControl: React.FC<CombatSettingControlProps> = ({
@@ -38,20 +38,25 @@ export const CombatSettingControl: React.FC<CombatSettingControlProps> = ({
         <div
             style={{
                 cursor: 'pointer',
-                background: 'rgba(255,255,255,0.05)',
-                padding: '1px 6px',
-                borderRadius: '10px',
+                background: 'rgba(28, 28, 30, 0.4)',
+                backdropFilter: 'blur(10px) saturate(160%)',
+                WebkitBackdropFilter: 'blur(10px) saturate(160%)',
+                padding: '4px 10px',
+                borderRadius: '12px',
                 textAlign: 'center',
                 position: 'relative',
                 zIndex: isActive ? 101 : 1,
-                border: '1px solid rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
                 minHeight: '34px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
-                gridColumn,
-                gridRow,
-                boxSizing: 'border-box'
+                gridColumn: gridColumn || 'auto',
+                gridRow: gridRow || 'auto',
+                boxSizing: 'border-box',
+                flex: 1,
+                transition: 'all 0.2s ease'
             }}
             onClick={onToggle}
         >

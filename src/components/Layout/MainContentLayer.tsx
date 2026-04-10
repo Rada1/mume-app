@@ -67,7 +67,8 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         playerPosition,
         isNewbieMode,
         isRiding,
-        characterName
+        characterName,
+        gameState
     } = useGame();
     const { processMessageHtml } = useLog();
 
@@ -217,7 +218,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                 {/* Mobile portrait LineCluster is rendered inside MapperCluster (near the map gutter) */}
             </div>
 
-            {isNewbieMode && (
+            {isNewbieMode && gameState !== 'account' && (
                 <PromptBox
                     stats={stats}
                     characterInfo={characterInfo}
@@ -232,7 +233,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                 />
             )}
 
-            {(!isMobile || isLandscape) && (
+            {(gameState === 'account' || !isMobile || isLandscape) && (
                 <InputArea
                     input={input}
                     setInput={setInput}
@@ -250,6 +251,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     parley={parley}
                     setParley={setParley}
                     whoList={whoList}
+                    gameState={gameState}
                 />
             )}
         </div>

@@ -151,6 +151,24 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
         const fullId = `${prefixId}:${line.entityId || line.id}:${line.context || line.id}`;
         const isSelected = isObjectSelected(selectedObjectIds, fullId, cmdId);
 
+        const rowBg = line.isHeader ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.6)'; // Solid dark cutout look
+        const accentColor = 'rgba(180, 180, 180, 0.7)'; // Brighter silver accent
+
+        const rowStyle: React.CSSProperties = {
+            background: rowBg,
+            borderRadius: '4px',
+            margin: '0.5px 0',
+            padding: '1px 10px',
+            paddingLeft: `${depth * 8 + 10}px`,
+            width: '100%',
+            boxSizing: 'border-box',
+            display: 'flex',
+            alignItems: 'center',
+            minHeight: '16px',
+            lineHeight: '1.15',
+            color: line.isHeader ? '#ffffff' : 'inherit'
+        };
+
         if (mode === 'equipment') {
             const cat = getCategoryForName(line.text);
             const isActuallyContainer = line.isContainer || cat === 'inline-containers';
@@ -167,40 +185,45 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                 const itemName = condMatch ? afterArticle.slice(0, afterArticle.length - condMatch[0].length) : afterArticle;
 
                 return (
-                    <div style={{ display: 'block', whiteSpace: 'pre', lineHeight: '1.2', margin: '0', padding: '0', fontSize: eqFontSize }}>
-                        {line.prefix && <span style={{ color: dim }}>{line.prefix}</span>}
-                        <span style={{ color: dim }}>{article}</span>
-                        <span
-                            className={`inline-btn auto-item ${isSelected ? 'selected-item' : ''} ${isActuallyContainer ? 'is-container' : ''}`}
-                            data-id={fullId}
-                            data-line-id={line.id}
-                            data-context={line.context || line.id}
-                            data-action="menu"
-                            data-category={cat || undefined}
-                            data-cmd={cmdId}
-                            style={{
-                                display: 'inline',
-                                lineHeight: '1.2',
-                                padding: '0',
-                                margin: '0',
-                                background: isSelected ? `rgba(180,100,50,0.15)` : 'transparent',
-                                border: 'none',
-                                borderRadius: '0',
-                                boxShadow: 'none',
-                                cursor: 'default',
-                                color: brown,
-                                whiteSpace: 'pre',
-                            }}
-                        >{itemName}</span>
-                        {condition && <span style={{ color: dim }}> {condition}</span>}
+                    <div style={rowStyle}>
+                        <div style={{ display: 'block', whiteSpace: 'pre', lineHeight: 'inherit', margin: '0', padding: '0', fontSize: eqFontSize }}>
+                            {line.prefix && <span style={{ color: dim }}>{line.prefix}</span>}
+                            <span style={{ color: dim }}>{article}</span>
+                            <span
+                                className={`inline-btn auto-item ${isSelected ? 'selected-item' : ''} ${isActuallyContainer ? 'is-container' : ''}`}
+                                data-id={fullId}
+                                data-line-id={line.id}
+                                data-context={line.context || line.id}
+                                data-action="menu"
+                                data-category={cat || undefined}
+                                data-cmd={cmdId}
+                                style={{
+                                    display: 'inline',
+                                    lineHeight: 'inherit',
+                                    padding: '0 4px',
+                                    margin: '0',
+                                    background: isSelected ? `rgba(180,100,50,0.15)` : 'transparent',
+                                    border: 'none',
+                                    borderRadius: '0',
+                                    boxShadow: 'none',
+                                    cursor: 'default',
+                                    color: brown,
+                                    whiteSpace: 'pre',
+                                }}
+                            >{itemName}</span>
+                            {condition && <span style={{ color: dim }}> {condition}</span>}
+                        </div>
                     </div>
                 );
             }
-            // Fix: Render prefix even for empty slots (non-item lines)
+            // Render non-item lines (like headers or empty slots) with the same row highlight
             return (
-                <div style={{ display: 'block', whiteSpace: 'pre', lineHeight: '1.2', padding: '0', color: 'rgba(255,255,255,0.6)', fontSize: eqFontSize }}>
-                    {line.prefix && <span style={{ color: dim }}>{line.prefix}</span>}
-                    <span dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html || '') }} />
+                <div style={rowStyle}>
+                    <div style={{ display: 'block', whiteSpace: 'pre', lineHeight: 'inherit', padding: '0', color: '#ffffff', fontSize: eqFontSize }}>
+                        {line.prefix && <span style={{ color: dim }}>{line.prefix}</span>}
+                        {line.text === 'nothing' && <span style={{ color: 'transparent' }}>a </span>}
+                        <span dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html || '') }} />
+                    </div>
                 </div>
             );
         }
@@ -213,42 +236,46 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             const articleMatch = line.text.match(/^(a |an |the |some )/i);
             const article = articleMatch ? articleMatch[1] : '';
             const afterArticle = line.text.slice(article.length);
-            const condMatch = afterArticle.match(/\s+(\((flawless|well-maintained|worn|scratched|damaged|beaten|battered|beaten and battered|shabby|sub-standard|poor|fragmented|broken|shattered)\))$/i);
+            const condMatch = afterArticle.match(/\s+(\(.*\))$/i);
             const condition = condMatch ? condMatch[1] : '';
             const itemName = condMatch ? afterArticle.slice(0, afterArticle.length - condMatch[0].length) : afterArticle;
 
             return (
-                <div style={{ display: 'block', whiteSpace: 'pre', lineHeight: '1.2', margin: '0', padding: '0', paddingLeft: `${depth * 8}px` }}>
-                    <span style={{ color: dim }}>{article}</span>
-                    <span
-                        className={`inline-btn auto-item ${isSelected ? 'selected-item' : ''} ${isActuallyContainer ? 'is-container' : ''}`}
-                        data-id={fullId}
-                        data-line-id={line.id}
-                        data-context={line.context || line.id}
-                        data-action="menu"
-                        data-category={cat || undefined}
-                        data-cmd={cmdId}
-                        style={{
-                            display: 'inline',
-                            lineHeight: '1.2',
-                            padding: '0',
-                            margin: '0',
-                            background: isSelected ? `rgba(180,100,50,0.15)` : 'transparent',
-                            border: 'none',
-                            borderRadius: '0',
-                            boxShadow: 'none',
-                            cursor: 'default',
-                            color: brown,
-                            whiteSpace: 'pre',
-                        }}
-                    >{itemName}</span>
-                    {condition && <span style={{ color: dim }}> {condition}</span>}
+                <div style={rowStyle}>
+                    <div style={{ display: 'block', whiteSpace: 'pre', lineHeight: 'inherit', margin: '0', padding: '0', fontSize: eqFontSize }}>
+                        <span style={{ color: dim }}>{article}</span>
+                        <span
+                            className={`inline-btn auto-item ${isSelected ? 'selected-item' : ''} ${isActuallyContainer ? 'is-container' : ''}`}
+                            data-id={fullId}
+                            data-line-id={line.id}
+                            data-context={line.context || line.id}
+                            data-action="menu"
+                            data-category={cat || undefined}
+                            data-cmd={cmdId}
+                            style={{
+                                display: 'inline',
+                                lineHeight: 'inherit',
+                                padding: '0 4px',
+                                margin: '0',
+                                background: isSelected ? `rgba(180,100,50,0.15)` : 'transparent',
+                                border: 'none',
+                                borderRadius: '0',
+                                boxShadow: 'none',
+                                cursor: 'default',
+                                color: brown,
+                                whiteSpace: 'pre',
+                            }}
+                        >{itemName}</span>
+                        {condition && <span style={{ color: dim }}> {condition}</span>}
+                    </div>
                 </div>
             );
         }
 
         return (
-            <div style={{ paddingLeft: `${depth * 8}px`, lineHeight: '1.2', whiteSpace: 'pre-wrap' }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }} />
+            <div style={rowStyle}>
+                <div style={{ paddingLeft: `${depth * 8}px`, lineHeight: 'inherit', whiteSpace: 'pre-wrap', fontSize: eqFontSize }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }} />
+            </div>
         );
     });
 
@@ -278,7 +305,25 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     ];
 
     const currentLines = useMemo(() => {
-        if (activeTab === 'inventory') return inventoryLines;
+        if (activeTab === 'inventory') {
+            const lines: DrawerLine[] = [];
+            inventoryLines.forEach((line, idx) => {
+                const isCarryingHeader = line.text.toLowerCase().includes('you are carrying');
+                lines.push({ ...line, isHeader: isCarryingHeader });
+                if (isCarryingHeader) {
+                    lines.push({
+                        id: `inv-sep-${idx}`,
+                        text: '-------',
+                        html: '-------',
+                        isHeader: true,
+                        isItem: false,
+                        depth: 0,
+                        cmd: 'inventorylist'
+                    } as DrawerLine);
+                }
+            });
+            return lines;
+        }
 
         const remainingEq = [...(eqLines || [])];
         
@@ -301,8 +346,8 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             return {
                 id: `empty-${slot}-${idx}`,
                 prefix: slot.padEnd(20, ' '),
-                text: 'empty',
-                html: '<span style="opacity: 0.25; font-style: italic;">empty</span>',
+                text: 'nothing',
+                html: 'nothing',
                 isItem: false,
                 isHeader: false,
                 isContainer: false,
@@ -311,7 +356,20 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             } as DrawerLine;
         });
 
-        return [...headers, ...mappedSlots];
+        // Add separator after "You are using:" headers
+        const headerWithSeparator = headers.flatMap((h, idx) => [
+            h,
+            {
+                id: `eq-sep-${idx}`,
+                text: '-------',
+                html: '-------',
+                isHeader: true,
+                depth: 0,
+                cmd: 'equipmentlist'
+            } as DrawerLine
+        ]);
+
+        return [...headerWithSeparator, ...mappedSlots];
     }, [activeTab, inventoryLines, eqLines]);
 
     return (

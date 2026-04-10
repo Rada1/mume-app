@@ -42,8 +42,8 @@ export function useGameParser(deps: UseGameParserDeps) {
  playDoorSound, triggerHaptic, setStats, setWeather, setIsFoggy, 
         setLightningEnabled, setAbilities, setCharacterClass, 
         setInCombat, inCombatRef, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, 
-        executeCommandRef, setInventoryLines, setStatsLines, setInfoLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines, setEqLines, setWhoList, setWhereList, setRoomItems, 
-        captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
+        executeCommandRef, setInventoryLines, setStatsLines, setInfoLines, setScoreLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines, setEqLines, setWhoList, setWhereList, setRoomItems, 
+        captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
         keywordOverrides, roomNameRef, roomDescRef, setRoomName, setRoomDesc, showDebugEchoes, addDiagnosticLog, popoverState, setPopoverState,
         setDiscoveredItems, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName,
         setBufferHealthStatus, setBufferName, setCharacterInfo, setQuests, quests,
@@ -51,7 +51,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         triggerXpTicker, triggerHitFlash, triggerOppHitFlash, pendingGmcpCommRef, lastCommIdBySenderRef, groupMembers,
         shop, practice, registerEntity, setEntities, setPlayerPosition,
         isCharacterOpen, isStatsOpen,
-        accountState, setAccountState, setGameState,
+        accountState, setAccountState, setGameState, setMessages,
         isSpectateMode,
         setSpectateStats, setSpectateHealthStatus, setSpectateOpponentName, setSpectateOpponentStatus,
         setSpectatePosition, setSpectateRoomName, setSpectateInCombat, setSpectateCharacterName,
@@ -74,7 +74,7 @@ export function useGameParser(deps: UseGameParserDeps) {
 
     // Initialize Specialized Hooks
     const { finalizeCapture } = useStageManager({
-        captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
+        captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
         addDiagnosticLog, addMessage,
         setPopoverState, setEqLines, setInventoryLines, registerEntity, setEntities,
         practice, shop, quests, finalizeQuests,
@@ -112,7 +112,7 @@ export function useGameParser(deps: UseGameParserDeps) {
     });
 
     const { detectRoom } = useRoomParser({
-        roomNameRef, roomDescRef, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv, isDrawerCapture, isSilentCapture
+        roomNameRef, roomDescRef, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, isDrawerCapture, isSilentCapture
     });
 
     const { parseAtmosphere } = useAtmosphereParser({
@@ -132,16 +132,16 @@ export function useGameParser(deps: UseGameParserDeps) {
     });
 
     const { initializeStage } = useStageInitializer({
-        captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
-        isInventoryOpen, isEquipmentOpen, isCharacterOpen, isPlayersOpen,
-        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines, setInfoLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines,
+        captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
+        isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
+        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines, setInfoLines, setScoreLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines,
         finalizeCapture
     });
 
     const { routeMessage, determineVisibility, detectItemsInRoom } = useMessageRouter({
         captureStage, isSilentCapture, isDrawerCapture,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
-        isWaitingForInv, isWaitingForEq, isWaitingForStats,
+        isWaitingForInv, isWaitingForInfo, isWaitingForEq, isWaitingForStats,
         setWhoList, setWhereList, setRoomItems, registerEntity, setCharacterInfo, setDiscoveredItems, extractNoun, ansiConvert,
         playerPosition: deps.playerPosition
     });
@@ -154,22 +154,16 @@ export function useGameParser(deps: UseGameParserDeps) {
         sendCommand: (cmd: string) => executeCommandRef.current?.(cmd),
         executeCommandRef,
         isMobile: deps.isMobile,
-        addDiagnosticLog
+        addDiagnosticLog,
+        addMessage,
+        setMessages,
+        clearLog: deps.clearLog
     });
 
-    // --- Account / Prompt Watcher ---
-    // This allows the Account Screen to trigger on the PROMPT (without newline)
-    // so it's the "first thing" the user sees.
-    useEffect(() => {
-        if (!deps.activePrompt) return;
-        // Only run if we aren't already in a game state
-        if (deps.gameState !== 'playing') {
-            const lines = deps.activePrompt.split('\n');
-            lines.forEach((line, idx) => {
-                parseAccountLine(line, idx === 0);
-            });
-        }
-    }, [deps.activePrompt, deps.gameState, parseAccountLine]);
+    // NOTE: Account parsing is handled entirely inside processLine() via the
+    // parseAccountLine call below. The old activePrompt watcher was removed because
+    // useTelnet already calls processLine() on any incomplete buffer ending with '>',
+    // so the same prompt was being parsed twice — causing the duplicate account-prompt spam.
     
     // --- Room Transition Tracking ---
     useEffect(() => {
@@ -455,14 +449,23 @@ export function useGameParser(deps: UseGameParserDeps) {
                 if (textOnly.length > 0) tempEqRef.current.push(...createLines(cleanLine, textOnly, lower, 'equipmentlist'));
             } else if (captureStage.current === 'practice') {
                 if (textOnly.trim().length > 0) {
-                    practice.parsePracticeLine(textOnly);
-                    setPracticeLines(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
+                    const skill = practice.parsePracticeLine(textOnly);
+                    const practiceSkill = (typeof skill === 'object' && skill !== null && !('sessionsLeft' in skill)) ? skill : undefined;
+                    setPracticeLines(p => [...p, { 
+                        id: Math.random().toString(36).substring(7), 
+                        text: textOnly, 
+                        html: ansiConvert.toHtml(cleanLine),
+                        practiceSkill
+                    }]);
                 }
             } else if (captureStage.current === 'who' || captureStage.current === 'where') {
                 if (textOnly.trim().length > 0) {
-                    const html = processMessageHtml ? processMessageHtml(ansiConvert.toHtml(cleanLine), 'players-line-' + Math.random(), false, captureStage.current === 'who' ? 'who-list' : 'where-list') : ansiConvert.toHtml(cleanLine);
+                    const isHeader = lower.startsWith('player') || lower.startsWith('---');
+                    const html = (processMessageHtml && !isHeader)
+                        ? processMessageHtml(ansiConvert.toHtml(cleanLine), 'players-line-' + Math.random(), false, captureStage.current === 'who' ? 'who-list' : 'where-list') 
+                        : ansiConvert.toHtml(cleanLine);
                     const setter = captureStage.current === 'who' ? setWhoLines : setWhereLines;
-                    setter(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html }]);
+                    setter(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html, isHeader }]);
                 }
             } else if (captureStage.current === 'shop') {
                 if (textOnly.trim().length > 0) {
@@ -513,9 +516,20 @@ export function useGameParser(deps: UseGameParserDeps) {
                     });
                 }
                 if (isDrawerCapture.current || isSilentCapture.current) return;
-            } else if (captureStage.current === 'stat') {
-                setStatsLines(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
+            } else if (captureStage.current === 'stat' || captureStage.current === 'score') {
+                const isVitals = /\d+\/\d+ hits, \d+\/\d+ mana, and \d+\/\d+ moves/i.test(lower) || /\d+\/\d+ hits, \d+\/\d+ mana/.test(lower);
+                const targetSetter = isVitals ? setScoreLines : setStatsLines;
+                const bufferName = isVitals ? 'scoreLines' : 'statsLines';
+                
+                // Filter out common tags and terminators to keep the UI clean
+                if (lower.includes('[/at]') || lower.includes('[at]') || lower.includes('[/stat]') || lower.trim() === 'ok.' || lower.trim() === 'at') {
+                    return;
+                }
+
+                console.log(`[Parser] Capturing to ${bufferName}: "${textOnly.substring(0, 30)}..."`);
+                targetSetter((p: any) => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
             } else if (captureStage.current === 'info') {
+                console.log(`[Parser] Capturing to infoLines: "${textOnly.substring(0, 30)}..."`);
                 setInfoLines((p: any) => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
             }
         }
