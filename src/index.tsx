@@ -18,6 +18,7 @@ import { MainContentLayer } from './components/Layout/MainContentLayer';
 import { HUDClustersLayer } from './components/Layout/HUDClustersLayer';
 import { ModalsLayer } from './components/Layout/ModalsLayer';
 import { AtmosphericLayer } from './components/Layout/AtmosphericLayer';
+import ErrorBoundary from './components/ErrorBoundary';
 import { GameProvider, useGame, useUI, useVitals, useLog } from './context/GameContext';
 import { MapperProvider } from './context/MapperContext';
 import { SpatButtons } from './components/SpatButtons';
@@ -227,48 +228,52 @@ const MudClient = () => {
                 }} />
                 <AtmosphericLayer />
 
+                <ErrorBoundary name="Main Content">
+                    <MainContentLayer
+                        handleMouseUp={() => { }}
+                        handleLogPointerDown={handleLogPointerDown}
+                        handleLogPointerUp={handleLogPointerUp}
+                        handleSend={handleSendCallback}
+                        handleInputSwipe={handleInputSwipe}
+                        commandPreview={commandPreview}
+                        setCommandPreview={setCommandPreview}
+                        heldButton={heldButton}
+                        setHeldButton={setHeldButton}
+                        mumeEditState={mumeEditState}
+                        setMumeEditState={setMumeEditState}
+                        handleDragStart={handleDragStart}
+                        wasDraggingRef={wasDraggingRef}
+                    />
+                </ErrorBoundary>
 
-
-                <MainContentLayer
-                    handleMouseUp={() => { }}
-                    handleLogPointerDown={handleLogPointerDown}
-                    handleLogPointerUp={handleLogPointerUp}
-                    handleSend={handleSendCallback}
-                    handleInputSwipe={handleInputSwipe}
-                    commandPreview={commandPreview}
-                    setCommandPreview={setCommandPreview}
-                    heldButton={heldButton}
-                    setHeldButton={setHeldButton}
-                    mumeEditState={mumeEditState}
-                    setMumeEditState={setMumeEditState}
-                    handleDragStart={handleDragStart}
-                    wasDraggingRef={wasDraggingRef}
-                />
-
-                <HUDClustersLayer
-                    handleDragStart={handleDragStart}
-                    wasDraggingRef={wasDraggingRef}
-                    commandPreview={commandPreview}
-                    setCommandPreview={setCommandPreview}
-                    heldButton={heldButton}
-                    setHeldButton={setHeldButton}
-                    btnGlow={btnGlow}
-                    setBtnGlow={setBtnGlow}
-                    input={input}
-                    setInput={setInput}
-                    handleSend={handleSendCallback}
-                    handleInputSwipe={handleInputSwipe}
-                />
+                <ErrorBoundary name="HUD Controls">
+                    <HUDClustersLayer
+                        handleDragStart={handleDragStart}
+                        wasDraggingRef={wasDraggingRef}
+                        commandPreview={commandPreview}
+                        setCommandPreview={setCommandPreview}
+                        heldButton={heldButton}
+                        setHeldButton={setHeldButton}
+                        btnGlow={btnGlow}
+                        setBtnGlow={setBtnGlow}
+                        input={input}
+                        setInput={setInput}
+                        handleSend={handleSendCallback}
+                        handleInputSwipe={handleInputSwipe}
+                    />
+                </ErrorBoundary>
             </div>
 
-            <ModalsLayer
-                isLoading={isLoading}
-                returnToManager={returnToManager}
-                setReturnToManager={setReturnToManager}
-                managerSelectedSet={managerSelectedSet}
-                setManagerSelectedSet={setManagerSelectedSet}
-                connect={() => telnet.connect()}
-            />
+            <ErrorBoundary name="Modals & Dialogs">
+                <ModalsLayer
+                    isLoading={isLoading}
+                    returnToManager={returnToManager}
+                    setReturnToManager={setReturnToManager}
+                    managerSelectedSet={managerSelectedSet}
+                    setManagerSelectedSet={setManagerSelectedSet}
+                    connect={() => telnet.connect()}
+                />
+            </ErrorBoundary>
 
             <MultiSelectToolbar />
 

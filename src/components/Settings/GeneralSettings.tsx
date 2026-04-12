@@ -84,6 +84,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setIsImmersionMode,
     isMobileBrevityMode,
     setIsMobileBrevityMode,
+    showRecordingIndicator,
+    setShowRecordingIndicator,
     isHighlighterEnabled,
     setIsHighlighterEnabled,
     isCrtEnabled,

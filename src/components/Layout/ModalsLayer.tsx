@@ -102,6 +102,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setIsNewbieMode,
         isNoviceMode,
         setIsNoviceMode,
+        showRecordingIndicator,
+        setShowRecordingIndicator,
         parley,
         setParley,
         whoList,
@@ -238,6 +240,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setIsNewbieMode={setIsNewbieMode}
                     isNoviceMode={isNoviceMode}
                     setIsNoviceMode={setIsNoviceMode}
+                    showRecordingIndicator={showRecordingIndicator}
+                    setShowRecordingIndicator={setShowRecordingIndicator}
                     fontFamily={fontFamily}
                     setFontFamily={setFontFamily}
                 />

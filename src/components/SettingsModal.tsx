@@ -60,6 +60,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setIsNewbieMode,
     isNoviceMode,
     setIsNoviceMode,
+    showRecordingIndicator,
+    setShowRecordingIndicator,
 }) => {
     const {
         isMmapperMode, setIsMmapperMode,
