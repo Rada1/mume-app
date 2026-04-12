@@ -95,7 +95,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         return (
             <div
                 className={`mobile-bottom-gutter ${isShown ? 'map-expanded' : ''}`}
-                onClick={(e) => e.stopPropagation()} // Prevent log interaction
                 style={{
                     padding: '0',
                     display: 'flex',

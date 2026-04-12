@@ -414,7 +414,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                     setParley={setParley}
                                     triggerHaptic={triggerHaptic}
                                     playClickSound={playClickSound}
-                                    playClickSound={playClickSound}
                                     latestBatchId={latestBatchId}
                                     isTimestampEnabled={isTimestampEnabled}
                                     isNewbieMode={isNewbieMode}

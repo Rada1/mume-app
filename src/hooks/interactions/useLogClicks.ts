@@ -34,6 +34,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 selection = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
             } else {
                 const ev = e.nativeEvent as any;
+                const isMob = window.innerWidth <= 768; // Use direct check as fallback
                 const x = ev.clientX || (ev.touches?.[0]?.clientX);
                 const y = ev.clientY || (ev.touches?.[0]?.clientY);
 
@@ -91,7 +92,8 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
 
     const handleLogClick = useCallback((e: React.MouseEvent) => {
         initAudio(); // Sound fix
-        if (ui.mapExpanded && viewport.isMobile) return;
+        // Allow clicks in mobile portrait even if map is open in gutter
+        if (ui.mapExpanded && viewport.isMobile && viewport.isLandscape) return;
 
         const now = Date.now();
         const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;

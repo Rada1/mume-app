@@ -749,6 +749,11 @@
     border-top: 1px solid rgba(255, 255, 255, 0.12);
     z-index: 4500;
     pointer-events: auto;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.kb-open .portrait-tab-bar {
+    display: none !important;
 }
 
 /* On desktop, keep it horizontal but styled for the map drawer */

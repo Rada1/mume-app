@@ -22,9 +22,13 @@
     overflow: visible; 
     display: flex;
     flex-direction: column;
-    pointer-events: auto; 
+    pointer-events: none; /* Let clicks pass through to the log if not on a child */
     border-top: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 20px 20px 0 0;
+}
+
+.mobile-bottom-gutter > * {
+    pointer-events: auto;
 }
 
 /* Shared card style for all gutter content panels (map + drawers) */
@@ -75,8 +79,9 @@
     pointer-events: none;
 }
 
+/* Children should not capture events by default to allow log interaction beneath */
 .hud-clusters-absolute-layer > * {
-    pointer-events: auto;
+    pointer-events: none;
 }
 
 /* Landscape-specific gutter overrides unified with portrait behavior */
@@ -637,6 +642,35 @@
 /* Non-combat messages in the log - keeping at full opacity/color per user request */
 .app-container.in-combat .message:not(.is-combat) {
     filter: none;
+}
+
+/* --- Critical Mobile Interaction Isolation --- */
+/* Ensure the message log area is ALWAYS interactive regardless of HUD state */
+.app-container.is-mobile .message-log-container {
+    pointer-events: auto !important;
+    z-index: 6500; /* Mirror content-layer level within its context, above gutter (6000) */
+    touch-action: manipulation !important; /* Disable double-tap-to-zoom to improve log targeting taps */
+}
+
+.app-container.is-mobile .message-log {
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+}
+
+/* Forces inline buttons to capture events even if buried under transparent wrappers */
+.app-container .inline-btn,
+.app-container .inline-obj-char,
+.app-container .shop-card,
+.app-container .practice-card {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    z-index: 100; /* Relative to log line */
+}
+
+/* Ensure nothing inside the absolute layers blocks the log unless explicitly specified above */
+.app-container .hud-clusters-absolute-layer,
+.app-container .custom-buttons-layer {
+    pointer-events: none !important;
 }
 
 

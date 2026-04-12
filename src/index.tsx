@@ -101,7 +101,9 @@ const MudClient = () => {
         };
 
         document.addEventListener('touchstart', handleGlobalTouch, { passive: true, capture: true });
-        return () => document.removeEventListener('touchstart', handleGlobalTouch, { capture: true });
+        return () => {
+            document.removeEventListener('touchstart', handleGlobalTouch, { capture: true });
+        };
     }, [isMobile]);
 
     useEffect(() => {

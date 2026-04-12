@@ -22,8 +22,9 @@ export const RecorderHUD: React.FC = () => {
     return (
         <div className="recorder-hud" style={{
             position: 'absolute',
-            top: '10px',
-            right: '10px',
+            top: '12px',
+            left: '50%',
+            transform: 'translateX(-50%)',
             display: 'flex',
             alignItems: 'center',
             gap: '6px',
