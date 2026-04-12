@@ -57,7 +57,7 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
 
             <GridOverlay isEditMode={btn.isEditMode} isGridEnabled={btn.isGridEnabled} gridSize={btn.gridSize} />
 
-            {(isMapFloating || isMobile) && (
+            {gameState !== 'account' && (isMapFloating || isMobile) && (
                 <MapperCluster
                     uiPositions={btn.uiPositions}
                     isEditMode={btn.isEditMode}

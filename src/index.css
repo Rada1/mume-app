@@ -626,7 +626,7 @@
 .app-container.in-combat .mapper-container,
 .app-container.in-combat .header,
 .app-container.in-combat .input-area {
-    filter: grayscale(100%);
+    filter: none;
 }
 
 /* Ensure the message log container allows filters for children */
@@ -634,14 +634,9 @@
     z-index: 10;
 }
 
-/* Grayscale non-combat messages in the log */
+/* Non-combat messages in the log - keeping at full opacity/color per user request */
 .app-container.in-combat .message:not(.is-combat) {
-    filter: grayscale(100%) opacity(0.8);
-    transition: filter 0.8s ease, opacity 0.8s ease;
+    filter: none;
 }
 
-.app-container.in-combat .message.is-combat,
-.app-container.in-combat .stats-cluster {
-    filter: none !important;
-}
 

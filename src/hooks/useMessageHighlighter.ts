@@ -25,7 +25,9 @@ export const useMessageHighlighter = (
     discoveredItems: string[] = [],
     keywordOverrides: Record<string, string> = {},
     selectedObjectIds: Set<string> = new Set(),
-    inCombat: boolean = false
+    inCombat: boolean = false,
+    spectateCharacterName: string | null = null,
+    groupMembers: import('../types').GroupMember[] = []
 ) => {
     const cacheRef = useRef<Map<string, { html: string, htmlRaw: string, deps: string }>>(new Map());
     const regexCacheRef = useRef<Map<string, RegExp>>(new Map());
@@ -97,15 +99,21 @@ export const useMessageHighlighter = (
         const di = discoveredItems.join('|');
         const ic = inlineCategories.map(c => `${c.id}:${c.keywords.join(',')}`).join('|');
         const ko = Object.entries(keywordOverrides).map(([k, v]) => `${k}:${v}`).join('|');
+        const g = groupMembers.map(m => `${m.id || ''}${m.name}`).join('|');
         const sel = Array.from(selectedObjectIds).join(',');
-        return `${target || ''}:${rp}:${rn}:${ri}:${di}:${ic}:${ko}:${isHighlighterEnabled}:${highlightVersion}:${sel}:${inCombat}`;
-    }, [target, roomPlayers, roomNpcs, roomItems, discoveredItems, inlineCategories, isHighlighterEnabled, highlightVersion, selectedObjectIds, keywordOverrides, inCombat]);
+        return `${target || ''}:${rp}:${rn}:${ri}:${di}:${ic}:${ko}:${isHighlighterEnabled}:${highlightVersion}:${sel}:${inCombat}:${spectateCharacterName || ''}:${g}`;
+    }, [target, roomPlayers, roomNpcs, roomItems, discoveredItems, inlineCategories, isHighlighterEnabled, highlightVersion, selectedObjectIds, keywordOverrides, inCombat, spectateCharacterName, groupMembers]);
 
     /**
      * Main entry point for processing a message's HTML and applying highlights.
      */
     const processMessageHtml = useCallback((originalHtml: string, mid: string, isRoomName: boolean, type?: MessageType, isCombatMessage: boolean = false, combatSide?: 'player' | 'opponent' | 'groupmate') => {
         if (!isHighlighterEnabled) {
+            return originalHtml;
+        }
+
+        // --- 0. Rule: No highlighting for prompts in spectate mode ---
+        if (type === 'prompt' && spectateCharacterName) {
             return originalHtml;
         }
 
@@ -215,58 +223,16 @@ export const useMessageHighlighter = (
             }
         }
 
-        // --- 3.5. Combat Damage Highlighting (Cyan/Red) ---
-        // This targets the "[literal-dmg] [combat-verb]" part of the message.
-        // Rule: Only apply if inCombat is active and it's a combat-related line.
-        const combatDmgIndicators = 'barely|lightly|strongly|hard|very\\s+hard|extremely\\s+hard';
-        const combatVerbs = 'hits?|slashes?|pounds?|cleaves?|pierces?|stabs?|shoots?|smites?|whips?|strikes?|smashes?';
-        
-        // Use textOnly to detect context efficiently
-        const combatVerbRegex = new RegExp(` (?:${combatVerbs}) `, 'i');
-        const pAttacking = textOnly.startsWith('You ') && combatVerbRegex.test(textOnly);
-        const pTargeted = textOnly.includes(' your ') && combatVerbRegex.test(textOnly);
-
-        if (inCombat && (pAttacking || pTargeted || isCombatMessage)) {
-            const cssClass = (pAttacking || combatSide === 'player') 
-                ? 'combat-dmg-out' 
-                : (combatSide === 'groupmate' ? 'combat-dmg-group' : 'combat-dmg-in');
-
-            // 1. Absolute Damage + Combat Verb (including standalone 'hit', etc.)
-            const combatDmgPattern = `((?:${combatDmgIndicators})\\s+)?(${combatVerbs})`;
-            newHtml = safeHighlight(newHtml, combatDmgPattern, true, (m) => {
-                return `<span class="${cssClass}">${m}</span>`;
-            });
-
-            // 2. Standalone Combat Verbs (for cases where they are not part of a damage phrase)
-            // This ensures "hit" in "You hit the orc" is highlighted even if not "hard"
-            const standaloneVerbs = `\\b(${combatVerbs})\\b`;
-            newHtml = safeHighlight(newHtml, standaloneVerbs, true, (m) => {
-                return `<span class="${cssClass}">${m}</span>`;
-            });
-
-            // 3. Body Parts
-            const bodyPartsPattern = '(?:right\\s+|left\\s+)?(?:head|body|arm|hand|leg|foot)';
-            newHtml = safeHighlight(newHtml, bodyPartsPattern, true, (m) => {
-                return `<span class="${cssClass}">${m}</span>`;
-            });
-
-            // 4. Relative Damage
-            // Usually follows "and " and precedes " it."
-            const relativeDmgVerbs = 'tickles?|shatters?|hurts?|wounds?|maims?|scratches?|bruises?|massacres?|obliterates?|crushes?|blasts?|stings?';
-            const relativeDmgPattern = `(?:and\\s+)(${relativeDmgVerbs})(?=\\s+it\\b|\\.|$)`;
-            newHtml = safeHighlight(newHtml, relativeDmgPattern, true, (m, match) => {
-                if (!match) return m;
-                const verb = match[0];
-                return `and <span class="${cssClass}">${verb}</span>`;
-            });
-        }
+        // --- 3.5. Combat Damage Highlighting ---
+        // (Section removed: combat message highlighting for 'hit, body, etc' is now disabled)
 
         if (!isRoomName) {
             // Build and sort candidates using utility
             const candidates = buildHighlighterCandidates(
                 mid || 'unknown', target, buttonsRef, roomPlayers, roomNpcs, characterName, 
                 roomItems, discoveredItems, inlineCategories, type, textOnly, keywordOverrides,
-                selectedObjectIds, isCombatMessage, inCombat, combatSide
+                selectedObjectIds, isCombatMessage, inCombat, combatSide, spectateCharacterName,
+                groupMembers
             );
 
             candidates
@@ -316,7 +282,7 @@ export const useMessageHighlighter = (
         }
 
         return finalHtml;
-    }, [target, buttonsRef, roomPlayers, roomNpcs, characterName, roomItems, inlineCategories, generateDepsHash, highlightVersion, discoveredItems, isHighlighterEnabled, keywordOverrides, selectedObjectIds, inCombat]);
+    }, [target, buttonsRef, roomPlayers, roomNpcs, characterName, roomItems, inlineCategories, generateDepsHash, highlightVersion, discoveredItems, isHighlighterEnabled, keywordOverrides, selectedObjectIds, inCombat, spectateCharacterName, groupMembers]);
 
     return { processMessageHtml };
 };

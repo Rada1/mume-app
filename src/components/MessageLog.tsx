@@ -29,63 +29,7 @@ const ReplyButton = ({ msg, setParley, onReply }: { msg: Message, setParley: (p:
     );
 };
 
-// Module-level: tracks message IDs where the typewriter finished or was interrupted.
-// Survives virtualizer unmount/remount so the animation never restarts mid-sentence.
-const typewriterDoneIds = new Set<string>();
 
-const Typewriter = ({ msgId, text, isRecent, playCommMessageSound, stopCommMessageSound }: {
-    msgId: string,
-    text: string,
-    isRecent: boolean,
-    playCommMessageSound?: (options?: { volume?: number }) => void,
-    stopCommMessageSound?: () => void
-}) => {
-    // If the animation was interrupted (e.g. line shifted up in virtualizer), show full text immediately
-    const alreadyDone = typewriterDoneIds.has(msgId);
-    const [displayedText, setDisplayedText] = useState(!isRecent || alreadyDone ? text : '');
-
-    // On true unmount, mark as done so remounts skip animation and show full text
-    useEffect(() => {
-        return () => { typewriterDoneIds.add(msgId); };
-    }, [msgId]);
-
-    // When text updates after animation already completed (or message not recent),
-    // sync displayedText immediately — handles comm-continue appending to a finished bubble.
-    useEffect(() => {
-        if (alreadyDone || !isRecent) setDisplayedText(text);
-    }, [text, alreadyDone, isRecent]);
-
-    useEffect(() => {
-        if (!isRecent || alreadyDone || displayedText === text) return;
-
-        let index = 0;
-        const interval = setInterval(() => {
-            setDisplayedText(text.slice(0, index + 1));
-
-            // Play typing sound every few characters to avoid audio clutter
-            if (index % 4 === 0 && playCommMessageSound) {
-                playCommMessageSound({ volume: 1.0 });
-            }
-
-            index++;
-            if (index >= text.length) {
-                clearInterval(interval);
-                typewriterDoneIds.add(msgId);
-                if (stopCommMessageSound) stopCommMessageSound();
-            }
-        }, 8); // Faster typewriter (8ms)
-
-        return () => {
-            clearInterval(interval);
-            if (stopCommMessageSound) stopCommMessageSound();
-            // Don't add to typewriterDoneIds here — that's handled by the unmount effect above.
-            // Adding here would prematurely mark the id as done on dep-change (e.g. comm-continue
-            // updating the text), causing the new animation to be skipped and text to freeze.
-        };
-    }, [text, isRecent, msgId, alreadyDone, playCommMessageSound, stopCommMessageSound]);
-
-    return <span>{displayedText}</span>;
-};
 
 
 
@@ -109,8 +53,6 @@ const MessageItem = React.memo(({
     setParley,
     triggerHaptic,
     playClickSound,
-    playCommMessageSound,
-    stopCommMessageSound,
     latestBatchId,
     isTimestampEnabled,
     isNewbieMode,
@@ -126,8 +68,6 @@ const MessageItem = React.memo(({
     setParley?: (p: any) => void;
     triggerHaptic?: (ms: number) => void;
     playClickSound?: () => void;
-    playCommMessageSound?: () => void;
-    stopCommMessageSound?: () => void;
     latestBatchId?: number;
     isTimestampEnabled?: boolean;
     isNewbieMode?: boolean;
@@ -176,14 +116,15 @@ const MessageItem = React.memo(({
 
     return (
         <div
-            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${isOutdatedRoom ? ' is-outdated-room' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide && inCombat ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
+            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${isOutdatedRoom ? ' is-outdated-room' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
         >
-            {msg.type === 'user' ? (
-                <div className="user-command-bubble">
-                    {timestampEl} {msg.textRaw}
-                </div>
+            {msg.type === 'user' || msg.type === 'snoop-command' ? (
+                <div 
+                    className={msg.type === 'user' ? "user-command-bubble" : "snoop-command-bubble"}
+                    dangerouslySetInnerHTML={{ __html: ansiConvert.toHtml(msg.textRaw || '') }}
+                />
             ) : msg.type === 'prompt' ? (
-                <span>{msg.textRaw}</span>
+                <span dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(msg.textRaw || ''), msg.id, false, 'prompt')) }} />
             ) : msg.type === 'shop-item' && msg.shopItem ? (
                 <div className="content-row">
                     <ShopItemCard item={msg.shopItem} executeCommand={executeCommand} />
@@ -196,7 +137,7 @@ const MessageItem = React.memo(({
             ) : msg.type === 'practice-column-header' ? (
                 <PracticeColumnHeaderCard sessionsLeft={msg.practiceHeader?.sessionsLeft} />
             ) : msg.type === 'practice-class-header' ? (
-                <PracticeClassHeaderCard label={msg.textRaw} />
+                <PracticeClassHeaderCard label={ansiConvert.toHtml(msg.textRaw || '')} />
             ) : msg.type === 'account-prompt' ? (
                 <div className="account-prompt-container">
                     <div className="message-content" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(content) }} />
@@ -233,18 +174,16 @@ const MessageItem = React.memo(({
                 </div>
             ) : (msg.type === 'comm' || msg.isComm) && msg.commSender ? (
                 <div className="comm-bubble-wrapper">
-                    {timestampEl}
-                    <div className="comm-sender-line" style={{ color: msg.commColor }}>
-                        <span className="comm-sender" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(msg.commSender || '', msg.id + '-sender', false, 'comm-sender')) }} />
-                        <span className="comm-action"> {msg.commAction}:</span>
-                    </div>
                     <div className="comm-content-row">
                         <div
                             className="comm-bubble inline-btn"
-                            style={{ color: msg.commColor, cursor: 'pointer', '--glow-color': msg.commColor } as React.CSSProperties}
+                            style={{ color: msg.commColor, cursor: 'pointer', '--bubble-color': msg.commColor, '--glow-color': msg.commColor } as React.CSSProperties}
                             onClick={triggerParley}
                         >
-                            <Typewriter msgId={msg.id} text={msg.commText || ''} isRecent={isRecent} playCommMessageSound={playCommMessageSound} stopCommMessageSound={stopCommMessageSound} />
+                            {timestampEl}
+                            <span className="comm-sender" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(msg.commSender || ''), msg.id + '-sender', false, 'comm-sender')) }} />
+                            <span className="comm-action" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(` ${msg.commAction}: `)) }} />
+                            <span className="comm-text" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(msg.commText || ''), msg.id + '-text', false, 'comm-text')) }} />
                         </div>
                         <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
                     </div>
@@ -343,6 +282,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const virtualizer = useVirtualizer({
         count: displayMessages.length,
         getScrollElement: () => scrollContainerRef.current,
+        getItemKey: useCallback((index: number) => displayMessages[index]?.id || index, [displayMessages]),
         estimateSize: useCallback((index: number) => {
             const msg = displayMessages[index];
             if (!msg) return 24;
@@ -474,8 +414,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                     setParley={setParley}
                                     triggerHaptic={triggerHaptic}
                                     playClickSound={playClickSound}
-                                    playCommMessageSound={playCommMessageSound}
-                                    stopCommMessageSound={stopCommMessageSound}
+                                    playClickSound={playClickSound}
                                     latestBatchId={latestBatchId}
                                     isTimestampEnabled={isTimestampEnabled}
                                     isNewbieMode={isNewbieMode}

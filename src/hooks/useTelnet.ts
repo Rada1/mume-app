@@ -138,7 +138,7 @@ export function useTelnet(options: TelnetOptions) {
             const line = lines[i];
             // De-duplication: if this line was previously processed as an optimistic prompt
             // (e.g. "By what name...?"), don't process it again now that it has a newline.
-            if (i === 0 && line === lastProcessedPromptRef.current) {
+            if (i === 0 && lastProcessedPromptRef.current !== "" && line === lastProcessedPromptRef.current) {
                 lastProcessedPromptRef.current = "";
                 continue;
             }

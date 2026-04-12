@@ -88,7 +88,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     }, []);
 
     // Mobile DOCKED (Gutter) Mode
-    if (isMobile && !isMapFloating) {
+    // Section removed in account mode or landscape to prevent duplicate command bars
+    if (isMobile && !isMapFloating && gameState !== 'account' && !isLandscape) {
         const isShown = ui.mapExpanded || (ui.peekingDrawer === 'map');
         
         return (
@@ -253,7 +254,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 )}
 
                 {/* Unified Tab Bar for both orientations - Now at the bottom */}
-                <div className="portrait-tab-bar">
+                {!isKeyboardOpen && (
+                    <div className="portrait-tab-bar">
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'stats' ? 'active' : ''}`}
                         onClick={() => { triggerHaptic(15); handleTabClick('stats'); }}
@@ -289,7 +291,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         <MapIcon className="tab-icon" />
                         <span className="tab-text">Map</span>
                     </div>
-                </div>
+                    </div>
+                )}
             </div>
         );
     }

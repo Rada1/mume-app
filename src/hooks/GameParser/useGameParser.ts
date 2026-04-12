@@ -54,7 +54,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         accountState, setAccountState, setGameState, setMessages,
         isSpectateMode,
         setSpectateStats, setSpectateHealthStatus, setSpectateOpponentName, setSpectateOpponentStatus,
-        setSpectatePosition, setSpectateRoomName, setSpectateInCombat, setSpectateCharacterName,
+        setSpectatePosition, setSpectateWaiting, setSpectateRoomName, setSpectateInCombat, setSpectateCharacterName,
+        spectateCharacterName, roomPlayers,
         processMessageHtml
     } = deps;
 
@@ -91,9 +92,10 @@ export function useGameParser(deps: UseGameParserDeps) {
 
     const { parseLogGmcp } = useLogGmcpParser({
         setSpectateStats, setSpectateHealthStatus, setSpectateOpponentName,
-        setSpectateOpponentStatus, setSpectatePosition, setSpectateRoomName,
+        setSpectateOpponentStatus, setSpectatePosition, setSpectateWaiting, setSpectateRoomName,
         setSpectateInCombat, setSpectateCharacterName, 
         setRoomPlayers: deps.setRoomPlayers, setRoomNpcs: deps.setRoomNpcs,
+        setRoomItems: deps.setRoomItems,
         setRoomName, setRoomDesc,
         characterName: deps.characterName,
         mapperRef,
@@ -104,7 +106,8 @@ export function useGameParser(deps: UseGameParserDeps) {
 
     const { checkCombatMatch, handleCombatExit, handleXpTicker } = useCombatParser({
         inCombatRef, setInCombat, setOpponentHealthStatus, setOpponentName, setCharacterInfo,
-        triggerXpTicker, groupMembers, mapperRef, setDeathRoomId: deps.setDeathRoomId
+        triggerXpTicker, groupMembers, mapperRef, setDeathRoomId: deps.setDeathRoomId,
+        spectateCharacterName, roomPlayers
     });
 
     const { parseGlobalStatus, parseDetailedScore } = useStatParser({
@@ -181,24 +184,36 @@ export function useGameParser(deps: UseGameParserDeps) {
         // We no longer return early on empty lines to allow "compact off" (blank lines) to be visible.
         // This is crucial for properly rendering the game's spacing when compact mode is disabled.
 
-        // --- Spectate Mode (Snoop & GMCP Parsing) ---
-        const snoopRegex = /^((?:\x1b\[[0-9;]*m)*)&[a-zA-Z]\s/;
-        const isSnoop = isSpectateMode && snoopRegex.test(cleanLine);
+        // --- GMCP Text Leak Suppression ---
+        // Some modes (like spectating or server bugs) may cause GMCP to bleed through as text.
+        // We always try to parse and suppress these lines to avoid log pollution.
+        if (parseLogGmcp(cleanLine)) return null;
+
+        // --- Spectate Mode (Snoop Mapping) ---
+        // Snoop prefixes typically look like '&I ' (Input/Command) or '&O ' (Output)
+        // In some cases (or tightly packed streams), the space might be missing if followed by '>'
+        const snoopRegex = /^((?:\x1b\[[0-9;]*m)*)&([a-zA-Z])(?:\s|(?=>))/;
+        let isSnoopInput = false;
+        let isSnoop = false;
         
         if (isSpectateMode) {
-            // Process GMCP state updates
-            const wasGmcp = parseLogGmcp(cleanLine);
-            if (wasGmcp) return null; // Hide GMCP data lines from the player's view
-
-            // Snoop prefixes typically look like '&I ' or with ANSI: '\x1b[1;32m&I '
-            // We strip the '&X ' part but preserve preceding ANSI codes
-            if (isSnoop) {
+            let snoopMatch;
+            while ((snoopMatch = cleanLine.match(snoopRegex))) {
+                isSnoop = true;
+                const snoopType = snoopMatch[2].toUpperCase();
+                if (snoopType === 'I') isSnoopInput = true;
                 cleanLine = cleanLine.replace(snoopRegex, '$1');
             }
         }
 
         let textOnlyWithSpaces = cleanLine.replace(/\x1b\[[0-9;]*m/g, '');
         let textOnly = textOnlyWithSpaces;
+        
+        // Final safety catch for commands: if it was snooped and the text starts with '>', it's a command.
+        if (isSnoop && textOnly.trim().startsWith('>')) {
+            isSnoopInput = true;
+        }
+
         let lower = textOnly.trim().toLowerCase();
         
         if (captureStage.current !== 'practice' && textOnly.trim().length > 0) {
@@ -223,26 +238,27 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (isPromptMatch) {
             if (!attachedText) {
                 if (isSpectateMode) {
-                    // Only show the prompt if it was actually a snooped/spectated prompt.
-                    // For our own character's prompts, we emit a blank line to preserve spacing/pacing.
-                    if (isSnoop) {
-                        addMessage('prompt', cleanLine, false);
-                    } else {
-                        addMessage('info', '', false);
-                    }
+                    addMessage('prompt', cleanLine, false);
                 }
                 return;
             }
             
             // If we have attached text on the SAME LINE as a prompt, we MUST process it.
+            if (parseLogGmcp(attachedText)) return;
+
             // If the attached text starts an 'info' capture, we need to capture it.
             initializeStage(attachedText, attachedText.toLowerCase(), attachedText, attachedText.toLowerCase(), attachedText);
 
             content = attachedText;
             contentLower = content.toLowerCase();
-            cleanLine = cleanLine.replace(/^(?:\x1b\[[0-9;]*m)*[^>]*>/, '').trim();
-            textOnly = attachedText;
-            lower = attachedText.toLowerCase();
+            
+            // For OUR prompts, we strip the prompt text to show only the description/message.
+            // For SNOOPED inputs, we keep the prompt (>) as it identifies the command.
+            if (!isSnoopInput) {
+                cleanLine = cleanLine.replace(/^(?:\x1b\[[0-9;]*m)*[^>]*>/, '').trim();
+                textOnly = attachedText;
+                lower = attachedText.toLowerCase();
+            }
         }
 
         // --- Verbose Stat Parsing (standalone score line in spectate mode) ---
@@ -363,14 +379,15 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         // --- Spell Casting Sounds ---
         // Only trigger for the player, not NPCs or other players
-        if (lower.includes('you begin some strange incantations') || 
-            lower.includes('you start to concentrate') || 
-            lower.includes('you muster all of your concentration')) {
+        // In spectate mode, we disable these to avoid constant noise from the snooped player
+        if (!isSpectateMode && (lower.includes('you begin some strange incantations') ||
+            lower.includes('you start to concentrate') ||
+            lower.includes('you muster all of your concentration'))) {
             playIncantationSound?.();
         }
 
-        if (lower === 'ok.') {
-            stopIncantationSound?.(true);
+        if (lower.startsWith('ok.') || lower.includes('you utter the words')) {
+            if (!isSpectateMode) stopIncantationSound?.(true);
         } else if (lower.includes('lose your concentration') || 
                    lower.includes('lost your concentration') ||
                    lower.includes('stop your incantations') ||
@@ -378,7 +395,7 @@ export function useGameParser(deps: UseGameParserDeps) {
                    lower.includes('concentration is broken') ||
                    lower.includes('too dazed to concentrate') ||
                    lower.includes('too stunned to concentrate')) {
-            stopIncantationSound?.(false);
+            if (!isSpectateMode) stopIncantationSound?.(false);
         }
 
         // --- Tutorial Exit Sound ---
@@ -418,7 +435,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             parseDetailedScore(textOnly, lower);
         }
 
-        const { isRoomName, isRoomDescription } = detectRoom(textOnly, lower, cleanLine);
+        const { isRoomName, isRoomDescription, isRoomWindow } = detectRoom(textOnly, lower, isPromptMatch);
 
         if (currentRoomName && (textOnlyRaw.startsWith(currentRoomName) || lowerRaw.startsWith(currentRoomName.toLowerCase()))) {
             const headerPart = textOnlyRaw.startsWith(currentRoomName) ? currentRoomName : textOnlyRaw.substring(0, currentRoomName.length);
@@ -538,15 +555,17 @@ export function useGameParser(deps: UseGameParserDeps) {
         processTriggers(textOnly);
 
         const isImportantMessage = /hits you|receive your share|is dead|tells you|say,|group:|following/i.test(lower);
+        // If Newbie Mode is OFF, we want to see descriptions and exits in the log.
         // Room content (NPCs, exits, items) should be preserved even during silent captures.
-        const isRoomContent = isRoomName || lower.startsWith('exits:') || lower.includes(' is here.') || lower.includes(' are here.');
-        const shouldShow = determineVisibility(lower, isImportantMessage, isRoomContent, isRoomDescription, promptInfo.isEndPrompt);
+        const isRoomContent = isRoomName || lower.startsWith('exits:') || lower.includes(' is here.') || lower.includes(' are here.') || lower.includes('standing here') || lower.includes('resting here') || lower.includes('sitting here') || lower.includes('sleeping here');
+        const shouldShow = determineVisibility(lower, isImportantMessage, isRoomContent, isRoomDescription, promptInfo.isEndPrompt, deps.isNewbieMode, isRoomWindow);
 
-        const commInfo = parseComm(line, textOnly, lower);
+        const commInfo = parseComm(cleanLine, textOnly, lower);
         if (commInfo.isSuppressed) return;
 
         let msgType = routeMessage(commInfo.msgType, textOnlyWithSpaces, lower, cleanLine, attachedText, isPromptMatch);
         if (isRoomDescription) msgType = 'room-description';
+        if (isSnoopInput) msgType = 'snoop-command';
         detectItemsInRoom(textOnly, cleanLine, !shouldShow);
 
         let targetMid: string | undefined = undefined;
@@ -558,6 +577,12 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (shouldShow) {
             let finalRawText = cleanLine;
             if (isRoomName && !finalRawText.endsWith('\x1b[0m')) finalRawText += '\x1b[0m';
+
+            // For snooped commands, we want to hide the leading '>' prompt to keep the bubble clean.
+            if (msgType === 'snoop-command') {
+                finalRawText = finalRawText.replace(/^((?:\x1b\[[0-9;]*m)*)>/, '$1').trim();
+            }
+
             const currentMid = msgType === 'comm-continue' ? targetMid! : `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`;
             if (msgType === 'comm' || commInfo.replyCommand) {
                 commInfo.lastCommMsgIdRef.current = currentMid;

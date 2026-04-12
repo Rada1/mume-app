@@ -236,6 +236,7 @@ export const useGameProviderState = () => {
     const [spectateOpponentName, setSpectateOpponentName] = useState<string | null>(null);
     const [spectateOpponentStatus, setSpectateOpponentStatus] = useState<CombatHealthStatus | null>(null);
     const [spectatePosition, setSpectatePosition] = useState<string>('standing');
+    const [spectateWaiting, setSpectateWaiting] = useState<boolean>(false);
     const [spectateRoomName, setSpectateRoomName] = useState<string | null>(null);
     const [spectateInCombat, setSpectateInCombat] = useState(false);
     const [spectateCharacterName, setSpectateCharacterName] = useState<string | null>(null);
@@ -632,6 +633,7 @@ export const useGameProviderState = () => {
         clearRegistry,
         selectedObjectIds, toggleObjectSelection, clearObjectSelection,
         spectatePosition, setSpectatePosition,
+        spectateWaiting, setSpectateWaiting,
         spectateRoomName, setSpectateRoomName,
         spectateInCombat, setSpectateInCombat,
         spectateCharacterName, setSpectateCharacterName,
@@ -657,7 +659,7 @@ export const useGameProviderState = () => {
         entities, setEntities, registerEntity, getEntity, clearRegistry, selectedObjectIds, toggleObjectSelection, clearObjectSelection,
         settings.isSpectateMode, settings.setIsSpectateMode, spectateTargetId, setSpectateTargetId,
         isTimestampEnabled, setIsTimestampEnabled,
-        spectatePosition, spectateRoomName, spectateInCombat, spectateCharacterName,
+        spectatePosition, spectateWaiting, spectateRoomName, spectateInCombat, spectateCharacterName,
         spectateStats, spectateHealthStatus, spectateOpponentName, spectateOpponentStatus,
         opponentName, opponentId, fontFamily, setFontFamily
     ]);

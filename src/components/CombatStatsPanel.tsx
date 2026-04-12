@@ -20,8 +20,10 @@ const StatRow: React.FC<{ label: string; value: string }> = ({ label, value }) =
 
 const CombatStatsPanel: React.FC = () => {
     const { stats } = useVitals();
-    const { inCombat, mood, executeCommand } = useGame();
+    const { inCombat, mood, executeCommand, isSpectateMode } = useGame();
     const [moodMenuOpen, setMoodMenuOpen] = useState(false);
+
+
     const [hoveredMood, setHoveredMood] = useState<string | null>(null);
     const isDraggingRef = useRef(false);
 
@@ -77,6 +79,7 @@ const CombatStatsPanel: React.FC = () => {
         isDraggingRef.current = true;
     };
 
+    if (isSpectateMode) return null;
     return (
         <div className={`combat-stats-panel${inCombat ? ' active' : ''}`}>
             <StatRow label="OB"  value={fmt(stats.ob)} />

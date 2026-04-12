@@ -240,6 +240,15 @@ export class GmcpDecoder {
             const p = pos.toLowerCase();
             this.charVitalsState.position = p;
             if (this.handlers.onPositionChange) this.handlers.onPositionChange(p);
+
+            // Sync waiting condition with position
+            this.handlers.setStats((prev: GameStats) => ({
+                ...prev,
+                conditions: { 
+                    ...prev.conditions, 
+                    waiting: p === 'waiting' || p.includes('waiting')
+                }
+            }));
         }
 
         const opp = getField(['opponent', 'opp', 'o']);

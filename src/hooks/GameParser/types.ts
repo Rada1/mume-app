@@ -87,6 +87,7 @@ export interface UseGameParserDeps {
     setSpectateOpponentName: (name: string | null) => void;
     setSpectateOpponentStatus: (status: CombatHealthStatus | null) => void;
     setSpectatePosition: (pos: string) => void;
+    setSpectateWaiting: (val: boolean) => void;
     setSpectateRoomName: (name: string | null) => void;
     setSpectateInCombat: (val: boolean) => void;
     setSpectateCharacterName: (name: string | null) => void;
@@ -108,5 +109,8 @@ export interface UseGameParserDeps {
     setLightningEnabled: (val: boolean) => void;
     setMessages: React.Dispatch<React.SetStateAction<import('../../types').Message[]>>;
     clearLog: () => void;
+    isNewbieMode: boolean;
     processMessageHtml?: (originalHtml: string, mid: string, isRoomName: boolean, type?: import('../../types').MessageType, isCombatMessage?: boolean, combatSide?: 'player' | 'opponent' | 'groupmate') => string;
+    spectateCharacterName: string | null;
+    roomPlayers: import('../../types').GmcpOccupant[];
 }

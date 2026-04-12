@@ -259,9 +259,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         currentTerrain: s.currentTerrain,
         weather: s.weather,
         playerPosition: s.playerPosition,
-        waiting: v.stats.conditions?.waiting,
+        waiting: s.isSpectateMode ? s.spectateWaiting : v.stats.conditions?.waiting,
         manualCancelRef,
-        gameState: s.gameState
+        gameState: s.gameState,
+        isSpectateMode: s.isSpectateMode
     });
 
     useEffect(() => {
@@ -382,7 +383,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
 
     const [input, setInput] = useState("");
-    const { processMessageHtml } = useMessageHighlighter(v.target, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems, s.inlineCategories, s.isHighlighterEnabled, highlightVersion, s.discoveredItems, keywordOverrides, s.selectedObjectIds, s.inCombat);
+    const actualTarget = v.target;
+    const { processMessageHtml } = useMessageHighlighter(actualTarget, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems, s.inlineCategories, s.isHighlighterEnabled, highlightVersion, s.discoveredItems, keywordOverrides, s.selectedObjectIds, s.inCombat, s.spectateCharacterName, s.groupMembers);
 
 
     const navIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -444,6 +446,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         roomName: s.roomName,
         setRoomName: s.setRoomName,
         setRoomDesc: s.setRoomDesc,
+        isNewbieMode: s.isNewbieMode,
         popoverState: s.popoverState,
         setPopoverState: s.setPopoverState,
         pendingDrawerContainerRef: s.pendingDrawerContainerRef,
@@ -459,6 +462,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setSpectateOpponentName: s.setSpectateOpponentName,
         setSpectateOpponentStatus: s.setSpectateOpponentStatus,
         setSpectatePosition: s.setSpectatePosition,
+        setSpectateWaiting: s.setSpectateWaiting,
         setSpectateRoomName: s.setSpectateRoomName,
         setSpectateInCombat: s.setSpectateInCombat,
         setSpectateCharacterName: s.setSpectateCharacterName,
@@ -492,9 +496,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isSpectateMode: s.isSpectateMode,
         processMessageHtml: processMessageHtml,
         spectateTarget,
+        setMessages,
+        clearLog,
         setRoomPlayers: s.setRoomPlayers,
         setRoomNpcs: s.setRoomNpcs,
         setRoomItems: s.setRoomItems,
+        roomPlayers: s.roomPlayers,
+        spectateCharacterName: s.spectateCharacterName,
         registerEntity: s.registerEntity,
         spectateStats: v.spectateStats,
         characterName: s.characterName

@@ -16,10 +16,12 @@ export interface CombatParserDeps {
     groupMembers: GroupMember[];
     mapperRef?: React.RefObject<any>;
     setDeathRoomId?: (val: string | null) => void;
+    spectateCharacterName?: string | null;
+    roomPlayers?: import('../../types').GmcpOccupant[];
 }
 
-const COMBAT_VERBS_STR = ['hit', 'miss', 'wound', 'kill', 'maul', 'pierce', 'cleave', 'stab', 'slash', 'pound', 'crush', 'smite', 'strike', 'backstab', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shocked', 'stunned', 'blinded', 'silenced', 'hurt', 'die', 'fighting', 'recovered'].join('|');
-const COMBAT_REGEX = new RegExp(`(?: )(${COMBAT_VERBS_STR})s?(?: )|(${COMBAT_VERBS_STR})s? you`);
+const COMBAT_VERBS_STR = ['hit', 'miss', 'wound', 'kill', 'maul', 'pierce', 'cleave', 'stab', 'slash', 'pound', 'crush', 'smite', 'strike', 'backstab', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shocked', 'stunned', 'blinded', 'silenced', 'hurt', 'die', 'fighting', 'recovered', 'shoot', 'shoots', 'blast', 'shatters', 'joins?', 'assists?'].join('|');
+const COMBAT_REGEX = new RegExp(`(?:\\s+)(${COMBAT_VERBS_STR})s?(?:\\s|\\.|!|you)|\\b(${COMBAT_VERBS_STR})s? you`, 'i');
 
 export function useCombatParser(deps: CombatParserDeps) {
     const {
@@ -31,7 +33,9 @@ export function useCombatParser(deps: CombatParserDeps) {
         triggerXpTicker,
         groupMembers,
         mapperRef,
-        setDeathRoomId
+        setDeathRoomId,
+        spectateCharacterName,
+        roomPlayers
     } = deps;
 
     const checkCombatMatch = useCallback((lower: string) => {
@@ -56,7 +60,22 @@ export function useCombatParser(deps: CombatParserDeps) {
             side = 'player';
         } else {
             // Check if any group member name starts the line
-            const groupNameMatch = groupMembers.find(m => m.name && cleanLower.startsWith(m.name.toLowerCase() + ' '));
+            // Use a more flexible check to handle "Name (Abbr)" format common in MUME group combat
+            const pcNames = (roomPlayers || []).map(p => (typeof p === 'string' ? p : p.name)).filter(Boolean) as string[];
+            const extraNames = [...(groupMembers.map(m => m.name).filter(Boolean) as string[])];
+            if (spectateCharacterName) extraNames.push(spectateCharacterName);
+            
+            // Any PC in the room or our group or the spectated char
+            const allAllies = Array.from(new Set([...pcNames, ...extraNames]));
+
+            const groupNameMatch = allAllies.find(name => {
+                const lowerName = name.toLowerCase();
+                // Match "Name " or "Name(Abbr) " or "Name (Abbr) "
+                return cleanLower.startsWith(lowerName + ' ') || 
+                       cleanLower.startsWith(lowerName + '(') || 
+                       cleanLower.startsWith(lowerName + ' (');
+            });
+            
             if (groupNameMatch) {
                 side = 'groupmate';
             } else {
@@ -64,7 +83,7 @@ export function useCombatParser(deps: CombatParserDeps) {
             }
         }
         return { isMatch: true, side, isImpact };
-    }, [inCombatRef, groupMembers]);
+    }, [inCombatRef, groupMembers, spectateCharacterName, roomPlayers]);
 
     const handleCombatExit = useCallback((lower: string) => {
         if (inCombatRef.current) {

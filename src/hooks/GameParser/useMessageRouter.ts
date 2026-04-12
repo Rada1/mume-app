@@ -34,7 +34,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         playerPosition
     } = deps;
 
-    const determineVisibility = useCallback((lower: string, isImportantMessage: boolean, isRoomName: boolean, isRoomDescription: boolean, isEndPrompt: boolean) => {
+    const determineVisibility = useCallback((lower: string, isImportantMessage: boolean, isRoomContent: boolean, isRoomDescription: boolean, isEndPrompt: boolean, isNewbieMode: boolean, isRoomWindow?: boolean) => {
         // --- Sleeping Suppression ---
         // If the player is sleeping, suppress weather and lighting updates
         if (playerPosition === 'sleeping') {
@@ -70,11 +70,20 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         // --- Final Visibility Calculation ---
         // 1. If currently capturing for an open drawer, hide unless it's a critical message/room name
         if (isDrawerHiding) {
-            return isImportantMessage || isRoomName;
+            return isImportantMessage || isRoomContent;
+        }
+
+        // 3. Spacing: Always show truly empty lines to preserve game pacing/formatting
+        // unless we are specifically hiding a drawer-capture.
+        if (lower === '' && !isDrawerHiding) {
+            return true;
         }
 
         // 2. Normal visibility: not silent OR it's a special high-priority message
-        return (isSilentCapture.current === 0) || isImportantMessage || isRoomName || isRoomDescription;
+        // If Newbie Mode is OFF, we are much more lenient about showing descriptions and room content
+        // to ensure the classic experience isn't "flickery".
+        const classicBypass = (!isNewbieMode && isRoomWindow);
+        return (isSilentCapture.current === 0) || isImportantMessage || isRoomContent || isRoomDescription || classicBypass;
     }, [captureStage, isSilentCapture, isDrawerCapture, isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen, isWaitingForInv, isWaitingForEq, isWaitingForStats, isWaitingForInfo, playerPosition]);
 
     const routeMessage = useCallback((msgType: string, textOnly: string, lower: string, cleanLine: string, attachedText: string, isMatch: boolean) => {
@@ -84,11 +93,11 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         const trimmed = textOnly.trim();
         if (stage === 'who' && trimmed !== 'who:' && trimmed.toLowerCase() !== 'allies' && trimmed.toLowerCase() !== 'minions' && !trimmed.startsWith('---')) finalType = 'who-list';
         else if (stage === 'where' && !trimmed.startsWith('Player') && !trimmed.startsWith('Who') && !trimmed.startsWith('---')) finalType = 'where-list';
-        // NOTE: 'description' stage routing removed — the Room Card handles room descriptions via GMCP.
-        // Keeping this caused all post-description room content (NPCs, exits, items) to be swallowed.
         else if (stage === 'eq') finalType = 'equipment-list';
         else if (stage === 'inv') finalType = 'inventory-list';
         else if (lower.startsWith('exits:')) finalType = 'room-exits';
+        // In spectate mode, ANY line starting with '>' is a commanded action from the spectated player
+        else if (deps.isSpectateMode && trimmed.startsWith('>') && trimmed.length > 1) finalType = 'snoop-command';
         else if (isMatch && attachedText.length <= 2) finalType = 'prompt';
         else if (lower.startsWith('you go ') || lower.includes(' leaves ') || lower.includes(' arrives from ') || lower.includes('alas, you cannot go that way') || lower.includes('there is no exit')) finalType = 'move';
 

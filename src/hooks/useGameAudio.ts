@@ -17,6 +17,7 @@ export interface GameAudioDeps {
     waiting?: boolean;
     manualCancelRef?: React.MutableRefObject<boolean>;
     gameState?: string;
+    isSpectateMode?: boolean;
 }
 
 export const useGameAudio = ({
@@ -30,7 +31,8 @@ export const useGameAudio = ({
     playerPosition,
     waiting,
     manualCancelRef,
-    gameState
+    gameState,
+    isSpectateMode
 }: GameAudioDeps) => {
     const isSleeping = playerPosition === 'sleeping';
     const playSoundRef = useRef<(buffer: AudioBuffer) => void>(() => { });
@@ -79,6 +81,12 @@ export const useGameAudio = ({
     // Stop incantation if we are no longer waiting (interrupt or end of cast)
     const lastWaitingRef = useRef(waiting);
     useEffect(() => {
+        // Skip spell sounds triggered by waiting state clearing if in spectate mode
+        if (isSpectateMode) {
+            lastWaitingRef.current = waiting;
+            return;
+        }
+
         if (lastWaitingRef.current && !waiting) {
             if (manualCancelRef?.current) {
                 console.log('[Audio] Manual cancel detected, silent stop');
@@ -90,7 +98,7 @@ export const useGameAudio = ({
             }
         }
         lastWaitingRef.current = waiting;
-    }, [waiting, stopIncantationSound, manualCancelRef]);
+    }, [waiting, stopIncantationSound, manualCancelRef, isSpectateMode]);
 
     // Wire the real functions into refs immediately
     triggerHapticRef.current = soundSystemHaptic;

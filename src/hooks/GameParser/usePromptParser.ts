@@ -85,6 +85,24 @@ export function usePromptParser(deps: PromptParserDeps) {
             setPlayerHealthStatus('Healthy');
         }
 
+        // --- Condition Extraction from Flags (W, !, etc.) ---
+        const hasWaiting = /[\s\*\[\(\!]W[\s\*\]\)>]/.test(promptPart);
+        const hasFighting = /[\s\*\[\(\!]![\s\*\]\)>]/.test(promptPart);
+
+        if (isSpectateMode) {
+            setSpectateStats(prev => ({
+                ...prev,
+                conditions: { ...prev.conditions, waiting: hasWaiting }
+            }));
+            if (hasFighting) setSpectateInCombat(true);
+        } else {
+            if (hasFighting) setInCombat(true);
+            deps.setStats(prev => ({
+                ...prev,
+                conditions: { ...prev.conditions, waiting: hasWaiting }
+            }));
+        }
+
         // 2 & 3. Combatants (Opponents and Tanks/Buffers)
         const combatantsPart = promptPart
             .replace(/\b(?:HP|MA|MV|SP|Move|Mana)\s*:\s*\w+/gi, '') // Remove vital statuses

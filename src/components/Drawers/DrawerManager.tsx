@@ -1,11 +1,16 @@
+/**
+ * @file DrawerManager.tsx
+ * @description Orchestrates the side drawers and desktop sidebar tabs.
+ */
+
 import React from 'react';
 import { InventoryDrawer } from './InventoryDrawer';
 import { StatsDrawer } from './StatsDrawer';
 import { CharacterDrawer } from './CharacterDrawer';
 import { PlayersDrawer } from './PlayersDrawer';
 import { Mapper } from '../Mapper/Mapper';
-import { User, Shield, Map as MapIcon, Users, BarChart2 } from 'lucide-react';
 
+// --- Logic Section ---
 
 import { DrawerLine, CustomButton, SoundTrigger } from '../../types';
 
@@ -105,7 +110,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         triggerHaptic, characterName, viewport, mapperRef, 
         pendingDrawerContainerRef, inlineCategories, entities, keywordOverrides 
     } = useGame() as any;
-    const { ui, setUI, handleTabClick, toggleMap } = useUI();
+    const { ui, setUI } = useUI();
 
     // On desktop, push the log right/left so side drawers sit beside it instead of over it
     React.useEffect(() => {
@@ -173,56 +178,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                 </div>
             )}
 
-            {/* Persistent Desktop Tab Sidebar (Right Edge) */}
-            {!viewport.isMobile && (
-                <div className="desktop-side-tabs" style={{ 
-                    position: 'fixed', 
-                    right: 0, 
-                    top: '50%', 
-                    transform: 'translateY(-50%)',
-                    zIndex: 5000, 
-                    display: 'flex', 
-                    flexDirection: 'column',
-                    gap: '4px'
-                }}>
-                    <div
-                        className={`desktop-edge-tab right ${ui.drawer === 'stats' ? 'active' : ''}`}
-                        onClick={() => { triggerHaptic(15); handleTabClick('stats'); }}
-                    >
-                        <BarChart2 className="tab-icon" />
-                        <span className="tab-text">Stats</span>
-                    </div>
-                    <div
-                        className={`desktop-edge-tab right ${ui.drawer === 'character' ? 'active' : ''}`}
-                        onClick={() => { triggerHaptic(15); handleTabClick('character'); }}
-                    >
-                        <User className="tab-icon" />
-                        <span className="tab-text">Char</span>
-                    </div>
-                    <div
-                        className={`desktop-edge-tab right ${ui.drawer === 'players' ? 'active' : ''}`}
-                        onClick={() => { triggerHaptic(15); handleTabClick('players'); }}
-                    >
-                        <Users className="tab-icon" />
-                        <span className="tab-text">Players</span>
-                    </div>
-                    <div
-                        className={`desktop-edge-tab right ${ui.drawer === 'inventory' ? 'active' : ''}`}
-                        onClick={() => { triggerHaptic(15); handleTabClick('inventory'); }}
-                    >
-                        <Shield className="tab-icon" />
-                        <span className="tab-text">Gear</span>
-                    </div>
-                    <div
-                        id="drawer-tab-map"
-                        className={`desktop-edge-tab right ${ui.mapExpanded && ui.drawer === 'none' ? 'active' : ''}`}
-                        onClick={() => { triggerHaptic(15); toggleMap(); }}
-                    >
-                        <MapIcon className="tab-icon" />
-                        <span className="tab-text">Map</span>
-                    </div>
-                </div>
-            )}
+            {/* Persistent Desktop Tab Sidebar removed — move to Menu or Commands for a cleaner terminal aesthetic */}
 
 
             {/* On mobile portrait, drawers are rendered inside the gutter (MapperCluster) */}

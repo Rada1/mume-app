@@ -61,20 +61,22 @@ export const buildHighlighterCandidates = (
     selectedObjectIds: Set<string> = new Set(),
     isCombatLine: boolean = false,
     inCombat: boolean = false,
-    combatSide?: 'player' | 'opponent' | 'groupmate'
+    combatSide?: 'player' | 'opponent' | 'groupmate',
+    spectateCharacterName?: string | null,
+    groupMembers?: import('../types').GroupMember[]
 ): Candidate[] => {
     const candidates: Candidate[] = [];
     // Normalized sets to handle accent mismatches (e.g. Dúnadan vs Dunadan)
     const normalize = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
     const ACCENT_MAP: Record<string, string> = {
-        'a': '[a\u00e0-\u00e5]',
-        'e': '[e\u00e8-\u00eb]',
-        'i': '[i\u00ec-\u00ef]',
-        'o': '[o\u00f2-\u00f6]',
-        'u': '[u\u00f9-\u00fc]',
-        'n': '[n\u00f1]',
-        'c': '[c\u00e7]'
+        'a': '[a\u00e0-\u00e5\u00c0-\u00c5]',
+        'e': '[e\u00e8-\u00eb\u00c8-\u00cb]',
+        'i': '[i\u00ec-\u00ef\u00cc-\u00cf]',
+        'o': '[o\u00f2-\u00f6\u00d2-\u00d6]',
+        'u': '[u\u00f9-\u00fc\u00d9-\u00dc]',
+        'n': '[n\u00f1\u00d1]',
+        'c': '[c\u00e7\u00c7]'
     };
 
     const toAccentAgnosticCore = (s: string) => {
@@ -90,8 +92,8 @@ export const buildHighlighterCandidates = (
         return res;
     };
 
-    const WORD_BOUNDARY_START = `(?:^|(?<=[\\s\\.,:;\\!']))`;
-    const WORD_BOUNDARY_END = `(?=[\\s\\.,:;\\!'&]|&#(?:x27|39|apos);|$)`;
+    const WORD_BOUNDARY_START = `(?:^|(?<=[\\s\\.,:;\\!'(m\\[>]))`;
+    const WORD_BOUNDARY_END = `(?=[\\s\\.,:;\\!'()&\\x1b\\]<]|&#(?:x27|39|apos);|$)`;
 
     const toAccentAgnostic = (s: string) => {
         // Use a simpler word boundary for MUD text
@@ -99,12 +101,25 @@ export const buildHighlighterCandidates = (
         return `${WORD_BOUNDARY_START}${toAccentAgnosticCore(s)}${WORD_BOUNDARY_END}`;
     };
 
-    const pcNames = roomPlayers.map(p => typeof p === 'string' ? p : p.name).filter((name): name is string => !!name && name !== characterName);
+    // In spectate mode the "self" to exclude is the snooped character, not the app user —
+    // the app user may physically appear in the snooped room and should still be highlighted.
+    const selfName = spectateCharacterName || characterName;
+
+    const pcNamesList = roomPlayers.map(p => typeof p === 'string' ? p : p.name).filter((name): name is string => !!name && name !== selfName);
+
+    // Add group members to the list (ensures groupmates are always buttons even if room GMCP is delayed)
+    if (groupMembers) {
+        groupMembers.forEach(m => {
+            if (m.name && m.name !== selfName && !pcNamesList.includes(m.name)) {
+                pcNamesList.push(m.name);
+            }
+        });
+    }
+    const pcNamesSet = new Set(pcNamesList);
     const npcNames = roomNpcs.map(p => typeof p === 'string' ? p : p.name).filter((name): name is string => !!name);
     
-    const pcNamesSet = new Set(pcNames);
     const npcNamesSet = new Set(npcNames);
-    const normalizedPcSet = new Set(pcNames.map(normalize));
+    const normalizedPcSet = new Set(pcNamesList.map(normalize));
     const normalizedNpcSet = new Set(npcNames.map(normalize));
 
     // 1. Active Target
@@ -179,9 +194,17 @@ export const buildHighlighterCandidates = (
     });
 
     // 4. NPCs
-    const npcOccupants = roomNpcs;
     const pSet = new Set(Array.from(pcNamesSet).map(p => p.toLowerCase()));
     if (characterName) pSet.add(characterName.toLowerCase());
+
+    const npcOccupants = [...roomNpcs];
+    // Add current target as an NPC candidate if not already present and not a PC
+    if (target && target.length > 2 && !pSet.has(target.toLowerCase())) {
+        const isAlreadyIn = npcOccupants.some(n => (typeof n === 'string' ? n : n.name)?.toLowerCase() === target.toLowerCase());
+        if (!isAlreadyIn) {
+            npcOccupants.push({ name: target, id: `target-${target}` } as any);
+        }
+    }
 
     const corpseGlowColor = getGlowColorForCategory('inline-corpses', inlineCategories) || 'rgba(180, 100, 50, 0.9)';
 
@@ -378,19 +401,8 @@ export const buildHighlighterCandidates = (
         });
     });
 
-    // 9. Combat Actions (Cyan Highlights - only in combat mode and for combat lines)
-    // Rule: Skip these if we already applies side-specific (player/opponent/groupmate) damage highlights
-    if (inCombat && isCombatLine && !combatSide) {
-        combatActions.forEach(word => {
-            candidates.push({
-                pattern: `\\b${word}(?:s|d|ed|ing)?\\b`,
-                isRegex: true,
-                priority: 10,
-                replacer: (m) => `<span class="keyword-highlight combat-action">${m}</span>`,
-                length: word.length
-            });
-        });
-    }
+    // 9. Combat Actions
+    // (Section removed: combat action highlighting disabled)
 
     // 10. Room Exits - Only highlight if this is an exits line
     if (type === 'room-exits') {

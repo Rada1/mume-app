@@ -400,7 +400,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 2px;
-    margin: 8px 8px -3px 8px;
+    margin: 8px 0 -3px 0;
     width: 100%;
     max-width: 100%;
 }
@@ -430,18 +430,6 @@
     flex-shrink: 0;
 }
 
-.comm-sender-line {
-    display: flex;
-    align-items: baseline;
-    gap: 4px;
-    padding-left: 0;
-    padding-top: 3px;
-    opacity: 0.9;
-    flex-shrink: 0;
-    white-space: nowrap;
-    font-size: 1em; /* Standardize with log size */
-}
-
 .comm-sender {
     font-weight: bold;
     font-style: italic;
@@ -454,8 +442,8 @@
 }
 
 .comm-bubble {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: color-mix(in srgb, var(--bubble-color, rgba(255, 255, 255, 0.1)), transparent 75%);
+    border: 1px solid color-mix(in srgb, var(--bubble-color, rgba(255, 255, 255, 0.3)), transparent 30%);
     border-radius: 12px;
     padding: 3px 10px;
     color: #fff;
@@ -463,13 +451,30 @@
     width: fit-content;
     max-width: 100%;
     align-self: flex-start;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 10px color-mix(in srgb, var(--bubble-color, transparent), transparent 70%);
+    backdrop-filter: blur(6px);
     position: relative;
-    line-height: 1.1;
+    line-height: inherit;
     word-break: break-word;
     font-family: var(--font-main);
     font-size: 1em;
+    display: inline-flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0;
+    animation: none !important;
+    transition: none !important;
+}
+
+.comm-bubble .message-timestamp {
+    padding-top: 0;
+    font-size: 0.75em;
+    margin-right: 6px;
+    opacity: 0.5;
+}
+
+.comm-text {
+    margin-left: 2px;
 }
 
 
@@ -565,7 +570,14 @@
 }
 
 .combat-groupmate .combat-bubble {
-    border-left: 3px solid rgba(96, 165, 250, 0.7) !important;
+    border-left: none;
+    background: linear-gradient(90deg, rgba(74, 222, 128, 0.15), transparent); /* Light Green @ 15% */
+    margin-left: 4px;
+}
+
+.combat-groupmate .message-content,
+.combat-groupmate .message-content span {
+    color: #4ade80 !important; /* Light Green */
 }
 
 .combat-opponent .combat-bubble {
@@ -582,16 +594,16 @@
     transform: skewX(-15deg);
 }
 
-.combat-groupmate .combat-bubble {
-    border-left: none;
-    /* Full light blue for groupmates */
-    background: linear-gradient(90deg, rgba(125, 211, 252, 0.15), transparent);
-    margin-left: 4px;
-}
 
 .combat-bubble:hover {
     background: rgba(255, 255, 255, 0.06);
     border-color: rgba(255, 255, 255, 0.2);
+}
+
+.message.snoop-command {
+    margin: 8px 0 !important;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .message.user {
@@ -618,6 +630,35 @@
     line-height: 1.4;
     margin-right: 8px;
     max-width: 85%;
+}
+
+.snoop-command-bubble {
+    background: rgba(16, 185, 129, 0.15); /* emerald-500 @ 15% */
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    border-radius: 20px 20px 6px 20px;
+    padding: 3px 10px;
+    width: fit-content;
+    color: rgba(167, 243, 208, 0.95); /* emerald-200 */
+    font-weight: 500;
+    font-size: 0.95em;
+    font-family: var(--font-main);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    line-height: 1.4;
+    margin-right: 8px;
+    max-width: 85%;
+    position: relative;
+    backdrop-filter: blur(4px);
+}
+
+.user-command-bubble .message-timestamp,
+.snoop-command-bubble .message-timestamp {
+    opacity: 0.5;
+    font-weight: normal;
+    font-size: 0.75em;
 }
 
 .user-command-bubble .message-timestamp {

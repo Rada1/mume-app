@@ -66,6 +66,47 @@ export function useCommParser(deps: CommParserDeps) {
             if (commColor) break;
         }
 
+        const sanitizeExtractedText = (text: string): string => {
+            // Strips literal garbage like line wraps, residual ANSI fragments, and carriage returns
+            // specifically at the end of the line where MUME appends them.
+            return text
+                .replace(/[\s\r\n\x00-\x1F+-]*(?:\[0m)?[\s\r\n\x00-\x1F]*$/, '')
+                .replace(/[\r\x00-\x08\x0B-\x1A\x1C-\x1F]/g, ''); // Strip all other non-ANSI control chars, PRESERVING \x1b (27)
+        };
+
+        const getRawRange = (textIdx: number, length: number): string => {
+            let tIdx = 0;
+            let rIdx = 0;
+            let startR = -1;
+            let rawResult = '';
+            
+            while (rIdx < line.length) {
+                if (line[rIdx] === '\x1b' && line[rIdx + 1] === '[') {
+                    const mEnd = line.indexOf('m', rIdx);
+                    if (mEnd !== -1) {
+                        const ansiCode = line.substring(rIdx, mEnd + 1);
+                        if (tIdx >= textIdx && tIdx < textIdx + length) {
+                            rawResult += ansiCode;
+                        }
+                        rIdx = mEnd + 1;
+                        continue;
+                    }
+                }
+                
+                if (tIdx >= textIdx && tIdx < textIdx + length) {
+                    if (startR === -1) startR = rIdx;
+                    rawResult += line[rIdx];
+                    tIdx++;
+                } else if (tIdx >= textIdx + length) {
+                    return sanitizeExtractedText(rawResult);
+                } else {
+                    tIdx++;
+                }
+                rIdx++;
+            }
+            return sanitizeExtractedText(rawResult);
+        };
+
         if (gmcpComm) {
             replyTarget = gmcpComm.sender || undefined;
             const chanMap: Record<string, string> = { 
@@ -86,18 +127,22 @@ export function useCommParser(deps: CommParserDeps) {
                 }
             } else {
                 const prefixMatch = textOnly.match(/^(.*?)\s+(?:says|tells|narrates|yells|shouts|exclaims|sings|whispers|prays|asks)(?:.*?)[,\s:]+\s*/i);
-                commText = prefixMatch ? textOnly.substring(prefixMatch[0].length) : textOnly;
+                if (prefixMatch) {
+                    commSender = getRawRange(0, prefixMatch[1].length);
+                    commText = getRawRange(prefixMatch[0].length, textOnly.length - prefixMatch[0].length);
+                } else {
+                    commText = sanitizeExtractedText(line);
+                }
             }
         } else {
             const commPatterns: [RegExp, string, boolean][] = [
-                // Require an opening quote but allow the closing quote to be on a subsequent line
-                // (MUME wraps long messages at ~80 chars, splitting mid-quote across lines).
-                [/^(.+?)\s+(tells? you|tells?|whispers?)\s+(['"].*)$/i, 'tell', true],
-                [/^(.+?)\s+(says?|asks?(?:\s+you)?|exclaims?)\s+(['"].*)$/i, 'say', true],
-                [/^(.+?)\s+(narrates?)\s+(['"].*)$/i, 'narrate', true],
-                [/^(.+?)\s+(shouts?|yells?)\s+(['"].*)$/i, 'shout', true],
-                [/^(.+?)\s+(sings?)\s+(['"].*)$/i, 'sing', true],
-                [/^(.+?)\s+(prays?)\s+(['"].*)$/i, 'pray', true],
+                // Allow optional space before the colon or opening quote
+                [/^(.+?)\s+(tells? you|tells?|whispers?)(?:\s+|:\s*|,\s*)(?:(['"].*)|)$/i, 'tell', true],
+                [/^(.+?)\s+(says?|asks?(?:\s+you)?|exclaims?)(?:\s+|:\s*|,\s*)(?:(['"].*)|)$/i, 'say', true],
+                [/^(.+?)\s+(narrates?)(?:\s+|:\s*|,\s*)(?:(['"].*)|)$/i, 'narrate', true],
+                [/^(.+?)\s+(shouts?|yells?)(?:\s+|:\s*|,\s*)(?:(['"].*)|)$/i, 'shout', true],
+                [/^(.+?)\s+(sings?)(?:\s+|:\s*|,\s*)(?:(['"].*)|)$/i, 'sing', true],
+                [/^(.+?)\s+(prays?)(?:\s+|:\s*|,\s*)(?:(['"].*)|)$/i, 'pray', true],
             ];
             for (const [re, cmd, hasSender] of commPatterns) {
                 const m = textOnly.match(re);
@@ -105,43 +150,57 @@ export function useCommParser(deps: CommParserDeps) {
                     replyCommand = cmd;
                     if (hasSender) {
                         replyTarget = m[1];
-                        commSender = m[1];
+                        commSender = getRawRange(0, m[1].length);
                         commAction = m[2];
-                        commText = m[3];
+                        if (m[3]) {
+                            const textStartIdx = m[0].indexOf(m[3]);
+                            commText = getRawRange(textStartIdx, m[3].length);
+                        } else {
+                            commText = '';
+                            openCommRef.current = true;
+                        }
                     }
                     break;
                 }
             }
 
             if (replyCommand && commText !== undefined) {
-                // Track whether the opening quote was closed on this line.
-                // If not, continuation lines (next server-wrapped segment) must be appended.
-                const trimmedComm = commText.trimEnd();
-                openCommRef.current = !(trimmedComm.endsWith("'") || trimmedComm.endsWith('"') ||
-                    trimmedComm.endsWith("'!") || trimmedComm.endsWith('"!') ||
-                    trimmedComm.endsWith("'.") || trimmedComm.endsWith('".'));
+                // Determine if a quote was opened and not closed on this line.
+                const trimmedComm = commText.trim();
+                const q = trimmedComm.startsWith("'") ? "'" : trimmedComm.startsWith('"') ? '"' : null;
+
+                if (q) {
+                    // It's considered "open" if there isn't a corresponding closing quote at the end of the line.
+                    const closingRegex = new RegExp(`${q}[\\.\\?\\!\\)\\s]*$`);
+                    openCommRef.current = !closingRegex.test(textOnly.trim());
+                } else if (textOnly.trim() === '' || textOnly.endsWith(':')) {
+                    openCommRef.current = true;
+                } else {
+                    openCommRef.current = false;
+                }
             }
 
             if (!replyCommand && lastCommMsgIdRef.current && (Date.now() - lastCommTimeRef.current < 500)) {
-                // Treat as continuation when the previous comm line had an unclosed quote,
-                // OR the line looks like it continues a comm (starts lowercase / ends with quote).
-                const isLikelyContinuation = openCommRef.current || (textOnly.length > 0 && (
-                    /^[a-z0-9'"]/.test(textOnly) ||
-                    textOnly.endsWith("'") ||
-                    textOnly.endsWith('"') ||
-                    textOnly.endsWith("'!") ||
-                    textOnly.endsWith('"!') ||
-                    textOnly.endsWith("'.") ||
-                    textOnly.endsWith('".')
-                ));
+                const lowerOnly = textOnly.toLowerCase().trim();
+                // KILL SWITCH: If the line looks like game protocol, combat, or room info, 
+                // it CANNOT be a communication continuation.
+                const isCombat = /^\d+(\/\d+)? (hits|mana|move)/i.test(lowerOnly) || lowerOnly.includes(' smites ') || lowerOnly.includes(' pounds ') || lowerOnly.includes(' hits ');
+                const isMap = lowerOnly.startsWith('exits:') || lowerOnly.includes(' - [') || lowerOnly.includes(' is here.') || lowerOnly.includes(' are here.');
+                const isProtocol = lowerOnly.startsWith('core.') || lowerOnly.startsWith('comm.') || lowerOnly.startsWith('room.');
+                
+                if (isCombat || isMap || isProtocol) {
+                    openCommRef.current = false;
+                }
+
+                // Treat as continuation when the previous comm line had an unclosed quote.
+                const isLikelyContinuation = openCommRef.current;
 
                 if (isLikelyContinuation) {
                     msgType = 'comm-continue';
-                    commText = textOnly;
-                    // If this line closes the quote, mark comm as closed
-                    const t = textOnly.trimEnd();
-                    if (t.endsWith("'") || t.endsWith('"') || t.endsWith("'!") || t.endsWith('"!') ||
-                        t.endsWith("'.") || t.endsWith('".')) {
+                    commText = getRawRange(0, textOnly.length);
+                    
+                    // If this line contains a quote, assume it closes the block.
+                    if (textOnly.includes("'") || textOnly.includes('"')) {
                         openCommRef.current = false;
                     }
                 }

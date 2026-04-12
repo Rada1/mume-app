@@ -13,6 +13,7 @@ export interface RoomParserDeps {
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
+    isWaitingForInfo: React.MutableRefObject<boolean>;
     isDrawerCapture: React.MutableRefObject<number>;
     isSilentCapture: React.MutableRefObject<number>;
 }
@@ -25,6 +26,7 @@ export function useRoomParser(deps: RoomParserDeps) {
         isWaitingForStats,
         isWaitingForEq,
         isWaitingForInv,
+        isWaitingForInfo,
         isDrawerCapture,
         isSilentCapture
     } = deps;
@@ -40,7 +42,7 @@ export function useRoomParser(deps: RoomParserDeps) {
         return norm;
     };
 
-    const detectRoom = useCallback((textOnly: string, lower: string, cleanLine: string): { isRoomName: boolean; isRoomDescription: boolean } => {
+    const detectRoom = useCallback((textOnly: string, lower: string, isPromptMatch: boolean): { isRoomName: boolean; isRoomDescription: boolean; isRoomWindow: boolean } => {
         const currentRoomRefValue = roomNameRef.current;
         let isRoomMatched = currentRoomRefValue && (
             textOnly === currentRoomRefValue || lower === currentRoomRefValue.toLowerCase() ||
@@ -50,11 +52,10 @@ export function useRoomParser(deps: RoomParserDeps) {
         // Rely exclusively on authoritative GMCP matching for room names to prevent false positives with NPCs/Items.
         let isRoomName = !!(isRoomMatched && textOnly.length < (currentRoomRefValue?.length || 0) + 30 && !textOnly.includes(' - ') && !/carrying|using|following|contains|says|tells|help|change prompt|manual|commands/i.test(lower));
 
-        if (isRoomName && captureStage.current === 'none' && !isWaitingForStats.current && !isWaitingForEq.current && !isWaitingForInv.current) {
-            captureStage.current = 'none';
-
+        // Allow room name markers even during background captures to ensure descriptions are detected.
+        if (isRoomName) {
             const isSameRoom = currentRoomRefValue && (textOnly === currentRoomRefValue || lower === currentRoomRefValue.toLowerCase());
-            if (!isSameRoom) {
+            if (!isSameRoom && captureStage.current === 'none') {
                 if (typeof window !== 'undefined') {
                     window.dispatchEvent(new CustomEvent('mume-mapper-move-confirmed', { detail: { isDark: false } }));
                 }
@@ -93,8 +94,10 @@ export function useRoomParser(deps: RoomParserDeps) {
                 // don't break the GMCP text match.
                 const strippedDesc = normDesc.replace(/[^a-z0-9]/g, '');
                 const strippedLine = normLine.replace(/[^a-z0-9]/g, '');
+                const isDescMatch = strippedLine.length > 0 && strippedDesc.includes(strippedLine);
 
-                if (strippedLine.length > 0 && strippedDesc.includes(strippedLine)) {
+                if (isDescMatch) {
+
                     isRoomDescription = true;
                 }
                 // NOTE: We intentionally do NOT set afterRoomNameRef = false here.
@@ -104,8 +107,8 @@ export function useRoomParser(deps: RoomParserDeps) {
             // Blank lines are simply ignored without affecting the state
         }
 
-        return { isRoomName, isRoomDescription };
-    }, [roomNameRef, roomDescRef, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv, isDrawerCapture, isSilentCapture]);
+        return { isRoomName, isRoomDescription, isRoomWindow: afterRoomNameRef.current };
+    }, [roomNameRef, roomDescRef, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, isDrawerCapture, isSilentCapture]);
 
     return { detectRoom };
 }
