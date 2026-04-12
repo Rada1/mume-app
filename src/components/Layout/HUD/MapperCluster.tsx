@@ -89,7 +89,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
 
     // Mobile DOCKED (Gutter) Mode
     // Section removed in account mode or landscape to prevent duplicate command bars
-    if (isMobile && !isMapFloating && gameState !== 'account' && !isLandscape) {
+    if (isMobile && !isMapFloating && gameState === 'playing' && !isLandscape) {
         const isShown = ui.mapExpanded || (ui.peekingDrawer === 'map');
         
         return (
@@ -254,7 +254,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 )}
 
                 {/* Unified Tab Bar for both orientations - Now at the bottom */}
-                {!isKeyboardOpen && (
+                {!isKeyboardOpen && gameState === 'playing' && (
                     <div className="portrait-tab-bar">
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'stats' ? 'active' : ''}`}

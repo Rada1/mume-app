@@ -3,7 +3,7 @@
  * @description Hook for recording MUME sessions as lightweight data logs.
  */
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 
 export type LogEntryType = 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys';
 
@@ -25,11 +25,21 @@ export interface SessionLog {
 }
 
 export const useSessionRecorder = () => {
-  const [isRecording, setIsRecording] = useState(false);
+  const [isRecording, setIsRecording] = useState(true);
   const [duration, setDuration] = useState(0);
   const entriesRef = useRef<LogEntry[]>([]);
-  const startTimeRef = useRef<number>(0);
+  const startTimeRef = useRef<number>(Date.now());
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    // Automatically start recording on mount
+    if (isRecording) {
+      startRecording();
+    }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
 
   const startRecording = useCallback((characterName?: string) => {
     setIsRecording(true);
