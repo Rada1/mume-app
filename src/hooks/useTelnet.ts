@@ -36,6 +36,7 @@ export interface TelnetHandlers {
     onRoomCharsCombat?: (data: any[]) => void;
     onCharRide?: (data: any) => void;
     onCorePing?: () => void;
+    onCoreGoodbye?: () => void;
     onDisconnect?: () => void;
     flushMessages?: () => void;
     addDiagnosticLog?: (log: string) => void;
@@ -106,7 +107,8 @@ export function useTelnet(options: TelnetOptions) {
         onDisconnect: () => handlersRef.current.onDisconnect?.(),
         onRoomCharsCombat: (val) => handlersRef.current.onRoomCharsCombat?.(val),
         onCharRide: (val) => handlersRef.current.onCharRide?.(val),
-        onCorePing: () => handlersRef.current.onCorePing?.()
+        onCorePing: () => handlersRef.current.onCorePing?.(),
+        onCoreGoodbye: () => handlersRef.current.onCoreGoodbye?.()
     }));
     const protocolHandler = useRef<ProtocolHandler | null>(null);
 

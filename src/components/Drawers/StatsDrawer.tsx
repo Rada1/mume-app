@@ -132,7 +132,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                         {scoreLines.length > 0 && (
                             <div className="info-block" style={{ marginBottom: '24px' }}>
                                 <div style={{ color: '#ffffff', fontFamily: 'var(--font-main, monospace)', fontSize: 'var(--dynamic-log-size, 16px)', opacity: 0.9, marginBottom: '0px' }}>score</div>
-                                <div style={{ color: 'rgba(255,255,255,0.15)', fontSize: '0.8rem', letterSpacing: '1px', marginBottom: '12px' }}>-------</div>
+                                <div style={{ color: '#ffffff', fontFamily: 'var(--font-main, monospace)', fontSize: 'var(--dynamic-log-size, 16px)', opacity: 0.9, marginBottom: '12px' }}>-------</div>
                                 {scoreLines.map(line => (
                                     <div
                                         key={line.id}
@@ -156,7 +156,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                         {statsLines.length > 0 ? (
                             <div className="stats-block">
                                 <div style={{ color: '#ffffff', fontFamily: 'var(--font-main, monospace)', fontSize: 'var(--dynamic-log-size, 16px)', opacity: 0.9, marginBottom: '0px' }}>stat</div>
-                                <div style={{ color: 'rgba(255,255,255,0.15)', fontSize: '0.8rem', letterSpacing: '1px', marginBottom: '12px' }}>-------</div>
+                                <div style={{ color: '#ffffff', fontFamily: 'var(--font-main, monospace)', fontSize: 'var(--dynamic-log-size, 16px)', opacity: 0.9, marginBottom: '12px' }}>-------</div>
                                 {statsLines.map(line => {
                                     // Skip redundant tags that keep getting captured
                                     const lowerText = line.text.toLowerCase().trim();

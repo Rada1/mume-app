@@ -7,6 +7,7 @@ import { DrawerManager } from '../Drawers/DrawerManager';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { OnboardingOverlay } from '../OnboardingOverlay';
 import { KeywordEditModal } from '../KeywordEditModal';
+import { LibraryModal } from '../LibraryModal';
 
 
 interface ModalsLayerProps {
@@ -126,6 +127,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setIsSettingsOpen,
         settingsTab,
         setSettingsTab,
+        isLibraryOpen,
+        setIsLibraryOpen,
         setIsSetManagerOpen,
         popoverState,
         setPopoverState,
@@ -396,6 +399,13 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 >
                     ⚠ Keyword "{keywordFailureBanner.context}" not found — tap to fix
                 </div>
+            )}
+
+            {isLibraryOpen && (
+                <LibraryModal
+                    isOpen={isLibraryOpen}
+                    onClose={() => setIsLibraryOpen(false)}
+                />
             )}
 
         </>

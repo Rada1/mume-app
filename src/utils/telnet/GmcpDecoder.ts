@@ -31,6 +31,7 @@ export interface GmcpHandlers {
     onRoomCharsCombat?: (data: any[]) => void;
     onCharRide?: (data: any) => void;
     onCorePing?: () => void;
+    onCoreGoodbye?: () => void;
     onDisconnect?: () => void;
 }
 
@@ -97,6 +98,8 @@ export class GmcpDecoder {
             this.handleSimpleJson(json, handlers.onCharRide);
         } else if (pkgLower === 'core.ping') {
             this.handlers.onCorePing?.();
+        } else if (pkgLower === 'core.goodbye') {
+            this.handlers.onCoreGoodbye?.();
         }
     }
 

@@ -130,6 +130,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, [spectateTarget]);
 
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [isLibraryOpen, setIsLibraryOpen] = useState(false);
     const [settingsTab, setSettingsTab] = useState<'general' | 'sound' | 'actions' | 'help'>('general');
 
     // --- Keyword Override System ---
@@ -155,7 +156,25 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setDiagnosticLogs(prev => [msg, ...prev].slice(0, 50));
     }, []);
 
-    // GMCP Handlers States
+    // --- Mode State ---
+    const [sessionMode, setSessionMode] = useState<SessionMode>('live');
+    // uiMode is already managed by 's' (game state)
+
+    // --- Replayer "Shadow" State for HUD ---
+    const [replayHUDState, setReplayHUDState] = useState({
+        roomName: '',
+        roomDesc: '',
+        roomTerrain: '',
+        roomZone: '',
+        hp: 0,
+        maxHp: 0,
+        mana: 0,
+        maxMana: 0,
+        move: 0,
+        maxMove: 0,
+        opponentName: null as string | null,
+        opponentHealth: null as CombatHealthStatus | null,
+    });
     const [roomInfoFn, setRoomInfoFn] = useState<(data: any) => void>();
     const [roomExitsFn, setRoomExitsFn] = useState<(data: any) => void>();
     const [charVitalsFn, setCharVitalsFn] = useState<(data: any) => void>();
@@ -374,6 +393,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         disableSmoothScroll: s.disableSmoothScroll, setDisableSmoothScroll: s.setDisableSmoothScroll,
         isImmersionMode: s.isImmersionMode, setIsImmersionMode: s.setIsImmersionMode,
         isMobileBrevityMode: s.isMobileBrevityMode, setIsMobileBrevityMode: s.setIsMobileBrevityMode,
+        showRecordingIndicator: s.showRecordingIndicator, setShowRecordingIndicator: s.setShowRecordingIndicator,
         showOrganicTerrain: s.showOrganicTerrain, setShowOrganicTerrain: s.setShowOrganicTerrain,
         inlineCategories: s.inlineCategories, setInlineCategories: s.setInlineCategories,
         isHighlighterEnabled: s.isHighlighterEnabled, setIsHighlighterEnabled: s.setIsHighlighterEnabled,
@@ -551,8 +571,18 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             onCorePing: () => {
                 // Initializer moved to onCharNameChange
             },
+            onCoreGoodbye: () => {
+                if (recorder.isRecording) {
+                    console.log('[Recorder] Core.Goodbye received. Auto-saving session...');
+                    recorder.stopAndSave();
+                }
+            },
             onDisconnect: () => {
                 console.log('[GameContext] Disconnect! Clearing tactical buffers.');
+                if (recorder.isRecording) {
+                    console.log('[Recorder] Disconnect detected. Auto-saving session...');
+                    recorder.stopAndSave();
+                }
                 s.setStatsLines([]);
                 s.setScoreLines([]);
                 s.setInfoLines([]);
@@ -567,10 +597,195 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     });
 
+    // --- Section: Auto-Save on Tab Close ---
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            if (recorder.isRecording) {
+                // Browsers often block downloads on unload, but we attempt it here.
+                // It works reliably on disconnect/logout which is the primary use case.
+                recorder.stopAndSave();
+            }
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [recorder.isRecording, recorder.stopAndSave]);
+
 
     React.useLayoutEffect(() => {
         document.documentElement.style.setProperty('--font-main', fontFamily);
     }, [fontFamily]);
+
+    // --- Replayer Logic ---
+    const isPrivacyModeActiveRef = useRef(false);
+    const applyPrivacyScrubbing = useCallback((text: string, isPrivacyMode: boolean) => {
+        if (!isPrivacyMode) return text;
+        
+        let scrubbed = text.replace(/\b(Str|Int|Wis|Dex|Con|Wil|Per):\s*(\d+)/gi, (match, label, val) => {
+            return `${label}:${'I'.repeat(val.length)}`;
+        });
+        
+        scrubbed = scrubbed.replace(/(\d+)\/(\d+)\s*(hits|hp|mana|sp|moves|mv)/gi, (match, current, max, unit) => {
+            return `${'I'.repeat(current.length)}/${'I'.repeat(max.length)} ${unit}`;
+        });
+        
+        scrubbed = scrubbed.replace(/(\d+)(h|m|v)\b/gi, (match, val, unit) => {
+            return `${'I'.repeat(val.length)}${unit}`;
+        });
+        
+        return scrubbed;
+    }, []);
+
+    const replayerBufferRef = useRef('');
+    const replayerProtocolHandlerRef = useRef<ProtocolHandler | null>(null);
+
+    if (!replayerProtocolHandlerRef.current) {
+        replayerProtocolHandlerRef.current = new ProtocolHandler({
+            sendBytes: () => {}, 
+            sendGMCP: () => {},  
+            addMessage: (type, text, ...args) => {
+                addMessage(type as any, text, ...args);
+            },
+            handleSubnegotiation: (buffer) => {
+                const cmd = buffer[0];
+                if (cmd === TELNET_GMCP) {
+                    const raw = new TextDecoder().decode(new Uint8Array(buffer.slice(1)));
+                    let splitIdx = raw.search(/[\s\{\[]/);
+                    const pkg = splitIdx > -1 ? raw.substring(0, splitIdx).trim() : raw;
+                    const json = splitIdx > -1 ? raw.substring(splitIdx).trim() : '';
+                    const data = json ? JSON.parse(json) : null;
+                    const parts = pkg.split('.');
+                    const leaf = parts[parts.length - 1];
+                    const handlerName = `on${leaf}`;
+                    if ((gmcpHandlers as any)[handlerName]) {
+                        (gmcpHandlers as any)[handlerName](data);
+                    }
+                    
+                    if (pkg === 'Room.Info' && mapperRef.current) {
+                        mapperRef.current.handleRoomInfo(data);
+                        if (typeof window !== 'undefined') {
+                            window.dispatchEvent(new CustomEvent('mume-mapper-room-info', { 
+                                detail: { ...data, spectating: true } 
+                            }));
+                        }
+                    }
+                    if (pkg === 'Char.Vitals' && data.terrain && mapperRef.current) {
+                        mapperRef.current.handleTerrain(data.terrain);
+                        if (typeof window !== 'undefined') {
+                            window.dispatchEvent(new CustomEvent('mume-mapper-terrain', { 
+                                detail: data.terrain 
+                            }));
+                        }
+                    }
+                }
+            },
+            processText: (text) => {
+                const scrubbed = applyPrivacyScrubbing(text, isPrivacyModeActiveRef.current);
+                replayerBufferRef.current += scrubbed;
+                const lines = replayerBufferRef.current.split('\n');
+                replayerBufferRef.current = lines.pop() || '';
+                for (let i = 0; i < lines.length; i++) {
+                    parser.processLine(lines[i]);
+                }
+                
+                const remaining = replayerBufferRef.current;
+                if (remaining) {
+                    const clean = remaining.replace(/\x1b\[[0-9;]*m/g, '').trim();
+                    if (clean.endsWith('>') || clean.endsWith(':')) {
+                        parser.processLine(remaining);
+                        flushMessages();
+                    }
+                }
+            }
+        });
+    }
+
+    const replayer = useSessionReplayer(useCallback((type, payload, isPrivacyMode, isSilent = false) => {
+        isPrivacyModeActiveRef.current = isPrivacyMode;
+        
+        if (isSilent) {
+            if (type === 'gmcp') {
+                const { pkg, data } = payload;
+                setReplayHUDState(prev => {
+                    const next = { ...prev };
+                    if (pkg === 'Room.Info') {
+                        next.roomName = data.name || '';
+                        next.roomDesc = data.desc || '';
+                        next.roomTerrain = data.terrain || data.environment || '';
+                        next.roomZone = data.zone || data.area || '';
+                        
+                        if (mapperRef.current) {
+                            mapperRef.current.handleRoomInfo(data);
+                        }
+                    } else if (pkg === 'Char.Vitals') {
+                        if (data.hp !== undefined) next.hp = data.hp;
+                        if (data.maxhp !== undefined) next.maxHp = data.maxhp;
+                        if (data.mana !== undefined) next.mana = data.mana;
+                        if (data.maxmana !== undefined) next.maxMana = data.maxmana;
+                        if (data.move !== undefined) next.move = data.move;
+                        if (data.maxmove !== undefined) next.maxMove = data.maxmove;
+                        if (data.opponent !== undefined) {
+                            next.opponentName = data.opponent ? 'Opponent' : null;
+                        }
+                        
+                        if (data.terrain && mapperRef.current) {
+                            mapperRef.current.handleTerrain(data.terrain);
+                        }
+                    }
+                    return next;
+                });
+            }
+            return;
+        }
+
+        if (type === 'rx') {
+            replayerProtocolHandlerRef.current?.handleRawData(new Uint8Array(payload));
+        } else if (type === 'gmcp') {
+            const { pkg, data } = payload;
+            
+            setReplayHUDState(prev => {
+                const next = { ...prev };
+                if (pkg === 'Room.Info') {
+                    next.roomName = data.name || '';
+                    next.roomDesc = data.desc || '';
+                    next.roomTerrain = data.terrain || data.environment || '';
+                    next.roomZone = data.zone || data.area || '';
+                } else if (pkg === 'Char.Vitals') {
+                    if (data.hp !== undefined) next.hp = data.hp;
+                    if (data.maxhp !== undefined) next.maxHp = data.maxhp;
+                    if (data.hp_status) next.opponentHealth = data.hp_status;
+                }
+                return next;
+            });
+
+            const parts = pkg.split('.');
+            const leaf = parts[parts.length - 1];
+            const handlerName = `on${leaf}`;
+            if ((gmcpHandlers as any)[handlerName]) {
+                (gmcpHandlers as any)[handlerName](data);
+            }
+        } else if (type === 'tx') {
+            addMessage('user', applyPrivacyScrubbing(payload, isPrivacyMode), false);
+        }
+    }, [gmcpHandlers, parser, addMessage, flushMessages, applyPrivacyScrubbing]));
+
+    const theaterReplayer = useMemo(() => ({
+        ...replayer,
+        loadLog: (log: import('../hooks/useSessionRecorder').SessionLog) => {
+            console.log('[Replayer] Loading log and entering Theater Mode');
+            setSessionMode('replay');
+            setMessages([]); 
+            replayer.loadLog(log);
+        },
+        clearLog: () => {
+            console.log('[Replayer] Clearing log and exiting Theater Mode');
+            setSessionMode('live');
+            replayer.clearLog();
+        },
+        setIsVisible: (visible: boolean) => {
+            if (!visible) setSessionMode('live');
+            replayer.setIsVisible(visible);
+        }
+    }), [replayer, setMessages, setSessionMode]);
 
     const controllerDeps = React.useMemo(() => ({
         telnet,
@@ -644,7 +859,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         recordEntry: sanitizedRecordEntry,
         clearLog,
         gameState: s.gameState,
-
+        sessionMode,
+        replayer: theaterReplayer,
     }), [
         telnet, addMessage, initAudio, mapperRef, teleportTargets, s.isDrawerCapture, s.isSilentCapture, s.captureStage,
         s.isWaitingForStats, s.isWaitingForEq, s.isWaitingForInv, s.isWaitingForInfo, s.setInventoryLines, s.setStatsLines, s.setEqLines,
@@ -655,133 +871,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         practice, v.heldButton, v.setHeldButton, s.parley, s.setParley, s.isTrackpadModifierActive, shop,
         keywordOverrides, openKeywordEdit, lastCommandContextRef, s.entities, s.applyOptimisticChange,
         s.selectedObjectIds, s.toggleObjectSelection, s.clearObjectSelection, playClickSound, s.isSoundEnabled,
-        vitals.stats.conditions?.waiting, sanitizedRecordEntry, v.activePrompt, clearLog, s.gameState
+        v.stats.conditions?.waiting, sanitizedRecordEntry, v.activePrompt, clearLog, s.gameState,
+        sessionMode, theaterReplayer
     ]);
 
     const controller = useCommandController(controllerDeps);
-    // --- Replayer Logic ---
-    const isPrivacyModeActiveRef = useRef(false);
-    const applyPrivacyScrubbing = useCallback((text: string, isPrivacyMode: boolean) => {
-        if (!isPrivacyMode) return text;
-        
-        // Replace digits in stats with 'I' barcode
-        let scrubbed = text.replace(/\b(Str|Int|Wis|Dex|Con|Wil|Per):\s*(\d+)/gi, (match, label, val) => {
-            return `${label}:${'I'.repeat(val.length)}`;
-        });
-        
-        // Replace digits in vitals/score with 'I' barcode
-        scrubbed = scrubbed.replace(/(\d+)\/(\d+)\s*(hits|hp|mana|sp|moves|mv)/gi, (match, current, max, unit) => {
-            return `${'I'.repeat(current.length)}/${'I'.repeat(max.length)} ${unit}`;
-        });
-        
-        // Condensed vitals (443h, 97m, 122v)
-        scrubbed = scrubbed.replace(/(\d+)(h|m|v)\b/gi, (match, val, unit) => {
-            return `${'I'.repeat(val.length)}${unit}`;
-        });
-        
-        return scrubbed;
-    }, []);
-
-    const replayerBufferRef = useRef('');
-    const replayerProtocolHandlerRef = useRef<ProtocolHandler | null>(null);
-
-    // Initialize handler with stable callbacks
-    if (!replayerProtocolHandlerRef.current) {
-        replayerProtocolHandlerRef.current = new ProtocolHandler({
-            sendBytes: () => {}, 
-            sendGMCP: () => {},  
-            addMessage: (type, text, ...args) => {
-                // Force immediate refresh for replayer messages
-                addMessage(type as any, text, ...args);
-            },
-            handleSubnegotiation: (buffer) => {
-                const cmd = buffer[0];
-                if (cmd === TELNET_GMCP) {
-                    const raw = new TextDecoder().decode(new Uint8Array(buffer.slice(1)));
-                    let splitIdx = raw.search(/[\s\{\[]/);
-                    const pkg = splitIdx > -1 ? raw.substring(0, splitIdx).trim() : raw;
-                    const json = splitIdx > -1 ? raw.substring(splitIdx).trim() : '';
-                    const data = json ? JSON.parse(json) : null;
-                    const parts = pkg.split('.');
-                    const leaf = parts[parts.length - 1];
-                    const handlerName = `on${leaf}`;
-                    if ((gmcpHandlers as any)[handlerName]) {
-                        (gmcpHandlers as any)[handlerName](data);
-                    }
-                    
-                    // Direct Mapper sync for Room.Info
-                    if (pkg === 'Room.Info' && mapperRef.current) {
-                        mapperRef.current.handleRoomInfo(data);
-                        // Forward to event listeners with spectating flag
-                        if (typeof window !== 'undefined') {
-                            window.dispatchEvent(new CustomEvent('mume-mapper-room-info', { 
-                                detail: { ...data, spectating: true } 
-                            }));
-                        }
-                    }
-                    // Direct Mapper sync for Char.Vitals terrain
-                    if (pkg === 'Char.Vitals' && data.terrain && mapperRef.current) {
-                        mapperRef.current.handleTerrain(data.terrain);
-                        if (typeof window !== 'undefined') {
-                            window.dispatchEvent(new CustomEvent('mume-mapper-terrain', { 
-                                detail: data.terrain 
-                            }));
-                        }
-                    }
-                }
-            },
-            processText: (text) => {
-                const scrubbed = applyPrivacyScrubbing(text, isPrivacyModeActiveRef.current);
-                replayerBufferRef.current += scrubbed;
-                const lines = replayerBufferRef.current.split('\n');
-                replayerBufferRef.current = lines.pop() || '';
-                for (let i = 0; i < lines.length; i++) {
-                    parser.processLine(lines[i]);
-                }
-                
-                // Prompt handling (similar to useTelnet)
-                const remaining = replayerBufferRef.current;
-                if (remaining) {
-                    const clean = remaining.replace(/\x1b\[[0-9;]*m/g, '').trim();
-                    if (clean.endsWith('>') || clean.endsWith(':')) {
-                        parser.processLine(remaining);
-                        flushMessages();
-                    }
-                }
-            }
-        });
-    }
-
-    const replayer = useSessionReplayer(useCallback((type, payload, isPrivacyMode) => {
-        isPrivacyModeActiveRef.current = isPrivacyMode;
-        if (type === 'rx') {
-            replayerProtocolHandlerRef.current?.handleRawData(new Uint8Array(payload));
-        } else if (type === 'gmcp') {
-            const { pkg, data } = payload;
-            const params = typeof data === 'string' ? JSON.parse(data) : data;
-            const parts = pkg.split('.');
-            const leaf = parts[parts.length - 1];
-            const handlerName = `on${leaf}`;
-            if ((gmcpHandlers as any)[handlerName]) {
-                (gmcpHandlers as any)[handlerName](params);
-            }
-            // Direct Mapper sync for explicit GMCP
-            if (pkg === 'Room.Info' && mapperRef.current) {
-                mapperRef.current.handleRoomInfo(params);
-                if (typeof window !== 'undefined') {
-                    window.dispatchEvent(new CustomEvent('mume-mapper-room-info', { 
-                        detail: { ...params, spectating: true } 
-                    }));
-                }
-            }
-            if (pkg === 'Char.Vitals' && params.terrain && mapperRef.current) {
-                mapperRef.current.handleTerrain(params.terrain);
-            }
-        } else if (type === 'tx') {
-            addMessage('user', applyPrivacyScrubbing(payload, isPrivacyMode), false);
-        }
-    }, [gmcpHandlers, parser, addMessage, flushMessages, applyPrivacyScrubbing]));
-
     const { handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd } = controller;
 
     const handleSaveMumeEdit = useCallback((text: string) => {
@@ -887,6 +981,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         ui: s.ui, setUI: s.setUI,
         popoverState: s.popoverState, setPopoverState: s.setPopoverState,
         isSettingsOpen, setIsSettingsOpen,
+        isLibraryOpen, setIsLibraryOpen,
         settingsTab, setSettingsTab,
         setIsStatsOpen: s.setIsStatsOpen,
         setIsCharacterOpen: s.setIsCharacterOpen,
@@ -900,31 +995,40 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         toggleMap: s.toggleMap,
         isRecording: recorder.isRecording,
         duration: recorder.duration,
+        showRecordingIndicator: s.showRecordingIndicator,
+        setShowRecordingIndicator: s.setShowRecordingIndicator,
         startRecording: recorder.startRecording,
         stopRecording: recorder.stopRecording,
+        stopAndSave: recorder.stopAndSave,
         saveLog: recorder.saveLog,
-        replayer: replayer
+        replayer: theaterReplayer
     }), [
-        s.ui, s.popoverState, s.setPopoverState, isSettingsOpen, settingsTab,
+        s.ui, s.popoverState, s.setPopoverState, isSettingsOpen, isLibraryOpen, settingsTab,
         s.setIsCharacterOpen, s.setIsEquipmentOpen, s.setIsInventoryOpen, s.setIsMapExpanded, s.setIsSetManagerOpen, s.setUI, s.setIsPlayersOpen,
-        s.handleTabClick, s.toggleMap,
-        recorder.isRecording, recorder.duration, recorder.startRecording, recorder.stopRecording, recorder.saveLog,
-        replayer.log, replayer.state, replayer.loadLog, replayer.clearLog, replayer.play, replayer.pause, replayer.seek, replayer.setSpeed,
-        replayer.setIsVisible, replayer.setPrivacyMode, replayer.startExport, replayer.stopExport
+        s.handleTabClick, s.toggleMap, s.showRecordingIndicator, s.setShowRecordingIndicator,
+        recorder.isRecording, recorder.duration, recorder.startRecording, recorder.stopRecording, recorder.stopAndSave, recorder.saveLog,
+        theaterReplayer
     ]);
 
     const gameValue = useMemo(() => {
+        const isReplaying = sessionMode === 'replay';
         const base = { ...s };
-        if (isSpectateMode && spectateTarget) {
+        
+        if (isReplaying) {
+            base.roomName = replayHUDState.roomName || 'Archive View';
+            base.roomDesc = replayHUDState.roomDesc;
+            base.currentTerrain = replayHUDState.roomTerrain;
+            base.roomZone = replayHUDState.roomZone;
+        } else if (isSpectateMode && spectateTarget) {
             base.roomName = spectateTarget.room || s.roomName;
             base.characterName = spectateTarget.name || s.characterName;
-            // Use spectated player's fighting state; default to false (not the player's own combat)
             const isTargetFighting = spectateTarget.fighting || spectateTarget.position?.toLowerCase() === 'fighting';
             base.inCombat = isTargetFighting ?? false;
         }
 
         return {
             ...base,
+            sessionMode, setSessionMode,
             accentColor, setAccentColor,
             teleportTargets, setTeleportTargets,
             onRoomInfo: roomInfoFn, setOnRoomInfo: setRoomInfoFn,
@@ -943,7 +1047,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             onGroupUpdate: groupUpdateFn, setOnGroupUpdate: setGroupUpdateFn,
             onGroupRemove: groupRemoveFn, setOnGroupRemove: setGroupRemoveFn,
             onGroupSet: groupSetFn, setOnGroupSet: setGroupSetFn,
-            playSound, playRandomSound, playDoorSound, setPlaySound, triggerHaptic, setTriggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, playTutorialExitSound,
+            playSound: isReplaying ? () => {} : playSound, 
+            playRandomSound: isReplaying ? () => {} : playRandomSound, 
+            playDoorSound: isReplaying ? () => {} : playDoorSound, 
+            setPlaySound, triggerHaptic: isReplaying ? () => {} : triggerHaptic, 
+            setTriggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, playTutorialExitSound,
 
             btn, joystick, editor, containerRef, viewport, env,
             initAudio,
@@ -970,7 +1078,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             accountState: v.accountState, setAccountState: v.setAccountState,
             keywordOverrides, openKeywordEdit,
             keywordEditState, setKeywordEditState,
-            setKeywordOverride, removeKeywordOverride,
+            setKeywordOverride, removeOverride: removeKeywordOverride,
             keywordFailureBanner, setKeywordFailureBanner,
             detectLighting: env.detectLighting,
             setDetectLighting: (fn: (text: string) => void) => { /* internal use */ },
@@ -978,11 +1086,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             duration: recorder.duration,
             startRecording: recorder.startRecording,
             stopRecording: recorder.stopRecording,
+            stopAndSave: recorder.stopAndSave,
             saveLog: recorder.saveLog,
             recordEntry: recorder.recordEntry
         };
     }, [
-        s, isSpectateMode, spectateTarget, accentColor, teleportTargets,
+        s, sessionMode, replayHUDState, isSpectateMode, spectateTarget, accentColor, teleportTargets,
         roomInfoFn, roomExitsFn, charVitalsFn, roomPlayersFn, roomNpcsFn, roomItemsFn,
         addPlayerFn, addNpcFn, removePlayerFn, removeNpcFn, opponentChangeFn,
         playSound, triggerHaptic, playCommMessageSound, stopCommMessageSound, playTutorialExitSound,
@@ -992,7 +1101,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         settings, audioCtxRef, telnet, parser, spatButtons, diagnosticLogs, addDiagnosticLog,
         handleLogPointerDown, handleLogPointerUp,
         handleSaveMumeEdit, s.setQuests, addMessage, addSystemMessage,
-        s.gameState, s.setGameState, prepareLoginAttempt
+        s.gameState, s.setGameState, prepareLoginAttempt, theaterReplayer
     ]);
 
     const logValue = useMemo(() => ({
@@ -1026,6 +1135,26 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, [s.isSpectateMode, s.spectateStats, v.stats]);
 
     const effectiveVitals = useMemo(() => {
+        const isReplaying = sessionMode === 'replay';
+        
+        if (isReplaying) {
+            return {
+                ...v,
+                stats: {
+                    ...v.stats,
+                    hp: replayHUDState.hp,
+                    maxHp: replayHUDState.maxHp,
+                    mana: replayHUDState.mana,
+                    maxMana: replayHUDState.maxMana,
+                    move: replayHUDState.move,
+                    maxMove: replayHUDState.maxMove,
+                },
+                opponentName: replayHUDState.opponentName,
+                opponentHealthStatus: replayHUDState.opponentHealth,
+                roomName: replayHUDState.roomName
+            };
+        }
+        
         if (s.isSpectateMode) {
             return {
                 ...v,
@@ -1038,7 +1167,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             };
         }
         return v;
-    }, [v, s.isSpectateMode, s.spectateStats, s.spectateHealthStatus, s.spectateOpponentName, s.spectateOpponentStatus, s.spectateCharacterName, s.spectateRoomName]);
+    }, [v, sessionMode, replayHUDState, s.isSpectateMode, s.spectateStats, s.spectateHealthStatus, s.spectateOpponentName, s.spectateOpponentStatus, s.spectateCharacterName, s.spectateRoomName]);
 
     // Spectate Mapper Sync handled via textual Room.Info parsing in useLogGmcpParser.ts
 

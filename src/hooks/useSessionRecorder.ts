@@ -4,6 +4,7 @@
  */
 
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { saveSessionToDb } from '../utils/storage/sessionDb';
 
 export type LogEntryType = 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys';
 
@@ -104,12 +105,39 @@ export const useSessionRecorder = () => {
     URL.revokeObjectURL(url);
   }, []);
 
+  const saveToLibrary = useCallback(async (log: SessionLog) => {
+    try {
+      const id = await saveSessionToDb(log);
+      console.log(`[Recorder] Session archived in library with ID: ${id}`);
+      return id;
+    } catch (e) {
+      console.error('[Recorder] Failed to save to library:', e);
+      return null;
+    }
+  }, []);
+
+  const stopAndSave = useCallback(async (characterName?: string, download = false) => {
+    const log = stopRecording(characterName);
+    
+    // Always save to internal library
+    await saveToLibrary(log);
+    
+    // Optionally trigger a download
+    if (download) {
+      saveLog(log);
+    }
+    
+    return log;
+  }, [stopRecording, saveLog, saveToLibrary]);
+
   return {
     isRecording,
     duration,
     startRecording,
     stopRecording,
+    stopAndSave,
     recordEntry,
-    saveLog
+    saveLog,
+    saveToLibrary
   };
 };

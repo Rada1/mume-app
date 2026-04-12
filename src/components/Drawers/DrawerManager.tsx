@@ -110,7 +110,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         triggerHaptic, characterName, viewport, mapperRef, 
         pendingDrawerContainerRef, inlineCategories, entities, keywordOverrides 
     } = useGame() as any;
-    const { ui, setUI } = useUI();
+    const { ui, setUI, isLibraryOpen, setIsLibraryOpen } = useUI();
 
     // On desktop, push the log right/left so side drawers sit beside it instead of over it
     React.useEffect(() => {
@@ -204,6 +204,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                         onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none', peekingSource: 'none' })); }}
                         executeCommand={executeCommand}
                     />
+
 
                     <InventoryDrawer
                         isOpen={ui.drawer === 'inventory'}

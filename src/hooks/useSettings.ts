@@ -38,6 +38,8 @@ interface UseSettingsDeps {
     setIsImmersionMode: (val: boolean) => void;
     isMobileBrevityMode: boolean;
     setIsMobileBrevityMode: (val: boolean) => void;
+    showRecordingIndicator: boolean;
+    setShowRecordingIndicator: (val: boolean) => void;
     showOrganicTerrain: boolean;
     setShowOrganicTerrain: (val: boolean) => void;
     inlineCategories: import('../types').InlineCategoryConfig[];
@@ -66,6 +68,7 @@ export function useSettings(deps: UseSettingsDeps) {
         disableSmoothScroll, setDisableSmoothScroll,
         isImmersionMode, setIsImmersionMode,
         isMobileBrevityMode, setIsMobileBrevityMode,
+        showRecordingIndicator, setShowRecordingIndicator,
         inlineCategories, setInlineCategories,
         isHighlighterEnabled, setIsHighlighterEnabled,
         isCrtEnabled, setIsCrtEnabled,
@@ -140,6 +143,8 @@ export function useSettings(deps: UseSettingsDeps) {
             disable3dScroll,
             disableSmoothScroll,
             isImmersionMode,
+            isMobileBrevityMode,
+            showRecordingIndicator,
             inlineCategories,
             favorites
         };
@@ -164,6 +169,8 @@ export function useSettings(deps: UseSettingsDeps) {
             disable3dScroll,
             disableSmoothScroll,
             isImmersionMode,
+            isMobileBrevityMode,
+            showRecordingIndicator,
             inlineCategories,
             favorites
         };
@@ -203,6 +210,7 @@ export function useSettings(deps: UseSettingsDeps) {
                     if (settings.disableSmoothScroll !== undefined) setDisableSmoothScroll(settings.disableSmoothScroll);
                     if (settings.isImmersionMode !== undefined) setIsImmersionMode(settings.isImmersionMode);
                     if (settings.isMobileBrevityMode !== undefined) setIsMobileBrevityMode(settings.isMobileBrevityMode);
+                    if (settings.showRecordingIndicator !== undefined) setShowRecordingIndicator(settings.showRecordingIndicator);
                     if (settings.inlineCategories) setInlineCategories(settings.inlineCategories);
                     if (settings.isHighlighterEnabled !== undefined) setIsHighlighterEnabled(settings.isHighlighterEnabled);
                     if (settings.isCrtEnabled !== undefined) setIsCrtEnabled(settings.isCrtEnabled);
@@ -309,6 +317,7 @@ export function useSettings(deps: UseSettingsDeps) {
         disableSmoothScroll, setDisableSmoothScroll,
         isImmersionMode, setIsImmersionMode,
         isMobileBrevityMode, setIsMobileBrevityMode,
+        showRecordingIndicator, setShowRecordingIndicator,
         isHighlighterEnabled, setIsHighlighterEnabled,
         isCrtEnabled, setIsCrtEnabled,
         isBloomEnabled, setIsBloomEnabled,

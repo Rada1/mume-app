@@ -8,6 +8,7 @@ import PracticeSkillCard from './PracticeSkillCard';
 import PracticeHeaderCard from './PracticeHeaderCard';
 import PracticeClassHeaderCard from './PracticeClassHeaderCard';
 import PracticeColumnHeaderCard from './PracticeColumnHeaderCard';
+import { useBaseGame, useVitals, useLog, useUI } from '../context/GameContext';
 
 const formatTimestamp = (ts: number) => {
     const date = new Date(ts);
@@ -29,11 +30,6 @@ const ReplyButton = ({ msg, setParley, onReply }: { msg: Message, setParley: (p:
     );
 };
 
-
-
-
-
-import { useBaseGame, useVitals, useLog } from '../context/GameContext';
 
 interface MessageLogProps {
     onLogClick: (e: React.MouseEvent) => void;
@@ -215,35 +211,123 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onDragStart,
     onDragEnd
 }) => {
-    const { inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, isTimestampEnabled, isNewbieMode, isSpectateMode, input, setInput } = useBaseGame();
+    const { inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, isTimestampEnabled, isNewbieMode, isSpectateMode, input, setInput, sessionMode } = useBaseGame();
+    const { replayer } = useUI();
     const { messages, processMessageHtml } = useLog();
     const { activePrompt, setTarget, target, opponentName, opponentHealthStatus } = useVitals();
     const { scrollContainerRef, messagesEndRef, scrollToBottom } = viewport;
 
-    const processedMessages = useMemo(() => messages, [messages]);
+    // --- Replay Mode Mapping ---
+    const replayMessages = useMemo(() => {
+        if (sessionMode !== 'replay' || !replayer.log) return [];
+        
+        const results: Message[] = [];
+        let combinedRx = '';
+        let lastTimestamp = 0;
 
-    const latestBatchId = useMemo(() => {
-        if (messages.length === 0) return undefined;
-        for (let i = messages.length - 1; i >= 0; i--) {
-            if (messages[i].batchId !== undefined) return messages[i].batchId;
+        replayer.log.entries.forEach((entry: any, idx: number) => {
+            // LogEntry uses compact field names: typ, d, t
+            const typ = entry.typ ?? entry.type;
+            const data = entry.d ?? entry.data;
+            const ts = entry.t ?? entry.timestamp ?? 0;
+
+            if (typ === 'rx') {
+                // data may be stored as a plain number array (Array.from(Uint8Array)) by useTelnet
+                let text: string;
+                if (typeof data === 'string') {
+                    text = data;
+                } else if (data instanceof Uint8Array) {
+                    text = new TextDecoder().decode(data);
+                } else if (Array.isArray(data)) {
+                    text = new TextDecoder().decode(new Uint8Array(data));
+                } else {
+                    text = String(data);
+                }
+                combinedRx += text;
+                lastTimestamp = ts;
+            } else if (typ === 'tx' || typ === 'sys' || typ === 'ui') {
+                // Flush pending RX as message lines
+                if (combinedRx) {
+                    const lines = combinedRx.split('\n');
+                    lines.forEach((line, lIdx) => {
+                        if (line.trim() || lIdx < lines.length - 1) {
+                            results.push({
+                                id: `replay-rx-${idx}-${lIdx}`,
+                                type: 'system',
+                                textRaw: line,
+                                html: ansiConvert.toHtml(line),
+                                timestamp: lastTimestamp,
+                                isCombat: false
+                            });
+                        }
+                    });
+                    combinedRx = '';
+                }
+
+                if (typ === 'tx') {
+                    const text = typeof data === 'string' ? data : String(data);
+                    results.push({
+                        id: `replay-tx-${idx}`,
+                        type: 'user',
+                        textRaw: text,
+                        html: text,
+                        timestamp: ts
+                    });
+                } else if (typ === 'sys') {
+                    const text = typeof data === 'string' ? data : JSON.stringify(data);
+                    results.push({
+                        id: `replay-sys-${idx}`,
+                        type: 'system',
+                        textRaw: text,
+                        html: text,
+                        timestamp: ts
+                    });
+                }
+            }
+        });
+        
+        // Final flush of any remaining RX
+        if (combinedRx) {
+            const lines = combinedRx.split('\n');
+            lines.forEach((line, lIdx) => {
+                results.push({
+                    id: `replay-final-${lIdx}`,
+                    type: 'system',
+                    textRaw: line,
+                    html: ansiConvert.toHtml(line),
+                    timestamp: lastTimestamp
+                });
+            });
         }
-        return undefined;
-    }, [messages]);
+        
+        return results;
+    }, [sessionMode, replayer.log]);
+
 
     const displayMessages = useMemo(() => {
+        if (sessionMode === 'replay') return replayMessages;
+        
         // If Newbie Mode is OFF, we show everything in the log (classic mode)
         if (!isNewbieMode) return messages;
 
         // In Newbie Mode, we show most action but hide prompts (handled by HUD/Input).
         // We now allow room names to show so they act as markers in the persistent history.
         return messages.filter(m => m.type !== 'prompt');
-    }, [messages, isNewbieMode]);
+    }, [messages, replayMessages, sessionMode, isNewbieMode]);
 
     const lastUserMsgIndex = useMemo(() => {
         for (let i = displayMessages.length - 1; i >= 0; i--) {
             if (displayMessages[i].type === 'user') return i;
         }
         return -1;
+    }, [displayMessages]);
+
+    const latestBatchId = useMemo(() => {
+        for (let i = displayMessages.length - 1; i >= 0; i--) {
+            const b = (displayMessages[i] as any).batchId;
+            if (b !== undefined) return b as number;
+        }
+        return undefined;
     }, [displayMessages]);
 
     const handlePointerDownInternal = useCallback((e: React.PointerEvent) => {
@@ -276,8 +360,8 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
     }, [viewport, scrollContainerRef]);
 
-    const messagesRef = React.useRef(processedMessages);
-    messagesRef.current = processedMessages;
+    const messagesRef = React.useRef(displayMessages);
+    messagesRef.current = displayMessages;
 
     const virtualizer = useVirtualizer({
         count: displayMessages.length,

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Crosshair, WifiOff, RefreshCw, Circle, Save, X } from 'lucide-react';
+import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Crosshair, WifiOff, RefreshCw, Circle, Save, X, FileText } from 'lucide-react';
 import { EnvControls } from './Layout/EnvControls';
 import { RecorderHUD } from './Layout/HUD/RecorderHUD';
 import { LightingType, WeatherType } from '../types';
@@ -37,8 +37,8 @@ const Header: React.FC<HeaderProps> = ({
 
     const { stats, setStats, target, setTarget } = useVitals();
     const { 
-        ui, setUI, setIsSettingsOpen, setIsSetManagerOpen, setPopoverState,
-        isRecording, startRecording, stopRecording, saveLog, characterName,
+        ui, setUI, setIsSettingsOpen, setIsSetManagerOpen, setIsLibraryOpen, setPopoverState,
+        isRecording, startRecording, stopRecording, stopAndSave, saveLog, characterName,
         replayer
     } = useUI();
 
@@ -111,6 +111,32 @@ const Header: React.FC<HeaderProps> = ({
             {/* Middle: Status Indicators (Flexible/Clipped) */}
             <EnvControls getLightingIcon={getLightingIcon} getWeatherIcon={getWeatherIcon} isLandscape={isLandscape} />
             <RecorderHUD />
+
+            {/* Theater Mode Banner */}
+            {replayer.state.isVisible && replayer.log && (
+                <div style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '3px 10px', borderRadius: 6,
+                    background: 'rgba(255,180,0,0.12)',
+                    border: '1px solid rgba(255,180,0,0.5)',
+                    color: '#ffb400',
+                    fontWeight: 700, fontSize: 11, letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    boxShadow: '0 0 8px rgba(255,180,0,0.25)',
+                    animation: 'theaterPulse 2s ease-in-out infinite',
+                    flexShrink: 0,
+                    cursor: 'pointer',
+                    userSelect: 'none',
+                }}>
+                    <span style={{ fontSize: 8, color: '#ffb400' }}>⏺</span>
+                    THEATER MODE
+                    <button onClick={() => replayer.clearLog()} style={{
+                        background: 'none', border: 'none', color: '#ffb400',
+                        cursor: 'pointer', padding: '0 0 0 4px', fontSize: 12, lineHeight: 1,
+                        opacity: 0.7
+                    }} title="Exit Theater Mode">✕</button>
+                </div>
+            )}
 
             {/* Right: Master Controls (Always Visible/Fixed) */}
             <div className="controls" style={{ flexShrink: 0, marginLeft: 'auto', display: 'flex', gap: 6, alignItems: 'center' }}>
@@ -268,8 +294,7 @@ const Header: React.FC<HeaderProps> = ({
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             if (isRecording) {
-                                                const log = stopRecording();
-                                                saveLog(log);
+                                                stopAndSave();
                                             } else {
                                                 startRecording(characterName || undefined);
                                             }
@@ -280,6 +305,18 @@ const Header: React.FC<HeaderProps> = ({
                                         <span style={{ color: isRecording ? '#ff4444' : 'inherit' }}>
                                             {isRecording ? 'Stop & Save Recording' : 'Start Session Recording'}
                                         </span>
+                                    </div>
+
+                                    <div
+                                        className="dropdown-item"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setIsLibraryOpen(true);
+                                            setIsMenuOpen(false);
+                                        }}
+                                    >
+                                        <FileText size={16} />
+                                        <span>Session Library</span>
                                     </div>
 
                                     <div

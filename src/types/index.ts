@@ -7,6 +7,7 @@ export type Direction = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | 'u' 
 export type SwipeDirection = 'up' | 'down' | 'left' | 'right' | 'ne' | 'nw' | 'se' | 'sw';
 
 export type TriggerAction = 'show' | 'switch_set';
+export type SessionMode = 'live' | 'replay';
 export type UiMode = 'auto' | 'desktop' | 'portrait' | 'landscape';
 export type GameState = 'disconnected' | 'account' | 'playing';
 export type CaptureStage = 'none' | 'who' | 'where' | 'inv' | 'eq' | 'stat' | 'container' | 'shop' | 'shop-detail' | 'practice' | 'whois' | 'description' | 'info' | 'quest' | 'account';
@@ -388,6 +389,8 @@ export interface SettingsModalProps {
     setIsNewbieMode: (val: boolean) => void;
     isNoviceMode: boolean;
     setIsNoviceMode: (val: boolean) => void;
+    showRecordingIndicator: boolean;
+    setShowRecordingIndicator: (val: boolean) => void;
     isTimestampEnabled: boolean;
     setIsTimestampEnabled: (val: boolean) => void;
     fontFamily: string;
@@ -421,6 +424,7 @@ export interface SavedSettings {
     disableSmoothScroll?: boolean;
     isImmersionMode?: boolean;
     isMobileBrevityMode?: boolean;
+    showRecordingIndicator?: boolean;
     showOrganicTerrain?: boolean;
     inlineCategories?: InlineCategoryConfig[];
     favorites?: string[];

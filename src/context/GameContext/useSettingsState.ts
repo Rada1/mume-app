@@ -50,6 +50,7 @@ export const useSettingsState = () => {
     const [isBloomEnabled, setIsBloomEnabled] = usePersistentState('mud-bloom-enabled', (MASTER_SETTINGS as any).isBloomEnabled ?? false);
     const [isSpectateMode, setIsSpectateMode] = usePersistentState('mud-spectate-mode', false);
     const [isTimestampEnabled, setIsTimestampEnabled] = usePersistentState('mud-timestamp-enabled', false);
+    const [showRecordingIndicator, setShowRecordingIndicator] = usePersistentState('mud-show-recording-indicator', false);
     const [favorites, setFavorites] = usePersistentState<string[]>('mud-favorites', []);
     const [fontFamily, setFontFamily] = usePersistentState<string>('mud-font-family', "'Roboto Mono', monospace");
     const [zoneMusic, setZoneMusic] = usePersistentState<ZoneMusicMapping[]>('mud-zone-music', [
@@ -76,6 +77,7 @@ export const useSettingsState = () => {
         disableSmoothScroll, setDisableSmoothScroll,
         isImmersionMode, setIsImmersionMode,
         isMobileBrevityMode, setIsMobileBrevityMode,
+        showRecordingIndicator, setShowRecordingIndicator,
         showOrganicTerrain, setShowOrganicTerrain,
         inlineCategories, setInlineCategories,
         isHighlighterEnabled, setIsHighlighterEnabled,

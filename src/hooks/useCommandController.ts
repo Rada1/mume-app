@@ -83,6 +83,8 @@ export interface CommandControllerDeps {
     recordEntry?: (type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any) => void;
     clearLog: () => void;
     gameState: import('../types').GameState;
+    sessionMode: import('../types').SessionMode;
+    replayer: any;
 }
 
 
@@ -149,6 +151,53 @@ export function useCommandController(deps: CommandControllerDeps) {
             if (silent && isSystem) practice.setSilentSyncPending(true);
         } else if (cmd.toLowerCase().startsWith('list') || cmd.toLowerCase().startsWith('browse')) {
             if (options?.fromUi) shop.setIsUiRequested(true);
+        }
+
+        // --- Theater Mode Search Interception ---
+        if (d.sessionMode === 'replay' && !silent && !isSystem) {
+            const keyword = cmd.trim().toLowerCase();
+            if (keyword && d.replayer?.log) {
+                // Find next occurrence in replayer log entries (Rx only)
+                const logEntries = d.replayer.log.entries;
+                const currentTime = d.replayer.state.currentTime;
+                
+                let foundIndex = -1;
+                // Search forward from current playhead
+                for (let i = 0; i < logEntries.length; i++) {
+                    const entry = logEntries[i];
+                    if (entry.type === 'rx' && entry.timestamp > currentTime) {
+                        const text = (typeof entry.data === 'string' ? entry.data : new TextDecoder().decode(new Uint8Array(entry.data))).toLowerCase();
+                        if (text.includes(keyword)) {
+                            foundIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                // If not found forward, wrap around/search from start
+                if (foundIndex === -1) {
+                    for (let i = 0; i < logEntries.length; i++) {
+                        const entry = logEntries[i];
+                        if (entry.type === 'rx') {
+                            const text = (typeof entry.data === 'string' ? entry.data : new TextDecoder().decode(new Uint8Array(entry.data))).toLowerCase();
+                            if (text.includes(keyword)) {
+                                foundIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (foundIndex !== -1) {
+                    const match = logEntries[foundIndex];
+                    console.log(`[Replayer] Match found for "${keyword}" at ${match.timestamp}ms. Seeking...`);
+                    d.replayer.pause();
+                    d.replayer.seek(match.timestamp);
+                } else {
+                    addMessage('system', `Keyword "${keyword}" not found in session log.`, undefined, undefined, undefined, { textOnly: `Keyword "${keyword}" not found in session log.`, lower: `keyword "${keyword}" not found in session log.` });
+                }
+            }
+            return;
         }
 
         executor.executeCommand(cmd, silent, isSystem, isHistorical, fromDrawer);

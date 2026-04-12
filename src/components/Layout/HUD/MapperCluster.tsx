@@ -3,7 +3,7 @@ import { Mapper } from '../../Mapper/Mapper';
 import { LineCluster } from './LineCluster';
 import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { useMapper } from '../../../context/useMapper';
-import { GripHorizontal, Map as MapIcon, User, Shield, Users, BarChart2, CloudFog } from 'lucide-react';
+import { GripHorizontal, Map as MapIcon, User, Shield, Users, BarChart2, CloudFog, FileText } from 'lucide-react';
 import InputArea from '../../InputArea';
 import { StatsDrawer } from '../../Drawers/StatsDrawer';
 import { CharacterDrawer } from '../../Drawers/CharacterDrawer';
@@ -43,7 +43,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         env, isFoggy, gameState
     } = useGame() as any;
     const { target, activePrompt, stats } = useVitals();
-    const { ui, setUI, setPopoverState } = useUI();
+    const { ui, setUI, setPopoverState, isLibraryOpen, setIsLibraryOpen } = useUI();
     const { getLightingIcon, getWeatherIcon, lighting, weather } = env;
     const { isMapFloating, setIsMapFloating } = useMapper();
     const isExpanded = ui.mapExpanded || ui.peekingDrawer === 'map';
@@ -89,7 +89,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
 
     // Mobile DOCKED (Gutter) Mode
     // Section removed in account mode or landscape to prevent duplicate command bars
-    if (isMobile && !isMapFloating && gameState === 'playing' && !isLandscape) {
+    const isReplaying = (useGame() as any).sessionMode === 'replay';
+    if (isMobile && !isMapFloating && (gameState === 'playing' || isReplaying) && !isLandscape) {
         const isShown = ui.mapExpanded || (ui.peekingDrawer === 'map');
         
         return (
@@ -253,7 +254,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 )}
 
                 {/* Unified Tab Bar for both orientations - Now at the bottom */}
-                {!isKeyboardOpen && gameState === 'playing' && (
+                {!isKeyboardOpen && (gameState === 'playing' || gameState === 'account') && (
                     <div className="portrait-tab-bar">
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'stats' ? 'active' : ''}`}

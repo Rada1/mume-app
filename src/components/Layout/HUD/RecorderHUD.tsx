@@ -9,9 +9,9 @@ import { Circle } from 'lucide-react';
 import './LineCluster.css'; // Reuse some HUD styles or we'll add our own
 
 export const RecorderHUD: React.FC = () => {
-    const { isRecording, duration } = useUI();
+    const { isRecording, duration, showRecordingIndicator } = useUI();
 
-    if (!isRecording) return null;
+    if (!isRecording || !showRecordingIndicator) return null;
 
     const formatDuration = (s: number) => {
         const mins = Math.floor(s / 60);

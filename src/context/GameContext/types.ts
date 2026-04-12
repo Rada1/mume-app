@@ -123,6 +123,8 @@ export interface UIContextType {
     characterName: string | null;
     isRecording: boolean;
     duration: number;
+    showRecordingIndicator: boolean;
+    setShowRecordingIndicator: (val: boolean) => void;
     startRecording: (characterName?: string) => void;
     stopRecording: () => import('../../hooks/useSessionRecorder').SessionLog;
     saveLog: (log: import('../../hooks/useSessionRecorder').SessionLog) => void;
@@ -173,6 +175,8 @@ export interface GameContextType {
     setHasSeenOnboarding: (val: boolean) => void;
     showDebugEchoes: boolean;
     setShowDebugEchoes: (val: boolean) => void;
+    sessionMode: import('../../types').SessionMode;
+    setSessionMode: (val: import('../../types').SessionMode) => void;
     uiMode: import('../../types').UiMode;
     setUiMode: (val: import('../../types').UiMode) => void;
     disable3dScroll: boolean;
@@ -183,6 +187,8 @@ export interface GameContextType {
     setIsImmersionMode: (val: boolean) => void;
     isMobileBrevityMode: boolean;
     setIsMobileBrevityMode: (val: boolean) => void;
+    showRecordingIndicator: boolean;
+    setShowRecordingIndicator: (val: boolean) => void;
     isCrtEnabled: boolean;
     setIsCrtEnabled: (val: boolean) => void;
     isBloomEnabled: boolean;

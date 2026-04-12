@@ -5,12 +5,36 @@
 
 import React, { useState } from 'react';
 import { useUI } from '../../../context/GameContext';
-import { Play, Pause, Square, FastForward, Rewind, Download, Video, X, Eye, EyeOff } from 'lucide-react';
+import { 
+    Play, Pause, Square, FastForward, Rewind, Download, Video, X, Eye, EyeOff,
+    Search, ChevronLeft, ChevronRight 
+} from 'lucide-react';
 
 export const ReplayHUD: React.FC = () => {
     const { replayer } = useUI();
-    const { state, play, pause, seek, setSpeed, setPrivacyMode, loadLog, startExport, stopExport, setIsVisible } = replayer;
+    const { state, play, pause, seek, setSpeed, setPrivacyMode, loadLog, startExport, stopExport, setIsVisible, performSearch } = replayer;
     const [isHovered, setIsHovered] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value);
+        performSearch(e.target.value);
+    };
+
+    const jumpToResult = (dir: 'next' | 'prev') => {
+        if (!state.searchResults.length) return;
+        
+        let targetTime = 0;
+        if (dir === 'next') {
+            const next = state.searchResults.find(t => t > state.currentTime + 100);
+            targetTime = next !== undefined ? next : state.searchResults[0];
+        } else {
+            const prevs = state.searchResults.filter(t => t < state.currentTime - 100);
+            targetTime = prevs.length ? prevs[prevs.length - 1] : state.searchResults[state.searchResults.length - 1];
+        }
+        
+        seek(targetTime);
+    };
 
     console.log('[ReplayHUD] Rendering, duration:', state.duration, 'currentTime:', state.currentTime, 'isVisible:', state.isVisible);
     
@@ -75,6 +99,45 @@ export const ReplayHUD: React.FC = () => {
                 </button>
             </div>
 
+            {/* Search Row */}
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <div style={{ position: 'relative', flex: 1 }}>
+                    <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.3)' }} />
+                    <input 
+                        type="text"
+                        placeholder="Search session log..."
+                        value={searchQuery}
+                        onChange={handleSearch}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                pause();
+                                jumpToResult('next');
+                            }
+                        }}
+                        style={{
+                            width: '100%',
+                            background: 'rgba(255,255,255,0.05)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            borderRadius: '8px',
+                            padding: '6px 12px 6px 32px',
+                            color: '#fff',
+                            fontSize: '0.8rem',
+                            outline: 'none'
+                        }}
+                    />
+                </div>
+                {state.searchResults?.length > 0 && (
+                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center', background: 'rgba(74, 144, 226, 0.1)', borderRadius: '8px', padding: '2px 4px' }}>
+                        <button onClick={() => jumpToResult('prev')} style={{ background: 'none', border: 'none', color: '#4a90e2', cursor: 'pointer', padding: '2px' }}><ChevronLeft size={16} /></button>
+                        <span style={{ fontSize: '0.7rem', color: '#4a90e2', fontWeight: 'bold', minWidth: '40px', textAlign: 'center' }}>
+                            {state.searchResults.filter(t => t <= state.currentTime).length} / {state.searchResults.length}
+                        </span>
+                        <button onClick={() => jumpToResult('next')} style={{ background: 'none', border: 'none', color: '#4a90e2', cursor: 'pointer', padding: '2px' }}><ChevronRight size={16} /></button>
+                    </div>
+                )}
+            </div>
+
             {/* Scrubber */}
             <div style={{ position: 'relative', height: '6px', width: '100%', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '3px', cursor: 'pointer' }}
                  onClick={(e) => {
@@ -89,11 +152,31 @@ export const ReplayHUD: React.FC = () => {
                     width: `${progress}%`, backgroundColor: '#4a90e2', 
                     borderRadius: '3px', boxShadow: '0 0 10px rgba(74, 144, 226, 0.5)'
                 }} />
+                
+                {/* Search Markers */}
+                {state.searchResults?.map((t, idx) => (
+                    <div 
+                        key={idx}
+                        style={{
+                            position: 'absolute',
+                            left: `${(t / state.duration) * 100}%`,
+                            top: '-2px',
+                            width: '2px',
+                            height: '10px',
+                            backgroundColor: '#fff',
+                            boxShadow: '0 0 4px #4a90e2',
+                            pointerEvents: 'none',
+                            zIndex: 1
+                        }}
+                    />
+                ))}
+
                 <div style={{
                     position: 'absolute', top: '50%', left: `${progress}%`,
                     width: '12px', height: '12px', backgroundColor: '#fff',
                     borderRadius: '50%', transform: 'translate(-50%, -50%)',
-                    boxShadow: '0 0 5px rgba(0,0,0,0.5)'
+                    boxShadow: '0 0 5px rgba(0,0,0,0.5)',
+                    zIndex: 2
                 }} />
             </div>
 

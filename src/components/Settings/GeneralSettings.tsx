@@ -34,6 +34,8 @@ interface GeneralSettingsProps {
     setIsImmersionMode: (val: boolean) => void;
     isMobileBrevityMode: boolean;
     setIsMobileBrevityMode: (val: boolean) => void;
+    showRecordingIndicator: boolean;
+    setShowRecordingIndicator: (val: boolean) => void;
     isHighlighterEnabled: boolean;
     setIsHighlighterEnabled: (val: boolean) => void;
     isCrtEnabled: boolean;
@@ -509,6 +511,31 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             position: 'absolute',
                             top: '2px',
                             left: isMobileBrevityMode ? '22px' : '2px',
+                            transition: 'all 0.3s'
+                        }} />
+                    </button>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
+                    <div style={{ flex: '1 1 200px' }}>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Recording Indicator</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>
+                            Show the "REC" indicator at the top of the screen when recording.
+                        </div>
+                    </div>
+                    <button
+                        className={`setting-toggle ${showRecordingIndicator ? 'active' : ''}`}
+                        onClick={() => setShowRecordingIndicator(!showRecordingIndicator)}
+                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: showRecordingIndicator ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                    >
+                        <div style={{
+                            width: '20px',
+                            height: '20px',
+                            background: '#fff',
+                            borderRadius: '50%',
+                            position: 'absolute',
+                            top: '2px',
+                            left: showRecordingIndicator ? '22px' : '2px',
                             transition: 'all 0.3s'
                         }} />
                     </button>

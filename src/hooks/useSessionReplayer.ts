@@ -15,6 +15,7 @@ export interface ReplayerState {
   isExporting: boolean;
   isVisible: boolean;
   isPrivacyMode: boolean;
+  searchResults: number[];
 }
 
 export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: any, isPrivacyMode: boolean) => void) => {
@@ -27,7 +28,8 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
     currentIndex: 0,
     isExporting: false,
     isVisible: false,
-    isPrivacyMode: false
+    isPrivacyMode: false,
+    searchResults: []
   });
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -58,7 +60,8 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
       currentIndex: 0,
       isExporting: false,
       isVisible: false,
-      isPrivacyMode: stateRef.current.isPrivacyMode
+      isPrivacyMode: stateRef.current.isPrivacyMode,
+      searchResults: []
     });
     if (timerRef.current) clearInterval(timerRef.current);
   }, []);
@@ -85,7 +88,8 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
       currentIndex: 0,
       isExporting: false,
       isVisible: true,
-      isPrivacyMode: stateRef.current.isPrivacyMode
+      isPrivacyMode: stateRef.current.isPrivacyMode,
+      searchResults: []
     });
   }, []);
 
@@ -107,6 +111,34 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
   
   const setPrivacyMode = useCallback((active: boolean) => {
       setState(s => ({ ...s, isPrivacyMode: active }));
+  }, []);
+
+  const performSearch = useCallback((query: string) => {
+    if (!logRef.current || !query.trim()) {
+      setState(s => ({ ...s, searchResults: [] }));
+      return;
+    }
+
+    const lowerQuery = query.toLowerCase();
+    const matches: number[] = [];
+    const entries = logRef.current.entries;
+
+    // Search through rx, tx, and sys entries for the query
+    for (const entry of entries) {
+      if (entry.typ === 'rx' || entry.typ === 'tx' || entry.typ === 'sys') {
+        const text = typeof entry.d === 'string' ? entry.d : JSON.stringify(entry.d);
+        if (text.toLowerCase().includes(lowerQuery)) {
+          // If we have multiple matches very close together, just take the first one
+          // to avoid cluttering the scrubber with too many markers
+          const lastMatch = matches[matches.length - 1];
+          if (lastMatch === undefined || (entry.t - lastMatch > 500)) {
+            matches.push(entry.t);
+          }
+        }
+      }
+    }
+
+    setState(s => ({ ...s, searchResults: matches }));
   }, []);
 
   const play = useCallback(() => {
@@ -152,23 +184,38 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
 
       setState(s => ({ ...s, currentTime: elapsed, currentIndex: idx }));
     }, 50); // 20fps check
-  }, [onData, pause, stopExport]);
+  }, [pause, stopExport]);
 
-  const seek = useCallback((timeMs: number) => {
+  const rehydrate = useCallback((timeMs: number) => {
     if (!logRef.current) return;
     
     const entries = logRef.current.entries;
     let idx = 0;
     
+    // Process all entries silently up to the target time
     while (idx < entries.length && entries[idx].t <= timeMs) {
+      const entry = entries[idx];
+      // Only re-process GMCP and RX for state rehydration
+      if (entry.typ === 'gmcp' || entry.typ === 'rx') {
+          // Pass 'true' for silent/rehydrating flag to onData
+          onDataRef.current(entry.typ as any, entry.d, stateRef.current.isPrivacyMode, true);
+      }
       idx++;
     }
+    
+    return idx;
+  }, []);
 
-    setState(s => ({ ...s, currentTime: timeMs, currentIndex: idx }));
+  const seek = useCallback((timeMs: number) => {
+    if (!logRef.current) return;
+    
+    const newIndex = rehydrate(timeMs);
+
+    setState(s => ({ ...s, currentTime: timeMs, currentIndex: newIndex || 0 }));
     if (stateRef.current.isPlaying) {
         startTimeRef.current = Date.now() - (timeMs / stateRef.current.speed);
     }
-  }, []);
+  }, [rehydrate]);
 
   const setSpeed = useCallback((speed: number) => {
       const isPlaying = stateRef.current.isPlaying;
@@ -230,6 +277,7 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
     setSpeed,
     setIsVisible,
     setPrivacyMode,
+    performSearch,
     startExport,
     stopExport,
     state
