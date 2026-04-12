@@ -21,8 +21,8 @@ export function useQuestsHandler(
         const textOnly = text.replace(/\x1b\[[0-9;]*m/g, '').trim();
         const lower = textOnly.toLowerCase();
 
-        // 1. Detect start of quest list
-        if (textOnly.includes('You have learnt of a quest in this area:') || 
+        // 1. Detect start of quest list or detailed quest view
+        if ((textOnly.includes('learnt of') && textOnly.includes('quest')) || 
             textOnly.includes('with the following unfinished quest')) {
             
             console.log(`[QuestsHandler] START Quest List detected: "${textOnly}"`);

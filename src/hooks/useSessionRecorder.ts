@@ -25,17 +25,14 @@ export interface SessionLog {
 }
 
 export const useSessionRecorder = () => {
-  const [isRecording, setIsRecording] = useState(true);
+  const [isRecording, setIsRecording] = useState(false);
   const [duration, setDuration] = useState(0);
   const entriesRef = useRef<LogEntry[]>([]);
   const startTimeRef = useRef<number>(Date.now());
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const recordedCharacterRef = useRef<string | null>(null);
 
   useEffect(() => {
-    // Automatically start recording on mount
-    if (isRecording) {
-      startRecording();
-    }
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
@@ -45,6 +42,7 @@ export const useSessionRecorder = () => {
     setIsRecording(true);
     entriesRef.current = [];
     startTimeRef.current = Date.now();
+    recordedCharacterRef.current = characterName || null;
     setDuration(0);
 
     // Initial metadata entry
@@ -74,7 +72,7 @@ export const useSessionRecorder = () => {
     });
   }, [isRecording]);
 
-  const stopRecording = useCallback((): SessionLog => {
+  const stopRecording = useCallback((characterName?: string): SessionLog => {
     setIsRecording(false);
     if (timerRef.current) clearInterval(timerRef.current);
 
@@ -83,6 +81,7 @@ export const useSessionRecorder = () => {
       startTime: new Date(startTimeRef.current).toISOString(),
       entries: entriesRef.current,
       metadata: {
+        character: characterName || recordedCharacterRef.current || undefined,
         client: 'MUME AI Studio',
         version: '1.0.0'
       }
@@ -95,9 +94,10 @@ export const useSessionRecorder = () => {
     const blob = new Blob([JSON.stringify(log)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    const dateStr = new Date(log.startTime).toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const dateStr = new Date(log.startTime).toISOString().replace(/[:.]/g, '-').slice(0, 10);
+    const charPrefix = log.metadata.character ? `[${log.metadata.character}] ` : '';
     a.href = url;
-    a.download = `mume-session-${dateStr}.mume-log`;
+    a.download = `${charPrefix}mume-session-${dateStr}.mume-log`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

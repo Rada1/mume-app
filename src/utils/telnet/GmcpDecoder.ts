@@ -30,6 +30,7 @@ export interface GmcpHandlers {
     onMumeEdit?: (data: import('../../types').GmcpMumeEdit) => void;
     onRoomCharsCombat?: (data: any[]) => void;
     onCharRide?: (data: any) => void;
+    onCorePing?: () => void;
     onDisconnect?: () => void;
 }
 
@@ -94,6 +95,8 @@ export class GmcpDecoder {
             this.handleSimpleJson(json, handlers.onMumeEdit);
         } else if (pkgLower === 'char.ride') {
             this.handleSimpleJson(json, handlers.onCharRide);
+        } else if (pkgLower === 'core.ping') {
+            this.handlers.onCorePing?.();
         }
     }
 

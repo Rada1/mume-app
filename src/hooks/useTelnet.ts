@@ -35,6 +35,7 @@ export interface TelnetHandlers {
     onMumeEdit?: (data: import('../types').GmcpMumeEdit) => void;
     onRoomCharsCombat?: (data: any[]) => void;
     onCharRide?: (data: any) => void;
+    onCorePing?: () => void;
     onDisconnect?: () => void;
     flushMessages?: () => void;
     addDiagnosticLog?: (log: string) => void;
@@ -104,7 +105,8 @@ export function useTelnet(options: TelnetOptions) {
         onMumeEdit: (val) => handlersRef.current.onMumeEdit?.(val),
         onDisconnect: () => handlersRef.current.onDisconnect?.(),
         onRoomCharsCombat: (val) => handlersRef.current.onRoomCharsCombat?.(val),
-        onCharRide: (val) => handlersRef.current.onCharRide?.(val)
+        onCharRide: (val) => handlersRef.current.onCharRide?.(val),
+        onCorePing: () => handlersRef.current.onCorePing?.()
     }));
     const protocolHandler = useRef<ProtocolHandler | null>(null);
 

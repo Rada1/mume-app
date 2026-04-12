@@ -101,7 +101,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         mapperRef,
         detectLighting: deps.detectLighting,
         setWeather: deps.setWeather,
-        setIsFoggy: deps.setIsFoggy
+        setIsFoggy: deps.setIsFoggy,
+        isSpectateMode: deps.isSpectateMode
     });
 
     const { checkCombatMatch, handleCombatExit, handleXpTicker } = useCombatParser({
@@ -427,7 +428,8 @@ export function useGameParser(deps: UseGameParserDeps) {
                 const textToParse = attachedText || textOnly;
                 if (textToParse.length > 0) {
                     parseQuestLine(textToParse);
-                    setQuestLines((p: any) => [...p, { id: Math.random().toString(36).substring(7), text: textToParse, html: ansiConvert.toHtml(cleanLine) }]);
+                    const html = processMessageHtml ? processMessageHtml(ansiConvert.toHtml(cleanLine), 'quest-line-' + Math.random(), false, 'quest-list') : ansiConvert.toHtml(cleanLine);
+                    setQuestLines((p: any) => [...p, { id: Math.random().toString(36).substring(7), text: textToParse, html }]);
                 }
                 if (promptInfo.isEndPrompt && !attachedText) finalizeCapture();
                 if (isDrawerCapture.current || isSilentCapture.current) return;

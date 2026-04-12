@@ -532,7 +532,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             onAddNpc: (data: string | GmcpOccupant) => { gmcpHandlers.onAddNpc(data); addNpcFn?.(data); },
             onRemovePlayer: (data: string | GmcpOccupant) => { gmcpHandlers.onRemovePlayer(data); removePlayerFn?.(data); },
             onRemoveNpc: (data: string | GmcpOccupant) => { gmcpHandlers.onRemoveNpc(data); removeNpcFn?.(data); },
-            onCharNameChange: gmcpHandlers.onCharNameChange,
+            onCharNameChange: (name) => {
+                gmcpHandlers.onCharNameChange(name);
+                if (name && !recorder.isRecording) {
+                    console.log(`[Recorder] Char.Name received. Auto-starting recording for character: ${name}`);
+                    recorder.startRecording(name);
+                }
+            },
             onCharInfo: gmcpHandlers.onCharInfo,
             onPositionChange: gmcpHandlers.onPositionChange,
             onOpponentChange: (name) => { opponentChangeFn?.(name); v.setOpponentName(name); },
@@ -542,6 +548,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             onGroupRemove: (id) => { gmcpHandlers.onGroupRemove(id); groupRemoveFn?.(id); },
             onGroupSet: (data) => { gmcpHandlers.onGroupSet(data); groupSetFn?.(data); },
             onCharRide: gmcpHandlers.onCharRide,
+            onCorePing: () => {
+                // Initializer moved to onCharNameChange
+            },
             onDisconnect: () => {
                 console.log('[GameContext] Disconnect! Clearing tactical buffers.');
                 s.setStatsLines([]);

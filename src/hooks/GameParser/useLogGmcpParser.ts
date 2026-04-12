@@ -26,6 +26,7 @@ interface LogGmcpParserDeps {
     detectLighting?: (light: number | string) => void;
     setWeather?: (w: any) => void;
     setIsFoggy?: (f: boolean) => void;
+    isSpectateMode?: boolean;
 }
 
 export function useLogGmcpParser(deps: LogGmcpParserDeps) {
@@ -68,6 +69,11 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
     const parseLogGmcp = useCallback((line: string) => {
         // Strip ANSI escape codes first — cleanLine from processLine still contains them
         const stripped = line.replace(/\x1b\[[0-9;]*m/g, '');
+        
+        // Detect if the line has explicit GMCP marking or snoop prefixes
+        const isSnooped = /^\s*&[a-zA-Z]\s+/.test(stripped);
+        const isExplicitGmcp = /GMCP\s+/i.test(stripped);
+        
         // Robust GMCP regex handles optional GMCP prefix and ampersand prefixes
         // Sometimes snooped logs leak naked namespaces like "Core.Ping"
         const gmcpRegex = /^\s*(?:&[a-zA-Z]\s+)*(?:GMCP\s+)?([A-Za-z]+\.[A-Za-z\.]+)(?:\s+(.+))?$/i;
@@ -78,7 +84,13 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         const namespace = match[1];
         const jsonStr = match[2];
 
+        // --- Selective Suppression Logic ---
+        // If we are NOT in spectate mode, we only suppress if it is EXPLICITLY marked as GMCP.
+        // This prevents suppressing "Core.Hello" (no payload) which is common in documentation/help text.
+        if (!deps.isSpectateMode && !isExplicitGmcp) return false;
+
         // If it looks like a known GMCP namespace but has no payload, it's a signal to suppress
+        // (but only if we've passed the mode check above)
         if (!jsonStr) return true;
 
         try {

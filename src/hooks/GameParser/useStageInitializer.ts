@@ -68,7 +68,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         }
 
         // 2. Quests
-        else if (lower.includes('learnt of a quest') || lower.includes('unfinished quest') || lower.includes('not found any new quests') || lower.includes('no unfinished quests') || quests.activeQuests?.some(q => {
+        else if ((lower.includes('learnt of') && lower.includes('quest')) || lower.includes('unfinished quest') || lower.includes('not found any new quests') || lower.includes('no unfinished quests') || quests.activeQuests?.some(q => {
             const qName = q.name.toLowerCase().trim().replace(/\s+/g, ' ');
             const lName = lower.trim().replace(/\s+/g, ' ');
             return qName === lName || lName.includes(qName) || qName.includes(lName);

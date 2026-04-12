@@ -193,7 +193,32 @@ export const useMessageHighlighter = (
         }
 
 
-        // --- 3. Specialized List Highlighting (WHO/WHERE) ---
+        // --- 3.5. Quest List Highlighting ---
+        if (type === 'quest-list') {
+            const trimmed = textOnly.trim();
+            if (trimmed.length > 0) {
+                const lowerTrimmed = trimmed.toLowerCase();
+                // Exclude headers, informational lines, and separators
+                const isHeader = lowerTrimmed.includes('you have') || 
+                                 lowerTrimmed.includes('you are') || 
+                                 lowerTrimmed.includes('unfinished') || 
+                                 lowerTrimmed.startsWith('(*') ||
+                                 lowerTrimmed.includes('---');
+                
+                if (!isHeader) {
+                    // It's a quest name or area name (e.g., "Valinor")
+                    const questGlow = '#facc15'; // Quest yellow
+                    // If it starts with *, strip it and take the name before any description dash/colon
+                    const context = trimmed.startsWith('*') ? trimmed.substring(1).trim().split(/\s*[-:]\s*/)[0].trim() : trimmed;
+                    const buttonId = `quest-${context.toLowerCase().replace(/\s+/g, '-')}`;
+                    const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'quest');
+                    
+                    return `<span class="inline-btn auto-quest${isSelected ? ' selected' : ''}" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="quest %n" data-context="${esc(context)}" data-action="command" data-from-drawer="true" style="--glow-color: ${questGlow}; color: var(--glow-color); font-weight: 800">${originalHtml}</span>`;
+                }
+            }
+        }
+
+        // --- 3.6. Specialized List Highlighting (WHO/WHERE) ---
         if (type === 'who-list' || type === 'where-list') {
             let cleanText = textOnly.trim();
             let lastLength = 0;
@@ -223,7 +248,7 @@ export const useMessageHighlighter = (
             }
         }
 
-        // --- 3.5. Combat Damage Highlighting ---
+        // --- 3.6. Combat Damage Highlighting ---
         // (Section removed: combat message highlighting for 'hit, body, etc' is now disabled)
 
         if (!isRoomName) {

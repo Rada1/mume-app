@@ -50,8 +50,8 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
         if (!infoContainerRef.current) return;
         const measure = () => {
             const width = infoContainerRef.current?.clientWidth;
-            // Scale font so 80 monospace chars fit safely
-            if (width) setTabFontSize(`${width / 48}px`);
+            // Scale font so 80 monospace chars fit safely within the padded container (24px padding)
+            if (width) setTabFontSize(`${(width - 24) / 48}px`);
         };
         measure();
         const ro = new ResizeObserver(measure);

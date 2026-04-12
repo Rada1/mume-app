@@ -157,6 +157,8 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         const cmd = targetEl.getAttribute('data-cmd');
         const context = targetEl.getAttribute('data-context');
         const action = targetEl.getAttribute('data-action');
+        const fromDrawerStr = targetEl.getAttribute('data-from-drawer');
+        const fromDrawer = fromDrawerStr === 'true';
         const category = targetEl.getAttribute('data-category');
         const menuDisplay = targetEl.getAttribute('data-menu-display') as 'dial' | 'list' || undefined;
         const rawContextStr = context || targetEl.innerText.trim();
@@ -251,7 +253,11 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         } else if ((action === 'command' || action === 'preload') && cmd) {
             let finalCmd = cmd;
             if (context) {
-                finalCmd = finalCmd.replace(/%n/g, context).replace(/\$1/g, context);
+                if (finalCmd.includes('%n') || finalCmd.includes('$1')) {
+                    finalCmd = finalCmd.replace(/%n/g, context).replace(/\$1/g, context);
+                } else {
+                    finalCmd = `${finalCmd} ${context}`;
+                }
             }
 
             if (action === 'preload' || finalCmd.startsWith('input:')) {
@@ -277,7 +283,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 }
             } else {
                 if (context) lastCommandContextRef.current = { context, displayText: targetEl.innerText.trim() };
-                executeCommand(finalCmd, false, false, false, false, { shouldFocus: false });
+                executeCommand(finalCmd, false, false, false, fromDrawer, { shouldFocus: false });
             }
             triggerHaptic(40);
         } else if (cmd === 'target' && context) {

@@ -53,8 +53,8 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
         if (!eqContainerRef.current) return;
         const measure = () => {
             const width = eqContainerRef.current?.clientWidth;
-            // Space Mono char width ≈ 0.601 × font-size, so to fit 80 chars: size = width / (80 × 0.601)
-            if (width) setEqFontSize(`${width / 48}px`);
+            // Space Mono char width ≈ 0.601 × font-size, subtract padding (16px)
+            if (width) setEqFontSize(`${(width - 16) / 48}px`);
         };
         measure();
         const ro = new ResizeObserver(measure);
