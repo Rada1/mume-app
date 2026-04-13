@@ -966,6 +966,7 @@ span.inline-btn {
 
 .inline-btn.active-target {
     border: 1px solid var(--target-color, #facc15) !important;
+    color: var(--target-color, #facc15) !important;
     background: rgba(255, 255, 255, 0.05) !important;
     border-radius: 4px;
     padding: 0 3px !important;

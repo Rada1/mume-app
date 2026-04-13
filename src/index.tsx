@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
+import { createPortal } from 'react-dom';
 
 import './index.css';
 import './components/MessageLog.css';
@@ -85,8 +86,14 @@ const MudClient = () => {
 
         const handleGlobalTouch = (e: TouchEvent) => {
             const target = e.target as HTMLElement;
-            // Don't blur if the user is actually trying to type or click the prompt
-            if (target.tagName === 'INPUT' || target.classList.contains('cmd-prompt') || target.closest('.input-form')) {
+            // Don't blur if the user is actually trying to type, click the prompt, or interact with an active button
+            if (
+                target.tagName === 'INPUT' || 
+                target.classList.contains('cmd-prompt') || 
+                target.closest('.input-form') ||
+                target.closest('.inline-btn') ||
+                target.closest('.popover-item')
+            ) {
                 return;
             }
 
@@ -106,6 +113,16 @@ const MudClient = () => {
             document.removeEventListener('touchstart', handleGlobalTouch, { capture: true });
         };
     }, [isMobile]);
+
+    // Sync popover state to body for CSS selector support across portals
+    useEffect(() => {
+        if (popoverState) {
+            document.body.classList.add('has-popover');
+        } else {
+            document.body.classList.remove('has-popover');
+        }
+        return () => document.body.classList.remove('has-popover');
+    }, [popoverState]);
 
     useEffect(() => {
         document.documentElement.style.setProperty('--accent', accentColor);
@@ -264,31 +281,39 @@ const MudClient = () => {
                 </ErrorBoundary>
             </div>
 
-            <ErrorBoundary name="Modals & Dialogs">
-                <ModalsLayer
-                    isLoading={isLoading}
-                    returnToManager={returnToManager}
-                    setReturnToManager={setReturnToManager}
-                    managerSelectedSet={managerSelectedSet}
-                    setManagerSelectedSet={setManagerSelectedSet}
-                    connect={() => telnet.connect()}
-                />
-            </ErrorBoundary>
+            {typeof document !== 'undefined' && createPortal(
+                <ErrorBoundary name="Modals & Dialogs">
+                    <div className={`modals-layer-wrapper ${isLandscape ? 'is-landscape' : ''}`}>
+                        <ModalsLayer
+                            isLoading={isLoading}
+                            returnToManager={returnToManager}
+                            setReturnToManager={setReturnToManager}
+                            managerSelectedSet={managerSelectedSet}
+                            setManagerSelectedSet={setManagerSelectedSet}
+                            connect={() => telnet.connect()}
+                        />
+                        <MultiSelectToolbar />
+                        <SwipeFeedbackOverlay />
+                    </div>
+                </ErrorBoundary>,
+                document.body
+            )}
 
-            <MultiSelectToolbar />
 
-            {heldButton?.isLogDragging && (
+            {heldButton?.isLogDragging && createPortal(
                 <div 
                     className="log-drag-ghost" 
                     style={{ 
                         left: heldButton.x, 
-                        top: heldButton.y 
+                        top: heldButton.y,
+                        zIndex: 10000000
                     }}
                 >
                     {heldButton.label || heldButton.baseCommand}
-                </div>
+                </div>,
+                document.body
             )}
-            <SwipeFeedbackOverlay />
+
         </div>
     );
 };

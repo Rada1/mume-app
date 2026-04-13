@@ -8,6 +8,7 @@ import { InventoryDrawer } from './InventoryDrawer';
 import { StatsDrawer } from './StatsDrawer';
 import { CharacterDrawer } from './CharacterDrawer';
 import { PlayersDrawer } from './PlayersDrawer';
+import { SessionLogDrawer } from './SessionLogDrawer';
 import { Mapper } from '../Mapper/Mapper';
 
 // --- Logic Section ---
@@ -219,6 +220,11 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                         inlineCategories={inlineCategories}
                         entities={entities}
                         keywordOverrides={keywordOverrides}
+                    />
+
+                    <SessionLogDrawer
+                        isOpen={ui.drawer === 'session-log'}
+                        onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none' })); }}
                     />
                 </>
             )}

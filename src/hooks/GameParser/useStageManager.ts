@@ -16,9 +16,15 @@ export interface StageManagerDeps {
     isWaitingForInfo: React.MutableRefObject<boolean>;
     addDiagnosticLog?: (msg: string) => void;
     addMessage: (type: MessageType, text: string, ...args: any[]) => void;
-    setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
     setEqLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setInventoryLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
+    setStatsLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
+    setInfoLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
+    setScoreLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
+    setQuestLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
+    setPracticeLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
+    setWhoLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
+    setWhereLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setEntities: React.Dispatch<React.SetStateAction<Record<string, GameEntity>>>;
     registerEntity: (id: string, name: string, location: import('../../types').EntityLocation, category?: string) => import('../../types').GameEntity;
     practice: any;
@@ -27,6 +33,13 @@ export interface StageManagerDeps {
     finalizeQuests: () => void;
     tempEqRef: React.MutableRefObject<DrawerLine[]>;
     tempInvRef: React.MutableRefObject<DrawerLine[]>;
+    tempStatsRef: React.MutableRefObject<DrawerLine[]>;
+    tempScoreRef: React.MutableRefObject<DrawerLine[]>;
+    tempInfoRef: React.MutableRefObject<DrawerLine[]>;
+    tempPracticeRef: React.MutableRefObject<DrawerLine[]>;
+    tempQuestRef: React.MutableRefObject<DrawerLine[]>;
+    tempWhoRef: React.MutableRefObject<DrawerLine[]>;
+    tempWhereRef: React.MutableRefObject<DrawerLine[]>;
     tempEntitiesRef: React.MutableRefObject<Record<string, GameEntity>>;
 }
 
@@ -43,12 +56,27 @@ export function useStageManager(deps: StageManagerDeps) {
         setPopoverState,
         setEqLines,
         setInventoryLines,
+        setStatsLines,
+        setInfoLines,
+        setScoreLines,
+        setQuestLines,
+        setPracticeLines,
+        setWhoLines,
+        setWhereLines,
         setEntities,
         practice,
         shop,
+        quests,
         finalizeQuests,
         tempEqRef,
         tempInvRef,
+        tempStatsRef,
+        tempScoreRef,
+        tempInfoRef,
+        tempPracticeRef,
+        tempQuestRef,
+        tempWhoRef,
+        tempWhereRef,
         tempEntitiesRef
     } = deps;
 
@@ -101,7 +129,27 @@ export function useStageManager(deps: StageManagerDeps) {
             } else if (currentStage === 'shop-detail') {
                 shop.finalizeShopDetail(setPopoverState);
             } else if (currentStage === 'quest') {
+                setQuestLines([...tempQuestRef.current]);
+                tempQuestRef.current = [];
                 finalizeQuests();
+            } else if (currentStage === 'who') {
+                setWhoLines([...tempWhoRef.current]);
+                tempWhoRef.current = [];
+            } else if (currentStage === 'where') {
+                setWhereLines([...tempWhereRef.current]);
+                tempWhereRef.current = [];
+            } else if (currentStage === 'stat') {
+                setStatsLines([...tempStatsRef.current]);
+                tempStatsRef.current = [];
+            } else if (currentStage === 'score') {
+                setScoreLines([...tempScoreRef.current]);
+                tempScoreRef.current = [];
+            } else if (currentStage === 'info') {
+                setInfoLines([...tempInfoRef.current]);
+                tempInfoRef.current = [];
+            } else if (currentStage === 'practice') {
+                setPracticeLines([...tempPracticeRef.current]);
+                tempPracticeRef.current = [];
             } else if (currentStage === 'eq' || currentStage === 'inv' || currentStage === 'container') {
                 if (currentStage === 'eq') {
                     setEqLines([...tempEqRef.current]);

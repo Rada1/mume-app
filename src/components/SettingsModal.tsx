@@ -62,6 +62,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setIsNoviceMode,
     showRecordingIndicator,
     setShowRecordingIndicator,
+    autoSaveSessions,
+    setAutoSaveSessions
 }) => {
     const {
         isMmapperMode, setIsMmapperMode,
@@ -149,6 +151,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setIsNewbieMode={setIsNewbieMode}
                                 fontFamily={fontFamily}
                                 setFontFamily={setFontFamily}
+                                autoSaveSessions={autoSaveSessions}
+                                setAutoSaveSessions={setAutoSaveSessions}
                             />
                             <DataManagement
                                 exportSettings={exportSettings}

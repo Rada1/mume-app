@@ -27,6 +27,7 @@ interface LogGmcpParserDeps {
     setWeather?: (w: any) => void;
     setIsFoggy?: (f: boolean) => void;
     isSpectateMode?: boolean;
+    sessionMode?: 'live' | 'replay';
 }
 
 export function useLogGmcpParser(deps: LogGmcpParserDeps) {
@@ -76,7 +77,8 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         
         // Robust GMCP regex handles optional GMCP prefix and ampersand prefixes
         // Sometimes snooped logs leak naked namespaces like "Core.Ping"
-        const gmcpRegex = /^\s*(?:&[a-zA-Z]\s+)*(?:GMCP\s+)?([A-Za-z]+\.[A-Za-z\.]+)(?:\s+(.+))?$/i;
+        // In session replays, non-printable "replacement characters" (diamonds) often appear at the start.
+        const gmcpRegex = /^[\s\uFFFD\x00-\x1F\x7F-\xFF]*(?:&[a-zA-Z]\s+)*(?:GMCP\s+)?([A-Za-z]+\.[A-Za-z\.]+)(?:\s+(.+))?$/i;
         const match = stripped.match(gmcpRegex);
         
         if (!match) return false;
@@ -85,9 +87,11 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         const jsonStr = match[2];
 
         // --- Selective Suppression Logic ---
-        // If we are NOT in spectate mode, we only suppress if it is EXPLICITLY marked as GMCP.
+        // If we are NOT in spectate mode, we only suppress if it is EXPLICITLY marked as GMCP,
+        // UNLESS we are in replay mode (Theater Mode). In replays, ANY GMCP leak should be hidden.
         // This prevents suppressing "Core.Hello" (no payload) which is common in documentation/help text.
-        if (!deps.isSpectateMode && !isExplicitGmcp) return false;
+        const isReplay = deps.sessionMode === 'replay';
+        if (!deps.isSpectateMode && !isExplicitGmcp && !isReplay) return false;
 
         // If it looks like a known GMCP namespace but has no payload, it's a signal to suppress
         // (but only if we've passed the mode check above)

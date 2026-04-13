@@ -84,9 +84,9 @@ export interface LogContextType {
 
 export interface UIContextType {
     ui: {
-        drawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players';
+        drawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'session-log';
         isDrawerPeeking: boolean;
-        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map';
+        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map' | 'session-log';
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;
@@ -95,9 +95,9 @@ export interface UIContextType {
         peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map';
     };
     setUI: Dispatch<SetStateAction<{
-        drawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players';
+        drawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'session-log';
         isDrawerPeeking: boolean;
-        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map';
+        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map' | 'session-log';
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;
@@ -139,6 +139,7 @@ export interface UIContextType {
         setSpeed: (speed: number) => void;
         setIsVisible: (visible: boolean) => void;
         setPrivacyMode: (active: boolean) => void;
+        setTrimRange: (range: [number | null, number | null]) => void;
         startExport: () => Promise<void>;
         stopExport: () => void;
     };
@@ -476,6 +477,7 @@ export interface GameContextType {
         seek: (timeMs: number) => void;
         setSpeed: (speed: number) => void;
         setIsVisible: (visible: boolean) => void;
+        setTrimRange: (range: [number | null, number | null]) => void;
         startExport: () => Promise<void>;
         stopExport: () => void;
     };

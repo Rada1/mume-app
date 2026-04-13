@@ -128,6 +128,17 @@ export const useGameProviderState = () => {
     useEffect(() => { roomDescRef.current = roomDesc; }, [roomDesc]);
 
 
+    // Parser State (Moved up for useUIState access)
+    const [inventoryLines, setInventoryLines] = useState<DrawerLine[]>([]);
+    const [statsLines, setStatsLines] = useState<DrawerLine[]>([]);
+    const [infoLines, setInfoLines] = useState<DrawerLine[]>([]); 
+    const [scoreLines, setScoreLines] = useState<DrawerLine[]>([]); 
+    const [questLines, setQuestLines] = useState<DrawerLine[]>([]);
+    const [practiceLines, setPracticeLines] = useState<DrawerLine[]>([]);
+    const [whoLines, setWhoLines] = useState<DrawerLine[]>([]);
+    const [whereLines, setWhereLines] = useState<DrawerLine[]>([]);
+    const [eqLines, setEqLines] = useState<DrawerLine[]>([]);
+
     const executeCommandRef = useRef<(cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void>(() => { });
 
     // UI state
@@ -135,7 +146,12 @@ export const useGameProviderState = () => {
         ui, setUI, setIsStatsOpen, setIsCharacterOpen, setIsEquipmentOpen, setIsInventoryOpen, 
         setIsPlayersOpen, setIsMapExpanded, setIsSetManagerOpen,
         handleTabClick, toggleMap 
-    } = useUIState(executeCommandRef);
+    } = useUIState(executeCommandRef, {
+        statsCount: statsLines.length + scoreLines.length,
+        characterCount: infoLines.length + practiceLines.length + questLines.length,
+        inventoryCount: inventoryLines.length + eqLines.length,
+        playersCount: whoLines.length + whereLines.length
+    });
 
     // Environmental state
     const [lighting, setLighting] = useState<LightingType>('none');
@@ -261,16 +277,6 @@ export const useGameProviderState = () => {
         return () => window.removeEventListener('mume-replay-onboarding', handleReplay);
     }, [setHasSeenOnboarding]);
 
-    // Parser State
-    const [inventoryLines, setInventoryLines] = useState<DrawerLine[]>([]);
-    const [statsLines, setStatsLines] = useState<DrawerLine[]>([]);
-    const [infoLines, setInfoLines] = useState<DrawerLine[]>([]); 
-    const [scoreLines, setScoreLines] = useState<DrawerLine[]>([]); 
-    const [questLines, setQuestLines] = useState<DrawerLine[]>([]);
-    const [practiceLines, setPracticeLines] = useState<DrawerLine[]>([]);
-    const [whoLines, setWhoLines] = useState<DrawerLine[]>([]);
-    const [whereLines, setWhereLines] = useState<DrawerLine[]>([]);
-    const [eqLines, setEqLines] = useState<DrawerLine[]>([]);
     const captureStage = useRef<import('../../types').CaptureStage>('none');
 
     // Optimistic inventory/equipment overlay

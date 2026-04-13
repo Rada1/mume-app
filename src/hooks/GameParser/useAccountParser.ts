@@ -15,7 +15,7 @@ interface UseAccountParserProps {
     gameState: import('../../types').GameState;
     setGameState: React.Dispatch<React.SetStateAction<import('../../types').GameState>>;
     sendCommand: (cmd: string) => void;
-    executeCommandRef: React.MutableRefObject<((cmd: string, silent?: boolean, isEnter?: boolean) => void) | undefined>;
+    executeCommandRef: React.MutableRefObject<((cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void) | undefined>;
     isMobile?: boolean;
     addDiagnosticLog?: (msg: string) => void;
     addMessage?: (type: import('../../types').MessageType, text: string, isCombat?: boolean, mid?: string) => void;
@@ -156,6 +156,25 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
         if (cleanLine.includes('Welcome to MUME') || cleanLine.includes('The music of the Ainur')) {
             setGameState('playing');
             setAccountState(prev => ({ ...prev, stage: 'none' }));
+
+            // --- Bootstrap Drawer Data ---
+            // Trigger a sequence of silent commands to populate all drawers in the background
+            setTimeout(() => {
+                if (executeCommandRef.current) {
+                    console.log('[Bootstrap] Triggering background data gather...');
+                    executeCommandRef.current('stat', true, true, true, true);
+                    setTimeout(() => executeCommandRef.current?.('score', true, true, true, true), 100);
+                    setTimeout(() => executeCommandRef.current?.('info %m', true, true, true, true), 200);
+                    setTimeout(() => executeCommandRef.current?.('info', true, true, true, true), 300);
+                    setTimeout(() => executeCommandRef.current?.('eq', true, true, true, true), 400);
+                    setTimeout(() => executeCommandRef.current?.('inv', true, true, true, true), 500);
+                    setTimeout(() => executeCommandRef.current?.('practice', true, true, true, true), 600);
+                    setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 700);
+                    setTimeout(() => executeCommandRef.current?.('who', true, true, true, true), 800);
+                    setTimeout(() => executeCommandRef.current?.('where', true, true, true, true), 900);
+                }
+            }, 1000); // Wait 1s for the login text to settle
+
             return false;
         }
 

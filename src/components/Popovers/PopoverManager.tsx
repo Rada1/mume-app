@@ -243,7 +243,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             position: 'fixed',
             left: popoverState.x,
             top: popoverState.y,
-            zIndex: 25000,
+            zIndex: 70000,
             '--accent': themeColor || 'var(--set-accent, var(--accent))'
         } as any}>
             {popoverState.type === 'teleport-save' && <TeleportSavePopover popoverState={popoverState} setPopoverState={setPopoverState} setTeleportTargets={setTeleportTargets} addMessage={addMessage} />}

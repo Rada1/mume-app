@@ -102,7 +102,7 @@ export const useLogPointerDown = (
                 // To re-enable, uncomment the line below:
                 // startDrag(e, targetEl, label, contextStr);
             }
-        }, isMobile ? 350 : 500);
+        }, isMobile ? 450 : 500);
 
     }, [
         btn, joystick, target, executeCommand, triggerHaptic, setHeldButton, heldButton, 

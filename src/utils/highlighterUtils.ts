@@ -142,7 +142,7 @@ export const buildHighlighterCandidates = (
         candidates.push({
             pattern: target,
             priority: 1, // Lowest priority: only highlights if no other button matches this text
-            replacer: (m, _match) => `<span class="inline-btn auto-target active-target${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(m)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}">${m.replace(/,/g, '')}</span>`,
+            replacer: (m, _match) => `<span class="inline-btn auto-target active-target${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(m)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}; color: ${glowColor}">${m.replace(/,/g, '')}</span>`,
             length: target.length
         });
     }

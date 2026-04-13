@@ -50,6 +50,8 @@ interface GeneralSettingsProps {
     setIsNewbieMode: (val: boolean) => void;
     fontFamily: string;
     setFontFamily: (val: string) => void;
+    autoSaveSessions: boolean;
+    setAutoSaveSessions: (val: boolean) => void;
 }
 
 const GeneralSettings: React.FC<GeneralSettingsProps> = ({
@@ -100,6 +102,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setIsNewbieMode,
     fontFamily,
     setFontFamily,
+    autoSaveSessions,
+    setAutoSaveSessions
 }) => {
     let protocol = 'wss:';
     let host = '';
@@ -538,6 +542,29 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             position: 'absolute',
                             top: '2px',
                             left: showRecordingIndicator ? '22px' : '2px',
+                            transition: 'all 0.3s'
+                        }} />
+                    </button>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
+                    <div style={{ flex: '1 1 200px' }}>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Auto-Save Sessions</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Automatically start recording on login and save to archive on logoff.</div>
+                    </div>
+                    <button
+                        className={`setting-toggle ${autoSaveSessions ? 'active' : ''}`}
+                        onClick={() => setAutoSaveSessions(!autoSaveSessions)}
+                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: autoSaveSessions ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                    >
+                        <div style={{
+                            width: '20px',
+                            height: '20px',
+                            background: '#fff',
+                            borderRadius: '50%',
+                            position: 'absolute',
+                            top: '2px',
+                            left: autoSaveSessions ? '22px' : '2px',
                             transition: 'all 0.3s'
                         }} />
                     </button>

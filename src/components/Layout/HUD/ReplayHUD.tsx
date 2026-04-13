@@ -7,11 +7,11 @@ import React, { useState } from 'react';
 import { useUI } from '../../../context/GameContext';
 import { 
     Play, Pause, Square, FastForward, Rewind, Download, Video, X, Eye, EyeOff,
-    Search, ChevronLeft, ChevronRight 
+    Search, ChevronLeft, ChevronRight, FileText
 } from 'lucide-react';
 
 export const ReplayHUD: React.FC = () => {
-    const { replayer } = useUI();
+    const { replayer, setUI } = useUI();
     const { state, play, pause, seek, setSpeed, setPrivacyMode, loadLog, startExport, stopExport, setIsVisible, performSearch } = replayer;
     const [isHovered, setIsHovered] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -91,12 +91,25 @@ export const ReplayHUD: React.FC = () => {
                         {formatTime(state.currentTime)} / {formatTime(state.duration)}
                     </span>
                 </div>
-                <button 
-                    onClick={() => { replayer.setIsVisible(false); }}
-                    style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}
-                >
-                    <X size={18} />
-                </button>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                    <button 
+                        onClick={() => setUI(s => ({ ...s, drawer: s.drawer === 'session-log' ? 'none' : 'session-log' }))}
+                        style={{ 
+                            background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', 
+                            color: '#fff', padding: '4px 8px', borderRadius: '6px', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem'
+                        }}
+                    >
+                        <FileText size={16} />
+                        ARCHIVE
+                    </button>
+                    <button 
+                        onClick={() => { replayer.setIsVisible(false); }}
+                        style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}
+                    >
+                        <X size={18} />
+                    </button>
+                </div>
             </div>
 
             {/* Search Row */}

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { RefreshCw, X } from 'lucide-react';
 import { useGame, useVitals } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
@@ -41,6 +41,15 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
 
     const drawerRef = useRef<HTMLDivElement>(null);
     const swipePos = useRef<{ x: number, y: number } | null>(null);
+
+    // Silent refresh on open: old lines stay visible until new capture swaps in
+    useEffect(() => {
+        if (!isOpen) return;
+        executeCommand('stat', true, true, true, true);
+        const t1 = setTimeout(() => executeCommand('score', true, true, true, true), 100);
+        const t2 = setTimeout(() => executeCommand('info %m', true, true, true, true), 200);
+        return () => { clearTimeout(t1); clearTimeout(t2); };
+    }, [isOpen, executeCommand]);
 
     const onPointerDownInternal = (e: React.PointerEvent) => {
         const target = e.target as HTMLElement;
@@ -124,7 +133,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                         fontFamily: 'var(--font-main, monospace)',
                         fontSize: 'var(--dynamic-log-size, 16px)',
                         lineHeight: '1.2',
-                        padding: '10px 8px 100px 8px',
+                        padding: '10px 8px 10px 8px',
                         flex: 1,
                         textAlign: 'center'
                     }}>
@@ -179,6 +188,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                                         />
                                     );
                                 })}
+                                <div style={{ height: '50px', flexShrink: 0 }} />
                             </div>
                         ) : (
                             scoreLines.length === 0 && (
@@ -296,9 +306,9 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                     onClick={(e) => {
                         triggerHaptic(15);
                         console.log('[StatsDrawer] Manual refresh triggered (stat, score, info %m)');
-                        executeCommand('stat', true);
-                        executeCommand('score', true);
-                        executeCommand('info %m', true);
+                        executeCommand('stat', true, true, true, true);
+                        executeCommand('score', true, true, true, true);
+                        executeCommand('info %m', true, true, true, true);
                     }}
                     style={{
                         position: 'absolute',

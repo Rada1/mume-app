@@ -74,8 +74,8 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         }
 
         // 3. Spacing: Always show truly empty lines to preserve game pacing/formatting
-        // unless we are specifically hiding a drawer-capture.
-        if (lower === '' && !isDrawerHiding) {
+        // unless we are specifically in a capture mode or hiding drawer content.
+        if (lower === '' && !isDrawerHiding && isSilentCapture.current === 0 && isDrawerCapture.current === 0 && captureStage.current === 'none') {
             return true;
         }
 

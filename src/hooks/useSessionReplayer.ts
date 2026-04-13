@@ -16,6 +16,7 @@ export interface ReplayerState {
   isVisible: boolean;
   isPrivacyMode: boolean;
   searchResults: number[];
+  trimRange: [number | null, number | null];
 }
 
 export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: any, isPrivacyMode: boolean) => void) => {
@@ -29,7 +30,8 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
     isExporting: false,
     isVisible: false,
     isPrivacyMode: false,
-    searchResults: []
+    searchResults: [],
+    trimRange: [null, null]
   });
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -61,7 +63,8 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
       isExporting: false,
       isVisible: false,
       isPrivacyMode: stateRef.current.isPrivacyMode,
-      searchResults: []
+      searchResults: [],
+      trimRange: [null, null]
     });
     if (timerRef.current) clearInterval(timerRef.current);
   }, []);
@@ -89,7 +92,8 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
       isExporting: false,
       isVisible: true,
       isPrivacyMode: stateRef.current.isPrivacyMode,
-      searchResults: []
+      searchResults: [],
+      trimRange: [null, null]
     });
   }, []);
 
@@ -111,6 +115,10 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
   
   const setPrivacyMode = useCallback((active: boolean) => {
       setState(s => ({ ...s, isPrivacyMode: active }));
+  }, []);
+
+  const setTrimRange = useCallback((range: [number | null, number | null]) => {
+      setState(s => ({ ...s, trimRange: range }));
   }, []);
 
   const performSearch = useCallback((query: string) => {
@@ -161,9 +169,10 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
       const now = Date.now();
       const elapsed = (now - startTimeRef.current) * stateRef.current.speed;
       
-      if (elapsed >= stateRef.current.duration) {
+      if (elapsed >= stateRef.current.duration || (stateRef.current.isExporting && stateRef.current.trimRange?.[1] !== null && elapsed >= stateRef.current.trimRange?.[1])) {
         pause();
-        setState(s => ({ ...s, currentTime: s.duration, isPlaying: false }));
+        const finalTime = (stateRef.current.isExporting && stateRef.current.trimRange?.[1] !== null) ? stateRef.current.trimRange[1] : stateRef.current.duration;
+        setState(s => ({ ...s, currentTime: finalTime, isPlaying: false }));
         if (stateRef.current.isExporting) {
             stopExport();
         }
@@ -258,7 +267,8 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
           setState(s => ({ ...s, isExporting: true, speed: 1 }));
           
           setTimeout(() => {
-              seek(0);
+              const startAt = stateRef.current.trimRange?.[0] || 0;
+              seek(startAt);
               recorder.start();
               play();
           }, 100);
@@ -280,6 +290,7 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
     performSearch,
     startExport,
     stopExport,
+    setTrimRange,
     state
   };
 };

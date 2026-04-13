@@ -1,6 +1,9 @@
 import { useState, useCallback } from 'react';
 
-export const useUIState = (executeCommandRef: React.MutableRefObject<(cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void>) => {
+export const useUIState = (
+    executeCommandRef: React.MutableRefObject<(cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void>,
+    dataCounts: { stats: number; info: number; inventory: number; players: number }
+) => {
     const [ui, setUI] = useState<{
         drawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players';
         isDrawerPeeking: boolean;
@@ -30,34 +33,50 @@ export const useUIState = (executeCommandRef: React.MutableRefObject<(cmd: strin
 
     const handleTabClick = useCallback((drawer: 'stats' | 'character' | 'inventory' | 'players') => {
         executeCommandRef.current?.('click-sound', true, true);
+        
+        let hasData = false;
+        if (drawer === 'stats') hasData = dataCounts.stats > 0;
+        else if (drawer === 'character') hasData = dataCounts.info > 0;
+        else if (drawer === 'inventory') hasData = dataCounts.inventory > 0;
+        else if (drawer === 'players') hasData = dataCounts.players > 0;
+
+        const refreshData = () => {
+            if (drawer === 'stats') {
+                executeCommandRef.current?.('stat', true, true, true, true);
+                setTimeout(() => executeCommandRef.current?.('score', true, true, true, true), 100);
+                setTimeout(() => executeCommandRef.current?.('info %m', true, true, true, true), 200);
+            } else if (drawer === 'character') {
+                executeCommandRef.current?.('info', true, true, true, true);
+                setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 100);
+                setTimeout(() => executeCommandRef.current?.('practice', true, true, true, true), 200);
+            } else if (drawer === 'inventory') {
+                executeCommandRef.current?.('eq', true, true, true, true);
+                setTimeout(() => executeCommandRef.current?.('inv', true, true, true, true), 100);
+            } else if (drawer === 'players') {
+                executeCommandRef.current?.('who', true, true, true, true);
+                setTimeout(() => executeCommandRef.current?.('where', true, true, true, true), 150);
+            }
+        };
+
         setUI(prev => {
             if (prev.drawer === drawer) {
                 // Persistent gutter: clicking the active tab does nothing
                 return prev;
             } else {
-                // Fetch fresh data when opening
-                setTimeout(() => {
-                    if (drawer === 'stats') {
-                        executeCommandRef.current?.('stat', true, true, true, true);
-                        setTimeout(() => executeCommandRef.current?.('score', true, true, true, true), 100);
-                        setTimeout(() => executeCommandRef.current?.('info %m', true, true, true, true), 200);
-                    } else if (drawer === 'character') {
-                        executeCommandRef.current?.('info', true, true, true, true);
-                        setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 100);
-                        setTimeout(() => executeCommandRef.current?.('practice', true, true, true, true), 200);
-                    } else if (drawer === 'inventory') {
-                        executeCommandRef.current?.('eq', true, true, true, true);
-                        setTimeout(() => executeCommandRef.current?.('inv', true, true, true, true), 100);
-                    } else if (drawer === 'players') {
-                        executeCommandRef.current?.('who', true, true, true, true);
-                        setTimeout(() => executeCommandRef.current?.('where', true, true, true, true), 150);
-                    }
-                }, 50);
-                // Switch directly to the new drawer
-                return { ...prev, drawer, mapExpanded: false, peekingSource: 'none' };
+                if (hasData) {
+                    // If we already have data (from bootstrap or previous open),
+                    // trigger refresh in background immediately and switch UI.
+                    refreshData();
+                    return { ...prev, drawer, mapExpanded: false, peekingSource: 'none' };
+                } else {
+                    // Fetch fresh data when opening for the first time
+                    setTimeout(refreshData, 50);
+                    // Switch directly to the new drawer
+                    return { ...prev, drawer, mapExpanded: false, peekingSource: 'none' };
+                }
             }
         });
-    }, [executeCommandRef]);
+    }, [executeCommandRef, dataCounts]);
 
     const toggleMap = useCallback(() => {
         executeCommandRef.current?.('click-sound', true, true);

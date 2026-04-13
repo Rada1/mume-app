@@ -52,6 +52,8 @@ interface UseSettingsDeps {
     setIsBloomEnabled: (val: boolean) => void;
     isTimestampEnabled: boolean;
     setIsTimestampEnabled: (val: boolean) => void;
+    autoSaveSessions: boolean;
+    setAutoSaveSessions: (val: boolean) => void;
 }
 
 export function useSettings(deps: UseSettingsDeps) {
@@ -73,7 +75,8 @@ export function useSettings(deps: UseSettingsDeps) {
         isHighlighterEnabled, setIsHighlighterEnabled,
         isCrtEnabled, setIsCrtEnabled,
         isBloomEnabled, setIsBloomEnabled,
-        isTimestampEnabled, setIsTimestampEnabled
+        isTimestampEnabled, setIsTimestampEnabled,
+        autoSaveSessions, setAutoSaveSessions
     } = deps;
     const [bgImage, setBgImage] = useState((MASTER_SETTINGS as any).bgImage || DEFAULT_BG);
     const resolveInitialUrl = () => {
@@ -216,6 +219,7 @@ export function useSettings(deps: UseSettingsDeps) {
                     if (settings.isCrtEnabled !== undefined) setIsCrtEnabled(settings.isCrtEnabled);
                     if (settings.isBloomEnabled !== undefined) setIsBloomEnabled(settings.isBloomEnabled);
                     if (settings.isTimestampEnabled !== undefined) setIsTimestampEnabled(settings.isTimestampEnabled);
+                    if (settings.autoSaveSessions !== undefined) setAutoSaveSessions(settings.autoSaveSessions);
                     if (settings.favorites) setFavorites(settings.favorites);
                     if (settings.buttons) setButtons(settings.buttons.map(b => ({ ...b, isVisible: !b.trigger?.enabled })));
                     if (settings.soundTriggers && audioCtxRef.current) {
@@ -322,6 +326,7 @@ export function useSettings(deps: UseSettingsDeps) {
         isCrtEnabled, setIsCrtEnabled,
         isBloomEnabled, setIsBloomEnabled,
         isTimestampEnabled, setIsTimestampEnabled,
-        favorites, setFavorites
+        favorites, setFavorites,
+        autoSaveSessions, setAutoSaveSessions
     };
 }

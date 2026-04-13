@@ -51,6 +51,7 @@ export const useSettingsState = () => {
     const [isSpectateMode, setIsSpectateMode] = usePersistentState('mud-spectate-mode', false);
     const [isTimestampEnabled, setIsTimestampEnabled] = usePersistentState('mud-timestamp-enabled', false);
     const [showRecordingIndicator, setShowRecordingIndicator] = usePersistentState('mud-show-recording-indicator', false);
+    const [autoSaveSessions, setAutoSaveSessions] = usePersistentState('mud-auto-save-sessions', true);
     const [favorites, setFavorites] = usePersistentState<string[]>('mud-favorites', []);
     const [fontFamily, setFontFamily] = usePersistentState<string>('mud-font-family', "'Roboto Mono', monospace");
     const [zoneMusic, setZoneMusic] = usePersistentState<ZoneMusicMapping[]>('mud-zone-music', [
@@ -87,6 +88,7 @@ export const useSettingsState = () => {
         isTimestampEnabled, setIsTimestampEnabled,
         favorites, setFavorites,
         fontFamily, setFontFamily,
-        zoneMusic, setZoneMusic
+        zoneMusic, setZoneMusic,
+        autoSaveSessions, setAutoSaveSessions
     };
 };

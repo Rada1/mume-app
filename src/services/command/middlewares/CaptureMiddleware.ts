@@ -48,14 +48,18 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
         console.log(`[Middleware] Setting isWaitingForStats! Cmd: "${cmd}" (Matches: stat/score/at/info)`);
         isWaitingForStats.current = true;
         captureStage.current = 'none';
-        setStatsLines([]);
-        setScoreLines([]);
+        if (!silent && !isSystem && !fromDrawer) {
+            setStatsLines([]);
+            setScoreLines([]);
+        }
     } else if (lowerCmd === 'eq' || lowerCmd === 'equipment') {
         isWaitingForEq.current = true;
         captureStage.current = 'none';
     } else if (lowerCmd === 'info') {
         isWaitingForInfo.current = true;
-        setInfoLines([]);
+        if (!silent && !isSystem && !fromDrawer) {
+            setInfoLines([]);
+        }
     } else if (lowerCmd === 'practice' || lowerCmd === 'prac') {
         // Practice detection is also handled by useStageInitializer
         captureStage.current = 'practice';

@@ -3,7 +3,7 @@
  * @description Renders the player's inventory and equipment in a unified tabbed drawer.
  */
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
 import { useGame } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
 import { getCategoryForName } from '../../utils/categorizationUtils';
@@ -49,11 +49,18 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     const eqContainerRef = useRef<HTMLDivElement>(null);
     const [eqFontSize, setEqFontSize] = useState<string>('inherit');
 
+    // Silent refresh on open: old lines stay visible until new capture swaps in
     useEffect(() => {
+        if (!isOpen) return;
+        executeCommand('inv', true, true, true, true);
+        const t = setTimeout(() => executeCommand('eq', true, true, true, true), 100);
+        return () => clearTimeout(t);
+    }, [isOpen, executeCommand]);
+
+    useLayoutEffect(() => {
         if (!eqContainerRef.current) return;
         const measure = () => {
             const width = eqContainerRef.current?.clientWidth;
-            // Space Mono char width ≈ 0.601 × font-size, subtract padding (16px)
             if (width) setEqFontSize(`${(width - 16) / 48}px`);
         };
         measure();
@@ -427,6 +434,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                         <div ref={eqContainerRef} style={{
                             fontFamily: 'var(--font-main, monospace)',
                             fontSize: eqFontSize,
+                            visibility: eqFontSize === 'inherit' ? 'hidden' : 'visible',
                             lineHeight: '1.2',
                             whiteSpace: 'pre',
                             overflowX: 'hidden',
@@ -446,11 +454,14 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                     eqFontSize={eqFontSize} 
                                 />
                             ))}
+                            {/* Empty spacing at the bottom for better scroll visibility */}
+                            <div style={{ height: '50px', width: '100%' }} aria-hidden="true" />
                         </div>
                     ) : (
                         <div ref={eqContainerRef} style={{
                             fontFamily: 'var(--font-main, monospace)',
                             fontSize: eqFontSize,
+                            visibility: eqFontSize === 'inherit' ? 'hidden' : 'visible',
                             lineHeight: '1.2',
                             display: 'flex',
                             flexDirection: 'column',
@@ -471,6 +482,8 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                     eqFontSize={eqFontSize} 
                                 />
                             ))}
+                            {/* Empty spacing at the bottom for better scroll visibility */}
+                            <div style={{ height: '50px', width: '100%' }} aria-hidden="true" />
                         </div>
                     )}
                 </div>

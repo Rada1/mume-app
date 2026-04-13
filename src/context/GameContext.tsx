@@ -399,7 +399,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isHighlighterEnabled: s.isHighlighterEnabled, setIsHighlighterEnabled: s.setIsHighlighterEnabled,
         isCrtEnabled: s.isCrtEnabled, setIsCrtEnabled: s.setIsCrtEnabled,
         isBloomEnabled: s.isBloomEnabled, setIsBloomEnabled: s.setIsBloomEnabled,
-        isTimestampEnabled: s.isTimestampEnabled, setIsTimestampEnabled: s.setIsTimestampEnabled
+        isTimestampEnabled: s.isTimestampEnabled, setIsTimestampEnabled: s.setIsTimestampEnabled,
+        autoSaveSessions: s.autoSaveSessions, setAutoSaveSessions: s.setAutoSaveSessions
     });
 
     const [input, setInput] = useState("");
@@ -525,7 +526,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         spectateCharacterName: s.spectateCharacterName,
         registerEntity: s.registerEntity,
         spectateStats: v.spectateStats,
-        characterName: s.characterName
+        characterName: s.characterName,
+        sessionMode: sessionMode
     });
 
 
@@ -554,7 +556,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             onRemoveNpc: (data: string | GmcpOccupant) => { gmcpHandlers.onRemoveNpc(data); removeNpcFn?.(data); },
             onCharNameChange: (name) => {
                 gmcpHandlers.onCharNameChange(name);
-                if (name && !recorder.isRecording) {
+                if (name && !recorder.isRecording && s.autoSaveSessions) {
                     console.log(`[Recorder] Char.Name received. Auto-starting recording for character: ${name}`);
                     recorder.startRecording(name);
                 }
@@ -572,14 +574,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 // Initializer moved to onCharNameChange
             },
             onCoreGoodbye: () => {
-                if (recorder.isRecording) {
+                if (recorder.isRecording && s.autoSaveSessions) {
                     console.log('[Recorder] Core.Goodbye received. Auto-saving session...');
                     recorder.stopAndSave();
                 }
             },
             onDisconnect: () => {
                 console.log('[GameContext] Disconnect! Clearing tactical buffers.');
-                if (recorder.isRecording) {
+                if (recorder.isRecording && s.autoSaveSessions) {
                     console.log('[Recorder] Disconnect detected. Auto-saving session...');
                     recorder.stopAndSave();
                 }

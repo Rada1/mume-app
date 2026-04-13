@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useLayoutEffect } from 'react';
 import { X, Users, RefreshCw, Star } from 'lucide-react';
 import { useGame, useUI } from '../../context/GameContext';
 import { MemberRow } from './MemberRow';
@@ -122,7 +122,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
     const infoContainerRef = useRef<HTMLDivElement>(null);
     const [infoFontSize, setInfoFontSize] = useState<string>('inherit');
 
-    React.useEffect(() => {
+    useLayoutEffect(() => {
         if (!infoContainerRef.current || (activeTab !== 'online' && activeTab !== 'nearby')) return;
         const measure = () => {
             const el = infoContainerRef.current;
@@ -273,7 +273,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
 
                 <div className="drawer-body" style={{ pointerEvents: 'auto', flex: 1, marginRight: '0', overflowY: 'auto', position: 'relative', padding: 0 }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
                     {activeTab === 'group' ? (
-                        <div style={{ padding: '8px 0 60px 0' }}>
+                        <div style={{ padding: '8px 0 0 0' }}>
                             {groupMembers.length > 0 ? (
                                 groupMembers.map((m, idx) => <MemberRow key={m.id} member={m} index={idx} />)
                             ) : (
@@ -282,12 +282,14 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                                     <p style={{ fontSize: '0.8rem' }}>Not in a group.</p>
                                 </div>
                             )}
+                            <div style={{ height: '50px', flexShrink: 0 }} />
                         </div>
                     ) : activeTab === 'online' ? (
-                        <div className="online-tab" style={{ position: 'relative', paddingBottom: '60px', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                        <div className="online-tab" style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
                             <div ref={infoContainerRef} style={{
                                 fontFamily: 'var(--font-main, monospace)',
                                 fontSize: infoFontSize,
+                                visibility: infoFontSize === 'inherit' ? 'hidden' : 'visible',
                                 lineHeight: '1.2',
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -315,13 +317,15 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                                         <p style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontStyle: 'italic' }}>No player data captured.</p>
                                     </div>
                                 )}
+                                <div style={{ height: '50px', flexShrink: 0 }} />
                             </div>
                         </div>
                     ) : (
-                        <div className="nearby-tab" style={{ position: 'relative', paddingBottom: '60px', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                        <div className="nearby-tab" style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
                             <div ref={infoContainerRef} style={{
                                 fontFamily: 'var(--font-main, monospace)',
                                 fontSize: infoFontSize,
+                                visibility: infoFontSize === 'inherit' ? 'hidden' : 'visible',
                                 lineHeight: '1.2',
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -349,6 +353,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                                         <p style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontStyle: 'italic' }}>No player data captured.</p>
                                     </div>
                                 )}
+                                <div style={{ height: '50px', flexShrink: 0 }} />
                             </div>
                         </div>
                     )}

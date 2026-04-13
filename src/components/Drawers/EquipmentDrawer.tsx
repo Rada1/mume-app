@@ -245,6 +245,9 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                     }}>
                         {eqLines.map(line => renderLine(line))}
                         {eqLines.length === 0 && <div className="drawer-empty-state" style={{ textAlign: 'center', padding: '20px', opacity: 0.5 }}>No equipment worn</div>}
+                        
+                        {/* Empty spacing at the bottom for better scroll visibility */}
+                        <div style={{ height: '100px', width: '100%' }} aria-hidden="true" />
                     </div>
                 </div>
             </div>

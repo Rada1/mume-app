@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Crosshair, WifiOff, RefreshCw, Circle, Save, X, FileText } from 'lucide-react';
 import { EnvControls } from './Layout/EnvControls';
 import { RecorderHUD } from './Layout/HUD/RecorderHUD';
@@ -105,6 +106,30 @@ const Header: React.FC<HeaderProps> = ({
     };
 
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Portal-positioned coords for the main menu dropdown (escapes content-layer stacking)
+    const [menuDropdownPos, setMenuDropdownPos] = useState<{ top: number; right: number } | null>(null);
+    useLayoutEffect(() => {
+        if (!ui.isMenuOpen || !menuRef.current) {
+            setMenuDropdownPos(null);
+            return;
+        }
+        const update = () => {
+            const rect = menuRef.current?.getBoundingClientRect();
+            if (!rect) return;
+            setMenuDropdownPos({
+                top: rect.bottom + 10,
+                right: window.innerWidth - rect.right,
+            });
+        };
+        update();
+        window.addEventListener('resize', update);
+        window.addEventListener('scroll', update, true);
+        return () => {
+            window.removeEventListener('resize', update);
+            window.removeEventListener('scroll', update, true);
+        };
+    }, [ui.isMenuOpen]);
 
     return (
         <header className={`header ${viewport.isMobile ? 'mobile-header' : ''}`} style={{ flexWrap: 'nowrap', gap: 6 }}>
@@ -256,8 +281,15 @@ const Header: React.FC<HeaderProps> = ({
                         <MoreVertical size={20} />
                     </button>
 
-                    {isMenuOpen && (
-                        <div className="header-dropdown-menu" style={{ right: 0 }}>
+                    {isMenuOpen && menuDropdownPos && createPortal(
+                        <div
+                            className="header-dropdown-menu"
+                            style={{
+                                position: 'fixed',
+                                top: menuDropdownPos.top,
+                                right: menuDropdownPos.right,
+                            }}
+                        >
                             {menuView === 'main' ? (
                                 <>
                                     <div className="menu-group">
@@ -443,7 +475,8 @@ const Header: React.FC<HeaderProps> = ({
                                     </div>
                                 </div>
                             )}
-                        </div>
+                        </div>,
+                        document.body
                     )}
                 </div>
             </div>

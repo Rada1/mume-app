@@ -59,11 +59,14 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
         return () => ro.disconnect();
     }, [activeTab, isOpen]);
 
+    // Silent refresh on open: old lines stay visible until new capture swaps in
     useEffect(() => {
         if (!isOpen) return;
-        // The info tab now uses a stable terminal style with left-alignment 
-        // to preserve original MUME formatting.
-    }, [isOpen]);
+        executeCommand('info', true, true, true, true);
+        const t1 = setTimeout(() => executeCommand('quest', true, true, true, true), 100);
+        const t2 = setTimeout(() => executeCommand('practice', true, true, true, true), 200);
+        return () => { clearTimeout(t1); clearTimeout(t2); };
+    }, [isOpen, executeCommand]);
 
     useEffect(() => {
         if (isOpen && characterInfo) {
@@ -254,7 +257,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
 
                 <div className="drawer-body" style={{ pointerEvents: 'auto', flex: 1, marginRight: '0', overflowY: 'auto', position: 'relative', padding: 0 }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
                     {activeTab === 'info' ? (
-                        <div className="info-tab" style={{ position: 'relative', paddingBottom: '60px', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                        <div className="info-tab" style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
                             <div ref={infoContainerRef} style={{
                                 fontFamily: 'var(--font-main, monospace)',
                                 fontSize: tabFontSize,
@@ -287,10 +290,11 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                         <p style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontStyle: 'italic' }}>No character data captured.</p>
                                     </div>
                                 )}
+                                <div style={{ height: '50px', flexShrink: 0 }} />
                             </div>
                         </div>
                     ) : activeTab === 'practice' ? (
-                        <div className="practice-tab" style={{ position: 'relative', paddingBottom: '60px', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                        <div className="practice-tab" style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
                             <div ref={infoContainerRef} style={{
                                 fontFamily: 'var(--font-main, monospace)',
                                 fontSize: tabFontSize,
@@ -323,10 +327,11 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                         <p style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontStyle: 'italic' }}>No practice data captured.</p>
                                     </div>
                                 )}
+                                <div style={{ height: '50px', flexShrink: 0 }} />
                             </div>
                         </div>
                     ) : (
-                        <div className="quests-tab" style={{ position: 'relative', paddingBottom: '60px', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                        <div className="quests-tab" style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
                             <div ref={infoContainerRef} style={{
                                 fontFamily: 'var(--font-main, monospace)',
                                 fontSize: tabFontSize,
@@ -353,6 +358,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                         <p style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontStyle: 'italic' }}>No quest data captured.</p>
                                     </div>
                                 )}
+                                <div style={{ height: '50px', flexShrink: 0 }} />
                             </div>
                         </div>
                     )}
@@ -465,13 +471,14 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                     onClick={(e) => {
                         triggerHaptic(15);
                         if (activeTab === 'info') { 
-                            handleRefresh(e); 
+                            executeCommand('info', true, true, true, true);
+                            executeCommand('quest', true, true, true, true);
                             practice.setSilentSyncPending(false); 
                         } else if (activeTab === 'practice') {
                             practice.setIsUiRequested(true);
-                            executeCommand('practice');
+                            executeCommand('practice', true, true, true, true);
                         } else {
-                            executeCommand('quest', true);
+                            executeCommand('quest', true, true, true, true);
                         }
                     }}
                     style={{

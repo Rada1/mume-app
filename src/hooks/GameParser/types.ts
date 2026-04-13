@@ -113,4 +113,5 @@ export interface UseGameParserDeps {
     processMessageHtml?: (originalHtml: string, mid: string, isRoomName: boolean, type?: import('../../types').MessageType, isCombatMessage?: boolean, combatSide?: 'player' | 'opponent' | 'groupmate') => string;
     spectateCharacterName: string | null;
     roomPlayers: import('../../types').GmcpOccupant[];
+    sessionMode?: 'live' | 'replay';
 }

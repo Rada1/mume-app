@@ -27,6 +27,17 @@
     border-radius: 20px 20px 0 0;
 }
 
+.modals-layer-wrapper {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100000; /* Ensure this is the highest layer in the app */
+}
+
+.modals-layer-wrapper > * {
+    pointer-events: auto;
+}
+
 .mobile-bottom-gutter > * {
     pointer-events: auto;
 }
@@ -343,7 +354,7 @@
 }
 
 /* Landscape: Move pods left to clear room for the right-side vertical button cluster */
-.is-landscape .modals-layer {
+.modals-layer-wrapper.is-landscape {
     padding-right: 0 !important;
 }
 

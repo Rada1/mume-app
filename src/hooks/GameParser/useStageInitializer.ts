@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { CaptureStage, QuestData } from '../../types';
+import { CaptureStage, QuestData, DrawerLine } from '../../types';
 
 interface StageInitializerDeps {
     captureStage: React.MutableRefObject<CaptureStage>;
@@ -20,13 +20,16 @@ interface StageInitializerDeps {
     setWhoList: (val: string[]) => void;
     setWhereList: (val: any[]) => void;
     setPopoverState: (val: any) => void;
-    setStatsLines: (val: any[]) => void;
-    setInfoLines: (val: any[]) => void;
-    setScoreLines: (val: any) => void;
-    setQuestLines: (val: any) => void;
-    setPracticeLines: (val: any[]) => void;
-    setWhoLines: (val: any[]) => void;
-    setWhereLines: (val: any[]) => void;
+    setScoreLines: (val: DrawerLine[]) => void;
+    setStatsLines: (val: DrawerLine[]) => void;
+    setInfoLines: (val: DrawerLine[]) => void;
+    tempStatsRef: React.MutableRefObject<DrawerLine[]>;
+    tempScoreRef: React.MutableRefObject<DrawerLine[]>;
+    tempInfoRef: React.MutableRefObject<DrawerLine[]>;
+    tempPracticeRef: React.MutableRefObject<DrawerLine[]>;
+    tempQuestRef: React.MutableRefObject<DrawerLine[]>;
+    tempWhoRef: React.MutableRefObject<DrawerLine[]>;
+    tempWhereRef: React.MutableRefObject<DrawerLine[]>;
     finalizeCapture: () => void;
 }
 
@@ -34,24 +37,22 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
     const {
         captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
-        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines, setInfoLines, setScoreLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines,
+        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, 
+        setScoreLines, setStatsLines, setInfoLines,
+        tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef,
         finalizeCapture
     } = deps;
 
     const initializeStage = useCallback((textOnly: string, lower: string, content: string, contentLower: string, attachedText?: string) => {
         const strippedLower = (attachedText || textOnly).trim().toLowerCase();
         
-        if (lower.length > 0) {
-            console.log(`[StageInit] Testing: "${lower.substring(0, 50)}..." (stripped: "${strippedLower}")`);
-        }
-
         // 1. Practice
         if (lower.includes('skill') && lower.includes('knowledge')) {
             if (practice.isUiRequested || isCharacterOpen || lower.includes('class') || practice.silentSyncPendingRef.current) {
                 if (captureStage.current === 'practice') return;
                 if (captureStage.current !== 'none') finalizeCapture();
                 captureStage.current = 'practice';
-                setPracticeLines([]);
+                tempPracticeRef.current = [];
                 if (practice.isUiRequested || practice.silentSyncPendingRef.current) {
                     if (isSilentCapture.current === 0) isSilentCapture.current = 1;
                 }
@@ -61,7 +62,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
             if (captureStage.current === 'practice') return;
             if (captureStage.current !== 'none') finalizeCapture();
             captureStage.current = 'practice';
-            setPracticeLines([]);
+            tempPracticeRef.current = [];
             if (isCharacterOpen || practice.silentSyncPendingRef.current) {
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
             }
@@ -76,7 +77,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
             if (captureStage.current === 'quest') return;
             if (captureStage.current !== 'none') finalizeCapture();
             captureStage.current = 'quest';
-            setQuestLines([]);
+            tempQuestRef.current = [];
             if (isCharacterOpen) {
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
             }
@@ -86,17 +87,26 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         else if (strippedLower === 'who' || strippedLower === 'who:' || strippedLower === 'players' || strippedLower === 'allies' || strippedLower === 'minions' || strippedLower.startsWith("who's online") || strippedLower.startsWith("allies online") || strippedLower.startsWith("minions online")) {
             if (captureStage.current === 'who') return;
             if (captureStage.current !== 'none') finalizeCapture();
-            captureStage.current = 'who'; setWhoList([]); setWhoLines([]);
+            captureStage.current = 'who'; 
+            tempWhoRef.current = [];
             if (isPlayersOpen) {
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
+            }
+            // Still clear name lists immediately as they are processed differently
+            if (isSilentCapture.current === 0 && isDrawerCapture.current === 0) {
+                setWhoList([]); 
             }
         }
         else if ((textOnly.startsWith('Player') && textOnly.includes('Room')) || (textOnly.startsWith('Who') && textOnly.includes('Location'))) {
             if (captureStage.current === 'where') return;
             if (captureStage.current !== 'none') finalizeCapture();
-            captureStage.current = 'where'; setWhereList([]); setWhereLines([]);
+            captureStage.current = 'where'; 
+            tempWhereRef.current = [];
             if (isPlayersOpen) {
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
+            }
+            if (isSilentCapture.current === 0 && isDrawerCapture.current === 0) {
+                setWhereList([]); 
             }
         }
 
@@ -104,7 +114,8 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         else if (lower.includes('you can buy:') || lower.includes('items matching') || lower.includes('for sale:')) {
             if (captureStage.current === 'shop') return;
             if (captureStage.current !== 'none') finalizeCapture();
-            captureStage.current = 'shop'; practice.shop?.setIsShopListingActive(true);
+            captureStage.current = 'shop'; 
+            if (practice.shop?.setIsShopListingActive) practice.shop.setIsShopListingActive(true);
         }
 
         // 5. Container
@@ -112,12 +123,10 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
             if (captureStage.current === 'container') return;
             if (captureStage.current !== 'none') finalizeCapture();
             captureStage.current = 'container';
-            // isDrawerCapture logic handled by orchestrator via pending refs
         }
 
         // 6. Stats / Score / Spell Speed / Affects
         else if (isWaitingForStats.current && /\b(stat|score|st|sc|at|ob|db|pb|armor|armour|arm|mood|str|int|wis|dex|con|wil|exp|level|hits|mana|moves|spell|speed|vision|gold|qp|tnl)\b/i.test(lower)) {
-            // Is it just the simple vitals line (score command)?
             const isScoreCommand = /\d+\/\d+ hits, \d+\/\d+ mana, and \d+\/\d+ moves/i.test(lower);
             const targetStage = isScoreCommand ? 'score' : 'stat';
             
@@ -126,13 +135,17 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
             
             isWaitingForStats.current = false; 
             captureStage.current = targetStage;
+            tempStatsRef.current = [];
+            tempScoreRef.current = [];
             
-            setScoreLines([]);
-            setStatsLines([]);
-            
-            console.log(`[StageInit] Triggered ${targetStage.toUpperCase()} stage! Line: "${lower.substring(0, 40)}"`);
             if (isCharacterOpen || isStatsOpen) {
                 if (isDrawerCapture.current === 0) isDrawerCapture.current = 1;
+            }
+
+            // Only clear UI if entirely necessary (foreground refresh)
+            if (isSilentCapture.current === 0 && isDrawerCapture.current === 0) {
+                setScoreLines([]);
+                setStatsLines([]);
             }
         }
 
@@ -174,16 +187,17 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
             if (captureStage.current === 'info') return;
             if (captureStage.current !== 'none') finalizeCapture();
             captureStage.current = 'info';
-            if (typeof setInfoLines === 'function') {
-                setInfoLines([]);
-            } else {
-                console.error('[StageInit] setInfoLines is not a function!', deps);
-            }
-            setCharacterInfo((prev: any) => ({ ...prev, description: '' }));
+            tempInfoRef.current = [];
+            
             if (isCharacterOpen || isStatsOpen) {
-                console.log(`[StageInit] Triggered INFO stage! Line: "${lower.substring(0, 40)}"`);
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
             }
+
+            // Foreground clear
+            if (isSilentCapture.current === 0 && isDrawerCapture.current === 0) {
+                if (typeof setInfoLines === 'function') setInfoLines([]);
+            }
+            setCharacterInfo((prev: any) => ({ ...prev, description: '' }));
         }
         else if (lower.includes('whois information for') || lower.startsWith('whois:') || lower.startsWith('whois status:')) {
             if (captureStage.current === 'whois') return;
@@ -194,13 +208,12 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
             }
         }
-        // NOTE: 'description' captureStage removed — the Room Card handles descriptions
-        // via GMCP exclusively. Keeping this stage caused room description lines to silence
-        // all subsequent room content (NPCs, exits, items) until the next prompt.
     }, [
         captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
-        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines, setScoreLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines,
+        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, 
+        setScoreLines, setStatsLines, setInfoLines,
+        tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef,
         finalizeCapture
     ]);
 

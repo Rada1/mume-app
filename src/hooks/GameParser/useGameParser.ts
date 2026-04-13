@@ -56,7 +56,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         setSpectateStats, setSpectateHealthStatus, setSpectateOpponentName, setSpectateOpponentStatus,
         setSpectatePosition, setSpectateWaiting, setSpectateRoomName, setSpectateInCombat, setSpectateCharacterName,
         spectateCharacterName, roomPlayers,
-        processMessageHtml
+        processMessageHtml,
+        sessionMode
     } = deps;
 
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef, playRandomSound });
@@ -66,6 +67,13 @@ export function useGameParser(deps: UseGameParserDeps) {
     // Shared Buffers/Refs
     const tempEqRef = useRef<DrawerLine[]>([]);
     const tempInvRef = useRef<DrawerLine[]>([]);
+    const tempStatsRef = useRef<DrawerLine[]>([]);
+    const tempScoreRef = useRef<DrawerLine[]>([]);
+    const tempInfoRef = useRef<DrawerLine[]>([]);
+    const tempPracticeRef = useRef<DrawerLine[]>([]);
+    const tempQuestRef = useRef<DrawerLine[]>([]);
+    const tempWhoRef = useRef<DrawerLine[]>([]);
+    const tempWhereRef = useRef<DrawerLine[]>([]);
     const tempEntitiesRef = useRef<Record<string, GameEntity>>({});
     const counterRef = useRef(0);
     const shopPagerSeenRef = useRef(false);
@@ -77,9 +85,11 @@ export function useGameParser(deps: UseGameParserDeps) {
     const { finalizeCapture } = useStageManager({
         captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
         addDiagnosticLog, addMessage,
-        setPopoverState, setEqLines, setInventoryLines, registerEntity, setEntities,
+        setPopoverState, setEqLines, setInventoryLines,
+        setStatsLines, setInfoLines, setScoreLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines,
+        registerEntity, setEntities,
         practice, shop, quests, finalizeQuests,
-        tempEqRef, tempInvRef, tempEntitiesRef
+        tempEqRef, tempInvRef, tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef, tempEntitiesRef
     });
 
     const { parsePrompt } = usePromptParser({
@@ -102,7 +112,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         detectLighting: deps.detectLighting,
         setWeather: deps.setWeather,
         setIsFoggy: deps.setIsFoggy,
-        isSpectateMode: deps.isSpectateMode
+        isSpectateMode: deps.isSpectateMode,
+        sessionMode
     });
 
     const { checkCombatMatch, handleCombatExit, handleXpTicker } = useCombatParser({
@@ -138,7 +149,7 @@ export function useGameParser(deps: UseGameParserDeps) {
     const { initializeStage } = useStageInitializer({
         captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
-        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, setStatsLines, setInfoLines, setScoreLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines,
+        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef,
         finalizeCapture
     });
 
@@ -368,10 +379,14 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         if (combatInfo.isMatch && combatInfo.isImpact) {
             if (combatInfo.side === 'player') {
-                playHitImpactSound?.();
-                triggerOppHitFlash?.();
+                if (inCombatRef.current) {
+                    playHitImpactSound?.();
+                    triggerOppHitFlash?.();
+                }
             } else if (combatInfo.side === 'opponent') {
-                triggerHitFlash?.();
+                if (inCombatRef.current) {
+                    triggerHitFlash?.();
+                }
             }
         }
 
@@ -429,7 +444,7 @@ export function useGameParser(deps: UseGameParserDeps) {
                 if (textToParse.length > 0) {
                     parseQuestLine(textToParse);
                     const html = processMessageHtml ? processMessageHtml(ansiConvert.toHtml(cleanLine), 'quest-line-' + Math.random(), false, 'quest-list') : ansiConvert.toHtml(cleanLine);
-                    setQuestLines((p: any) => [...p, { id: Math.random().toString(36).substring(7), text: textToParse, html }]);
+                    tempQuestRef.current.push({ id: Math.random().toString(36).substring(7), text: textToParse, html });
                 }
                 if (promptInfo.isEndPrompt && !attachedText) finalizeCapture();
                 if (isDrawerCapture.current || isSilentCapture.current) return;
@@ -470,12 +485,12 @@ export function useGameParser(deps: UseGameParserDeps) {
                 if (textOnly.trim().length > 0) {
                     const skill = practice.parsePracticeLine(textOnly);
                     const practiceSkill = (typeof skill === 'object' && skill !== null && !('sessionsLeft' in skill)) ? skill : undefined;
-                    setPracticeLines(p => [...p, { 
+                    tempPracticeRef.current.push({ 
                         id: Math.random().toString(36).substring(7), 
                         text: textOnly, 
                         html: ansiConvert.toHtml(cleanLine),
                         practiceSkill
-                    }]);
+                    });
                 }
             } else if (captureStage.current === 'who' || captureStage.current === 'where') {
                 if (textOnly.trim().length > 0) {
@@ -483,8 +498,8 @@ export function useGameParser(deps: UseGameParserDeps) {
                     const html = (processMessageHtml && !isHeader)
                         ? processMessageHtml(ansiConvert.toHtml(cleanLine), 'players-line-' + Math.random(), false, captureStage.current === 'who' ? 'who-list' : 'where-list') 
                         : ansiConvert.toHtml(cleanLine);
-                    const setter = captureStage.current === 'who' ? setWhoLines : setWhereLines;
-                    setter(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html, isHeader }]);
+                    const targetRef = captureStage.current === 'who' ? tempWhoRef : tempWhereRef;
+                    targetRef.current.push({ id: Math.random().toString(36).substring(7), text: textOnly, html, isHeader });
                 }
             } else if (captureStage.current === 'shop') {
                 if (textOnly.trim().length > 0) {
@@ -537,8 +552,8 @@ export function useGameParser(deps: UseGameParserDeps) {
                 if (isDrawerCapture.current || isSilentCapture.current) return;
             } else if (captureStage.current === 'stat' || captureStage.current === 'score') {
                 const isVitals = /\d+\/\d+ hits, \d+\/\d+ mana, and \d+\/\d+ moves/i.test(lower) || /\d+\/\d+ hits, \d+\/\d+ mana/.test(lower);
-                const targetSetter = isVitals ? setScoreLines : setStatsLines;
-                const bufferName = isVitals ? 'scoreLines' : 'statsLines';
+                const targetRef = isVitals ? tempScoreRef : tempStatsRef;
+                const bufferName = isVitals ? 'scoreRef' : 'statsRef';
                 
                 // Filter out common tags and terminators to keep the UI clean
                 if (lower.includes('[/at]') || lower.includes('[at]') || lower.includes('[/stat]') || lower.trim() === 'ok.' || lower.trim() === 'at') {
@@ -546,10 +561,10 @@ export function useGameParser(deps: UseGameParserDeps) {
                 }
 
                 console.log(`[Parser] Capturing to ${bufferName}: "${textOnly.substring(0, 30)}..."`);
-                targetSetter((p: any) => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
+                targetRef.current.push({ id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) });
             } else if (captureStage.current === 'info') {
-                console.log(`[Parser] Capturing to infoLines: "${textOnly.substring(0, 30)}..."`);
-                setInfoLines((p: any) => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
+                console.log(`[Parser] Capturing to infoRef: "${textOnly.substring(0, 30)}..."`);
+                tempInfoRef.current.push({ id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) });
             }
         }
 
