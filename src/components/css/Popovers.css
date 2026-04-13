@@ -1,9 +1,7 @@
 /* Popover Menu Styles */
 .popover-menu {
     position: fixed;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    background: rgba(15, 18, 25, 0.95);
     border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: 16px;
     padding: 12px;
@@ -76,9 +74,7 @@
     transform: translate(-50%, -50%);
     width: 110px;
     height: 110px;
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(32px);
-    -webkit-backdrop-filter: blur(32px);
+    background: rgba(10, 13, 21, 0.9);
     border: 2px solid var(--accent);
     border-radius: 50%;
     display: flex;
@@ -206,9 +202,7 @@
     position: absolute;
     top: calc(100% + 10px);
     right: 0;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    background: rgba(15, 18, 25, 0.95);
     border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: 16px;
     min-width: 220px;

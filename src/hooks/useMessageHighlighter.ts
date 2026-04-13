@@ -6,7 +6,7 @@
 import { useCallback, RefObject, useRef } from 'react';
 import { CustomButton, InlineCategoryConfig, MessageType } from '../types';
 import { buildHighlighterCandidates, applyColorTaggedObjects } from '../utils/highlighterUtils';
-import { getGlowColorForCategory } from '../utils/categorizationUtils';
+import { getGlowColorForCategory, getCategoryForName } from '../utils/categorizationUtils';
 import { isObjectSelected } from '../utils/selectionUtils';
 import { ARRIVE_REGEX, LEAVE_REGEX } from './useMessageLog';
 
@@ -189,6 +189,24 @@ export const useMessageHighlighter = (
             }
             if (direction) {
                 newHtml = safeHighlight(newHtml, direction, false, (m) => `<span class="movement-item">${m}</span>`);
+            }
+        }
+
+        // --- 0.6. Item Acquisition Highlighting ---
+        // Match "You now have a(n) <item>." and wrap the item in an interactive span.
+        // We do this BEFORE built-in candidates to ensure specific acquisition context is captured.
+        const acquisitionMatch = textOnly.match(/You now have (?:a|an)\s+(.*?)(?:\.|$)/i);
+        if (acquisitionMatch) {
+            const itemName = acquisitionMatch[1]?.trim();
+            if (itemName) {
+                const itemCategory = getCategoryForName(itemName, inlineCategories) || 'inline-default';
+                const itemGlow = getGlowColorForCategory(itemCategory, inlineCategories);
+                const buttonId = `auto-item-${itemName.toLowerCase().replace(/\s+/g, '-')}`;
+                const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'inline-obj-char');
+                
+                newHtml = safeHighlight(newHtml, itemName, false, (m) => {
+                    return `<span class="inline-btn auto-item${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="inline-obj-char" data-context="${esc(itemName)}" data-action="menu" data-menu-display="list" style="--glow-color: ${itemGlow}; color: var(--glow-color); font-weight: 800">${m}</span>`;
+                });
             }
         }
 

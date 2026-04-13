@@ -112,7 +112,7 @@ export function isButtonValidForEntity(
     if (button.command.startsWith('wield ')) {
         const isWeaponByCat = detectedCatId === 'inline-weapon';
         const isWeaponByCap = entity?.capabilities?.includes(EntityCapability.Weapon);
-        const isWeaponByName = /sword|dagger|mace|axe|staff|spear|club|flail|hammer|polearm|scimitar|morning star|halberd|rapier|blade|pike|lance|cleaver/i.test(entity.name || '');
+        const isWeaponByName = /sword|dagger|mace|axe|staff|spear|club|flail|hammer|polearm|scimitar|morning star|halberd|rapier|blade|pike|lance|cleaver/i.test(entity?.name || context || '');
         const isWeapon = isWeaponByCat || isWeaponByCap || isWeaponByName;
         
         if (!isWeapon) return false;

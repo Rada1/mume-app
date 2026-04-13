@@ -16,8 +16,6 @@
 
 .modal {
     background: var(--bg-modal, #0a0d15);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--border-modal, rgba(255, 255, 255, 0.15));
     padding: 20px;
     width: 95%;
