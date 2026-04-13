@@ -116,7 +116,7 @@
 }
 
 .message {
-    line-height: 1.0;              /* Absolute maximum tactical density */
+    line-height: 1.5;              /* Balanced readability */
     max-width: 100%;
     word-wrap: break-word;
     white-space: pre-wrap;
