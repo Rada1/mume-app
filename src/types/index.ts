@@ -10,7 +10,7 @@ export type TriggerAction = 'show' | 'switch_set';
 export type SessionMode = 'live' | 'replay';
 export type UiMode = 'auto' | 'desktop' | 'portrait' | 'landscape';
 export type GameState = 'disconnected' | 'account' | 'playing';
-export type CaptureStage = 'none' | 'who' | 'where' | 'inv' | 'eq' | 'stat' | 'container' | 'shop' | 'shop-detail' | 'practice' | 'whois' | 'description' | 'info' | 'quest' | 'account';
+export type CaptureStage = 'none' | 'who' | 'where' | 'inv' | 'eq' | 'stat' | 'container' | 'shop' | 'shop-detail' | 'practice' | 'whois' | 'description' | 'info' | 'quest' | 'account' | 'help';
 export type CombatHealthStatus = 'Healthy' | 'Fine' | 'Hurt' | 'Wounded' | 'Bad' | 'Awful' | 'Dying' | 'Stunned' | 'None';
 export type ExecuteCommand = (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean, fromUi?: boolean }) => void;
 
@@ -266,7 +266,7 @@ export interface PopoverState {
     x: number;
     y: number;
     sourceHeight?: number;
-    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'give-target-select' | 'put-container-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target' | 'container' | 'shop-card' | 'practice-card' | 'session-log';
+    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'give-target-select' | 'put-container-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target' | 'container' | 'shop-card' | 'session-log' | 'help-card';
     setId: string;
     category?: string;
     context?: string;
@@ -284,6 +284,7 @@ export interface PopoverState {
     entityId?: string;
     shopItems?: ShopItem[];
     practiceData?: PracticeData;
+    helpData?: string;
     accentColor?: string;
 }
 

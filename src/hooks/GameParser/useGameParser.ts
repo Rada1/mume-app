@@ -57,7 +57,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         setSpectatePosition, setSpectateWaiting, setSpectateRoomName, setSpectateInCombat, setSpectateCharacterName,
         spectateCharacterName, roomPlayers,
         processMessageHtml,
-        sessionMode
+        sessionMode,
+        help
     } = deps;
 
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef, playRandomSound });
@@ -88,7 +89,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         setPopoverState, setEqLines, setInventoryLines,
         setStatsLines, setInfoLines, setScoreLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines,
         registerEntity, setEntities,
-        practice, shop, quests, finalizeQuests,
+        practice, shop, help, quests, finalizeQuests,
         tempEqRef, tempInvRef, tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef, tempEntitiesRef
     });
 
@@ -150,7 +151,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
         practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef,
-        finalizeCapture
+        finalizeCapture, help
     });
 
     const { routeMessage, determineVisibility, detectItemsInRoom } = useMessageRouter({
@@ -476,7 +477,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
         parseAtmosphere(lower);
 
-        if (['inv', 'eq', 'stat', 'container', 'practice', 'shop', 'shop-detail', 'info', 'whois', 'who', 'where'].includes(captureStage.current)) {
+        if (['inv', 'eq', 'stat', 'container', 'practice', 'shop', 'shop-detail', 'info', 'whois', 'who', 'where', 'help'].includes(captureStage.current)) {
             if (captureStage.current === 'inv') {
                 tempInvRef.current.push(...createLines(cleanLine, textOnly, lower, 'inventorylist'));
             } else if (captureStage.current === 'eq') {
@@ -566,6 +567,8 @@ export function useGameParser(deps: UseGameParserDeps) {
             } else if (captureStage.current === 'info') {
                 console.log(`[Parser] Capturing to infoRef: "${textOnly.substring(0, 30)}..."`);
                 tempInfoRef.current.push({ id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) });
+            } else if (captureStage.current === 'help') {
+                deps.help.parseHelpLine(cleanLine);
             }
         }
 

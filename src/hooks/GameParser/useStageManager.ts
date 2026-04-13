@@ -29,6 +29,7 @@ export interface StageManagerDeps {
     registerEntity: (id: string, name: string, location: import('../../types').EntityLocation, category?: string) => import('../../types').GameEntity;
     practice: any;
     shop: any;
+    help: any;
     quests: any;
     finalizeQuests: () => void;
     tempEqRef: React.MutableRefObject<DrawerLine[]>;
@@ -66,6 +67,7 @@ export function useStageManager(deps: StageManagerDeps) {
         setEntities,
         practice,
         shop,
+        help,
         quests,
         finalizeQuests,
         tempEqRef,
@@ -109,7 +111,7 @@ export function useStageManager(deps: StageManagerDeps) {
             return false;
         }
 
-        const stagesToTerminate: CaptureStage[] = ['who', 'where', 'inv', 'eq', 'stat', 'container', 'shop', 'shop-detail', 'practice', 'description', 'whois', 'info', 'quest'];
+        const stagesToTerminate: CaptureStage[] = ['who', 'where', 'inv', 'eq', 'stat', 'container', 'shop', 'shop-detail', 'practice', 'description', 'whois', 'info', 'quest', 'help'];
         if (stagesToTerminate.includes(currentStage)) {
             const eqLen = tempEqRef.current.length;
             const invLen = tempInvRef.current.length;
@@ -120,7 +122,7 @@ export function useStageManager(deps: StageManagerDeps) {
                 const suppressPracticeLog = isDrawerCapture.current > 0 || isSilentCapture.current > 0 || practice.silentSyncPendingRef.current;
                 practice.finalizePractice(
                     suppressPracticeLog ? undefined : addMessage, 
-                    suppressPracticeLog ? undefined : setPopoverState
+                    undefined
                 );
                 
                 // Update the drawer lines
@@ -133,6 +135,9 @@ export function useStageManager(deps: StageManagerDeps) {
                 shop.finalizeShop(addMessage, setPopoverState);
             } else if (currentStage === 'shop-detail') {
                 shop.finalizeShopDetail(setPopoverState);
+            } else if (currentStage === 'help') {
+                console.log('[StageManager] Finalizing help stage');
+                help.finalizeHelp(setPopoverState);
             } else if (currentStage === 'quest') {
                 setQuestLines([...tempQuestRef.current]);
                 tempQuestRef.current = [];

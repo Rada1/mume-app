@@ -1,23 +1,21 @@
 import React, { useState } from 'react';
 import { useViewport } from '../hooks/useViewport';
-import { ShopItem, PracticeData } from '../types';
+import { ShopItem } from '../types';
 import ShopItemCard from './ShopItemCard';
-import { X, Search, Plus, Minus, ShoppingCart, Eye, Check } from 'lucide-react';
+import { X, Search, Plus, Minus, Check } from 'lucide-react';
 
 interface FloatingGroupCardProps {
-    type: 'shop' | 'practice';
+    type: 'shop';
     shopItems?: ShopItem[];
-    practiceData?: PracticeData;
     onClose: () => void;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean) => void;
-    practice?: any;
     shop?: any;
     setPopoverState?: (state: any) => void;
     popoverRef?: React.RefObject<HTMLDivElement>;
 }
 
 export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({ 
-    type, shopItems, practiceData, onClose, executeCommand, practice, shop, setPopoverState, popoverRef 
+    shopItems, onClose, executeCommand, shop, setPopoverState, popoverRef 
 }) => {
     const { isMobile, isLandscape } = useViewport();
     const isPortrait = isMobile && !isLandscape;
@@ -31,10 +29,6 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
         item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
         item.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.id.toString() === searchTerm
-    );
-
-    const filteredSkills = practiceData?.skills.filter(skill => 
-        skill.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const toggleItemSelection = (itemId: string) => {
@@ -91,31 +85,33 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
             bottom: 0,
             zIndex: 30000,
             display: 'flex',
-            alignItems: isPortrait ? 'flex-end' : 'center',
+            alignItems: 'center',
             justifyContent: 'center',
-            background: 'rgba(0, 0, 0, 0.4)',
-            backdropFilter: 'blur(4px)',
-            padding: isPortrait ? 0 : '20px'
+            background: 'rgba(0, 0, 0, 0.6)',
+            backdropFilter: 'none',
+            WebkitBackdropFilter: 'none',
+            padding: isMobile ? '0' : '20px'
         }}>
             <div className="floating-group-card" ref={popoverRef} onClick={(e) => e.stopPropagation()} style={{
-                width: '100%',
-                maxWidth: isPortrait ? 'none' : '850px',
-                height: isPortrait ? '420px' : 'auto',
-                maxHeight: isPortrait ? '60dvh' : '85vh',
-                background: 'rgba(20, 20, 25, 0.85)',
-                borderTop: '1px solid rgba(255, 255, 255, 0.2)',
-                borderBottom: isPortrait ? 'none' : '1px solid rgba(255, 255, 255, 0.15)',
-                borderLeft: 'none',
-                borderRight: 'none',
-                boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.5)',
-                borderRadius: isPortrait ? '20px 20px 0 0' : '0',
+                width: isMobile ? '100%' : '100%',
+                left: isMobile ? 0 : 'auto',
+                maxWidth: isMobile ? '100%' : '850px',
+                height: 'auto',
+                maxHeight: isMobile ? '65vh' : '85vh',
+                background: 'rgba(25, 25, 30, 0.95)',
+                margin: 0,
+                border: isMobile ? 'none' : '1px solid rgba(255, 255, 255, 0.15)',
+                borderLeft: isMobile ? 'none' : undefined,
+                borderRight: isMobile ? 'none' : undefined,
+                boxShadow: isMobile ? 'none' : '0 20px 50px rgba(0, 0, 0, 0.6)',
+                borderRadius: isMobile ? '0' : '16px',
                 display: 'flex',
                 flexDirection: 'column',
                 overflow: 'hidden',
                 position: 'relative',
-                backdropFilter: 'blur(30px)',
-                WebkitBackdropFilter: 'blur(30px)',
-                transform: 'translate3d(0, 0, 0)',
+                backdropFilter: 'none',
+                WebkitBackdropFilter: 'none',
+                transform: 'none',
                 transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
             }}>
                 <div className="card-header" style={{
@@ -129,9 +125,9 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <h3 style={{ margin: 0, color: 'var(--accent)', fontSize: '1.1rem', letterSpacing: '1px', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
-                            {type === 'shop' ? 'Shop' : 'Practice'}
+                            Shop
                         </h3>
-                        {type === 'shop' && selectedItemIds.length > 0 && (
+                        {selectedItemIds.length > 0 && (
                             <div style={{ 
                                 display: 'flex', 
                                 alignItems: 'center', 
@@ -184,7 +180,7 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
                         }} />
                         <input
                             type="text"
-                            placeholder={type === 'shop' ? "Filter..." : "Filter skills..."}
+                            placeholder="Filter..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             style={{
@@ -202,11 +198,6 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        {type === 'practice' && practiceData && (
-                            <span style={{ fontSize: '0.85rem', opacity: 0.5, whiteSpace: 'nowrap' }}>
-                                {practiceData.sessionsLeft} left
-                            </span>
-                        )}
                         <button onClick={onClose} style={{
                             background: 'rgba(255, 255, 255, 0.1)',
                             border: 'none',
@@ -232,13 +223,13 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
                     flexDirection: 'column',
                     gap: '0'
                 }}>
-                    {type === 'shop' && filteredShopItems?.length === 0 && (
+                    {filteredShopItems?.length === 0 && (
                         <div style={{ textAlign: 'center', padding: '40px 20px', opacity: 0.4 }}>
                             No items matching "{searchTerm}"
                         </div>
                     )}
                     
-                    {type === 'shop' && filteredShopItems?.map(item => {
+                    {filteredShopItems?.map(item => {
                         const isSelected = selectedItemIds.includes(item.id);
                         return (
                             <div 
@@ -342,84 +333,6 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
                                 <div style={{ flex: 1 }}>
                                     <ShopItemCard item={item} executeCommand={executeCommand} />
                                 </div>
-                            </div>
-                        );
-                    })}
-                    
-                    {type === 'practice' && filteredSkills?.length === 0 && (
-                        <div style={{ textAlign: 'center', padding: '40px 20px', opacity: 0.4 }}>
-                            No skills matching "{searchTerm}"
-                        </div>
-                    )}
-
-                    {type === 'practice' && filteredSkills?.map((skill, idx) => {
-                        const isAtGuildmaster = practiceData?.isAtGuildmaster;
-                        const classColor = skill.skillClass ? {
-                            'Warrior': 'rgba(255, 100, 100, 1)',
-                            'Cleric': 'rgba(255, 255, 100, 1)',
-                            'Mage': 'rgba(100, 100, 255, 1)',
-                            'Thief': 'rgba(200, 200, 200, 1)',
-                            'Ranger': 'rgba(100, 255, 100, 1)'
-                        }[skill.skillClass] || 'var(--accent)' : 'var(--accent)';
-
-                        return (
-                            <div key={idx} className="floating-card-item practice-skill-entry" style={{
-                                padding: '0px 10px',
-                                border: 'none',
-                                borderRadius: '0',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px'
-                            }}>
-                                <div style={{ flex: 1 }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                                        <span style={{ fontWeight: 'bold', color: classColor, fontSize: '1rem' }}>{skill.name}</span>
-                                        <span style={{ opacity: 0.8, fontWeight: 'bold' }}>
-                                            {isAtGuildmaster ? (skill.knowledge.includes('%') ? skill.knowledge : skill.knowledge + '%') : skill.knowledge}
-                                        </span>
-                                    </div>
-                                    <div style={{ fontSize: '0.8rem', opacity: 0.4, display: 'flex', gap: '10px' }}>
-                                        {skill.sessions && <span>{skill.sessions} {isAtGuildmaster ? 'sessions' : ''}</span>}
-                                        {skill.sessions && <span>•</span>}
-                                        <span>{skill.difficulty}</span>
-                                        <span>•</span>
-                                        <span style={{ color: classColor, opacity: 0.8 }}>{skill.skillClass}</span>
-                                    </div>
-                                </div>
-
-                                {isAtGuildmaster && (
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (practice) {
-                                                practice.setLastPracticedSkill?.(skill.name);
-                                                executeCommand(`practice ${skill.name}`);
-                                                practice.setSilentSyncPending?.(true);
-                                                executeCommand('practice', true);
-                                            } else {
-                                                executeCommand(`practice ${skill.name}`);
-                                            }
-                                        }}
-                                        style={{
-                                            background: classColor !== 'var(--accent)' ? classColor : 'var(--accent)',
-                                            border: 'none',
-                                            color: '#000',
-                                            width: '32px',
-                                            height: '32px',
-                                            borderRadius: '50%',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            cursor: 'pointer',
-                                            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)',
-                                            transition: 'transform 0.1s active'
-                                        }}
-                                        onPointerDown={(e) => e.currentTarget.style.transform = 'scale(0.9)'}
-                                        onPointerUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                                    >
-                                        <Plus size={20} />
-                                    </button>
-                                )}
                             </div>
                         );
                     })}

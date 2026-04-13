@@ -682,8 +682,7 @@
 /* Forces inline buttons to capture events even if buried under transparent wrappers */
 .app-container .inline-btn,
 .app-container .inline-obj-char,
-.app-container .shop-card,
-.app-container .practice-card {
+.app-container .shop-card {
     pointer-events: auto !important;
     cursor: pointer !important;
     z-index: 100; /* Relative to log line */

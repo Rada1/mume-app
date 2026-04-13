@@ -40,7 +40,22 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
     const [activeButtonRect, setActiveButtonRect] = useState<DOMRect | null>(null);
 
     const drawerRef = useRef<HTMLDivElement>(null);
+    const infoContainerRef = useRef<HTMLDivElement>(null);
+    const [infoFontSize, setInfoFontSize] = useState<string>('var(--dynamic-log-size, 16px)');
     const swipePos = useRef<{ x: number, y: number } | null>(null);
+
+    useEffect(() => {
+        if (!infoContainerRef.current) return;
+        const measure = () => {
+            const width = infoContainerRef.current?.clientWidth;
+            // Scale font so 80 monospace chars fit safely within the container
+            if (width) setInfoFontSize(`${(width - 24) / 48}px`);
+        };
+        measure();
+        const ro = new ResizeObserver(measure);
+        ro.observe(infoContainerRef.current);
+        return () => ro.disconnect();
+    }, [isOpen]);
 
     // Silent refresh on open: old lines stay visible until new capture swaps in
     useEffect(() => {
@@ -129,31 +144,37 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                     display: 'flex',
                     flexDirection: 'column'
                 }}>
-                    <div style={{
+                    <div ref={infoContainerRef} style={{
                         fontFamily: 'var(--font-main, monospace)',
-                        fontSize: 'var(--dynamic-log-size, 16px)',
+                        fontSize: infoFontSize,
                         lineHeight: '1.5',
-                        padding: '10px 8px 10px 8px',
+                        padding: '8px 12px',
                         flex: 1,
-                        textAlign: 'center'
+                        textAlign: 'left'
                     }}>
                         {/* 1. Score / Vitals Section */}
                         {scoreLines.length > 0 && (
-                            <div className="info-block" style={{ marginBottom: '24px' }}>
-                                <div style={{ color: '#ffffff', fontFamily: 'var(--font-main, monospace)', fontSize: 'var(--dynamic-log-size, 16px)', opacity: 0.9, marginBottom: '0px' }}>score</div>
-                                <div style={{ color: '#ffffff', fontFamily: 'var(--font-main, monospace)', fontSize: 'var(--dynamic-log-size, 16px)', opacity: 0.9, marginBottom: '12px' }}>-------</div>
+                            <div className="info-block" style={{ marginBottom: '16px' }}>
+                                <div style={{ 
+                                    background: 'rgba(255, 255, 255, 0.05)', 
+                                    borderRadius: '4px',
+                                    margin: '0.5px 0',
+                                    padding: '1px 8px',
+                                    color: '#ffffff', 
+                                    opacity: 0.9 
+                                }}>score</div>
                                 {scoreLines.map(line => (
                                     <div
                                         key={line.id}
-                                        className="stat-line"
                                         style={{
-                                            padding: '6px 0',
+                                            background: 'rgba(0, 0, 0, 0.6)',
+                                            borderRadius: '4px',
+                                            margin: '0.5px 0',
+                                            padding: '1px 8px',
                                             width: '100%',
-                                            display: 'flex',
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                            textAlign: 'center',
-                                            whiteSpace: 'nowrap'
+                                            display: 'block',
+                                            whiteSpace: 'pre',
+                                            boxSizing: 'border-box'
                                         }}
                                         dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html.trim()) }}
                                     />
@@ -164,8 +185,14 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                         {/* 2. Stats / Combat Section */}
                         {statsLines.length > 0 ? (
                             <div className="stats-block">
-                                <div style={{ color: '#ffffff', fontFamily: 'var(--font-main, monospace)', fontSize: 'var(--dynamic-log-size, 16px)', opacity: 0.9, marginBottom: '0px' }}>stat</div>
-                                <div style={{ color: '#ffffff', fontFamily: 'var(--font-main, monospace)', fontSize: 'var(--dynamic-log-size, 16px)', opacity: 0.9, marginBottom: '12px' }}>-------</div>
+                                <div style={{ 
+                                    background: 'rgba(255, 255, 255, 0.05)', 
+                                    borderRadius: '4px',
+                                    margin: '0.5px 0',
+                                    padding: '1px 8px',
+                                    color: '#ffffff', 
+                                    opacity: 0.9 
+                                }}>stat</div>
                                 {statsLines.map(line => {
                                     // Skip redundant tags that keep getting captured
                                     const lowerText = line.text.toLowerCase().trim();
@@ -174,15 +201,15 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                                     return (
                                         <div
                                             key={line.id}
-                                            className="stat-line"
                                             style={{
-                                                padding: '6px 0',
+                                                background: 'rgba(0, 0, 0, 0.6)',
+                                                borderRadius: '4px',
+                                                margin: '0.5px 0',
+                                                padding: '1px 8px',
                                                 width: '100%',
-                                                display: 'flex',
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                                textAlign: 'center',
-                                                whiteSpace: 'nowrap'
+                                                display: 'block',
+                                                whiteSpace: 'pre',
+                                                boxSizing: 'border-box'
                                             }}
                                             dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html.trim()) }}
                                         />

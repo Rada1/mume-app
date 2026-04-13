@@ -8,6 +8,7 @@ import ShopSearchPopover from './ShopSearchPopover';
 import { ContainerPopover } from './ContainerPopover';
 import { ContainerSelectPopover } from './ContainerSelectPopover';
 import { FloatingGroupCard } from '../FloatingGroupCard';
+import { HelpCard } from '../HelpCard';
 import { getHierarchyChain } from '../../utils/buttonHierarchyUtils';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
 
@@ -221,19 +222,27 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         );
     }
 
-    if (popoverState.type === 'shop-card' || popoverState.type === 'practice-card') {
-        const isPractice = popoverState.type === 'practice-card';
+    if (popoverState.type === 'shop-card') {
         return (
             <FloatingGroupCard
-                type={isPractice ? 'practice' : 'shop'}
+                type="shop"
                 shopItems={popoverState.shopItems}
-                practiceData={isPractice ? (practice?.practiceData || popoverState.practiceData) : undefined}
                 onClose={() => setPopoverState(null)}
                 executeCommand={executeCommand}
-                practice={practice}
                 shop={shop}
                 setPopoverState={setPopoverState}
                 popoverRef={popoverRef}
+            />
+        );
+    }
+
+    if (popoverState.type === 'help-card' && popoverState.helpData) {
+        return (
+            <HelpCard 
+                helpData={popoverState.helpData}
+                onClose={() => setPopoverState(null)}
+                popoverRef={popoverRef}
+                executeCommand={executeCommand}
             />
         );
     }

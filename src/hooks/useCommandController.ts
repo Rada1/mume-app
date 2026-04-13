@@ -146,11 +146,13 @@ export function useCommandController(deps: CommandControllerDeps) {
             practice.setLastPracticedSkill(cmd.substring(9).trim());
         } else if (cmd.toLowerCase() === 'practice') {
             if (options?.fromUi) practice.setIsUiRequested(true);
-            // Silent system practice (e.g. initial connect sync) — flag it so the
-            // response stays hidden even if a game prompt fires before it arrives.
+            
+            // Silent system practice (e.g. initial connect sync)
             if (silent && isSystem) practice.setSilentSyncPending(true);
         } else if (cmd.toLowerCase().startsWith('list') || cmd.toLowerCase().startsWith('browse')) {
             if (options?.fromUi) shop.setIsUiRequested(true);
+        } else if (cmd.toLowerCase() === 'help' || cmd.toLowerCase().startsWith('help ')) {
+            deps.help.setIsUiRequested(true);
         }
 
         // --- Theater Mode Search Interception ---

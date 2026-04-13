@@ -1,15 +1,13 @@
 .line-cluster {
     display: flex;
-    gap: 16px;
-    /* Space between rotated diamonds */
+    gap: 8px;
     align-items: center;
     justify-content: center;
-    padding: 12px;
+    padding: 6px 10px;
     background: rgb(35, 35, 40);
-    backdrop-filter: blur(8px);
-    border-radius: 40px;
+    border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     pointer-events: auto;
     overflow: visible;
 }
@@ -18,14 +16,13 @@
 .line-cluster-container {
     position: absolute;
     right: 35px;
-    /* Moved further from the right edge */
     top: 50%;
     transform: translateY(-50%);
     z-index: 2500;
     transition: opacity 0.3s, transform 0.3s;
     width: auto;
     height: auto;
-    pointer-events: auto; /* Ensure interactivity */
+    pointer-events: auto;
 }
 
 /* Desktop LineCluster repositioned from absolute edge to hugging the 900px message log */
@@ -42,18 +39,15 @@
 .line-cluster-container.desktop-inline .line-cluster {
     background: rgb(35, 35, 40);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .line-cluster-container .line-cluster {
     flex-direction: column;
-    padding: 14px 10px;
-    /* Reduced vertical padding for landscape/desktop */
-    gap: 14px;
-    /* Reduced gap between buttons to save vertical space */
+    padding: 8px 6px;
+    gap: 10px;
     height: auto;
     min-height: unset;
-    /* Remove min-height to allow tighter fit */
 }
 
 /* Override GameButton defaults inside the cluster */
@@ -63,9 +57,7 @@
     top: auto !important;
     margin: 0 !important;
     width: 32px !important;
-    /* Reduced size for better fit */
     height: 32px !important;
-    /* Reduced size for better fit */
     min-width: 32px !important;
     min-height: 32px !important;
     flex-shrink: 0;
@@ -96,7 +88,6 @@
 @media (max-width: 768px) and (orientation: portrait) {
     .line-cluster-container {
         top: 5px;
-        /* Strictly below the blue bar */
         bottom: auto;
         left: 50%;
         right: auto;
@@ -106,15 +97,12 @@
 
     .line-cluster-container .line-cluster {
         flex-direction: row !important;
-        gap: 16px;
-        /* Increased padding between buttons */
-        padding: 4px 14px;
-        /* Minimal vertical padding */
+        gap: 10px;
+        padding: 3px 12px;
         width: max-content;
         height: auto;
         min-height: unset !important;
-        border-radius: 16px;
-        /* Tighter fit for 32px diamonds */
+        border-radius: 14px;
     }
 
     .line-cluster .custom-btn {
@@ -147,15 +135,16 @@
 
 .mobile-tactical-buttons-persistent .line-cluster {
     flex-direction: row !important;
-    width: 100% !important;
+    width: fit-content !important;
     justify-content: center !important;
-    gap: 16px !important;
-    padding: 2px 14px !important;
+    gap: 6px !important;
+    padding: 2px 6px !important;
+    margin: 0 auto;
     min-height: unset !important;
     border-radius: 12px !important;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
+    background: rgb(35, 35, 40) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
     backdrop-filter: none !important;
 }
 

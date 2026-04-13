@@ -265,17 +265,21 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
             );
         }
 
+        const isHeader = !!line.isHeader;
+        const rowBg = isHeader ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.6)';
+
         return (
             <div style={{ 
                 textAlign: centered ? 'center' : 'left', 
                 paddingLeft: centered ? '0' : `${depth * 8 + 8}px`, 
                 paddingRight: '8px',
-                lineHeight: '1.5',                 whiteSpace: 'pre', 
+                lineHeight: '1.5',
+                whiteSpace: 'pre', 
                 fontSize,
-                background: bg,
-                margin: bg !== 'transparent' ? '2px 0' : '0',
-                paddingTop: bg !== 'transparent' ? '2px' : '0',
-                paddingBottom: bg !== 'transparent' ? '2px' : '0',
+                background: bg !== 'transparent' ? bg : rowBg,
+                margin: '0.5px 0',
+                paddingTop: '1px',
+                paddingBottom: '1px',
                 borderRadius: '4px',
                 borderLeft: 'none',
                 width: '100%',

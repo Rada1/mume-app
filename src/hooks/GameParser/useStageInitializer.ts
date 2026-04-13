@@ -30,6 +30,7 @@ interface StageInitializerDeps {
     tempQuestRef: React.MutableRefObject<DrawerLine[]>;
     tempWhoRef: React.MutableRefObject<DrawerLine[]>;
     tempWhereRef: React.MutableRefObject<DrawerLine[]>;
+    help: any;
     finalizeCapture: () => void;
 }
 
@@ -40,22 +41,29 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, 
         setScoreLines, setStatsLines, setInfoLines,
         tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef,
+        help,
         finalizeCapture
     } = deps;
+
+    const startStage = (stage: CaptureStage) => {
+        if (stage === 'help') help.setIsHelpActive(true);
+        captureStage.current = stage;
+    };
 
     const initializeStage = useCallback((textOnly: string, lower: string, content: string, contentLower: string, attachedText?: string) => {
         const strippedLower = (attachedText || textOnly).trim().toLowerCase();
         
         // 1. Practice
         if ((lower.includes('skill') && lower.includes('knowledge')) || lower.includes('can teach you') || (captureStage.current === 'practice' && (lower.includes('knowledge:') || lower.includes('difficulty:')))) {
-            if (practice.isUiRequested || isCharacterOpen || lower.includes('class') || practice.silentSyncPendingRef.current) {
-                if (captureStage.current === 'practice') return;
-                if (captureStage.current !== 'none') finalizeCapture();
-                captureStage.current = 'practice';
-                tempPracticeRef.current = [];
-                if (practice.isUiRequested || practice.silentSyncPendingRef.current) {
-                    if (isSilentCapture.current === 0) isSilentCapture.current = 1;
-                }
+            if (captureStage.current === 'practice') return;
+            if (captureStage.current !== 'none') finalizeCapture();
+            captureStage.current = 'practice';
+            tempPracticeRef.current = [];
+            
+            // Only silence if explicitly requested by UI refresh or system sync. 
+            // Manual commands from the log remain visible.
+            if (practice.isUiRequested || practice.silentSyncPendingRef.current) {
+                if (isSilentCapture.current === 0) isSilentCapture.current = 1;
             }
         }
         else if (lower.includes('practice sessions left')) {
@@ -63,7 +71,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
             if (captureStage.current !== 'none') finalizeCapture();
             captureStage.current = 'practice';
             tempPracticeRef.current = [];
-            if (isCharacterOpen || practice.silentSyncPendingRef.current) {
+            if (practice.isUiRequested || practice.silentSyncPendingRef.current) {
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
             }
         }
@@ -121,7 +129,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         ) {
             if (captureStage.current === 'shop') return;
             if (captureStage.current !== 'none') finalizeCapture();
-            captureStage.current = 'shop';
+            startStage('shop');
             if (practice.shop?.setIsShopListingActive) practice.shop.setIsShopListingActive(true);
         }
 
@@ -215,12 +223,28 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
             }
         }
+        // 10. Help System
+        else if (
+            lower.startsWith('help on ') || 
+            lower.startsWith('mume help system') || 
+            lower.startsWith('topic:') ||
+            (help.isUiRequested && (
+                /^[A-Z0-9\s]+(\s*,\s*[A-Z0-9\s]+)*$/.test(textOnly.trim()) ||
+                lower.startsWith('no help exists for') ||
+                lower.includes('matches for help on')
+            ))
+        ) {
+            if (captureStage.current === 'help') return;
+            if (captureStage.current !== 'none') finalizeCapture();
+            startStage('help');
+        }
     }, [
         captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
         practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, 
         setScoreLines, setStatsLines, setInfoLines,
         tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef,
+        help.isUiRequested, // Important dependency
         finalizeCapture
     ]);
 

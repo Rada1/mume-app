@@ -114,4 +114,5 @@ export interface UseGameParserDeps {
     spectateCharacterName: string | null;
     roomPlayers: import('../../types').GmcpOccupant[];
     sessionMode?: 'live' | 'replay';
+    help: any;
 }

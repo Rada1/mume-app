@@ -29,6 +29,7 @@ import { useSessionManager } from '../hooks/useSessionManager';
 import { useGameAudio } from '../hooks/useGameAudio';
 import { useSessionRecorder } from '../hooks/useSessionRecorder';
 import { useSessionReplayer } from '../hooks/useSessionReplayer';
+import { useHelpHandler } from '../hooks/useHelpHandler';
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);
 export const VitalsContext = createContext<VitalsContextType | undefined>(undefined);
@@ -376,6 +377,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const practice = usePracticeHandler(s.setAbilities);
     const shop = useShopHandler();
+    const help = useHelpHandler();
 
     const settings = useSettings({
         addMessage, audioCtxRef, initAudio,
@@ -456,6 +458,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         captureStage: s.captureStage,
         practice,
         shop,
+        help,
+        entities: s.entities,
         isDrawerCapture: s.isDrawerCapture,
         isSilentCapture: s.isSilentCapture,
         isWaitingForStats: s.isWaitingForStats,
@@ -796,6 +800,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         navIntervalRef,
         mapperRef,
         teleportTargets,
+        help,
         isDrawerCapture: s.isDrawerCapture,
         isSilentCapture: s.isSilentCapture,
         captureStage: s.captureStage,
@@ -1068,7 +1073,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             handleSaveMumeEdit,
             hasSeenOnboarding: s.hasSeenOnboarding, setHasSeenOnboarding: s.setHasSeenOnboarding,
             mapperRef, ...settings, audioCtxRef,
-            telnet, parser, practice,
+            telnet, parser, practice, help,
             spatButtons, setSpatButtons,
             gameState: s.gameState, setGameState: s.setGameState, prepareLoginAttempt,
             diagnosticLogs, addDiagnosticLog,
