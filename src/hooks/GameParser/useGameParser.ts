@@ -483,6 +483,7 @@ export function useGameParser(deps: UseGameParserDeps) {
                 if (textOnly.length > 0) tempEqRef.current.push(...createLines(cleanLine, textOnly, lower, 'equipmentlist'));
             } else if (captureStage.current === 'practice') {
                 if (textOnly.trim().length > 0) {
+                    console.log(`[PracticeParser] Capturing practice row: "${textOnly.substring(0, 30)}..."`);
                     const skill = practice.parsePracticeLine(textOnly);
                     const practiceSkill = (typeof skill === 'object' && skill !== null && !('sessionsLeft' in skill)) ? skill : undefined;
                     tempPracticeRef.current.push({ 

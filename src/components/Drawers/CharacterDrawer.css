@@ -443,3 +443,30 @@
         transform: translateY(0);
     }
 }
+/* Authentic Practice Styles */
+.skill-item-authentic {
+    font-size: var(--dynamic-log-size, 16px);
+    border-radius: 4px;
+    margin: 1px 0;
+    transition: background 0.2s ease;
+}
+
+.prac-button-inline {
+    background: var(--accent);
+    border: none;
+    color: #000;
+    font-size: 10px;
+    font-weight: 900;
+    padding: 2px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.1s ease;
+    z-index: 10;
+}
+
+.prac-button-inline:active {
+    transform: scale(0.95);
+    background: #fff;
+}

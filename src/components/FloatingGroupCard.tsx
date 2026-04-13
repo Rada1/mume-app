@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { useViewport } from '../hooks/useViewport';
 import { ShopItem, PracticeData } from '../types';
 import ShopItemCard from './ShopItemCard';
-import { X, Search, Plus, ShoppingCart, Eye, Check } from 'lucide-react';
+import { X, Search, Plus, Minus, ShoppingCart, Eye, Check } from 'lucide-react';
 
 interface FloatingGroupCardProps {
     type: 'shop' | 'practice';
@@ -18,8 +19,13 @@ interface FloatingGroupCardProps {
 export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({ 
     type, shopItems, practiceData, onClose, executeCommand, practice, shop, setPopoverState, popoverRef 
 }) => {
+    const { isMobile, isLandscape } = useViewport();
+    const isPortrait = isMobile && !isLandscape;
+
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
+    const [itemQuantities, setItemQuantities] = useState<Record<string, number>>({});
+
+    const selectedItemIds = Object.keys(itemQuantities);
 
     const filteredShopItems = shopItems?.filter(item => 
         item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -32,19 +38,40 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
     );
 
     const toggleItemSelection = (itemId: string) => {
-        setSelectedItemIds(prev => 
-            prev.includes(itemId) 
-                ? prev.filter(id => id !== itemId) 
-                : [...prev, itemId]
-        );
+        setItemQuantities(prev => {
+            const next = { ...prev };
+            if (next[itemId]) {
+                delete next[itemId];
+            } else {
+                next[itemId] = 1;
+            }
+            return next;
+        });
+    };
+
+    const updateItemQuantity = (id: string, delta: number) => {
+        setItemQuantities(prev => {
+            const next = { ...prev };
+            const current = next[id] || 0;
+            const updated = current + delta;
+            
+            if (updated <= 0) {
+                delete next[id];
+            } else {
+                next[id] = Math.min(99, updated);
+            }
+            return next;
+        });
     };
 
     const handleBatchBuy = () => {
         if (selectedItemIds.length === 0) return;
-        selectedItemIds.forEach(id => {
-            executeCommand(`buy ${id}`);
+        Object.entries(itemQuantities).forEach(([id, qty]) => {
+            for (let i = 0; i < qty; i++) {
+                executeCommand(`buy ${id}`);
+            }
         });
-        setSelectedItemIds([]);
+        setItemQuantities({});
     };
 
     const handleBatchShow = () => {
@@ -52,7 +79,7 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
         selectedItemIds.forEach(id => {
             executeCommand(`show ${id}`);
         });
-        setSelectedItemIds([]);
+        setItemQuantities({});
     };
 
     return (
@@ -64,24 +91,32 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
             bottom: 0,
             zIndex: 30000,
             display: 'flex',
-            alignItems: 'center',
+            alignItems: isPortrait ? 'flex-end' : 'center',
             justifyContent: 'center',
             background: 'rgba(0, 0, 0, 0.4)',
-            backdropFilter: 'blur(4px)'
+            backdropFilter: 'blur(4px)',
+            padding: isPortrait ? 0 : '20px'
         }}>
             <div className="floating-group-card" ref={popoverRef} onClick={(e) => e.stopPropagation()} style={{
-                width: '90%',
-                maxWidth: '600px',
-                maxHeight: '80vh',
+                width: '100%',
+                maxWidth: isPortrait ? 'none' : '850px',
+                height: isPortrait ? '420px' : 'auto',
+                maxHeight: isPortrait ? '60dvh' : '85vh',
                 background: 'rgba(20, 20, 25, 0.85)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
-                borderRadius: '20px',
+                borderTop: '1px solid rgba(255, 255, 255, 0.2)',
+                borderBottom: isPortrait ? 'none' : '1px solid rgba(255, 255, 255, 0.15)',
+                borderLeft: 'none',
+                borderRight: 'none',
+                boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.5)',
+                borderRadius: isPortrait ? '20px 20px 0 0' : '0',
                 display: 'flex',
                 flexDirection: 'column',
                 overflow: 'hidden',
                 position: 'relative',
-                backdropFilter: 'blur(20px)'
+                backdropFilter: 'blur(30px)',
+                WebkitBackdropFilter: 'blur(30px)',
+                transform: 'translate3d(0, 0, 0)',
+                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
             }}>
                 <div className="card-header" style={{
                     padding: '12px 20px',
@@ -190,12 +225,12 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
                 </div>
                 
                 <div className="card-content" style={{
-                    padding: '20px',
+                    padding: '20px 0',
                     overflowY: 'auto',
                     flex: 1,
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '12px'
+                    gap: '0'
                 }}>
                     {type === 'shop' && filteredShopItems?.length === 0 && (
                         <div style={{ textAlign: 'center', padding: '40px 20px', opacity: 0.4 }}>
@@ -211,31 +246,97 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
                                 className={`floating-card-item shop-item-entry ${isSelected ? 'selected' : ''}`} 
                                 onClick={() => toggleItemSelection(item.id)} 
                                 style={{ 
-                                    padding: '12px 16px',
-                                    background: isSelected ? 'rgba(var(--accent-rgb), 0.12)' : 'rgba(255, 255, 255, 0.03)',
-                                    border: `1px solid ${isSelected ? 'var(--accent)' : 'rgba(255, 255, 255, 0.08)'}`,
-                                    borderRadius: '16px',
+                                    padding: '0px 10px',
+                                    background: isSelected ? 'rgba(var(--accent-rgb), 0.12)' : 'transparent',
+                                    border: 'none',
+                                    borderLeft: 'none',
+                                    borderRight: 'none',
+                                    borderRadius: '0',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '15px',
+                                    gap: '6px',
                                     cursor: 'pointer',
                                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                                     position: 'relative'
                                 }}
                             >
+                                <div 
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleItemSelection(item.id.toString());
+                                    }}
+                                    style={{ 
+                                        width: '10px', 
+                                        height: '10px', 
+                                        borderRadius: '2px', 
+                                        border: `1px solid ${isSelected ? 'var(--accent)' : 'rgba(255, 255, 255, 0.2)'}`,
+                                        background: isSelected ? 'var(--accent)' : 'transparent',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        transition: 'all 0.2s ease',
+                                        flexShrink: 0,
+                                        margin: '2px 0',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    {isSelected && <Check size={8} color="#000" strokeWidth={5} />}
+                                </div>
+
                                 <div style={{ 
-                                    width: '20px', 
-                                    height: '20px', 
-                                    borderRadius: '6px', 
-                                    border: `2px solid ${isSelected ? 'var(--accent)' : 'rgba(255, 255, 255, 0.2)'}`,
-                                    background: isSelected ? 'var(--accent)' : 'transparent',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    transition: 'all 0.2s ease',
-                                    flexShrink: 0
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '4px',
+                                    padding: '0 4px',
+                                    borderLeft: isSelected ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
+                                    borderRight: isSelected ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
+                                    margin: '0 2px'
                                 }}>
-                                    {isSelected && <Check size={14} color="#000" strokeWidth={3} />}
+                                    <button 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            updateItemQuantity(item.id.toString(), -1);
+                                        }}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            color: isSelected ? 'var(--accent)' : 'rgba(255, 255, 255, 0.15)',
+                                            padding: 0,
+                                            display: 'flex',
+                                            cursor: 'pointer',
+                                            opacity: isSelected ? 1 : 0.3
+                                        }}
+                                    >
+                                        <Minus size={10} strokeWidth={3} />
+                                    </button>
+                                    
+                                    <span style={{ 
+                                        fontSize: '0.75rem', 
+                                        fontWeight: 'bold', 
+                                        minWidth: '14px', 
+                                        textAlign: 'center',
+                                        color: isSelected ? 'var(--accent)' : 'rgba(255, 255, 255, 0.15)',
+                                        fontFamily: 'monospace'
+                                    }}>
+                                        {itemQuantities[item.id] || 0}
+                                    </span>
+
+                                    <button 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            updateItemQuantity(item.id.toString(), 1);
+                                        }}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            color: isSelected ? 'var(--accent)' : 'rgba(255, 255, 255, 0.3)',
+                                            padding: 0,
+                                            display: 'flex',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        <Plus size={10} strokeWidth={3} />
+                                    </button>
                                 </div>
 
                                 <div style={{ flex: 1 }}>
@@ -263,13 +364,12 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
 
                         return (
                             <div key={idx} className="floating-card-item practice-skill-entry" style={{
-                                padding: '12px 15px',
-                                background: 'rgba(255, 255, 255, 0.03)',
-                                border: '1px solid rgba(255, 255, 255, 0.08)',
-                                borderRadius: '16px',
+                                padding: '0px 10px',
+                                border: 'none',
+                                borderRadius: '0',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '15px'
+                                gap: '8px'
                             }}>
                                 <div style={{ flex: 1 }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>

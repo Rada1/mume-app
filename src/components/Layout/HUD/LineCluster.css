@@ -140,31 +140,43 @@
 }
 
 /* Specific override for when it's inside the MapperCluster gutter */
-.mobile-bottom-gutter .line-cluster-container {
-    position: absolute !important;
-    top: 4px !important;
-    left: 50% !important;
-    right: auto !important;
-    bottom: auto !important;
-    transform: translateX(-50%) !important;
+.mobile-tactical-buttons-persistent {
+    padding: 0 4px;
     z-index: 2600;
-    width: max-content !important;
 }
 
-.mobile-bottom-gutter .line-cluster {
+.mobile-tactical-buttons-persistent .line-cluster {
     flex-direction: row !important;
-    width: max-content !important;
+    width: 100% !important;
+    justify-content: center !important;
     gap: 16px !important;
-    padding: 4px 14px !important;
+    padding: 2px 14px !important;
     min-height: unset !important;
     border-radius: 12px !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
 }
 
-.mobile-bottom-gutter .line-cluster .custom-btn {
+.mobile-tactical-buttons-persistent .line-cluster .custom-btn {
     width: 16px !important;
     height: 16px !important;
     min-width: 16px !important;
     min-height: 16px !important;
+}
+
+.mobile-tactical-buttons-persistent .line-cluster .custom-btn .button-icon {
+    font-size: 0.6rem !important;
+}
+
+.mobile-tactical-buttons-persistent .line-cluster .custom-btn .button-label {
+    font-size: 0.35rem !important;
+    max-width: 16px;
+}
+
+.mobile-bottom-gutter .line-cluster-container {
+    display: none !important; /* Remove the old absolute container */
 }
 
 .mobile-bottom-gutter .line-cluster .custom-btn .button-icon {

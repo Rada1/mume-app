@@ -9,6 +9,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         executeCommand, setInput, setTarget, addMessage, triggerHaptic, btn, joystick, target,
         popoverState, setPopoverState, setCommandPreview, wasDraggingRef, viewport, setParley, parley,
         keywordOverrides, applyOptimisticChange,
+        setIsCharacterOpen,
         playClickSound, isSoundEnabled, initAudio
     } = deps;
 
@@ -33,6 +34,13 @@ export const useButtonClicks = (deps: InteractionDeps) => {
 
         if (btn.isEditMode) {
             if (button.setId !== 'Tactical' && !wasDraggingRef.current) btn.setEditingButtonId(button.id);
+            return;
+        }
+        
+        // --- Redirect Guildmaster Practice to Drawer ---
+        if (button.id === 'cat-guildmaster-practice') {
+            setIsCharacterOpen(true, 'practice');
+            executeCommand('practice', true, true, true, true);
             return;
         }
 

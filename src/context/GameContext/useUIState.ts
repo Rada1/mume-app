@@ -14,6 +14,7 @@ export const useUIState = (
         isSetMenuOpen: boolean;
         menuView: 'main' | 'availableSets';
         peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map';
+        characterTab: 'info' | 'practice' | 'quests';
     }>(() => {
         const isMobileInitial = typeof window !== 'undefined' &&
             (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768);
@@ -27,11 +28,12 @@ export const useUIState = (
             isMenuOpen: false,
             isSetMenuOpen: false,
             menuView: 'main',
-            peekingSource: 'none'
+            peekingSource: 'none',
+            characterTab: 'info'
         };
     });
 
-    const handleTabClick = useCallback((drawer: 'stats' | 'character' | 'inventory' | 'players') => {
+    const handleTabClick = useCallback((drawer: 'stats' | 'character' | 'inventory' | 'players', initialTab?: 'info' | 'practice' | 'quests') => {
         executeCommandRef.current?.('click-sound', true, true);
         
         let hasData = false;
@@ -72,7 +74,9 @@ export const useUIState = (
                     // Fetch fresh data when opening for the first time
                     setTimeout(refreshData, 50);
                     // Switch directly to the new drawer
-                    return { ...prev, drawer, mapExpanded: false, peekingSource: 'none' };
+                    const update: any = { ...prev, drawer, mapExpanded: false, peekingSource: 'none' };
+                    if (drawer === 'character' && initialTab) update.characterTab = initialTab;
+                    return update;
                 }
             }
         });
@@ -99,8 +103,8 @@ export const useUIState = (
         else setUI(prev => ({ ...prev, drawer: 'none', mapExpanded: window.innerWidth <= 1024 ? true : prev.mapExpanded }));
     }, [handleTabClick]);
 
-    const setIsCharacterOpen = useCallback((open: boolean) => {
-        if (open) handleTabClick('character');
+    const setIsCharacterOpen = useCallback((open: boolean, tab?: 'info' | 'practice' | 'quests') => {
+        if (open) handleTabClick('character', tab);
         else setUI(prev => ({ ...prev, drawer: 'none', mapExpanded: window.innerWidth <= 1024 ? true : prev.mapExpanded }));
     }, [handleTabClick]);
 

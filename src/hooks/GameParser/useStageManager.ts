@@ -122,6 +122,11 @@ export function useStageManager(deps: StageManagerDeps) {
                     suppressPracticeLog ? undefined : addMessage, 
                     suppressPracticeLog ? undefined : setPopoverState
                 );
+                
+                // Update the drawer lines
+                setPracticeLines([...tempPracticeRef.current]);
+                tempPracticeRef.current = [];
+
                 practice.setIsPracticeActive(false);
                 practice.setIsUiRequested(false);
             } else if (currentStage === 'shop') {
@@ -147,9 +152,6 @@ export function useStageManager(deps: StageManagerDeps) {
             } else if (currentStage === 'info') {
                 setInfoLines([...tempInfoRef.current]);
                 tempInfoRef.current = [];
-            } else if (currentStage === 'practice') {
-                setPracticeLines([...tempPracticeRef.current]);
-                tempPracticeRef.current = [];
             } else if (currentStage === 'eq' || currentStage === 'inv' || currentStage === 'container') {
                 if (currentStage === 'eq') {
                     setEqLines([...tempEqRef.current]);

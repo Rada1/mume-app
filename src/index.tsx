@@ -147,6 +147,22 @@ const MudClient = () => {
         }
     }, [telnet]);
 
+    // --- Shop Page Management ---
+    // When the shop-card is active, we disable the MUME "page" paginator so it doesn't interrupt long listings.
+    // When closed, we restore it.
+    const lastIsShopOpen = useRef(false);
+    useEffect(() => {
+        const isShopOpen = popoverState?.type === 'shop-card';
+        if (isShopOpen && !lastIsShopOpen.current) {
+            console.log('[Shop] Activating shop card: change page off');
+            executeCommand('change page off', true, true);
+        } else if (!isShopOpen && lastIsShopOpen.current) {
+            console.log('[Shop] Closing shop card: change page on');
+            executeCommand('change page on', true, true);
+        }
+        lastIsShopOpen.current = isShopOpen;
+    }, [popoverState?.type, executeCommand]);
+
     const handleBackgroundClick = (e: React.MouseEvent) => {
         if (btn.isEditMode) {
             const target = e.target as HTMLElement;

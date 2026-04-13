@@ -23,7 +23,7 @@ export const CATEGORY_BUTTON_MAP: Record<string, string[]> = {
     'inline-corpses': ['cat-corpse-butcher', 'cat-corpse-drag', 'cat-corpse-scalp'],
     'inline-containers': ['cat-container-look-in', 'cat-container-open', 'cat-container-close'],
     'inline-innkeeper': ['cat-innkeeper-offer', 'cat-innkeeper-rent', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
-    'inline-shopkeeper': ['cat-shopkeeper-shop', 'cat-shopkeeper-mend', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
+    'inline-shopkeeper': ['cat-shopkeeper-shop', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
     'inline-shopkeeper-drop': ['cat-shopkeeper-sell-drag', 'cat-shopkeeper-mend-drag'],
     'inlinenpc': ['innpc-consider', 'innpc-kill', 'innpc-ex'],
     'inline-mounts': ['cat-mount-ride', 'cat-mount-lead', 'cat-mount-saddle', 'cat-mount-unsaddle', 'cat-mount-unsaddle-all', 'innpc-consider', 'innpc-kill', 'innpc-ex', 'cat-mount-abandon'],

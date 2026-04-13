@@ -22,6 +22,7 @@ export const INLINE_HIERARCHY: Record<string, string[]> = {
     'inline-obj-shop': ['inline-object'],
     
     // NPC Hierarchy
+    'inlinenpc': ['inline-default'],
     'inline-mounts': ['inlinenpc'],
     'inline-shopkeeper': ['inlinenpc'],
     'inline-shopkeeper-drop': ['inlinenpc'],

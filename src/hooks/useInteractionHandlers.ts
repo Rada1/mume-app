@@ -30,7 +30,7 @@ export interface InteractionDeps {
     wasDraggingRef: React.RefObject<boolean>;
     viewport: any;
     setIsMapExpanded: (val: boolean) => void;
-    setIsCharacterOpen: (val: boolean) => void;
+    setIsCharacterOpen: (val: boolean, tab?: 'info' | 'practice' | 'quests') => void;
     setIsEquipmentOpen: (val: boolean) => void;
     setIsInventoryOpen: (val: boolean) => void;
     setIsSettingsOpen: (val: boolean) => void;

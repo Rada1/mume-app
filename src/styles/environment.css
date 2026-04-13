@@ -155,14 +155,9 @@
     background: radial-gradient(ellipse 140% 60% at 50% var(--torch-y), rgba(255, 60, 10, 0.18) 0%, transparent 75%);
 }
 
-.is-mobile:not(.is-landscape):not(.kb-open) .lighting-artificial .lighting-inner {
-    /* When keyboard is down, the input bar sits above the 300px mapper gutter */
-    --torch-y: calc(100% - 300px);
-}
-
-.is-mobile:not(.is-landscape):not(.kb-open).is-map-expanded .lighting-artificial .lighting-inner {
-    /* When map is expanded, the gutter is 65vh */
-    --torch-y: calc(100% - 65vh);
+.is-mobile:not(.is-landscape) .lighting-artificial .lighting-inner {
+    /* Anchored to the top of the mobile gutter (minimized or expanded) */
+    --torch-y: calc(100% - var(--mobile-gutter-height));
 }
 
 .is-mobile.is-landscape .lighting-artificial .lighting-inner {
@@ -259,11 +254,8 @@
 /* --- Mobile Portrait: offset fog so it anchors to the log bottom, not the screen bottom --- */
 /* The map drawer peeks at 300px; without this the densest fog is hidden behind the drawer */
 .is-mobile:not(.is-landscape) .fog-layer {
-    bottom: 300px;
-}
-
-.is-mobile:not(.is-landscape).is-map-expanded .fog-layer {
-    bottom: 65vh;
+    /* Anchored to the top of the mobile gutter (minimized or expanded) */
+    bottom: var(--mobile-gutter-height);
 }
 
 /* When keyboard is open, the app-container is already cropped to the visual viewport.

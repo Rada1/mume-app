@@ -23,9 +23,7 @@ export const NPC_BUTTONS = [
 
     // --- SHOPKEEPERS ---
     createButton({ id: 'cat-shopkeeper-shop', label: 'Shop', command: 'list', setId: 'inline-shopkeeper', color: '#8b5cf6' }),
-    createButton({ id: 'cat-shopkeeper-mend', label: 'Mend', command: 'shop-mend', setId: 'inline-shopkeeper', color: '#8b5cf6' }),
     createButton({ id: 'cat-shopkeeper-sell-drag', label: 'Sell %n', command: 'sell %n', setId: 'inline-shopkeeper-drop', color: '#8b5cf6' }),
-    createButton({ id: 'cat-shopkeeper-mend-drag', label: 'Mend %n', command: 'mend %n', setId: 'inline-shopkeeper-drop', color: '#8b5cf6' }),
 
     // --- SHOP ITEMS ---
     createButton({ id: 'cat-shopitem-buy', label: 'Buy', command: 'buy %n', setId: 'inline-shopitem', color: '#8b5cf6' }),

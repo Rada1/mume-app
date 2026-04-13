@@ -172,7 +172,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             display: 'flex',
             alignItems: 'center',
             minHeight: '16px',
-            lineHeight: '1.15',
+            lineHeight: '1.5',
             color: line.isHeader ? '#ffffff' : 'inherit'
         };
 
@@ -435,7 +435,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                             fontFamily: 'var(--font-main, monospace)',
                             fontSize: eqFontSize,
                             visibility: eqFontSize === 'inherit' ? 'hidden' : 'visible',
-                            lineHeight: '1.2',
+                            lineHeight: '1.5',
                             whiteSpace: 'pre',
                             overflowX: 'hidden',
                             background: 'transparent',
@@ -462,7 +462,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                             fontFamily: 'var(--font-main, monospace)',
                             fontSize: eqFontSize,
                             visibility: eqFontSize === 'inherit' ? 'hidden' : 'visible',
-                            lineHeight: '1.2',
+                            lineHeight: '1.5',
                             display: 'flex',
                             flexDirection: 'column',
                             gap: '0',

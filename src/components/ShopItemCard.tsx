@@ -17,7 +17,7 @@ const ShopItemCard: React.FC<ShopItemCardProps> = ({ item }) => {
         // Split "11 gold 14 silver" to color only the numbers
         const parts = formatted.split(/(\d+)/); 
         return (
-            <span className="price-text" style={{ color: 'var(--text-dim)', opacity: 0.6, fontWeight: 'normal' }}>
+            <span className="price-text" style={{ color: 'var(--text-dim)', opacity: 0.6, fontWeight: 'normal', whiteSpace: 'nowrap' }}>
                 {parts.map((part, i) => {
                     const isNumber = /^\d+$/.test(part);
                     return isNumber ? (
@@ -40,27 +40,30 @@ const ShopItemCard: React.FC<ShopItemCardProps> = ({ item }) => {
             data-menu-display="list"
             style={{ 
                 '--glow-color': 'rgba(180, 100, 50, 0.4)',
-                display: 'inline-flex',
+                display: 'flex',
+                width: '100%',
+                flex: 1,
                 alignItems: 'baseline',
-                flexWrap: 'wrap',
-                gap: '2px',
-                padding: '2px 6px',
-                borderRadius: '6px',
-                margin: '1px 0',
-                background: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid rgba(255, 255, 255, 0.08)'
+                flexWrap: 'nowrap',
+                gap: '8px',
+                padding: '0px 2px',
+                margin: '0',
+                background: 'transparent',
+                border: 'none',
+                fontSize: 'var(--dynamic-log-size, 16px)',
+                boxSizing: 'border-box'
             } as any}
         >
-            <span className="shop-item-id" style={{ opacity: 0.4, fontSize: '0.85em', marginRight: '4px' }}>{item.id}. </span>
-            <span className="shop-item-name" style={{ color: 'rgba(180, 100, 50, 0.9)', fontWeight: '900' }}>{item.name}</span>
+            <span className="shop-item-id" style={{ opacity: 0.4, marginRight: '4px' }}>{item.id}. </span>
+            <span className="shop-item-name" style={{ color: 'rgba(180, 100, 50, 0.9)', fontWeight: '900', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</span>
             
             {(item.condition && item.condition !== 'standard' || item.age) && (
-                <span className="shop-item-status" style={{ fontSize: '0.85em', opacity: 0.6, fontStyle: 'italic', marginLeft: '6px' }}>
+                <span className="shop-item-status" style={{ opacity: 0.6, fontStyle: 'italic', marginLeft: '6px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     ({[item.condition !== 'standard' ? item.condition : null, item.age].filter(Boolean).join(', ')})
                 </span>
             )}
             
-            <span className="shop-item-separator" style={{ opacity: 0.2, margin: '0 6px', fontSize: '0.8em' }}>|</span>
+            <div style={{ flex: 1 }} />
             
             <div className="price-container" style={{ display: 'inline-flex', alignItems: 'baseline' }}>
                 {renderPrice(item.price)}

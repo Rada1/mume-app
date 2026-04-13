@@ -40,7 +40,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         handleTabClick, toggleMap, spatButtons, setSpatButtons, parley, setParley, whoList,
         statsLines, scoreLines, displayInventoryLines, displayEqLines,
         pendingDrawerContainerRef, inlineCategories, entities, keywordOverrides,
-        env, isFoggy, gameState
+        env, isFoggy, gameState, currentTerrain
     } = useGame() as any;
     const { target, activePrompt, stats } = useVitals();
     const { ui, setUI, setPopoverState, isLibraryOpen, setIsLibraryOpen } = useUI();
@@ -109,7 +109,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     style={{
                         padding: '6px 4px 0 4px',
                         flexShrink: 0,
-                        marginBottom: (isShown || ui.drawer !== 'none') ? '24px' : '0'
+                        marginBottom: (isShown || ui.drawer !== 'none') ? '8px' : '0'
                     }}
                 >
                     <InputArea
@@ -128,6 +128,38 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         parley={parley}
                         setParley={setParley}
                         whoList={whoList}
+                        gameState={gameState}
+                        terrain={currentTerrain}
+                        characterName={characterName}
+                    />
+                </div>
+                
+                {/* Persistent Tactical Buttons for Mobile Portrait */}
+                <div className="mobile-tactical-buttons-persistent">
+                    <LineCluster
+                        isEditMode={isEditMode}
+                        handleDragStart={handleDragStart}
+                        buttons={btn.buttons}
+                        selectedButtonIds={btn.selectedButtonIds}
+                        dragState={dragState}
+                        handleButtonClick={handleButtonClick}
+                        wasDraggingRef={wasDraggingRef}
+                        triggerHaptic={triggerHaptic}
+                        setPopoverState={setPopoverState}
+                        setEditingButtonId={btn.setEditingButtonId}
+                        setSelectedIds={btn.setSelectedIds}
+                        activePrompt={activePrompt}
+                        executeCommand={executeCommand}
+                        setCommandPreview={setCommandPreview}
+                        heldButton={heldButton}
+                        setHeldButton={setHeldButton}
+                        joystick={joystick}
+                        target={target}
+                        isGridEnabled={btn.isGridEnabled}
+                        gridSize={btn.gridSize}
+                        setActiveSet={btn.setActiveSet}
+                        setButtons={btn.setButtons}
+                        isMobile={isMobile}
                     />
                 </div>
 
@@ -160,33 +192,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                             {isFoggy && <CloudFog size={16} style={{ opacity: 0.6 }} />}
                         </div>
                     )}
-                    <div className={`line-cluster-container ${(!showControls || isKeyboardOpen) && !btn.isEditMode ? 'hud-hidden' : ''}`}>
-                        <LineCluster
-                            isEditMode={isEditMode}
-                            handleDragStart={handleDragStart}
-                            buttons={btn.buttons}
-                            selectedButtonIds={btn.selectedButtonIds}
-                            dragState={dragState}
-                            handleButtonClick={handleButtonClick}
-                            wasDraggingRef={wasDraggingRef}
-                            triggerHaptic={triggerHaptic}
-                            setPopoverState={setPopoverState}
-                            setEditingButtonId={btn.setEditingButtonId}
-                            setSelectedIds={btn.setSelectedIds}
-                            activePrompt={activePrompt}
-                            executeCommand={executeCommand}
-                            setCommandPreview={setCommandPreview}
-                            heldButton={heldButton}
-                            setHeldButton={setHeldButton}
-                            joystick={joystick}
-                            target={target}
-                            isGridEnabled={btn.isGridEnabled}
-                            gridSize={btn.gridSize}
-                            setActiveSet={btn.setActiveSet}
-                            setButtons={btn.setButtons}
-                            isMobile={isMobile}
-                        />
-                    </div>
+
 
                     <Mapper
                         ref={mapperRef}

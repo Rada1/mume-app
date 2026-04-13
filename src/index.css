@@ -63,6 +63,7 @@
         border-top: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 20px 20px 0 0;
         overflow: visible;
+        transition: none !important;
     }
 
     .kb-open .hud-clusters-absolute-layer,
@@ -429,7 +430,9 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    width: 100%;
+    flex: 1;
+    min-width: 0;
+    width: auto;
 }
 
 .cmd-prompt {
@@ -443,6 +446,7 @@
     align-items: center;
     gap: 8px;
     flex-shrink: 0;
+    margin-left: auto;
 }
 
 .msg-repeat-btn {
@@ -460,6 +464,13 @@
     position: relative;
     z-index: 10;
     flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .msg-repeat-btn, .msg-cancel-btn {
+        width: 32px;
+        height: 32px;
+    }
 }
 
 .msg-repeat-btn:hover {

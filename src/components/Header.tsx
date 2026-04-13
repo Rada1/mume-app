@@ -73,6 +73,12 @@ const Header: React.FC<HeaderProps> = ({
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             const target = event.target as Node;
+
+            // Portaled menu check: if the click is inside the dropdown itself, don't close.
+            if (target instanceof HTMLElement && target.closest('.header-dropdown-menu')) {
+                return;
+            }
+
             if (ui.isMenuOpen && menuRef.current && !menuRef.current.contains(target)) {
                 setIsMenuOpen(false);
                 setMenuView('main');

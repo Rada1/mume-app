@@ -241,7 +241,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                     <div ref={infoContainerRef} style={{
                         fontFamily: 'var(--font-main, monospace)',
                         fontSize: infoFontSize,
-                        lineHeight: '1.2'
+                        lineHeight: '1.5',
                     }}>
                         {eqLines.map(line => renderLine(line))}
                         {eqLines.length === 0 && <div className="drawer-empty-state" style={{ textAlign: 'center', padding: '20px', opacity: 0.5 }}>No equipment worn</div>}

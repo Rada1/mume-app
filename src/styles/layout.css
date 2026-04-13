@@ -18,6 +18,10 @@
     --mobile-gutter-height: 400px;
 }
 
+.app-container.kb-open {
+    --mobile-gutter-height: 70px;
+}
+
 .background-layer {
     position: absolute;
     inset: -10%;
@@ -82,7 +86,11 @@
 @media (max-width: 768px) and (orientation: portrait) {
     .content-layer {
         padding-bottom: var(--mobile-gutter-height) !important;
-        transition: padding-bottom 0.4s ease;
+        transition: none !important;
+    }
+    
+    .kb-open .content-layer {
+        padding-bottom: 70px !important;
     }
     
     .state-account .content-layer {

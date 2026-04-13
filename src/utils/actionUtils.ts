@@ -22,102 +22,69 @@ export function isButtonValidForEntity(
     const { inlineCategories, roomNpcs, entities } = deps;
     const entity = entities[entityId];
     
-    if (button.id.includes('shop') || button.id.includes('innkeeper') || button.id.includes('water') || button.id.includes('drink')) {
-        console.log(`[DEBUG] Validating button ${button.id} vs ${entityId} (setId: ${setId}, cat: ${categoryOverride})`);
-    }
-    // Fallback: If no entity data yet, just use the set hierarchy check
-    // This happens for items clicked in the log that haven't been 'scanned' into inventory/eq yet.
-    if (!entity) {
-        // We use the noun from the entityId if possible (strip auto-item- or auto-obj- prefix)
-        const context = entityId.startsWith('auto-item-') ? entityId.replace('auto-item-', '') : 
-                        entityId.startsWith('auto-obj-') ? entityId.replace('auto-obj-', '') : undefined;
-        const detectedCatId = categoryOverride || (context ? getCategoryForName(context, inlineCategories) : null);
-        const fullSetChain = getHierarchyChain(setId, detectedCatId);
-        
-        if (button.setId.includes('innkeeper') || button.setId.includes('shopkeeper')) {
-            console.log(`[DEBUG] Action Chain for ${entityId}: [${fullSetChain.join(',')}] - Target setId: ${button.setId}`);
-        }
-        // Still apply basic shopkeeper/possession rules by command name
-        const isShopCmd = button.command.includes('mend') || button.command.includes('sell') || button.command.includes('value') || button.command === 'list' || button.command.startsWith('buy ');
-        const isPosessed = setId === 'inline-obj-char' || setId === 'inventorylist' || 
-                           setId === 'inline-obj-worn' || setId === 'equipmentlist';
+    // --- STEP 1: Determine Context & Category ---
+    // We try to derive the noun/context of the entity to perform category matching.
+    const context = entity?.noun || 
+                   entityId.replace(/^(auto-npc-|auto-item-|auto-obj-|roomnpcs:|roomitems:|inventorylist:|equipmentlist:|log-npc-)/, '')
+                           .replace(/-[a-f0-9]+$/, '').replace(/-/g, ' ');
 
-        if (button.command.startsWith('get ') && !button.command.includes('all') && isPosessed) return false;
-        if (isShopCmd && (setId === 'inline-obj-worn' || setId === 'equipmentlist')) return false;
-        
-        if (isShopCmd && !fullSetChain.includes('inline-shopkeeper')) {
-            const hasShopkeeper = roomNpcs?.some(npc => {
-                const npcName = (typeof npc === 'string' ? npc : npc.name || npc.shortdesc || '').toLowerCase();
-                return /barman|dealer|keeper|merchant|weaponsmith|armourer|smith|trader|grocer|librarian|provisioner|alchemist|herbalist|tailor/i.test(npcName);
-            });
-            if (!hasShopkeeper) return false;
-        }
-
-        if (button.command.startsWith('mend')) {
-            const isArmour = detectedCatId === 'inline-armour';
-            const isWeapon = detectedCatId === 'inline-weapon';
-            if (!isArmour && !isWeapon) return false;
-        }
-
-        if (button.command.startsWith('wield ')) {
-            const isWeapon = 
-                detectedCatId === 'inline-weapon' || 
-                /sword|dagger|mace|axe|staff|spear|club|flail|hammer|polearm|scimitar|morning star|halberd|rapier|blade|pike|lance|cleaver/i.test(context || '');
-            if (!isWeapon) return false;
-        }
-
-        return fullSetChain.includes(button.setId) || button.setId === setId;
-    }
-
-    const context = entity.noun;
-    
-    // 1. Hierarchical Match
-    const detectedCatId = categoryOverride || getCategoryForName(context, inlineCategories);
+    const detectedCatId = categoryOverride || (context ? getCategoryForName(context, inlineCategories) : null);
     const fullSetChain = getHierarchyChain(setId, detectedCatId);
-    
-    // --- SPECIAL HANDLING: Innkeeper/Shopkeeper/Guildmaster detection via roomNpcs ---
-    // If we have roomNpcs (GMCP data), we can check if THIS entity (by ID or name matching)
-    // is actually a service provider, even if the highlighter didn't tag its category correctly.
+
+    // Debugging for service-related buttons
     const isServiceButton = button.setId.startsWith('inline-innkeeper') || 
                             button.setId.startsWith('inline-shopkeeper') || 
                             button.setId.startsWith('inline-guildmaster');
 
-    if (isServiceButton && roomNpcs) {
-        const matchingNpc = roomNpcs.find(npc => {
-            const name = (typeof npc === 'string' ? npc : npc.name || npc.shortdesc || '').toLowerCase();
-            const id = (typeof npc === 'string' ? '' : npc.id || '');
-            return id === entityId || name.includes(context.toLowerCase());
-        });
+    if (isServiceButton) {
+        // If the hierarchy chain already includes the target set, we trust it absolutely (e.g. via manual category tag)
+        if (fullSetChain.includes(button.setId)) return true;
 
-        if (matchingNpc) {
-            const npcName = (typeof matchingNpc === 'string' ? matchingNpc : matchingNpc.name || matchingNpc.shortdesc || '').toLowerCase();
-            const isInnkeeper = /innkeeper/i.test(npcName);
-            const isShopkeeper = /barman|dealer|keeper|merchant|weaponsmith|armourer|smith|trader|grocer|librarian|provisioner|alchemist|herbalist|tailor/i.test(npcName);
-            const isGuildmaster = /guildmaster|teacher|master|trainer|huor/i.test(npcName);
+        let isMatch = false;
+        
+        // 1. Check explicit capabilities (registered entities)
+        if (entity?.capabilities) {
+            if (button.setId === 'inline-innkeeper' && entity.capabilities.includes(EntityCapability.Innkeeper)) isMatch = true;
+            if (button.setId === 'inline-shopkeeper' && entity.capabilities.includes(EntityCapability.Shopkeeper)) isMatch = true;
+            if (button.setId === 'inline-guildmaster' && entity.capabilities.includes(EntityCapability.Guildmaster)) isMatch = true;
+        }
 
-            if (button.setId === 'inline-innkeeper' && isInnkeeper) fullSetChain.push('inline-innkeeper');
-            if (button.setId === 'inline-shopkeeper' && isShopkeeper) fullSetChain.push('inline-shopkeeper');
-            if (button.setId === 'inline-guildmaster' && isGuildmaster) fullSetChain.push('inline-guildmaster');
+        // 2. Check roomNpcs (fallback for log-parsed or GMCP entities)
+        if (!isMatch && roomNpcs) {
+            const searchNoun = context.toLowerCase();
+            const matchingNpc = roomNpcs.find(npc => {
+                const name = (typeof npc === 'string' ? npc : npc.name || npc.shortdesc || '').toLowerCase();
+                const id = (typeof npc === 'string' ? '' : npc.id || '');
+                const keyword = (typeof npc === 'string' ? '' : npc.keyword || '').toLowerCase();
+                return id === entityId || name.includes(searchNoun) || keyword.includes(searchNoun);
+            });
+
+            if (matchingNpc) {
+                const npcName = (typeof matchingNpc === 'string' ? matchingNpc : matchingNpc.name || matchingNpc.shortdesc || '').toLowerCase();
+                if (button.setId === 'inline-innkeeper' && /innkeeper|barman|butterbur|tender|lodging/i.test(npcName)) isMatch = true;
+                if (button.setId === 'inline-shopkeeper' && /shopkeeper|blacksmith|dealer|keeper|merchant|weaponsmith|armourer|smith|trader|grocer|librarian|provisioner|alchemist|herbalist|tailor/i.test(npcName)) isMatch = true;
+                if (button.setId === 'inline-guildmaster' && /guildmaster|teacher|master|trainer|huor/i.test(npcName)) isMatch = true;
+            }
+        }
+
+        if (isMatch) {
+            if (!fullSetChain.includes(button.setId)) fullSetChain.push(button.setId);
+            return true;
         }
     }
 
+    // --- STEP 2: Main Set Validation ---
     if (!fullSetChain.includes(button.setId) && button.setId !== setId) {
-        console.log(`[ActionFilter] Rejected button ${button.id} (${button.label}) for ${entityId}: mismatch setId ${button.setId} vs chain [${fullSetChain.join(',')}]`);
         return false;
     }
 
-    // 2. MUME Specific Rules
+    // --- STEP 3: MUME Specific Rules ---
     const isShopCmd = button.command.includes('mend') || button.command.includes('sell') || button.command.includes('value') || button.command === 'list' || button.command.startsWith('buy ');
     const isPosessed = setId === 'inline-obj-char' || setId === 'inventorylist' || 
                        setId === 'inline-obj-worn' || setId === 'equipmentlist';
 
     // Block 'Get' for items already in possession
     if (button.command.startsWith('get ') && !button.command.includes('all') && isPosessed) {
-        return false;
-    }
-
-    // Block 'Put' for items NOT in possession
-    if (button.command.startsWith('put ') && !isPosessed) {
         return false;
     }
 
@@ -130,7 +97,7 @@ export function isButtonValidForEntity(
     if (isShopCmd && !fullSetChain.includes('inline-shopkeeper')) {
         const hasShopkeeper = roomNpcs?.some(npc => {
             const npcName = (typeof npc === 'string' ? npc : npc.name || npc.shortdesc || '').toLowerCase();
-            return /barman|dealer|keeper|merchant|weaponsmith|armourer|smith|trader|grocer|librarian|provisioner|alchemist|herbalist|tailor/i.test(npcName);
+            return /shopkeeper|blacksmith|barman|dealer|keeper|merchant|weaponsmith|armourer|smith|trader|grocer|librarian|provisioner|alchemist|herbalist|tailor/i.test(npcName);
         });
         if (!hasShopkeeper) return false;
     }

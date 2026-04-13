@@ -25,11 +25,10 @@ const PracticeSkillCard: React.FC<PracticeSkillCardProps> = ({ skill: initialSki
 
     return (
         <div className={`practice-skill-card ${isMaxed ? 'maxed' : ''}`} style={{
-            background: 'rgba(255, 255, 255, 0.03)',
-            border: '1px solid rgba(255, 255, 255, 0.06)',
-            borderRadius: '12px',
-            padding: '12px 16px',
-            marginBottom: '10px',
+            background: 'transparent',
+            border: 'none',
+            padding: '4px 2px',
+            marginBottom: '4px',
             display: 'flex',
             flexDirection: 'column',
             gap: '10px',

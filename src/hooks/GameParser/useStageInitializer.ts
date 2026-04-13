@@ -47,7 +47,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         const strippedLower = (attachedText || textOnly).trim().toLowerCase();
         
         // 1. Practice
-        if (lower.includes('skill') && lower.includes('knowledge')) {
+        if ((lower.includes('skill') && lower.includes('knowledge')) || lower.includes('can teach you') || (captureStage.current === 'practice' && (lower.includes('knowledge:') || lower.includes('difficulty:')))) {
             if (practice.isUiRequested || isCharacterOpen || lower.includes('class') || practice.silentSyncPendingRef.current) {
                 if (captureStage.current === 'practice') return;
                 if (captureStage.current !== 'none') finalizeCapture();
@@ -69,11 +69,11 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         }
 
         // 2. Quests
-        else if ((lower.includes('learnt of') && lower.includes('quest')) || lower.includes('unfinished quest') || lower.includes('not found any new quests') || lower.includes('no unfinished quests') || quests.activeQuests?.some(q => {
+        else if (((lower.includes('learnt of') && lower.includes('quest')) || lower.includes('unfinished quest') || lower.includes('not found any new quests') || lower.includes('no unfinished quests') || quests.activeQuests?.some(q => {
             const qName = q.name.toLowerCase().trim().replace(/\s+/g, ' ');
             const lName = lower.trim().replace(/\s+/g, ' ');
             return qName === lName || lName.includes(qName) || qName.includes(lName);
-        })) {
+        })) && captureStage.current !== 'practice') {
             if (captureStage.current === 'quest') return;
             if (captureStage.current !== 'none') finalizeCapture();
             captureStage.current = 'quest';
@@ -111,10 +111,17 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         }
 
         // 4. Shop
-        else if (lower.includes('you can buy:') || lower.includes('items matching') || lower.includes('for sale:')) {
+        else if (
+            lower.includes('you can buy:') ||
+            lower.includes('items matching') ||
+            lower.includes('for sale:') ||
+            // Fallback: numbered item line with currency price (catches shops whose
+            // header we don't recognize — MUME sometimes omits or changes the header).
+            /^\s*\d+\.\s+.+\s+(?:up to|for)\s+.*\b(?:silver|copper|gold|bronze|mithril|tin|iron)\b/i.test(textOnly)
+        ) {
             if (captureStage.current === 'shop') return;
             if (captureStage.current !== 'none') finalizeCapture();
-            captureStage.current = 'shop'; 
+            captureStage.current = 'shop';
             if (practice.shop?.setIsShopListingActive) practice.shop.setIsShopListingActive(true);
         }
 

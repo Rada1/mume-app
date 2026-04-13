@@ -433,6 +433,7 @@ export interface SavedSettings {
     isBloomEnabled?: boolean;
     isNewbieMode?: boolean;
     isTimestampEnabled?: boolean;
+    autoSaveSessions?: boolean;
 }
 
 export interface RoomNode {

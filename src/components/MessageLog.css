@@ -116,11 +116,11 @@
 }
 
 .message {
-    line-height: 1.1;              /* Compact tactical ratio */
+    line-height: 1.0;              /* Absolute maximum tactical density */
     max-width: 100%;
     word-wrap: break-word;
     white-space: pre-wrap;
-    padding: 1px 12px 1px 6px;
+    padding: 0px 12px 0px 6px;
     margin: 0 0 -1px 0;            /* Collapse sub-pixel gaps universally */
     min-height: 0;                 /* Dense terminal logic */
     background: transparent;       /* Standard game text is now high-contrast transparent */
@@ -128,6 +128,11 @@
 
     transition: none !important;
     transform: none !important;
+}
+
+.message.shop-item {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 }
 
 .newbie-mode .message {
@@ -162,7 +167,7 @@
     padding: 1px 12px 1px 6px !important;
     margin: 0 !important;
     box-shadow: none !important;
-    line-height: 1.0 !important;
+    line-height: 1.5 !important;
 }
 
 .message.prompt {
@@ -172,7 +177,7 @@
     padding: 1px 12px 1px 6px !important;
     margin: 0 !important;
     box-shadow: none !important;
-    line-height: 1.0 !important;
+    line-height: 1.5 !important;
 }
 
 .message.is-room-block:not(.is-room-name) {
@@ -401,8 +406,8 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 2px;
-    margin: 8px 0 -3px 0;
+    gap: 1.5px;
+    margin: 2px 0 0 0;
     width: 100%;
     max-width: 100%;
 }
@@ -410,7 +415,7 @@
 .comm-content-row {
     display: flex;
     align-items: flex-start;
-    gap: 6px;
+    gap: 5px;
     flex: 1;
     min-width: 0;
     /* Bubble fills available width so multi-line text wraps within the border */
@@ -446,8 +451,8 @@
 .comm-bubble {
     background: color-mix(in srgb, var(--bubble-color, rgba(255, 255, 255, 0.1)), transparent 75%);
     border: 1px solid color-mix(in srgb, var(--bubble-color, rgba(255, 255, 255, 0.3)), transparent 30%);
-    border-radius: 12px;
-    padding: 3px 10px;
+    border-radius: 8px;
+    padding: 1px 7px;
     color: #fff;
     flex-shrink: 1;
     width: fit-content;
@@ -456,7 +461,7 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 10px color-mix(in srgb, var(--bubble-color, transparent), transparent 70%);
     backdrop-filter: blur(6px);
     position: relative;
-    line-height: inherit;
+    line-height: 1.25;
     word-break: break-word;
     font-family: var(--font-main);
     font-size: 1em;

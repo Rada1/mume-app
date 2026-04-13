@@ -132,7 +132,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                     <div style={{
                         fontFamily: 'var(--font-main, monospace)',
                         fontSize: 'var(--dynamic-log-size, 16px)',
-                        lineHeight: '1.2',
+                        lineHeight: '1.5',
                         padding: '10px 8px 10px 8px',
                         flex: 1,
                         textAlign: 'center'
@@ -147,7 +147,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                                         key={line.id}
                                         className="stat-line"
                                         style={{
-                                            padding: '4px 0',
+                                            padding: '6px 0',
                                             width: '100%',
                                             display: 'flex',
                                             justifyContent: 'center',
@@ -176,7 +176,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                                             key={line.id}
                                             className="stat-line"
                                             style={{
-                                                padding: '4px 0',
+                                                padding: '6px 0',
                                                 width: '100%',
                                                 display: 'flex',
                                                 justifyContent: 'center',

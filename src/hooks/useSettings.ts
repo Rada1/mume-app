@@ -149,7 +149,11 @@ export function useSettings(deps: UseSettingsDeps) {
             isMobileBrevityMode,
             showRecordingIndicator,
             inlineCategories,
-            favorites
+            favorites,
+            isTimestampEnabled,
+            isCrtEnabled,
+            isBloomEnabled,
+            autoSaveSessions
         };
         // Note: buttons array is injected by the caller — see MudClient.exportSettings wrapper
         return settings;
@@ -175,7 +179,8 @@ export function useSettings(deps: UseSettingsDeps) {
             isMobileBrevityMode,
             showRecordingIndicator,
             inlineCategories,
-            favorites
+            favorites,
+            autoSaveSessions
         };
         const blob = new Blob([JSON.stringify(settings)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
