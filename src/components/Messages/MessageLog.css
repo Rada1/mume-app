@@ -453,8 +453,8 @@
 .comm-bubble {
     background: color-mix(in srgb, var(--bubble-color, rgba(255, 255, 255, 0.1)), transparent 75%);
     border: 1px solid color-mix(in srgb, var(--bubble-color, rgba(255, 255, 255, 0.3)), transparent 30%);
-    border-radius: 8px;
-    padding: 1px 7px;
+    border-radius: 20px 20px 20px 6px;
+    padding: 2px 8px;
     color: #fff;
     flex-shrink: 1;
     width: fit-content;
@@ -463,14 +463,15 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 10px color-mix(in srgb, var(--bubble-color, transparent), transparent 70%);
     backdrop-filter: blur(6px);
     position: relative;
-    line-height: 1.25;
+    line-height: 1.4;
     word-break: break-word;
     font-family: var(--font-main);
-    font-size: 1em;
+    font-size: 0.95em;
     display: inline-flex;
     align-items: baseline;
     flex-wrap: wrap;
     gap: 0;
+    margin-left: 4px;
     animation: none !important;
     transition: none !important;
 }

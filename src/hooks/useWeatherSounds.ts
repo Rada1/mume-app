@@ -60,6 +60,14 @@ export const useWeatherSounds = ({ weather, isSoundEnabled, audioCtxRef, isSleep
         try {
             const response = await fetch(url);
             if (!response.ok) return;
+
+            // Safety check: Don't try to decode if we got HTML (often a 404 fallback)
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('text/html')) {
+                // Silently skip non-audio responses to avoid EncodingError console noise
+                return;
+            }
+
             const arrayBuffer = await response.arrayBuffer();
             const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
 

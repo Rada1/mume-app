@@ -9,7 +9,7 @@ interface TerrainSoundsDeps {
 }
 
 const TERRAIN_SOUND_MAP: Record<string, string> = {
-    // 'CITY': '/assets/Sounds/Terrain Sounds/city.mp3',
+    'CITY': '/assets/Sounds/Terrain Sounds/city.mp3',
     'INSIDE': '/assets/Sounds/Terrain Sounds/inside.mp3',
     'FOREST': '/assets/Sounds/Terrain Sounds/forest.mp3',
     'FIELD': '/assets/Sounds/Terrain Sounds/field.mp3',
@@ -94,6 +94,14 @@ export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, 
         try {
             const response = await fetch(url);
             if (!response.ok) return;
+            
+            // Safety check: Don't try to decode if we got HTML (often a 404 fallback)
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('text/html')) {
+                // Silently skip non-audio responses to avoid EncodingError console noise
+                return;
+            }
+
             const arrayBuffer = await response.arrayBuffer();
             const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
 
