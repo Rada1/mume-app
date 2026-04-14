@@ -679,6 +679,12 @@
     touch-action: manipulation !important;
 }
 
+/* --- Critical Desktop Interaction Isolation --- */
+.app-container.is-desktop .message-log-container {
+    pointer-events: auto !important;
+    z-index: 7500; /* Above HUD Clusters (7000) to ensure scroll capturing on plain text area */
+}
+
 /* Forces inline buttons to capture events even if buried under transparent wrappers */
 .app-container .inline-btn,
 .app-container .inline-obj-char,

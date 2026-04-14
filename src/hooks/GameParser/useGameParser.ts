@@ -90,7 +90,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         setStatsLines, setInfoLines, setScoreLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines,
         registerEntity, setEntities,
         practice, shop, help, quests, finalizeQuests,
-        tempEqRef, tempInvRef, tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef, tempEntitiesRef
+        tempEqRef, tempInvRef, tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef, tempEntitiesRef,
+        isMobile: deps.isMobile
     });
 
     const { parsePrompt } = usePromptParser({
@@ -144,7 +145,8 @@ export function useGameParser(deps: UseGameParserDeps) {
     });
 
     const { createLines, resetNounCounts, resetContainerStack } = useLineProcessor({
-        captureStage, keywordOverrides, extractNoun, detectCapabilities, ansiConvert, addDiagnosticLog, tempEntitiesRef
+        captureStage, keywordOverrides, extractNoun, detectCapabilities, ansiConvert, addDiagnosticLog, tempEntitiesRef,
+        inlineCategories: deps.inlineCategories
     });
 
     const { initializeStage } = useStageInitializer({
@@ -159,7 +161,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
         isWaitingForInv, isWaitingForInfo, isWaitingForEq, isWaitingForStats,
         setWhoList, setWhereList, setRoomItems, registerEntity, setCharacterInfo, setDiscoveredItems, extractNoun, ansiConvert,
-        playerPosition: deps.playerPosition
+        playerPosition: deps.playerPosition,
+        inlineCategories: deps.inlineCategories
     });
 
     const { parseAccountLine } = useAccountParser({

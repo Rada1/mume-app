@@ -86,7 +86,7 @@ export function usePromptParser(deps: PromptParserDeps) {
         }
 
         // --- Condition Extraction from Flags (W, !, etc.) ---
-        const hasWaiting = /[\s\*\[\(\!]W[\s\*\]\)>]/.test(promptPart);
+        const hasWaiting = /[\s\*\[\(\!]\*[\s\*\]\)>]/.test(promptPart);
         const hasFighting = /[\s\*\[\(\!]![\s\*\]\)>]/.test(promptPart);
 
         if (isSpectateMode) {

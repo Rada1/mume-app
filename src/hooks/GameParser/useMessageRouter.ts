@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
-import { CaptureStage } from '../../types';
+import { CaptureStage, InlineCategoryConfig, GmcpOccupant, EntityLocation, GameEntity } from '../../types';
+import { getCategoryForName } from '../../utils/categorizationUtils';
 
 interface MessageRouterDeps {
     captureStage: React.MutableRefObject<CaptureStage>;
@@ -23,6 +24,7 @@ interface MessageRouterDeps {
     extractNoun: (name: string) => string;
     ansiConvert: any;
     playerPosition?: string;
+    inlineCategories?: InlineCategoryConfig[];
 }
 
 export const useMessageRouter = (deps: MessageRouterDeps) => {
@@ -31,7 +33,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
         isWaitingForInv, isWaitingForEq, isWaitingForStats, isWaitingForInfo,
         setWhoList, setWhereList, setRoomItems, registerEntity, setCharacterInfo, setDiscoveredItems, extractNoun, ansiConvert,
-        playerPosition
+        playerPosition, inlineCategories
     } = deps;
 
     const determineVisibility = useCallback((lower: string, isImportantMessage: boolean, isRoomContent: boolean, isRoomDescription: boolean, isEndPrompt: boolean, isNewbieMode: boolean, isRoomWindow?: boolean) => {
@@ -53,7 +55,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
             else if (stage === 'practice' && (isCharacterOpen || isSilentCapture.current > 0 || isDrawerCapture.current > 0)) isDrawerHiding = true;
             else if (stage === 'container' && (isDrawerCapture.current > 0 || isSilentCapture.current > 0)) isDrawerHiding = true;
             else if (['who', 'where'].includes(stage) && isPlayersOpen) isDrawerHiding = true;
-            else if (stage === 'shop') isDrawerHiding = true;
+            else if (stage === 'shop' || stage === 'help') isDrawerHiding = true;
         } else if (isSilentCapture.current > 0 || isDrawerCapture.current > 0) {
             if (/you are carrying|your inventory contains/i.test(lower) && isInventoryOpen) isDrawerHiding = true;
             if ((/you are (using|equipped with)/i.test(lower) || /ob:|armor:|mood:|str:|exp:|level:/i.test(lower) || /practice sessions left/i.test(lower)) && isCharacterOpen) isDrawerHiding = true;
@@ -159,8 +161,9 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
                     if (alreadyExists) return prev;
                     
                     const newItem = { name: objName, short: objName, id: `roomitems:${objName}` };
-                    // Ensure it is registered so clicking the tag works
-                    registerEntity(`roomitems:${objName}`, objName, 'roomitems', 'inline-obj-room');
+                    // Ensure it is registered so clicking the tag works with accurate theme and buttons
+                    const specCat = getCategoryForName(objName, deps.inlineCategories);
+                    registerEntity(`roomitems:${objName}`, objName, 'roomitems', specCat || 'inline-obj-room');
                     
                     return [...prev, newItem];
                 });

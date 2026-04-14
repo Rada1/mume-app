@@ -57,6 +57,7 @@ interface GmcpHandlersProps {
     roomDescRef?: React.RefObject<string>;
     setInCombat?: (val: boolean, force?: boolean) => void;
     isSpectateMode?: boolean;
+    inlineCategories: import('../../types').InlineCategoryConfig[];
 }
 
 export const useGmcpHandlers = (props: GmcpHandlersProps) => {

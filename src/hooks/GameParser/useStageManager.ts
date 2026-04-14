@@ -42,6 +42,7 @@ export interface StageManagerDeps {
     tempWhoRef: React.MutableRefObject<DrawerLine[]>;
     tempWhereRef: React.MutableRefObject<DrawerLine[]>;
     tempEntitiesRef: React.MutableRefObject<Record<string, GameEntity>>;
+    isMobile: boolean;
 }
 
 export function useStageManager(deps: StageManagerDeps) {
@@ -79,7 +80,8 @@ export function useStageManager(deps: StageManagerDeps) {
         tempQuestRef,
         tempWhoRef,
         tempWhereRef,
-        tempEntitiesRef
+        tempEntitiesRef,
+        isMobile
     } = deps;
 
     const finalizeCapture = useCallback((targetStage?: CaptureStage) => {
@@ -132,7 +134,7 @@ export function useStageManager(deps: StageManagerDeps) {
                 practice.setIsPracticeActive(false);
                 practice.setIsUiRequested(false);
             } else if (currentStage === 'shop') {
-                shop.finalizeShop(addMessage, setPopoverState);
+                shop.finalizeShop(addMessage, isMobile ? setPopoverState : undefined);
             } else if (currentStage === 'shop-detail') {
                 shop.finalizeShopDetail(setPopoverState);
             } else if (currentStage === 'help') {
@@ -149,9 +151,15 @@ export function useStageManager(deps: StageManagerDeps) {
                 setWhereLines([...tempWhereRef.current]);
                 tempWhereRef.current = [];
             } else if (currentStage === 'stat') {
+                if (!isMobile) {
+                    tempStatsRef.current.forEach(line => addMessage('game', line.text));
+                }
                 setStatsLines([...tempStatsRef.current]);
                 tempStatsRef.current = [];
             } else if (currentStage === 'score') {
+                if (!isMobile) {
+                    tempScoreRef.current.forEach(line => addMessage('game', line.text));
+                }
                 setScoreLines([...tempScoreRef.current]);
                 tempScoreRef.current = [];
             } else if (currentStage === 'info') {

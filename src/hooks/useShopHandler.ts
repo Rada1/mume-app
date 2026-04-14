@@ -139,14 +139,13 @@ export function useShopHandler() {
                 setId: 'shop',
                 shopItems: items
             });
-        } else if (addMessage && items.length > 0) {
-            const header = logBuffer.current[0] ?? '';
-            setTimeout(() => {
-                if (header) addMessage('game', header, undefined, `shop-hdr-${Date.now()}`);
-                items.forEach((item, idx) => {
-                    addMessage('shop-item', item.description, undefined, `shop-${item.id}-${Date.now()}-${idx}`, false, undefined, item);
-                });
-            }, 10);
+        } else if (addMessage) {
+            logBuffer.current.forEach((line, idx) => {
+                // If it's a line we parsed as an item, we can still tag it as shop-item
+                // but if we want "raw data", maybe 'game' is better.
+                // The user asked for "raw data", so let's use 'game'.
+                addMessage('game', line, undefined, `shop-raw-${Date.now()}-${idx}`);
+            });
         }
 
         setIsShopListingActive(false);

@@ -7,6 +7,7 @@ import { useCallback, useRef } from 'react';
 import { DrawerLine, GameEntity, CaptureStage, EntityLocation, EntityCapability } from '../../types';
 import { isItemContainer } from '../../utils/gameUtils';
 import { getEffectiveKeyword } from '../../utils/keywordUtils';
+import { getCategoryForName } from '../../utils/categorizationUtils';
 
 export interface LineProcessorDeps {
     captureStage: React.MutableRefObject<CaptureStage>;
@@ -16,6 +17,7 @@ export interface LineProcessorDeps {
     ansiConvert: { toHtml: (ansi: string) => string };
     addDiagnosticLog?: (msg: string) => void;
     tempEntitiesRef: React.MutableRefObject<Record<string, GameEntity>>;
+    inlineCategories: import('../../types').InlineCategoryConfig[];
 }
 
 export function useLineProcessor(deps: LineProcessorDeps) {
@@ -26,7 +28,8 @@ export function useLineProcessor(deps: LineProcessorDeps) {
         detectCapabilities,
         ansiConvert,
         addDiagnosticLog,
-        tempEntitiesRef
+        tempEntitiesRef,
+        inlineCategories
     } = deps;
 
     const containerStackRef = useRef<{ depth: number, noun: string, context: string, stableId: string }[]>([]);
@@ -144,7 +147,8 @@ export function useLineProcessor(deps: LineProcessorDeps) {
                     location: (captureStage.current === 'container' ? `container:${parentItemNoun}` : captureStage.current) as EntityLocation,
                     parentId: parentItemNoun,
                     capabilities: caps,
-                    shortDesc: currentItemText
+                    shortDesc: currentItemText,
+                    category: getCategoryForName(currentItemText, inlineCategories) || undefined
                 };
                 tempEntitiesRef.current[stableId] = entity;
             }

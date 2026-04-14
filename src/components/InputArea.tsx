@@ -371,7 +371,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                         <MessageCircle size={18} />
                     </button>
                 )}
-                <XpTicker isLandscape={viewport.isLandscape} />
+                <XpTicker isLandscape={viewport.isLandscape} align="right" />
             </div>
         );
 };

@@ -29,24 +29,25 @@ export const MapperDropdown: React.FC<MapperDropdownProps> = ({
     
     const dropdownContent = (
         <div style={{ 
-            position: 'fixed', 
-            top: isMobile ? 'auto' : '100px', 
+            position: isMobile ? 'fixed' : 'absolute', 
+            top: isMobile ? 'auto' : '45px', 
             bottom: isMobile ? '120px' : 'auto', 
-            left: isMobile ? '15px' : 'auto',
-            right: isMobile ? 'auto' : '30px',
+            left: isMobile ? '15px' : '8px',
+            right: isMobile ? 'auto' : 'auto',
             zIndex: 99999,
             pointerEvents: 'auto'
         }}>
             <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: -1 }} onClick={() => setIsOpen(false)} />
             <div style={{
-                backgroundColor: 'rgba(10, 13, 21, 0.5)',
+                backgroundColor: 'rgba(10, 13, 21, 0.75)',
                 backdropFilter: 'blur(16px) saturate(180%)',
                 WebkitBackdropFilter: 'blur(16px) saturate(180%)',
                 border: '1px solid rgba(255, 255, 255, 0.15)',
+                borderBottom: '2px solid var(--accent)',
                 borderRadius: '16px',
                 padding: '12px',
                 minWidth: '220px',
-                maxHeight: '45vh',
+                maxHeight: isMobile ? '45vh' : 'calc(100vh - 150px)',
                 overflowY: 'auto',
                 boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6)',
                 display: 'flex',
@@ -125,5 +126,5 @@ export const MapperDropdown: React.FC<MapperDropdownProps> = ({
         </div>
     );
 
-    return createPortal(dropdownContent, document.body);
+    return isMobile ? createPortal(dropdownContent, document.body) : dropdownContent;
 };

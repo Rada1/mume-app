@@ -14,6 +14,8 @@ interface ZoneMusicDeps {
 
 const STATIC_MUSIC_MAP: Record<string, string | string[]> = {
     'bree': '/assets/Sounds/Zone Sounds/BreeSound.wav',
+    'bree-land': '/assets/Sounds/Zone Sounds/BreeSound.wav',
+    'the bree-land': '/assets/Sounds/Zone Sounds/BreeSound.wav',
     'old east road': [
         '/assets/Sounds/Zone Sounds/oldeastroad.mp3', 
         '/assets/Sounds/Zone Sounds/oldeastroad2.mp3'

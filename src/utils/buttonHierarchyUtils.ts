@@ -35,12 +35,12 @@ export const getHierarchyChain = (setId: string, detectedCatId: string | null = 
     if (setId === 'inventorylist') setId = 'inline-obj-char';
     if (setId === 'equipmentlist') setId = 'inline-obj-worn';
 
-    const CONTAINER_CATS = ['inline-containers', 'inline-quiver', 'inline-corpses', 'inline-fluidcontainer', 'inline-water'];
+    const ACTIONABLE_OBJ_CATS = ['inline-containers', 'inline-quiver', 'inline-corpses', 'inline-fluidcontainer', 'inline-water', 'inline-food', 'inline-lightsource', 'inline-lantern', 'inline-treasure'];
     
-    // --- Rule: Room objects should only be 'get' + containers + base objects (Examine) --- 
+    // --- Rule: Room objects should only be 'get' + actionable categories + base objects (Examine) --- 
     if (setId === 'inline-obj-room') {
         const chain = ['inline-obj-room', 'inline-object'];
-        if (detectedCatId && CONTAINER_CATS.includes(detectedCatId)) {
+        if (detectedCatId && ACTIONABLE_OBJ_CATS.includes(detectedCatId)) {
             chain.push(detectedCatId);
             const parents = INLINE_HIERARCHY[detectedCatId] || [];
             chain.push(...parents);
@@ -61,10 +61,10 @@ export const getHierarchyChain = (setId: string, detectedCatId: string | null = 
         return Array.from(new Set(chain)).filter(id => id !== 'inline-obj-room');
     }
 
-    // --- Rule: Worn objects should allow containers ---
+    // --- Rule: Worn objects should allow containers/actionable cats ---
     if (setId === 'inline-obj-worn') {
         const chain = [setId];
-        if (detectedCatId && CONTAINER_CATS.includes(detectedCatId)) {
+        if (detectedCatId && ACTIONABLE_OBJ_CATS.includes(detectedCatId)) {
             chain.push(detectedCatId);
             const parents = INLINE_HIERARCHY[detectedCatId] || [];
             chain.push(...parents);

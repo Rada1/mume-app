@@ -57,8 +57,13 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
     const isSetManager = popoverState.setId === 'setmanager';
     const NPC_SUBCATEGORIES = ['inline-mounts', 'inline-shopkeeper', 'inline-innkeeper', 'inline-guildmaster'];
     
-    // Detect if this specific item name belongs to a category
-    const detectedCatId = popoverState.category || (popoverState.context ? getCategoryForName(popoverState.context, inlineCategories) : null);
+    // Detect if this specific item name belongs to a category.
+    // We prioritize specific tags (from inlineCategories) over generic location-based ones (like inline-obj-room).
+    const dynamicCat = popoverState.context ? getCategoryForName(popoverState.context, inlineCategories) : null;
+    const genericBaseCats = ['inline-obj-room', 'inline-obj-char', 'inline-obj-worn', 'inlinenpc'];
+    const detectedCatId = (popoverState.category && !genericBaseCats.includes(popoverState.category)) 
+        ? popoverState.category 
+        : (dynamicCat || popoverState.category);
     
     // Build actual hierarchy chain
     const fullSetChain = getHierarchyChain(popoverState.setId, detectedCatId);

@@ -529,6 +529,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         roomPlayers: s.roomPlayers,
         spectateCharacterName: s.spectateCharacterName,
         registerEntity: s.registerEntity,
+        inlineCategories: s.inlineCategories,
         spectateStats: v.spectateStats,
         characterName: s.characterName,
         sessionMode: sessionMode

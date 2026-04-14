@@ -3,9 +3,10 @@ import { useVitals } from '../context/GameContext';
 
 interface XpTickerProps {
     isLandscape?: boolean;
+    align?: 'center' | 'right';
 }
 
-const XpTicker: React.FC<XpTickerProps> = ({ isLandscape }) => {
+const XpTicker: React.FC<XpTickerProps> = ({ isLandscape, align = 'center' }) => {
     const { xpHistory, xpEvent } = useVitals();
     
     const [isVisible, setIsVisible] = useState(false);
@@ -132,11 +133,13 @@ const XpTicker: React.FC<XpTickerProps> = ({ isLandscape }) => {
         <div style={{
             position: 'absolute',
             top: isLandscape ? '-42px' : '-48px',
-            left: '50%',
-            transform: `translateX(-50%) scale(${isBumping ? 1.15 : 1})`,
+            left: align === 'center' ? '50%' : 'auto',
+            right: align === 'right' ? '10px' : 'auto',
+            transform: `${align === 'center' ? 'translateX(-50%)' : 'none'} scale(${isBumping ? 1.15 : 1})`,
+            transformOrigin: align === 'right' ? 'right center' : 'center center',
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
+            alignItems: align === 'center' ? 'center' : 'flex-end',
             gap: '2px',
             zIndex: 50,
             pointerEvents: 'none',

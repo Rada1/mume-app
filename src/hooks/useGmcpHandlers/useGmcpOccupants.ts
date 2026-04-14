@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { GmcpOccupant } from '../../types';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
 import { occupantAnims, getOccupantKey } from '../../components/Mapper/occupantAnimStore';
+import { getCategoryForName } from '../../utils/categorizationUtils';
 
 const parseOccupant = (data: any, characterName: string | null): GmcpOccupant | null => {
     if (!data) return null;
@@ -41,6 +42,7 @@ interface UseGmcpOccupantsProps {
     registerEntity?: (id: string, name: string, location: import('../../types').EntityLocation, category?: string) => import('../../types').GameEntity;
     setIsRiding?: (val: boolean) => void;
     lastRoomChangeTimeRef: React.MutableRefObject<number>;
+    inlineCategories: import('../../types').InlineCategoryConfig[];
 }
 
 export const useGmcpOccupants = ({
@@ -52,7 +54,8 @@ export const useGmcpOccupants = ({
     isSpectateMode,
     registerEntity,
     setIsRiding,
-    lastRoomChangeTimeRef
+    lastRoomChangeTimeRef,
+    inlineCategories
 }: UseGmcpOccupantsProps) => {
 
     const handleRoomList = useCallback((data: any, isPlayersList: boolean) => {
@@ -120,7 +123,8 @@ export const useGmcpOccupants = ({
             const obj = typeof i === 'string' ? { name: i, keyword: i, short: i } : { ...i, name: i.name || i.short || i.shortdesc || i.keyword };
             if (registerEntity && obj.name) {
                 const id = (obj as any).id ? String((obj as any).id) : `roomitems:${obj.name}`;
-                registerEntity(id, obj.name, 'roomitems', 'inline-obj-room');
+                const specCat = getCategoryForName(obj.name, inlineCategories);
+                registerEntity(id, obj.name, 'roomitems', specCat || 'inline-obj-room');
             }
             return obj;
         });

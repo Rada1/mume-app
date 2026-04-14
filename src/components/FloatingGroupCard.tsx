@@ -66,6 +66,7 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
             }
         });
         setItemQuantities({});
+        onClose();
     };
 
     const handleBatchShow = () => {
@@ -88,8 +89,8 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
             alignItems: 'center',
             justifyContent: 'center',
             background: 'rgba(0, 0, 0, 0.6)',
-            backdropFilter: 'none',
-            WebkitBackdropFilter: 'none',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
             padding: isMobile ? '0' : '20px'
         }}>
             <div className="floating-group-card" ref={popoverRef} onClick={(e) => e.stopPropagation()} style={{
@@ -98,19 +99,9 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
                 maxWidth: isMobile ? '100%' : '850px',
                 height: 'auto',
                 maxHeight: isMobile ? '65vh' : '85vh',
-                background: 'rgba(25, 25, 30, 0.95)',
-                margin: 0,
-                border: isMobile ? 'none' : '1px solid rgba(255, 255, 255, 0.15)',
-                borderLeft: isMobile ? 'none' : undefined,
-                borderRight: isMobile ? 'none' : undefined,
-                boxShadow: isMobile ? 'none' : '0 20px 50px rgba(0, 0, 0, 0.6)',
-                borderRadius: isMobile ? '0' : '16px',
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden',
-                position: 'relative',
-                backdropFilter: 'none',
-                WebkitBackdropFilter: 'none',
+                background: 'rgba(15, 15, 20, 0.6)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
                 transform: 'none',
                 transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
             }}>

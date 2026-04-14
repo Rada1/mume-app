@@ -28,7 +28,11 @@ export function isButtonValidForEntity(
                    entityId.replace(/^(auto-npc-|auto-item-|auto-obj-|roomnpcs:|roomitems:|inventorylist:|equipmentlist:|log-npc-)/, '')
                            .replace(/-[a-f0-9]+$/, '').replace(/-/g, ' ');
 
-    const detectedCatId = categoryOverride || (context ? getCategoryForName(context, inlineCategories) : null);
+    const dynamicCat = context ? getCategoryForName(context, inlineCategories) : null;
+    const genericBaseCats = ['inline-obj-room', 'inline-obj-char', 'inline-obj-worn', 'inlinenpc'];
+    const detectedCatId = (categoryOverride && !genericBaseCats.includes(categoryOverride)) 
+        ? categoryOverride 
+        : (dynamicCat || categoryOverride || null);
     const fullSetChain = getHierarchyChain(setId, detectedCatId);
 
     // Debugging for service-related buttons
