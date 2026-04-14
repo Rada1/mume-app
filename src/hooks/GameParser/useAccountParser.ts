@@ -21,11 +21,12 @@ interface UseAccountParserProps {
     addMessage?: (type: import('../../types').MessageType, text: string, isCombat?: boolean, mid?: string) => void;
     setMessages?: React.Dispatch<React.SetStateAction<import('../../types').Message[]>>;
     clearLog?: () => void;
+    setIsPasswordMode: (val: boolean) => void;
 }
 
 // --- Logic Section: Hook Implementation ---
 
-export function useAccountParser({ accountState, setAccountState, gameState, setGameState, sendCommand, executeCommandRef, isMobile, addDiagnosticLog, addMessage, setMessages, clearLog }: UseAccountParserProps) {
+export function useAccountParser({ accountState, setAccountState, gameState, setGameState, sendCommand, executeCommandRef, isMobile, addDiagnosticLog, addMessage, setMessages, clearLog, setIsPasswordMode }: UseAccountParserProps) {
     // Use Refs to keep parseAccountLine stable and avoid re-render loops
     const gameStateRef = useRef(gameState);
     gameStateRef.current = gameState;
@@ -43,6 +44,7 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
             if (cleanLine === 'Account>') {
                 setGameState('account');
                 setAccountState(prev => ({ ...prev, stage: 'account-menu' }));
+                setIsPasswordMode(false);
                 return true;
             }
             return false;
@@ -56,6 +58,8 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
                 if (prev.stage === 'character-select' && prev.characters.length > 0) return prev;
                 return { ...prev, stage: 'account-menu' };
             });
+            setIsPasswordMode(false);
+            clearLog?.(); // Clear username/password bubbles once menu is reached
             return false;
         }
 
@@ -81,11 +85,13 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
                              lowerLine.includes("character's name") ||
                              lowerLine.includes('nom de guerre:');
         
-        const isPasswordPrompt = lowerLine.includes('password:');
+        const isPasswordPrompt = /\bpassword:$/i.test(lowerLine) || lowerLine.includes('account password:');
 
         if (isNamePrompt || isPasswordPrompt) {
             setGameState('account');
             setAccountState((prev: any) => ({ ...prev, stage: 'login' }));
+            if (isPasswordPrompt) setIsPasswordMode(true);
+            else if (isNamePrompt) setIsPasswordMode(false);
             return false;
         }
 
@@ -97,6 +103,7 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
                 stage: (prev.stage === 'account-menu' || prev.stage === 'login') ? 'account-menu' : 'character-select',
                 characters: []
             }));
+            setIsPasswordMode(false);
             return false;
         }
 
@@ -146,16 +153,23 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
 
         // 4. Detect Selection Footers
         if ((cleanLine.includes('(P)lay') && cleanLine.includes('(N)ew')) ||
-            (cleanLine.includes('Select a character') && cleanLine.includes('(N)ew'))) {
+            (cleanLine.includes('Select a character') && cleanLine.includes('(N)ew')) ||
+            cleanLine.includes('If you have never played MUME before')) {
             setGameState('account');
             setAccountState(prev => ({ ...prev, stage: 'character-select' }));
+            setIsPasswordMode(false);
+            clearLog?.(); // Clear bubbles once we reach character selection
             return false;
         }
 
         // 5. Detect Successful Login
-        if (cleanLine.includes('Welcome to MUME') || cleanLine.includes('The music of the Ainur')) {
+        if (cleanLine.includes('Welcome to MUME') || 
+            cleanLine.includes('The music of the Ainur') ||
+            cleanLine.includes('Now entering the game')) {
             setGameState('playing');
             setAccountState(prev => ({ ...prev, stage: 'none' }));
+            setIsPasswordMode(false);
+            clearLog?.();
 
             // --- Bootstrap Drawer Data ---
             // Trigger a sequence of silent commands to populate all drawers in the background
@@ -182,6 +196,7 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
         if (cleanLine.includes('Available commands:')) {
             setGameState('account');
             setAccountState(prev => ({ ...prev, stage: 'account-menu' }));
+            setIsPasswordMode(false);
             return false;
         }
 

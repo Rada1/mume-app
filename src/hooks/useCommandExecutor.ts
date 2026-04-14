@@ -46,6 +46,7 @@ export interface ExecutorDeps {
     actions: GameAction[];
     setActions: (val: GameAction[] | ((prev: GameAction[]) => GameAction[])) => void;
     activePrompt: string;
+    isPasswordMode: boolean;
 }
 
 export const useCommandExecutor = (deps: ExecutorDeps) => {
@@ -134,9 +135,10 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         // --- 7. Echo to Log ---
         if (!silent) {
             const promptPrefix = activePrompt || '';
-            (addMessage as any)('user', `${promptPrefix}${finalCmd}`, undefined, undefined, undefined, { 
-                textOnly: `${promptPrefix}${finalCmd}`, 
-                lower: `${promptPrefix}${finalCmd}`.toLowerCase() 
+            const logText = d.isPasswordMode ? '********' : finalCmd;
+            (addMessage as any)('user', `${promptPrefix}${logText}`, undefined, undefined, undefined, { 
+                textOnly: `${promptPrefix}${logText}`, 
+                lower: `${promptPrefix}${logText}`.toLowerCase() 
             });
         }
 

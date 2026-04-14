@@ -1,4 +1,4 @@
-import { IAC, SB, SE, WILL, WONT, DO, DONT, TELNET_GMCP, TELNET_TTYPE, TELNET_NAWS, TTYPE_IS, TTYPE_SEND } from '../../constants';
+import { IAC, SB, SE, WILL, WONT, DO, DONT, TELNET_ECHO, TELNET_GMCP, TELNET_TTYPE, TELNET_NAWS, TTYPE_IS, TTYPE_SEND } from '../../constants';
 
 export type TelnetState = 'DATA' | 'IAC' | 'NEGOTIATE' | 'SUB' | 'SUB_IAC';
 
@@ -8,6 +8,7 @@ export interface ProtocolOptions {
     handleSubnegotiation: (buffer: number[]) => void;
     processText: (text: string) => void;
     sendGMCP: (pkg: string, data?: any) => void;
+    onEchoChange?: (visible: boolean) => void;
 }
 
 export class ProtocolHandler {
@@ -96,6 +97,12 @@ export class ProtocolHandler {
         } else if (cmd === DO && option === TELNET_NAWS) {
             this.options.sendBytes([IAC, WILL, TELNET_NAWS]);
             this.sendNAWS();
+        } else if (cmd === WILL && option === TELNET_ECHO) {
+            this.options.sendBytes([IAC, DO, TELNET_ECHO]);
+            this.options.onEchoChange?.(false); // Hide local echo (Password mode)
+        } else if (cmd === WONT && option === TELNET_ECHO) {
+            this.options.sendBytes([IAC, DONT, TELNET_ECHO]);
+            this.options.onEchoChange?.(true); // Show local echo (Normal mode)
         } else if (cmd === WILL) {
             this.options.sendBytes([IAC, DONT, option]);
         } else if (cmd === DO) {

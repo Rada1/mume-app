@@ -19,7 +19,7 @@ export interface ReplayerState {
   trimRange: [number | null, number | null];
 }
 
-export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: any, isPrivacyMode: boolean) => void) => {
+export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: any, isPrivacyMode: boolean, isSilent?: boolean) => void) => {
   const [log, setLog] = useState<SessionLog | null>(null);
   const [state, setState] = useState<ReplayerState>({
     isPlaying: false,

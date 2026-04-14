@@ -12,8 +12,6 @@ interface UseSettingsDeps {
     setButtons: (buttons: CustomButton[]) => void;
 
     // Dependencies previously fetched via useGame()
-    isNoviceMode: boolean;
-    setIsNoviceMode: (val: boolean) => void;
     isSoundEnabled: boolean;
     setIsSoundEnabled: (val: boolean) => void;
     abilities: Record<string, number>;
@@ -36,8 +34,6 @@ interface UseSettingsDeps {
     setDisableSmoothScroll: (val: boolean) => void;
     isImmersionMode: boolean;
     setIsImmersionMode: (val: boolean) => void;
-    isMobileBrevityMode: boolean;
-    setIsMobileBrevityMode: (val: boolean) => void;
     showRecordingIndicator: boolean;
     setShowRecordingIndicator: (val: boolean) => void;
     showOrganicTerrain: boolean;
@@ -46,20 +42,20 @@ interface UseSettingsDeps {
     setInlineCategories: (val: import('../types').InlineCategoryConfig[]) => void;
     isHighlighterEnabled: boolean;
     setIsHighlighterEnabled: (val: boolean) => void;
-    isCrtEnabled: boolean;
-    setIsCrtEnabled: (val: boolean) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
     isTimestampEnabled: boolean;
     setIsTimestampEnabled: (val: boolean) => void;
     autoSaveSessions: boolean;
     setAutoSaveSessions: (val: boolean) => void;
+    isNewbieMode: boolean;
+    setIsNewbieMode: (val: boolean) => void;
 }
 
 export function useSettings(deps: UseSettingsDeps) {
     const {
         addMessage, audioCtxRef, initAudio, setButtons,
-        isNoviceMode, setIsNoviceMode, isSoundEnabled, setIsSoundEnabled,
+        isSoundEnabled, setIsSoundEnabled,
         abilities, setAbilities, characterClass, setCharacterClass,
         actions, setActions,
         setSettings, setSetSettings,
@@ -69,14 +65,13 @@ export function useSettings(deps: UseSettingsDeps) {
         disable3dScroll, setDisable3dScroll,
         disableSmoothScroll, setDisableSmoothScroll,
         isImmersionMode, setIsImmersionMode,
-        isMobileBrevityMode, setIsMobileBrevityMode,
         showRecordingIndicator, setShowRecordingIndicator,
         inlineCategories, setInlineCategories,
         isHighlighterEnabled, setIsHighlighterEnabled,
-        isCrtEnabled, setIsCrtEnabled,
         isBloomEnabled, setIsBloomEnabled,
         isTimestampEnabled, setIsTimestampEnabled,
-        autoSaveSessions, setAutoSaveSessions
+        autoSaveSessions, setAutoSaveSessions,
+        isNewbieMode, setIsNewbieMode
     } = deps;
     const [bgImage, setBgImage] = useState((MASTER_SETTINGS as any).bgImage || DEFAULT_BG);
     const resolveInitialUrl = () => {
@@ -133,7 +128,6 @@ export function useSettings(deps: UseSettingsDeps) {
             loginName,
             loginPassword,
             isSoundEnabled,
-            isNoviceMode,
             buttons: [] as any, // filled by caller via onExport
             soundTriggers: soundTriggers.map(({ buffer, ...rest }) => rest),
             actions,
@@ -146,12 +140,10 @@ export function useSettings(deps: UseSettingsDeps) {
             disable3dScroll,
             disableSmoothScroll,
             isImmersionMode,
-            isMobileBrevityMode,
             showRecordingIndicator,
             inlineCategories,
             favorites,
             isTimestampEnabled,
-            isCrtEnabled,
             isBloomEnabled,
             autoSaveSessions
         };
@@ -162,8 +154,8 @@ export function useSettings(deps: UseSettingsDeps) {
     const exportSettingsFile = (buttons: CustomButton[]) => {
         const settings: SavedSettings = {
             version: 3, connectionUrl, bgImage, loginName, loginPassword,
-            isCrtEnabled, isBloomEnabled, isTimestampEnabled,
-            isSoundEnabled, isNoviceMode,
+            isBloomEnabled, isTimestampEnabled,
+            isSoundEnabled,
             buttons: buttons.map(b => ({ ...b, isVisible: undefined } as any)),
             soundTriggers: soundTriggers.map(({ buffer, ...rest }) => rest),
             actions,
@@ -176,7 +168,6 @@ export function useSettings(deps: UseSettingsDeps) {
             disable3dScroll,
             disableSmoothScroll,
             isImmersionMode,
-            isMobileBrevityMode,
             showRecordingIndicator,
             inlineCategories,
             favorites,
@@ -206,7 +197,7 @@ export function useSettings(deps: UseSettingsDeps) {
                     if (settings.loginName) setLoginName(settings.loginName);
                     if (settings.loginPassword) setLoginPassword(settings.loginPassword);
                     if (settings.isSoundEnabled !== undefined) setIsSoundEnabled(settings.isSoundEnabled);
-                    if (settings.isNoviceMode !== undefined) setIsNoviceMode(settings.isNoviceMode);
+                    if (settings.isNewbieMode !== undefined) setIsNewbieMode(settings.isNewbieMode);
                     if (settings.abilities) setAbilities(settings.abilities);
                     if (settings.characterClass) setCharacterClass(settings.characterClass);
                     if (settings.actions) setActions(settings.actions);
@@ -217,11 +208,9 @@ export function useSettings(deps: UseSettingsDeps) {
                     if (settings.disable3dScroll !== undefined) setDisable3dScroll(settings.disable3dScroll);
                     if (settings.disableSmoothScroll !== undefined) setDisableSmoothScroll(settings.disableSmoothScroll);
                     if (settings.isImmersionMode !== undefined) setIsImmersionMode(settings.isImmersionMode);
-                    if (settings.isMobileBrevityMode !== undefined) setIsMobileBrevityMode(settings.isMobileBrevityMode);
                     if (settings.showRecordingIndicator !== undefined) setShowRecordingIndicator(settings.showRecordingIndicator);
                     if (settings.inlineCategories) setInlineCategories(settings.inlineCategories);
                     if (settings.isHighlighterEnabled !== undefined) setIsHighlighterEnabled(settings.isHighlighterEnabled);
-                    if (settings.isCrtEnabled !== undefined) setIsCrtEnabled(settings.isCrtEnabled);
                     if (settings.isBloomEnabled !== undefined) setIsBloomEnabled(settings.isBloomEnabled);
                     if (settings.isTimestampEnabled !== undefined) setIsTimestampEnabled(settings.isTimestampEnabled);
                     if (settings.autoSaveSessions !== undefined) setAutoSaveSessions(settings.autoSaveSessions);
@@ -304,7 +293,6 @@ export function useSettings(deps: UseSettingsDeps) {
         connectionUrl, setConnectionUrl,
         loginName, setLoginName,
         loginPassword, setLoginPassword,
-        isNoviceMode, setIsNoviceMode,
         isLoading, setIsLoading,
         isSoundEnabled, setIsSoundEnabled,
         isSoundEnabledRef,
@@ -325,10 +313,8 @@ export function useSettings(deps: UseSettingsDeps) {
         disable3dScroll, setDisable3dScroll,
         disableSmoothScroll, setDisableSmoothScroll,
         isImmersionMode, setIsImmersionMode,
-        isMobileBrevityMode, setIsMobileBrevityMode,
         showRecordingIndicator, setShowRecordingIndicator,
         isHighlighterEnabled, setIsHighlighterEnabled,
-        isCrtEnabled, setIsCrtEnabled,
         isBloomEnabled, setIsBloomEnabled,
         isTimestampEnabled, setIsTimestampEnabled,
         favorites, setFavorites,

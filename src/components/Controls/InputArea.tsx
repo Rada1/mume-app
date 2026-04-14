@@ -36,7 +36,7 @@ const InputArea: React.FC<InputAreaProps> = ({
     const { ui, setUI } = useUI();
     const { viewport } = useBaseGame();
     const { stats } = useVitals();
-    const { inCombat, setActiveDragData, triggerHaptic, playClickSound, isSoundEnabled, initAudio } = useGame();
+    const { inCombat, setActiveDragData, triggerHaptic, playClickSound, isSoundEnabled, initAudio, isPasswordMode } = useGame();
     const terrainClass = terrain ? `terrain-${normalizeTerrain(terrain)}` : '';
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const startPos = useRef<{ x: number, y: number } | null>(null);
@@ -283,6 +283,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                             className="input-field"
                             value={input}
                             rows={1}
+                            style={{ WebkitTextSecurity: isPasswordMode ? 'disc' : 'none' } as any}
                             onChange={(e) => {
                                 setInput(e.target.value);
                                 // Auto-resize logic
@@ -307,7 +308,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                                     inputRef.current.focus();
                                 }
                             }}
-                            placeholder={commandPreview ? "" : "Enter command..."}
+                            placeholder={isPasswordMode ? "Enter password..." : (commandPreview ? "" : "Enter command...")}
                         />
                     </div>
 

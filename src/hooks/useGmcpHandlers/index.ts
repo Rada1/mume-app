@@ -26,7 +26,6 @@ interface GmcpHandlersProps {
     setRoomName: (name: string | null) => void;
     setPlayerPosition: (pos: string) => void;
     setRoomDesc: (desc: string | null) => void;
-    isMobileBrevityMode: boolean;
     setRoomExits: (exits: string[]) => void;
     setRoomZone: (zone: string | null) => void;
     setBufferName: (name: string | null) => void;

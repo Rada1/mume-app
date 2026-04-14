@@ -1,65 +1,4 @@
-/* --- CRT and Bloom Effects --- */
-
-/**
- * CRT Filter Effect
- * Adds scanlines and a subtle flicker to the entire screen.
- */
-.crt-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 50000;
-  pointer-events: none;
-  background: linear-gradient(
-    rgba(18, 16, 16, 0) 50%, 
-    rgba(0, 0, 0, 0.25) 50%
-  ), linear-gradient(
-    90deg, 
-    rgba(255, 0, 0, 0.06), 
-    rgba(0, 255, 0, 0.02), 
-    rgba(0, 0, 255, 0.06)
-  );
-  background-size: 100% 2px, 3px 100%;
-}
-
-/* Subtler scanlines for light mode */
-.light-mode .crt-overlay {
-  background: linear-gradient(
-    rgba(255, 255, 255, 0) 50%, 
-    rgba(0, 0, 0, 0.08) 50%
-  ), linear-gradient(
-    90deg, 
-    rgba(255, 0, 0, 0.02), 
-    rgba(0, 255, 0, 0.01), 
-    rgba(0, 0, 255, 0.02)
-  );
-  background-size: 100% 2px, 3px 100%;
-}
-
-.crt-overlay::after {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: rgba(18, 16, 16, 0.03);
-  opacity: 0;
-  z-index: 50001;
-  pointer-events: none;
-  animation: crt-flicker 0.15s infinite;
-}
-
-@keyframes crt-flicker {
-  0% { opacity: 0.01; }
-  25% { opacity: 0.03; }
-  50% { opacity: 0.01; }
-  75% { opacity: 0.04; }
-  100% { opacity: 0.02; }
-}
+/* --- Bloom Effects --- */
 
 /**
  * Bloom Effect
@@ -99,11 +38,3 @@
   filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.15));
 }
 
-/* Enhancing the premium feel for MUME */
-.crt-enabled .background-layer {
-  filter: sepia(0.1) brightness(0.9);
-}
-
-.light-mode.crt-enabled .background-layer {
-  filter: none; /* Keep light mode clean */
-}

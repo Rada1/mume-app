@@ -10,8 +10,7 @@ export interface UseGameParserDeps {
     playSound: (buffer: AudioBuffer) => void;
     playHitImpactSound?: () => void;
     playCommMessageSound?: (options?: { volume?: number }) => void;
-    playTutorialExitSound?: (options?: { volume?: number }) => Promise<void>;
-    playIncantationSound?: () => void;
+    playMagicExplosionSound?: () => void;
 
     stopIncantationSound?: (andExplode: boolean) => void;
     playMagicExplosionSound?: () => void;

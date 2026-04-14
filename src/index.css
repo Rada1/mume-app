@@ -35,6 +35,15 @@
 }
 
 .modals-layer-wrapper > * {
+    pointer-events: none;
+}
+
+/* Explicitly re-enable pointer events for active UI elements within the modals layer */
+.modals-layer-wrapper .log-card-drawer,
+.modals-layer-wrapper .popover-menu,
+.modals-layer-wrapper .modal,
+.modals-layer-wrapper .floating-card-container,
+.modals-layer-wrapper .standard-menu-popover {
     pointer-events: auto;
 }
 

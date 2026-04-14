@@ -176,7 +176,14 @@ export const buildHighlighterCandidates = (
 
     // 3. PCs
     pcNamesSet.forEach(name => {
-        const patterns = [name, pluralizeMumeSubject(name)].filter(Boolean);
+        const stripped = name.replace(/^(A|An|The|Some)\s+/i, '');
+        const patterns = new Set([
+            name,
+            stripped,
+            pluralizeMumeSubject(name),
+            pluralizeMumeSubject(stripped)
+        ].filter(Boolean));
+        
         patterns.forEach(p => {
             candidates.push({
                 pattern: toAccentAgnostic(p),

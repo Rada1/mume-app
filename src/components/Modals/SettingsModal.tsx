@@ -42,24 +42,17 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setDisableSmoothScroll,
     isImmersionMode,
     setIsImmersionMode,
-    isMobileBrevityMode,
-    setIsMobileBrevityMode,
     isHighlighterEnabled,
     setIsHighlighterEnabled,
-    isCrtEnabled,
-    setIsCrtEnabled,
     isBloomEnabled,
     setIsBloomEnabled,
-    isSpectateMode,
-    setIsSpectateMode,
+    isSpectateMode,    setIsSpectateMode,
     isTimestampEnabled,
     setIsTimestampEnabled,
     fontFamily,
     setFontFamily,
     isNewbieMode,
     setIsNewbieMode,
-    isNoviceMode,
-    setIsNoviceMode,
     showRecordingIndicator,
     setShowRecordingIndicator,
     autoSaveSessions,
@@ -116,8 +109,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setLoginPassword={setLoginPassword}
                                 isMmapperMode={isMmapperMode}
                                 setIsMmapperMode={setIsMmapperMode}
-                                isNoviceMode={isNoviceMode}
-                                setIsNoviceMode={setIsNoviceMode}
                                 theme={theme}
                                 setTheme={setTheme}
                                 showDebugEchoes={showDebugEchoes}
@@ -133,14 +124,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setDisableSmoothScroll={setDisableSmoothScroll}
                                 isImmersionMode={isImmersionMode}
                                 setIsImmersionMode={setIsImmersionMode}
-                                isMobileBrevityMode={isMobileBrevityMode}
-                                setIsMobileBrevityMode={setIsMobileBrevityMode}
                                 showRecordingIndicator={showRecordingIndicator}
                                 setShowRecordingIndicator={setShowRecordingIndicator}
                                 isHighlighterEnabled={isHighlighterEnabled}
                                 setIsHighlighterEnabled={setIsHighlighterEnabled}
-                                isCrtEnabled={isCrtEnabled}
-                                setIsCrtEnabled={setIsCrtEnabled}
                                 isBloomEnabled={isBloomEnabled}
                                 setIsBloomEnabled={setIsBloomEnabled}
                                 isSpectateMode={isSpectateMode}

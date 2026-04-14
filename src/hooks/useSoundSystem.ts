@@ -9,7 +9,6 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
     const magicExplosionSoundRef = useRef<AudioBuffer | null>(null);
     const activeIncantationRef = useRef<{ source: AudioBufferSourceNode, gain: GainNode } | null>(null);
     const activeCommMessageRef = useRef<{ source: AudioBufferSourceNode, gain: GainNode } | null>(null);
-    const tutorialExitSoundRef = useRef<AudioBuffer | null>(null);
 
 
 
@@ -234,31 +233,6 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         }
     }, []);
 
-    const loadTutorialExitSound = useCallback(async () => {
-        if (!audioCtxRef.current) initAudio();
-        if (!audioCtxRef.current || tutorialExitSoundRef.current) return;
-        try {
-            const response = await fetch('/assets/Sounds/Sound effects/tutorialexit.mp3');
-            const arrayBuffer = await response.arrayBuffer();
-            const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
-            tutorialExitSoundRef.current = audioBuffer;
-        } catch (err) {
-            console.error('Failed to load tutorial exit sound:', err);
-        }
-    }, [initAudio]);
-
-
-    const playTutorialExitSound = useCallback(async (options?: { volume?: number }) => {
-        if (!audioCtxRef.current) initAudio();
-        if (!tutorialExitSoundRef.current) {
-            await loadTutorialExitSound();
-        }
-        if (tutorialExitSoundRef.current) {
-            playSound(tutorialExitSoundRef.current, { volume: options?.volume || 0.1 });
-        }
-    }, [loadTutorialExitSound, playSound, initAudio]);
-
-
     const stopCommMessageSound = useCallback(() => {
 
         if (!activeCommMessageRef.current || !audioCtxRef.current) return;
@@ -391,8 +365,6 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         playCommMessageSound,
         stopCommMessageSound,
         loadCommMessageSound,
-        playTutorialExitSound,
-        loadTutorialExitSound,
         playIncantationSound,
 
 

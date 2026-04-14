@@ -16,6 +16,7 @@ export interface StageManagerDeps {
     isWaitingForInfo: React.MutableRefObject<boolean>;
     addDiagnosticLog?: (msg: string) => void;
     addMessage: (type: MessageType, text: string, ...args: any[]) => void;
+    setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
     setEqLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setInventoryLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setStatsLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;

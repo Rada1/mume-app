@@ -40,6 +40,7 @@ export interface TelnetHandlers {
     onDisconnect?: () => void;
     flushMessages?: () => void;
     addDiagnosticLog?: (log: string) => void;
+    onEchoChange?: (visible: boolean) => void;
 }
 
 export interface TelnetOptions {
@@ -199,7 +200,8 @@ export function useTelnet(options: TelnetOptions) {
             sendGMCP: (...args) => sendGMCPRef.current(...args),
             handleSubnegotiation: (...args) => handleSubnegotiationRef.current(...args),
             processText: (...args) => processTextRef.current(...args),
-            addMessage: (...args) => addMessageRef.current(...args)
+            addMessage: (...args) => addMessageRef.current(...args),
+            onEchoChange: (visible: boolean) => handlersRef.current.onEchoChange?.(visible)
         });
 
         return () => {

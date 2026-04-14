@@ -1,7 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { MessageType, Message } from '../types';
 import { ansiConvert } from '../utils/ansi';
-import { numToWord, pluralizeMumeSubject, pluralizeVerb, pluralizeRest } from '../utils/gameUtils';
 
 // ---------------------------------------------------------------------------
 // Regex constants
@@ -9,7 +8,6 @@ import { numToWord, pluralizeMumeSubject, pluralizeVerb, pluralizeRest } from '.
 
 export const ARRIVE_REGEX = /^(.+?)\s+(has arrived from|arrives from|enters from)\s+(the\s+)?(.+?)\.?$/i;
 export const LEAVE_REGEX = /^(.+?)\s+(leaves|enters)\s+(the\s+)?(.+?)\.?$/i;
-export const HERE_REGEX = /^(.+?)\s+(is(?:\s+[\w\s,]+)?\s+here|stands? here|sits? here|rests? here|sleeps? here)(?:.*)?$/i;
 export const NPC_LINE_REGEX = /^((?:A|An|The|Some)?\s*[\w\s,-]+?'?s?)\s+(\w+s)\b\s*(.*)$/i;
 
 export const ROOM_EXIT_REGEX = /^(North|South|East|West|Up|Down|North|Southwest|Northeast|Southwest|Southeast)\s+-\s+/i;
@@ -21,7 +19,6 @@ let lastVibrateTime = 0;
 
 export function useMessageLog(
     inCombatRef: React.RefObject<boolean>,
-    isMobileBrevityMode: boolean,
     roomContext: {
         players: import('../types').GmcpOccupant[],
         npcs: import('../types').GmcpOccupant[],
@@ -42,8 +39,6 @@ export function useMessageLog(
     const messageBufferRef = useRef<Message[]>([]);
     const flushTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const roomLineBufferRef = useRef<{ subject: string, action: string, original: string }[]>([]);
-    const roomBufferTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const batchIdRef = useRef(0);
 
     const isCombatLine = useCallback((text: string) => {
@@ -93,72 +88,17 @@ export function useMessageLog(
         flushTimeoutRef.current = null;
     }, []);
 
-    const addMessageRef = useRef<any>(null);
-
-    const flushRoomBuffer = useCallback(() => {
-        if (roomLineBufferRef.current.length === 0) return;
-        const items = roomLineBufferRef.current;
-        roomLineBufferRef.current = [];
-        if (roomBufferTimeoutRef.current) {
-            clearTimeout(roomBufferTimeoutRef.current);
-            roomBufferTimeoutRef.current = null;
-        }
-
-        const actionGroups: Record<string, string[]> = {};
-        const textChunks: string[] = [];
-
-        items.forEach(item => {
-            if (item.action === "text-chunk") textChunks.push(item.original);
-            else {
-                if (!actionGroups[item.action]) actionGroups[item.action] = [];
-                actionGroups[item.action].push(item.subject);
-            }
-        });
-
-        const actionStrings = Object.entries(actionGroups).map(([action, subjects]) => {
-            if (subjects.length === 0) return "";
-            const unique = Array.from(new Set(subjects));
-            let subjectStr = unique.length === 1 ? unique[0] : (unique.length === 2 ? `${unique[0]} and ${unique[1]}` : `${unique.slice(0, -1).join(', ')}, and ${unique[unique.length - 1]}`);
-            let verb = unique.length > 1 ? (action.startsWith('is ') ? 'are ' + action.slice(3) : pluralizeVerb(action)) : action;
-            return `${subjectStr} ${verb}`;
-        }).filter(Boolean);
-
-        const allSentences = [...textChunks, ...actionStrings].map(s => s.trim()).filter(Boolean);
-        if (allSentences.length === 0) return;
-
-        const punctuated = allSentences.map((s, idx) => {
-            let t = s;
-            const isLast = idx === allSentences.length - 1;
-
-            // Normalize punctuation
-            if (t.endsWith('.') || t.endsWith('..') || t.endsWith('...')) {
-                t = t.replace(/\.+$/, '');
-            }
-
-            if (isLast) return t + '.';
-            return t + '...';
-        });
-
-        const finalPara = punctuated.join(' ');
-
-        if (finalPara) {
-            const finalParagraph = finalPara.charAt(0).toUpperCase() + finalPara.slice(1);
-            const msgText = `\x1b[1;37m${finalParagraph.replace(/\s+/g, ' ')}\x1b[0m`;
-            addMessageRef.current?.('game', msgText, false, undefined, false, { textOnly: finalParagraph, lower: finalParagraph.toLowerCase() }, undefined, undefined, undefined, true, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
-        }
-    }, []);
-
     const addMessage = useCallback((
         type: MessageType,
         text: string,
-        combatOverride?: boolean,
-        mid?: string,
-        isRoomName?: boolean,
-        precalculated?: { textOnly: string, lower: string },
-        shopItem?: any,
-        practiceSkill?: any,
-        practiceHeader?: any,
-        skipBrevity: boolean = false,
+        extra?: any,           // Maps to combatOverride
+        mid?: string,          // Maps to cmd
+        isRoomName?: boolean,  // Maps to context
+        precalculated?: { textOnly: string, lower: string }, // Maps to htmlProps
+        shopItem?: any,        // Maps to sender
+        practiceSkill?: any,   // Maps to channel
+        practiceHeader?: any,  // Maps to id
+        isSystem: boolean = false, // Maps to isSystem
         replyTarget?: string,
         replyCommand?: string,
         commSender?: string,
@@ -167,6 +107,7 @@ export function useMessageLog(
         commColor?: string,
         providedCombatSide?: 'player' | 'opponent' | 'groupmate'
     ) => {
+        const combatOverride = extra === true || (typeof extra === 'object' && extra?.isCombat);
         let currentText = text;
         let currentTextOnly = precalculated?.textOnly || text.replace(/\x1b\[[0-9;]*m/g, '').trim();
         let currentTextLower = precalculated?.lower || currentTextOnly.toLowerCase();
@@ -247,7 +188,7 @@ export function useMessageLog(
 
 
         if (isActuallyRoomName) {
-            flushRoomBuffer();
+            // Room name detected
         }
 
         // RETURN EARLY: The description is already shown in the authoritative GMCP header.
@@ -255,36 +196,7 @@ export function useMessageLog(
             return;
         }
 
-
-
-
-
-        if (isMobileBrevityMode && type === 'game' && !isActuallyRoomName && !isCombat && !isComm && !skipBrevity) {
-            if (currentTextOnly.length > 0) {
-                const hereMatch = currentTextOnly.match(HERE_REGEX);
-                const npcMatch = currentTextOnly.match(NPC_LINE_REGEX);
-
-                if (hereMatch || npcMatch) {
-                    const subject = hereMatch ? hereMatch[1] : (npcMatch ? npcMatch[1] : "");
-                    const action = hereMatch ? hereMatch[2] : (npcMatch ? `${npcMatch[2]} ${npcMatch[3]}` : "");
-                    roomLineBufferRef.current.push({ subject, action: action.trim(), original: currentTextOnly });
-                } else {
-                    roomLineBufferRef.current.push({ subject: "", action: "text-chunk", original: currentTextOnly });
-                }
-
-                if (roomBufferTimeoutRef.current) clearTimeout(roomBufferTimeoutRef.current);
-                roomBufferTimeoutRef.current = setTimeout(flushRoomBuffer, 300);
-                return;
-            }
-            // Fall through to real message for blank lines (currentTextOnly.length === 0)
-            // But we MUST flush whatever is already in the buffer first so the blank
-            // line appears after the buffered text, not before it.
-            flushRoomBuffer();
-        } else {
-            flushRoomBuffer();
-        }
-
-        addMessageRef.current = addMessage;
+        // Description logic
 
         const isUrgent = isArriveLeave ||
             currentTextLower.includes('strange incantations') ||
@@ -304,20 +216,6 @@ export function useMessageLog(
         }
 
         const dimmedInCombat = inCombatRef.current && !isCombat && !isUrgent;
-        let stackId = '';
-        let subject = '', actionText = '', direction = '';
-
-        if (isMobileBrevityMode) {
-            const arriveMatch = currentTextOnly.match(ARRIVE_REGEX);
-            const leaveMatch = currentTextOnly.match(LEAVE_REGEX);
-            const hereMatch = currentTextOnly.match(HERE_REGEX);
-            const npcMatch = currentTextOnly.match(NPC_LINE_REGEX);
-
-            if (arriveMatch) { subject = arriveMatch[1]; actionText = arriveMatch[2]; direction = arriveMatch[4]; stackId = `arrive:${subject.toLowerCase()}:${actionText.toLowerCase()}:${direction.toLowerCase()}`; }
-            else if (leaveMatch) { subject = leaveMatch[1]; actionText = leaveMatch[2]; direction = leaveMatch[4]; stackId = `leave:${subject.toLowerCase()}:${actionText.toLowerCase()}:${direction.toLowerCase()}`; }
-            else if (hereMatch) { subject = hereMatch[1]; actionText = hereMatch[2]; stackId = `here:${subject.toLowerCase()}:${actionText.toLowerCase()}`; }
-            else if (npcMatch) { subject = npcMatch[1]; actionText = npcMatch[2]; direction = npcMatch[3]; stackId = `npc:${currentTextOnly.toLowerCase()}`; }
-        }
 
         const lastMsg = lastMessageRef.current;
         const targetMid = mid;
@@ -353,28 +251,6 @@ export function useMessageLog(
         // If this is NOT a communication continuation, and the last message WAS a comm, 
         // we MUST ensure we don't accidentally carry over ghost comm properties from a previous logic branch.
         // This prevents the 'duplicate message' bug where a new message inherits the last comm's text.
-
-        if (stackId && lastMsg && lastMsg.stackId === stackId && lastMsg.type === type && !isActuallyRoomName) {
-            let newCount = (lastMsg.stackCount || 1) + 1;
-            const pluralSubject = pluralizeMumeSubject(subject);
-            let verb = '', rest = direction;
-            if (actionText.includes('arrive')) verb = 'have arrived';
-            else if (actionText.includes('leave')) verb = 'leave';
-            else if (actionText.toLowerCase().startsWith('is ')) {
-                if (actionText.toLowerCase().includes('standing')) verb = 'stand ' + actionText.slice(12);
-                else if (actionText.toLowerCase().includes('resting')) verb = 'rest ' + actionText.slice(11);
-                else if (actionText.toLowerCase().includes('sleeping')) verb = 'sleep ' + actionText.slice(12);
-                else if (actionText.toLowerCase().includes('sitting')) verb = 'sit ' + actionText.slice(11);
-                else verb = 'are ' + actionText.slice(3);
-            } else { verb = pluralizeVerb(actionText); rest = pluralizeRest(direction); }
-
-            const newTextRaw = `${numToWord(newCount).charAt(0).toUpperCase() + numToWord(newCount).slice(1)} ${pluralSubject} ${verb}${actionText.includes('arrive') ? ' from ' : ''}${rest}.`.replace(/\s+/g, ' ');
-            const updatedMsg: Message = { ...lastMsg, textRaw: newTextRaw, html: ansiConvert.toHtml(`\x1b[1;37m${newTextRaw}\x1b[0m`), stackCount: newCount, timestamp: Date.now() };
-            lastMessageRef.current = updatedMsg;
-            if (messageBufferRef.current.length > 0) messageBufferRef.current[messageBufferRef.current.length - 1] = updatedMsg;
-            else setMessages(prev => { const next = [...prev]; if (next.length > 0) next[next.length - 1] = updatedMsg; return next; });
-            return;
-        }
 
         // Room description lines are merged into the preceding room-name message
         // so they render as one unified DOM element with no subpixel gaps.
@@ -455,8 +331,6 @@ export function useMessageLog(
             dimmedInCombat,
             isUrgent,
             isEmpty,
-            stackId: stackId || undefined,
-            stackCount: 1,
             isComm,
             replyTarget,
             replyCommand,
@@ -511,11 +385,10 @@ export function useMessageLog(
                 flushTimeoutRef.current = setTimeout(flushMessages, 50);
             }
         }
-    }, [inCombatRef, setMessages, flushMessages, isMobileBrevityMode, roomContext, flushRoomBuffer, isAccountModeRef]);
+    }, [inCombatRef, setMessages, flushMessages, roomContext, isAccountModeRef]);
 
     const clearLog = useCallback(() => {
         messageBufferRef.current = [];
-        roomLineBufferRef.current = [];
         if (flushTimeoutRef.current) {
             clearTimeout(flushTimeoutRef.current);
             flushTimeoutRef.current = null;

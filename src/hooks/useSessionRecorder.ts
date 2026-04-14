@@ -62,8 +62,12 @@ export const useSessionRecorder = () => {
     if (!isRecording) return;
 
     let recordedData = data;
-    if (options?.mask && type === 'tx') {
-      recordedData = '********';
+    if (options?.mask) {
+      if (type === 'tx') {
+        recordedData = '********';
+      } else if (type === 'ui' && data?.event === 'executeCommand' && data?.cmd) {
+        recordedData = { ...data, cmd: '********' };
+      }
     }
 
     entriesRef.current.push({

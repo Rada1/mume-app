@@ -160,20 +160,14 @@ export interface GameContextType {
     setPopoverState: (val: import('../../types').PopoverState | null) => void;
 
     // Settings & Mode
-    isNoviceMode: boolean;
-    setIsNoviceMode: (val: boolean) => void;
     isNewbieMode: boolean;
     setIsNewbieMode: (val: boolean) => void;
     isSoundEnabled: boolean;
-    setIsSoundEnabled: (val: boolean) => void;
-    isMmapperMode: boolean;
     setIsMmapperMode: (val: boolean) => void;
     theme: 'light' | 'dark';
     setTheme: (val: 'light' | 'dark') => void;
-    showControls: boolean;
-    setShowControls: (val: boolean) => void;
-    hasSeenOnboarding: boolean;
-    setHasSeenOnboarding: (val: boolean) => void;
+    autoConnect: boolean;
+    setAutoConnect: (val: boolean) => void;
     showDebugEchoes: boolean;
     setShowDebugEchoes: (val: boolean) => void;
     sessionMode: import('../../types').SessionMode;
@@ -186,12 +180,8 @@ export interface GameContextType {
     setDisableSmoothScroll: (val: boolean) => void;
     isImmersionMode: boolean;
     setIsImmersionMode: (val: boolean) => void;
-    isMobileBrevityMode: boolean;
-    setIsMobileBrevityMode: (val: boolean) => void;
     showRecordingIndicator: boolean;
     setShowRecordingIndicator: (val: boolean) => void;
-    isCrtEnabled: boolean;
-    setIsCrtEnabled: (val: boolean) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
     isSpectateMode: boolean;
@@ -421,7 +411,6 @@ export interface GameContextType {
     playClickSound: () => void;
     playCommMessageSound: (options?: { volume?: number }) => void;
     stopCommMessageSound: () => void;
-    playTutorialExitSound: (options?: { volume?: number }) => void;
     triggerHaptic: (ms: number) => void;
 
 

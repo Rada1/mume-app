@@ -21,7 +21,6 @@ export const useSettingsState = () => {
         }
     }, [connectionUrl, setConnectionUrl, DEFAULT_URL]);
 
-    const [isNoviceMode, setIsNoviceMode] = usePersistentState('mud-novice-mode', (MASTER_SETTINGS as any).isNoviceMode ?? false);
     const [isNewbieMode, setIsNewbieMode] = usePersistentState('mud-newbie-mode', true);
     const [isSoundEnabled, setIsSoundEnabled] = usePersistentState('mud-sound-enabled', (MASTER_SETTINGS as any).isSoundEnabled ?? true);
     const [isMmapperMode, setIsMmapperMode] = usePersistentState('mud-mmapper-mode', false);
@@ -36,17 +35,14 @@ export const useSettingsState = () => {
         return false;
     })());
     const [autoConnect, setAutoConnect] = usePersistentState('mud-auto-connect', (MASTER_SETTINGS as any).autoConnect ?? true);
-    const [hasSeenOnboarding, setHasSeenOnboarding] = usePersistentState('mud-has-seen-onboarding', false);
     const [showDebugEchoes, setShowDebugEchoes] = usePersistentState('mud-show-debug-echoes', false);
     const [uiMode, setUiMode] = usePersistentState<any>('mud-ui-mode', (MASTER_SETTINGS as any).uiMode ?? 'auto');
     const [disable3dScroll, setDisable3dScroll] = usePersistentState('mud-disable-3d-scroll', (MASTER_SETTINGS as any).disable3dScroll ?? false);
     const [disableSmoothScroll, setDisableSmoothScroll] = usePersistentState('mud-disable-smooth-scroll', (MASTER_SETTINGS as any).disableSmoothScroll ?? false);
     const [isImmersionMode, setIsImmersionMode] = usePersistentState('mud-immersion-mode', (MASTER_SETTINGS as any).isImmersionMode ?? true);
-    const [isMobileBrevityMode, setIsMobileBrevityMode] = usePersistentState('mud-mobile-brevity', false);
     const [showOrganicTerrain, setShowOrganicTerrain] = usePersistentState('mud-show-organic-terrain', true);
     const [inlineCategories, setInlineCategories] = usePersistentState<InlineCategoryConfig[]>('mud-inline-categories', (MASTER_SETTINGS as any).inlineCategories || DEFAULT_INLINE_CATEGORIES);
     const [isHighlighterEnabled, setIsHighlighterEnabled] = usePersistentState('mud-highlighter-enabled', true);
-    const [isCrtEnabled, setIsCrtEnabled] = usePersistentState('mud-crt-enabled', (MASTER_SETTINGS as any).isCrtEnabled ?? false);
     const [isBloomEnabled, setIsBloomEnabled] = usePersistentState('mud-bloom-enabled', (MASTER_SETTINGS as any).isBloomEnabled ?? false);
     const [isSpectateMode, setIsSpectateMode] = usePersistentState('mud-spectate-mode', false);
     const [isTimestampEnabled, setIsTimestampEnabled] = usePersistentState('mud-timestamp-enabled', false);
@@ -64,25 +60,21 @@ export const useSettingsState = () => {
 
     return {
         connectionUrl, setConnectionUrl,
-        isNoviceMode, setIsNoviceMode,
         isNewbieMode, setIsNewbieMode,
         isSoundEnabled, setIsSoundEnabled,
         isMmapperMode, setIsMmapperMode,
         theme, setTheme,
         showControls, setShowControls,
         autoConnect, setAutoConnect,
-        hasSeenOnboarding, setHasSeenOnboarding,
         showDebugEchoes, setShowDebugEchoes,
         uiMode, setUiMode,
         disable3dScroll, setDisable3dScroll,
         disableSmoothScroll, setDisableSmoothScroll,
         isImmersionMode, setIsImmersionMode,
-        isMobileBrevityMode, setIsMobileBrevityMode,
         showRecordingIndicator, setShowRecordingIndicator,
         showOrganicTerrain, setShowOrganicTerrain,
         inlineCategories, setInlineCategories,
         isHighlighterEnabled, setIsHighlighterEnabled,
-        isCrtEnabled, setIsCrtEnabled,
         isBloomEnabled, setIsBloomEnabled,
         isSpectateMode, setIsSpectateMode,
         isTimestampEnabled, setIsTimestampEnabled,

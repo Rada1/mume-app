@@ -5,7 +5,6 @@ import SetManagerModal from '../Modals/SetManagerModal';
 import { PopoverManager } from '../Popovers/PopoverManager';
 import { DrawerManager } from '../Drawers/DrawerManager';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
-import { OnboardingOverlay } from '../Overlay/OnboardingOverlay';
 import { KeywordEditModal } from '../Modals/KeywordEditModal';
 import { LibraryModal } from '../Modals/LibraryModal';
 
@@ -72,7 +71,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setAutoConnect,
         showDebugEchoes,
         setShowDebugEchoes,
-        hasSeenOnboarding,
         status,
         uiMode,
         setUiMode,
@@ -82,16 +80,12 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setDisableSmoothScroll,
         isImmersionMode,
         setIsImmersionMode,
-        isMobileBrevityMode,
-        setIsMobileBrevityMode,
         showLegacyButtons,
         setShowLegacyButtons,
         favorites,
         setFavorites,
         isHighlighterEnabled,
         setIsHighlighterEnabled,
-        isCrtEnabled,
-        setIsCrtEnabled,
         isBloomEnabled,
         setIsBloomEnabled,
         isSpectateMode,
@@ -100,8 +94,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setIsTimestampEnabled,
         isNewbieMode,
         setIsNewbieMode,
-        isNoviceMode,
-        setIsNoviceMode,
         showRecordingIndicator,
         setShowRecordingIndicator,
         parley,
@@ -222,14 +214,10 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setDisableSmoothScroll={setDisableSmoothScroll}
                     isImmersionMode={isImmersionMode}
                     setIsImmersionMode={setIsImmersionMode}
-                    isMobileBrevityMode={isMobileBrevityMode}
-                    setIsMobileBrevityMode={setIsMobileBrevityMode}
                     showLegacyButtons={showLegacyButtons}
                     setShowLegacyButtons={setShowLegacyButtons}
                     isHighlighterEnabled={isHighlighterEnabled}
                     setIsHighlighterEnabled={setIsHighlighterEnabled}
-                    isCrtEnabled={isCrtEnabled}
-                    setIsCrtEnabled={setIsCrtEnabled}
                     isBloomEnabled={isBloomEnabled}
                     setIsBloomEnabled={setIsBloomEnabled}
                     isSpectateMode={isSpectateMode}
@@ -238,8 +226,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setIsTimestampEnabled={setIsTimestampEnabled}
                     isNewbieMode={isNewbieMode}
                     setIsNewbieMode={setIsNewbieMode}
-                    isNoviceMode={isNoviceMode}
-                    setIsNoviceMode={setIsNoviceMode}
                     showRecordingIndicator={showRecordingIndicator}
                     setShowRecordingIndicator={setShowRecordingIndicator}
                     fontFamily={fontFamily}
@@ -373,10 +359,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 handleSoundUpload={handleSoundUpload}
                 setSoundTriggers={setSoundTriggers}
             />
-
-            {!hasSeenOnboarding && status === 'connected' && (
-                <OnboardingOverlay />
-            )}
 
             {keywordEditState && (
                 <KeywordEditModal

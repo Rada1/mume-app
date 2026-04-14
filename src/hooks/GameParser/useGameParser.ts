@@ -32,7 +32,6 @@ export function useGameParser(deps: UseGameParserDeps) {
     const { 
         mapperRef, btn, addMessage, playSound,        playHitImpactSound,
         playCommMessageSound,
-        playTutorialExitSound,
 
         playIncantationSound,
 
@@ -58,7 +57,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         spectateCharacterName, roomPlayers,
         processMessageHtml,
         sessionMode,
-        help
+        help,
+        setIsPasswordMode
     } = deps;
 
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef, playRandomSound });
@@ -78,7 +78,6 @@ export function useGameParser(deps: UseGameParserDeps) {
     const tempEntitiesRef = useRef<Record<string, GameEntity>>({});
     const counterRef = useRef(0);
     const shopPagerSeenRef = useRef(false);
-    const tutorialExitPlayedRef = useRef(false);
     const lastRoomChangeTimeRef = useRef(0);
 
 
@@ -179,7 +178,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         addDiagnosticLog,
         addMessage,
         setMessages,
-        clearLog: deps.clearLog
+        clearLog: deps.clearLog,
+        setIsPasswordMode
     });
 
     // NOTE: Account parsing is handled entirely inside processLine() via the
@@ -419,16 +419,6 @@ export function useGameParser(deps: UseGameParserDeps) {
                    lower.includes('too dazed to concentrate') ||
                    lower.includes('too stunned to concentrate')) {
             if (!isSpectateMode) stopIncantationSound?.(false);
-        }
-
-        // --- Tutorial Exit Sound ---
-        // Note: only check the first part of the phrase — MUME wraps long lines at ~80 chars,
-        // which splits "adventure concludes for now, for I must make haste to / Isengard" across
-        // two separate processLine calls, so both conditions would never match simultaneously.
-        if (!tutorialExitPlayedRef.current &&
-            lower.includes('adventure concludes for now')) {
-            tutorialExitPlayedRef.current = true;
-            playTutorialExitSound?.();
         }
 
 

@@ -181,8 +181,22 @@ export const useMessageHighlighter = (
 
         if (arriveMatch || leaveMatch) {
             const movementMatch = arriveMatch || leaveMatch!;
+            const subject = movementMatch[1];
             const verb = movementMatch[2];
             const direction = movementMatch[4];
+
+            if (subject) {
+                const subjectLower = subject.toLowerCase();
+                const isNpcSubject = /^(a|an|the|some)\s/i.test(subject);
+                const category = isNpcSubject ? 'inlinenpc' : 'inlineplayer';
+                const glowColor = getGlowColorForCategory(category, inlineCategories);
+                const buttonId = isNpcSubject ? `auto-npc-${subject}` : `auto-${subject}`;
+                const isSelected = isObjectSelected(selectedObjectIds, buttonId, category);
+                
+                newHtml = safeHighlight(newHtml, subject, false, (m) => {
+                    return `<span class="inline-btn auto-occupant movement-subject ${isNpcSubject ? 'npc-highlighter' : 'pc-highlighter'}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${category}" data-context="${esc(subject)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}; color: ${glowColor}; font-weight: 800">${m}</span>`;
+                });
+            }
 
             if (verb) {
                 newHtml = safeHighlight(newHtml, verb, false, (m) => `<span class="movement-item">${m}</span>`);
@@ -250,7 +264,7 @@ export const useMessageHighlighter = (
             }
 
             const nameCandidate = cleanText.split(/\s+/)[0].replace(/[.,:;!]+$/, '');
-            const commonHeaders = ['Players', 'Allies', 'Minions', 'Who', 'Where', 'Visible'];
+            const commonHeaders = ['Players', 'Player', 'Allies', 'Minions', 'Who', 'Where', 'Visible'];
             if (nameCandidate && nameCandidate.length > 2 && /^[A-Z\u00C0-\u00DE]/.test(nameCandidate) && !commonHeaders.includes(nameCandidate)) {
                 // Search newHtml using the entity-encoded form (how ansi-to-html wrote it)
                 const htmlNameCandidate = nameCandidate.replace(/[^\x00-\x7F]/g, c => `&#x${c.codePointAt(0)!.toString(16).toUpperCase()};`);

@@ -11,8 +11,6 @@ export interface SessionManagerDeps {
     characterName: string | null;
     executeCommand: (cmd: string, echo?: boolean, fromMacro?: boolean) => void;
     autoConnect: boolean;
-    hasSeenOnboarding: boolean;
-    isNoviceMode: boolean;
     groupMembers: any[];
     spatButtons: any[];
     triggerSpitManual: (btn: any) => void;
@@ -30,8 +28,6 @@ export const useSessionManager = ({
     characterName,
     executeCommand,
     autoConnect,
-    hasSeenOnboarding,
-    isNoviceMode,
     groupMembers,
     spatButtons,
     triggerSpitManual,
@@ -120,25 +116,8 @@ export const useSessionManager = ({
             telnetConnect();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        }, []);
 
-    // --- Phase 1: First-Run Onboarding Greeting ---
-    useEffect(() => {
-        if (status === 'connected' && !hasSeenOnboarding && isNoviceMode) {
-            const greetingMessages = [
-                "Welcome! The map (top-right) tracks your movement automatically.",
-                "Vitals (top-center) show your status. Click a target's name in the log to lock onto them.",
-                "Tactical buttons (bottom-sides) can be swiped for extra actions."
-            ];
-            greetingMessages.forEach((msg, i) => {
-                setTimeout(() => {
-                    addSystemMessage(msg);
-                }, 1000 * (i + 1));
-            });
-        }
-    }, [status, hasSeenOnboarding, isNoviceMode, addSystemMessage]);
-
-    // --- Group Combat Assist Trigger ---
     // When any groupmate is fighting, show a single 'Assist' spit button.
     const isAssistActiveRef = useRef<boolean>(false);
     useEffect(() => {

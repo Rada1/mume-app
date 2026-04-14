@@ -11,9 +11,9 @@ export const useGameProviderState = () => {
     // Settings & Mode
     const settings = useSettingsState();
     const {
-        isNoviceMode, setIsNoviceMode, isNewbieMode, setIsNewbieMode, isSoundEnabled, setIsSoundEnabled, isMmapperMode, setIsMmapperMode, theme, setTheme, showControls, setShowControls, autoConnect, setAutoConnect, hasSeenOnboarding, setHasSeenOnboarding,
-        showDebugEchoes, setShowDebugEchoes, uiMode, setUiMode, disable3dScroll, setDisable3dScroll, disableSmoothScroll, setDisableSmoothScroll, isImmersionMode, setIsImmersionMode, isMobileBrevityMode, setIsMobileBrevityMode, showOrganicTerrain, setShowOrganicTerrain, inlineCategories, setInlineCategories, isHighlighterEnabled, setIsHighlighterEnabled,
-        isCrtEnabled, setIsCrtEnabled, isBloomEnabled, setIsBloomEnabled, isTimestampEnabled, setIsTimestampEnabled, favorites, setFavorites, zoneMusic, setZoneMusic,
+        isNewbieMode, setIsNewbieMode, isSoundEnabled, setIsSoundEnabled, isMmapperMode, setIsMmapperMode, theme, setTheme, showControls, setShowControls, autoConnect, setAutoConnect,
+        showDebugEchoes, setShowDebugEchoes, uiMode, setUiMode, disable3dScroll, setDisable3dScroll, disableSmoothScroll, setDisableSmoothScroll, isImmersionMode, setIsImmersionMode, showOrganicTerrain, setShowOrganicTerrain, inlineCategories, setInlineCategories, isHighlighterEnabled, setIsHighlighterEnabled,
+        isBloomEnabled, setIsBloomEnabled, isTimestampEnabled, setIsTimestampEnabled, favorites, setFavorites, zoneMusic, setZoneMusic,
         fontFamily, setFontFamily
     } = settings;
 
@@ -23,6 +23,7 @@ export const useGameProviderState = () => {
     // Core Game State
     const [status, setStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');
     const [gameState, setGameState] = useState<import('../../types').GameState>('disconnected');
+    const [isPasswordMode, setIsPasswordMode] = useState(false);
 
     const [target, _setTarget] = useState<string | null>(null);
     const setTarget = useCallback((val: string | null) => {
@@ -92,6 +93,7 @@ export const useGameProviderState = () => {
     useEffect(() => {
         if (status === 'disconnected') {
             setGameState('disconnected');
+            setIsPasswordMode(false);
         } else if (status === 'connected') {
             // If we have a character name, we are definitely playing.
             // If not, we are likely at the account/login screen.
@@ -256,26 +258,6 @@ export const useGameProviderState = () => {
     const [spectateRoomName, setSpectateRoomName] = useState<string | null>(null);
     const [spectateInCombat, setSpectateInCombat] = useState(false);
     const [spectateCharacterName, setSpectateCharacterName] = useState<string | null>(null);
-
-    // Global listener for replaying onboarding
-    useEffect(() => {
-        const handleReplay = () => {
-            console.log('[Onboarding] Triggering replay...');
-            setHasSeenOnboarding(false);
-            // Close other UI elements that might block it
-            setUI(prev => ({
-                ...prev,
-                setManagerOpen: false,
-                isMenuOpen: false,
-                drawer: 'none'
-            }));
-            // Settings modal is usually managed by useUI in context, 
-            // but we can broadcast another event for components to react
-            window.dispatchEvent(new CustomEvent('mume-close-settings'));
-        };
-        window.addEventListener('mume-replay-onboarding', handleReplay);
-        return () => window.removeEventListener('mume-replay-onboarding', handleReplay);
-    }, [setHasSeenOnboarding]);
 
     const captureStage = useRef<import('../../types').CaptureStage>('none');
 
@@ -545,6 +527,7 @@ export const useGameProviderState = () => {
         inCombat: effectiveInCombat, setInCombat,
         status, setStatus,
         gameState, setGameState,
+        isPasswordMode, setIsPasswordMode,
         characterName, setCharacterName,
         mood, setMood,
         spellSpeed, setSpellSpeed,
@@ -552,7 +535,6 @@ export const useGameProviderState = () => {
         playerPosition: settings.isSpectateMode ? spectatePosition : playerPosition, 
         setPlayerPosition, playerPositionRef,
         isRiding, setIsRiding, isRidingRef,
-        isNoviceMode, setIsNoviceMode,
         isNewbieMode, setIsNewbieMode,
         isSoundEnabled, setIsSoundEnabled,
         isMmapperMode, setIsMmapperMode,
@@ -586,13 +568,11 @@ export const useGameProviderState = () => {
         applyOptimisticChange,
         captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, pendingDrawerContainerRef,
         autoConnect, setAutoConnect,
-        hasSeenOnboarding, setHasSeenOnboarding,
         showDebugEchoes, setShowDebugEchoes,
         uiMode, setUiMode,
         disable3dScroll, setDisable3dScroll,
         disableSmoothScroll, setDisableSmoothScroll,
         isImmersionMode, setIsImmersionMode,
-        isMobileBrevityMode, setIsMobileBrevityMode,
         showOrganicTerrain, setShowOrganicTerrain,
         parley, setParley,
         whoList, setWhoList,
@@ -603,7 +583,6 @@ export const useGameProviderState = () => {
         roomZone, setRoomZone,
         inlineCategories, setInlineCategories,
         isHighlighterEnabled, setIsHighlighterEnabled,
-        isCrtEnabled, setIsCrtEnabled,
         isBloomEnabled, setIsBloomEnabled,
         isTimestampEnabled, setIsTimestampEnabled,
         isSpectateMode: settings.isSpectateMode,
@@ -651,15 +630,15 @@ export const useGameProviderState = () => {
         spectateOpponentStatus, setSpectateOpponentStatus,
         fontFamily, setFontFamily
     }), [
-        effectiveInCombat, status, gameState, characterName, mood, spellSpeed, alertness, playerPosition, isRiding,
-        isNoviceMode, isNewbieMode, isSoundEnabled, isMmapperMode, theme, showControls,
+        effectiveInCombat, status, gameState, isPasswordMode, characterName, mood, spellSpeed, alertness, playerPosition, isRiding,
+        isNewbieMode, setIsNewbieMode, isSoundEnabled, isMmapperMode, theme, showControls,
         roomPlayers, roomNpcs, roomItems, currentTerrain, ui, setIsCharacterOpen,
         setIsEquipmentOpen, setIsInventoryOpen, setIsMapExpanded, setIsSetManagerOpen, lighting,
         lightningEnabled, weather, isFoggy, abilities, characterClass, actions, handleTabClick, toggleMap,
-        inventoryLines, statsLines, scoreLines, questLines, practiceLines, whoLines, whereLines, eqLines, optimisticInventoryLines, optimisticEqLines, applyOptimisticChange, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
-        disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, roomName, roomDesc, roomExits, roomZone,
+        inventoryLines, statsLines, scoreLines, questLines, practiceLines, whoLines, whereLines, eqLines, optimisticInventoryLines, optimisticEqLines, applyOptimisticChange, autoConnect, showDebugEchoes, uiMode,
+        disable3dScroll, disableSmoothScroll, isImmersionMode, roomName, roomDesc, roomExits, roomZone,
         handleTabClick, toggleMap,
-        inlineCategories, isHighlighterEnabled, isCrtEnabled, isBloomEnabled, favorites, activeDragData, heldButton,
+        inlineCategories, isHighlighterEnabled, isBloomEnabled, favorites, activeDragData, heldButton,
         parley, whoList, whereList, popoverState, discoveredItems, zoneMusic,
         quests, groupMembers, mumeEditState, handleSaveMumeEdit, executeCommandRef,
         entities, setEntities, registerEntity, getEntity, clearRegistry, selectedObjectIds, toggleObjectSelection, clearObjectSelection,

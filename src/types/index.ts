@@ -10,7 +10,7 @@ export type TriggerAction = 'show' | 'switch_set';
 export type SessionMode = 'live' | 'replay';
 export type UiMode = 'auto' | 'desktop' | 'portrait' | 'landscape';
 export type GameState = 'disconnected' | 'account' | 'playing';
-export type CaptureStage = 'none' | 'who' | 'where' | 'inv' | 'eq' | 'stat' | 'container' | 'shop' | 'shop-detail' | 'practice' | 'whois' | 'description' | 'info' | 'quest' | 'account' | 'help';
+export type CaptureStage = 'none' | 'who' | 'where' | 'inv' | 'eq' | 'stat' | 'score' | 'container' | 'shop' | 'shop-detail' | 'practice' | 'whois' | 'description' | 'info' | 'quest' | 'account' | 'help';
 export type CombatHealthStatus = 'Healthy' | 'Fine' | 'Hurt' | 'Wounded' | 'Bad' | 'Awful' | 'Dying' | 'Stunned' | 'None';
 export type ExecuteCommand = (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean, fromUi?: boolean }) => void;
 
@@ -38,8 +38,6 @@ export interface Message {
     isCombat?: boolean; // True if this line is combat-related
     combatSide?: 'player' | 'opponent' | 'groupmate'; // Who is acting in this combat line
     dimmedInCombat?: boolean; // True if this non-combat line arrived during a fight (permanently dim)
-    stackCount?: number; // How many copies of this message are stacked
-    stackId?: string; // Identifier for the type of stack (e.g. "arrival:a black wolf:south")
     isComm?: boolean; // True if this is a communication message (says, tells, etc.)
     replyTarget?: string; // Sender name for comm messages — enables the inline reply button
     replyCommand?: string; // Channel command for the reply button (e.g. 'tell', 'say', 'narrate')
@@ -374,12 +372,8 @@ export interface SettingsModalProps {
     setDisableSmoothScroll: (val: boolean) => void;
     isImmersionMode: boolean;
     setIsImmersionMode: (val: boolean) => void;
-    isMobileBrevityMode: boolean;
-    setIsMobileBrevityMode: (val: boolean) => void;
     isHighlighterEnabled: boolean;
     setIsHighlighterEnabled: (val: boolean) => void;
-    isCrtEnabled: boolean;
-    setIsCrtEnabled: (val: boolean) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
     isSpectateMode: boolean;
@@ -424,13 +418,11 @@ export interface SavedSettings {
     disable3dScroll?: boolean;
     disableSmoothScroll?: boolean;
     isImmersionMode?: boolean;
-    isMobileBrevityMode?: boolean;
     showRecordingIndicator?: boolean;
     showOrganicTerrain?: boolean;
     inlineCategories?: InlineCategoryConfig[];
     favorites?: string[];
     isHighlighterEnabled?: boolean;
-    isCrtEnabled?: boolean;
     isBloomEnabled?: boolean;
     isNewbieMode?: boolean;
     isTimestampEnabled?: boolean;

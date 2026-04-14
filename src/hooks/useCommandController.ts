@@ -7,7 +7,7 @@ import { CaptureStage } from '../types';
 
 export interface CommandControllerDeps {
     telnet: { sendCommand: (cmd: string) => void };
-    addMessage: (type: any, text: string, combat?: boolean, mid?: string, room?: boolean, pre?: any, shop?: any, skill?: any, hdr?: any, skip?: boolean) => void;
+    addMessage: (type: any, text: string, extra?: any, mid?: string, room?: boolean, pre?: any, shop?: any, skill?: any, hdr?: any, skip?: boolean, ...rest: any[]) => void;
     initAudio: () => void;
     navIntervalRef: React.MutableRefObject<NodeJS.Timeout | null>;
     mapperRef: React.RefObject<any>;
@@ -27,7 +27,6 @@ export interface CommandControllerDeps {
     setCommandPreview: (val: string | null) => void;
     input: string;
     setInput: (val: string) => void;
-    isNoviceMode: boolean;
     isNewbieMode: boolean;
     status: 'connected' | 'disconnected' | 'connecting';
     target: string | null;
@@ -70,6 +69,7 @@ export interface CommandControllerDeps {
     shop: any;
     keywordOverrides: Record<string, string>;
     openKeywordEdit: (context: string, displayText: string) => void;
+    help: any;
     lastCommandContextRef: React.MutableRefObject<{ context: string; displayText: string } | null>;
     entities: Record<string, import('../types').GameEntity>;
     applyOptimisticChange: (change: import('../types').OptimisticChange) => void;
@@ -80,16 +80,17 @@ export interface CommandControllerDeps {
     isSoundEnabled: boolean;
     manualCancelRef?: React.MutableRefObject<boolean>;
     waiting?: boolean;
-    recordEntry?: (type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any) => void;
+    recordEntry?: (type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any, options?: { mask?: boolean }) => void;
     clearLog: () => void;
     gameState: import('../types').GameState;
     sessionMode: import('../types').SessionMode;
     replayer: any;
+    isPasswordMode: boolean;
 }
 
 
 export function useCommandController(deps: CommandControllerDeps) {
-    const { input, setInput, isNoviceMode, isNewbieMode, viewport, triggerHaptic, setTarget, setPendingMove, addMessage, manualCancelRef, waiting } = deps;
+    const { input, setInput, isNewbieMode, viewport, triggerHaptic, setTarget, setPendingMove, addMessage, manualCancelRef, waiting } = deps;
 
     const executor = useCommandExecutor(deps);
     const depsRef = useRef(deps);
@@ -205,7 +206,7 @@ export function useCommandController(deps: CommandControllerDeps) {
         executor.executeCommand(cmd, silent, isSystem, isHistorical, fromDrawer);
 
         if (!silent && !isSystem && recordEntry) {
-            recordEntry('ui', { event: 'executeCommand', cmd });
+            recordEntry('ui', { event: 'executeCommand', cmd }, { mask: d.isPasswordMode });
         }
     }, [executor.executeCommand]);
 
@@ -246,15 +247,9 @@ export function useCommandController(deps: CommandControllerDeps) {
             }
         }
 
-        if (isNoviceMode && finalCmd) {
-            const result = mudParser.parse(finalCmd);
-            if (result.finalOutput?.length) result.finalOutput.forEach(c => executeCommand(c));
-            else executeCommand(finalCmd);
-        } else {
-            executeCommand(finalCmd);
-        }
+        executeCommand(finalCmd);
 
-    }, [input, executeCommand, viewport, isNoviceMode, setInput, deps.mapperRef, deps.parley]);
+    }, [input, executeCommand, viewport, setInput, deps.mapperRef, deps.parley]);
 
     return { executeCommand, handleButtonClick, handleInputSwipe, handleSend, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd };
 }

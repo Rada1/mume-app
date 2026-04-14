@@ -66,8 +66,6 @@ export const useGameAudio = ({
         loadCommMessageSound,
         playCommMessageSound,
         stopCommMessageSound,
-        playTutorialExitSound,
-        loadTutorialExitSound,
         loadSpellSounds
 
 
@@ -125,8 +123,6 @@ export const useGameAudio = ({
         loadSpellSounds,
         playCommMessageSound,
         stopCommMessageSound,
-        playTutorialExitSound,
-        loadTutorialExitSound,
         loadCommMessageSound,
 
 

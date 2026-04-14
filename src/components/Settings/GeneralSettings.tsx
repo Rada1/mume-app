@@ -15,8 +15,6 @@ interface GeneralSettingsProps {
     setLoginPassword: (val: string) => void;
     isMmapperMode: boolean;
     setIsMmapperMode: (val: boolean) => void;
-    isNoviceMode: boolean;
-    setIsNoviceMode: (val: boolean) => void;
     theme: 'light' | 'dark';
     setTheme: (val: 'light' | 'dark') => void;
     bgImage: string;
@@ -32,14 +30,10 @@ interface GeneralSettingsProps {
     setDisableSmoothScroll: (val: boolean) => void;
     isImmersionMode: boolean;
     setIsImmersionMode: (val: boolean) => void;
-    isMobileBrevityMode: boolean;
-    setIsMobileBrevityMode: (val: boolean) => void;
     showRecordingIndicator: boolean;
     setShowRecordingIndicator: (val: boolean) => void;
     isHighlighterEnabled: boolean;
     setIsHighlighterEnabled: (val: boolean) => void;
-    isCrtEnabled: boolean;
-    setIsCrtEnabled: (val: boolean) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
     isSpectateMode: boolean;
@@ -67,8 +61,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setLoginPassword,
     isMmapperMode,
     setIsMmapperMode,
-    isNoviceMode,
-    setIsNoviceMode,
     theme,
     setTheme,
     bgImage,
@@ -84,14 +76,10 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setDisableSmoothScroll,
     isImmersionMode,
     setIsImmersionMode,
-    isMobileBrevityMode,
-    setIsMobileBrevityMode,
     showRecordingIndicator,
     setShowRecordingIndicator,
     isHighlighterEnabled,
     setIsHighlighterEnabled,
-    isCrtEnabled,
-    setIsCrtEnabled,
     isBloomEnabled,
     setIsBloomEnabled,
     isSpectateMode,
@@ -497,29 +485,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             <label className="setting-label" style={{ color: '#f472b6', fontWeight: 'bold', margin: 0 }}>Experiments</label>
                             <span style={{ fontSize: '0.65rem', background: '#ec4899', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>LAB</span>
                         </div>
-                        <div style={{ marginTop: '10px' }}>
-                            <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Mobile Brevity Mode</label>
-                            <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-                                Simplifies and condenses game text. Highly recommended for small screens.
-                            </div>
-                        </div>
                     </div>
-                    <button
-                        className={`setting-toggle ${isMobileBrevityMode ? 'active' : ''}`}
-                        onClick={() => setIsMobileBrevityMode(!isMobileBrevityMode)}
-                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isMobileBrevityMode ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
-                    >
-                        <div style={{
-                            width: '20px',
-                            height: '20px',
-                            background: '#fff',
-                            borderRadius: '50%',
-                            position: 'absolute',
-                            top: '2px',
-                            left: isMobileBrevityMode ? '22px' : '2px',
-                            transition: 'all 0.3s'
-                        }} />
-                    </button>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
@@ -648,75 +614,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
                     <div style={{ flex: '1 1 200px' }}>
-                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Novice Mode</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Smart command parsing for easier inputs.</div>
-                    </div>
-                    <button
-                        className={`setting-toggle ${isNoviceMode ? 'active' : ''}`}
-                        onClick={() => setIsNoviceMode(!isNoviceMode)}
-                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isNoviceMode ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
-                    >
-                        <div style={{
-                            width: '20px',
-                            height: '20px',
-                            background: '#fff',
-                            borderRadius: '50%',
-                            position: 'absolute',
-                            top: '2px',
-                            left: isNoviceMode ? '22px' : '2px',
-                            transition: 'all 0.3s'
-                        }} />
-                    </button>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
-                    <div style={{ flex: '1 1 200px' }}>
-                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>CRT Filter</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Retro scanlines and subtle screen flicker.</div>
-                    </div>
-                    <div
-                        className={`setting-toggle ${isCrtEnabled ? 'active' : ''}`}
-                        onClick={() => setIsCrtEnabled(!isCrtEnabled)}
-                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isCrtEnabled ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
-                    >
-                        <div style={{
-                            width: '20px',
-                            height: '20px',
-                            background: '#fff',
-                            borderRadius: '50%',
-                            position: 'absolute',
-                            top: '2px',
-                            left: isCrtEnabled ? '22px' : '2px',
-                            transition: 'all 0.3s'
-                        }} />
-                    </div>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
-                    <div style={{ flex: '1 1 200px' }}>
-                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Bloom Effect</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Soft glow on bright UI elements and text.</div>
-                    </div>
-                    <div
-                        className={`setting-toggle ${isBloomEnabled ? 'active' : ''}`}
-                        onClick={() => setIsBloomEnabled(!isBloomEnabled)}
-                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isBloomEnabled ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
-                    >
-                        <div style={{
-                            width: '20px',
-                            height: '20px',
-                            background: '#fff',
-                            borderRadius: '50%',
-                            position: 'absolute',
-                            top: '2px',
-                            left: isBloomEnabled ? '22px' : '2px',
-                            transition: 'all 0.3s'
-                        }} />
-                    </div>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
-                    <div style={{ flex: '1 1 200px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Spectate Mode</label>
                             <span style={{ fontSize: '0.65rem', background: '#ec4899', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>EXP</span>
@@ -740,29 +637,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                         }} />
                     </button>
                 </div>
-            </div>
-
-            <div className="setting-group" style={{ 
-                border: '1px solid var(--accent)', 
-                background: 'rgba(var(--accent-rgb), 0.05)', 
-                padding: '15px', 
-                borderRadius: '8px', 
-                marginBottom: '20px',
-                textAlign: 'center'
-            }}>
-                <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', display: 'block', marginBottom: '10px' }}>Tutorial & Onboarding</label>
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginBottom: '15px' }}>
-                    Need a refresher on how to use the client? You can replay the initial walkthrough at any time.
-                </p>
-                <button 
-                    className="btn-primary" 
-                    onClick={() => {
-                        (window as any).dispatchEvent(new CustomEvent('mume-replay-onboarding'));
-                    }}
-                    style={{ background: 'var(--accent)', color: '#000', border: 'none', padding: '8px 20px', borderRadius: '20px', fontWeight: 'bold', cursor: 'pointer' }}
-                >
-                    Replay Interactive Tutorial
-                </button>
             </div>
 
             <div className="setting-group">

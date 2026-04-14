@@ -81,13 +81,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const {
         roomPlayers, roomNpcs, roomItems,
         roomZone,
-        isNoviceMode, isNewbieMode, isSoundEnabled, characterClass, abilities,
+        isNewbieMode, isSoundEnabled, characterClass, abilities,
         lighting, lightningEnabled, weather, isFoggy,
         actions, actionsRef,
         inCombat, status, characterName,
         mood, spellSpeed, alertness, playerPosition,
         isImmersionMode,
-        isCrtEnabled,
         isBloomEnabled,
         fontFamily,
         handleTabClick,
@@ -202,23 +201,23 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const roomContext = useMemo(() => ({
         players: s.roomPlayers,
-        npcs: s.roomNpcs,
-        items: s.roomItems,
+        onAddNpc: s.onAddNpc,
+        onRemoveNpc: s.onRemoveNpc,
+        setIsPasswordMode: s.setIsPasswordMode,
         roomName: s.roomName,
         roomDesc: s.roomDesc
-    }), [s.roomPlayers, s.roomNpcs, s.roomItems, s.roomName, s.roomDesc]);
+    }), [s.roomPlayers, s.roomNpcs, s.roomItems, s.roomName, s.roomDesc, s.onAddNpc, s.onRemoveNpc, s.setIsPasswordMode]);
 
-    const sanitizedRecordEntry = useCallback((type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any) => {
-        const isSensitive = s.gameState !== 'playing';
+    const sanitizedRecordEntry = useCallback((type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any, options?: { mask?: boolean }) => {
+        const isSensitive = s.gameState !== 'playing' || s.isPasswordMode || options?.mask;
         recorder.recordEntry(type, data, { mask: isSensitive });
-    }, [s.gameState, recorder.recordEntry]);
+    }, [s.gameState, s.isPasswordMode, recorder.recordEntry]);
 
     const isAccountModeRef = useRef(s.gameState === 'account');
     useEffect(() => { isAccountModeRef.current = s.gameState === 'account'; }, [s.gameState]);
 
     const { messages, setMessages, addMessage, flushMessages, isCombatLine, clearLog } = useMessageLog(
         inCombatHookRef,
-        s.isMobileBrevityMode,
         roomContext,
         lastCommIdBySenderRef,
         isNewbieMode,
@@ -228,6 +227,19 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         v.setPendingMove,
         isAccountModeRef
     );
+
+    // --- Safety Sanatization ---
+    // Clear the log when transitioning from account login to playing the game.
+    // This ensures no password/character-select remnants persist into the game world.
+    const prevGameStateRef = useRef(s.gameState);
+    useEffect(() => {
+        if (prevGameStateRef.current === 'account' && s.gameState === 'playing') {
+            console.log('[Sanitization] State transition detected: account -> playing. Clearing log.');
+            clearLog();
+        }
+        prevGameStateRef.current = s.gameState;
+    }, [s.gameState, clearLog]);
+
     const addSystemMessage = useCallback((text: string) => addMessage('system', text, undefined, undefined, undefined, { textOnly: text, lower: text.toLowerCase() }, undefined, undefined, undefined, true), [addMessage]);
 
     // Keyword failure detection: watch last message for MUME "not found" patterns
@@ -262,8 +274,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         loadSpellSounds,
         playCommMessageSound,
         stopCommMessageSound,
-        playTutorialExitSound,
-        loadTutorialExitSound,
         loadCommMessageSound,
 
 
@@ -294,10 +304,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             loadHitImpactSound();
             loadSpellSounds();
             loadCommMessageSound();
-            loadTutorialExitSound();
         }
 
-    }, [initAudio, loadClickSound, loadMovementSound, loadDoorSound, loadHitImpactSound, loadSpellSounds, loadCommMessageSound, loadTutorialExitSound]);
+    }, [initAudio, loadClickSound, loadMovementSound, loadDoorSound, loadHitImpactSound, loadSpellSounds, loadCommMessageSound]);
 
 
 
@@ -339,7 +348,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setRoomName: s.setRoomName,
         setRoomDesc: s.setRoomDesc,
         setRoomZone: s.setRoomZone,
-        isMobileBrevityMode: s.isMobileBrevityMode,
         setRoomExits: s.setRoomExits,
         setDiscoveredItems: s.setDiscoveredItems,
         setBufferName: v.setBufferName,
@@ -382,7 +390,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const settings = useSettings({
         addMessage, audioCtxRef, initAudio,
         setButtons: btn.setButtons,
-        isNoviceMode, setIsNoviceMode: s.setIsNoviceMode,
         isSoundEnabled, setIsSoundEnabled: s.setIsSoundEnabled,
         abilities, setAbilities: s.setAbilities,
         characterClass, setCharacterClass: s.setCharacterClass,
@@ -394,15 +401,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         disable3dScroll: s.disable3dScroll, setDisable3dScroll: s.setDisable3dScroll,
         disableSmoothScroll: s.disableSmoothScroll, setDisableSmoothScroll: s.setDisableSmoothScroll,
         isImmersionMode: s.isImmersionMode, setIsImmersionMode: s.setIsImmersionMode,
-        isMobileBrevityMode: s.isMobileBrevityMode, setIsMobileBrevityMode: s.setIsMobileBrevityMode,
         showRecordingIndicator: s.showRecordingIndicator, setShowRecordingIndicator: s.setShowRecordingIndicator,
         showOrganicTerrain: s.showOrganicTerrain, setShowOrganicTerrain: s.setShowOrganicTerrain,
         inlineCategories: s.inlineCategories, setInlineCategories: s.setInlineCategories,
         isHighlighterEnabled: s.isHighlighterEnabled, setIsHighlighterEnabled: s.setIsHighlighterEnabled,
-        isCrtEnabled: s.isCrtEnabled, setIsCrtEnabled: s.setIsCrtEnabled,
         isBloomEnabled: s.isBloomEnabled, setIsBloomEnabled: s.setIsBloomEnabled,
         isTimestampEnabled: s.isTimestampEnabled, setIsTimestampEnabled: s.setIsTimestampEnabled,
-        autoSaveSessions: s.autoSaveSessions, setAutoSaveSessions: s.setAutoSaveSessions
+        autoSaveSessions: s.autoSaveSessions, setAutoSaveSessions: s.setAutoSaveSessions,
+        isNewbieMode: s.isNewbieMode, setIsNewbieMode: s.setIsNewbieMode
     });
 
     const [input, setInput] = useState("");
@@ -507,7 +513,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playIncantationSound,
         playCommMessageSound,
         stopIncantationSound,
-        playTutorialExitSound,
         playMagicExplosionSound,
         deathRoomId: v.deathRoomId,
         setDeathRoomId: v.setDeathRoomId,
@@ -586,6 +591,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             },
             onDisconnect: () => {
                 console.log('[GameContext] Disconnect! Clearing tactical buffers.');
+                s.setIsPasswordMode(false);
                 if (recorder.isRecording && s.autoSaveSessions) {
                     console.log('[Recorder] Disconnect detected. Auto-saving session...');
                     recorder.stopAndSave();
@@ -599,6 +605,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 s.setWhereLines([]);
                 s.setQuestLines([]);
                 s.setPracticeLines([]);
+            },
+            onEchoChange: (visible: boolean) => {
+                s.setIsPasswordMode(!visible);
             },
             addDiagnosticLog
         }
@@ -817,7 +826,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setCommandPreview: () => { },
         input,
         setInput,
-        isNoviceMode: s.isNoviceMode,
         isNewbieMode: s.isNewbieMode,
         status: s.status,
         target: v.target,
@@ -865,14 +873,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isSoundEnabled: s.isSoundEnabled,
         waiting: !!v.stats.conditions?.waiting,
         recordEntry: sanitizedRecordEntry,
-        clearLog,
         gameState: s.gameState,
-        sessionMode,
-        replayer: theaterReplayer,
+        isPasswordMode: s.isPasswordMode,
+        sessionMode: s.sessionMode,
+        replayer: s.replayer
     }), [
         telnet, addMessage, initAudio, mapperRef, teleportTargets, s.isDrawerCapture, s.isSilentCapture, s.captureStage,
         s.isWaitingForStats, s.isWaitingForEq, s.isWaitingForInv, s.isWaitingForInfo, s.setInventoryLines, s.setStatsLines, s.setEqLines,
-        input, setInput, isNoviceMode, s.isNewbieMode, s.status, v.target, v.setTarget, v.setPendingMove, parser.finalizeCapture, s.popoverState,
+        input, setInput, s.isNewbieMode, s.status, v.target, v.setTarget, v.setPendingMove, parser.finalizeCapture, s.popoverState,
         s.setPopoverState, s.setIsCharacterOpen, s.setIsStatsOpen, s.setIsEquipmentOpen, s.setIsInventoryOpen,
         s.setIsPlayersOpen, setIsSettingsOpen, setSettingsTab, s.setIsMapExpanded, s.setUI, viewport, triggerHaptic,
         btn, joystick, editor.wasDraggingRef, s.ui, s.actions, s.setActions, s.setActiveDragData, s.activeDragData,
@@ -924,8 +932,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         characterName: s.characterName,
         executeCommand,
         autoConnect: s.autoConnect,
-        hasSeenOnboarding: s.hasSeenOnboarding,
-        isNoviceMode,
         groupMembers: s.groupMembers,
         spatButtons,
         triggerSpitManual,
@@ -1059,7 +1065,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             playRandomSound: isReplaying ? () => {} : playRandomSound, 
             playDoorSound: isReplaying ? () => {} : playDoorSound, 
             setPlaySound, triggerHaptic: isReplaying ? () => {} : triggerHaptic, 
-            setTriggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, playTutorialExitSound,
+            setTriggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound,
 
             btn, joystick, editor, containerRef, viewport, env,
             initAudio,
@@ -1072,7 +1078,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             groupMembers: s.groupMembers, setGroupMembers: s.setGroupMembers,
             mumeEditState: s.mumeEditState, setMumeEditState: s.setMumeEditState,
             handleSaveMumeEdit,
-            hasSeenOnboarding: s.hasSeenOnboarding, setHasSeenOnboarding: s.setHasSeenOnboarding,
             mapperRef, ...settings, audioCtxRef,
             telnet, parser, practice, help,
             spatButtons, setSpatButtons,
@@ -1102,7 +1107,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         s, sessionMode, replayHUDState, isSpectateMode, spectateTarget, accentColor, teleportTargets,
         roomInfoFn, roomExitsFn, charVitalsFn, roomPlayersFn, roomNpcsFn, roomItemsFn,
         addPlayerFn, addNpcFn, removePlayerFn, removeNpcFn, opponentChangeFn,
-        playSound, triggerHaptic, playCommMessageSound, stopCommMessageSound, playTutorialExitSound,
+        playSound, triggerHaptic, playCommMessageSound, stopCommMessageSound,
         btn, joystick, editor, viewport, env, v,
         input, handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
         handleDragStart, handleDragEnd,
