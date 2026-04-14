@@ -482,6 +482,8 @@ export const useGameProviderState = () => {
         selectedCharacter: null,
         lastCreatedCharacterName: undefined
     });
+    const accountStageRef = useRef<import('../../types').AccountStage>('none');
+    useEffect(() => { accountStageRef.current = accountState.stage; }, [accountState.stage]);
 
     const handleSaveMumeEdit = useCallback((text: string) => {
         if (typeof window !== 'undefined' && (window as any).mumeTelnet?.sendGmcp) {
@@ -628,7 +630,8 @@ export const useGameProviderState = () => {
         spectateHealthStatus, setSpectateHealthStatus,
         spectateOpponentName, setSpectateOpponentName,
         spectateOpponentStatus, setSpectateOpponentStatus,
-        fontFamily, setFontFamily
+        fontFamily, setFontFamily,
+        accountStageRef
     }), [
         effectiveInCombat, status, gameState, isPasswordMode, characterName, mood, spellSpeed, alertness, playerPosition, isRiding,
         isNewbieMode, setIsNewbieMode, isSoundEnabled, isMmapperMode, theme, showControls,
@@ -646,7 +649,7 @@ export const useGameProviderState = () => {
         isTimestampEnabled, setIsTimestampEnabled,
         spectatePosition, spectateWaiting, spectateRoomName, spectateInCombat, spectateCharacterName,
         spectateStats, spectateHealthStatus, spectateOpponentName, spectateOpponentStatus,
-        opponentName, opponentId, fontFamily, setFontFamily
+        opponentName, opponentId, fontFamily, setFontFamily, accountStageRef
     ]);
 
 

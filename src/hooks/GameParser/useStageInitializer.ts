@@ -32,6 +32,7 @@ interface StageInitializerDeps {
     tempWhereRef: React.MutableRefObject<DrawerLine[]>;
     help: any;
     finalizeCapture: () => void;
+    isMobile: boolean;
 }
 
 export const useStageInitializer = (deps: StageInitializerDeps) => {
@@ -42,7 +43,8 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         setScoreLines, setStatsLines, setInfoLines,
         tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef,
         help,
-        finalizeCapture
+        finalizeCapture,
+        isMobile
     } = deps;
 
     const startStage = (stage: CaptureStage) => {
@@ -236,7 +238,9 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         ) {
             if (captureStage.current === 'help') return;
             if (captureStage.current !== 'none') finalizeCapture();
-            startStage('help');
+            if (isMobile) {
+                startStage('help');
+            }
         }
     }, [
         captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,

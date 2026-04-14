@@ -241,7 +241,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                 executeCommand={executeCommand}
                             />
                         )}
-                        {ui.drawer === 'inventory' && (
+                        {(ui.drawer === 'inventory' || ui.drawer === 'equipment') && (
                             <InventoryDrawer
                                 isOpen={true}
                                 onClose={() => {}}
@@ -284,8 +284,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         <span className="tab-text">Players</span>
                     </div>
                     <div
-                        className={`desktop-edge-tab right ${ui.drawer === 'inventory' ? 'active' : ''}`}
-                        onClick={() => { triggerHaptic(15); handleTabClick('inventory'); }}
+                        className={`desktop-edge-tab right ${ui.drawer === 'equipment' || ui.drawer === 'inventory' ? 'active' : ''}`}
+                        onClick={() => { triggerHaptic(15); handleTabClick('equipment'); }}
                     >
                         <Shield className="tab-icon" />
                         <span className="tab-text">Gear</span>

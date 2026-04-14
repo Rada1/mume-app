@@ -125,6 +125,7 @@
     min-height: 0;                 /* Dense terminal logic */
     background: transparent;       /* Standard game text is now high-contrast transparent */
     position: relative;
+    pointer-events: auto !important;
 
     transition: none !important;
     transform: none !important;
@@ -242,6 +243,7 @@
     /* Container must be 1 to allow children to be 1 */
     color: var(--text-primary);
     transition: filter 0.3s ease, color 0.2s ease;
+    pointer-events: auto !important;
 }
 
 /* Dim everything in combat unless it's an urgent line or combat output */

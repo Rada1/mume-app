@@ -15,7 +15,7 @@ import { getCategoryForName, getGlowColorForCategory } from '../../utils/categor
 export const PopoverManager: React.FC<PopoverManagerProps> = ({
     popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, roomNpcs, roomItems, inventoryLines, eqLines, setSettings, inlineCategories, setInlineCategories, favorites, setFavorites, parley, setParley, whoList,
     isMendingMode, setIsMendingMode, setMendingTarget, setIsEquipmentOpen, setIsInventoryOpen, refreshLogHighlights, practice, shop, openKeywordEdit,
-    entities, registerEntity, selectedObjectIds, clearObjectSelection, keywordOverrides
+    entities, registerEntity, selectedObjectIds, clearObjectSelection, keywordOverrides, accountCharacters, accountState, setAccountState
 }) => {
 
     useLayoutEffect(() => {
@@ -281,7 +281,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     themeColor={themeColor}
                 />
             )}
-            {(popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target' || popoverState.type === 'give-target-select' || popoverState.type === 'menu' || !popoverState.type) && (
+            {(popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target' || popoverState.type === 'give-target-select' || popoverState.type === 'menu' || popoverState.type === 'character-select' || !popoverState.type) && (
                 <StandardMenuPopover
                     popoverState={popoverState}
                     buttons={buttons}
@@ -316,6 +316,9 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     selectedObjectIds={selectedObjectIds}
                     clearObjectSelection={clearObjectSelection}
                     keywordOverrides={keywordOverrides}
+                    accountCharacters={accountCharacters}
+                    accountState={accountState}
+                    setAccountState={setAccountState}
                 />            )}
         </div>
     );

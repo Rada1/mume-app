@@ -400,7 +400,6 @@
 /* Ensure the message log container stays focused and bright */
 .app-container.in-combat .message-log-container {
     filter: none !important;
-    z-index: 10;
 }
 
 .input-main-container {
@@ -667,7 +666,7 @@
 
 /* Ensure the message log container allows filters for children */
 .app-container.in-combat .message-log-container {
-    z-index: 10;
+    filter: none;
 }
 
 /* Non-combat messages in the log - keeping at full opacity/color per user request */
@@ -688,12 +687,7 @@
     touch-action: manipulation !important;
 }
 
-/* --- Critical Desktop Interaction Isolation --- */
-.app-container.is-desktop .message-log-container,
-.app-container.is-desktop .message,
-.app-container.is-desktop .message-content {
-    pointer-events: auto !important;
-}
+
 
 /* Forces inline buttons to capture events even if buried under transparent wrappers */
 .app-container .inline-btn,

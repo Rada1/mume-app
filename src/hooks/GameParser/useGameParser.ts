@@ -50,7 +50,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         triggerXpTicker, triggerHitFlash, triggerOppHitFlash, pendingGmcpCommRef, lastCommIdBySenderRef, groupMembers,
         shop, practice, registerEntity, setEntities, setPlayerPosition,
         isCharacterOpen, isStatsOpen,
-        accountState, setAccountState, setGameState, setMessages,
+        accountState, setAccountState, accountStageRef, setGameState, setMessages,
         isSpectateMode,
         setSpectateStats, setSpectateHealthStatus, setSpectateOpponentName, setSpectateOpponentStatus,
         setSpectatePosition, setSpectateWaiting, setSpectateRoomName, setSpectateInCombat, setSpectateCharacterName,
@@ -154,7 +154,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, 
         setScoreLines, setStatsLines, setInfoLines,
         tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef,
-        finalizeCapture, help
+        finalizeCapture, help,
+        isMobile: deps.isMobile
     });
 
 
@@ -170,6 +171,7 @@ export function useGameParser(deps: UseGameParserDeps) {
     const { parseAccountLine } = useAccountParser({
         accountState,
         setAccountState,
+        accountStageRef,
         gameState: deps.gameState,
         setGameState,
         sendCommand: (cmd: string) => executeCommandRef.current?.(cmd),
@@ -480,7 +482,6 @@ export function useGameParser(deps: UseGameParserDeps) {
                 if (textOnly.length > 0) tempEqRef.current.push(...createLines(cleanLine, textOnly, lower, 'equipmentlist'));
             } else if (captureStage.current === 'practice') {
                 if (textOnly.trim().length > 0) {
-                    console.log(`[PracticeParser] Capturing practice row: "${textOnly.substring(0, 30)}..."`);
                     const skill = practice.parsePracticeLine(textOnly);
                     const practiceSkill = (typeof skill === 'object' && skill !== null && !('sessionsLeft' in skill)) ? skill : undefined;
                     tempPracticeRef.current.push({ 
@@ -558,10 +559,8 @@ export function useGameParser(deps: UseGameParserDeps) {
                     return;
                 }
 
-                console.log(`[Parser] Capturing to ${bufferName}: "${textOnly.substring(0, 30)}..."`);
                 targetRef.current.push({ id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) });
             } else if (captureStage.current === 'info') {
-                console.log(`[Parser] Capturing to infoRef: "${textOnly.substring(0, 30)}..."`);
                 tempInfoRef.current.push({ id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) });
             } else if (captureStage.current === 'help') {
                 deps.help.parseHelpLine(cleanLine);

@@ -33,13 +33,13 @@ export const useUIState = (
         };
     });
 
-    const handleTabClick = useCallback((drawer: 'stats' | 'character' | 'inventory' | 'players', initialTab?: 'info' | 'practice' | 'quests') => {
+    const handleTabClick = useCallback((drawer: 'stats' | 'character' | 'inventory' | 'players' | 'equipment', initialTab?: 'info' | 'practice' | 'quests') => {
         executeCommandRef.current?.('click-sound', true, true);
         
         let hasData = false;
         if (drawer === 'stats') hasData = dataCounts.stats > 0;
         else if (drawer === 'character') hasData = dataCounts.info > 0;
-        else if (drawer === 'inventory') hasData = dataCounts.inventory > 0;
+        else if (drawer === 'inventory' || drawer === 'equipment') hasData = dataCounts.inventory > 0;
         else if (drawer === 'players') hasData = dataCounts.players > 0;
 
         const refreshData = () => {
@@ -51,7 +51,7 @@ export const useUIState = (
                 executeCommandRef.current?.('info', true, true, true, true);
                 setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 100);
                 setTimeout(() => executeCommandRef.current?.('practice', true, true, true, true), 200);
-            } else if (drawer === 'inventory') {
+            } else if (drawer === 'inventory' || drawer === 'equipment') {
                 executeCommandRef.current?.('eq', true, true, true, true);
                 setTimeout(() => executeCommandRef.current?.('inv', true, true, true, true), 100);
             } else if (drawer === 'players') {
@@ -109,7 +109,7 @@ export const useUIState = (
     }, [handleTabClick]);
 
     const setIsEquipmentOpen = useCallback((open: boolean) => {
-        if (open) handleTabClick('inventory'); // Equipment is now part of inventory drawer
+        if (open) handleTabClick('equipment'); 
         else setUI(prev => ({ ...prev, drawer: 'none', mapExpanded: window.innerWidth <= 1024 ? true : prev.mapExpanded }));
     }, [handleTabClick]);
 

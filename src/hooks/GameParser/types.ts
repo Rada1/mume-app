@@ -74,6 +74,7 @@ export interface UseGameParserDeps {
     setDeathRoomId: (val: string | null) => void;
     accountState: import('../../types').AccountState;
     setAccountState: React.Dispatch<React.SetStateAction<import('../../types').AccountState>>;
+    accountStageRef: React.MutableRefObject<import('../../types').AccountStage>;
     setGameState: React.Dispatch<React.SetStateAction<import('../../types').GameState>>;
     activePrompt: string;
     gameState: import('../../types').GameState;
@@ -114,4 +115,5 @@ export interface UseGameParserDeps {
     roomPlayers: import('../../types').GmcpOccupant[];
     sessionMode?: 'live' | 'replay';
     help: any;
+    setIsPasswordMode: (val: boolean) => void;
 }

@@ -363,12 +363,31 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
     }, [viewport, scrollContainerRef]);
 
-    const handleWheelInternal = useCallback((e: React.WheelEvent) => {
-        if (onWheel) onWheel(e);
-        if (viewport.isLockedToBottomRef.current) {
-            viewport.isLockedToBottomRef.current = false;
-        }
-    }, [onWheel, viewport]);
+    const onWheelRef = useRef(onWheel);
+    useEffect(() => { onWheelRef.current = onWheel; }, [onWheel]);
+
+    useEffect(() => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const handleWheelInternal = (e: WheelEvent) => {
+            // Manually drive the scroll so wheel works regardless of what the
+            // wheel target is (text node, span, etc). Browser's native
+            // scroll-chain occasionally fails to reach this container from
+            // deeply-nested text nodes in the virtualizer.
+            if (e.ctrlKey) return; // let browser handle zoom
+            e.preventDefault();
+            container.scrollTop += e.deltaY;
+
+            if (onWheelRef.current) onWheelRef.current(e as any);
+            if (viewport.isLockedToBottomRef.current) {
+                viewport.isLockedToBottomRef.current = false;
+            }
+        };
+
+        container.addEventListener('wheel', handleWheelInternal, { passive: false });
+        return () => container.removeEventListener('wheel', handleWheelInternal);
+    }, [scrollContainerRef, viewport]);
 
     const messagesRef = React.useRef(displayMessages);
     messagesRef.current = displayMessages;
@@ -475,7 +494,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
                 onMouseUp={handlePointerUpInternal as any}
                 onDragStart={onDragStart}
                 onDragEnd={onDragEnd}
-                onWheel={handleWheelInternal}
             >
 
                 <div

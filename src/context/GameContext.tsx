@@ -229,16 +229,15 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     );
 
     // --- Safety Sanatization ---
-    // Clear the log when transitioning from account login to playing the game.
-    // This ensures no password/character-select remnants persist into the game world.
-    const prevGameStateRef = useRef(s.gameState);
-    useEffect(() => {
-        if (prevGameStateRef.current === 'account' && s.gameState === 'playing') {
-            console.log('[Sanitization] State transition detected: account -> playing. Clearing log.');
-            clearLog();
-        }
-        prevGameStateRef.current = s.gameState;
-    }, [s.gameState, clearLog]);
+    // [Mod] Disabled: don't clear the previous log data when logging in
+    // const prevGameStateRef = useRef(s.gameState);
+    // useEffect(() => {
+    //     if (prevGameStateRef.current === 'account' && s.gameState === 'playing') {
+    //         console.log('[Sanitization] State transition detected: account -> playing. Clearing log.');
+    //         clearLog();
+    //     }
+    //     prevGameStateRef.current = s.gameState;
+    // }, [s.gameState, clearLog]);
 
     const addSystemMessage = useCallback((text: string) => addMessage('system', text, undefined, undefined, undefined, { textOnly: text, lower: text.toLowerCase() }, undefined, undefined, undefined, true), [addMessage]);
 
@@ -518,6 +517,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setDeathRoomId: v.setDeathRoomId,
         accountState: v.accountState,
         setAccountState: v.setAccountState,
+        accountStageRef: s.accountStageRef,
         setGameState: s.setGameState,
         activePrompt: v.activePrompt,
         gameState: s.gameState,
@@ -537,7 +537,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         inlineCategories: s.inlineCategories,
         spectateStats: v.spectateStats,
         characterName: s.characterName,
-        sessionMode: sessionMode
+        sessionMode: sessionMode,
+        setIsPasswordMode: s.setIsPasswordMode
     });
 
 
@@ -876,7 +877,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         gameState: s.gameState,
         isPasswordMode: s.isPasswordMode,
         sessionMode: s.sessionMode,
-        replayer: s.replayer
+        replayer: s.replayer,
+        accountState: v.accountState,
+        setAccountState: v.setAccountState,
+        accountStageRef: s.accountStageRef
     }), [
         telnet, addMessage, initAudio, mapperRef, teleportTargets, s.isDrawerCapture, s.isSilentCapture, s.captureStage,
         s.isWaitingForStats, s.isWaitingForEq, s.isWaitingForInv, s.isWaitingForInfo, s.setInventoryLines, s.setStatsLines, s.setEqLines,
@@ -888,7 +892,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         keywordOverrides, openKeywordEdit, lastCommandContextRef, s.entities, s.applyOptimisticChange,
         s.selectedObjectIds, s.toggleObjectSelection, s.clearObjectSelection, playClickSound, s.isSoundEnabled,
         v.stats.conditions?.waiting, sanitizedRecordEntry, v.activePrompt, clearLog, s.gameState,
-        sessionMode, theaterReplayer
+        sessionMode, theaterReplayer, v.accountState, v.setAccountState, s.accountStageRef
     ]);
 
     const controller = useCommandController(controllerDeps);

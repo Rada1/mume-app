@@ -109,6 +109,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         keywordFailureBanner, setKeywordFailureBanner,
         gameState,
         accountState,
+        setAccountState,
         viewport,
         fontFamily,
         setFontFamily,
@@ -143,26 +144,17 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
             if (popoverRef.current && popoverRef.current.contains(target)) return;
             if (target instanceof HTMLElement && target.closest('.inline-btn')) return;
 
-
-            console.log('[DEBUG] handleClickOutside triggered', { 
-                targetTag: (target as HTMLElement).tagName,
-                targetClass: (target as HTMLElement).className,
-                popoverState: !!popoverState
-            });
-
             // Dial menus use a different overlay logic, but we still need to prevent execution
             if (popoverState.menuDisplay === 'dial') {
                 const dialOverlay = document.querySelector('.dial-menu-overlay');
                 const dialCenter = document.querySelector('.dial-menu-center');
                 if (dialCenter && dialCenter.contains(target)) return;
                 if (dialOverlay && !dialOverlay.contains(target)) {
-                    console.log('[DEBUG] Closing Dial Popover');
                     (window as any).popoverIsClosing = true;
                     setPopoverState(null);
                     setTimeout(() => { (window as any).popoverIsClosing = false; }, 300);
                 }
             } else {
-                console.log('[DEBUG] Closing Popover (Standard)');
                 (window as any).popoverIsClosing = true;
                 setPopoverState(null);
                 setTimeout(() => { (window as any).popoverIsClosing = false; }, 300);
@@ -173,7 +165,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         return () => window.removeEventListener('pointerdown', handleClickOutside, { capture: true });
     }, [popoverState, setPopoverState]);
 
-    console.log('[DEBUG] ModalsLayer Render', { gameState, accountStage: accountState?.stage });
 
     return (
         <>
@@ -334,6 +325,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 selectedObjectIds={selectedObjectIds}
                 clearObjectSelection={clearObjectSelection}
                 keywordOverrides={keywordOverrides}
+                accountState={accountState}
+                setAccountState={setAccountState}
             />
 
             <DrawerManager

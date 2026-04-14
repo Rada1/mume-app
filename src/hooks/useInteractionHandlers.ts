@@ -1,4 +1,4 @@
-import { CaptureStage, CustomButton, MessageType } from '../types';
+import { CaptureStage, CustomButton, MessageType, AccountState } from '../types';
 
 export interface InteractionDeps {
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean, fromUi?: boolean }) => void;
@@ -69,6 +69,7 @@ export interface InteractionDeps {
     playClickSound: () => void;
     isSoundEnabled: boolean;
     initAudio: () => void;
+    setAccountState: React.Dispatch<React.SetStateAction<AccountState>>;
 }
 
 

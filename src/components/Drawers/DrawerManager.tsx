@@ -208,8 +208,8 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 
 
                     <InventoryDrawer
-                        isOpen={ui.drawer === 'inventory'}
-                        isPeeking={ui.isDrawerPeeking && ui.peekingDrawer === 'inventory'}
+                        isOpen={ui.drawer === 'inventory' || ui.drawer === 'equipment'}
+                        isPeeking={ui.isDrawerPeeking && (ui.peekingDrawer === 'inventory' || ui.peekingDrawer === 'equipment')}
                         onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none', peekingSource: 'none' })); }}
                         inventoryLines={inventoryLines}
                         eqLines={eqLines}

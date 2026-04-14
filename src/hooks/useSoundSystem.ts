@@ -35,7 +35,6 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
 
     const playSound = useCallback((buffer: AudioBuffer, options?: { pitch?: number, reverse?: boolean, volume?: number }) => {
         if (!audioCtxRef.current || !isSoundEnabled) {
-            console.log('[Sound] Play bypassed:', { ctx: !!audioCtxRef.current, enabled: isSoundEnabled });
             return;
         }
         const ctx = audioCtxRef.current;
@@ -66,14 +65,12 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
             const gainNode = ctx.createGain();
             gainNode.gain.value = options?.volume ?? 1.0;
 
-            console.log('[Sound] Playing:', { pitch: basePitch + jitter, reverse: !!options?.reverse, volume: gainNode.gain.value });
             
             source.connect(gainNode);
             gainNode.connect(ctx.destination);
             source.start(0);
         };
         if (ctx.state === 'suspended') {
-            console.log('[Sound] Resuming context...');
             ctx.resume().then(doPlay).catch((err) => { console.error('[Sound] Resume failed:', err); });
         } else {
             doPlay();
@@ -101,7 +98,6 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         if (!audioCtxRef.current || !isSoundEnabled) return;
 
         if (!movementSoundRef.current) {
-            console.log('[Sound] Movement sound not loaded, loading...');
             if (!audioCtxRef.current) initAudio();
             if (!audioCtxRef.current) return;
             try {
@@ -110,7 +106,6 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
                 const arrayBuffer = await response.arrayBuffer();
                 const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
                 movementSoundRef.current = audioBuffer;
-                console.log('[Sound] Movement sound loaded');
             } catch (err) {
                 console.error('[Sound] Failed to load movement sound:', err);
                 return;
@@ -120,15 +115,12 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         const buffer = movementSoundRef.current;
         if (!buffer) return;
 
-        console.log('[Sound] playMovementSound:', { isRiding });
 
         if (isRiding) {
             // "Clip"
-            console.log('[Sound] Riding: Clip (down-pitch)');
             playSound(buffer, { pitch: 0.85 });
             // "Clop"
             setTimeout(() => {
-                console.log('[Sound] Riding: Clop (up-pitch)');
                 playSound(buffer, { pitch: 1.15 });
             }, 110);
         } else {
@@ -160,27 +152,21 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
     }, []);
 
     const playDoorSound = useCallback(async (isOpen: boolean) => {
-        console.log('[Sound] playDoorSound called:', isOpen);
         if (doorSoundRef.current) {
             playSound(doorSoundRef.current, { pitch: isOpen ? 1.0 : 0.8, volume: 3.0 });
         } else {
-            console.log('[Sound] Loading door1.wav...');
             // Load and then play if successful
             if (!audioCtxRef.current) {
-                console.log('[Sound] No AudioContext yet, initializing...');
                 initAudio();
             }
             if (!audioCtxRef.current) {
-                console.log('[Sound] Still no AudioContext after init, aborting load');
                 return;
             }
             try {
                 const response = await fetch('/assets/Sounds/Sound effects/door1.wav');
-                console.log('[Sound] Fetch door1.wav status:', response.status);
                 const arrayBuffer = await response.arrayBuffer();
                 const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
                 doorSoundRef.current = audioBuffer;
-                console.log('[Sound] door1.wav loaded and ready');
                 playSound(audioBuffer, { pitch: isOpen ? 1.0 : 0.8, volume: 3.0 });
             } catch (err) {
                 console.error('[Sound] Failed to load door sound:', err);

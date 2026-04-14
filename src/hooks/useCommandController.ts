@@ -82,10 +82,11 @@ export interface CommandControllerDeps {
     waiting?: boolean;
     recordEntry?: (type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any, options?: { mask?: boolean }) => void;
     clearLog: () => void;
-    gameState: import('../types').GameState;
-    sessionMode: import('../types').SessionMode;
     replayer: any;
     isPasswordMode: boolean;
+    accountState: import('../types').AccountState;
+    setAccountState: React.Dispatch<React.SetStateAction<import('../types').AccountState>>;
+    accountStageRef: React.MutableRefObject<import('../types').AccountStage>;
 }
 
 
@@ -98,7 +99,9 @@ export function useCommandController(deps: CommandControllerDeps) {
 
     const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, isHistorical = false, fromDrawer = false, options?: { shouldFocus?: boolean, fromUi?: boolean }) => {
         const d = depsRef.current;
-        const { viewport, waiting, manualCancelRef, isSoundEnabled, playClickSound, recordEntry, practice, shop } = d;
+        const { viewport, waiting, manualCancelRef, isSoundEnabled, playClickSound, recordEntry, practice, shop, gameState } = d;
+
+        const effectiveSilent = silent || gameState === 'account';
 
         // Manual cancel detection
         if (cmd === '' && waiting && manualCancelRef) {
@@ -149,7 +152,7 @@ export function useCommandController(deps: CommandControllerDeps) {
             if (options?.fromUi) practice.setIsUiRequested(true);
             
             // Silent system practice (e.g. initial connect sync)
-            if (silent && isSystem) practice.setSilentSyncPending(true);
+            if (isSystem && effectiveSilent) practice.setSilentSyncPending(true);
         } else if (cmd.toLowerCase().startsWith('list') || cmd.toLowerCase().startsWith('browse')) {
             if (options?.fromUi) shop.setIsUiRequested(true);
         } else if (cmd.toLowerCase() === 'help' || cmd.toLowerCase().startsWith('help ')) {
@@ -157,7 +160,7 @@ export function useCommandController(deps: CommandControllerDeps) {
         }
 
         // --- Theater Mode Search Interception ---
-        if (d.sessionMode === 'replay' && !silent && !isSystem) {
+        if (d.sessionMode === 'replay' && !effectiveSilent && !isSystem) {
             const keyword = cmd.trim().toLowerCase();
             if (keyword && d.replayer?.log) {
                 // Find next occurrence in replayer log entries (Rx only)
@@ -203,9 +206,9 @@ export function useCommandController(deps: CommandControllerDeps) {
             return;
         }
 
-        executor.executeCommand(cmd, silent, isSystem, isHistorical, fromDrawer);
+        executor.executeCommand(cmd, effectiveSilent, isSystem, isHistorical, fromDrawer);
 
-        if (!silent && !isSystem && recordEntry) {
+        if (!effectiveSilent && !isSystem && recordEntry) {
             recordEntry('ui', { event: 'executeCommand', cmd }, { mask: d.isPasswordMode });
         }
     }, [executor.executeCommand]);
@@ -226,6 +229,10 @@ export function useCommandController(deps: CommandControllerDeps) {
         clearObjectSelection: deps.clearObjectSelection,
         playClickSound: deps.playClickSound,
         isSoundEnabled: deps.isSoundEnabled,
+        initAudio: deps.initAudio,
+        accountState: deps.accountState,
+        setAccountState: deps.setAccountState,
+        accountStageRef: deps.accountStageRef,
     });
 
 

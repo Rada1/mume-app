@@ -36,7 +36,6 @@ export const ReplayHUD: React.FC = () => {
         seek(targetTime);
     };
 
-    console.log('[ReplayHUD] Rendering, duration:', state.duration, 'currentTime:', state.currentTime, 'isVisible:', state.isVisible);
     
     if (!state.duration || !state.isVisible) {
         return null;

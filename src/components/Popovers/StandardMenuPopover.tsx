@@ -42,6 +42,9 @@ interface StandardMenuProps {
     registerEntity: (id: string, name: string, location: import('../../types').EntityLocation, category?: string) => import('../../types').GameEntity;
     selectedObjectIds: Set<string>;
     clearObjectSelection: () => void;
+    accountCharacters?: import('../../types').CharacterEntry[];
+    accountState?: import('../../types').AccountState;
+    setAccountState?: React.Dispatch<React.SetStateAction<import('../../types').AccountState>>;
 }
 
 export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
@@ -50,7 +53,8 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
     keywordOverrides,
     parley, setParley, whoList, executeCommand, inlineCategories, setInlineCategories,
     isMendingMode, setIsMendingMode, setMendingTarget, setIsEquipmentOpen, setIsInventoryOpen, refreshLogHighlights, triggerHaptic, openKeywordEdit, roomPlayers, roomNpcs, roomItems,
-    entities, selectedObjectIds, clearObjectSelection
+    entities, selectedObjectIds, clearObjectSelection,
+    accountCharacters, accountState, setAccountState
 }) => {
     const [isChoosingCategory, setIsChoosingCategory] = React.useState(false);
     const [selectedCatId, setSelectedCatId] = React.useState<string | null>(null);
@@ -210,6 +214,103 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
             </div>
         );
     };
+    
+    // --- Logic Section: Automated Character Gathering ---
+    React.useEffect(() => {
+        if (popoverState.setId === 'play-character-select' && 
+            (!accountState?.characters || accountState.characters.length === 0) && 
+            !accountState?.isGathering) {
+            
+            console.log('[Account] Character list empty, triggering silent list...');
+            setAccountState?.(prev => ({ ...prev, isGathering: true }));
+            executeCommand('list', true, true);
+        }
+    }, [popoverState.setId, accountState?.characters?.length, accountState?.isGathering, executeCommand, setAccountState]);
+
+    // --- SPECIAL RENDERING: Character Selection ---
+    if (popoverState.setId === 'play-character-select') {
+        const chars = accountState?.characters || [];
+        const isGathering = accountState?.isGathering;
+
+        return (
+            <>
+                <div className="popover-header" style={{
+                    padding: '12px 16px',
+                    borderBottom: '1px solid rgba(250, 204, 21, 0.2)',
+                    fontSize: '0.9rem',
+                    fontWeight: 800,
+                    color: '#facc15',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                }}>
+                    <span>Select Character</span>
+                    {!isGathering && (
+                        <span 
+                            onClick={() => {
+                                setAccountState?.(prev => ({ ...prev, isGathering: true, characters: [] }));
+                                executeCommand('list', true, true);
+                            }}
+                            style={{ fontSize: '0.7rem', opacity: 0.6, cursor: 'pointer', letterSpacing: 'normal' }}
+                        >
+                            REFRESH
+                        </span>
+                    )}
+                </div>
+                <div className="popover-items-container" style={{ maxHeight: '60vh', overflowY: 'auto', minWidth: '240px' }}>
+                    {isGathering ? (
+                        <div style={{ padding: '32px 24px', textAlign: 'center' }}>
+                            <div className="discovery-spinner" style={{ 
+                                width: '24px', height: '24px', border: '2px solid rgba(250, 204, 21, 0.2)', 
+                                borderTopColor: '#facc15', borderRadius: '50%', margin: '0 auto 12px',
+                                animation: 'spin 0.8s linear infinite'
+                            }} />
+                            <div style={{ fontSize: '0.85rem', color: '#fff', opacity: 0.8 }}>Gathering characters...</div>
+                            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                        </div>
+                    ) : (chars.length === 0) ? (
+                        <div style={{ padding: '24px', textAlign: 'center', opacity: 0.6, fontSize: '0.85rem', color: '#fff' }}>
+                            No characters found.<br/>
+                            <span style={{ fontSize: '0.75rem', opacity: 0.8 }}>Try using the refresh button.</span>
+                        </div>
+                    ) : (
+                        chars.map((char) => (
+                            <div
+                                key={char.name}
+                                className="popover-item"
+                                data-menu-item="true"
+                                onClick={() => {
+                                    triggerHaptic?.(20);
+                                    executeCommand(`play ${char.name}`);
+                                    setPopoverState(null);
+                                }}
+                                style={{
+                                    padding: '12px 16px',
+                                    borderBottom: '1px solid rgba(255,255,255,0.05)',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    gap: '20px',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <span style={{ fontSize: '1rem', fontWeight: 700, color: '#fff' }}>{char.name}</span>
+                                    <span style={{ fontSize: '0.75rem', opacity: 0.6 }}>Level {char.level} {char.race}</span>
+                                </div>
+                                <div style={{ textAlign: 'right', fontSize: '0.7rem' }}>
+                                    <div style={{ opacity: 0.6 }}>{char.logon}</div>
+                                    <div style={{ color: '#facc15', marginTop: '4px' }}>{char.area}</div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+            </>
+        );
+    }
 
     const favoritedButtons = buttons.filter(b => {
         // Use the centralized validator

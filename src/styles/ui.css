@@ -275,3 +275,85 @@
     z-index: 1000 !important;
     animation: drop-pulse-strong 1.5s infinite cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
+
+/* --- Stat Editor Redesign --- */
+.stat-editor-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 10px 0;
+    justify-content: flex-start;
+}
+
+.stat-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 10px 14px;
+    min-width: 90px;
+    transition: all 0.2s ease;
+}
+
+.stat-block:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-dim, #aaaaaa);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+    opacity: 0.8;
+}
+
+.stat-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Menlo', monospace;
+    font-size: 1.2rem;
+    color: var(--ansi-yellow, #facc15);
+}
+
+.stat-value {
+    font-weight: 800;
+    min-width: 2ch;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
+}
+
+.stat-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--ansi-yellow, #facc15);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.3rem;
+    font-weight: 800;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    background: transparent;
+    color: var(--ansi-yellow, #facc15);
+}
+
+.stat-btn:hover {
+    background: rgba(250, 204, 21, 0.1);
+    box-shadow: 0 0 8px rgba(250, 204, 21, 0.2);
+}
+
+.stat-btn:active {
+    background: var(--ansi-yellow, #facc15);
+    color: #000;
+    transform: scale(0.9);
+}

@@ -112,6 +112,8 @@ export const useMessageHighlighter = (
             return originalHtml;
         }
 
+        const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
         // --- 0. Rule: No highlighting for prompts in spectate mode ---
         if (type === 'prompt' && spectateCharacterName) {
             return originalHtml;
@@ -125,16 +127,70 @@ export const useMessageHighlighter = (
             const playerGlow = getGlowColorForCategory('inlineplayer');
             const buttonId = `auto-${name}`;
             const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'inlineplayer');
-            const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             
             return `<span class="inline-btn auto-occupant pc-highlighter${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(name)}" data-action="menu" data-menu-display="list" style="--glow-color: ${playerGlow}; color: var(--glow-color); font-weight: 800">${originalHtml}</span>`;
+        }
+
+        // --- 1.2. Rule: Account Selection Buttons (Whole-Line Wrapper) ---
+        // We wrap the ENTIRE HTML for the line to avoid issues where ANSI color spans
+        // split the text into multiple nodes (e.g., green digits vs white choice text).
+        if (type === 'account-selection' || type === 'account-selection-edit') {
+            const rawText = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
+            const numMatch = rawText.match(/\((\d+)\)/);
+            const num = numMatch ? numMatch[1] : '';
+            const accountGlow = '#facc15'; // MUME yellow
+            const isEdit = type === 'account-selection-edit' || rawText.includes('Edit');
+            const editAttr = isEdit ? 'data-account-stage="stat-editing"' : '';
+            
+            return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="${esc(num)}" data-action="command" ${editAttr} style="--glow-color: ${accountGlow}; color: inherit; font-weight: 800; cursor: pointer; display: inline-block; width: 100%">${originalHtml}</span>`;
+        }
+
+        // --- 1.3. Rule: Account Stat Edit Buttons (+/-) ---
+        // Redesign: Transmute the standard stat line into a collection of styled blocks.
+        if (type === 'account-stat-edit') {
+            const statRegex = /([a-z]{3}):\s*(?:<[^>]+>)*(\d+)(?:<[^>]+>)*/gi;
+            const accountGlow = '#facc15';
+            
+            const blocks = originalHtml.replace(statRegex, (m, stat, valStr) => {
+                const val = parseInt(valStr);
+                const plusCmd = `${stat} ${val + 1}`;
+                const minusCmd = `${stat} ${val - 1}`;
+                
+                return `
+                    <div class="stat-block">
+                        <div class="stat-label">${stat}:</div>
+                        <div class="stat-controls">
+                            <span class="inline-btn stat-btn" data-mid="${mid}" data-cmd="${esc(plusCmd)}" data-action="command" data-silent="true" style="--glow-color: ${accountGlow}">+</span>
+                            <span class="stat-value">${valStr}</span>
+                            <span class="inline-btn stat-btn" data-mid="${mid}" data-cmd="${esc(minusCmd)}" data-action="command" data-silent="true" style="--glow-color: ${accountGlow}">-</span>
+                        </div>
+                    </div>
+                `.trim();
+            });
+            
+            // Note: We wrap in a container that allows the blocks to wrap naturally.
+            return `<div class="stat-editor-row">${blocks}</div>`;
+        }
+
+        // --- 1.4. Rule: Account Character List Buttons ---
+        // Specifically for the 'list' output in the account menu or character selection.
+        if (type === 'account-character-list') {
+            const rawText = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
+            // If it's the indexed format "1) Name", we want the name (second word). 
+            // If it's tabular "Name race level", we want the name (first word).
+            const parts = rawText.split(/\s+/);
+            const characterName = parts[0].endsWith(')') ? parts[1] : parts[0];
+            const accountGlow = '#facc15';
+            
+            return safeHighlight(originalHtml, characterName, false, (m) => {
+                return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="play ${esc(characterName)}" data-action="command" style="--glow-color: ${accountGlow}; color: var(--glow-color); font-weight: 800; border-bottom: 1px solid var(--glow-color)">${m}</span>`;
+            });
         }
 
         // --- 1.1. Rule: No general highlighted words in room names, EXCEPT the active target ---
         if (isRoomName) {
             if (target) {
                 const glowColor = '#facc15'; // Target gold
-                const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                 return safeHighlight(originalHtml, target, false, (m) => {
                     return `<span class="inline-btn auto-target active-target" draggable="true" data-mid="${mid}" data-cmd="target" data-context="${esc(target)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}">${m}</span>`;
                 });
@@ -162,7 +218,6 @@ export const useMessageHighlighter = (
         }
 
         let newHtml = targetHtml;
-        const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
         // --- 0. Color-tagged object detection (runs first so highlightDepth protects these spans) ---
         newHtml = applyColorTaggedObjects(newHtml, mid, inlineCategories, target, type, keywordOverrides, selectedObjectIds, roomPlayers, roomNpcs);
@@ -248,6 +303,33 @@ export const useMessageHighlighter = (
                     return `<span class="inline-btn auto-quest${isSelected ? ' selected' : ''}" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="quest %n" data-context="${esc(context)}" data-action="command" data-from-drawer="true" style="--glow-color: ${questGlow}; color: var(--glow-color); font-weight: 800">${originalHtml}</span>`;
                 }
             }
+        }
+
+        // --- 3.5.1 Account Menu Item Highlighting ---
+        if (type === 'account-menu-item') {
+            const menuKeywords = ['create', 'play', 'time', 'list', 'move', 'password', 'add', 'info', 'practice', 'link', 'lag', 'help', 'menu', 'quit', 'side', 'race', 'level', 'alphabetic', 'custom'];
+            let tempHtml = originalHtml;
+            const accountGlow = '#facc15'; // MUME yellow
+
+            menuKeywords.forEach(kw => {
+                tempHtml = safeHighlight(tempHtml, kw, false, (m) => {
+                    const lower = m.toLowerCase();
+                    if (lower === 'play') {
+                        return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-action="menu" data-cmd="play-character-select" style="--glow-color: ${accountGlow}; color: var(--glow-color); font-weight: 800; border-bottom: 1px solid var(--glow-color)">${m}</span>`;
+                    }
+                    return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="${esc(lower)}" data-action="command" style="--glow-color: ${accountGlow}; color: var(--glow-color); font-weight: 800; border-bottom: 1px solid var(--glow-color)">${m}</span>`;
+                });
+            });
+
+            // Handle special keywords NEW and ? separately
+            tempHtml = safeHighlight(tempHtml, 'NEW', false, (m) => {
+                return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="new" data-action="command" style="--glow-color: ${accountGlow}; color: var(--glow-color); font-weight: 800; border-bottom: 1px solid var(--glow-color)">${m}</span>`;
+            });
+            tempHtml = safeHighlight(tempHtml, '\\?', true, (m) => {
+                return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="?" data-action="command" style="--glow-color: ${accountGlow}; color: var(--glow-color); font-weight: 800; border-bottom: 1px solid var(--glow-color)">${m}</span>`;
+            });
+
+            return tempHtml;
         }
 
         // --- 3.6. Specialized List Highlighting (WHO/WHERE) ---

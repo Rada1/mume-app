@@ -82,8 +82,8 @@ export function useSettings(deps: UseSettingsDeps) {
         return url;
     };
     const [connectionUrl, setConnectionUrl] = useState(resolveInitialUrl());
-    const [loginName, setLoginName] = useState('');
-    const [loginPassword, setLoginPassword] = useState('');
+    const [loginName, setLoginName] = usePersistentState<string>('mud-login-name', '');
+    const [loginPassword, setLoginPassword] = usePersistentState<string>('mud-login-password', '');
     const [isLoading, setIsLoading] = useState(false);
     const [soundTriggers, setSoundTriggers] = useState<SoundTrigger[]>([]);
     const [newSoundPattern, setNewSoundPattern] = useState('');

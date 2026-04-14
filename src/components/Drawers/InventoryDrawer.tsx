@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
-import { useGame } from '../../context/GameContext';
+import { useGame, useUI } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
 import { getCategoryForName } from '../../utils/categorizationUtils';
 import { isObjectSelected } from '../../utils/selectionUtils';
@@ -43,8 +43,16 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
         selectedObjectIds,
         clearObjectSelection 
     } = useGame();
+    const { ui } = useUI();
     
     const [activeTab, setActiveTab] = useState<'inventory' | 'equipment'>(initialTab);
+
+    // Sync active tab with global UI state when it changes
+    useEffect(() => {
+        if (!isOpen) return;
+        if (ui.drawer === 'inventory') setActiveTab('inventory');
+        else if (ui.drawer === 'equipment') setActiveTab('equipment');
+    }, [isOpen, ui.drawer]);
     const drawerRef = React.useRef<HTMLDivElement>(null);
     const eqContainerRef = useRef<HTMLDivElement>(null);
     const [eqFontSize, setEqFontSize] = useState<string>('inherit');

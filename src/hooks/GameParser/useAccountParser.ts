@@ -12,6 +12,7 @@ import { CharacterEntry } from '../../types';
 interface UseAccountParserProps {
     accountState: import('../../types').AccountState;
     setAccountState: React.Dispatch<React.SetStateAction<import('../../types').AccountState>>;
+    accountStageRef: React.MutableRefObject<import('../../types').AccountStage>;
     gameState: import('../../types').GameState;
     setGameState: React.Dispatch<React.SetStateAction<import('../../types').GameState>>;
     sendCommand: (cmd: string) => void;
@@ -26,7 +27,7 @@ interface UseAccountParserProps {
 
 // --- Logic Section: Hook Implementation ---
 
-export function useAccountParser({ accountState, setAccountState, gameState, setGameState, sendCommand, executeCommandRef, isMobile, addDiagnosticLog, addMessage, setMessages, clearLog, setIsPasswordMode }: UseAccountParserProps) {
+export function useAccountParser({ accountState, setAccountState, accountStageRef, gameState, setGameState, sendCommand, executeCommandRef, isMobile, addDiagnosticLog, addMessage, setMessages, clearLog, setIsPasswordMode }: UseAccountParserProps) {
     // Use Refs to keep parseAccountLine stable and avoid re-render loops
     const gameStateRef = useRef(gameState);
     gameStateRef.current = gameState;
@@ -35,9 +36,22 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
     const isMobileRef = useRef(isMobile);
     isMobileRef.current = isMobile;
 
+    // --- State for Automated Gathering ---
+    const hasAutomatedListRef = useRef(false);
+    const isSilentListingRef = useRef(false);
+
     const parseAccountLine = useCallback((line: string, isNewChunk: boolean): boolean => {
         const cleanLine = line.replace(/\x1b\[[0-9;]*m/g, '').trim();
-        if (!cleanLine) return false;
+        if (!cleanLine) {
+            // Surgically suppress empty lines ONLY during stat editing to prevent layout 'shifting'.
+            // For all other account stages, preserve them to maintain intended terminal spacing.
+            return accountStageRef.current === 'stat-editing';
+        }
+
+        // Sync silent listing ref with state
+        if (accountState.isGathering) {
+            isSilentListingRef.current = true;
+        }
 
         // During gameplay, skip all account parsing except detecting return to Account>
         if (gameStateRef.current === 'playing') {
@@ -50,42 +64,104 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
             return false;
         }
 
-        // 0. Detect Main Account Menu Prompt (for completion/cancellation)
-        if (cleanLine === 'Account>') {
-            setGameState('account');
-            setAccountState(prev => {
-                // If we are currently in character select, don't stomp it if we have characters
-                if (prev.stage === 'character-select' && prev.characters.length > 0) return prev;
-                return { ...prev, stage: 'account-menu' };
-            });
-            setIsPasswordMode(false);
-            clearLog?.(); // Clear username/password bubbles once menu is reached
-            return false;
+        // --- Silent Listing Suppression ---
+        // If we are in silent listing mode, we suppress common character list output
+        if (isSilentListingRef.current) {
+            // 0a. Handle Paginator (if list is long)
+            const isPaginator = cleanLine.includes('Return: continue') || 
+                               cleanLine.includes('*** [Hit Return') ||
+                               (cleanLine.startsWith('***') && cleanLine.toLowerCase().includes('continue')) ||
+                               (cleanLine.includes('(') && cleanLine.includes('%)') && cleanLine.includes('continue'));
+
+            if (isPaginator) {
+                if (executeCommandRef.current) {
+                    // Small delay to ensure server is ready for input after sending the paginator
+                    setTimeout(() => {
+                        if (executeCommandRef.current) {
+                            executeCommandRef.current('', true, true); 
+                        }
+                    }, 150);
+                }
+                return true; // Suppress the paginator line
+            }
+
+            // Check for end of list/menu prompts
+            // We ONLY reset on the final 'Account>' prompt because 'Where <sort>' 
+            // and other menu headers can appear BEFORE the paginator in multi-page lists.
+            if (cleanLine === 'Account>') {
+                isSilentListingRef.current = false;
+                setAccountState(prev => ({ ...prev, isGathering: false, stage: 'account-menu' }));
+            } 
         }
 
-        // Detect Character Creation Headers (Return false to ensure they show in log)
-        const creationHeaders = [
-            "Choose Your Allegiance", "Choose Your Race", "Choose Your Subrace",
-            "Choose Your Hometown", "Choose Your Sex", "Choose Your Alignment",
-            "Choose Your Archetype", "Choose Your Stats", "Choose Your Physique",
-            "Choose Your Name", "Your Character", "Choose Your Specialty",
-            "Choose Your Profession", "Choose Your Class"
-        ];
-        if (creationHeaders.some(h => cleanLine.includes(h))) {
-            setAccountState(prev => ({ ...prev, stage: 'login' }));
-            return false;
+        const shouldSuppress = isSilentListingRef.current;
+
+        // --- 0. Detect Stat Edit Trigger ---
+        if (cleanLine.includes('Please specify an ability') && cleanLine.includes('(str, int, etc.)')) {
+            accountStageRef.current = 'stat-editing'; // Immediate synchronous update for lines in same chunk
+            setAccountState(prev => ({ ...prev, stage: 'stat-editing' }));
+            if (addMessage) {
+                addMessage('account-menu-item', line);
+                return true;
+            }
         }
 
-        // 1. Detect Name/Password Prompts (Mirrored into TAP TO TYPE box)
-        const lowerLine = cleanLine.toLowerCase();
-        const isNamePrompt = lowerLine.includes('by what name do you wish to be known') ||
-                             lowerLine.includes('what is your name?') ||
-                             lowerLine.includes("what's your name?") ||
-                             lowerLine.includes("illegal name") ||
-                             lowerLine.includes("character's name") ||
-                             lowerLine.includes('nom de guerre:');
-        
-        const isPasswordPrompt = /\bpassword:$/i.test(lowerLine) || lowerLine.includes('account password:');
+        // --- 0b. Detect Stat Summary Disclaimer (Reset out of edit mode) ---
+        if (cleanLine.includes('review the following statistics') || cleanLine.includes('provided values, as stats have a major impact')) {
+            accountStageRef.current = 'character-select'; // Reset to review stage
+            setAccountState(prev => ({ ...prev, stage: 'character-select' }));
+            // Don't return, let it render as menu item
+        }
+
+        // --- Logic Section: Stage-specific Parsing ---
+        const isSelectionLine = /^\s*\(\d+\)/.test(cleanLine);
+        if (isSelectionLine && addMessage) {
+            const isEditSelection = cleanLine.includes('Edit') && accountStageRef.current !== 'stat-editing';
+            addMessage(isEditSelection ? 'account-selection-edit' : 'account-selection', line);
+            return true;
+        }
+
+        const isStatLine = /Str:\s*\d+.*Int:\s*\d+.*Wis:\s*\d+/i.test(cleanLine);
+        if (isStatLine && addMessage) {
+            // Auto-detect editing mode if we see the stat line and it's definitely not the summary
+            // (The summary is preceded by long disclaimer text handled elsewhere)
+            if (accountStageRef.current === 'stat-editing') {
+                setMessages?.(prev => prev.filter(m => m.id !== 'account-stat-line'));
+                addMessage('account-stat-edit', line, undefined, 'account-stat-line');
+            } else {
+                addMessage('account-menu-item', line);
+            }
+            return true;
+        }
+
+        const isPointsLine = /points left/i.test(cleanLine);
+        if (isPointsLine && addMessage) {
+            // "Points left" is a definitive indicator of an interactive editing session.
+            if (accountStageRef.current !== 'stat-editing') {
+                accountStageRef.current = 'stat-editing';
+                setAccountState(prev => ({ ...prev, stage: 'stat-editing' }));
+                
+                // Retroactively fix the preceding stat line if it was parsed before this line identified the mode
+                setMessages?.(prev => {
+                    const next = [...prev];
+                    for (let i = next.length - 1; i >= Math.max(0, next.length - 10); i--) {
+                        if (/Str:\s*\d+.*Int:\s*\d+.*Wis:\s*\d+/i.test(next[i].textRaw)) {
+                            next[i] = { ...next[i], type: 'account-stat-edit', id: 'account-stat-line' };
+                            break;
+                        }
+                    }
+                    return next;
+                });
+            }
+
+            setMessages?.(prev => prev.filter(m => m.id !== 'account-points-line'));
+            addMessage('account-stat-points', line, undefined, 'account-points-line');
+            return true;
+        }
+
+        // 1. Detect Login Prompts
+        const isNamePrompt = cleanLine.includes('By what name do you wish to be known?');
+        const isPasswordPrompt = cleanLine.includes('Account password:');
 
         if (isNamePrompt || isPasswordPrompt) {
             setGameState('account');
@@ -104,7 +180,7 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
                 characters: []
             }));
             setIsPasswordMode(false);
-            return false;
+            return shouldSuppress;
         }
 
         // 3. Detect Character Entries
@@ -115,29 +191,46 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
             const newChar: CharacterEntry = { index: parseInt(index), name, level: parseInt(level), race, sublevel, logon, rent, area: '' };
             setAccountState(prev => ({ ...prev, characters: prev.characters.some(c => c.name === name) ? prev.characters : [...prev.characters, newChar] }));
             setGameState('account');
-            return false;
+            
+            if (!shouldSuppress && addMessage) {
+                addMessage('account-character-list', line);
+                return true;
+            }
+            return shouldSuppress;
         }
 
         // Account Menu Format
-        const logonRegex = /(\d+\s+(?:days?|yrs?|wks?|weeks?|months?|mths?|hours?|hrs?|mins?|secs?|ago|years?)|Yesterday|Today|Never|new|Playing)\s*/i;
+        const logonRegex = /(\d+\s+(?:days?|yrs?|wks?|weeks?|months?|mths?|hours?|hrs?|mins?|secs?|ago|years?)|Yesterday|Today|Never|new|Playing|no link|Retired|Dead)/i;
         const logonMatchLine = cleanLine.match(logonRegex);
-        if (logonMatchLine && logonMatchLine.index !== undefined) {
+        
+        // Stricter check for Account Menu Format to avoid false positives like "If you have never..."
+        if (logonMatchLine && logonMatchLine.index !== undefined && logonMatchLine.index > 20) {
             const rawLine = line.replace(/\x1b\[[0-9;]*m/g, '');
             const cleanName = cleanLine.split(/\s+/)[0];
-            if (/^[a-zA-Z\u00C0-\u024F]{2,15}$/.test(cleanName)) {
+            
+            // Exclude common account commands and descriptions
+            const exclusions = ['play', 'create', 'new', 'time', 'list', 'move', 'password', 'add', 'info', 'practice', 'link', 'lag', 'help', 'menu', 'quit', 'where'];
+            const lowerName = cleanName.toLowerCase();
+            
+            if (/^[a-zA-Z\u00C0-\u024F\-]{2,15}$/.test(cleanName) && !exclusions.includes(lowerName)) {
                 const name = rawLine.substring(0, 14).trim() || cleanName;
                 const newChar: CharacterEntry = { 
                     name, 
                     race: rawLine.substring(14, 18).trim(), 
                     sublevel: rawLine.substring(18, 22).trim(), 
                     level: (logonMatchLine.index > 22) ? rawLine.substring(22, logonMatchLine.index).trim() : '',
-                    logon: logonMatchLine[1],
+                    logon: logonMatchLine[1].trim(),
                     area: cleanLine.substring(logonMatchLine.index + logonMatchLine[0].length).trim().split(/\s+/)[0] || '',
                     rent: cleanLine.substring(logonMatchLine.index + logonMatchLine[0].length).trim().split(/\s+/)[1] || '',
                 };
                 setAccountState(prev => ({ ...prev, characters: prev.characters.some(c => c.name === name) ? prev.characters : [...prev.characters, newChar] }));
                 setGameState('account');
-                return false;
+                
+                if (!shouldSuppress && addMessage) {
+                    addMessage('account-character-list', line);
+                    return true;
+                }
+                return shouldSuppress;
             }
         }
 
@@ -158,7 +251,8 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
             setGameState('account');
             setAccountState(prev => ({ ...prev, stage: 'character-select' }));
             setIsPasswordMode(false);
-            clearLog?.(); // Clear bubbles once we reach character selection
+            // [Mod] Disabled: don't clear the previous log data when logging in
+            // clearLog?.(); // Clear bubbles once we reach character selection
             return false;
         }
 
@@ -169,7 +263,8 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
             setGameState('playing');
             setAccountState(prev => ({ ...prev, stage: 'none' }));
             setIsPasswordMode(false);
-            clearLog?.();
+            // [Mod] Disabled: don't clear the previous log data when logging in
+            // clearLog?.();
 
             // --- Bootstrap Drawer Data ---
             // Trigger a sequence of silent commands to populate all drawers in the background
@@ -195,9 +290,30 @@ export function useAccountParser({ accountState, setAccountState, gameState, set
         // 6. Detect Account Menu Header
         if (cleanLine.includes('Available commands:')) {
             setGameState('account');
+            stageRef.current = 'account-menu';
             setAccountState(prev => ({ ...prev, stage: 'account-menu' }));
             setIsPasswordMode(false);
+
+            if (addMessage) {
+                addMessage('account-menu-item', line);
+                return true;
+            }
             return false;
+        }
+
+        // 7. General Account Menu Content Catch (lines while in account-menu stage)
+        const isMenuStage = accountStageRef.current === 'account-menu';
+        const menuKeywords = ['create', 'play', 'time', 'list', 'move', 'password', 'add', 'info', 'practice', 'link', 'lag', 'help', 'menu', 'quit'];
+        const lowerClean = cleanLine.toLowerCase();
+        
+        const isMenuLine = isMenuStage && (menuKeywords.some(kw => lowerClean.startsWith(kw)) || cleanLine.startsWith('Where <sort>'));
+        const isIntroLine = lowerClean.includes('type new to create') || lowerClean.includes('? for help');
+        
+        if (isMenuLine || isIntroLine || isSelectionLine) {
+            if (addMessage) {
+                addMessage('account-menu-item', line);
+                return true;
+            }
         }
 
         return false;

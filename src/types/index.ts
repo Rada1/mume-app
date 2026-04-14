@@ -1,6 +1,6 @@
 import { LucideIcon } from 'lucide-react';
 
-export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt' | 'comm' | 'comm-continue' | 'comm-sender' | 'comm-text' | 'shop-item' | 'practice-skill' | 'practice-header' | 'practice-class-header' | 'practice-column-header' | 'who-list' | 'where-list' | 'room-description' | 'equipment-list' | 'inventory-list' | 'room-exits' | 'snoop-command' | 'account-prompt';
+export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt' | 'comm' | 'comm-continue' | 'comm-sender' | 'comm-text' | 'shop-item' | 'practice-skill' | 'practice-header' | 'practice-class-header' | 'practice-column-header' | 'who-list' | 'where-list' | 'room-description' | 'equipment-list' | 'inventory-list' | 'room-exits' | 'snoop-command' | 'account-prompt' | 'account-menu-item';
 export type LightingType = 'sun' | 'artificial' | 'moon' | 'dark' | 'none';
 export type WeatherType = 'clear' | 'cloud' | 'rain' | 'heavy-rain' | 'snow' | 'none';
 export type Direction = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | 'u' | 'd';
@@ -264,7 +264,7 @@ export interface PopoverState {
     x: number;
     y: number;
     sourceHeight?: number;
-    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'give-target-select' | 'put-container-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target' | 'container' | 'shop-card' | 'session-log' | 'help-card';
+    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'give-target-select' | 'put-container-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target' | 'container' | 'shop-card' | 'session-log' | 'help-card' | 'character-select';
     setId: string;
     category?: string;
     context?: string;
@@ -284,6 +284,9 @@ export interface PopoverState {
     practiceData?: PracticeData;
     helpData?: string;
     accentColor?: string;
+    accountCharacters?: CharacterEntry[];
+    accountState?: AccountState;
+    setAccountState?: React.Dispatch<React.SetStateAction<AccountState>>;
 }
 
 export interface PopoverManagerProps {
@@ -327,6 +330,9 @@ export interface PopoverManagerProps {
     selectedObjectIds: Set<string>;
     clearObjectSelection: () => void;
     keywordOverrides?: Record<string, string>;
+    accountCharacters?: CharacterEntry[];
+    accountState?: AccountState;
+    setAccountState?: React.Dispatch<React.SetStateAction<AccountState>>;
 }
 
 
@@ -649,7 +655,7 @@ export interface ZoneMusicMapping {
 
 // --- ACCOUNT & CHARACTER SELECTION ---
 
-export type AccountStage = 'login' | 'character-select' | 'character-detail' | 'account-menu' | 'character-creation' | 'none';
+export type AccountStage = 'login' | 'character-select' | 'character-detail' | 'account-menu' | 'character-creation' | 'stat-editing' | 'none';
 
 export interface CharacterEntry {
     index?: number;
@@ -701,4 +707,5 @@ export interface AccountState {
     selectedCharacter: CharacterEntry | null;
     creationPrompt?: CreationPrompt;
     lastCreatedCharacterName?: string;
+    isGathering?: boolean;
 }

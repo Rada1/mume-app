@@ -470,5 +470,6 @@ export interface GameContextType {
         startExport: () => Promise<void>;
         stopExport: () => void;
     };
+    accountStageRef: MutableRefObject<import('../../types').AccountStage>;
 }
 

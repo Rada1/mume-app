@@ -58,6 +58,7 @@ export function useTelnet(options: TelnetOptions) {
     const socketRef = useRef<WebSocket | null>(null);
     const bufferRef = useRef<string>("");
     const isBackgroundedRef = useRef<boolean>(false);
+    const connectionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     // Stability fix: use a ref for handlers to avoid stale closures in GmcpDecoder
     const handlersRef = useRef(handlers);
@@ -158,7 +159,12 @@ export function useTelnet(options: TelnetOptions) {
         if (remaining) {
             const cleanPrompt = remaining.replace(/\x1b\[[0-9;]*m/g, '').trim();
             // Any incomplete buffer ending with '>' is a prompt — always parse it.
-            const isLikelyPrompt = cleanPrompt.endsWith('>');
+            // Also recognize MUME-specific paginators and login prompts that don't end in '>'
+            const isLikelyPrompt = cleanPrompt.endsWith('>') || 
+                                   (cleanPrompt.startsWith('***') && cleanPrompt.endsWith('***')) ||
+                                   cleanPrompt.toLowerCase().includes('return: continue') ||
+                                   cleanPrompt.toLowerCase().includes('by what name') ||
+                                   cleanPrompt.toLowerCase().endsWith('password:');
 
             if (isLikelyPrompt) {
                 // Track this prompt so we don't double-process it if a newline follows
@@ -226,8 +232,25 @@ export function useTelnet(options: TelnetOptions) {
             // Try with no subprotocol first. If it fails once, some systems might prefer 'binary'.
             const ws = new WebSocket(connectionUrl);
             ws.binaryType = "arraybuffer";
+
+            // Set connection timeout
+            if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
+            connectionTimeoutRef.current = setTimeout(() => {
+                if (ws.readyState === WebSocket.CONNECTING) {
+                    console.warn(`[WebSocket] Connection timed out for ${connectionUrl}`);
+                    ws.close();
+                    handlersRef.current.setStatus('disconnected');
+                    const msg = 'Connection timed out. Please check your network and try again.';
+                    handlersRef.current.addMessage('error', msg, undefined, undefined, undefined, { textOnly: msg, lower: msg.toLowerCase() });
+                    handlersRef.current.addDiagnosticLog?.(`Timeout: Handshake took longer than 10s on ${connectionUrl}`);
+                }
+            }, 10000);
             
             ws.onopen = () => {
+                if (connectionTimeoutRef.current) {
+                    clearTimeout(connectionTimeoutRef.current);
+                    connectionTimeoutRef.current = null;
+                }
                 console.log(`[WebSocket] Connected successfully to ${connectionUrl}`);
                 handlersRef.current.setStatus('connected');
                 const msg2 = 'Connected! Negotiating...';
@@ -243,6 +266,10 @@ export function useTelnet(options: TelnetOptions) {
                 }
             };
             ws.onclose = (event) => {
+                if (connectionTimeoutRef.current) {
+                    clearTimeout(connectionTimeoutRef.current);
+                    connectionTimeoutRef.current = null;
+                }
                 const reason = event.reason ? ` Reason: ${event.reason}` : '';
                 const codeDesc = event.code === 1006 ? ' (Abnormal Closure - often firewall/proxy or TLS issue)' : '';
                 handlersRef.current.setStatus('disconnected');
@@ -253,6 +280,10 @@ export function useTelnet(options: TelnetOptions) {
                 if ((ws as any)._pingInterval) clearInterval((ws as any)._pingInterval);
             };
             ws.onerror = (event) => {
+                if (connectionTimeoutRef.current) {
+                    clearTimeout(connectionTimeoutRef.current);
+                    connectionTimeoutRef.current = null;
+                }
                 console.error('[WebSocket] Connection Error Event:', event);
                 handlersRef.current.setStatus('disconnected');
                 handlersRef.current.onDisconnect?.();
