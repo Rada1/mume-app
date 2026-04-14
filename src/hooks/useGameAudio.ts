@@ -18,6 +18,12 @@ export interface GameAudioDeps {
     manualCancelRef?: React.MutableRefObject<boolean>;
     gameState?: string;
     isSpectateMode?: boolean;
+    spectateRoomZone?: string | null;
+    spectateTerrain?: string;
+    spectateLighting?: string;
+    spectateWeather?: WeatherType;
+    spectateIsFoggy?: boolean;
+    spectateInCombat?: boolean;
 }
 
 export const useGameAudio = ({
@@ -32,9 +38,23 @@ export const useGameAudio = ({
     waiting,
     manualCancelRef,
     gameState,
-    isSpectateMode
+    isSpectateMode,
+    spectateRoomZone,
+    spectateTerrain,
+    spectateLighting,
+    spectateWeather,
+    spectateIsFoggy,
+    spectateInCombat
 }: GameAudioDeps) => {
     const isSleeping = playerPosition === 'sleeping';
+
+    // Use spectate values if in spectate mode
+    const effectiveRoomZone = isSpectateMode ? spectateRoomZone : roomZone;
+    const effectiveTerrain = isSpectateMode ? spectateTerrain : currentTerrain;
+    const effectiveLighting = isSpectateMode ? spectateLighting : lighting;
+    const effectiveWeather = isSpectateMode ? spectateWeather : weather;
+    const effectiveInCombat = isSpectateMode ? spectateInCombat : inCombat;
+
     const playSoundRef = useRef<(buffer: AudioBuffer) => void>(() => { });
     const setPlaySound = useCallback((fn: (buffer: AudioBuffer) => void) => { playSoundRef.current = fn; }, []);
     const playSound = useCallback((buffer: AudioBuffer) => playSoundRef.current(buffer), []);
@@ -72,9 +92,31 @@ export const useGameAudio = ({
 
     } = useSoundSystem(isSoundEnabled);
 
-    useZoneMusic({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic, isInCombat: inCombat, lighting, isSleeping, gameState });
-    useTerrainSounds({ currentTerrain, isSoundEnabled, audioCtxRef, lighting, isSleeping });
-    useWeatherSounds({ weather, isSoundEnabled, audioCtxRef, isSleeping });
+    useZoneMusic({ 
+        roomZone: effectiveRoomZone || null, 
+        isSoundEnabled, 
+        audioCtxRef, 
+        zoneMusic, 
+        isInCombat: effectiveInCombat, 
+        lighting: effectiveLighting, 
+        isSleeping, 
+        gameState 
+    });
+    
+    useTerrainSounds({ 
+        currentTerrain: effectiveTerrain || '', 
+        isSoundEnabled, 
+        audioCtxRef, 
+        lighting: effectiveLighting, 
+        isSleeping 
+    });
+    
+    useWeatherSounds({ 
+        weather: effectiveWeather || 'none', 
+        isSoundEnabled, 
+        audioCtxRef, 
+        isSleeping 
+    });
 
     // Stop incantation if we are no longer waiting (interrupt or end of cast)
     const lastWaitingRef = useRef(waiting);

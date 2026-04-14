@@ -3,7 +3,7 @@
  * @description Extracts and processes GMCP data embedded as text in the log.
  */
 
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { GameStats, CombatHealthStatus } from '../../types';
 
 interface LogGmcpParserDeps {
@@ -14,6 +14,12 @@ interface LogGmcpParserDeps {
     setSpectatePosition: (pos: string) => void;
     setSpectateWaiting: (val: boolean) => void;
     setSpectateRoomName: (name: string | null) => void;
+    setSpectateRoomDesc: (desc: string | null) => void;
+    setSpectateTerrain: (terrain: string) => void;
+    setSpectateRoomZone: (zone: string | null) => void;
+    setSpectateLighting: (light: import('../../types').LightingType) => void;
+    setSpectateWeather: (w: import('../../types').WeatherType) => void;
+    setSpectateIsFoggy: (f: boolean) => void;
     setSpectateInCombat: (val: boolean) => void;
     setSpectateCharacterName: (name: string | null) => void;
     setRoomPlayers: React.Dispatch<React.SetStateAction<any[]>>;
@@ -21,6 +27,7 @@ interface LogGmcpParserDeps {
     setRoomItems: React.Dispatch<React.SetStateAction<any[]>>;
     setRoomName: (name: string | null) => void;
     setRoomDesc: (desc: string | null) => void;
+    setRoomExits: (exits: string[]) => void;
     characterName: string | null;
     mapperRef: React.RefObject<any>;
     detectLighting?: (light: number | string) => void;
@@ -39,6 +46,12 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         setSpectatePosition,
         setSpectateWaiting,
         setSpectateRoomName,
+        setSpectateRoomDesc,
+        setSpectateTerrain,
+        setSpectateRoomZone,
+        setSpectateLighting,
+        setSpectateWeather,
+        setSpectateIsFoggy,
         setSpectateInCombat,
         setSpectateCharacterName,
         setRoomPlayers,
@@ -46,12 +59,24 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         setRoomItems,
         setRoomName,
         setRoomDesc,
+        setRoomExits,
         characterName,
         mapperRef,
         detectLighting,
         setWeather,
-        setIsFoggy
+        setIsFoggy,
+        isSpectateMode
     } = deps;
+
+    // Stable refs for values that can change without the callback being recreated.
+    // parseLogGmcp's dep array intentionally stays narrow (setters are stable), so we read
+    // mode flags + the last-known spectate room from refs to avoid a stale-closure bug where
+    // spectate GMCP lines stopped being suppressed/parsed once the user toggled spectate on.
+    const isSpectateModeRef = useRef(isSpectateMode);
+    const sessionModeRef = useRef(deps.sessionMode);
+    const lastSpectateRoomIdRef = useRef<string | number | null>(null);
+    useEffect(() => { isSpectateModeRef.current = isSpectateMode; }, [isSpectateMode]);
+    useEffect(() => { sessionModeRef.current = deps.sessionMode; }, [deps.sessionMode]);
 
     const findStatus = (str: string | undefined): CombatHealthStatus | null => {
         if (!str) return null;
@@ -90,15 +115,22 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         // If we are NOT in spectate mode, we only suppress if it is EXPLICITLY marked as GMCP,
         // UNLESS we are in replay mode (Theater Mode). In replays, ANY GMCP leak should be hidden.
         // This prevents suppressing "Core.Hello" (no payload) which is common in documentation/help text.
-        const isReplay = deps.sessionMode === 'replay';
-        if (!deps.isSpectateMode && !isExplicitGmcp && !isReplay) return false;
+        const inSpectate = isSpectateModeRef.current;
+        const isReplay = sessionModeRef.current === 'replay';
+        if (!inSpectate && !isExplicitGmcp && !isReplay) return false;
 
         // If it looks like a known GMCP namespace but has no payload, it's a signal to suppress
         // (but only if we've passed the mode check above)
         if (!jsonStr) return true;
 
         try {
-            const data = JSON.parse(jsonStr.trim());
+            // Clean common issues like literal newlines/carriages that might leak from snoops
+            // JSON.parse strictly forbids literal control characters in strings.
+            const cleanedJson = jsonStr.trim()
+                .replace(/\n/g, '\\n')
+                .replace(/\r/g, '\\r');
+            
+            const data = JSON.parse(cleanedJson);
             console.log('[LogGmcpParser] Parsed:', namespace, data);
 
             switch (namespace) {
@@ -106,7 +138,7 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                     if (data.hp !== undefined || data.mana !== undefined || data.move !== undefined || data.mp !== undefined || data.hits !== undefined) {
                         setSpectateStats(prev => ({
                             hp: data.hp ?? data.hits ?? prev.hp,
-                            maxHp: data.maxhp ?? data.maxhits ?? prev.maxHp,
+                            maxHp: data.maxhp ?? data.maxhits ?? prev.hp, // Note: maxhp can be missing, use hp as fallback for max
                             mana: data.mana ?? prev.mana,
                             maxMana: data.maxmana ?? prev.maxMana,
                             move: data.move ?? data.moves ?? data.mv ?? data.mp ?? prev.move,
@@ -134,27 +166,67 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                         setSpectateInCombat(!!data.opponent);
                     }
                     // --- Environmental sync from snooped Char.Vitals ---
-                    if (data.light !== undefined && data.light !== null && detectLighting) {
-                        detectLighting(data.light);
+                    if (data.light !== undefined && data.light !== null) {
+                        if (inSpectate) {
+                            // Translate numeric light to LightingType if needed, but detectLighting usually handles it
+                            if (typeof data.light === 'number') {
+                                const l = data.light;
+                                let type: import('../../types').LightingType = 'none';
+                                if (l <= 0) type = 'dark';
+                                else if (l <= 2) type = 'dim';
+                                else type = 'sun';
+                                setSpectateLighting(type);
+                            } else {
+                                setSpectateLighting(data.light);
+                            }
+                        } else if (detectLighting) {
+                            detectLighting(data.light);
+                        }
                     }
-                    if (data.weather !== undefined && setWeather) {
-                        setWeather(data.weather);
+                    if (data.weather !== undefined) {
+                        if (inSpectate) {
+                            setSpectateWeather(data.weather);
+                            if (data.fog !== undefined) setSpectateIsFoggy(!!data.fog);
+                        } else if (setWeather) {
+                            setWeather(data.weather);
+                            if (data.fog !== undefined && setIsFoggy) setIsFoggy(!!data.fog);
+                        }
                     }
                     break;
 
                 case 'Group.Update':
                 case 'Group.Set':
-                    // Group.Update contains data for arbitrary groupmates (identified by id),
-                    // NOT specifically the spectated character. Do NOT use it to drive the
-                    // map or spectate state — that must come from snooped Char.Vitals / Room.Info.
                     break;
 
-                case 'Room.Info':
+                case 'Room.Info': {
                     if (data.name) setSpectateRoomName(data.name);
+                    if (data.desc !== undefined) setSpectateRoomDesc(data.desc);
+                    if (data.terrain || data.environment) setSpectateTerrain(data.terrain || data.environment);
+                    if (data.zone || data.area) setSpectateRoomZone(data.zone || data.area);
+
+                    // Track the last spectated gmcp room id. When it changes (new room or a fresh
+                    // target after a snoop switch), clear occupants — Room.Chars.Add/Update is
+                    // accumulative, so without this, stale NPCs/players from the previous room
+                    // (or from the previous snoop target) pollute the tracker.
+                    const incomingId = data.num ?? (data as any).vnum ?? (data as any).id ?? null;
+                    if (incomingId !== null && incomingId !== lastSpectateRoomIdRef.current) {
+                        setRoomPlayers([]);
+                        setRoomNpcs([]);
+                        lastSpectateRoomIdRef.current = incomingId;
+                    }
                     setRoomItems([]);
                     if (mapperRef.current?.handleRoomInfo) {
                         mapperRef.current.handleRoomInfo({ ...data, spectating: true });
                     }
+                    if (data.exits) setRoomExits(Object.keys(data.exits));
+                    break;
+                }
+                
+                case 'Room.UpdateExits':
+                    if (mapperRef.current?.handleUpdateExits) {
+                        mapperRef.current.handleUpdateExits({ ...data, spectating: true });
+                    }
+                    if (data.exits) setRoomExits(Object.keys(data.exits));
                     break;
 
                 case 'Room.Items.Set':
@@ -278,7 +350,7 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
             }
             return true;
         } catch (e) {
-            console.warn('[LogGmcpParser] Failed to parse JSON:', jsonStr);
+            console.warn('[LogGmcpParser] Failed to parse JSON:', jsonStr, 'Error:', e);
             // Even if JSON fails, if it's a GMCP line, we suppress it from the log
             return true;
         }
@@ -286,8 +358,27 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         setSpectateStats, setSpectateHealthStatus, setSpectateOpponentName, 
         setSpectateOpponentStatus, setSpectatePosition, setSpectateWaiting, setSpectateRoomName,
         setSpectateInCombat, setSpectateCharacterName, mapperRef,
-        detectLighting, setWeather, setIsFoggy, setRoomPlayers, setRoomNpcs, setRoomItems, characterName
+        detectLighting, setWeather, setIsFoggy, setRoomPlayers, setRoomNpcs, setRoomItems, 
+        setRoomExits, characterName
     ]);
 
-    return { parseLogGmcp };
+    // Called when the user rotates to a new snoop target. Clears everything that is tied to
+    // the previous spectated character so the next Room.Info / Char.Vitals / Room.Chars.Set
+    // starts from a clean slate instead of mixing old and new state.
+    const resetSpectateContext = useCallback(() => {
+        lastSpectateRoomIdRef.current = null;
+        setRoomPlayers([]);
+        setRoomNpcs([]);
+        setRoomItems([]);
+        setSpectateRoomName(null);
+        setSpectateRoomDesc(null);
+        if (mapperRef.current?.stableRoomIdRef) {
+            // Drop the mapper's notion of "which room the player is currently in" so that the
+            // next snooped Room.Info is treated as a fresh sync rather than a failed move
+            // correlation against the previous snoop target's last known location.
+            mapperRef.current.stableRoomIdRef.current = null;
+        }
+    }, [setRoomPlayers, setRoomNpcs, setRoomItems, setSpectateRoomName, setSpectateRoomDesc, mapperRef]);
+
+    return { parseLogGmcp, resetSpectateContext };
 }

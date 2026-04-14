@@ -1,0 +1,144 @@
+.spectate-queue-hud {
+    position: absolute;
+    top: 60px;
+    right: 12px;
+    width: 160px;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 10px;
+    z-index: 10000;
+    font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    pointer-events: auto;
+    animation: fadeInSlideIn 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.spectate-hud-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 6px;
+}
+
+.hud-timer {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #00ffff;
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+    line-height: 1; /* Tighten line height to prevent overlap */
+}
+
+.spectate-hud-current {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 4px 0 10px; /* Restored some right padding for balance */
+    background: rgba(0, 255, 255, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(0, 255, 255, 0.1);
+    min-height: 38px;
+    position: relative;
+    pointer-events: auto !important; /* Force interaction on the row */
+}
+
+.active-remove {
+    /* No manual margin needed, parent flex handles it */
+}
+
+.hud-current-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hud-icon {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.hud-icon-active {
+    color: #00ffff;
+}
+
+.spectate-hud-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.hud-list-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.05rem;
+    margin-top: 4px;
+}
+
+.hud-list-item {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    padding-left: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.2s ease;
+    border-radius: 4px;
+    pointer-events: auto !important; /* Force interaction on list items */
+}
+
+.hud-list-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.queue-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90px;
+}
+
+.remove-queue-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    width: 32px; 
+    height: 32px; /* Fixed square size for vertical centering */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    line-height: 0;
+    z-index: 50;
+    border-radius: 4px; /* Give it its own rounded corners on hover */
+}
+
+.remove-queue-btn:hover {
+    color: #ff4d4d;
+    background: rgba(255, 77, 77, 0.2);
+    transform: scale(1.1); /* Subtle pop on hover */
+}
+
+@keyframes fadeInSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}

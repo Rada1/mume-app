@@ -20,6 +20,7 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 - **Central State (HP, Mana, Target, Inventory):** `src/context/GameContext.tsx`
 - **Map & Exploration State:** `src/context/MapperContext.tsx`
 - **User Input & Command History:** `src/context/InputContext.tsx`
+- **Spectate & Snoop Queue:** `src/context/GameContext/state.ts` (spectateQueue, lastSnoopStartTime)
 - **Entity Registry (NPCs, Players, Items):** `src/hooks/useEntityRegistry.ts` (Source of Truth)
 - **User Settings & Persistence:** `src/hooks/useSettings.ts`, `src/context/GameContext/useSettingsState.ts`
 - **Global Types & Interfaces:** `src/types/index.ts`
@@ -43,6 +44,7 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 - **Command Control (Sending to Game):** `src/hooks/useCommandController.ts`
 - **Specialized Handlers:** `usePracticeHandler.ts`, `useShopHandler.ts`, `useQuestsHandler.ts`
 - **Buttons & UI Interactions:** `useButtons.ts`, `useSpatButtons.ts`, `useInteractionHandlers.ts`, `useViewport.ts`
+- **Spectate Automation (Rotation/Tells):** `useSpectateAutomator.ts`
 - **Advanced Processing:** `useTriggerProcessor.ts`, `useKeywordOverrides.ts`, `useMessageHighlighter.ts`
 - **Audio & Atmosphere:** `useAtmosphereAudio.ts`, `useSoundSystem.ts`, `useZoneMusic.ts`, `useWeatherSounds.ts`, `useTerrainSounds.ts`
 

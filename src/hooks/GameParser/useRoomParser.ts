@@ -16,6 +16,9 @@ export interface RoomParserDeps {
     isWaitingForInfo: React.MutableRefObject<boolean>;
     isDrawerCapture: React.MutableRefObject<number>;
     isSilentCapture: React.MutableRefObject<number>;
+    isSpectateMode?: boolean;
+    spectateRoomName?: string | null;
+    spectateRoomDesc?: string | null;
 }
 
 export function useRoomParser(deps: RoomParserDeps) {
@@ -28,7 +31,10 @@ export function useRoomParser(deps: RoomParserDeps) {
         isWaitingForInv,
         isWaitingForInfo,
         isDrawerCapture,
-        isSilentCapture
+        isSilentCapture,
+        isSpectateMode,
+        spectateRoomName,
+        spectateRoomDesc
     } = deps;
 
     const afterRoomNameRef = useRef(false);
@@ -43,7 +49,7 @@ export function useRoomParser(deps: RoomParserDeps) {
     };
 
     const detectRoom = useCallback((textOnly: string, lower: string, isPromptMatch: boolean): { isRoomName: boolean; isRoomDescription: boolean; isRoomWindow: boolean } => {
-        const currentRoomRefValue = roomNameRef.current;
+        const currentRoomRefValue = (isSpectateMode && spectateRoomName !== undefined) ? spectateRoomName : roomNameRef.current;
         let isRoomMatched = currentRoomRefValue && (
             textOnly === currentRoomRefValue || lower === currentRoomRefValue.toLowerCase() ||
             textOnly === currentRoomRefValue + '.' || lower === currentRoomRefValue.toLowerCase() + '.' ||
@@ -75,7 +81,10 @@ export function useRoomParser(deps: RoomParserDeps) {
         // dynamic weather text, and blank lines can all appear mid-description.
         // Only terminate when we see "Exits:" or exceed a safety line limit.
         let isRoomDescription = false;
-        if (!isRoomName && afterRoomNameRef.current && roomDescRef?.current) {
+        
+        const currentRoomDescValue = (isSpectateMode && spectateRoomDesc !== undefined) ? spectateRoomDesc : roomDescRef?.current;
+        
+        if (!isRoomName && afterRoomNameRef.current && currentRoomDescValue) {
             const trimmed = textOnly.trim();
             if (lower.startsWith('obvious exits') || lower.startsWith('exits:')) {
                 // Definitive end of room description block
@@ -87,7 +96,7 @@ export function useRoomParser(deps: RoomParserDeps) {
                 descLineCountRef.current = 0;
             } else if (trimmed !== '') {
                 descLineCountRef.current++;
-                const normDesc = getNormDesc(roomDescRef.current);
+                const normDesc = getNormDesc(currentRoomDescValue);
                 const normLine = trimmed.replace(/\s+/g, ' ').toLowerCase();
                 
                 // Strip punctuation and spacing to ensure terminal wrapping or punctuation changes
@@ -97,7 +106,6 @@ export function useRoomParser(deps: RoomParserDeps) {
                 const isDescMatch = strippedLine.length > 0 && strippedDesc.includes(strippedLine);
 
                 if (isDescMatch) {
-
                     isRoomDescription = true;
                 }
                 // NOTE: We intentionally do NOT set afterRoomNameRef = false here.
@@ -105,10 +113,19 @@ export function useRoomParser(deps: RoomParserDeps) {
                 // next line still gets a chance to match the description.
             }
             // Blank lines are simply ignored without affecting the state
+        } else if (!isRoomName && afterRoomNameRef.current && !currentRoomDescValue) {
+            // Fallback for missing GMCP description: Treat lines until "Exits:" or double-blank as description
+            const trimmed = textOnly.trim();
+            if (lower.startsWith('obvious exits') || lower.startsWith('exits:')) {
+                afterRoomNameRef.current = false;
+            } else if (trimmed !== '') {
+                isRoomDescription = true; // Fallback assumes everything until Exits is description if no GMCP
+            }
         }
 
         return { isRoomName, isRoomDescription, isRoomWindow: afterRoomNameRef.current };
-    }, [roomNameRef, roomDescRef, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, isDrawerCapture, isSilentCapture]);
+    }, [roomNameRef, roomDescRef, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, isDrawerCapture, isSilentCapture, isSpectateMode, spectateRoomName, spectateRoomDesc]);
 
     return { detectRoom };
 }
+

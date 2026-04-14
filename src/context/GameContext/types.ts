@@ -205,6 +205,13 @@ export interface GameContextType {
     setWhereList: Dispatch<SetStateAction<import('../../types').WhereEntry[]>>;
     zoneMusic: import('../../types').ZoneMusicMapping[];
     setZoneMusic: Dispatch<SetStateAction<import('../../types').ZoneMusicMapping[]>>;
+    spectateQueue: string[];
+    setSpectateQueue: Dispatch<SetStateAction<string[]>>;
+    lastSnoopStartTime: number | null;
+    setLastSnoopStartTime: Dispatch<SetStateAction<number | null>>;
+    addToQueue: (name: string) => void;
+    rotateQueue: (manuallyTriggered?: boolean) => void;
+    removeFromQueue: (name: string) => void;
 
     mood: string;
     setMood: (val: string) => void;

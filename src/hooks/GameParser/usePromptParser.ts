@@ -66,7 +66,7 @@ export function usePromptParser(deps: PromptParserDeps) {
         const promptRegex = /^([^\r\n<>]{0,120}>)\s*/;
         const textPMatch = textOnly.match(promptRegex);
         
-        if (!textPMatch) return { isMatch: false, promptPart: '', attachedText: '', isEndPrompt: false };
+        if (!textPMatch) return { isMatch: false, promptPart: '', attachedText: '', isEndPrompt: false, isGameplayPrompt: false };
 
         const promptPart = textPMatch[0];
         const attachedText = textOnly.slice(promptPart.length).trim();
@@ -200,7 +200,9 @@ export function usePromptParser(deps: PromptParserDeps) {
             }
         }
 
-        return { isMatch: true, promptPart, attachedText, isEndPrompt };
+        const isGameplayPrompt = /HP:\w+|MA:\w+|MV:\w+|SP:\w+/i.test(promptPart);
+
+        return { isMatch: true, promptPart, attachedText, isEndPrompt, isGameplayPrompt };
     }, [
         captureStage, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName, 
         setBufferHealthStatus, setBufferName, setInCombat, finalizeCapture,

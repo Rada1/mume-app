@@ -485,6 +485,12 @@
 
 .comm-text {
     margin-left: 2px;
+    color: #ffffff !important;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.comm-text span {
+    color: #ffffff !important;
 }
 
 

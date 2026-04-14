@@ -447,8 +447,6 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const stableHandlers = Object.freeze(handlersRef);
 
         const onInfo    = (e: any) => {
-            // In spectate mode, only process updates that explicitly come from the spectated target
-            if (isSpectateModeRef.current && !e.detail.spectating) return;
             stableHandlers.handleRoomInfo(e.detail);
         };
         const onExits   = (e: any) => stableHandlers.handleUpdateExits(e.detail);

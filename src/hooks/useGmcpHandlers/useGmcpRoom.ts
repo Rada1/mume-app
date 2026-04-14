@@ -49,7 +49,6 @@ export const useGmcpRoom = ({
 }: UseGmcpRoomProps) => {
 
     const onRoomInfo = useCallback((data: GmcpRoomInfo) => {
-        if (isSpectateMode) return;
         if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-room-info', { detail: data }));
 
         const roomNum = data.num || data.id || data.vnum;
@@ -92,6 +91,7 @@ export const useGmcpRoom = ({
             setRoomNpcs([]);
             lastRoomChangeTimeRef.current = Date.now();
             if (playMovementSound) {
+                // Determine riding status: if spectating, we can check Room.Chars or fallback.
                 const isRiding = isRidingRef?.current || playerPositionRef.current === 'riding' || playerPositionRef.current === 'mounted';
                 playMovementSound(isRiding);
             }
@@ -99,7 +99,6 @@ export const useGmcpRoom = ({
     }, [mapperRef, setCurrentTerrain, setRoomName, setRoomDesc, setRoomExits, setRoomZone, setRoomPlayers, setRoomNpcs, setRoomItems, setDiscoveredItems, playMovementSound, isSpectateMode, detectLighting, isRidingRef, playerPositionRef, lastRoomChangeTimeRef, lastRoomNumRef, lastExitsRef, roomDescRef]);
 
     const onRoomUpdateExits = useCallback((data: GmcpUpdateExits) => {
-        if (isSpectateMode) return;
         if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-update-exits', { detail: data }));
         if (data.exits) {
             console.log('[GMCP] Room.UpdateExits:', data.exits);

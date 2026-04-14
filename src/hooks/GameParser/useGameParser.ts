@@ -26,6 +26,7 @@ import { useStageInitializer } from './useStageInitializer';
 import { useMessageRouter } from './useMessageRouter';
 import { useAccountParser } from './useAccountParser';
 import { useLogGmcpParser } from './useLogGmcpParser';
+import { useSpectateAutomator } from '../useSpectateAutomator';
 import { occupantAnims, getOccupantKey, DIR_WORD_TO_CODE } from '../../components/Mapper/occupantAnimStore';
 
 export function useGameParser(deps: UseGameParserDeps) {
@@ -53,12 +54,19 @@ export function useGameParser(deps: UseGameParserDeps) {
         accountState, setAccountState, accountStageRef, setGameState, setMessages,
         isSpectateMode,
         setSpectateStats, setSpectateHealthStatus, setSpectateOpponentName, setSpectateOpponentStatus,
-        setSpectatePosition, setSpectateWaiting, setSpectateRoomName, setSpectateInCombat, setSpectateCharacterName,
-        spectateCharacterName, roomPlayers,
+        setSpectatePosition, setSpectateWaiting, setSpectateRoomName,
+        setSpectateTerrain, setSpectateRoomZone, setSpectateLighting, setSpectateWeather, setSpectateIsFoggy,
+        setSpectateInCombat, setSpectateCharacterName,
+        spectateCharacterName, roomPlayers, spectateRoomName, spectateRoomDesc, setSpectateRoomDesc,
         processMessageHtml,
         sessionMode,
         help,
-        setIsPasswordMode
+        setIsPasswordMode,
+        spectateQueue,
+        setSpectateQueue,
+        lastSnoopStartTime,
+        setLastSnoopStartTime,
+        addSystemMessage
     } = deps;
 
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef, playRandomSound });
@@ -101,13 +109,14 @@ export function useGameParser(deps: UseGameParserDeps) {
         setSpectateOpponentName, setSpectateOpponentStatus, setSpectateInCombat
     });
 
-    const { parseLogGmcp } = useLogGmcpParser({
+    const { parseLogGmcp, resetSpectateContext } = useLogGmcpParser({
         setSpectateStats, setSpectateHealthStatus, setSpectateOpponentName,
-        setSpectateOpponentStatus, setSpectatePosition, setSpectateWaiting, setSpectateRoomName,
+        setSpectateOpponentStatus, setSpectatePosition, setSpectateWaiting, setSpectateRoomName, setSpectateRoomDesc: setSpectateRoomDesc as any,
+        setSpectateTerrain, setSpectateRoomZone, setSpectateLighting, setSpectateWeather, setSpectateIsFoggy,
         setSpectateInCombat, setSpectateCharacterName, 
         setRoomPlayers: deps.setRoomPlayers, setRoomNpcs: deps.setRoomNpcs,
         setRoomItems: deps.setRoomItems,
-        setRoomName, setRoomDesc,
+        setRoomName, setRoomDesc, setRoomExits: deps.setRoomExits,
         characterName: deps.characterName,
         mapperRef,
         detectLighting: deps.detectLighting,
@@ -128,7 +137,10 @@ export function useGameParser(deps: UseGameParserDeps) {
     });
 
     const { detectRoom } = useRoomParser({
-        roomNameRef, roomDescRef, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, isDrawerCapture, isSilentCapture
+        roomNameRef, roomDescRef, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, isDrawerCapture, isSilentCapture,
+        isSpectateMode: deps.isSpectateMode,
+        spectateRoomName, spectateRoomDesc
+        // Using roomDescRef from useLogGmcpParser might need an explicit spectateRoomDesc ref or state string if MUME sends it, but for now we just pass what we have
     });
 
     const { parseAtmosphere } = useAtmosphereParser({
@@ -183,6 +195,20 @@ export function useGameParser(deps: UseGameParserDeps) {
         clearLog: deps.clearLog,
         setIsPasswordMode
     });
+    
+    const automator = useSpectateAutomator({
+        spectateQueue,
+        setSpectateQueue,
+        lastSnoopStartTime,
+        setLastSnoopStartTime,
+        spectateCharacterName,
+        setSpectateCharacterName,
+        executeCommand: (cmd, silent, isSystem) => executeCommandRef.current?.(cmd, silent, isSystem),
+        addSystemMessage,
+        isSpectateMode,
+        setIsSpectateMode: deps.setIsSpectateMode,
+        resetSpectateContext
+    });
 
     // NOTE: Account parsing is handled entirely inside processLine() via the
     // parseAccountLine call below. The old activePrompt watcher was removed because
@@ -200,6 +226,14 @@ export function useGameParser(deps: UseGameParserDeps) {
         };
     }, []);
 
+    // Emergency Spectate Sync: If we start spectating, we are definitely NOT stuck in account menu.
+    useEffect(() => {
+        if (isSpectateMode && deps.gameState === 'account') {
+            setGameState('playing');
+            setAccountState(prev => ({ ...prev, stage: 'none' }));
+        }
+    }, [isSpectateMode, deps.gameState, setGameState, setAccountState]);
+
     const processLine = useCallback((line: string) => {
         let cleanLine = line.replace(/\r$/, '').normalize('NFC');
         // We no longer return early on empty lines to allow "compact off" (blank lines) to be visible.
@@ -208,7 +242,14 @@ export function useGameParser(deps: UseGameParserDeps) {
         // --- GMCP Text Leak Suppression ---
         // Some modes (like spectating or server bugs) may cause GMCP to bleed through as text.
         // We always try to parse and suppress these lines to avoid log pollution.
-        if (parseLogGmcp(cleanLine)) return null;
+        if (parseLogGmcp(cleanLine)) {
+            // Emergency sync: If we are in account mode but receiving gameplay GMCP, we've transitioned.
+            if (deps.gameState === 'account') {
+                setGameState('playing');
+                setAccountState(prev => ({ ...prev, stage: 'none' }));
+            }
+            return null;
+        }
 
         // --- Spectate Mode (Snoop Mapping) ---
         // Snoop prefixes typically look like '&I ' (Input/Command) or '&O ' (Output)
@@ -233,6 +274,12 @@ export function useGameParser(deps: UseGameParserDeps) {
         // Final safety catch for commands: if it was snooped and the text starts with '>', it's a command.
         if (isSnoop && textOnly.trim().startsWith('>')) {
             isSnoopInput = true;
+            
+            // Trigger 2: Detect snooped player sending <stop>
+            const trimmedCmd = textOnly.trim().substring(1).trim().toLowerCase(); // Remove the '>' and trim
+            if (trimmedCmd === '<stop>' || trimmedCmd === "'<stop>'" || trimmedCmd === '"<stop>"') {
+                automator.stopSnoop(true);
+            }
         }
 
         let lower = textOnly.trim().toLowerCase();
@@ -257,6 +304,20 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
         if (isPromptMatch) {
+            // Support spectate lighting sync from snooped prompts
+            if (isSpectateMode && isSnoop && deps.setSpectateLighting) {
+                const cleanForSearch = promptInfo.promptPart.replace(/\[.*?\]/g, '');
+                let type: import('../../types').LightingType = 'none';
+                if (cleanForSearch.includes('!')) type = 'artificial';
+                else if (cleanForSearch.includes('*')) type = 'sun';
+                else if (cleanForSearch.includes(')') || cleanForSearch.includes('(')) type = 'moon';
+                else if (/\bo\b/i.test(cleanForSearch) || cleanForSearch.includes(' o ') || cleanForSearch.endsWith(' o>')) type = 'dark';
+                
+                if (type !== 'none') {
+                    deps.setSpectateLighting(type);
+                }
+            }
+
             if (!attachedText) {
                 if (isSpectateMode) {
                     addMessage('prompt', cleanLine, false);
@@ -279,6 +340,12 @@ export function useGameParser(deps: UseGameParserDeps) {
                 cleanLine = cleanLine.replace(/^(?:\x1b\[[0-9;]*m)*[^>]*>/, '').trim();
                 textOnly = attachedText;
                 lower = attachedText.toLowerCase();
+            }
+
+            // Emergency sync: if we see a gameplay prompt, we are definitely in-game.
+            if (promptInfo.isGameplayPrompt && deps.gameState === 'account') {
+                setGameState('playing');
+                setAccountState(prev => ({ ...prev, stage: 'none' }));
             }
         }
 
@@ -579,6 +646,31 @@ export function useGameParser(deps: UseGameParserDeps) {
         const commInfo = parseComm(cleanLine, textOnly, lower);
         if (commInfo.isSuppressed) return;
 
+        // Trigger 1 & 2: Detect incoming tells containing <spectateme> or <stop>
+        const isTell = commInfo.replyCommand === 'tell' || commInfo.commAction?.toLowerCase().includes('tell');
+        if (isTell && (commInfo.commSender || commInfo.replyTarget) && commInfo.commText) {
+            const cleanCommText = commInfo.commText.trim().replace(/^['"](.*)['"]$/, '$1').trim();
+            const rawSender = commInfo.commSender || commInfo.replyTarget || '';
+            const cleanSender = rawSender.replace(/\x1b\[[0-9;]*m/g, '').trim();
+
+            if (cleanCommText === '<spectateme>') {
+                automator.addToQueue(cleanSender);
+            } else if (cleanCommText === '<stop>') {
+                const targetCharName = spectateCharacterName?.toLowerCase() || '';
+                const senderNameLower = cleanSender.toLowerCase();
+                
+                console.log('[Automator] Stop Request from:', cleanSender, 'Current Target:', spectateCharacterName);
+                
+                if (targetCharName === senderNameLower) {
+                    console.log('[Automator] Stopping snoop for current target');
+                    automator.stopSnoop(true);
+                } else {
+                    console.log('[Automator] Removing sender from queue');
+                    automator.removeFromQueue(cleanSender);
+                }
+            }
+        }
+
         let msgType = routeMessage(commInfo.msgType, textOnlyWithSpaces, lower, cleanLine, attachedText, isPromptMatch);
         if (isRoomDescription) msgType = 'room-description';
         if (isSnoopInput) msgType = 'snoop-command';
@@ -611,7 +703,17 @@ export function useGameParser(deps: UseGameParserDeps) {
 
 
         if (promptInfo.isEndPrompt) finalizeCapture();
-    }, [addMessage, setInventoryLines, setStatsLines, setPracticeLines, setWhoLines, setWhereLines, setEqLines, setWhoList, setWhereList, deps, processTriggers, roomNameRef, setPopoverState, finalizeCapture, parsePrompt, checkCombatMatch, handleCombatExit, handleXpTicker, parseGlobalStatus, parseDetailedScore, detectRoom, parseAtmosphere, trackAction, parseComm, createLines, resetNounCounts, resetContainerStack, practice, shop, quests, setCharacterInfo, setDiscoveredItems, executeCommandRef, captureStage, ansiConvert, extractNoun, initializeStage, determineVisibility, routeMessage, detectItemsInRoom, mumeEditState.isOpen, setMumeEditState]);
+    }, [addMessage, setInventoryLines, setStatsLines, setPracticeLines, setWhoLines, setWhereLines, setEqLines, setWhoList, setWhereList, deps, processTriggers, roomNameRef, setPopoverState, finalizeCapture, parsePrompt, checkCombatMatch, handleCombatExit, handleXpTicker, parseGlobalStatus, parseDetailedScore, detectRoom, parseAtmosphere, trackAction, parseComm, createLines, resetNounCounts, resetContainerStack, practice, shop, quests, setCharacterInfo, setDiscoveredItems, executeCommandRef, captureStage, ansiConvert, extractNoun, initializeStage, determineVisibility, routeMessage, detectItemsInRoom, mumeEditState.isOpen, setMumeEditState, 
+        setSpectateStats, setSpectateHealthStatus, setSpectateOpponentName, setSpectateOpponentStatus,
+        setSpectatePosition, setSpectateWaiting, setSpectateRoomName,
+        setSpectateTerrain, setSpectateRoomZone, setSpectateLighting, setSpectateWeather, setSpectateIsFoggy,
+        setSpectateInCombat, setSpectateCharacterName]);
 
-    return { processLine, finalizeCapture };
+    return { 
+        processLine, 
+        finalizeCapture,
+        addToQueue: automator.addToQueue,
+        rotateQueue: automator.rotateQueue,
+        removeFromQueue: automator.removeFromQueue
+    };
 }

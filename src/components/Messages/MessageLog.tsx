@@ -430,11 +430,13 @@ const MessageLog: React.FC<MessageLogProps> = ({
         const isThrottled = now - lastScrollCallRef.current < 16;
 
         if (isNewMessage) {
-            if (viewport.isLockedToBottomRef.current || lastMsg?.type === 'user') {
+            // In Spectate Mode, we always want to follow the action unless the user manually scrolled up.
+            // The isLockedToBottomRef already tracks if we are at the bottom.
+            if (viewport.isLockedToBottomRef.current || lastMsg?.type === 'user' || isSpectateMode) {
                 viewport.isLockedToBottomRef.current = true;
                 lastScrollCallRef.current = now;
                 requestAnimationFrame(() => {
-                    viewport.scrollToBottom(true, lastMsg?.type === 'user', 'NewMessage');
+                    viewport.scrollToBottom(true, lastMsg?.type === 'user' || isSpectateMode, 'NewMessage');
                 });
             }
         } else if (viewport.isLockedToBottomRef.current && !isThrottled) {

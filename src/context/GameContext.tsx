@@ -291,7 +291,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         waiting: s.isSpectateMode ? s.spectateWaiting : v.stats.conditions?.waiting,
         manualCancelRef,
         gameState: s.gameState,
-        isSpectateMode: s.isSpectateMode
+        isSpectateMode: s.isSpectateMode,
+        spectateRoomZone: s.spectateRoomZone,
+        spectateTerrain: s.spectateTerrain,
+        spectateLighting: s.spectateLighting,
+        spectateWeather: s.spectateWeather,
+        spectateIsFoggy: s.spectateIsFoggy,
+        spectateInCombat: s.spectateInCombat
     });
 
     useEffect(() => {
@@ -476,6 +482,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         roomName: s.roomName,
         setRoomName: s.setRoomName,
         setRoomDesc: s.setRoomDesc,
+        setRoomExits: s.setRoomExits,
         isNewbieMode: s.isNewbieMode,
         popoverState: s.popoverState,
         setPopoverState: s.setPopoverState,
@@ -494,6 +501,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setSpectatePosition: s.setSpectatePosition,
         setSpectateWaiting: s.setSpectateWaiting,
         setSpectateRoomName: s.setSpectateRoomName,
+        setSpectateTerrain: s.setSpectateTerrain,
+        setSpectateRoomZone: s.setSpectateRoomZone,
+        setSpectateLighting: s.setSpectateLighting,
+        setSpectateWeather: s.setSpectateWeather,
+        setSpectateIsFoggy: s.setSpectateIsFoggy,
         setSpectateInCombat: s.setSpectateInCombat,
         setSpectateCharacterName: s.setSpectateCharacterName,
         characterInfo: v.characterInfo,
@@ -533,12 +545,21 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setRoomItems: s.setRoomItems,
         roomPlayers: s.roomPlayers,
         spectateCharacterName: s.spectateCharacterName,
+        spectateRoomName: s.spectateRoomName,
+        spectateRoomDesc: s.spectateRoomDesc,
+        setSpectateRoomDesc: s.setSpectateRoomDesc,
+        spectateQueue: s.spectateQueue,
+        setSpectateQueue: s.setSpectateQueue,
+        lastSnoopStartTime: s.lastSnoopStartTime,
+        setLastSnoopStartTime: s.setLastSnoopStartTime,
         registerEntity: s.registerEntity,
         inlineCategories: s.inlineCategories,
         spectateStats: v.spectateStats,
         characterName: s.characterName,
         sessionMode: sessionMode,
-        setIsPasswordMode: s.setIsPasswordMode
+        setIsPasswordMode: s.setIsPasswordMode,
+        addSystemMessage,
+        setIsSpectateMode: settings.setIsSpectateMode
     });
 
 
@@ -1105,7 +1126,17 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             stopRecording: recorder.stopRecording,
             stopAndSave: recorder.stopAndSave,
             saveLog: recorder.saveLog,
-            recordEntry: recorder.recordEntry
+            recordEntry: recorder.recordEntry,
+            spectateQueue: s.spectateQueue,
+            setSpectateQueue: s.setSpectateQueue,
+            lastSnoopStartTime: s.lastSnoopStartTime,
+            setLastSnoopStartTime: s.setLastSnoopStartTime,
+            isSpectateMode,
+            spectateCharacterName: s.spectateCharacterName || base.characterName,
+            setSpectateCharacterName: s.setSpectateCharacterName,
+            addToQueue: parser.addToQueue,
+            rotateQueue: parser.rotateQueue,
+            removeFromQueue: parser.removeFromQueue,
         };
     }, [
         s, sessionMode, replayHUDState, isSpectateMode, spectateTarget, accentColor, teleportTargets,
@@ -1118,7 +1149,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         settings, audioCtxRef, telnet, parser, spatButtons, diagnosticLogs, addDiagnosticLog,
         handleLogPointerDown, handleLogPointerUp,
         handleSaveMumeEdit, s.setQuests, addMessage, addSystemMessage,
-        s.gameState, s.setGameState, prepareLoginAttempt, theaterReplayer
+        s.spectateCharacterName, s.setSpectateCharacterName, s.spectateQueue, s.lastSnoopStartTime,
+        s.gameState, s.setGameState, prepareLoginAttempt, theaterReplayer,
+        parser.addToQueue, parser.rotateQueue, parser.removeFromQueue
     ]);
 
     const logValue = useMemo(() => ({

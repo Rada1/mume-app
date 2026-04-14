@@ -22,6 +22,7 @@ The MUME Client is an **AI-Native, Hook-Driven Mobile Client** for the MUME MUD.
 | **Fix UI/Layout** | `src/components/Layout/`, `src/styles/layout.css` |
 | **Edit Command Flow** | `src/hooks/useCommandController.ts`, `src/hooks/useCommandExecutor.ts` |
 | **Adjust Mapper** | `src/components/Mapper/`, `src/mapper/renderer.ts` |
+| **Spectate Rotation** | `src/hooks/useSpectateAutomator.ts`, `src/hooks/GameParser/useGameParser.ts` |
 
 ## 🚀 Efficiency Shortcuts for AI
 - **GMCP over Text:** Always prefer GMCP data updates over regex-parsing game text when possible.

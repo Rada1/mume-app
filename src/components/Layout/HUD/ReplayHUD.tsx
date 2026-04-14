@@ -66,7 +66,7 @@ export const ReplayHUD: React.FC = () => {
                 border: '1px solid rgba(74, 144, 226, 0.4)',
                 borderRadius: '16px',
                 padding: '12px 20px',
-                zIndex: 10000,
+                zIndex: 9000,
                 backdropFilter: 'blur(12px)',
                 boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
                 display: 'flex',

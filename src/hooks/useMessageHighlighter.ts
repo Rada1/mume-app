@@ -119,6 +119,11 @@ export const useMessageHighlighter = (
             return originalHtml;
         }
 
+        // --- 0.1. Rule: No highlighting for Room Names and Room Descriptions ---
+        if (isRoomName || type === 'room-description') {
+            return originalHtml;
+        }
+
         // --- 1. Rule: Specialized Comm Sender Highlighting ---
         // If the type is 'comm-sender', we treat the entire input as a player name
         // and wrap it in the same interactive button markup used for PCs.

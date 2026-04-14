@@ -190,7 +190,8 @@
 .joystick-cluster, 
 .xbox-cluster, 
 .custom-btn:not(.is-swiping),
-.reset-zoom-fab {
+.reset-zoom-fab,
+.spectate-queue-hud {
     pointer-events: auto !important;
 }
 

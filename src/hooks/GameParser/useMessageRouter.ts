@@ -139,16 +139,22 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
 
         // --- Generic Fallback (e.g. A carrot is here) ---
         if (objects.length === 0) {
-            const itemMatch = textOnly.match(/^(?:A|An|The|Some|a|an|the|some)\s+(.*?)\s+(?:is|are)\s+here\s*[.!]?$/i);
+            // Refined regex to ensure the object name itself isn't just a filler word
+            const itemMatch = textOnly.match(/^(?:A|An|The|Some|a|an|the|some)\s+(.+?)\s+(?:is|are)\s+here\s*[.!]?$/i);
             if (itemMatch) {
-                objects.push(itemMatch[1]);
+                const potentialName = itemMatch[1].trim();
+                // Avoid matching "You are here" (if snoop prefix missed) or "It is here"
+                if (!/^(you|it|they|he|she|to|at|here)$/i.test(potentialName)) {
+                    objects.push(potentialName);
+                }
             }
         }
 
         // --- Add Identified Objects to Tracker ---
+        const skipNouns = /^(here|to|at|is|are|the|some|you|it|from|with|in|on|by)$/i;
         objects.forEach(objName => {
             const noun = extractNoun(objName);
-            if (noun && noun.length > 2) {
+            if (noun && noun.length > 2 && !skipNouns.test(noun)) {
                 // Add to discovered items for highlighter
                 setDiscoveredItems(prev => Array.from(new Set([...prev, noun])));
                 

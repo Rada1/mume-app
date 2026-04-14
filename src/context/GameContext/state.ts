@@ -256,10 +256,20 @@ export const useGameProviderState = () => {
     const [spectatePosition, setSpectatePosition] = useState<string>('standing');
     const [spectateWaiting, setSpectateWaiting] = useState<boolean>(false);
     const [spectateRoomName, setSpectateRoomName] = useState<string | null>(null);
+    const [spectateRoomDesc, setSpectateRoomDesc] = useState<string | null>(null);
+    const [spectateTerrain, setSpectateTerrain] = useState<string>('city');
+    const [spectateRoomZone, setSpectateRoomZone] = useState<string | null>(null);
+    const [spectateLighting, setSpectateLighting] = useState<LightingType>('none');
+    const [spectateWeather, setSpectateWeather] = useState<WeatherType>('none');
+    const [spectateIsFoggy, setSpectateIsFoggy] = useState(false);
     const [spectateInCombat, setSpectateInCombat] = useState(false);
     const [spectateCharacterName, setSpectateCharacterName] = useState<string | null>(null);
 
     const captureStage = useRef<import('../../types').CaptureStage>('none');
+
+    // --- Spectate Automation State ---
+    const [spectateQueue, setSpectateQueue] = useState<string[]>([]);
+    const [lastSnoopStartTime, setLastSnoopStartTime] = useState<number | null>(null);
 
     // Optimistic inventory/equipment overlay
     const [optimisticInventoryLines, setOptimisticInventoryLines] = useState<DrawerLine[] | null>(null);
@@ -519,7 +529,9 @@ export const useGameProviderState = () => {
         spectateStats, setSpectateStats,
         spectateHealthStatus, setSpectateHealthStatus,
         spectateOpponentName, setSpectateOpponentName,
-        spectateOpponentStatus, setSpectateOpponentStatus
+        spectateOpponentStatus, setSpectateOpponentStatus,
+        spectateQueue, setSpectateQueue,
+        lastSnoopStartTime, setLastSnoopStartTime
     }), [stats, target, activePrompt, rumble, deathRoomId, heldButton, isMendingMode, mendingTarget,
         playerHealthStatus, opponentHealthStatus, opponentName, opponentId, bufferHealthStatus, bufferName, pendingMove, characterInfo, groupMembers,
         xpHistory, xpEvent, triggerXpTicker, hitFlashEvent, oppHitFlashEvent, accountState,
@@ -549,10 +561,10 @@ export const useGameProviderState = () => {
         currentTerrain, setCurrentTerrain,
         ui, setUI,
         setIsStatsOpen, setIsEquipmentOpen, setIsInventoryOpen, setIsCharacterOpen, setIsMapExpanded, setIsSetManagerOpen, setIsPlayersOpen,
-        lighting, setLighting,
+        lighting: settings.isSpectateMode ? spectateLighting : lighting, setLighting,
         lightningEnabled, setLightningEnabled,
-        weather, setWeather,
-        isFoggy, setIsFoggy,
+        weather: settings.isSpectateMode ? spectateWeather : weather, setWeather,
+        isFoggy: settings.isSpectateMode ? spectateIsFoggy : isFoggy, setIsFoggy,
         abilities, setAbilities,
         characterClass, setCharacterClass,
         actions, setActions, actionsRef,
@@ -622,6 +634,12 @@ export const useGameProviderState = () => {
         spectatePosition, setSpectatePosition,
         spectateWaiting, setSpectateWaiting,
         spectateRoomName, setSpectateRoomName,
+        spectateRoomDesc, setSpectateRoomDesc,
+        spectateTerrain, setSpectateTerrain,
+        spectateRoomZone, setSpectateRoomZone,
+        spectateLighting, setSpectateLighting,
+        spectateWeather, setSpectateWeather,
+        spectateIsFoggy, setSpectateIsFoggy,
         spectateInCombat, setSpectateInCombat,
         spectateCharacterName, setSpectateCharacterName,
         handleTabClick, toggleMap,
@@ -630,6 +648,8 @@ export const useGameProviderState = () => {
         spectateHealthStatus, setSpectateHealthStatus,
         spectateOpponentName, setSpectateOpponentName,
         spectateOpponentStatus, setSpectateOpponentStatus,
+        spectateQueue, setSpectateQueue,
+        lastSnoopStartTime, setLastSnoopStartTime,
         fontFamily, setFontFamily,
         accountStageRef
     }), [
@@ -647,8 +667,11 @@ export const useGameProviderState = () => {
         entities, setEntities, registerEntity, getEntity, clearRegistry, selectedObjectIds, toggleObjectSelection, clearObjectSelection,
         settings.isSpectateMode, settings.setIsSpectateMode, spectateTargetId, setSpectateTargetId,
         isTimestampEnabled, setIsTimestampEnabled,
-        spectatePosition, spectateWaiting, spectateRoomName, spectateInCombat, spectateCharacterName,
-        spectateStats, spectateHealthStatus, spectateOpponentName, spectateOpponentStatus,
+        spectatePosition, spectateWaiting, spectateRoomName, 
+        spectateTerrain, spectateRoomZone, spectateLighting, spectateWeather, spectateIsFoggy,
+        spectateInCombat, spectateCharacterName,
+        spectateStats, setSpectateStats, spectateHealthStatus, spectateOpponentName, spectateOpponentStatus,
+        spectateQueue, setSpectateQueue, lastSnoopStartTime, setLastSnoopStartTime,
         opponentName, opponentId, fontFamily, setFontFamily, accountStageRef
     ]);
 

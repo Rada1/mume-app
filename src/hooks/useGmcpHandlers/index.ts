@@ -113,13 +113,15 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
     });
 
     const onCharNameChange = useCallback((name: string | null) => {
+        if (props.isSpectateMode) return; // Don't let user's name change affect spectate HUD
+        
         if (props.characterName && name !== props.characterName) {
             props.setAbilities({});
             const msg = `Character changed to ${name}. Abilities reset.`;
             props.addMessage('system', msg, undefined, undefined, undefined, { textOnly: msg, lower: msg.toLowerCase() });
         }
         props.setCharacterName(name);
-    }, [props.characterName, props.setAbilities, props.addMessage, props.setCharacterName]);
+    }, [props.characterName, props.setAbilities, props.addMessage, props.setCharacterName, props.isSpectateMode]);
 
     const onComm = useCallback((_sender: string, _chan: string, _msg: string) => {
         // Comm messages arrive via plain text through processLine; the GMCP metadata

@@ -20,7 +20,7 @@ export const extractMumeKeyword = (label: string): string => {
     // quantifiers that indicate the true noun is after "of"
     const isOfQuantifier = /\b(pair|pairs|set|piece|bundle|pile|handful|bit|slice|loaf|lump|chunk|portion)\b/i;
     // words to filter out when isolating the keyword
-    const skipWords = /^(of|a|an|the|some|several|many|various|pair|pairs|set|piece|bundle|pile|handful|bit|slice|loaf|lump|chunk|portion)$/i;
+    const skipWords = /^(of|a|an|the|some|several|many|various|pair|pairs|set|piece|bundle|pile|handful|bit|slice|loaf|lump|chunk|portion|is|are|at|to|here|from|with|in|on|by)$/i;
 
     // Handle "X of Y" patterns
     const ofMatch = name.match(/^(.+?)\s+of\s+(.+)$/);

@@ -42,7 +42,7 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
             preMoveRef.current = { dir, targetId, time: Date.now() };
             contextTriggerRender();
         },
-    }), [handleAddRoom, handleDeleteRoom, handleResetAndSync, handleMoveConfirmed, handleMoveFailure, options.onRecenter, currentRoomIdRef, roomsRef, preloadedCoordsRef, pushPendingMove, preMoveRef, contextTriggerRender]);
+    }), [handleRoomInfo, handleUpdateExits, handleTerrain, handleAddRoom, handleDeleteRoom, handleResetAndSync, handleMoveConfirmed, handleMoveFailure, options.onRecenter, currentRoomIdRef, roomsRef, preloadedCoordsRef, pushPendingMove, preMoveRef, contextTriggerRender]);
 
 
     return {

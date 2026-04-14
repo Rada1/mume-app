@@ -89,9 +89,16 @@ export interface UseGameParserDeps {
     setSpectatePosition: (pos: string) => void;
     setSpectateWaiting: (val: boolean) => void;
     setSpectateRoomName: (name: string | null) => void;
+    setSpectateTerrain: (terrain: string) => void;
+    setSpectateRoomZone: (zone: string | null) => void;
+    setSpectateLighting: (light: import('../../types').LightingType) => void;
+    setSpectateWeather: (w: import('../../types').WeatherType) => void;
+    setSpectateIsFoggy: (f: boolean) => void;
     setSpectateInCombat: (val: boolean) => void;
     setSpectateCharacterName: (name: string | null) => void;
     spectateStats: GameStats;
+    spectateRoomDesc?: string | null;
+    setSpectateRoomDesc?: (desc: string | null) => void;
     characterName: string | null;
     setRoomPlayers: React.Dispatch<React.SetStateAction<import('../../types').GmcpOccupant[]>>;
     setRoomNpcs: React.Dispatch<React.SetStateAction<import('../../types').GmcpOccupant[]>>;
@@ -102,6 +109,7 @@ export interface UseGameParserDeps {
     setRoomItems: React.Dispatch<React.SetStateAction<import('../../types').GmcpOccupant[]>>;
     setRoomName: (name: string | null) => void;
     setRoomDesc: (desc: string | null) => void;
+    setRoomExits: (exits: string[]) => void;
     setAbilities: (val: Record<string, number> | ((prev: Record<string, number>) => Record<string, number>)) => void;
     setCharacterClass: (val: any) => void;
     setInCombat: (val: boolean, force?: boolean) => void;
@@ -116,4 +124,9 @@ export interface UseGameParserDeps {
     sessionMode?: 'live' | 'replay';
     help: any;
     setIsPasswordMode: (val: boolean) => void;
+    spectateQueue: string[];
+    setSpectateQueue: (val: string[] | ((prev: string[]) => string[])) => void;
+    lastSnoopStartTime: number | null;
+    setLastSnoopStartTime: (val: number | null) => void;
+    setIsSpectateMode?: (val: boolean) => void;
 }

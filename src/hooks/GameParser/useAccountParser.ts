@@ -200,7 +200,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         }
 
         // Account Menu Format
-        const logonRegex = /(\d+\s+(?:days?|yrs?|wks?|weeks?|months?|mths?|hours?|hrs?|mins?|secs?|ago|years?)|Yesterday|Today|Never|new|Playing|no link|Retired|Dead)/i;
+        const logonRegex = /(\d+\s+(?:days?|yrs?|wks?|weeks?|months?|mths?|hours?|hrs?|mins?|secs?|ago|years?)|Yesterday|Today|Never|\bnew\b|\bPlaying\b|\bno link\b|\bRetired\b|\bDead\b)/i;
         const logonMatchLine = cleanLine.match(logonRegex);
         
         // Stricter check for Account Menu Format to avoid false positives like "If you have never..."
