@@ -20,22 +20,74 @@ const STATIC_MUSIC_MAP: Record<string, string | string[]> = {
         '/assets/Sounds/Zone Sounds/oldeastroad.mp3', 
         '/assets/Sounds/Zone Sounds/oldeastroad2.mp3'
     ],
+    'the old east road': [
+        '/assets/Sounds/Zone Sounds/oldeastroad.mp3', 
+        '/assets/Sounds/Zone Sounds/oldeastroad2.mp3'
+    ],
     'shire': [
         '/assets/Sounds/Zone Sounds/Shire1.mp3', 
         '/assets/Sounds/Zone Sounds/Shire2.mp3'
     ],
-    'blue mountains': '/assets/Music/blue_mountains.mp3',
-    'old forest': '/assets/Music/old_forest.mp3',
-    'barrow-downs': '/assets/Music/downs.mp3',
+    'the shire': [
+        '/assets/Sounds/Zone Sounds/Shire1.mp3', 
+        '/assets/Sounds/Zone Sounds/Shire2.mp3'
+    ],
+    'blue mountains': '/assets/Sounds/Zone Sounds/Blue Mountains.mp3',
+    'the blue mountains': '/assets/Sounds/Zone Sounds/Blue Mountains.mp3',
+    'old forest': '/assets/Sounds/Zone Sounds/Old Forest.mp3',
+    'the old forest': '/assets/Sounds/Zone Sounds/Old Forest.mp3',
     'rivendell': [
         '/assets/Sounds/Zone Sounds/Rivendell1.mp3', 
         '/assets/Sounds/Zone Sounds/Rivendell2.mp3', 
         '/assets/Sounds/Zone Sounds/Rivendell3.mp3'
     ],
     'grey havens': '/assets/Sounds/Zone Sounds/Gray Havens1.mp3',
-    'north anduin': '/assets/Sounds/Zone Sounds/northanduin.mp3',
-    'road to tharbad': '/assets/Sounds/Zone Sounds/roadtotharbad.mp3',
+    'the grey havens': '/assets/Sounds/Zone Sounds/Gray Havens1.mp3',
+    'north anduin': [
+        '/assets/Sounds/Zone Sounds/northanduin.mp3',
+        '/assets/Sounds/Zone Sounds/North Anduin.mp3'
+    ],
+    'the northern anduin vale': [
+        '/assets/Sounds/Zone Sounds/northanduin.mp3',
+        '/assets/Sounds/Zone Sounds/North Anduin.mp3'
+    ],
+    'road to tharbad': [
+        '/assets/Sounds/Zone Sounds/roadtotharbad.mp3',
+        '/assets/Sounds/Zone Sounds/Road to Tharbad.mp3'
+    ],
+    'the road to tharbad': [
+        '/assets/Sounds/Zone Sounds/roadtotharbad.mp3',
+        '/assets/Sounds/Zone Sounds/Road to Tharbad.mp3'
+    ],
     'road to fornost': '/assets/Sounds/Zone Sounds/roadtofornost1.mp3',
+    'the road to fornost': '/assets/Sounds/Zone Sounds/roadtofornost1.mp3',
+    'ancient broken road': '/assets/Sounds/Zone Sounds/Ancient Broken Road.mp3',
+    'the ancient broken road': '/assets/Sounds/Zone Sounds/Ancient Broken Road.mp3',
+    'dunland': '/assets/Sounds/Zone Sounds/Dunland.mp3',
+    'gladden fields': '/assets/Sounds/Zone Sounds/Gladden Fields.mp3',
+    'the gladden fields': '/assets/Sounds/Zone Sounds/Gladden Fields.mp3',
+    'goblin-town': '/assets/Sounds/Zone Sounds/Goblin Town.mp3',
+    'the goblin-town': '/assets/Sounds/Zone Sounds/Goblin Town.mp3',
+    'midgewaters': '/assets/Sounds/Zone Sounds/MidgeWater.mp3',
+    'the midgewaters': '/assets/Sounds/Zone Sounds/MidgeWater.mp3',
+    'misty mountains': [
+        '/assets/Sounds/Zone Sounds/Misty Mountains.mp3',
+        '/assets/Sounds/Zone Sounds/Misty Mountains 2.mp3'
+    ],
+    'the misty mountains': [
+        '/assets/Sounds/Zone Sounds/Misty Mountains.mp3',
+        '/assets/Sounds/Zone Sounds/Misty Mountains 2.mp3'
+    ],
+    'road to grey havens': '/assets/Sounds/Zone Sounds/Road to Grey Havens.mp3',
+    'the road to grey havens': '/assets/Sounds/Zone Sounds/Road to Grey Havens.mp3',
+    'rohan': '/assets/Sounds/Zone Sounds/Rohan.mp3',
+    'tharbad': '/assets/Sounds/Zone Sounds/Tharbad.mp3',
+    'trollshaws': '/assets/Sounds/Zone Sounds/Troll Shaws.mp3',
+    'the trollshaws': '/assets/Sounds/Zone Sounds/Troll Shaws.mp3',
+    'troll warrens': '/assets/Sounds/Zone Sounds/warrens.mp3',
+    'the troll warrens': '/assets/Sounds/Zone Sounds/warrens.mp3',
+    'weathertop': '/assets/Sounds/Zone Sounds/Weathertop.mp3',
+    'the weathertop': '/assets/Sounds/Zone Sounds/Weathertop.mp3',
 };
 
 const FIGHT_MUSIC_URLS = [
