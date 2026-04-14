@@ -159,8 +159,8 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
 
             // Only clear UI if entirely necessary (foreground refresh)
             if (isSilentCapture.current === 0 && isDrawerCapture.current === 0) {
-                setScoreLines([]);
-                setStatsLines([]);
+                if (typeof setScoreLines === 'function') setScoreLines([]);
+                if (typeof setStatsLines === 'function') setStatsLines([]);
             }
         }
 
@@ -244,7 +244,8 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, 
         setScoreLines, setStatsLines, setInfoLines,
         tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef,
-        help.isUiRequested, // Important dependency
+        help, // Important dependency
+
         finalizeCapture
     ]);
 

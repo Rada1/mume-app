@@ -11,7 +11,7 @@ import { LineCluster } from './HUD/LineCluster';
 import { ReplayHUD } from './HUD/ReplayHUD';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/useMapper';
-import { MumeEditor } from '../MumeEditor';
+import { MumeEditor } from '../Utility/MumeEditor';
 
 interface HUDClustersLayerProps {
     handleDragStart: (e: React.PointerEvent, id: string, type: string) => void;

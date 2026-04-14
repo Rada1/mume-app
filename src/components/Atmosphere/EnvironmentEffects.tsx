@@ -1,6 +1,6 @@
 import React from 'react';
 import { LightingType, WeatherType } from '../../types';
-import Rain from '../Rain';
+import Rain from './Rain';
 
 interface EnvironmentEffectsProps {
     lighting: LightingType;

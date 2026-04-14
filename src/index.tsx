@@ -3,13 +3,13 @@ import { createRoot } from 'react-dom/client';
 import { createPortal } from 'react-dom';
 
 import './index.css';
-import './components/MessageLog.css';
+import './components/Messages/MessageLog.css';
 import './components/Controls/Stats.css';
 import './components/Controls/CustomButtons.css';
 import './components/Controls/SwipeWheel.css';
 import './components/Controls/Landscape.css';
-import './components/Drawers.css';
-import './components/Modals.css';
+import './components/Drawers/Drawers.css';
+import './components/Modals/Modals.css';
 import './components/css/Popovers.css';
 import './components/css/HelpGuides.css';
 import './components/css/PremiumSwitch.css';
@@ -19,12 +19,12 @@ import { MainContentLayer } from './components/Layout/MainContentLayer';
 import { HUDClustersLayer } from './components/Layout/HUDClustersLayer';
 import { ModalsLayer } from './components/Layout/ModalsLayer';
 import { AtmosphericLayer } from './components/Layout/AtmosphericLayer';
-import ErrorBoundary from './components/ErrorBoundary';
+import ErrorBoundary from './components/Utility/ErrorBoundary';
 import { GameProvider, useGame, useUI, useVitals, useLog } from './context/GameContext';
 import { MapperProvider } from './context/MapperContext';
-import { SpatButtons } from './components/SpatButtons';
+import { SpatButtons } from './components/Controls/SpatButtons';
 import { useSpatButtons } from './hooks/useSpatButtons';
-import SwipeFeedbackOverlay from './components/SwipeFeedbackOverlay';
+import SwipeFeedbackOverlay from './components/Overlay/SwipeFeedbackOverlay';
 import { MultiSelectToolbar } from './components/Popovers/MultiSelectToolbar';
 
 

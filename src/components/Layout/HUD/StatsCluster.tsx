@@ -1,7 +1,7 @@
 import React from 'react';
-import ModernVitals from '../../ModernVitals';
-import XpTicker from '../../XpTicker';
-import CombatVitals from '../../CombatVitals';
+import ModernVitals from '../../HUD/ModernVitals';
+import XpTicker from '../../Combat/XpTicker';
+import CombatVitals from '../../Combat/CombatVitals';
 import { useVitals, useGame } from '../../../context/GameContext';
 
 interface StatsClusterProps {

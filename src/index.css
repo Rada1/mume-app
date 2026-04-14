@@ -680,9 +680,10 @@
 }
 
 /* --- Critical Desktop Interaction Isolation --- */
-.app-container.is-desktop .message-log-container {
+.app-container.is-desktop .message-log-container,
+.app-container.is-desktop .message,
+.app-container.is-desktop .message-content {
     pointer-events: auto !important;
-    z-index: 7500; /* Above HUD Clusters (7000) to ensure scroll capturing on plain text area */
 }
 
 /* Forces inline buttons to capture events even if buried under transparent wrappers */

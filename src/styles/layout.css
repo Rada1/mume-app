@@ -179,7 +179,6 @@
     inset: 0;
     pointer-events: none;
     z-index: 7000; /* Interactive elements like joystick sit above the log (6500) */
-    overflow: hidden;
 }
 
 .hud-clusters-absolute-layer > * {

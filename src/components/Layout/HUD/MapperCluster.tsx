@@ -4,7 +4,7 @@ import { LineCluster } from './LineCluster';
 import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { useMapper } from '../../../context/useMapper';
 import { GripHorizontal, Map as MapIcon, User, Shield, Users, BarChart2, CloudFog, FileText } from 'lucide-react';
-import InputArea from '../../InputArea';
+import InputArea from '../../Controls/InputArea';
 import { StatsDrawer } from '../../Drawers/StatsDrawer';
 import { CharacterDrawer } from '../../Drawers/CharacterDrawer';
 import { PlayersDrawer } from '../../Drawers/PlayersDrawer';

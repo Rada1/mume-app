@@ -152,9 +152,12 @@ export function useGameParser(deps: UseGameParserDeps) {
     const { initializeStage } = useStageInitializer({
         captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
-        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef,
+        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, 
+        setScoreLines, setStatsLines, setInfoLines,
+        tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef,
         finalizeCapture, help
     });
+
 
     const { routeMessage, determineVisibility, detectItemsInRoom } = useMessageRouter({
         captureStage, isSilentCapture, isDrawerCapture,

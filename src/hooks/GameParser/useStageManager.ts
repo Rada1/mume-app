@@ -214,13 +214,10 @@ export function useStageManager(deps: StageManagerDeps) {
         setPopoverState,
         setEqLines,
         setInventoryLines,
-        setEntities,
-        practice,
-        shop,
-        finalizeQuests,
-        tempEqRef,
-        tempInvRef,
-        tempEntitiesRef
+        setEntities, setStatsLines, setInfoLines, setScoreLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines,
+        practice, shop, help, finalizeQuests,
+        tempEqRef, tempInvRef, tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef, tempEntitiesRef
+
     ]);
 
     return { finalizeCapture };

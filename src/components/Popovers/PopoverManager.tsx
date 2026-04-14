@@ -7,8 +7,8 @@ import { TeleportSavePopover, TeleportSelectPopover, TeleportManagePopover } fro
 import ShopSearchPopover from './ShopSearchPopover';
 import { ContainerPopover } from './ContainerPopover';
 import { ContainerSelectPopover } from './ContainerSelectPopover';
-import { FloatingGroupCard } from '../FloatingGroupCard';
-import { HelpCard } from '../HelpCard';
+import { FloatingGroupCard } from '../HUD/FloatingGroupCard';
+import { HelpCard } from '../Utility/HelpCard';
 import { getHierarchyChain } from '../../utils/buttonHierarchyUtils';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
 

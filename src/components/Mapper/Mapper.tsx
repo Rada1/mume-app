@@ -19,7 +19,7 @@ import { useSmartWalk } from './hooks/useSmartWalk';
 import { useMapperExportImport } from './hooks/useMapperExportImport';
 import { useMapperPlayerTracking } from './hooks/useMapperPlayerTracking';
 import { DpadCluster } from './DpadCluster';
-import '../Mapper.css';
+import './Mapper.css';
 
 interface MapperProps {
     isMinimized?: boolean;

@@ -1,13 +1,13 @@
 import React from 'react';
-import SettingsModal from '../SettingsModal';
-import EditButtonModal from '../EditButtonModal';
-import SetManagerModal from '../SetManagerModal';
+import SettingsModal from '../Modals/SettingsModal';
+import EditButtonModal from '../Modals/EditButtonModal';
+import SetManagerModal from '../Modals/SetManagerModal';
 import { PopoverManager } from '../Popovers/PopoverManager';
 import { DrawerManager } from '../Drawers/DrawerManager';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
-import { OnboardingOverlay } from '../OnboardingOverlay';
-import { KeywordEditModal } from '../KeywordEditModal';
-import { LibraryModal } from '../LibraryModal';
+import { OnboardingOverlay } from '../Overlay/OnboardingOverlay';
+import { KeywordEditModal } from '../Modals/KeywordEditModal';
+import { LibraryModal } from '../Modals/LibraryModal';
 
 
 interface ModalsLayerProps {

@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
-import Header from '../Header';
-import MessageLog from '../MessageLog';
-import InputArea from '../InputArea';
+import Header from '../HUD/Header';
+import MessageLog from '../Messages/MessageLog';
+import InputArea from '../Controls/InputArea';
 import { useGame, useUI, useVitals, useLog } from '../../context/GameContext';
-import CombatStatsPanel from '../CombatStatsPanel';
+import CombatStatsPanel from '../Combat/CombatStatsPanel';
 import { LineCluster } from './HUD/LineCluster';
-import PromptBox from '../PromptBox';
+import PromptBox from '../HUD/PromptBox';
 import { ansiConvert } from '../../utils/ansi';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
 

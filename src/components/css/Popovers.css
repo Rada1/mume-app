@@ -254,7 +254,6 @@
 body.has-popover .viewport-container,
 body.has-popover .xbox-cluster,
 body.has-popover .joystick-container,
-body.has-popover .message-log-container,
 body.has-popover .input-area {
     pointer-events: none !important;
 }

@@ -1,0 +1,379 @@
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import { MessageCircle, Reply, Repeat, XCircle } from 'lucide-react';
+import { SpatButtons } from './SpatButtons';
+import { SpatButton, PopoverState } from '../../types';
+import { useUI, useBaseGame, useVitals, useGame } from '../../context/GameContext';
+import XpTicker from '../Combat/XpTicker';
+
+
+
+interface InputAreaProps {
+    input: string;
+    setInput: (val: string) => void;
+    onSend: (e?: React.FormEvent) => void;
+    terrain?: string;
+    onSwipe?: (dir: string) => void;
+    isMobile?: boolean;
+    isKeyboardOpen?: boolean;
+    commandPreview?: string | null;
+    spatButtons: SpatButton[];
+    setActiveSet: (setId: string) => void;
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean }) => void;
+    setSpatButtons: React.Dispatch<React.SetStateAction<SpatButton[]>>;
+    setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
+    parley: import('../../types').ParleyState;
+    setParley: React.Dispatch<React.SetStateAction<import('../../types').ParleyState>>;
+    whoList: string[];
+    gameState: import('../../types').GameState;
+}
+
+import { normalizeTerrain } from '../../utils/terrainUtils';
+
+const InputArea: React.FC<InputAreaProps> = ({
+    input, setInput, onSend, terrain, onSwipe, isMobile, isKeyboardOpen, commandPreview,
+    spatButtons, setActiveSet, executeCommand, setSpatButtons, setPopoverState, parley, setParley, whoList, gameState
+}) => {
+    const { ui, setUI } = useUI();
+    const { viewport } = useBaseGame();
+    const { stats } = useVitals();
+    const { inCombat, setActiveDragData, triggerHaptic, playClickSound, isSoundEnabled, initAudio } = useGame();
+    const terrainClass = terrain ? `terrain-${normalizeTerrain(terrain)}` : '';
+    const inputRef = useRef<HTMLTextAreaElement>(null);
+    const startPos = useRef<{ x: number, y: number } | null>(null);
+    const [offset, setOffset] = React.useState({ x: 0, y: 0 });
+    const isSwiping = useRef(false);
+
+    // Global listeners to catch fast swipes that leave the element bounds
+    React.useEffect(() => {
+        const handleGlobalPointerMove = (e: PointerEvent) => {
+            if (isSwiping.current && startPos.current) {
+                const dx = e.clientX - startPos.current.x;
+                const dy = e.clientY - startPos.current.y;
+                const absX = Math.abs(dx);
+                const absY = Math.abs(dy);
+
+                // Full circular visual feedback (30px radius)
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const maxDist = 30;
+                const ox = dist > maxDist ? (dx / dist) * maxDist : dx;
+                const oy = dist > maxDist ? (dy / dist) * maxDist : dy;
+                setOffset({ x: ox, y: oy });
+
+                if (dist > 20) {
+                    let peek: any = 'none';
+                    if (dx < -15 && dy < -15) peek = 'inventory'; // NW -> reveal SE
+                    else if (dx > 15 && dy < -15) peek = 'stats'; // NE -> reveal SW
+                    else if (dx < -15 && dy > 15) peek = 'equipment'; // SW -> reveal NE
+                    else if (dx > 15 && dy > 15) peek = 'players'; // SE -> reveal NW
+                    else if (Math.abs(dy) > Math.abs(dx)) peek = dy < 0 ? 'none' : 'character';
+                    else peek = dx < 0 ? 'equipment' : 'stats';
+                    
+                    if (ui.peekingDrawer !== peek) {
+                        setUI(prev => ({ ...prev, peekingDrawer: peek }));
+                    }
+                } else if (ui.peekingDrawer !== 'none') {
+                    setUI(prev => ({ ...prev, peekingDrawer: 'none' }));
+                }
+            }
+        };
+
+        const handleGlobalPointerUp = (e: PointerEvent) => {
+            if (isSwiping.current && startPos.current) {
+                const deltaX = e.clientX - startPos.current.x;
+                const deltaY = e.clientY - startPos.current.y;
+                const absX = Math.abs(deltaX);
+                const absY = Math.abs(deltaY);
+
+                // High sensitivity threshold (35px) for quick flicks
+                if (Math.max(absX, absY) > 35) {
+                    if (deltaX < -25 && deltaY > 25) onSwipe?.('sw');
+                    else if (deltaX > 25 && deltaY < -25) onSwipe?.('ne');
+                    else if (deltaX > 25 && deltaY > 25) onSwipe?.('se');
+                    else if (deltaX < -25 && deltaY < -25) onSwipe?.('nw');
+                    else if (absY > absX) onSwipe?.(deltaY < 0 ? 'up' : 'down');
+                    else onSwipe?.(deltaX < 0 ? 'left' : 'right');
+                }
+            }
+            isSwiping.current = false;
+            startPos.current = null;
+            setOffset({ x: 0, y: 0 });
+        };
+
+        const handleGlobalPointerCancel = () => {
+            isSwiping.current = false;
+            startPos.current = null;
+            setOffset({ x: 0, y: 0 });
+        };
+
+        window.addEventListener('pointermove', handleGlobalPointerMove);
+        window.addEventListener('pointerup', handleGlobalPointerUp);
+        window.addEventListener('pointercancel', handleGlobalPointerCancel);
+
+        return () => {
+            window.removeEventListener('pointermove', handleGlobalPointerMove);
+            window.removeEventListener('pointerup', handleGlobalPointerUp);
+            window.removeEventListener('pointercancel', handleGlobalPointerCancel);
+        };
+    }, [onSwipe]);
+
+    // Reset height when input is cleared
+    React.useEffect(() => {
+        if (!input && inputRef.current) {
+            inputRef.current.style.height = 'auto';
+        }
+    }, [input]);
+
+    // Use a ref for input to avoid closure issues in the event listener
+    const inputRefState = useRef(input);
+    useEffect(() => { inputRefState.current = input; }, [input]);
+
+    useEffect(() => {
+        const handlePasteEvent = (e: any) => {
+            const textToPaste = e.detail;
+            if (!textToPaste) return;
+            
+            const currentVal = inputRefState.current;
+            const trimmed = currentVal.trim();
+            const newVal = trimmed ? `${trimmed} ${textToPaste}` : textToPaste;
+            setInput(newVal);
+
+            // Use the DOM ref for immediate focus and selection
+            setTimeout(() => {
+                if (inputRef.current) {
+                    inputRef.current.focus();
+                    const len = inputRef.current.value.length;
+                    inputRef.current.setSelectionRange(len, len);
+                }
+            }, 50);
+        };
+
+        window.addEventListener('mume-input-paste', handlePasteEvent);
+        return () => window.removeEventListener('mume-input-paste', handlePasteEvent);
+    }, [setInput]);
+
+    const handleNativeDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        const dataStr = e.dataTransfer.getData('application/json') || e.dataTransfer.getData('text/plain');
+        if (!dataStr) return;
+        
+        let text = dataStr;
+        try {
+            const parsed = JSON.parse(dataStr);
+            if (parsed && parsed.context) text = parsed.context;
+        } catch (err) {}
+        
+        window.dispatchEvent(new CustomEvent('mume-input-paste', { detail: text }));
+    };
+
+    const handleParleyCommandClick = (e: React.MouseEvent) => {
+        initAudio?.();
+        if (isSoundEnabled) playClickSound?.();
+        triggerHaptic(20);
+        const rect = e.currentTarget.getBoundingClientRect();
+        setPopoverState({
+            x: rect.left + rect.width / 2,
+            y: rect.top,
+            type: 'select-parley-command',
+            setId: 'parley-commands',
+            context: 'Select Command',
+            menuDisplay: 'list'
+        });
+    };
+
+    const handleParleyTargetClick = (e: React.MouseEvent) => {
+        initAudio?.();
+        if (isSoundEnabled) playClickSound?.();
+        triggerHaptic(20);
+        const rect = e.currentTarget.getBoundingClientRect();
+        setPopoverState({
+            x: rect.left + rect.width / 2,
+            y: rect.top,
+            type: 'select-parley-target',
+            setId: 'parley-targets',
+            context: 'Select Target',
+            menuDisplay: 'list'
+        });
+    };
+
+    const TARGETLESS_COMMANDS = ['say', 'narrate', 'shout', 'yell', 'sing'];
+
+    const handleParleyClear = () => {
+        initAudio?.();
+        if (isSoundEnabled) playClickSound?.();
+        triggerHaptic(20);
+        setParley({ ...parley, active: false });
+    };
+
+
+    // Hide spat buttons in portrait mode when map is expanded
+    const shouldShowSpat = viewport.isLandscape || !ui.mapExpanded;
+
+    return (
+        <div className={`input-area ${terrainClass} input-container`}>
+            <div className="input-main-container">
+                <form className="input-form" onSubmit={onSend}>
+                    <span className="cmd-prompt">{'>'}</span>
+                    
+                    {parley.active && (() => {
+                        const isTargetless = TARGETLESS_COMMANDS.includes(parley.command);
+                        
+                        const PARLEY_COLORS: Record<string, string> = {
+                            tell: '#22c55e',    // green
+                            whisper: '#22c55e', // also green often
+                            say: '#06b6d4',     // cyan
+                            yell: '#a855f7',    // purple
+                            shout: '#ef4444',   // red often? User didn't ask but good to have
+                            narrate: '#eab308', // yellow
+                            sing: '#f472b6'     // pink?
+                        };
+                        const commandColor = PARLEY_COLORS[parley.command.toLowerCase()] || 'inherit';
+
+                        return (
+                            <div className="parley-indicator-container">
+                                <div 
+                                    className="parley-indicator parley-command" 
+                                    onClick={handleParleyCommandClick}
+                                    style={{ color: commandColor, borderColor: commandColor !== 'inherit' ? commandColor : undefined }}
+                                >
+                                    {parley.command}
+                                </div>
+                                <div
+                                    className="parley-indicator parley-target"
+                                    onClick={handleParleyTargetClick}
+                                    title={isTargetless ? 'This command has no target' : undefined}
+                                >
+                                    {isTargetless ? '' : (parley.target ?? '')}
+                                </div>
+                                <button 
+                                    type="button"
+                                    className="parley-clear-btn" 
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleParleyClear();
+                                    }}
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        );
+                    })()}
+                    <div 
+                        onClick={() => inputRef.current?.focus()}
+                        style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', cursor: 'text' }}
+                    >
+                        {commandPreview && !input && (
+                            <div style={{
+                                position: 'absolute',
+                                left: '0',
+                                color: 'var(--accent)',
+                                opacity: 0.9,
+                                fontWeight: '500',
+                                pointerEvents: 'none',
+                                fontFamily: 'inherit',
+                                fontSize: 'inherit',
+                                padding: '0',
+                                marginLeft: '0'
+                            }}>
+                                {commandPreview}
+                            </div>
+                        )}
+                        <textarea
+                            ref={inputRef}
+                            className="input-field"
+                            value={input}
+                            rows={1}
+                            onChange={(e) => {
+                                setInput(e.target.value);
+                                // Auto-resize logic
+                                const target = e.target as HTMLTextAreaElement;
+                                target.style.height = 'auto';
+                                target.style.height = `${target.scrollHeight}px`;
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    onSend();
+                                }
+                            }}
+                            onFocus={(e) => {
+                                e.currentTarget.parentElement?.parentElement?.classList.add('focused');
+                            }}
+                            onBlur={(e) => {
+                                e.currentTarget.parentElement?.parentElement?.classList.remove('focused');
+                            }}
+                            onClick={(e) => {
+                                if (isMobile && inputRef.current) {
+                                    inputRef.current.focus();
+                                }
+                            }}
+                            placeholder={commandPreview ? "" : "Enter command..."}
+                        />
+                    </div>
+
+                    <button type="submit" style={{ display: 'none' }}>Send</button>
+                </form>
+
+                    {gameState === 'playing' && (
+                        <div className="input-actions-container">
+                            {shouldShowSpat && (
+                                <SpatButtons
+                                    spatButtons={spatButtons}
+                                    isMobile={!!isMobile}
+                                    isKeyboardOpen={isKeyboardOpen}
+                                    setActiveSet={setActiveSet}
+                                    executeCommand={executeCommand}
+                                    setSpatButtons={setSpatButtons}
+                                    setPopoverState={setPopoverState}
+                                    playClickSound={playClickSound}
+                                    triggerHaptic={triggerHaptic}
+                                    initAudio={initAudio}
+                                    isSoundEnabled={isSoundEnabled}
+                                />
+                            )}
+
+                        <button
+                            type="button"
+                            className="msg-repeat-btn"
+                            onClick={() => executeCommand('!', false, false, true)}
+                            onPointerDown={(e) => e.stopPropagation()}
+                            title="Repeat Last Command (!)"
+                        >
+                            <Repeat size={18} />
+                        </button>
+
+                        {stats.conditions?.waiting && (
+                            <button
+                                type="button"
+                                className="msg-cancel-btn"
+                                onClick={() => executeCommand('', false, false, false)}
+                                onPointerDown={(e) => e.stopPropagation()}
+                                title="Cancel Current Action (Send Newline)"
+                            >
+                                <XCircle size={18} />
+                            </button>
+                        )}
+                    </div>
+                )}
+                </div>
+
+                {isMobile && isKeyboardOpen && !parley.active && (
+                    <button
+                        type="button"
+                        className="mobile-parley-toggle"
+                        onPointerDown={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setParley(prev => ({ ...prev, active: true }));
+                            requestAnimationFrame(() => inputRef.current?.focus());
+                        }}
+                    >
+                        <MessageCircle size={18} />
+                    </button>
+                )}
+                <XpTicker isLandscape={viewport.isLandscape} align="right" />
+            </div>
+        );
+};
+
+export default React.memo(InputArea);

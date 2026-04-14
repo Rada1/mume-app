@@ -90,13 +90,14 @@ export function useEnvironment(deps: EnvironmentDeps) {
 
     const getLightingIcon = () => {
         switch (lighting) {
-            case 'sun': return <Sun size={16} className="text-yellow-400" />;
-            case 'moon': return <Moon size={16} className="text-blue-300" />;
-            case 'artificial': return <Flame size={16} className="text-orange-400" />;
+            case 'sun': return <Sun size={16} style={{ color: '#fbbf24' }} />; // Yellow
+            case 'moon': return <Moon size={16} style={{ color: '#a5b1c2' }} />; // Silvery Blue
+            case 'artificial': return <Flame size={16} style={{ color: '#ef4444' }} />; // Red
             case 'dark': return <EyeOff size={16} className="text-gray-500" />;
             default: return null;
         }
     };
+
 
     const getWeatherIcon = () => {
         switch (weather) {

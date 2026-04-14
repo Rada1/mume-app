@@ -450,7 +450,7 @@ export const buildHighlighterCandidates = (
     // 12. State Transitions (Locked, Closed, Latched)
     // We use contextual noun extraction from the full textOnly to handle split tags.
     const stateCounts: Record<string, number> = {};
-    ['locked', 'closed', 'latched'].forEach(stateWord => {
+    ['locked', 'latched'].forEach(stateWord => {
         candidates.push({
             pattern: `\\b${stateWord}\\b`,
             isRegex: true,
