@@ -137,7 +137,7 @@ export function useCommParser(deps: CommParserDeps) {
         } else {
             const commPatterns: [RegExp, string, boolean][] = [
                 // Allow optional space before the colon or opening quote
-                [/^(.+?)\s+(tells? you|tells?|whispers?)(?:\s+|:\s*|,\s*)(?:(['"].*)|)$/i, 'tell', true],
+                [/^(.+?)\s+(tells? you|tells?|whispers?|tells? the group)(?:\s+|:\s*|,\s*)(?:(['"].*)|)$/i, 'tell', true],
                 [/^(.+?)\s+(says?|asks?(?:\s+you)?|exclaims?)(?:\s+|:\s*|,\s*)(?:(['"].*)|)$/i, 'say', true],
                 [/^(.+?)\s+(narrates?)(?:\s+|:\s*|,\s*)(?:(['"].*)|)$/i, 'narrate', true],
                 [/^(.+?)\s+(shouts?|yells?)(?:\s+|:\s*|,\s*)(?:(['"].*)|)$/i, 'shout', true],

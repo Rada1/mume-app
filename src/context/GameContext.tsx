@@ -418,7 +418,17 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const [input, setInput] = useState("");
     const actualTarget = v.target;
-    const { processMessageHtml } = useMessageHighlighter(actualTarget, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems, s.inlineCategories, s.isHighlighterEnabled, highlightVersion, s.discoveredItems, keywordOverrides, s.selectedObjectIds, s.inCombat, s.spectateCharacterName, s.groupMembers);
+    // In spectate mode, merge both sources:
+    //   s.groupMembers       – group events delivered via the spectator's own binary GMCP channel
+    //                          (MUME sends the snooped player's group data here, so this is the
+    //                          primary source for live snooping)
+    //   s.spectateGroupMembers – group events parsed from text-leaked snoop lines
+    //                          (populated in replay / theater mode and as a fallback)
+    // Deduplication by name is handled inside buildHighlighterCandidates.
+    const activeGroupMembers = s.isSpectateMode
+        ? [...s.groupMembers, ...s.spectateGroupMembers]
+        : s.groupMembers;
+    const { processMessageHtml } = useMessageHighlighter(actualTarget, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems, s.inlineCategories, s.isHighlighterEnabled, highlightVersion, s.discoveredItems, keywordOverrides, s.selectedObjectIds, s.inCombat, s.spectateCharacterName, activeGroupMembers);
 
 
     const navIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -508,6 +518,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setSpectateIsFoggy: s.setSpectateIsFoggy,
         setSpectateInCombat: s.setSpectateInCombat,
         setSpectateCharacterName: s.setSpectateCharacterName,
+        setSpectateGroupMembers: s.setSpectateGroupMembers,
         characterInfo: v.characterInfo,
         setQuests: s.setQuests,
         quests: s.quests,

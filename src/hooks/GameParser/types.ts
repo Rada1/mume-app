@@ -96,6 +96,7 @@ export interface UseGameParserDeps {
     setSpectateIsFoggy: (f: boolean) => void;
     setSpectateInCombat: (val: boolean) => void;
     setSpectateCharacterName: (name: string | null) => void;
+    setSpectateGroupMembers: React.Dispatch<React.SetStateAction<import('../../types').GroupMember[]>>;
     spectateStats: GameStats;
     spectateRoomDesc?: string | null;
     setSpectateRoomDesc?: (desc: string | null) => void;

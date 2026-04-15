@@ -135,8 +135,10 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     const isMapDrawerOpen = ui.mapExpanded && !viewport.isMobile;
     // On mobile portrait, drawers are rendered inside the gutter (MapperCluster), not here
     const isMobilePortrait = viewport.isMobile && !viewport.isLandscape;
-    // Map Tray should not have a backdrop on mobile as it blocks the rest of the UI
-    const showBackdrop = ui.drawer !== 'none';
+    // On mobile, drawers render inline inside the gutter — no overlay backdrop needed.
+    // Showing the backdrop on mobile blocks the entire UI because the onClick guard
+    // skips mobile, leaving the z-3000 pointer-events layer permanently intercepting touches.
+    const showBackdrop = !viewport.isMobile && ui.drawer !== 'none';
 
     const handleUndock = () => {
         triggerHaptic(40);

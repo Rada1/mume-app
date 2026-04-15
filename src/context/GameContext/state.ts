@@ -447,6 +447,9 @@ export const useGameProviderState = () => {
     });
 
     const [groupMembers, setGroupMembers] = useState<GroupMember[]>([]);
+    // Group members parsed from snooped GMCP in spectate mode. Separate from the
+    // spectator's own groupMembers so the two populations don't cross-contaminate.
+    const [spectateGroupMembers, setSpectateGroupMembers] = useState<GroupMember[]>([]);
 
     const [xpHistory, setXpHistory] = useState<{ old: number; new: number }>({ old: 0, new: 0 });
     const [xpEvent, setXpEvent] = useState(0);
@@ -621,6 +624,8 @@ export const useGameProviderState = () => {
         quests,
         groupMembers,
         setGroupMembers,
+        spectateGroupMembers,
+        setSpectateGroupMembers,
         mumeEditState,
         setMumeEditState,
         handleSaveMumeEdit,
@@ -663,7 +668,7 @@ export const useGameProviderState = () => {
         handleTabClick, toggleMap,
         inlineCategories, isHighlighterEnabled, isBloomEnabled, favorites, activeDragData, heldButton,
         parley, whoList, whereList, popoverState, discoveredItems, zoneMusic,
-        quests, groupMembers, mumeEditState, handleSaveMumeEdit, executeCommandRef,
+        quests, groupMembers, spectateGroupMembers, mumeEditState, handleSaveMumeEdit, executeCommandRef,
         entities, setEntities, registerEntity, getEntity, clearRegistry, selectedObjectIds, toggleObjectSelection, clearObjectSelection,
         settings.isSpectateMode, settings.setIsSpectateMode, spectateTargetId, setSpectateTargetId,
         isTimestampEnabled, setIsTimestampEnabled,

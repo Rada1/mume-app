@@ -587,13 +587,13 @@
 
 .combat-groupmate .combat-bubble {
     border-left: none;
-    background: linear-gradient(90deg, rgba(74, 222, 128, 0.15), transparent); /* Light Green @ 15% */
+    background: linear-gradient(90deg, rgba(0, 139, 139, 0.15), transparent); /* Dark Cyan @ 15% */
     margin-left: 4px;
 }
 
 .combat-groupmate .message-content,
 .combat-groupmate .message-content span {
-    color: #4ade80 !important; /* Light Green */
+    color: #008b8b !important; /* Dark Cyan */
 }
 
 .combat-opponent .combat-bubble {

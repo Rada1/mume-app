@@ -13,10 +13,11 @@ interface DoorOverlayProps {
     camera: { x: number, y: number, zoom: number };
     canvasRect: DOMRect | null;
     preloaded: Record<string, any>;
+    renderVersion?: number;
 }
 
 export const DoorOverlay: React.FC<DoorOverlayProps> = ({
-    rooms, currentRoomId, camera, canvasRect, preloaded
+    rooms, currentRoomId, camera, canvasRect, preloaded, renderVersion
 }) => {
     const {
         triggerHaptic, executeCommand,
@@ -43,15 +44,16 @@ export const DoorOverlay: React.FC<DoorOverlayProps> = ({
         // Base coordinate calculation (relative to canvas top-left)
         const toScreen = (worldX: number, worldY: number) => {
             return {
-                x: (worldX - camera.x) * camera.zoom,
-                y: (worldY - camera.y) * camera.zoom
+                x: (worldX - camera.x) * camera.zoom + (canvasRect.width / 2),
+                y: (worldY - camera.y) * camera.zoom + (canvasRect.height / 2)
             };
         };
 
         const dirs: ('n' | 's' | 'e' | 'w')[] = ['n', 's', 'e', 'w'];
+        const rawId = currentRoomId.startsWith('m_') ? currentRoomId.substring(2) : currentRoomId;
 
         dirs.forEach(d => {
-            const wEx = preloaded[currentRoomId]?.[4]?.[d];
+            const wEx = preloaded[rawId]?.[4]?.[d];
             const { hasDoor, isClosed } = getGateState(room, wEx, d, rooms, preloaded);
 
             if (hasDoor) {
@@ -127,7 +129,7 @@ export const DoorOverlay: React.FC<DoorOverlayProps> = ({
         });
 
         return doors;
-    }, [rooms, currentRoomId, camera, canvasRect, preloaded]);
+    }, [rooms, currentRoomId, camera.x, camera.y, camera.zoom, canvasRect, preloaded, renderVersion]);
 
     if (!doorButtons.length) return null;
 

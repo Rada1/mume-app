@@ -19,6 +19,7 @@ import { useSmartWalk } from './hooks/useSmartWalk';
 import { useMapperExportImport } from './hooks/useMapperExportImport';
 import { useMapperPlayerTracking } from './hooks/useMapperPlayerTracking';
 import { DpadCluster } from './DpadCluster';
+import { DoorOverlay } from './DoorOverlay';
 import './Mapper.css';
 
 interface MapperProps {
@@ -56,6 +57,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const [isMobile] = useState(() => isMobileProp ?? /iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [canvasRect, setCanvasRect] = useState<DOMRect | null>(null);
     const cameraRef = useRef({ x: 0, y: 0, zoom: 1 });
     const cardRef = useRef<HTMLDivElement>(null);
     const imagesRef = useRef<Record<string, HTMLImageElement>>({});
@@ -101,6 +103,12 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         window.addEventListener('mume-mapper-center-on-player', onCenter);
         return () => window.removeEventListener('mume-mapper-center-on-player', onCenter);
     }, [handleCenterOnPlayer]);
+
+    useEffect(() => {
+        if (canvasRef.current) {
+            setCanvasRect(canvasRef.current.getBoundingClientRect());
+        }
+    }, [effectiveIsMinimized, isMapFloating]);
 
     const { marquee } = useMapperInteractions({
         rooms, setRooms, markers, setMarkers,
@@ -207,6 +215,15 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 opponentName={opponentName}
                 opponentId={opponentId}
                 deathRoomId={deathRoomId}
+            />
+
+            <DoorOverlay
+                rooms={rooms}
+                currentRoomId={currentRoomId}
+                camera={cameraRef.current}
+                canvasRect={canvasRect}
+                preloaded={preloadedCoordsRef.current}
+                renderVersion={renderVersion}
             />
             
             {isMobile && currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`] || preloadedCoordsRef.current[String(currentRoomId).replace(/^m_/, '')]) && (

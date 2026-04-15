@@ -148,7 +148,16 @@ export function useTelnet(options: TelnetOptions) {
                 lastProcessedPromptRef.current = "";
                 continue;
             }
-            processLine(line);
+            const result = processLine(line);
+            // If processLine explicitly returns null, it means the line was suppressed (e.g. GMCP bleed)
+            // and we should NOT update the prompt based on it if it's the last thing we saw.
+            if (result === null) {
+                // If this was the last line, we don't want it to 'stick' as the current prompt either
+                if (i === lines.length - 1) {
+                    lastProcessedPromptRef.current = "";
+                }
+                continue;
+            }
         }
 
         // ONLY after all lines are added to the message log, update the prompt
@@ -169,6 +178,10 @@ export function useTelnet(options: TelnetOptions) {
             if (isLikelyPrompt) {
                 // Track this prompt so we don't double-process it if a newline follows
                 lastProcessedPromptRef.current = remaining;
+                
+                // CRITICAL: We bypass the null-return check here because prompts
+                // must ALWAYS be processed to update the game state/UI, even if 
+                // they contain GMCP data that was also parsed.
                 processLine(remaining);
 
                 if (handlers.detectLighting) handlers.detectLighting(cleanPrompt);

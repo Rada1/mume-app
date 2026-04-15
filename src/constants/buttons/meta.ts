@@ -15,6 +15,7 @@ export const META_BUTTONS = [
     createButton({ id: 'inlp-ex', label: 'Examine', command: 'examine %n', setId: 'inlineplayer', color: '#2563eb' }),
     createButton({ id: 'inlp-whois', label: 'Whois', command: 'whois %n', setId: 'inlineplayer', color: '#0ea5e9' }),
     createButton({ id: 'inlp-soc', label: 'Social', command: 'social list', setId: 'inlineplayer', color: '#06b6d4', actionType: 'menu' }),
+    createButton({ id: 'inlp-conv', label: 'Converse', command: '__parley__', setId: 'inlineplayer', color: '#8b5cf6' }),
     createButton({ id: 'inlp-consider', label: 'Consider', command: 'consider %n', setId: 'inlineplayer', color: '#facc15' }),
 
     // --- TARGET MENU ---

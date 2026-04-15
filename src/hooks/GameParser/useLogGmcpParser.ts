@@ -22,6 +22,7 @@ interface LogGmcpParserDeps {
     setSpectateIsFoggy: (f: boolean) => void;
     setSpectateInCombat: (val: boolean) => void;
     setSpectateCharacterName: (name: string | null) => void;
+    setSpectateGroupMembers: React.Dispatch<React.SetStateAction<import('../../types').GroupMember[]>>;
     setRoomPlayers: React.Dispatch<React.SetStateAction<any[]>>;
     setRoomNpcs: React.Dispatch<React.SetStateAction<any[]>>;
     setRoomItems: React.Dispatch<React.SetStateAction<any[]>>;
@@ -54,6 +55,7 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         setSpectateIsFoggy,
         setSpectateInCombat,
         setSpectateCharacterName,
+        setSpectateGroupMembers,
         setRoomPlayers,
         setRoomNpcs,
         setRoomItems,
@@ -194,9 +196,38 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                     }
                     break;
 
-                case 'Group.Update':
-                case 'Group.Set':
+                // Snooped Group GMCP — track the spectated player's groupmates so they
+                // are always available as highlighted inline PC buttons in the log,
+                // even when Room.Chars data hasn't arrived yet or is stale.
+                case 'Group.Set': {
+                    const members: import('../../types').GroupMember[] = Array.isArray(data) ? data : [];
+                    // Filter out the spectated character themselves ("you" entries)
+                    const others = members.filter((m: any) => m.type !== 'you' && m.name);
+                    setSpectateGroupMembers(others);
                     break;
+                }
+                case 'Group.Add': {
+                    if (data.type === 'you' || !data.name) break;
+                    const member = data as import('../../types').GroupMember;
+                    setSpectateGroupMembers(prev => {
+                        if (prev.find(m => String(m.id) === String(member.id))) return prev;
+                        return [...prev, member];
+                    });
+                    break;
+                }
+                case 'Group.Update': {
+                    if (!data.id) break;
+                    setSpectateGroupMembers(prev => prev.map(m =>
+                        String(m.id) === String(data.id) ? { ...m, ...data } : m
+                    ));
+                    break;
+                }
+                case 'Group.Remove': {
+                    const removeId = data.id ?? data;
+                    if (removeId == null) break;
+                    setSpectateGroupMembers(prev => prev.filter(m => String(m.id) !== String(removeId)));
+                    break;
+                }
 
                 case 'Room.Info': {
                     if (data.name) setSpectateRoomName(data.name);
@@ -372,13 +403,14 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         setRoomItems([]);
         setSpectateRoomName(null);
         setSpectateRoomDesc(null);
+        setSpectateGroupMembers([]);
         if (mapperRef.current?.stableRoomIdRef) {
             // Drop the mapper's notion of "which room the player is currently in" so that the
             // next snooped Room.Info is treated as a fresh sync rather than a failed move
             // correlation against the previous snoop target's last known location.
             mapperRef.current.stableRoomIdRef.current = null;
         }
-    }, [setRoomPlayers, setRoomNpcs, setRoomItems, setSpectateRoomName, setSpectateRoomDesc, mapperRef]);
+    }, [setRoomPlayers, setRoomNpcs, setRoomItems, setSpectateRoomName, setSpectateRoomDesc, setSpectateGroupMembers, mapperRef]);
 
     return { parseLogGmcp, resetSpectateContext };
 }

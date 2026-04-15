@@ -101,9 +101,14 @@ export const buildHighlighterCandidates = (
         return `${WORD_BOUNDARY_START}${toAccentAgnosticCore(s)}${WORD_BOUNDARY_END}`;
     };
 
-    // In spectate mode the "self" to exclude is the snooped character, not the app user —
-    // the app user may physically appear in the snooped room and should still be highlighted.
-    const selfName = spectateCharacterName || characterName;
+    // Always exclude the *app user's* own name — you never want your own name as a button
+    // in your own log. In spectate mode we still exclude characterName for the same reason,
+    // but we do NOT exclude spectateCharacterName: the snooped player's name should always be
+    // a clickable button so the spectator can interact with them (look, assist, etc.).
+    // Room.Chars.Set from MUME never includes the room "owner" themselves (they are "you"
+    // to their own client), so without explicit injection the snooped player's name would
+    // never appear in any PC source and would be invisible to the highlighter.
+    const selfName = characterName;
 
     const pcNamesList = roomPlayers.map(p => typeof p === 'string' ? p : p.name).filter((name): name is string => !!name && name !== selfName);
 
@@ -114,6 +119,12 @@ export const buildHighlighterCandidates = (
                 pcNamesList.push(m.name);
             }
         });
+    }
+
+    // In spectate mode, always inject the snooped character's name as a PC so their actions
+    // in the log ("Khach wakes up", "Khach enters combat...") are highlighted and clickable.
+    if (spectateCharacterName && spectateCharacterName !== selfName && !pcNamesList.includes(spectateCharacterName)) {
+        pcNamesList.push(spectateCharacterName);
     }
     const pcNamesSet = new Set(pcNamesList);
     const npcNames = roomNpcs.map(p => typeof p === 'string' ? p : p.name).filter((name): name is string => !!name);
@@ -183,6 +194,17 @@ export const buildHighlighterCandidates = (
             pluralizeMumeSubject(name),
             pluralizeMumeSubject(stripped)
         ].filter(Boolean));
+
+        // MUME PC names are often stored with a title ("Khazik the Brave", "Ildaeth the Elf").
+        // Log/action text only uses the first token ("Khazik wakes up"), so add the first word
+        // as a pattern whenever the name is multi-word and doesn't start with an article.
+        if (stripped.includes(' ')) {
+            const firstWord = stripped.split(/\s+/)[0];
+            if (firstWord && firstWord.length > 1) {
+                patterns.add(firstWord);
+                patterns.add(pluralizeMumeSubject(firstWord));
+            }
+        }
         
         patterns.forEach(p => {
             candidates.push({

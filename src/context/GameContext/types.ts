@@ -237,6 +237,8 @@ export interface GameContextType {
     setBufferName: (val: string | null) => void;
     groupMembers: GroupMember[];
     setGroupMembers: Dispatch<SetStateAction<GroupMember[]>>;
+    spectateGroupMembers: GroupMember[];
+    setSpectateGroupMembers: Dispatch<SetStateAction<GroupMember[]>>;
     mumeEditState: { isOpen: boolean; title: string; text: string; key: string };
     setMumeEditState: Dispatch<SetStateAction<{ isOpen: boolean; title: string; text: string; key: string }>>;
     handleSaveMumeEdit: (text: string) => void;
