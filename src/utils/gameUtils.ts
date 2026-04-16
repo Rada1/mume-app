@@ -183,3 +183,15 @@ export const formatMumePrice = (priceStr: string): string => {
     });
     return result.join(' ');
 };
+
+/**
+ * Converts a total copper value into MUME gold/silver/copper units.
+ * 1 gold = 20 silver = 240 copper
+ * 1 silver = 12 copper
+ */
+export const formatCopperToCoins = (totalCopper: number) => {
+    const gold = Math.floor(totalCopper / 240);
+    const silver = Math.floor((totalCopper % 240) / 12);
+    const copper = totalCopper % 12;
+    return { gold, silver, copper };
+};

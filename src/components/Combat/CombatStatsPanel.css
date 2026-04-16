@@ -3,28 +3,63 @@
     right: 0;
     top: 50%;
     transform: translateY(-50%);
-    width: 60px;
-    z-index: 10;
+    z-index: 2500;
     pointer-events: none;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    padding: 10px 4px;
-
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 8px;
-
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s ease;
 }
 
 .combat-stats-panel.active {
     opacity: 1;
+}
+
+/* Mapper Overlay Specific Styles */
+.mobile-mapper-combat-overlay .combat-stats-panel {
+    top: 8px;
+    right: 8px;
+    bottom: auto;
+    left: auto;
+    transform: none;
+}
+
+.csp-l-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 6px;
+    pointer-events: none;
+}
+
+.csp-stats-bar {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    padding: 6px 14px;
+    background: rgba(10, 13, 21, 0.45);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    pointer-events: auto;
+    height: 36px;
+    align-items: center;
+    margin-top: 1px; /* Align with top of row padding */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.csp-controls-column {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 4px;
+    background: rgba(10, 13, 21, 0.45);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    pointer-events: auto;
+    width: 62px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .csp-row {
@@ -58,65 +93,82 @@
     margin: 2px 0;
 }
 
-/* Mood row — tappable */
-.csp-mood-trigger {
+/* Triggers (Mood, Speed, Alert) */
+.csp-trigger {
     cursor: pointer;
     pointer-events: auto;
     border-radius: 4px;
     padding: 2px 4px;
+    width: 100%;
     transition: background 0.15s;
+    position: relative; /* Anchor for the menu */
 }
 
-.csp-mood-trigger:active {
+.csp-trigger:active {
     background: rgba(255, 255, 255, 0.1);
 }
 
-/* Mood hotswitch popup */
-.csp-mood-menu {
+/* Common Popup Menu */
+.csp-menu {
     position: absolute;
-    right: calc(100% + 6px);
-    bottom: 8px;
-    background: rgba(12, 12, 18, 0.96);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    right: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(10, 13, 21, 0.98);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 8px;
     padding: 6px;
     display: flex;
     flex-direction: column;
-    gap: 3px;
-    z-index: 100;
+    gap: 4px;
+    z-index: 110;
     pointer-events: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
-.csp-mood-btn {
-    background: rgba(255, 255, 255, 0.07);
+.csp-menu::after {
+    content: '';
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-left: 6px solid rgba(255, 255, 255, 0.15);
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+}
+
+.csp-menu-btn {
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 5px;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.6rem;
-    font-weight: 700;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.65rem;
+    font-weight: 800;
     letter-spacing: 0.05em;
-    padding: 5px 10px;
+    padding: 6px 14px;
     cursor: pointer;
     pointer-events: auto;
-    transition: background 0.1s, color 0.1s;
+    transition: all 0.1s ease;
     text-transform: uppercase;
     white-space: nowrap;
 }
 
-.csp-mood-btn:active {
+.csp-menu-btn:active {
     background: rgba(255, 255, 255, 0.15);
 }
 
-.csp-mood-btn.active {
+.csp-menu-btn.active {
     background: rgba(74, 222, 128, 0.15);
     border-color: rgba(74, 222, 128, 0.4);
     color: #4ade80;
+    box-shadow: inset 0 0 10px rgba(74, 222, 128, 0.1);
 }
 
-.csp-mood-btn.drag-hover {
+.csp-menu-btn.drag-hover {
     background: rgba(255, 255, 255, 0.2);
     border-color: rgba(255, 255, 255, 0.3);
     color: #ffffff;
+    transform: scale(1.05);
 }

@@ -486,7 +486,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     return (
         <div className="message-log-layout" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden' }}>
             <div
-                className={`message-log${inCombat ? ' combat-mode' : ''}`}
+                className={`message-log${inCombat ? ' combat-mode' : ''}${isSpectateMode ? ' spectate-mode' : ''}`}
                 ref={scrollContainerRef}
                 onScroll={handleScroll}
                 onPointerDown={handlePointerDownInternal}

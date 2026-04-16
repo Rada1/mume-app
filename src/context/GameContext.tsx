@@ -401,6 +401,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         actions: s.actions, setActions: s.setActions,
         setSettings: btn.setSettings, setSetSettings: btn.setSetSettings,
         autoConnect: s.autoConnect, setAutoConnect: s.setAutoConnect,
+        connectionUrl: s.connectionUrl, setConnectionUrl: s.setConnectionUrl,
         showDebugEchoes: s.showDebugEchoes, setShowDebugEchoes: s.setShowDebugEchoes,
         uiMode: s.uiMode, setUiMode: s.setUiMode,
         disable3dScroll: s.disable3dScroll, setDisable3dScroll: s.setDisable3dScroll,
@@ -569,7 +570,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         characterName: s.characterName,
         sessionMode: sessionMode,
         setIsPasswordMode: s.setIsPasswordMode,
-        addSystemMessage,
         setIsSpectateMode: settings.setIsSpectateMode
     });
 
@@ -971,7 +971,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         groupMembers: s.groupMembers,
         spatButtons,
         triggerSpitManual,
-        gameState: s.gameState
+        gameState: s.gameState,
+        accountStage: v.accountState.stage,
+        isPasswordMode: s.isPasswordMode
     });
 
     // --- Section: Terminal Synchronization ---

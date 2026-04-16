@@ -18,95 +18,162 @@ const StatRow: React.FC<{ label: string; value: string }> = ({ label, value }) =
     </div>
 );
 
+const SPEEDS = [
+    { label: 'SLOW', val: 'slow' },
+    { label: 'NORM', val: 'normal' },
+    { label: 'FAST', val: 'fast' },
+];
+
+const ALERTS = [
+    { label: 'OFF', val: 'off' },
+    { label: 'NORM', val: 'normal' },
+    { label: 'ACT', val: 'active' },
+];
+
 const CombatStatsPanel: React.FC = () => {
     const { stats } = useVitals();
-    const { inCombat, mood, executeCommand, isSpectateMode } = useGame();
-    const [moodMenuOpen, setMoodMenuOpen] = useState(false);
-
-
-    const [hoveredMood, setHoveredMood] = useState<string | null>(null);
+    const { inCombat, mood, spellSpeed, alertness, executeCommand, isSpectateMode, viewport, btn } = useGame();
+    const { isMobile } = viewport;
+    
+    // Menu States
+    const [openMenu, setOpenMenu] = useState<'mood' | 'speed' | 'alert' | null>(null);
+    const [hoveredOption, setHoveredOption] = useState<string | null>(null);
     const isDraggingRef = useRef(false);
 
     const fmt = (v: number | undefined) => v !== undefined ? `${v}%` : '—';
+    
+    // Formatting current values
     const moodAbbr = mood ? mood.slice(0, 4).toUpperCase() : '—';
-    const currentMoodLower = mood?.toLowerCase() ?? '';
+    const speedAbbr = spellSpeed ? spellSpeed.slice(0, 4).toUpperCase() : '—';
+    const alertAbbr = alertness ? alertness.slice(0, 4).toUpperCase() : '—';
 
-    const getMoodAtPoint = (x: number, y: number): string | null => {
+    const getOptionAtPoint = (x: number, y: number): string | null => {
         const el = document.elementFromPoint(x, y);
-        return (el?.closest('[data-mood]') as HTMLElement | null)?.dataset.mood ?? null;
+        return (el?.closest('[data-opt]') as HTMLElement | null)?.dataset.opt ?? null;
     };
 
     const handlePointerMove = useCallback((e: PointerEvent) => {
         if (!isDraggingRef.current) return;
-        setHoveredMood(getMoodAtPoint(e.clientX, e.clientY));
+        setHoveredOption(getOptionAtPoint(e.clientX, e.clientY));
     }, []);
 
     const handlePointerUp = useCallback((e: PointerEvent) => {
         if (!isDraggingRef.current) return;
         isDraggingRef.current = false;
-        const selected = getMoodAtPoint(e.clientX, e.clientY);
-        if (selected) {
-            executeCommand(`cha mood ${selected}`);
-            setMoodMenuOpen(false);
+        const selected = getOptionAtPoint(e.clientX, e.clientY);
+        if (selected && openMenu) {
+            if (openMenu === 'mood') executeCommand(`cha mood ${selected}`);
+            if (openMenu === 'speed') executeCommand(`cha speed ${selected}`);
+            if (openMenu === 'alert') executeCommand(`alert ${selected}`);
+            setOpenMenu(null);
         }
-        setHoveredMood(null);
-    }, [executeCommand]);
+        setHoveredOption(null);
+    }, [executeCommand, openMenu]);
 
     useEffect(() => {
-        if (!moodMenuOpen) return;
+        if (!openMenu) return;
         document.addEventListener('pointermove', handlePointerMove);
         document.addEventListener('pointerup', handlePointerUp);
         return () => {
             document.removeEventListener('pointermove', handlePointerMove);
             document.removeEventListener('pointerup', handlePointerUp);
         };
-    }, [moodMenuOpen, handlePointerMove, handlePointerUp]);
+    }, [openMenu, handlePointerMove, handlePointerUp]);
 
     // Close menu if combat ends
     useEffect(() => {
-        if (!inCombat) setMoodMenuOpen(false);
+        if (!inCombat) setOpenMenu(null);
     }, [inCombat]);
 
-    const handleTriggerPointerDown = (e: React.PointerEvent) => {
+    const handleTriggerPointerDown = (type: 'mood' | 'speed' | 'alert') => (e: React.PointerEvent) => {
         e.stopPropagation();
         isDraggingRef.current = true;
-        if (!moodMenuOpen) setMoodMenuOpen(true);
+        setOpenMenu(type);
     };
 
-    // Tapping anywhere inside the open menu also starts a drag session
     const handleMenuPointerDown = (e: React.PointerEvent) => {
         e.stopPropagation();
         isDraggingRef.current = true;
     };
 
     if (isSpectateMode) return null;
+
+    // Show on mobile always during combat.
+    // On desktop, hide during play mode entirely to keep the log clear.
+    // Use can still see it in "Edit Mode" to position it for mobile.
+    const isVisible = btn.isEditMode || (isMobile && inCombat);
+
     return (
-        <div className={`combat-stats-panel${inCombat ? ' active' : ''}`}>
-            <StatRow label="OB"  value={fmt(stats.ob)} />
-            <StatRow label="DB"  value={fmt(stats.db)} />
-            <StatRow label="PB"  value={fmt(stats.pb)} />
-            <StatRow label="ARM" value={fmt(stats.armour)} />
-            <div className="csp-divider" />
-            <div
-                className="csp-row csp-mood-trigger"
-                onPointerDown={handleTriggerPointerDown}
-            >
-                <span className="csp-label">MOOD</span>
-                <span className="csp-value">{moodAbbr}</span>
-            </div>
-            {moodMenuOpen && (
-                <div className="csp-mood-menu" onPointerDown={handleMenuPointerDown}>
-                    {MOODS.map(m => (
-                        <button
-                            key={m.abbr}
-                            data-mood={m.full}
-                            className={`csp-mood-btn${currentMoodLower.startsWith(m.abbr) ? ' active' : ''}${hoveredMood === m.full ? ' drag-hover' : ''}`}
-                        >
-                            {m.label}
-                        </button>
-                    ))}
+        <div className={`combat-stats-panel${isVisible ? ' active' : ''}`}>
+            <div className="csp-l-container">
+                {/* Horizontal Stat Bar (Long part of L) */}
+                <div className="csp-stats-bar">
+                    <StatRow label="OB"  value={fmt(stats.ob)} />
+                    <StatRow label="DB"  value={fmt(stats.db)} />
+                    <StatRow label="PB"  value={fmt(stats.pb)} />
+                    <StatRow label="ARM" value={fmt(stats.armour)} />
                 </div>
-            )}
+
+                {/* Vertical Control Column (Short part of L) */}
+                <div className="csp-controls-column">
+                    {/* MOOD */}
+                    <div className="csp-row csp-trigger" onPointerDown={handleTriggerPointerDown('mood')}>
+                        <span className="csp-label">MOOD</span>
+                        <span className="csp-value">{moodAbbr}</span>
+                        {openMenu === 'mood' && (
+                            <div className="csp-menu" onPointerDown={handleMenuPointerDown}>
+                                {MOODS.map(m => (
+                                    <button
+                                        key={m.abbr}
+                                        data-opt={m.full}
+                                        className={`csp-menu-btn${(mood?.toLowerCase() || '').startsWith(m.abbr) ? ' active' : ''}${hoveredOption === m.full ? ' drag-hover' : ''}`}
+                                    >
+                                        {m.label}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* SPEED */}
+                    <div className="csp-row csp-trigger" onPointerDown={handleTriggerPointerDown('speed')}>
+                        <span className="csp-label">SPEED</span>
+                        <span className="csp-value">{speedAbbr}</span>
+                        {openMenu === 'speed' && (
+                            <div className="csp-menu" onPointerDown={handleMenuPointerDown}>
+                                {SPEEDS.map(s => (
+                                    <button
+                                        key={s.val}
+                                        data-opt={s.val}
+                                        className={`csp-menu-btn${(spellSpeed?.toLowerCase() || '') === s.val ? ' active' : ''}${hoveredOption === s.val ? ' drag-hover' : ''}`}
+                                    >
+                                        {s.label}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* ALERT */}
+                    <div className="csp-row csp-trigger" onPointerDown={handleTriggerPointerDown('alert')}>
+                        <span className="csp-label">ALERT</span>
+                        <span className="csp-value">{alertAbbr}</span>
+                        {openMenu === 'alert' && (
+                            <div className="csp-menu" onPointerDown={handleMenuPointerDown}>
+                                {ALERTS.map(a => (
+                                    <button
+                                        key={a.val}
+                                        data-opt={a.val}
+                                        className={`csp-menu-btn${(alertness?.toLowerCase() || '') === a.val ? ' active' : ''}${hoveredOption === a.val ? ' drag-hover' : ''}`}
+                                    >
+                                        {a.label}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

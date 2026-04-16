@@ -13,7 +13,6 @@ export const useSettingsState = () => {
         const legacyUrls = [
             'wss://mume.org/ws-proxy',
             'wss://mume.org/ws-proxy/',
-            'ws://localhost:8081',
             'wss://mume.org/ws-play'
         ];
         if (legacyUrls.includes(connectionUrl)) {

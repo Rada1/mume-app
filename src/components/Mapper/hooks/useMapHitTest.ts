@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { MapperRoom, MapperMarker } from '../mapperTypes';
-import { GRID_SIZE } from '../mapperUtils';
+import { GRID_SIZE, getGateState } from '../mapperUtils';
 
 interface UseMapHitTestProps {
     roomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
@@ -90,5 +90,87 @@ export const useMapHitTest = ({
         return null;
     }, [cameraRef, currentRoomIdRef, markersRef, roomsRef]);
 
-    return { screenToWorld, getRoomAt, getMarkerAt };
+    const getExitAt = useCallback((wx: number, wy: number) => {
+        const roomId = getRoomAt(wx, wy);
+        if (!roomId) return null;
+
+        const room = roomsRef.current[roomId] || (roomId.startsWith('m_') ? null : roomsRef.current[`m_${roomId}`]);
+        const s = GRID_SIZE;
+        const margin = 12; // Hitbox margin
+
+        let rx: number, ry: number;
+        let exits: any = null;
+
+        if (room) {
+            rx = room.x; ry = room.y;
+            exits = room.exits;
+        } else if (preloadedCoordsRef.current) {
+            const rawId = roomId.replace(/^m_/, '');
+            const rData = preloadedCoordsRef.current[rawId];
+            if (!rData) return null;
+            rx = rData[0]; ry = rData[1];
+            exits = rData[4];
+        } else {
+            return null;
+        }
+
+        const roomWx = Math.round(rx) * s;
+        const roomWy = Math.round(ry) * s;
+        const dx = wx - roomWx;
+        const dy = wy - roomWy;
+
+        // Check vertical exits first (corners)
+        const cOff = 12;
+        const anchorX = s / 2, anchorY = s / 2;
+        
+        const checkDoor = (dir: string) => {
+            const wE = preloadedCoordsRef.current?.[roomId.replace(/^m_/, '')]?.[4];
+            const gate = getGateState(room, wE, dir, roomsRef.current, preloadedCoordsRef.current || {});
+            if (gate && gate.hasDoor) {
+                return { direction: dir as any, roomId, isClosed: gate.isClosed, hasDoor: true };
+            }
+            return null;
+        };
+
+        // UP: NW Corner
+        const ux = anchorX - cOff, uy = anchorY - cOff;
+        if (Math.abs(dx - ux) < margin && Math.abs(dy - uy) < margin) {
+            const hit = checkDoor('u');
+            if (hit) return hit;
+        }
+
+        // DOWN: SE Corner
+        const dx_pos = anchorX + cOff, dy_pos = anchorY + cOff;
+        if (Math.abs(dx - dx_pos) < margin && Math.abs(dy - dy_pos) < margin) {
+            const hit = checkDoor('d');
+            if (hit) return hit;
+        }
+
+        // Check Cardinal Edges
+        // North
+        if (dy >= -margin && dy <= margin && dx >= 0 && dx <= s) {
+            const hit = checkDoor('n');
+            if (hit) return hit;
+        }
+        // South
+        if (dy >= s - margin && dy <= s + margin && dx >= 0 && dx <= s) {
+            const hit = checkDoor('s');
+            if (hit) return hit;
+        }
+        // East
+        if (dx >= s - margin && dx <= s + margin && dy >= 0 && dy <= s) {
+            const hit = checkDoor('e');
+            if (hit) return hit;
+        }
+        // West
+        if (dx >= -margin && dx <= margin && dy >= 0 && dy <= s) {
+            const hit = checkDoor('w');
+            if (hit) return hit;
+        }
+
+        return null;
+
+    }, [roomsRef, preloadedCoordsRef, getRoomAt]);
+
+    return { screenToWorld, getRoomAt, getMarkerAt, getExitAt };
 };

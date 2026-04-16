@@ -14,7 +14,8 @@ export const useGameProviderState = () => {
         isNewbieMode, setIsNewbieMode, isSoundEnabled, setIsSoundEnabled, isMmapperMode, setIsMmapperMode, theme, setTheme, showControls, setShowControls, autoConnect, setAutoConnect,
         showDebugEchoes, setShowDebugEchoes, uiMode, setUiMode, disable3dScroll, setDisable3dScroll, disableSmoothScroll, setDisableSmoothScroll, isImmersionMode, setIsImmersionMode, showOrganicTerrain, setShowOrganicTerrain, inlineCategories, setInlineCategories, isHighlighterEnabled, setIsHighlighterEnabled,
         isBloomEnabled, setIsBloomEnabled, isTimestampEnabled, setIsTimestampEnabled, favorites, setFavorites, zoneMusic, setZoneMusic,
-        fontFamily, setFontFamily
+        fontFamily, setFontFamily,
+        connectionUrl, setConnectionUrl
     } = settings;
 
     // Registry
@@ -74,7 +75,7 @@ export const useGameProviderState = () => {
             combatTimeoutRef.current = setTimeout(() => {
                 _setInCombat(false);
                 combatTimeoutRef.current = null;
-            }, 6000);
+            }, 3000);
         }
     }, []);
 
@@ -597,6 +598,7 @@ export const useGameProviderState = () => {
         roomName, setRoomName, roomNameRef,
         roomDesc, setRoomDesc, roomDescRef,
         roomExits, setRoomExits,
+        connectionUrl, setConnectionUrl,
         roomZone, setRoomZone,
         inlineCategories, setInlineCategories,
         isHighlighterEnabled, setIsHighlighterEnabled,
@@ -677,7 +679,8 @@ export const useGameProviderState = () => {
         spectateInCombat, spectateCharacterName,
         spectateStats, setSpectateStats, spectateHealthStatus, spectateOpponentName, spectateOpponentStatus,
         spectateQueue, setSpectateQueue, lastSnoopStartTime, setLastSnoopStartTime,
-        opponentName, opponentId, fontFamily, setFontFamily, accountStageRef
+        opponentName, opponentId, fontFamily, setFontFamily, accountStageRef,
+        connectionUrl, setConnectionUrl
     ]);
 
 

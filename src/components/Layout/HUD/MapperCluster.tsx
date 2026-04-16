@@ -3,12 +3,13 @@ import { Mapper } from '../../Mapper/Mapper';
 import { LineCluster } from './LineCluster';
 import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { useMapper } from '../../../context/useMapper';
-import { GripHorizontal, Map as MapIcon, User, Shield, Users, BarChart2, CloudFog, FileText } from 'lucide-react';
+import { GripHorizontal, Map as MapIcon, User, Shield, Users, BarChart2, CloudFog, FileText, UtensilsCrossed, Droplets } from 'lucide-react';
 import InputArea from '../../Controls/InputArea';
 import { StatsDrawer } from '../../Drawers/StatsDrawer';
 import { CharacterDrawer } from '../../Drawers/CharacterDrawer';
 import { PlayersDrawer } from '../../Drawers/PlayersDrawer';
 import { InventoryDrawer } from '../../Drawers/InventoryDrawer';
+import CombatStatsPanel from '../../Combat/CombatStatsPanel';
 
 interface MapperClusterProps {
     uiPositions: any;
@@ -174,8 +175,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         position: 'relative'
                     }}
                 >
-                    {/* Environmental Status Icons — moved here from tactical buttons bubble */}
-                    {(lighting !== 'none' || weather !== 'none' || isFoggy) && (
+                    {/* Environmental Status Icons — modified to include player vitals (hunger/thirst) */}
+                    {(lighting !== 'none' || weather !== 'none' || isFoggy || stats.conditions?.hungry || stats.conditions?.thirsty) && (
                         <div className="map-status-overlay" style={{
                             position: 'absolute',
                             top: '12px',
@@ -190,8 +191,31 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                             {getLightingIcon()}
                             {getWeatherIcon()}
                             {isFoggy && <CloudFog size={16} style={{ opacity: 0.6 }} />}
+                            
+                            {/* Hunger Indicator */}
+                            {stats.conditions?.hungry && (
+                                <UtensilsCrossed 
+                                    size={16} 
+                                    className="status-icon-pulse" 
+                                    style={{ color: '#fbbf24', opacity: 0.9 }} 
+                                />
+                            )}
+                            
+                            {/* Thirst Indicator */}
+                            {stats.conditions?.thirsty && (
+                                <Droplets 
+                                    size={16} 
+                                    className="status-icon-pulse" 
+                                    style={{ color: '#60a5fa', opacity: 0.9 }} 
+                                />
+                            )}
                         </div>
                     )}
+
+                    {/* Combat Stats Panel Overlay for Portrait Mobile */}
+                    <div className="mobile-mapper-combat-overlay">
+                        <CombatStatsPanel />
+                    </div>
 
 
                     <Mapper

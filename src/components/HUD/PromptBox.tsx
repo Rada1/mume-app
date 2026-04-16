@@ -4,7 +4,7 @@
  */
 
 import React, { memo, FC, useState, useRef, useCallback, useEffect } from 'react';
-import { Swords } from 'lucide-react';
+import { Swords, Heart, Zap, Footprints } from 'lucide-react';
 import './PromptBox.css';
 import { GameStats, CharacterInfo, CombatHealthStatus } from '../../types';
 import { useGame, useVitals } from '../../context/GameContext';
@@ -22,6 +22,7 @@ interface PromptBoxProps {
     playerHealthStatus: CombatHealthStatus | null;
     isRiding?: boolean;
     processMessageHtml?: (html: string, mid: string, isRoomName: boolean, type?: string, isCombat?: boolean, side?: string) => string;
+    onWimpyChange?: (val: number) => void;
 }
 
 const HEALTH_MAP: Record<string, { percent: number; color: string }> = {
@@ -65,13 +66,18 @@ const ConditionBadge: React.FC<{
     altStatus?: string;
     showAlt?: boolean;
     flash?: boolean;
-}> = ({ status, percent, colorClass, onClick, altStatus, showAlt, flash }) => (
-    <div className={`condition-badge ${colorClass} ${flash ? 'blink-hit' : ''}`} onClick={onClick}>
-        <div className="status-bar-segment">
+    mirrored?: boolean;
+    onPointerDown?: (e: React.PointerEvent) => void;
+    wimpyRatio?: number;
+}> = ({ status, percent, colorClass, onClick, altStatus, showAlt, flash, mirrored, onPointerDown, wimpyRatio }) => (
+    <div className={`condition-badge ${colorClass} ${flash ? 'blink-hit' : ''}`} onClick={onClick} onPointerDown={onPointerDown}>
+        <div className={`status-bar-segment ${mirrored ? 'is-mirrored' : ''}`}>
             <div 
                 className="status-bar-fill" 
                 style={{ 
                     width: `${Math.max(0, Math.min(100, percent))}%`,
+                    left: mirrored ? 'auto' : 0,
+                    right: mirrored ? 0 : 'auto'
                 }} 
             />
             <div className="status-bar-dividers">
@@ -80,6 +86,21 @@ const ConditionBadge: React.FC<{
                 <div className="bar-divider" />
                 <div className="bar-divider" />
             </div>
+            {wimpyRatio !== undefined && (
+                <div 
+                    className="wimpy-tick" 
+                    style={{ 
+                        left: `${wimpyRatio * 100}%`,
+                        position: 'absolute',
+                        top: '-2px',
+                        bottom: '-2px',
+                        width: '2px',
+                        backgroundColor: '#fff',
+                        boxShadow: '0 0 4px #fff',
+                        zIndex: 20
+                    }} 
+                />
+            )}
             <span className="status-text">{showAlt && altStatus ? altStatus : ""}</span>
         </div>
     </div>
@@ -154,14 +175,81 @@ const PromptBox: FC<PromptBoxProps> = ({
     opponentHealthStatus,
     playerHealthStatus,
     isRiding,
-    processMessageHtml
+    processMessageHtml,
+    onWimpyChange
 }) => {
-    const { triggerHaptic, executeCommand, setPlayerPosition, inlineCategories } = useGame();
+    const { triggerHaptic, executeCommand, setPlayerPosition, inlineCategories, isNewbieMode } = useGame();
     const { hitFlashEvent, oppHitFlashEvent } = useVitals();
     const [activeSlider, setActiveSlider] = useState<'pos' | null>(null);
     const [activeButtonRect, setActiveButtonRect] = useState<DOMRect | null>(null);
     const [showNumbers, setShowNumbers] = useState(false);
     const numbersTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // --- Wimpy Slider Drag Logic ---
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragVal, setDragVal] = useState<number | null>(null);
+    const dragValRef = useRef<number | null>(null);
+    const hpBarRef = useRef<HTMLDivElement>(null);
+
+    const updateDrag = useCallback((e: PointerEvent | React.PointerEvent) => {
+        if (!hpBarRef.current || stats.maxHp <= 0) return;
+        const rect = hpBarRef.current.getBoundingClientRect();
+        
+        let clientX = 0;
+        if ('clientX' in e) {
+            clientX = e.clientX;
+        }
+
+        let ratio = (clientX - rect.left) / rect.width;
+        ratio = Math.max(0, Math.min(1, ratio));
+        const val = Math.round(ratio * stats.maxHp);
+        dragValRef.current = val;
+        setDragVal(val);
+    }, [stats.maxHp]);
+
+    const handleHpPointerDown = (e: React.PointerEvent) => {
+        if (!onWimpyChange) return;
+        
+        // Initial calculation
+        if (!hpBarRef.current || stats.maxHp <= 0) return;
+        const rect = hpBarRef.current.getBoundingClientRect();
+        const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        const val = Math.round(ratio * stats.maxHp);
+        
+        dragValRef.current = val;
+        setDragVal(val);
+        setIsDragging(true);
+        triggerHaptic(10);
+    };
+
+    useEffect(() => {
+        if (!isDragging) return;
+        
+        const handleMove = (e: PointerEvent) => {
+            updateDrag(e);
+        };
+
+        const handleUp = (e: PointerEvent) => {
+            setIsDragging(false);
+            if (dragValRef.current !== null && onWimpyChange) {
+                onWimpyChange(dragValRef.current);
+            }
+            dragValRef.current = null;
+            setDragVal(null);
+            triggerHaptic(20);
+        };
+
+        window.addEventListener('pointermove', handleMove);
+        window.addEventListener('pointerup', handleUp);
+
+        return () => {
+            window.removeEventListener('pointermove', handleMove);
+            window.removeEventListener('pointerup', handleUp);
+        };
+    }, [isDragging, onWimpyChange, updateDrag, triggerHaptic]);
+
+    const displayWimpy = dragVal !== null ? dragVal : (stats.wimpy ?? 0);
+    const wimpyRatio = stats.maxHp > 0 ? displayWimpy / stats.maxHp : 0;
 
     // Dynamic color for opponent (NPC/Player/etc) to match log higlighter
     const opponentColor = React.useMemo(() => {
@@ -243,14 +331,20 @@ const PromptBox: FC<PromptBoxProps> = ({
                     {/* Player Side */}
                     <div className="vitals-side-container side-left">
                         <div className="player-stats-group">
-                            <ConditionBadge
-                                status={playerHealthStatus || 'Healthy'}
-                                percent={stats.maxHp > 0 ? (stats.hp / stats.maxHp) * 100 : (HEALTH_MAP[playerHealthStatus || 'Healthy']?.percent || 0)}
-                                colorClass="hp"
-                                onClick={triggerNumbers}
-                                showAlt={showNumbers}
-                                altStatus={`${stats.hp}/${stats.maxHp}`}
-                            />
+                            {isNewbieMode && <Heart size={11} className="vitals-icon hp-icon" strokeWidth={3} />}
+                            <div ref={hpBarRef} style={{ flex: 1, display: 'flex', minWidth: 0 }}>
+                                <ConditionBadge
+                                    status={playerHealthStatus || 'Healthy'}
+                                    percent={stats.maxHp > 0 ? (stats.hp / stats.maxHp) * 100 : (HEALTH_MAP[playerHealthStatus || 'Healthy']?.percent || 0)}
+                                    colorClass="hp"
+                                    onClick={triggerNumbers}
+                                    showAlt={showNumbers || isDragging}
+                                    altStatus={isDragging ? `Wimpy: ${displayWimpy}` : `${stats.hp}/${stats.maxHp}`}
+                                    onPointerDown={handleHpPointerDown}
+                                    wimpyRatio={wimpyRatio}
+                                />
+                            </div>
+                            {isNewbieMode && <Zap size={11} className="vitals-icon mana-icon" strokeWidth={3} />}
                             <ConditionBadge 
                                 status={mpStatus} 
                                 percent={getManaPercent(stats.mana, stats.maxMana)}
@@ -259,6 +353,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                                 showAlt={showNumbers}
                                 altStatus={`${stats.mana}/${stats.maxMana}`}
                             />
+                            {isNewbieMode && <Footprints size={11} className="vitals-icon move-icon" strokeWidth={3} />}
                             <ConditionBadge 
                                 status={stStatus} 
                                 percent={getMovePercent(stats.move, stats.maxMove)}
@@ -267,30 +362,47 @@ const PromptBox: FC<PromptBoxProps> = ({
                                 showAlt={showNumbers}
                                 altStatus={`${stats.move}/${stats.maxMove}`}
                             />
-
-                            <button 
-                                className={`pos-combat-square-btn ${inCombat ? 'is-fighting' : ''} ${activeSlider === 'pos' ? 'active' : ''}`}
-                                onClick={handlePosClick}
-                                title={inCombat ? 'Fighting' : `Position: ${playerPosition}`}
-                                style={{ marginLeft: '4px' }}
-                            >
-                                {getPositionIcon()}
-                            </button>
                         </div>
                     </div>
 
                     {/* Center Anchor */}
-                    <div className="vitals-center-anchor" style={{ width: inCombat ? '20px' : '0' }}></div>
+                    <div className="vitals-center-anchor">
+                        <button 
+                            className={`pos-combat-square-btn ${inCombat ? 'is-fighting' : ''} ${activeSlider === 'pos' ? 'active' : ''}`}
+                            onClick={handlePosClick}
+                            title={inCombat ? 'Fighting' : `Position: ${playerPosition}`}
+                        >
+                            {getPositionIcon()}
+                        </button>
+                    </div>
 
                     {/* Opponent Side */}
                     <div className="vitals-side-container side-right">
                         {opponentName && (
                             <div className="opponent-stats-group animate-combat-mini">
+                                <ConditionBadge 
+                                    status="Unknown" 
+                                    percent={100} 
+                                    colorClass="move placeholder" 
+                                    mirrored
+                                />
+                                {isNewbieMode && <Footprints size={11} className="vitals-icon move-icon placeholder" strokeWidth={3} />}
+                                
+                                <ConditionBadge 
+                                    status="Unknown" 
+                                    percent={100} 
+                                    colorClass="mana placeholder" 
+                                    mirrored
+                                />
+                                {isNewbieMode && <Zap size={11} className="vitals-icon mana-icon placeholder" strokeWidth={3} />}
+                                
                                 <ConditionBadge
                                     status={opponentHealthStatus || 'Fighting'}
                                     percent={HEALTH_MAP[opponentHealthStatus || 'Healthy']?.percent || 50}
                                     colorClass="opponent" 
+                                    mirrored
                                 />
+                                {isNewbieMode && <Heart size={11} className="vitals-icon hp-icon" strokeWidth={3} />}
                             </div>
                         )}
                     </div>

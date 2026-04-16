@@ -49,7 +49,7 @@ export const DoorOverlay: React.FC<DoorOverlayProps> = ({
             };
         };
 
-        const dirs: ('n' | 's' | 'e' | 'w')[] = ['n', 's', 'e', 'w'];
+        const dirs: ('n' | 's' | 'e' | 'w' | 'u' | 'd')[] = ['n', 's', 'e', 'w', 'u', 'd'];
         const rawId = currentRoomId.startsWith('m_') ? currentRoomId.substring(2) : currentRoomId;
 
         dirs.forEach(d => {
@@ -60,10 +60,13 @@ export const DoorOverlay: React.FC<DoorOverlayProps> = ({
                 let doorWorldX = wx + s / 2;
                 let doorWorldY = wy + s / 2;
 
+                const cOff = 12; // Triangle corner displacement
                 if (d === 'n') doorWorldY = wy;
                 else if (d === 's') doorWorldY = wy + s;
                 else if (d === 'e') doorWorldX = wx + s;
                 else if (d === 'w') doorWorldX = wx;
+                else if (d === 'u') { doorWorldX -= cOff; doorWorldY -= cOff; }
+                else if (d === 'd') { doorWorldX += cOff; doorWorldY += cOff; }
 
                 const screenPos = toScreen(doorWorldX, doorWorldY);
                 const dirName = DIRS[d].name.toLowerCase();
@@ -144,7 +147,7 @@ export const DoorOverlay: React.FC<DoorOverlayProps> = ({
                         left: door.screenX,
                         top: door.screenY,
                         transform: 'translate(-50%, -50%)',
-                        pointerEvents: 'auto',
+                        pointerEvents: 'none',
                         zIndex: 100
                     }}
                 >

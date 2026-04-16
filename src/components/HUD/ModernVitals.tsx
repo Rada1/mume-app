@@ -1,5 +1,7 @@
 import React, { useMemo, useState, useRef, useEffect, useCallback } from 'react';
+import { Heart, Zap, Footprints, LucideIcon } from 'lucide-react';
 import { GameStats } from '../../types';
+import { useGame } from '../../context/GameContext';
 import './ModernVitals.css';
 
 interface ModernVitalsProps {
@@ -20,7 +22,17 @@ const StatRow: React.FC<{
     onWimpyChange?: (val: number) => void;
     inCombat?: boolean;
     staminaStatus?: string;
-}> = ({ label, value, max, type, wimpy, onWimpyChange, inCombat, staminaStatus }) => {
+    isNewbieMode?: boolean;
+}> = ({ label, value, max, type, wimpy, onWimpyChange, inCombat, staminaStatus, isNewbieMode }) => {
+    const Icon: LucideIcon | null = useMemo(() => {
+        if (!isNewbieMode) return null;
+        switch (type) {
+            case 'hp': return Heart;
+            case 'mana': return Zap;
+            case 'move': return Footprints;
+            default: return null;
+        }
+    }, [type, isNewbieMode]);
     const trackRef = useRef<HTMLDivElement>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [dragVal, setDragVal] = useState<number | null>(null);
@@ -175,7 +187,9 @@ const StatRow: React.FC<{
     };
 
     return (
-        <div className={`modern-vitals-row ${type}`}>
+        <div className={`modern-vitals-row-wrapper ${type} ${isNewbieMode ? 'has-icon' : ''}`}>
+            {Icon && <Icon className="vitals-icon" size={12} strokeWidth={3} />}
+            <div className={`modern-vitals-row`}>
             <div className="modern-vitals-label-group">
                 <span className="stat-label">{label}</span>
                 <div className="modern-vitals-value-column">
@@ -217,12 +231,15 @@ const StatRow: React.FC<{
                     </>
                 )}
             </div>
+            </div>
         </div>
     );
 
 };
 
 const ModernVitals: React.FC<ModernVitalsProps> = ({ stats, isLandscape, inCombat, onWimpyChange, onScoreRefresh, triggerHaptic }) => {
+    const { isNewbieMode } = useGame();
+    
     return (
         <div
             className={`modern-vitals-container docked ${isLandscape ? 'landscape' : ''}`}
@@ -237,9 +254,10 @@ const ModernVitals: React.FC<ModernVitalsProps> = ({ stats, isLandscape, inComba
                 wimpy={stats.wimpy}
                 onWimpyChange={onWimpyChange}
                 inCombat={inCombat}
+                isNewbieMode={isNewbieMode}
             />
-            <StatRow label="MP" value={stats.mana} max={stats.maxMana} type="mana" />
-            <StatRow label="ST" value={stats.move} max={stats.maxMove} type="move" staminaStatus={stats.staminaStatus} />
+            <StatRow label="MP" value={stats.mana} max={stats.maxMana} type="mana" isNewbieMode={isNewbieMode} />
+            <StatRow label="ST" value={stats.move} max={stats.maxMove} type="move" staminaStatus={stats.staminaStatus} isNewbieMode={isNewbieMode} />
             {onScoreRefresh && (
                 <button
                     onPointerDown={(e) => { 

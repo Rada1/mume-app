@@ -103,7 +103,7 @@ export function useGameParser(deps: UseGameParserDeps) {
 
     const { parsePrompt } = usePromptParser({
         captureStage, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName,
-        setBufferHealthStatus, setBufferName, setInCombat, finalizeCapture,
+        setBufferHealthStatus, setBufferName, finalizeCapture,
         isSpectateMode: deps.isSpectateMode,
         setStats, setSpectateStats, setSpectateHealthStatus,
         setSpectateOpponentName, setSpectateOpponentStatus, setSpectateInCombat
@@ -252,6 +252,13 @@ export function useGameParser(deps: UseGameParserDeps) {
             return null;
         }
 
+        // In spectate mode, snooped GMCP bleed often comes wrapped in surrounding blank lines.
+        // Those empty lines would otherwise fall through and pollute the log with phantom gaps,
+        // so we drop them entirely while spectating.
+        if (isSpectateMode && cleanLine.replace(/\x1b\[[0-9;]*m/g, '').trim().length === 0) {
+            return null;
+        }
+
         // --- Spectate Mode (Snoop Mapping) ---
         // Snoop prefixes typically look like '&I ' (Input/Command) or '&O ' (Output)
         // In some cases (or tightly packed streams), the space might be missing if followed by '>'
@@ -320,9 +327,8 @@ export function useGameParser(deps: UseGameParserDeps) {
             }
 
             if (!attachedText) {
-                if (isSpectateMode) {
-                    addMessage('prompt', cleanLine, false);
-                }
+                // In spectate mode the user's own prompt is not part of the POV we want to show,
+                // so we drop it entirely instead of rendering it as a standalone '>' line.
                 return;
             }
             

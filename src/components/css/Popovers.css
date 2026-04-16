@@ -250,8 +250,7 @@
     margin: 4px 8px;
 }
 
-/* Popover state lock-outs */
-body.has-popover .viewport-container,
+/* Popover state lock-outs - removed broad viewport lock-out to allow map interactions while menu is open */
 body.has-popover .xbox-cluster,
 body.has-popover .joystick-container,
 body.has-popover .input-area {

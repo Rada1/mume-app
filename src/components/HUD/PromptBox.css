@@ -1,6 +1,6 @@
 .prompt-box-container {
     width: 100%;
-    margin-bottom: 8px;
+    margin-bottom: -2px;
     z-index: 50;
     pointer-events: auto;
     flex-shrink: 0;
@@ -12,7 +12,7 @@
     -webkit-backdrop-filter: none !important;
     border: none !important;
     border-radius: 8px;
-    padding: 6px 12px;
+    padding: 6px 12px 2px 12px;
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -80,7 +80,9 @@
 .player-stats-group {
     display: flex;
     align-items: center;
-    gap: 6px; /* Increased gap for breathing room */
+    gap: 4px; /* Slightly tighter for dynamic widths */
+    flex: 1;
+    width: 100%;
 }
 
 .condition-badge {
@@ -90,6 +92,12 @@
     font-family: var(--font-main);
     font-size: 0.75rem;
     font-weight: 700;
+    flex: 1;
+    min-width: 0;
+    padding: 8px 0; /* Increase hit area for sliders */
+    margin: -8px 0; /* Offset padding to maintain layout */
+    cursor: pointer;
+    touch-action: none;
 }
 
 .status-bracket-wrapper {
@@ -106,7 +114,7 @@
     padding: 0 2px;
     text-transform: lowercase;
     font-weight: 900;
-    font-size: 0.55rem; /* Smaller numbers */
+    font-size: 0.65rem; /* Improved readability */
     position: relative;
     z-index: 10;
     white-space: nowrap;
@@ -118,11 +126,16 @@
     align-items: center;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 0; /* Fully flat */
-    height: 6px; /* Slightly taller */
-    width: 45px;
+    height: 10px; /* Increased from 6px */
+    width: 100%;
+    max-width: 60px; /* Prevent bars from getting too stretched */
     overflow: hidden;
     transform: skewX(-15deg);
     margin: 0 1px;
+}
+
+.status-bar-segment.is-mirrored {
+    transform: skewX(15deg);
 }
 
 .status-bar-fill {
@@ -140,6 +153,19 @@
 .mana .status-bar-fill { color: #a855f7; background-color: currentColor; }
 .move .status-bar-fill { color: #00ff6a; background-color: currentColor; }
 .opponent .status-bar-fill { color: #ff2d2d; background-color: currentColor; }
+
+/* Placeholder bars (unknown data) */
+.placeholder .status-bar-fill {
+    color: #4b5563 !important; /* Cool Gray 600 */
+    opacity: 0.3 !important;
+    box-shadow: none !important;
+    filter: grayscale(1);
+}
+
+.placeholder.vitals-icon {
+    opacity: 0.3 !important;
+    filter: grayscale(0.8);
+}
 
 .hp .status-text { color: #ffffff !important; text-shadow: 0 0 3px rgba(0,0,0,0.8); }
 .mana .status-text { color: #ffffff !important; text-shadow: 0 0 3px rgba(0,0,0,0.8); }
@@ -182,13 +208,12 @@
 }
 
 .vitals-center-anchor {
-    width: 32px;
+    width: 28px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-shrink: 0;
     margin: 0 4px;
-    padding-bottom: 2px; /* Offset for bars */
 }
 
 .pos-combat-square-btn {
@@ -200,7 +225,7 @@
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 4px;
-    color: var(--accent, #3b82f6);
+    color: #fff;
     cursor: pointer;
     transition: all 0.2s ease;
     padding: 0;
@@ -228,14 +253,26 @@
     animation: combat-pulse 1.5s ease-in-out infinite;
 }
 
+.vitals-icon {
+    flex-shrink: 0;
+    opacity: 1;
+    filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.5));
+}
+
+.hp-icon { color: #ff2d2d; }
+.mana-icon { color: #a855f7; }
+.move-icon { color: #00ff6a; }
+
 .opponent-stats-group {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     font-family: var(--font-main);
     font-size: 0.8rem;
     opacity: 0.9;
     justify-content: flex-end;
+    flex: 1;
+    width: 100%;
 }
 
 @keyframes combat-pulse {

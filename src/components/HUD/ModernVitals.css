@@ -9,11 +9,29 @@
     align-items: center;
 }
 
+.modern-vitals-row-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.vitals-icon {
+    flex-shrink: 0;
+    opacity: 0.9;
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+}
+
+.hp .vitals-icon { color: #ef4444; }
+.mana .vitals-icon { color: #a855f7; }
+.move .vitals-icon { color: #10b981; }
+
 .modern-vitals-row {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    min-width: 100px;
+    flex: 1;
 }
 
 .modern-vitals-label-group {
@@ -121,8 +139,17 @@
         padding: 2px 4px;
     }
     
+    .modern-vitals-row-wrapper {
+        gap: 6px;
+    }
+
     .modern-vitals-row {
-        min-width: 70px;
+        min-width: 0;
+    }
+    
+    .vitals-icon {
+        width: 10px;
+        height: 10px;
     }
     
     .stat-label {

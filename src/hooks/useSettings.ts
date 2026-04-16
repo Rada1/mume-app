@@ -50,6 +50,8 @@ interface UseSettingsDeps {
     setAutoSaveSessions: (val: boolean) => void;
     isNewbieMode: boolean;
     setIsNewbieMode: (val: boolean) => void;
+    connectionUrl: string;
+    setConnectionUrl: (val: string) => void;
 }
 
 export function useSettings(deps: UseSettingsDeps) {
@@ -71,17 +73,10 @@ export function useSettings(deps: UseSettingsDeps) {
         isBloomEnabled, setIsBloomEnabled,
         isTimestampEnabled, setIsTimestampEnabled,
         autoSaveSessions, setAutoSaveSessions,
-        isNewbieMode, setIsNewbieMode
+        isNewbieMode, setIsNewbieMode,
+        connectionUrl, setConnectionUrl
     } = deps;
     const [bgImage, setBgImage] = useState((MASTER_SETTINGS as any).bgImage || DEFAULT_BG);
-    const resolveInitialUrl = () => {
-        const url = (MASTER_SETTINGS as any).connectionUrl || DEFAULT_URL;
-        if (url.includes('localhost') && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-            return url.replace('localhost', window.location.hostname);
-        }
-        return url;
-    };
-    const [connectionUrl, setConnectionUrl] = useState(resolveInitialUrl());
     const [loginName, setLoginName] = usePersistentState<string>('mud-login-name', '');
     const [loginPassword, setLoginPassword] = usePersistentState<string>('mud-login-password', '');
     const [isLoading, setIsLoading] = useState(false);

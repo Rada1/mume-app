@@ -201,11 +201,12 @@
     font-family: var(--font-main);
     /* Scale font so 80 monospace chars fit the container width (minus padding).
        Monospace char ≈ 0.6em wide → 80 chars = 48em → fontSize = availableWidth / 48 */
-    font-size: clamp(9px, calc((100cqw - 24px) / 48), 16px);
+    font-size: clamp(7.5px, calc((100cqw - 18px) / 48.5), 16px);
     font-style: italic;
     color: #e2e8f0;
     max-width: 80ch;
     line-height: 1.35;
+    letter-spacing: -0.02em; /* Subtle squeeze to help 80 chars fit */
     opacity: 0.95;
     white-space: pre-wrap;
     word-break: break-word;

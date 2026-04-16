@@ -238,6 +238,11 @@ export class GmcpDecoder {
             const maxmove = getField(['maxmove', 'maxmv', 'maxmp', 'maxmoves', 'maxstamina', 'maxst', 'V']); if (maxmove !== undefined) next.maxMove = Number(maxmove);
             const wimpy = getField(['wimpy', 'W']); if (wimpy !== undefined) next.wimpy = Number(wimpy);
             const moveStatus = getField(['move_status', 'stamina_status', 'st_status']); if (moveStatus !== undefined) next.staminaStatus = String(moveStatus);
+            
+            // Hunger / Thirst (MUME fields)
+            const hungry = getField(['hungry', 'hunger']); if (hungry !== undefined) next.conditions = { ...next.conditions, hungry: !!hungry };
+            const thirsty = getField(['thirsty', 'thirst']); if (thirsty !== undefined) next.conditions = { ...next.conditions, thirsty: !!thirsty };
+            
             return next;
         });
 
@@ -257,10 +262,15 @@ export class GmcpDecoder {
             }));
         }
 
-        const opp = getField(['opponent', 'opp', 'o']);
         if (opp !== undefined) {
-            this.charVitalsState.opponent = opp === "" ? null : opp;
-            if (this.handlers.onOpponentChange) this.handlers.onOpponentChange(this.charVitalsState.opponent);
+            const newOpp = opp === "" ? null : opp;
+            this.charVitalsState.opponent = newOpp;
+            if (this.handlers.onOpponentChange) this.handlers.onOpponentChange(newOpp);
+            
+            // If opponent is explicitly cleared and we aren't fighting, help the transition
+            if (newOpp === null && this.charVitalsState.position && !this.charVitalsState.position.includes('fighting')) {
+                (this.handlers as any).setInCombat(false, true);
+            }
         }
 
         const buff = getField(['buff', 'b']);
@@ -273,19 +283,25 @@ export class GmcpDecoder {
             this.handlers.onCharVitals(data);
         }
 
-        // Only act on combat state if this update explicitly included position or opponent data.
-        // If neither field was present, we don't know current combat state from this update alone —
-        // let the prompt parser's latch handle the eventual disengage rather than keeping combat
-        // active via stale cached values.
-        const posUpdated = getField(['position', 'pos', 'p']) !== undefined;
-        const oppUpdated = getField(['opponent', 'opp', 'o']) !== undefined;
-        if (posUpdated || oppUpdated) {
-            const isFighting = this.charVitalsState.position?.includes('fighting') ||
-                (this.charVitalsState.opponent !== null && this.charVitalsState.opponent !== undefined);
-            if (isFighting) {
+        // Combat state is driven strictly by the position field in *this* Char.Vitals update.
+        // We intentionally ignore the opponent field — it can linger as stale cached state from
+        // a previous fight, and using it was causing combat mode to re-fire on unrelated vitals
+        // updates where position had already returned to 'standing' / 'resting' / etc.
+        const posRaw = getField(['position', 'pos', 'p']);
+        if (posRaw !== undefined) {
+            const posStr = String(posRaw).toLowerCase();
+            if (posStr.includes('fighting')) {
                 this.handlers.setInCombat(true);
             } else {
-                (this.handlers as any).setInCombat(false);
+                // If position is explicitly a non-fighting state, force clear the UI latch
+                const isExplicitlyNotFighting = ['standing', 'resting', 'sitting', 'sleeping'].some(p => posStr === p || posStr.includes(p));
+                if (isExplicitlyNotFighting) {
+                    (this.handlers as any).setInCombat(false, true);
+                    // Also clear stale opponent if we are definitely not fighting
+                    this.charVitalsState.opponent = null;
+                } else {
+                    (this.handlers as any).setInCombat(false);
+                }
             }
         }
 
@@ -375,9 +391,10 @@ export class GmcpDecoder {
             // However, we can use it to double-check if we are in combat if our opponent is in the list.
             const weAreFighting = this.charVitalsState.position?.includes('fighting') || (this.charVitalsState.opponent !== null && this.charVitalsState.opponent !== undefined);
             if (!weAreFighting) {
-                const isExplicitlyNotFighting = this.charVitalsState.position && !this.charVitalsState.position.includes('fighting');
+                const isExplicitlyNotFighting = this.charVitalsState.position && ['standing', 'resting', 'sitting', 'sleeping'].some(p => this.charVitalsState.position!.includes(p));
                 if (isExplicitlyNotFighting) {
                     (this.handlers as any).setInCombat(false, true); // Force clear the latch
+                    this.charVitalsState.opponent = null; // Cleanup stale opponent
                 } else {
                     this.handlers.setInCombat(false); // Normal clear
                 }

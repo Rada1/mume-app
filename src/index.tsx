@@ -135,16 +135,7 @@ const MudClient = () => {
     }, [btn.editingButtonId, returnToManager, setIsSetManagerOpen]);
 
 
-    const hasAutoConnected = useRef(false);
-    useEffect(() => {
-        if (!hasAutoConnected.current && telnet && typeof telnet.connect === 'function') {
-            hasAutoConnected.current = true;
-            const timer = setTimeout(() => {
-                telnet.connect();
-            }, 1000);
-            return () => clearTimeout(timer);
-        }
-    }, [telnet]);
+
 
     // --- Shop Page Management ---
     // When the shop-card is active, we disable the MUME "page" paginator so it doesn't interrupt long listings.

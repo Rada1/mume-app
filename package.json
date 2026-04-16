@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "mmapper": "node mmapper-bridge.js",
     "bridge": "node mume-bridge.js",
+    "sim": "node mume-sim.js",
     "test": "playwright test",
     "test:ui": "playwright test --ui"
   },

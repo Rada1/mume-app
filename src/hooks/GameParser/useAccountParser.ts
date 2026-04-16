@@ -160,8 +160,9 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         }
 
         // 1. Detect Login Prompts
-        const isNamePrompt = cleanLine.includes('By what name do you wish to be known?');
-        const isPasswordPrompt = cleanLine.includes('Account password:');
+        const lowerLine = cleanLine.toLowerCase();
+        const isNamePrompt = lowerLine.includes('by what name do you wish to be known?');
+        const isPasswordPrompt = lowerLine.includes('account password:');
 
         if (isNamePrompt || isPasswordPrompt) {
             setGameState('account');
@@ -290,7 +291,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         // 6. Detect Account Menu Header
         if (cleanLine.includes('Available commands:')) {
             setGameState('account');
-            stageRef.current = 'account-menu';
+            accountStageRef.current = 'account-menu';
             setAccountState(prev => ({ ...prev, stage: 'account-menu' }));
             setIsPasswordMode(false);
 

@@ -358,73 +358,109 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     stopWalking();
                 }
 
-                if (dragTypeRef.current === 'joystick') {
-                    // This handles Requirement 1 (Short Tap -> Look) and Requirement 6 (Flick -> Move)
-                    const resultData = joystick.handleJoystickEnd(e as any, (cmd: string) => depsRef.current.executeCommand(cmd, false, false, false, false, { fromUi: true }), triggerHaptic, !!depsRef.current.heldButton);
-                    
-                    const isTap = resultData === true || (typeof resultData === 'object' && resultData.isCenterTap);
-                    const comboDir = (typeof resultData === 'object') ? resultData.dir : null;
+                if (dragTypeRef.current === 'joystick' || dragTypeRef.current === 'room') {
+                    const isTap = !hasDraggedRef.current;
+                    const { screenToWorld, getRoomAt, getExitAt } = hitTestRef.current;
+                    const world = screenToWorld(e.clientX, e.clientY);
 
-                    // --- TRACKPAD COMBO LOGIC (Requirements 4 & 5) ---
-                    if (depsRef.current.heldButton?.dx !== undefined && !comboFiredRef.current) {
-                        const button = depsRef.current.btn?.buttons?.find((b: any) => b.id === depsRef.current.heldButton.id);
-                        if (button) {
-                            // Re-calculate command using the button's own swipe only (joystick=undefined to
-                            // prevent stale joystick.currentDir from doubling up the direction we append below)
-                            const result = getButtonCommand(
-                                button,
-                                depsRef.current.heldButton.dx,
-                                depsRef.current.heldButton.dy,
-                                undefined,
-                                undefined,
-                                depsRef.current.heldButton.modifiers,
-                                { currentDir: comboDir, isTargetModifierActive: false },
-                                depsRef.current.target,
-                                isTap
-                            );
-                            
-                            if (result) {
-                                if (isTap) {
-                                    if (result.actionType === 'nav') {
-                                        depsRef.current.setActiveSet(result.cmd);
-                                    } else if (['assign', 'menu', 'select-assign', 'select-recipient'].includes(result.actionType || '')) {
-                                        const isDial = button.menuDisplay === 'dial';
-                                        const fingerX = (depsRef.current.heldButton.initialX || 0) + (depsRef.current.heldButton.dx || 0);
-                                        const fingerY = (depsRef.current.heldButton.initialY || 0) + (depsRef.current.heldButton.dy || 0);
+                    // Priority 1: Check for Exit/Door Click (on ANY tap)
+                    const exitHit = isTap ? getExitAt?.(world.x, world.y) : null;
 
-                                        let finalContext = result.modifiers || button.label;
-                                        if (result.actionType === 'select-assign' && !result.modifiers && result.dir) {
-                                            const swipeToDir: Record<string, string> = { up: 'north', down: 'south', left: 'west', right: 'east', ne: 'northeast', nw: 'northwest', se: 'southeast', sw: 'southwest' };
-                                            finalContext = swipeToDir[result.dir] || result.dir;
+                    if (exitHit) {
+                        // Clean up joystick state just in case we intercepted its tap
+                        if (dragTypeRef.current === 'joystick' && depsRef.current.joystick?.handleJoystickCancel) {
+                            depsRef.current.joystick.handleJoystickCancel(e as any);
+                        }
+
+                        const { setPopoverState, executeCommand } = depsRef.current;
+                        const directions: Record<string, string> = { 
+                            n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' 
+                        };
+                        const dirName = directions[exitHit.direction];
+                        
+                        if (contextMenuTriggeredRef.current) {
+                            // Long Press -> Menu
+                            setPopoverState({
+                                x: e.clientX,
+                                y: e.clientY,
+                                setId: 'doors',
+                                context: dirName,
+                                accentColor: '#78350f' 
+                            });
+                        } else {
+                            // Short Tap -> Open or Close
+                            const action = exitHit.isClosed ? 'open' : 'close';
+                            executeCommand(`${action} exit ${dirName}`, false, false, false, false, { fromUi: true });
+                        }
+                        depsRef.current.triggerHaptic(40);
+                    } else if (dragTypeRef.current === 'joystick') {
+                        // Priority 2: Standard Joystick Tap/Release
+                        const resultData = joystick.handleJoystickEnd(e as any, (cmd: string) => depsRef.current.executeCommand(cmd, false, false, false, false, { fromUi: true }), triggerHaptic, !!depsRef.current.heldButton);
+                        
+                        const isJoyTap = resultData === true || (typeof resultData === 'object' && resultData.isCenterTap);
+                        const comboDir = (typeof resultData === 'object') ? resultData.dir : null;
+
+                        // --- TRACKPAD COMBO LOGIC (Requirements 4 & 5) ---
+                        if (depsRef.current.heldButton?.dx !== undefined && !comboFiredRef.current) {
+                            const button = depsRef.current.btn?.buttons?.find((b: any) => b.id === depsRef.current.heldButton.id);
+                            if (button) {
+                                const result = getButtonCommand(
+                                    button,
+                                    depsRef.current.heldButton.dx,
+                                    depsRef.current.heldButton.dy,
+                                    undefined,
+                                    undefined,
+                                    depsRef.current.heldButton.modifiers,
+                                    { currentDir: comboDir, isTargetModifierActive: false },
+                                    depsRef.current.target,
+                                    isJoyTap
+                                );
+                                
+                                if (result) {
+                                    if (isJoyTap) {
+                                        if (result.actionType === 'nav') {
+                                            depsRef.current.setActiveSet(result.cmd);
+                                        } else if (['assign', 'menu', 'select-assign', 'select-recipient'].includes(result.actionType || '')) {
+                                            const isDial = button.menuDisplay === 'dial';
+                                            const fingerX = (depsRef.current.heldButton.initialX || 0) + (depsRef.current.heldButton.dx || 0);
+                                            const fingerY = (depsRef.current.heldButton.initialY || 0) + (depsRef.current.heldButton.dy || 0);
+
+                                            let finalContext = result.modifiers || button.label;
+                                            if (result.actionType === 'select-assign' && !result.modifiers && result.dir) {
+                                                const swipeToDir: Record<string, string> = { up: 'north', down: 'south', left: 'west', right: 'east', ne: 'northeast', nw: 'northwest', se: 'southeast', sw: 'southwest' };
+                                                finalContext = swipeToDir[result.dir] || result.dir;
+                                            }
+
+                                            depsRef.current.setPopoverState({
+                                                x: isDial ? window.innerWidth / 2 : fingerX,
+                                                y: isDial ? window.innerHeight / 2 : fingerY,
+                                                setId: result.cmd,
+                                                context: finalContext,
+                                                assignSourceId: (result.actionType === 'assign' || result.actionType === 'select-assign') ? button.id : undefined,
+                                                assignSwipeDir: result.dir,
+                                                executeAndAssign: result.actionType === 'select-assign' || result.actionType === 'assign',
+                                                menuDisplay: button.menuDisplay,
+                                                accentColor: button.style.borderColor || button.style.backgroundColor,
+                                                type: result.actionType === 'select-recipient' ? 'give-recipient-select' : undefined
+                                            });
+                                        } else {
+                                            depsRef.current.executeCommand(result.cmd, false, false, false, false, { fromUi: true });
                                         }
-
-                                        depsRef.current.setPopoverState({
-                                            x: isDial ? window.innerWidth / 2 : fingerX,
-                                            y: isDial ? window.innerHeight / 2 : fingerY,
-                                            setId: result.cmd,
-                                            context: finalContext,
-                                            assignSourceId: (result.actionType === 'assign' || result.actionType === 'select-assign') ? button.id : undefined,
-                                            assignSwipeDir: result.dir,
-                                            executeAndAssign: result.actionType === 'select-assign' || result.actionType === 'assign',
-                                            menuDisplay: button.menuDisplay,
-                                            accentColor: button.style.borderColor || button.style.backgroundColor,
-                                            type: result.actionType === 'select-recipient' ? 'give-recipient-select' : undefined
-                                        });
-                                    } else {
+                                    } else if (comboDir) {
                                         depsRef.current.executeCommand(result.cmd, false, false, false, false, { fromUi: true });
                                     }
-                                } else if (comboDir) {
-                                    depsRef.current.executeCommand(result.cmd, false, false, false, false, { fromUi: true });
+                                    depsRef.current.setHeldButton?.((prev: any) => prev ? { ...prev, didFire: true } : null);
+                                    comboFiredRef.current = true;
+                                    depsRef.current.triggerHaptic(60);
                                 }
-                                depsRef.current.setHeldButton?.((prev: any) => prev ? { ...prev, didFire: true } : null);
-                                comboFiredRef.current = true;
-                                depsRef.current.triggerHaptic(60);
                             }
                         }
+                    } else if (isTap && !contextMenuTriggeredRef.current) {
+                        // Priority 3: Standard Room Info
+                        const clickedRoomId = getRoomAt(world.x, world.y);
+                        if (clickedRoomId) setInfoRoomId(clickedRoomId);
                     }
-                }
-
- else if (dragTypeRef.current === 'marquee' && marqueeStart && marqueeEnd) {
+                } else if (dragTypeRef.current === 'marquee' && marqueeStart && marqueeEnd) {
                     const { screenToWorld } = hitTestRef.current;
                     const w1 = screenToWorld(marqueeStart.x, marqueeStart.y), w2 = screenToWorld(marqueeEnd.x, marqueeEnd.y);
                     const x1 = Math.min(w1.x, w2.x), y1 = Math.min(w1.y, w2.y), x2 = Math.max(w1.x, w2.x), y2 = Math.max(w1.y, w2.y);
@@ -435,11 +471,6 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         if (rx >= x1 - GRID_SIZE && rx <= x2 && ry >= y1 - GRID_SIZE && ry <= y2 && (r.z || 0) === currentZ) newSelection.add(r.id);
                     });
                     setSelectedRoomIds(newSelection);
-                } else if (!hasDraggedRef.current && dragTypeRef.current === 'room' && !contextMenuTriggeredRef.current) {
-                    const { screenToWorld, getRoomAt } = hitTestRef.current;
-                    const world = screenToWorld(e.clientX, e.clientY);
-                    const clickedRoomId = getRoomAt(world.x, world.y);
-                    if (clickedRoomId) setInfoRoomId(clickedRoomId);
                 }
                 if (dragTypeRef.current === 'room' && selectedRoomIdsRef.current.size > 0 && hasDraggedRef.current) {
                     setRooms(prev => {

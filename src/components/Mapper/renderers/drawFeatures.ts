@@ -3,8 +3,8 @@ import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, P
 
 // Pre-render common indicators for performance
 const indicatorIcons: Record<string, HTMLCanvasElement> = {};
-export const getIndicatorIcon = (sym: string, color: string) => {
-    const key = `${sym}_${color}`;
+export const getIndicatorIcon = (sym: string, color: string, outline: boolean = false) => {
+    const key = `${sym}_${color}_${outline}`;
     if (indicatorIcons[key]) return indicatorIcons[key];
     const canvas = document.createElement('canvas');
     canvas.width = 24; canvas.height = 24;
@@ -20,10 +20,18 @@ export const getIndicatorIcon = (sym: string, color: string) => {
     ctx.arc(12, 12, 12, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.fillStyle = color;
     ctx.font = 'bold 20px "Inter", sans-serif';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(sym, 12, 12);
+    
+    if (outline) {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2.5;
+        ctx.strokeText(sym, 12, 12);
+    } else {
+        ctx.fillStyle = color;
+        ctx.fillText(sym, 12, 12);
+    }
+    
     indicatorIcons[key] = canvas;
     return canvas;
 };
@@ -223,6 +231,17 @@ export const drawFeatures = (
                                 ctx.strokeStyle = "#ffcc00";
                                 ctx.lineWidth = 4.0;
                                 ctx.beginPath(); ctx.moveTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
+                            } else {
+                                // Open door indicator: little yellow squares touching the posts
+                                ctx.fillStyle = "#ffcc00";
+                                const sqSize = 4.0;
+                                if (ddx === 0) { // Vertical wall
+                                    ctx.fillRect(x1 - sqSize/2, y1 + ddy * 0.25, sqSize, sqSize);
+                                    ctx.fillRect(x1 - sqSize/2, y1 + ddy * 0.75 - sqSize, sqSize, sqSize);
+                                } else { // Horizontal wall
+                                    ctx.fillRect(x1 + ddx * 0.25, y1 - sqSize/2, sqSize, sqSize);
+                                    ctx.fillRect(x1 + ddx * 0.75 - sqSize, y1 - sqSize/2, sqSize, sqSize);
+                                }
                             }
                         }
                     }
@@ -263,11 +282,17 @@ export const drawFeatures = (
                         else if (isExplored) ctx.globalAlpha = exploredAlphaMul;
                         
                         if (ghostExits.u) {
-                            const icon = getIndicatorIcon('▲', iconColor);
+                            const { hasDoor, isClosed } = getGateState(localRoom, ghostExits, 'u', allRooms, preloaded);
+                            const finalColor = hasDoor ? "#ffcc00" : iconColor;
+                            const isOutline = hasDoor && !isClosed;
+                            const icon = getIndicatorIcon('▲', finalColor, isOutline);
                             ctx.drawImage(icon, anchorX - cOff - arrowSize/2, anchorY - cOff - arrowSize/2, arrowSize, arrowSize);
                         }
                         if (ghostExits.d) {
-                            const icon = getIndicatorIcon('▼', iconColor);
+                            const { hasDoor, isClosed } = getGateState(localRoom, ghostExits, 'd', allRooms, preloaded);
+                            const finalColor = hasDoor ? "#ffcc00" : iconColor;
+                            const isOutline = hasDoor && !isClosed;
+                            const icon = getIndicatorIcon('▼', finalColor, isOutline);
                             ctx.drawImage(icon, anchorX + cOff - arrowSize/2, anchorY + cOff - arrowSize/2, arrowSize, arrowSize);
                         }
 
@@ -376,11 +401,17 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
             const vOff = 10;
             const arrowSize = 18;
             if (room.exits.u) {
-                const icon = getIndicatorIcon('▲', isDarkMode ? '#fab387' : '#e67e22');
+                const { hasDoor, isClosed } = getGateState(room, null, 'u', allRooms, preloaded);
+                const finalColor = hasDoor ? "#ffcc00" : (isDarkMode ? '#fab387' : '#e67e22');
+                const isOutline = hasDoor && !isClosed;
+                const icon = getIndicatorIcon('▲', finalColor, isOutline);
                 ctx.drawImage(icon, cX - 12 - arrowSize/2, cY - 12 - arrowSize/2, arrowSize, arrowSize);
             }
             if (room.exits.d) {
-                const icon = getIndicatorIcon('▼', isDarkMode ? '#fab387' : '#e67e22');
+                const { hasDoor, isClosed } = getGateState(room, null, 'd', allRooms, preloaded);
+                const finalColor = hasDoor ? "#ffcc00" : (isDarkMode ? '#fab387' : '#e67e22');
+                const isOutline = hasDoor && !isClosed;
+                const icon = getIndicatorIcon('▼', finalColor, isOutline);
                 ctx.drawImage(icon, cX + 12 - arrowSize/2, cY + 12 - arrowSize/2, arrowSize, arrowSize);
             }
 
@@ -438,7 +469,20 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                     const ddx = x2 - x1, ddy = y2 - y1; ctx.strokeStyle = WALL_COLOR; ctx.lineWidth = 3.5;
                     ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.stroke();
                     ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
-                    if (isClosed) { ctx.strokeStyle = "#ffcc00"; ctx.lineWidth = 4.0; ctx.beginPath(); ctx.moveTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke(); }
+                    if (isClosed) { 
+                        ctx.strokeStyle = "#ffcc00"; ctx.lineWidth = 4.0; ctx.beginPath(); ctx.moveTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke(); 
+                    } else {
+                        // Open door indicator: little yellow squares touching the posts
+                        ctx.fillStyle = "#ffcc00";
+                        const sqSize = 4.0;
+                        if (ddx === 0) { // Vertical wall
+                            ctx.fillRect(x1 - sqSize/2, y1 + ddy * 0.25, sqSize, sqSize);
+                            ctx.fillRect(x1 - sqSize/2, y1 + ddy * 0.75 - sqSize, sqSize, sqSize);
+                        } else { // Horizontal wall
+                            ctx.fillRect(x1 + ddx * 0.25, y1 - sqSize/2, sqSize, sqSize);
+                            ctx.fillRect(x1 + ddx * 0.75 - sqSize, y1 - sqSize/2, sqSize, sqSize);
+                        }
+                    }
                 }
             }
         }

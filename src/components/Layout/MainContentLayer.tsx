@@ -40,7 +40,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     handleDragStart,
     wasDraggingRef
 }) => {
-    const { stats, characterInfo, opponentName, opponentHealthStatus, target, activePrompt, playerHealthStatus } = useVitals();
+    const { stats, setStats, characterInfo, opponentName, opponentHealthStatus, target, activePrompt, playerHealthStatus } = useVitals();
     const {
         env,
         input,
@@ -74,14 +74,16 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
     const prevInCombatRef = React.useRef(false);
     React.useEffect(() => {
-        if (inCombat && !prevInCombatRef.current) {
-            // Combat just started — populate OB/DB/PB/Armour
-            setTimeout(() => executeCommand('stat', true, true, false, false), 400);
-        }
-        prevInCombatRef.current = inCombat;
     }, [inCombat, executeCommand]);
-
+    
     const { setPopoverState } = useUI();
+
+    const handleWimpyChange = React.useCallback((val: number) => {
+        triggerHaptic(10);
+        // Optimistic update
+        setStats(prev => ({ ...prev, wimpy: val }));
+        executeCommand(`change wimpy ${val}`, true, true);
+    }, [executeCommand, triggerHaptic, setStats]);
     const logContainerRef = React.useRef<HTMLDivElement>(null);
     const [headerHeight, setHeaderHeight] = React.useState(0);
 
@@ -174,7 +176,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                             </div>
                         </div>
                     )}
-                    <CombatStatsPanel />
                     <MessageLog
                         onLogClick={handleLogClick}
                         onMouseUp={handleMouseUp}
@@ -183,6 +184,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         onDragStart={handleDragStart as any}
                         onDragEnd={handleDragEnd as any}
                     />
+                    {(!isMobile || viewport.isForceDesktop || isLandscape) && <CombatStatsPanel />}
                 </div>
 
                 {!isMobile && (
@@ -230,6 +232,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     playerHealthStatus={playerHealthStatus}
                     isRiding={isRiding}
                     processMessageHtml={processMessageHtml}
+                    onWimpyChange={handleWimpyChange}
                 />
             )}
 

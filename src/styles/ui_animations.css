@@ -334,3 +334,19 @@
         background: rgba(239, 68, 68, 0.25);
     }
 }
+
+@keyframes status-icon-pulse {
+    0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.1));
+    }
+    50% {
+        transform: scale(1.15);
+        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
+        color: #fff;
+    }
+}
+
+.status-icon-pulse {
+    animation: status-icon-pulse 2s ease-in-out infinite;
+}

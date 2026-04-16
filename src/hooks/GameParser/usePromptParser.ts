@@ -13,7 +13,6 @@ export interface PromptParserDeps {
     setOpponentName: (val: string | null) => void;
     setBufferHealthStatus: (val: CombatHealthStatus | null) => void;
     setBufferName: (val: string | null) => void;
-    setInCombat: (val: boolean, force?: boolean) => void;
     finalizeCapture: (targetStage?: CaptureStage) => boolean;
     isSpectateMode?: boolean;
     setStats: (stats: GameStats | ((prev: GameStats) => GameStats)) => void;
@@ -44,7 +43,6 @@ export function usePromptParser(deps: PromptParserDeps) {
         setOpponentName,
         setBufferHealthStatus,
         setBufferName,
-        setInCombat,
         finalizeCapture,
         isSpectateMode,
         setSpectateStats,
@@ -87,23 +85,10 @@ export function usePromptParser(deps: PromptParserDeps) {
 
         // --- Condition Extraction from Flags (W, !, etc.) ---
         const hasWaiting = /[\s\*\[\(\!]\*[\s\*\]\)>]/.test(promptPart);
-        const hasFighting = /[\s\*\[\(\!]![\s\*\]\)>]/.test(promptPart);
+        const hasFightingChar = /[\s\*\[\(\!][!fF][\s\*\]\)>]/.test(promptPart);
 
-        if (isSpectateMode) {
-            setSpectateStats(prev => ({
-                ...prev,
-                conditions: { ...prev.conditions, waiting: hasWaiting }
-            }));
-            if (hasFighting) setSpectateInCombat(true);
-        } else {
-            if (hasFighting) setInCombat(true);
-            deps.setStats(prev => ({
-                ...prev,
-                conditions: { ...prev.conditions, waiting: hasWaiting }
-            }));
-        }
-
-        // 2 & 3. Combatants (Opponents and Tanks/Buffers)
+        // --- Combat Health Extraction (Opponents and Tanks/Buffers) ---
+        // This is moved up so we can use the 'pairs' detection to verify hasFighting
         const combatantsPart = promptPart
             .replace(/\b(?:HP|MA|MV|SP|Move|Mana)\s*:\s*\w+/gi, '') // Remove vital statuses
             .replace(/^[\*\)\!\(\[\]oO\.f%\~+WU:=O\#\?\s\-]+/, '') // Remove leading prompt symbols
@@ -139,6 +124,22 @@ export function usePromptParser(deps: PromptParserDeps) {
             }
         }
 
+        const hasFighting = hasFightingChar || pairs.some(p => !p.isParen);
+
+        if (isSpectateMode) {
+            setSpectateStats(prev => ({
+                ...prev,
+                conditions: { ...prev.conditions, waiting: hasWaiting }
+            }));
+            if (hasFighting) setSpectateInCombat(true);
+            else setSpectateInCombat(false); // Explicitly clear if no longer fighting in prompt
+        } else {
+            deps.setStats(prev => ({
+                ...prev,
+                conditions: { ...prev.conditions, waiting: hasWaiting }
+            }));
+        }
+
         let oppName: string | null = null;
         let oppStatus: CombatHealthStatus | null = null;
         let buffName: string | null = null;
@@ -160,11 +161,9 @@ export function usePromptParser(deps: PromptParserDeps) {
         if (oppName && oppStatus) {
             setOpponentName(oppName);
             setOpponentHealthStatus(oppStatus);
-            if (!isSpectateMode) setInCombat(true);
         } else if (!isSpectateMode) {
             setOpponentHealthStatus(null);
             setOpponentName(null);
-            setInCombat(false);
         }
 
         if (buffName && buffStatus) {
@@ -205,7 +204,7 @@ export function usePromptParser(deps: PromptParserDeps) {
         return { isMatch: true, promptPart, attachedText, isEndPrompt, isGameplayPrompt };
     }, [
         captureStage, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName, 
-        setBufferHealthStatus, setBufferName, setInCombat, finalizeCapture,
+        setBufferHealthStatus, setBufferName, finalizeCapture,
         isSpectateMode, setSpectateStats, setSpectateHealthStatus, 
         setSpectateOpponentName, setSpectateOpponentStatus, setSpectateInCombat
     ]);

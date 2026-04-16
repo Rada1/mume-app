@@ -15,6 +15,8 @@ export interface SessionManagerDeps {
     spatButtons: any[];
     triggerSpitManual: (btn: any) => void;
     gameState: import('../types').GameState;
+    accountStage?: import('../types').AccountStage;
+    isPasswordMode?: boolean;
 }
 
 export const useSessionManager = ({
@@ -31,7 +33,9 @@ export const useSessionManager = ({
     groupMembers,
     spatButtons,
     triggerSpitManual,
-    gameState
+    gameState,
+    accountStage,
+    isPasswordMode
 }: SessionManagerDeps) => {
     // --- Auto-login session tracking ---
     const autoLoginSessionRef = useRef({ nameSent: false, passwordSent: false, lastStatus: '' });
@@ -51,20 +55,42 @@ export const useSessionManager = ({
         }
         autoLoginSessionRef.current.lastStatus = status;
 
+        const currentName = loginNameRef.current;
+        const currentPassword = loginPasswordRef.current;
+
+        // If no saved credentials, do nothing — let the user type manually
+        if (!currentName && !currentPassword) {
+            console.log('[SessionManager] No credentials found (status:', status, 'prompt:', activePrompt, ' gameState:', gameState, ')');
+            return;
+        }
+
+        console.log('[SessionManager] EVALUATING (status:', status, 'prompt:', activePrompt, ' gameState:', gameState, ')');
+
         if (status !== 'connected' || !activePrompt) return;
 
         // If we are already in the character selection flow, don't auto-send more login info
         if (gameState === 'playing') return;
 
-        const lower = activePrompt.toLowerCase();
-        const currentName = loginNameRef.current;
-        const currentPassword = loginPasswordRef.current;
+        // Important: Strip ANSI escape codes before checking for prompts
+        const cleanPrompt = activePrompt.replace(/\x1b\[[0-9;]*m/g, '');
+        const lower = cleanPrompt.toLowerCase();
 
-        // If no saved credentials, do nothing — let the user type manually
-        if (!currentName && !currentPassword) return;
+        const isNamePrompt = /by what name do you wish to be known\s*\?|what is your name\s*\?|character\'s name/i.test(lower) || (gameState === 'account' && accountStage === 'login' && !isPasswordMode);
+        const isPasswordPrompt = /password\s*:/i.test(lower) || (gameState === 'account' && accountStage === 'login' && isPasswordMode);
+        const isIllegalName = /illegal name/i.test(lower);
 
-        const isNamePrompt = lower.includes("by what name do you wish to be known?") || lower.includes("what is your name?") || lower.includes("character's name");
-        const isIllegalName = lower.includes("illegal name");
+        console.log('[SessionManager] Checking prompt:', { 
+            lower, 
+            isNamePrompt, 
+            isPasswordPrompt,
+            isIllegalName, 
+            nameSent: autoLoginSessionRef.current.nameSent,
+            passwordSent: autoLoginSessionRef.current.passwordSent,
+            currentNamePresent: !!currentName,
+            currentPasswordPresent: !!currentPassword,
+            accountStage,
+            isPasswordMode
+        });
 
         // Handle Name Prompt
         if (isNamePrompt && !isIllegalName) {
@@ -80,13 +106,13 @@ export const useSessionManager = ({
 
         // Handle Password Prompt
         if (currentPassword && !autoLoginSessionRef.current.passwordSent) {
-            if (lower.includes("password:")) {
+            if (isPasswordPrompt) {
                 autoLoginSessionRef.current.passwordSent = true;
                 addSystemMessage(`Auto-login: Sending password...`);
                 telnetSendCommandRef.current(currentPassword);
             }
         }
-    }, [activePrompt, status, addSystemMessage]);
+    }, [activePrompt, status, addSystemMessage, gameState]);
 
     // Exposed so LoginView can signal a manual login attempt is starting.
     // Sets nameSent=true (caller sends name) and resets passwordSent=false

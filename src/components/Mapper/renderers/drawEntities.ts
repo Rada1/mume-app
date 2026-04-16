@@ -1,7 +1,7 @@
 import { RenderContext, getSeed } from './rendererUtils';
 import { GRID_SIZE, DIRS } from '../mapperUtils';
 import { getMemberColor } from '../../../utils/groupUtils';
-import { getGlowColorForCategory, getCategoryForName } from '../../../utils/categorizationUtils';
+import { getGlowColorForCategory, getCategoryForName, COLOR_OBJ } from '../../../utils/categorizationUtils';
 import { occupantAnims, OCCUPANT_ANIM_DURATION, getOccupantKey } from '../occupantAnimStore';
 
 
@@ -149,9 +149,9 @@ export const drawRoomOccupants = (
 
         roomItems.forEach(item => {
             ctx.save();
-            ctx.fillStyle = '#ffcc00';
+            ctx.fillStyle = COLOR_OBJ;
             ctx.shadowBlur = 4 + pulse * 2;
-            ctx.shadowColor = '#ffcc00';
+            ctx.shadowColor = COLOR_OBJ;
             ctx.fillRect(startX, itemY, itemSize, itemSize);
             ctx.restore();
             startX += itemSize + itemGap;

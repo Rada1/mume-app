@@ -155,17 +155,15 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                         setSpectatePosition(data.position);
                         const posLower = data.position.toLowerCase();
                         setSpectateWaiting(posLower === 'waiting' || posLower.includes('waiting'));
-                        if (posLower === 'fighting') {
-                            setSpectateInCombat(true);
-                        }
-                    }
-                    if (data.fighting !== undefined) {
-                        setSpectateInCombat(!!data.fighting);
+                        // Combat state is driven strictly by the position field. A position update
+                        // that is anything other than 'fighting' clears combat mode. We intentionally
+                        // do NOT use the opponent field as a combat signal — it can linger as stale
+                        // state from a previous fight and cause false combat re-entries.
+                        setSpectateInCombat(posLower === 'fighting');
                     }
                     if (data.opponent !== undefined) {
                         setSpectateOpponentName(data.opponent || null);
                         setSpectateOpponentStatus(findStatus(data['opponent-hp']));
-                        setSpectateInCombat(!!data.opponent);
                     }
                     // --- Environmental sync from snooped Char.Vitals ---
                     if (data.light !== undefined && data.light !== null) {
@@ -328,9 +326,13 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                         const sanitized = extractedName.replace(/[.,:;!]$/, '');
                         if (sanitized.length <= 1) return c;
 
-                        // Heuristic: PC if the source didn't lead with an article. Only applied when
-                        // the snooped payload didn't already give us a pc/type field.
-                        const inferredPc = !hadExplicitType ? !startsWithArticle : undefined;
+                        // Heuristic: PC if the source didn't lead with an article AND the name starts
+                        // with an uppercase letter. MUME player names are always capitalized (Ildaeth,
+                        // Khach) while NPC nouns — even when the article is absent from the GMCP payload
+                        // ("mountain mule", "worm-like") — always start lowercase.
+                        // This prevents pre-stripped NPC names from being misclassified as players.
+                        const startsUpperCase = /^[A-Z\u00C0-\u00DE]/.test(sanitized);
+                        const inferredPc = !hadExplicitType ? (!startsWithArticle && startsUpperCase) : undefined;
 
                         return {
                             ...c,

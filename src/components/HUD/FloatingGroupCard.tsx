@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useViewport } from '../../hooks/useViewport';
+import { useVitals } from '../../context/GameContext';
 import { ShopItem } from '../../types';
 import ShopItemCard from '../Shop/ShopItemCard';
-import { X, Search, Plus, Minus, Check } from 'lucide-react';
+import { formatCopperToCoins } from '../../utils/gameUtils';
+import { X, Search, Plus, Minus, Check, Coins } from 'lucide-react';
 
 interface FloatingGroupCardProps {
     type: 'shop';
@@ -18,6 +20,7 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
     shopItems, onClose, executeCommand, shop, setPopoverState, popoverRef 
 }) => {
     const { isMobile, isLandscape } = useViewport();
+    const { characterInfo } = useVitals();
     const isPortrait = isMobile && !isLandscape;
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -189,6 +192,32 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        {characterInfo && characterInfo.gold !== undefined && (
+                            <div className="player-gold-status" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                padding: '4px 10px',
+                                background: 'rgba(255, 215, 0, 0.05)',
+                                borderRadius: '12px',
+                                border: '1px solid rgba(255, 215, 0, 0.1)',
+                                color: 'rgba(255, 215, 0, 0.8)',
+                                fontSize: '0.85rem',
+                                fontWeight: 'bold'
+                            }}>
+                                <Coins size={14} style={{ opacity: 0.8 }} />
+                                {(() => {
+                                    const { gold, silver, copper } = formatCopperToCoins(characterInfo.gold);
+                                    return (
+                                        <div style={{ display: 'flex', gap: '6px' }}>
+                                            {gold > 0 && <span>{gold}<span style={{ fontSize: '0.7rem', opacity: 0.6, marginLeft: '1px' }}>G</span></span>}
+                                            {(gold > 0 || silver > 0) && <span>{silver}<span style={{ fontSize: '0.7rem', opacity: 0.6, marginLeft: '1px' }}>S</span></span>}
+                                            <span>{copper}<span style={{ fontSize: '0.7rem', opacity: 0.6, marginLeft: '1px' }}>C</span></span>
+                                        </div>
+                                    );
+                                })()}
+                            </div>
+                        )}
                         <button onClick={onClose} style={{
                             background: 'rgba(255, 255, 255, 0.1)',
                             border: 'none',
