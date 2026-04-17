@@ -161,27 +161,43 @@ export const useGameAudio = ({
         soundSystemPlayDoorSound(isOpen);
     }, [soundSystemPlayDoorSound]);
 
-    // Stop incantation if we are no longer waiting (interrupt or end of cast)
+    // --- Spectate Spell Success Tracking ---
+    const spectateSpellSuccessRef = useRef(false);
+    const primeSpectateSpellSuccess = useCallback((success: boolean) => {
+        spectateSpellSuccessRef.current = success;
+    }, []);
+
+    // Synchronize incantation sounds with the waiting (casting) state
     const lastWaitingRef = useRef(waiting);
     useEffect(() => {
-        // Skip spell sounds triggered by waiting state clearing if in spectate mode
-        if (isSpectateMode) {
-            lastWaitingRef.current = waiting;
-            return;
-        }
-
-        if (lastWaitingRef.current && !waiting) {
-            if (manualCancelRef?.current) {
-                console.log('[Audio] Manual cancel detected, silent stop');
-                stopIncantationSound(false);
-                manualCancelRef.current = false;
+        // We prefer log parsing to start incantations (for perfect sync with text),
+        // but we use the GMCP 'waiting' state as a reliable fallback to ensure the sound starts.
+        if (!lastWaitingRef.current && waiting) {
+            // NOTE: We do NOT automatically start the incantation sound here anymore.
+            // In MUME, 'waiting' is also used for tracking, searching, and other non-spell skills.
+            // Starting the sound here causes accidental triggers for mundane actions.
+            // The sound must only be started by the explicit text parser in useGameParser.ts.
+            console.log('[Audio] Waiting state activated via GMCP (waiting for text trigger or skill completion)');
+        } else if (lastWaitingRef.current && !waiting) {
+            if (isSpectateMode) {
+                // In spectate mode, we wait for the position switch to trigger the stop,
+                // but we only play the explosion if the last text message was a success.
+                console.log(`[Audio] Spectate waiting state cleared, success=${spectateSpellSuccessRef.current}`);
+                stopIncantationSound(spectateSpellSuccessRef.current);
+                spectateSpellSuccessRef.current = false;
             } else {
-                console.log('[Audio] Waiting state cleared, triggering explosion if cast was successful');
-                stopIncantationSound(true); 
+                if (manualCancelRef?.current) {
+                    console.log('[Audio] Manual cancel detected, silent stop');
+                    stopIncantationSound(false);
+                    manualCancelRef.current = false;
+                } else {
+                    console.log('[Audio] Waiting state cleared, triggering explosion if cast was successful');
+                    stopIncantationSound(true); 
+                }
             }
         }
         lastWaitingRef.current = waiting;
-    }, [waiting, stopIncantationSound, manualCancelRef, isSpectateMode]);
+    }, [waiting, playIncantationSound, stopIncantationSound, manualCancelRef, isSpectateMode]);
 
     const initAudio = useCallback(() => {
         soundSystemInit();
@@ -231,7 +247,7 @@ export const useGameAudio = ({
         playCommMessageSound,
         stopCommMessageSound,
         loadCommMessageSound,
-
+        primeSpectateSpellSuccess,
 
         triggerHaptic,
 

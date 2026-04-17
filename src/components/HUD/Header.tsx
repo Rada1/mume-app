@@ -5,7 +5,6 @@ import { EnvControls } from '../Layout/EnvControls';
 import { RecorderHUD } from '../Layout/HUD/RecorderHUD';
 import { LightingType, WeatherType } from '../../types';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
-import ModernVitals from './ModernVitals';
 
 interface HeaderProps {
     isLandscape?: boolean;

@@ -22,6 +22,7 @@ export interface UseGameParserDeps {
     loadBashSound?: () => void;
     playIncantationSound?: () => void;
     stopIncantationSound?: (andExplode: boolean) => void;
+    primeSpectateSpellSuccess?: (success: boolean) => void;
     playMagicExplosionSound?: () => void;
     playRandomSound: (buffers: AudioBuffer[]) => void;
     playDoorSound: (isOpen: boolean) => void;
@@ -108,6 +109,7 @@ export interface UseGameParserDeps {
     setSpectateCharacterName: (name: string | null) => void;
     setSpectateGroupMembers: React.Dispatch<React.SetStateAction<import('../../types').GroupMember[]>>;
     spectateStats: GameStats;
+    spectateRoomName: string | null;
     spectateRoomDesc?: string | null;
     setSpectateRoomDesc?: (desc: string | null) => void;
     characterName: string | null;
@@ -120,6 +122,7 @@ export interface UseGameParserDeps {
     setRoomItems: React.Dispatch<React.SetStateAction<import('../../types').GmcpOccupant[]>>;
     setRoomName: (name: string | null) => void;
     setRoomDesc: (desc: string | null) => void;
+    setRoomZone: (zone: string | null) => void;
     setRoomExits: (exits: string[]) => void;
     setAbilities: (val: Record<string, number> | ((prev: Record<string, number>) => Record<string, number>)) => void;
     setCharacterClass: (val: any) => void;
@@ -129,6 +132,7 @@ export interface UseGameParserDeps {
     setMessages: React.Dispatch<React.SetStateAction<import('../../types').Message[]>>;
     clearLog: () => void;
     isNewbieMode: boolean;
+    inlineCategories: Record<string, string>;
     processMessageHtml?: (originalHtml: string, mid: string, isRoomName: boolean, type?: import('../../types').MessageType, isCombatMessage?: boolean, combatSide?: 'player' | 'opponent' | 'groupmate') => string;
     spectateCharacterName: string | null;
     roomPlayers: import('../../types').GmcpOccupant[];

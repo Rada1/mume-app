@@ -9,15 +9,14 @@ interface TerrainSoundsDeps {
 }
 
 const TERRAIN_SOUND_MAP: Record<string, string> = {
-    'CITY': '/assets/Sounds/Terrain Sounds/city.mp3',
-    'INSIDE': '/assets/Sounds/Terrain Sounds/inside.mp3',
     'FOREST': '/assets/Sounds/Terrain Sounds/forest.mp3',
-    'FIELD': '/assets/Sounds/Terrain Sounds/field.mp3',
-    'HILLS': '/assets/Sounds/Terrain Sounds/hills.mp3',
-    'MOUNTAIN': '/assets/Sounds/Terrain Sounds/mountains.wav',
+    'FIELD': '/assets/Sounds/Terrain Sounds/dayfield.wav',
+    'HILLS': '/assets/Sounds/Terrain Sounds/mountains.wav',
     'MOUNTAINS': '/assets/Sounds/Terrain Sounds/mountains.wav',
-    'WATER': '/assets/Sounds/Terrain Sounds/water.mp3',
-    'TUNNEL': '/assets/Sounds/Terrain Sounds/tunnel.mp3',
+    'MOUNTAIN': '/assets/Sounds/Terrain Sounds/mountains.wav',
+    'TUNNEL': '/assets/Sounds/Terrain Sounds/cave_tunnel.mp3',
+    'CAVE': '/assets/Sounds/Terrain Sounds/cave_tunnel.mp3',
+    'CITY': '/assets/Sounds/Terrain Sounds/city.mp3',
 };
 
 export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, lighting, isSleeping }: TerrainSoundsDeps) => {
@@ -25,6 +24,28 @@ export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, 
     const currentGainRef = useRef<GainNode | null>(null);
     const lastTerrainRef = useRef<string | null>(null);
     const lastLightingRef = useRef<string | null>(null);
+
+    // --- State for Pause/Resume ---
+    const bufferCacheRef = useRef<Record<string, AudioBuffer>>({});
+    const pausePositionsRef = useRef<Record<string, number>>({});
+    const startTimeRef = useRef<number>(0);
+    const activeUrlRef = useRef<string | null>(null);
+
+    // --- Logic Section ---
+
+    const saveCurrentPosition = () => {
+        if (activeUrlRef.current && currentSourceRef.current && audioCtxRef.current) {
+            const ctx = audioCtxRef.current;
+            const elapsed = ctx.currentTime - startTimeRef.current;
+            const buffer = currentSourceRef.current.buffer;
+            if (buffer) {
+                const previousOffset = pausePositionsRef.current[activeUrlRef.current] || 0;
+                const newOffset = (previousOffset + elapsed) % buffer.duration;
+                pausePositionsRef.current[activeUrlRef.current] = newOffset;
+                console.log(`[TerrainSounds] Saved position for ${activeUrlRef.current}: ${newOffset.toFixed(2)}s`);
+            }
+        }
+    };
 
     useEffect(() => {
         if (!isSoundEnabled || !currentTerrain || !audioCtxRef.current || isSleeping) {
@@ -40,17 +61,22 @@ export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, 
         lastTerrainRef.current = terrainKey;
         lastLightingRef.current = lighting || null;
 
+        // Try exact match first, then partial match
         let soundUrl = TERRAIN_SOUND_MAP[terrainKey];
+        if (!soundUrl) {
+            const foundKey = Object.keys(TERRAIN_SOUND_MAP).find(k => terrainKey.includes(k));
+            if (foundKey) soundUrl = TERRAIN_SOUND_MAP[foundKey];
+        }
         
-        // Dynamic overrides for time of day: Open-air terrains during the day
-        const isOpenAirTerrain = ['FIELD', 'ROAD', 'BRUSH', 'HILLS', 'HILL'].includes(terrainKey);
+        // Dynamic overrides for time of day
         const isDay = lighting === 'sun';
         
-        if (isOpenAirTerrain) {
+        // Open-air terrains that change significantly with light
+        if (terrainKey.includes('FIELD') || terrainKey.includes('ROAD') || terrainKey.includes('BRUSH')) {
             if (isDay) {
                 soundUrl = '/assets/Sounds/Terrain Sounds/dayfield.wav';
             } else {
-                // Return null to silence these areas at night for now
+                // Return null to silence these open areas at night (simulates quiet wilderness)
                 soundUrl = '';
             }
         }
@@ -65,6 +91,8 @@ export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, 
     }, [currentTerrain, isSoundEnabled, lighting, isSleeping]);
 
     const fadeOutAndStop = () => {
+        saveCurrentPosition();
+
         if (currentGainRef.current && audioCtxRef.current) {
             const ctx = audioCtxRef.current;
             const gain = currentGainRef.current;
@@ -85,6 +113,7 @@ export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, 
             
             currentGainRef.current = null;
             currentSourceRef.current = null;
+            activeUrlRef.current = null;
         }
     };
 
@@ -92,19 +121,26 @@ export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, 
         if (!audioCtxRef.current) return;
         const ctx = audioCtxRef.current;
 
-        try {
-            const response = await fetch(url);
-            if (!response.ok) return;
-            
-            // Safety check: Don't try to decode if we got HTML (often a 404 fallback)
-            const contentType = response.headers.get('content-type');
-            if (contentType && contentType.includes('text/html')) {
-                // Silently skip non-audio responses to avoid EncodingError console noise
-                return;
-            }
+        // Save position of what's currently playing before we switch
+        saveCurrentPosition();
 
-            const arrayBuffer = await response.arrayBuffer();
-            const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+        try {
+            let audioBuffer = bufferCacheRef.current[url];
+
+            if (!audioBuffer) {
+                const response = await fetch(url);
+                if (!response.ok) return;
+                
+                // Safety check: Don't try to decode if we got HTML (often a 404 fallback)
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('text/html')) {
+                    return;
+                }
+
+                const arrayBuffer = await response.arrayBuffer();
+                audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+                bufferCacheRef.current[url] = audioBuffer;
+            }
 
             // Fade out previous
             const oldGain = currentGainRef.current;
@@ -122,22 +158,26 @@ export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, 
                 }
             }
 
-            // Play new
+            // Play new (or resume current)
             const source = ctx.createBufferSource();
             source.buffer = audioBuffer;
             source.loop = true;
 
             const gain = ctx.createGain();
             gain.gain.setValueAtTime(0, ctx.currentTime);
-            // Balanced volume level (0.5)
+            // Balanced volume level (0.25)
             gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 3);
 
             source.connect(gain);
             gain.connect(ctx.destination);
-            source.start(0);
+            
+            const startOffset = pausePositionsRef.current[url] || 0;
+            source.start(0, startOffset % audioBuffer.duration);
 
             currentSourceRef.current = source;
             currentGainRef.current = gain;
+            activeUrlRef.current = url;
+            startTimeRef.current = ctx.currentTime;
 
         } catch (err) {
             console.error('[TerrainSounds] Failed to play ambient:', url, err);

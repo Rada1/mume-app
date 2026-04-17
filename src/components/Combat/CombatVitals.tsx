@@ -1,6 +1,6 @@
 import React from 'react';
 import { GameStats } from '../../types';
-import './ModernVitals.css'; // Reuse styles from ModernVitals
+import './CombatVitals.css'; // Renamed from ModernVitals.css
 
 interface CombatVitalsProps {
     stats: GameStats;

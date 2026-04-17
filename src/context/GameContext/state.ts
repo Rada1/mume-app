@@ -84,28 +84,15 @@ export const useGameProviderState = () => {
 
     const [rawSpectateInCombat, _setSpectateInCombat] = useState(false);
     const setSpectateInCombat = useCallback((val: boolean, force: boolean = false) => {
-        if (val) {
-            if (spectateCombatTimeoutRef.current) {
-                clearTimeout(spectateCombatTimeoutRef.current);
-                spectateCombatTimeoutRef.current = null;
-            }
-            _setSpectateInCombat(true);
-            // Heartbeat guard: auto-clear if we don't receive another combat=true signal
-            // within 8 seconds. Snooped Char.Vitals sometimes stops sending `position`
-            // after combat ends, leaving spectateInCombat stuck at true indefinitely.
-            // Each call to setSpectateInCombat(true) resets the timer, so rapid combat
-            // packets keep it alive; silence after combat ends clears it automatically.
-            spectateCombatTimeoutRef.current = setTimeout(() => {
-                spectateCombatTimeoutRef.current = null;
-                _setSpectateInCombat(false);
-            }, 8000);
-        } else {
-            if (spectateCombatTimeoutRef.current) {
-                clearTimeout(spectateCombatTimeoutRef.current);
-                spectateCombatTimeoutRef.current = null;
-            }
-            _setSpectateInCombat(false);
+        // Combat state is driven exclusively by explicit GMCP position signals.
+        // GMCP sends delta updates: `position` is only included when it changes.
+        // Vitals packets during active combat (hp/mana ticking) omit `position`,
+        // so we must not auto-clear — we wait for an explicit position change.
+        if (spectateCombatTimeoutRef.current) {
+            clearTimeout(spectateCombatTimeoutRef.current);
+            spectateCombatTimeoutRef.current = null;
         }
+        _setSpectateInCombat(val);
     }, []);
 
     const [characterName, setCharacterName] = useState<string | null>(null);
@@ -274,6 +261,7 @@ export const useGameProviderState = () => {
     });
     const [spectateHealthStatus, setSpectateHealthStatus] = useState<CombatHealthStatus | null>(null);
     const [spectateOpponentName, setSpectateOpponentName] = useState<string | null>(null);
+    const [spectateOpponentId, setSpectateOpponentId] = useState<string | null>(null);
     const [spectateOpponentStatus, setSpectateOpponentStatus] = useState<CombatHealthStatus | null>(null);
     const [spectatePosition, setSpectatePosition] = useState<string>('standing');
     const [spectateWaiting, setSpectateWaiting] = useState<boolean>(false);
@@ -554,13 +542,14 @@ export const useGameProviderState = () => {
         spectateStats, setSpectateStats,
         spectateHealthStatus, setSpectateHealthStatus,
         spectateOpponentName, setSpectateOpponentName,
+        spectateOpponentId, setSpectateOpponentId,
         spectateOpponentStatus, setSpectateOpponentStatus,
         spectateQueue, setSpectateQueue,
         lastSnoopStartTime, setLastSnoopStartTime
     }), [stats, target, activePrompt, rumble, deathRoomId, heldButton, isMendingMode, mendingTarget,
         playerHealthStatus, opponentHealthStatus, opponentName, opponentId, bufferHealthStatus, bufferName, pendingMove, characterInfo, groupMembers,
         xpHistory, xpEvent, triggerXpTicker, hitFlashEvent, oppHitFlashEvent, accountState,
-        spectateStats, spectateHealthStatus, spectateOpponentName, spectateOpponentStatus]);
+        spectateStats, spectateHealthStatus, spectateOpponentName, spectateOpponentId, spectateOpponentStatus]);
 
     const game = useMemo(() => ({
         inCombat: effectiveInCombat, setInCombat,
@@ -647,8 +636,9 @@ export const useGameProviderState = () => {
         setBufferName: vitals.setBufferName,
         setQuests,
         quests,
-        groupMembers,
+        groupMembers: settings.isSpectateMode ? spectateGroupMembers : groupMembers,
         setGroupMembers,
+        setSpectateGroupMembers,
         spectateGroupMembers,
         setSpectateGroupMembers,
         mumeEditState,

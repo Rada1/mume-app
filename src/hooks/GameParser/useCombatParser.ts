@@ -43,7 +43,7 @@ export function useCombatParser(deps: CombatParserDeps) {
         setSpectateOpponentStatus
     } = deps;
 
-    const checkCombatMatch = useCallback((lower: string) => {
+    const checkCombatMatch = useCallback((lower: string, isSnoop: boolean = false) => {
         // Exclude specific flavor text that shouldn't be combat
         if (lower.includes('hissing shriek') || lower.includes('the nine')) return { isMatch: false };
 
@@ -55,11 +55,12 @@ export function useCombatParser(deps: CombatParserDeps) {
         
         if (!isMatch) return { isMatch: false };
 
-        const impactVerbs = ['hit', 'pierce', 'slash', 'smite', 'crush', 'pound', 'stab', 'cleave', 'wound', 'maul', 'strike', 'backstab', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shoot', 'shock'];
+        const impactVerbs = ['hit', 'pierce', 'slash', 'smite', 'crush', 'pound', 'stab', 'cleave', 'wound', 'maul', 'strike', 'backstab', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shoot', 'shock', 'blast', 'struck', 'burn', 'chill', 'acid', 'poison'];
         
         // Use regex with word boundaries for more robust matching regardless of punctuation
-        const impactRegex = new RegExp(`\\b(${impactVerbs.join('|')})s?\\b`, 'i');
-        const isImpact = impactRegex.test(cleanLower);
+        const impactRegex = new RegExp(`\\b(${impactVerbs.join('|')})(?:es|s)?\\b`, 'i');
+        // A combat line is an impact only if it matches an impact verb AND doesn't mention avoidance
+        const isImpact = impactRegex.test(cleanLower) && !/\b(miss|dodge|parry|evade|avoid|blocks?)\b/i.test(cleanLower);
 
         // Determine side and target
         let side: 'player' | 'opponent' | 'groupmate' | undefined = undefined;
@@ -76,23 +77,21 @@ export function useCombatParser(deps: CombatParserDeps) {
             
             const allAllies = Array.from(new Set([...pcNames, ...extraNames]));
 
-            const groupNameMatch = allAllies.find(name => {
+            let groupNameMatch = '';
+            const gName = allAllies.find(name => {
                 const lowerName = name.toLowerCase();
-                // Check if line starts with name followed by space/punctuation/modifiers
                 return cleanLower.startsWith(lowerName + ' ') || 
                        cleanLower.startsWith(lowerName + '(') || 
                        cleanLower.startsWith(lowerName + ' (');
             });
+            if (gName) groupNameMatch = gName;
             
             if (groupNameMatch) {
                 side = 'groupmate';
             } else {
                 side = 'opponent';
-                // Only consider it a player hit if "you" or "your" follows the verb
-                // MUME formats: "NPC hits you.", "NPC smites your head.", "NPC dodges your attack."
-                // In spectate mode, we might want to hear it for someone else, but for now 
-                // "oof" is specifically for the local player's pain.
-                isPlayerTarget = /\b(you|your)\b/i.test(cleanLower);
+                const spectateTargetLower = spectateCharacterName?.toLowerCase();
+                isPlayerTarget = /\b(you|your)\b/i.test(cleanLower) || (!!spectateTargetLower && cleanLower.includes(spectateTargetLower));
             }
         }
         const modifiers = ['extremely hard', 'very hard', 'hard', 'strongly', 'lightly', 'barely'];
@@ -101,7 +100,9 @@ export function useCombatParser(deps: CombatParserDeps) {
         const verbMatch = cleanLower.match(impactRegex);
         const verb = verbMatch ? verbMatch[1].toLowerCase() : undefined;
 
-        return { isMatch: true, side, isImpact, modifier, verb, isPlayerTarget };
+        const isMainActor = (side === 'player') || (side === 'groupmate' && !!spectateCharacterName && groupNameMatch.toLowerCase() === spectateCharacterName.toLowerCase());
+
+        return { isMatch: true, side, isImpact, modifier, verb, isPlayerTarget, isMainActor };
     }, [inCombatRef, groupMembers, spectateCharacterName, roomPlayers]);
 
     const handleCombatExit = useCallback((lower: string, isSnoop: boolean = false) => {

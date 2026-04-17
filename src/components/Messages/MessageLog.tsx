@@ -86,10 +86,16 @@ const MessageItem = React.memo(({
     // 2. Storing `isHitImpact` as a permanent message flag caused the animation to
     //    re-fire on the previous hit when `recent-entry` dropped off during a re-render.
     const [showHitFlash, setShowHitFlash] = useState(() => !!msg.isHitImpact);
+    const [showHitterFlash, setShowHitterFlash] = useState(() => !!msg.isHitterImpact);
     useEffect(() => {
-        if (!msg.isHitImpact) return;
-        const t = setTimeout(() => setShowHitFlash(false), 1400);
-        return () => clearTimeout(t);
+        if (msg.isHitImpact) {
+            const t = setTimeout(() => setShowHitFlash(false), 2000);
+            return () => clearTimeout(t);
+        }
+        if (msg.isHitterImpact) {
+            const t = setTimeout(() => setShowHitterFlash(false), 2000);
+            return () => clearTimeout(t);
+        }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // intentionally empty — fire once on mount only
 
@@ -129,7 +135,7 @@ const MessageItem = React.memo(({
 
     return (
         <div
-            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${isOutdatedRoom ? ' is-outdated-room' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showHitFlash ? ' is-hit-impact' : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
+            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${isOutdatedRoom ? ' is-outdated-room' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showHitFlash ? ' is-hit-impact' : ''}${showHitterFlash ? ' is-hitter-impact' : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
         >
             {msg.type === 'user' || msg.type === 'snoop-command' ? (
                 <div 
@@ -232,7 +238,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const { inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, isTimestampEnabled, isNewbieMode, isSpectateMode, input, setInput, sessionMode } = useBaseGame();
     const { replayer } = useUI();
     const { messages, processMessageHtml } = useLog();
-    const { activePrompt, setTarget, target, opponentName, opponentHealthStatus } = useVitals();
+    const { activePrompt, target, setTarget, opponentName, opponentHealthStatus } = useVitals();
     const { scrollContainerRef, messagesEndRef, scrollToBottom } = viewport;
 
     // --- Replay Mode Mapping ---
@@ -330,7 +336,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
         // In Newbie Mode, we show most action but hide prompts (handled by HUD/Input).
         // We now allow room names to show so they act as markers in the persistent history.
-        return messages.filter(m => m.type !== 'prompt');
+        return messages.filter(m => m.type !== 'prompt' || m.isSnoop);
     }, [messages, replayMessages, sessionMode, isNewbieMode]);
 
     const lastUserMsgIndex = useMemo(() => {
@@ -470,7 +476,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                 viewport.scrollToBottom(true, false, 'LayoutEffect');
             });
         }
-    }, [messages, activePrompt, viewport, isNewbieMode, lastUserMsgIndex, virtualizer]);
+    }, [messages, viewport, isNewbieMode, lastUserMsgIndex, virtualizer]);
 
     React.useEffect(() => {
         const container = scrollContainerRef.current;

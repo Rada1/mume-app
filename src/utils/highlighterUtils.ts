@@ -6,7 +6,7 @@
 import { RefObject } from 'react';
 import { CustomButton, InlineCategoryConfig, MessageType } from '../types';
 import { pluralizeMumeSubject } from './gameUtils';
-import { getCategoryForName, getGlowColorForCategory, COLOR_OBJ } from './categorizationUtils';
+import { getCategoryForName, getGlowColorForCategory } from './categorizationUtils';
 import { getEffectiveKeyword } from './keywordUtils';
 import {
     statusKeywords,
@@ -235,7 +235,7 @@ export const buildHighlighterCandidates = (
         }
     }
 
-    const corpseGlowColor = getGlowColorForCategory('inline-corpses', inlineCategories) || COLOR_OBJ;
+    const corpseGlowColor = getGlowColorForCategory('inline-corpses', inlineCategories) || 'rgba(180, 100, 50, 0.9)';
 
     // Pre-detect which NPC names appear in "corpse of ..." context in this message.
     // MUME often splits "corpse of a pack horse" across HTML color spans, so we can't

@@ -21,6 +21,7 @@ interface PromptBoxProps {
     opponentHealthStatus: CombatHealthStatus | null;
     playerHealthStatus: CombatHealthStatus | null;
     isRiding?: boolean;
+    isSpectateMode?: boolean;
     processMessageHtml?: (html: string, mid: string, isRoomName: boolean, type?: string, isCombat?: boolean, side?: string) => string;
     onWimpyChange?: (val: number) => void;
 }
@@ -65,12 +66,13 @@ const ConditionBadge: React.FC<{
     onClick?: () => void;
     altStatus?: string;
     showAlt?: boolean;
-    flash?: boolean;
     mirrored?: boolean;
     onPointerDown?: (e: React.PointerEvent) => void;
     wimpyRatio?: number;
-}> = ({ status, percent, colorClass, onClick, altStatus, showAlt, flash, mirrored, onPointerDown, wimpyRatio }) => (
-    <div className={`condition-badge ${colorClass} ${flash ? 'blink-hit' : ''}`} onClick={onClick} onPointerDown={onPointerDown}>
+    isDragging?: boolean;
+    dragVal?: number | null;
+}> = ({ status, percent, colorClass, onClick, altStatus, showAlt, mirrored, onPointerDown, wimpyRatio, isDragging, dragVal }) => (
+    <div className={`condition-badge ${colorClass}`} onClick={onClick} onPointerDown={onPointerDown}>
         <div className={`status-bar-segment ${mirrored ? 'is-mirrored' : ''}`}>
             <div 
                 className="status-bar-fill" 
@@ -100,6 +102,13 @@ const ConditionBadge: React.FC<{
                         zIndex: 20
                     }} 
                 />
+            )}
+            {isDragging && dragVal !== null && wimpyRatio !== undefined && (
+                <div className="wimpy-indicator">
+                    <span className="wimpy-indicator-label">Wimpy At</span>
+                    <span className="wimpy-indicator-value">{dragVal} HP</span>
+                    <div className="wimpy-indicator-arrow" />
+                </div>
             )}
             <span className="status-text">{showAlt && altStatus ? altStatus : ""}</span>
         </div>
@@ -175,11 +184,11 @@ const PromptBox: FC<PromptBoxProps> = ({
     opponentHealthStatus,
     playerHealthStatus,
     isRiding,
+    isSpectateMode,
     processMessageHtml,
     onWimpyChange
 }) => {
     const { triggerHaptic, executeCommand, setPlayerPosition, inlineCategories, isNewbieMode } = useGame();
-    const { hitFlashEvent, oppHitFlashEvent } = useVitals();
     const [activeSlider, setActiveSlider] = useState<'pos' | null>(null);
     const [activeButtonRect, setActiveButtonRect] = useState<DOMRect | null>(null);
     const [showNumbers, setShowNumbers] = useState(false);
@@ -258,24 +267,6 @@ const PromptBox: FC<PromptBoxProps> = ({
         return getGlowColorForCategory(cat, inlineCategories) || undefined;
     }, [opponentName, inlineCategories]);
 
-    // Flash on combat impact (triggered by parser on each hit)
-    const [hitFlash, setHitFlash] = useState(false);
-    const [oppHitFlash, setOppHitFlash] = useState(false);
-
-    useEffect(() => {
-        if (hitFlashEvent === 0) return;
-        setHitFlash(true);
-        const t = setTimeout(() => setHitFlash(false), 350);
-        return () => clearTimeout(t);
-    }, [hitFlashEvent]);
-
-    useEffect(() => {
-        if (oppHitFlashEvent === 0) return;
-        setOppHitFlash(true);
-        const t = setTimeout(() => setOppHitFlash(false), 350);
-        return () => clearTimeout(t);
-    }, [oppHitFlashEvent]);
-
     const triggerNumbers = useCallback(() => {
         triggerHaptic(15);
         setShowNumbers(true);
@@ -316,11 +307,11 @@ const PromptBox: FC<PromptBoxProps> = ({
                 {/* Names Row — only shown in combat */}
                 {inCombat && (
                     <div className="vitals-names-row">
-                        <div className={`name-label player-name ${hitFlash ? 'blink-hit' : ''}`}>
+                        <div className="name-label player-name">
                             {renderStyledName(characterName || 'YOU')}
                         </div>
                         {opponentName && (
-                            <div className={`name-label opponent-name ${oppHitFlash ? 'blink-hit' : ''} animate-combat-mini`}>
+                            <div className="name-label opponent-name animate-combat-mini">
                                 {renderStyledName(opponentName, true)}
                             </div>
                         )}
@@ -339,9 +330,11 @@ const PromptBox: FC<PromptBoxProps> = ({
                                     colorClass="hp"
                                     onClick={triggerNumbers}
                                     showAlt={showNumbers || isDragging}
-                                    altStatus={isDragging ? `Wimpy: ${displayWimpy}` : `${stats.hp}/${stats.maxHp}`}
+                                    altStatus={isDragging ? `` : `${stats.hp}/${stats.maxHp}`}
                                     onPointerDown={handleHpPointerDown}
                                     wimpyRatio={wimpyRatio}
+                                    isDragging={isDragging}
+                                    dragVal={dragVal}
                                 />
                             </div>
                             {isNewbieMode && <Zap size={11} className="vitals-icon mana-icon" strokeWidth={3} />}
@@ -369,7 +362,8 @@ const PromptBox: FC<PromptBoxProps> = ({
                     <div className="vitals-center-anchor">
                         <button 
                             className={`pos-combat-square-btn ${inCombat ? 'is-fighting' : ''} ${activeSlider === 'pos' ? 'active' : ''}`}
-                            onClick={handlePosClick}
+                            onClick={!isSpectateMode ? handlePosClick : undefined}
+                            style={{ cursor: isSpectateMode ? 'default' : 'pointer' }}
                             title={inCombat ? 'Fighting' : `Position: ${playerPosition}`}
                         >
                             {getPositionIcon()}
@@ -387,7 +381,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                                     mirrored
                                 />
                                 {isNewbieMode && <Footprints size={11} className="vitals-icon move-icon placeholder" strokeWidth={3} />}
-                                
+
                                 <ConditionBadge 
                                     status="Unknown" 
                                     percent={100} 
@@ -395,14 +389,14 @@ const PromptBox: FC<PromptBoxProps> = ({
                                     mirrored
                                 />
                                 {isNewbieMode && <Zap size={11} className="vitals-icon mana-icon placeholder" strokeWidth={3} />}
-                                
+
                                 <ConditionBadge
                                     status={opponentHealthStatus || 'Fighting'}
                                     percent={HEALTH_MAP[opponentHealthStatus || 'Healthy']?.percent || 50}
                                     colorClass="opponent" 
                                     mirrored
                                 />
-                                {isNewbieMode && <Heart size={11} className="vitals-icon hp-icon" strokeWidth={3} />}
+                                {isNewbieMode && <Heart size={11} className="vitals-icon hp-icon is-mirrored" strokeWidth={3} />}
                             </div>
                         )}
                     </div>

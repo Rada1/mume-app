@@ -283,6 +283,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playIncantationSound,
         stopIncantationSound,
         playMagicExplosionSound,
+        primeSpectateSpellSuccess,
         loadSpellSounds,
         playCommMessageSound,
         stopCommMessageSound,
@@ -291,10 +292,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         loadBuySellSound,
         playBashSound,
         loadBashSound,
-
-
         triggerHaptic,
-
         setTriggerHaptic
     } = useGameAudio({
         isSoundEnabled: s.isSoundEnabled,
@@ -361,19 +359,20 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         addMessage,
         setCharacterName: s.setCharacterName,
         setPlayerPosition: s.isSpectateMode ? s.setSpectatePosition : s.setPlayerPosition,
+        setInCombat: s.isSpectateMode ? s.setSpectateInCombat : s.setInCombat,
         setRoomName: s.isSpectateMode ? s.setSpectateRoomName : s.setRoomName,
         setRoomDesc: s.isSpectateMode ? s.setSpectateRoomDesc : s.setRoomDesc,
         setRoomZone: s.isSpectateMode ? s.setSpectateRoomZone : s.setRoomZone,
         setRoomExits: s.setRoomExits, // Exits can stay shared for mapper
         setDiscoveredItems: s.setDiscoveredItems,
         setBufferName: v.setBufferName,
-        setPlayerHealthStatus: v.setPlayerHealthStatus,
-        setOpponentHealthStatus: v.setOpponentHealthStatus,
+        setPlayerHealthStatus: s.isSpectateMode ? v.setSpectateHealthStatus : v.setPlayerHealthStatus,
+        setOpponentHealthStatus: s.isSpectateMode ? v.setSpectateOpponentStatus : v.setOpponentHealthStatus,
         setBufferHealthStatus: v.setBufferHealthStatus,
-        setOpponentName: v.setOpponentName,
+        setOpponentName: s.isSpectateMode ? v.setSpectateOpponentName : v.setOpponentName,
         setCharacterInfo: v.setCharacterInfo,
         characterInfo: v.characterInfo,
-        opponentName: v.opponentName,
+        opponentName: s.isSpectateMode ? v.spectateOpponentName : v.opponentName,
         bufferName: v.bufferName,
         roomPlayers: s.roomPlayers,
         roomNpcs: s.roomNpcs,
@@ -381,8 +380,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setMumeEditState: s.setMumeEditState,
         setWhoList: s.setWhoList,
         setWhereList: s.setWhereList,
-        opponentId: v.opponentId,
-        setOpponentId: v.setOpponentId,
+        opponentId: s.isSpectateMode ? v.spectateOpponentId : v.opponentId,
+        setOpponentId: s.isSpectateMode ? v.setSpectateOpponentId : v.setOpponentId,
         detectLighting: (light) => {
             if (s.isSpectateMode) s.setSpectateLighting(light as any);
             else env.detectLighting?.(light);
@@ -565,6 +564,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playCommMessageSound,
         playBuySellSound,
         stopIncantationSound,
+        primeSpectateSpellSuccess,
         playMagicExplosionSound,
         deathRoomId: v.deathRoomId,
         setDeathRoomId: v.setDeathRoomId,
@@ -1136,7 +1136,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             playRandomSound: isReplaying ? () => {} : playRandomSound, 
             playDoorSound: isReplaying ? () => {} : playDoorSound, 
             setPlaySound, triggerHaptic: isReplaying ? () => {} : triggerHaptic, 
-            setTriggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound,
+            setTriggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, primeSpectateSpellSuccess,
 
             btn, joystick, editor, containerRef, viewport, env,
             initAudio,

@@ -43,8 +43,10 @@ export function useGameParser(deps: UseGameParserDeps) {
         loadBashSound,
 
         playIncantationSound,
+        playBuySellSound,
 
         stopIncantationSound,
+        primeSpectateSpellSuccess,
         playMagicExplosionSound,
         playRandomSound,
  playDoorSound, triggerHaptic, setStats, setWeather, setIsFoggy, 
@@ -346,7 +348,7 @@ export function useGameParser(deps: UseGameParserDeps) {
                 if (isSnoop) {
                     // Snooped standalone prompt — this is the spectated player's '>' prompt,
                     // which is part of the spectated POV and should be shown.
-                    addMessage('prompt', cleanLine, false);
+                    addMessage('prompt', cleanLine, false, undefined, undefined, undefined, undefined, undefined, undefined, false, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, isSnoop, isSnoopInput);
                 }
                 // User's own standalone prompt is not part of the spectated POV — drop silently.
                 return;
@@ -513,6 +515,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             } else if (combatInfo.side === 'opponent') {
                 // Only play "oof" if the message confirmed the player was the target (isPlayerTarget)
                 if (combatInfo.isPlayerTarget) {
+                    console.log(`[Parser] Processing opponent hit on player: "${combatInfo.verb}" (Modifier: ${combatInfo.modifier || 'none'})`);
                     playOofSound?.({ pitch, volume: volume * 1.2 });
                     triggerHitFlash?.();
                 }
@@ -523,16 +526,39 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (parseAccountLine(line, false)) return;
 
         // --- Spell Casting Sounds ---
-        // Only trigger for the player, not NPCs or other players
-        // In spectate mode, we disable these to avoid constant noise from the snooped player
-        if (!isSpectateMode && (lower.includes('you begin some strange incantations') ||
+        // We trigger the starting sound via text parsing to ensure they sync with the log message.
+        // We handle both second-person (player) and third-person (spectated player) variants.
+        const matchesIncantationText = 
+            lower.includes('you begin some strange incantations') ||
             lower.includes('you start to concentrate') ||
-            lower.includes('you muster all of your concentration'))) {
-            playIncantationSound?.();
+            lower.includes('you muster all of your concentration');
+
+        if (matchesIncantationText) {
+            // In spectate mode, we play if it's snooped OR if it's the target's name in the room line
+            const isTargetActing = !isSpectateMode || isSnoop || (spectateCharacterName && lower.includes(spectateCharacterName.toLowerCase()));
+            
+            if (isTargetActing) {
+                console.log(`[GameParser] Incantation match: snoop=${isSnoop}, text="${textOnly.substring(0, 40)}..."`);
+                playIncantationSound?.();
+            }
         }
 
-        if (lower.startsWith('ok.') || lower.includes('you utter the words')) {
-            if (!isSpectateMode) stopIncantationSound?.(true);
+        const isSpellSuccess = lower.startsWith('ok.') || 
+                               lower.includes('you utter the words') ||
+                               lower.startsWith('you feel ') ||
+                               lower.startsWith('you create ') ||
+                               lower.includes('is filled with a sudden warmth') ||
+                               lower.includes('a shield of light') ||
+                               lower.includes('you call a lightning') ||
+                               lower.includes('you wish for ');
+
+        if (isSpellSuccess) {
+            if (isSpectateMode) {
+                // In spectate mode, we prime the success but wait for the position switch to stop
+                if (isSnoop) primeSpectateSpellSuccess?.(true);
+            } else {
+                stopIncantationSound?.(true);
+            }
         } else if (lower.includes('lose your concentration') || 
                    lower.includes('lost your concentration') ||
                    lower.includes('stop your incantations') ||
@@ -540,7 +566,15 @@ export function useGameParser(deps: UseGameParserDeps) {
                    lower.includes('concentration is broken') ||
                    lower.includes('too dazed to concentrate') ||
                    lower.includes('too stunned to concentrate')) {
-            if (!isSpectateMode) stopIncantationSound?.(false);
+            if (isSpectateMode) {
+                // Interruptions in spectate mode are often immediate, but we also clear the success prime
+                if (isSnoop) {
+                    primeSpectateSpellSuccess?.(false);
+                    stopIncantationSound?.(false);
+                }
+            } else {
+                stopIncantationSound?.(false);
+            }
         }
 
 
@@ -694,7 +728,9 @@ export function useGameParser(deps: UseGameParserDeps) {
         trackAction(cleanLine, textOnly, lower);
         processTriggers(textOnly);
 
-        const isImportantMessage = /hits you|receive your share|is dead|tells you|say,|group:|following/i.test(lower);
+        const isSnoopCommand = isSnoop && textOnly.trim().startsWith('>');
+        const isImportantMessage = isCombatMatch || isSnoopCommand || /hits you|receive your share|is dead|tells you|say,|group:|following/i.test(lower);
+        
         // If Newbie Mode is OFF, we want to see descriptions and exits in the log.
         // Room content (NPCs, exits, items) should be preserved even during silent captures.
         const isRoomContent = isRoomName || lower.startsWith('exits:') || lower.includes(' is here.') || lower.includes(' are here.') || lower.includes('standing here') || lower.includes('resting here') || lower.includes('sitting here') || lower.includes('sleeping here');
@@ -761,7 +797,7 @@ export function useGameParser(deps: UseGameParserDeps) {
                     playCommMessageSound?.();
                 }
             }
-            addMessage(msgType, finalRawText, isCombatMatch, currentMid, isRoomName, { textOnly, lower }, undefined, undefined, undefined, false, commInfo.replyTarget, commInfo.replyCommand, commInfo.commSender, commInfo.commAction, commInfo.commText, commInfo.commColor, combatInfo.side, combatInfo.isImpact && combatInfo.side === 'player');
+            addMessage(msgType, finalRawText, isCombatMatch, currentMid, isRoomName, { textOnly, lower }, undefined, undefined, undefined, false, commInfo.replyTarget, commInfo.replyCommand, commInfo.commSender, commInfo.commAction, commInfo.commText, commInfo.commColor, combatInfo.side, combatInfo.isImpact && combatInfo.isPlayerTarget, combatInfo.isImpact && combatInfo.isMainActor, isSnoop, isSnoopInput);
 
         }
 

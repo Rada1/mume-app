@@ -1,8 +1,7 @@
 import React from 'react';
-import ModernVitals from '../../HUD/ModernVitals';
 import XpTicker from '../../Combat/XpTicker';
 import CombatVitals from '../../Combat/CombatVitals';
-import { useVitals, useGame } from '../../../context/GameContext';
+import { useGame } from '../../../context/GameContext';
 
 interface StatsClusterProps {
     uiPositions: any;
@@ -16,13 +15,7 @@ interface StatsClusterProps {
 export const StatsCluster: React.FC<StatsClusterProps> = ({
     uiPositions, isEditMode, dragState, handleDragStart, isLandscape, isMobile
 }) => {
-    const { stats, setStats } = useVitals();
     const { inCombat, executeCommand, mood } = useGame();
-
-    const handleWimpyChange = (val: number) => {
-        setStats(prev => ({ ...prev, wimpy: val }));
-        executeCommand(`change wimpy ${val}`);
-    };
 
     const pos = uiPositions.stats || {};
     const isDefault = pos.x === undefined && pos.y === undefined;
@@ -61,12 +54,6 @@ export const StatsCluster: React.FC<StatsClusterProps> = ({
             {isEditMode && <div className="resize-handle" style={{ zIndex: 1700 }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'stats', 'cluster-resize'); }} />}
             <div style={{ position: 'relative' }}>
                 <XpTicker isLandscape={isLandscape} />
-                <ModernVitals
-                    stats={stats}
-                    inCombat={inCombat}
-                    onWimpyChange={handleWimpyChange}
-                    isLandscape={isLandscape}
-                />
             </div>
             {inCombat && <CombatVitals stats={stats} mood={mood} />}
         </div>

@@ -89,6 +89,7 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
     const lastSpectateRoomIdRef = useRef<string | number | null>(null);
     const lastSpectateExitsRef = useRef<Record<string, any>>({});
     const spectatePositionRef = useRef<string>('standing');
+    const spectateTargetIdRef = useRef<number | null>(null);
     useEffect(() => { isSpectateModeRef.current = isSpectateMode; }, [isSpectateMode]);
     useEffect(() => { sessionModeRef.current = deps.sessionMode; }, [deps.sessionMode]);
 
@@ -102,7 +103,7 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         if (s.includes('bad')) return 'Bad';
         if (s.includes('awful')) return 'Awful';
         if (s.includes('stunned')) return 'Stunned';
-        if (s.includes('dying') || s.includes('bleeding')) return 'Dying';
+        if (s.includes('dying') || s.includes('bleeding') || s.includes('mortally')) return 'Dying';
         return null;
     };
 
@@ -117,7 +118,7 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         // Robust GMCP regex handles optional GMCP prefix and ampersand prefixes
         // Sometimes snooped logs leak naked namespaces like "Core.Ping"
         // In session replays, non-printable "replacement characters" (diamonds) often appear at the start.
-        const gmcpRegex = /^[\s\uFFFD\x00-\x1F\x7F-\xFF]*(?:&[a-zA-Z]\s+)*(?:GMCP\s+)?([A-Za-z]+\.[A-Za-z\.]+)(?:\s*(.+))?$/i;
+        const gmcpRegex = /^[\s\uFFFD\x00-\x1F\x7F-\xFF]*(?:&[a-zA-Z]\s+)*(?:GMCP\s+)?([A-Za-z]+\.[A-Za-z]+[A-Za-z\.]*)(?:\s*(.+))?$/i;
         const match = stripped.match(gmcpRegex);
         
         if (!match) return false;
@@ -150,21 +151,29 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
             switch (namespace) {
                 case 'Char.Vitals':
                     if (data.hp !== undefined || data.mana !== undefined || data.move !== undefined || data.mp !== undefined || data.hits !== undefined) {
-                        setSpectateStats(prev => ({
-                            hp: data.hp ?? data.hits ?? prev.hp,
-                            maxHp: data.maxhp ?? data.maxhits ?? prev.hp, // Note: maxhp can be missing, use hp as fallback for max
-                            mana: data.mana ?? prev.mana,
-                            maxMana: data.maxmana ?? prev.maxMana,
-                            move: data.move ?? data.moves ?? data.mv ?? data.mp ?? prev.move,
-                            maxMove: data.maxmove ?? data.maxmoves ?? data.maxmv ?? data.maxmp ?? prev.maxMove,
-                            wimpy: data.wimpy ?? prev.wimpy
-                        }));
+                        setSpectateStats(prev => {
+                            const hpVal = data.hp ?? data.hits;
+                            const maxHpVal = data.maxhp ?? data.maxhits;
+                            const manaVal = data.mana; // Note: sp/mp strings handled separately
+                            const moveVal = data.move ?? data.moves ?? data.mv ?? data.mp; 
+                            
+                            return {
+                                hp: typeof hpVal === 'number' ? hpVal : prev.hp,
+                                maxHp: typeof maxHpVal === 'number' ? maxHpVal : prev.maxHp,
+                                mana: typeof manaVal === 'number' ? manaVal : prev.mana,
+                                maxMana: typeof data.maxmana === 'number' ? data.maxmana : prev.maxMana,
+                                move: typeof moveVal === 'number' ? moveVal : prev.move,
+                                maxMove: typeof (data.maxmove ?? data.maxmoves) === 'number' ? (data.maxmove ?? data.maxmoves) : prev.maxMove,
+                                wimpy: typeof data.wimpy === 'number' ? data.wimpy : prev.wimpy
+                            };
+                        });
                     }
-                    if (data.hp_status || data['hp-string']) {
-                        setSpectateHealthStatus(findStatus(data.hp_status || data['hp-string']));
+                    if (data.hp_status || data['hp-string'] || data.hits) {
+                        setSpectateHealthStatus(findStatus(data.hp_status || data['hp-string'] || data.hits));
                     }
                     if (data.position) {
                         setSpectatePosition(data.position);
+                        spectatePositionRef.current = data.position;
                         const posLower = data.position.toLowerCase();
                         setSpectateWaiting(posLower === 'waiting' || posLower.includes('waiting'));
                         const isFighting = posLower === 'fighting';
@@ -176,10 +185,16 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                     // Strict clearing signal: if opponent is null/empty, we ARE NOT fighting
                     if (data.opponent === null || data.opponent === "") {
                         setSpectateInCombat(false);
+                        setSpectateOpponentStatus(null);
+                        setSpectateOpponentName(null);
+                    }
+                    if (data['opponent-hp'] !== undefined || data['opponent-hits'] !== undefined) {
+                        const status = findStatus(data['opponent-hp'] || data['opponent-hits']);
+                        console.log(`[LogGmcpParser] Opponent HP Update: ${data['opponent-hp'] || data['opponent-hits']} -> ${status}`);
+                        setSpectateOpponentStatus(status);
                     }
                     if (data.opponent !== undefined) {
                         setSpectateOpponentName(data.opponent || null);
-                        setSpectateOpponentStatus(findStatus(data['opponent-hp']));
                     }
                     if (data.terrain) {
                         setSpectateTerrain(data.terrain);
@@ -220,12 +235,22 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                 // even when Room.Chars data hasn't arrived yet or is stale.
                 case 'Group.Set': {
                     const members: import('../../types').GroupMember[] = Array.isArray(data) ? data : [];
+                    // Identify the snooped target (they are "you" in their own group list)
+                    const target = members.find((m: any) => m.type === 'you');
+                    if (target) {
+                        spectateTargetIdRef.current = Number(target.id);
+                        console.log(`[LogGmcpParser] Group.Set: identified spectate target "${target.name}" with ID: ${spectateTargetIdRef.current}`);
+                    }
                     // Filter out the spectated character themselves ("you" entries)
                     const others = members.filter((m: any) => m.type !== 'you' && m.name);
                     setSpectateGroupMembers(others);
                     break;
                 }
                 case 'Group.Add': {
+                    if (data.type === 'you' && data.id) {
+                        spectateTargetIdRef.current = Number(data.id);
+                        console.log(`[LogGmcpParser] Group.Add: identified spectate target ID: ${spectateTargetIdRef.current}`);
+                    }
                     if (data.type === 'you' || !data.name) break;
                     const member = data as import('../../types').GroupMember;
                     setSpectateGroupMembers(prev => {
@@ -237,7 +262,32 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                 case 'Group.Update': {
                     if (data.id === undefined) break;
                     const id = Number(data.id);
-                    setSpectateGroupMembers(prev => prev.map(m => m.id === id ? { ...m, ...data } : m));
+                    
+                    // Filter out stat data (hp, mana, move, hits) from being mixed into the group 
+                    // member state for the spectated player. This ensures that the primary bars 
+                    // rely solely on high-fidelity Char.Vitals GMCP.
+                    const isTarget = id === spectateTargetIdRef.current;
+                    const filteredData = isTarget 
+                        ? Object.fromEntries(Object.entries(data).filter(([k]) => !['hp', 'mana', 'move', 'hits', 'hp-string', 'vitals'].includes(k)))
+                        : data;
+
+                    setSpectateGroupMembers(prev => prev.map(m => m.id === id ? { ...m, ...filteredData } : m));
+
+                    // Use Group.Update for reliable 'waiting' (casting) state synchronization in spectate mode
+                    if (data.waiting !== undefined) {
+                        if (isTarget) {
+                            console.log(`[LogGmcpParser] Group.Update for target (ID ${id}): waiting=${data.waiting}`);
+                            setSpectateWaiting(!!data.waiting);
+                        } else if (!spectateTargetIdRef.current) {
+                            // Fallback: If we haven't identified a target ID yet, and we get a waiting=true
+                            // while spectating, assume this ID belongs to our target for now.
+                            // This handles cases where the initial Group.Set/Add was missed.
+                            spectateTargetIdRef.current = id;
+                            console.log(`[LogGmcpParser] Auto-discovered spectate target ID ${id} via Group.Update waiting=${data.waiting}`);
+                            setSpectateWaiting(!!data.waiting);
+                        }
+                    }
+
                     // NOTE: Do NOT sync combat state from Group.Update. Group packets are
                     // unreliable for this — they can fire with stale/mismatched fighting fields
                     // for other group members, causing false combat-start or premature stop.
@@ -438,6 +488,8 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                             const targetToSync = inSpectate ? spectateCharacterName : characterName;
                             if (c.name === targetToSync && c.position !== undefined) {
                                 const posLower = c.position.toLowerCase();
+                                setSpectatePosition(c.position);
+                                spectatePositionRef.current = c.position;
                                 setSpectateInCombat(posLower === 'fighting');
                                 if (posLower === 'fighting') setSpectateWaiting(false);
                             }
@@ -463,9 +515,9 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                     // But effectively, if we see Room.Chars.Combat involving the spectated character,
                     // it means combat is active.
                     let foundTarget = false;
+                    const targetToSync = inSpectate ? spectateCharacterName : characterName;
                     data.forEach((char: any) => {
                         const status = findStatus(char.health || char.condition || char.hp_status || char.status);
-                        const targetToSync = inSpectate ? spectateCharacterName : characterName;
                         if (char.name === targetToSync) {
                             foundTarget = true;
                             // If we see combat data specifically for our target, it's a strong signal combat is ongoing.
@@ -509,6 +561,7 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
     // starts from a clean slate instead of mixing old and new state.
     const resetSpectateContext = useCallback(() => {
         lastSpectateRoomIdRef.current = null;
+        spectateTargetIdRef.current = null;
         setRoomPlayers([]);
         setRoomNpcs([]);
         setRoomItems([]);

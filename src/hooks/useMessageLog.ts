@@ -120,7 +120,10 @@ export function useMessageLog(
         commText?: string,
         commColor?: string,
         providedCombatSide?: 'player' | 'opponent' | 'groupmate',
-        providedIsHitImpact?: boolean
+        providedIsHitImpact?: boolean,
+        providedIsHitterImpact?: boolean,
+        providedIsSnoop?: boolean,
+        providedIsSnoopInput?: boolean
     ) => {
         const combatOverride = extra === true || (typeof extra === 'object' && extra?.isCombat);
         let currentText = text;
@@ -360,7 +363,10 @@ export function useMessageLog(
             commAction,
             commText,
             commColor,
-            isHitImpact: providedIsHitImpact
+            isHitImpact: providedIsHitImpact,
+            isHitterImpact: providedIsHitterImpact,
+            isSnoop: providedIsSnoop,
+            isSnoopInput: providedIsSnoopInput
         };
 
         if (isCombat) {

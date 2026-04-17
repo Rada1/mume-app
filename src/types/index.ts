@@ -59,6 +59,9 @@ export interface Message {
     isBatchEnd?: boolean;
     inRoomBatch?: boolean;
     isHitImpact?: boolean;
+    isHitterImpact?: boolean;
+    isSnoop?: boolean;
+    isSnoopInput?: boolean;
 }
 
 export interface ShopItem {

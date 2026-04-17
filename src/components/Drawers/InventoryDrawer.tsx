@@ -7,6 +7,7 @@ import React, { useState, useEffect, useLayoutEffect, useRef, useMemo } from 're
 import { useGame, useUI } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
 import { getCategoryForName, COLOR_OBJ } from '../../utils/categorizationUtils';
+
 import { isObjectSelected } from '../../utils/selectionUtils';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
 
@@ -190,6 +191,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             const dim = 'var(--text-primary)';
             const brown = COLOR_OBJ;
 
+
             if (line.isItem) {
                 const itemText = line.text;
                 const articleMatch = itemText.match(/^(a |an |the |some )/i);
@@ -217,7 +219,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                     lineHeight: 'inherit',
                                     padding: '0 4px',
                                     margin: '0',
-                                    background: isSelected ? `${COLOR_OBJ}26` : 'transparent',
+                                    background: isSelected ? `rgba(180,100,50,0.15)` : 'transparent',
                                     border: 'none',
                                     borderRadius: '0',
                                     boxShadow: 'none',
@@ -245,7 +247,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
 
         const cat = getCategoryForName(line.text);
         const isActuallyContainer = line.isContainer || cat === 'inline-containers';
-        const brown = COLOR_OBJ;
+        const brown = 'rgba(180, 100, 50, 0.9)';
         const dim = 'var(--text-primary)';
         if (line.isItem) {
             const articleMatch = line.text.match(/^(a |an |the |some )/i);
@@ -272,7 +274,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                 lineHeight: 'inherit',
                                 padding: '0 4px',
                                 margin: '0',
-                                background: isSelected ? `${COLOR_OBJ}26` : 'transparent',
+                                background: isSelected ? `rgba(180,100,50,0.15)` : 'transparent',
                                 border: 'none',
                                 borderRadius: '0',
                                 boxShadow: 'none',

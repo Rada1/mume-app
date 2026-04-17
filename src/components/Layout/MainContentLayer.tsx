@@ -40,7 +40,10 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     handleDragStart,
     wasDraggingRef
 }) => {
-    const { stats, setStats, characterInfo, opponentName, opponentHealthStatus, target, activePrompt, playerHealthStatus } = useVitals();
+    const { 
+        stats, setStats, characterInfo, opponentName, opponentHealthStatus, target, activePrompt, playerHealthStatus,
+        spectateStats, spectateHealthStatus, spectateOpponentName, spectateOpponentStatus
+    } = useVitals();
     const {
         env,
         input,
@@ -68,7 +71,9 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         isNewbieMode,
         isRiding,
         characterName,
-        gameState
+        gameState,
+        isSpectateMode,
+        spectateCharacterName
     } = useGame();
     const { processMessageHtml } = useLog();
 
@@ -222,17 +227,18 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
             {isNewbieMode && gameState !== 'account' && (
                 <PromptBox
-                    stats={stats}
+                    stats={isSpectateMode ? spectateStats : stats}
                     characterInfo={characterInfo}
-                    characterName={characterName}
+                    characterName={isSpectateMode ? spectateCharacterName : characterName}
                     inCombat={inCombat}
                     playerPosition={playerPosition}
-                    opponentName={opponentName}
-                    opponentHealthStatus={opponentHealthStatus}
-                    playerHealthStatus={playerHealthStatus}
+                    opponentName={isSpectateMode ? spectateOpponentName : opponentName}
+                    opponentHealthStatus={isSpectateMode ? spectateOpponentStatus : opponentHealthStatus}
+                    playerHealthStatus={isSpectateMode ? spectateHealthStatus : playerHealthStatus}
                     isRiding={isRiding}
                     processMessageHtml={processMessageHtml}
-                    onWimpyChange={handleWimpyChange}
+                    isSpectateMode={isSpectateMode}
+                    onWimpyChange={!isSpectateMode ? handleWimpyChange : undefined}
                 />
             )}
 

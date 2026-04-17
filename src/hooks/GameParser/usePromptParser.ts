@@ -78,8 +78,12 @@ export function usePromptParser(deps: PromptParserDeps) {
         const playerMatch = promptPart.match(/HP:(\w+)/i);
         if (playerMatch) {
             const status = findStatus(playerMatch[1]);
-            setPlayerHealthStatus(status ?? 'Healthy');
-        } else {
+            // In spectate mode, the user's own prompt should NOT update the spectated target's status.
+            // All spectator stats must rely solely on Char.Vitals log-parsed GMCP.
+            if (!isSpectateMode) {
+                setPlayerHealthStatus(status ?? 'Healthy');
+            }
+        } else if (!isSpectateMode) {
             setPlayerHealthStatus('Healthy');
         }
 

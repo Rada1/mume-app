@@ -118,6 +118,17 @@
     position: relative;
     z-index: 10;
     white-space: nowrap;
+    width: 100%;
+}
+
+.is-mirrored .status-text {
+    text-align: right;
+    padding-right: 4px;
+}
+
+.status-bar-segment:not(.is-mirrored) .status-text {
+    text-align: left;
+    padding-left: 4px;
 }
 
 .status-bar-segment {
@@ -128,14 +139,13 @@
     border-radius: 0; /* Fully flat */
     height: 10px; /* Increased from 6px */
     width: 100%;
-    max-width: 60px; /* Prevent bars from getting too stretched */
-    overflow: hidden;
-    transform: skewX(-15deg);
+    overflow: visible; /* Allow indicator to be seen */
+    transform: skewX(15deg);
     margin: 0 1px;
 }
 
 .status-bar-segment.is-mirrored {
-    transform: skewX(15deg);
+    transform: skewX(-15deg);
 }
 
 .status-bar-fill {
@@ -182,12 +192,71 @@
     justify-content: space-evenly;
     pointer-events: none;
     z-index: 5;
+    overflow: hidden; /* Keep dividers inside skewed bar */
 }
 
 .bar-divider {
     width: 1px; /* Thinner space for smaller bars */
     height: 100%;
     background: rgba(10, 10, 10, 1);
+}
+
+/* Wimpy Indicator Tooltip for Prompt */
+.wimpy-indicator {
+    --un-skew: -15deg;
+    position: absolute;
+    bottom: 100%;
+    margin-bottom: 10px;
+    transform: translateX(-50%) skewX(var(--un-skew)); /* Un-skew from parent */
+    background: rgba(0, 0, 0, 0.95);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6), 0 0 15px rgba(239, 68, 68, 0.3);
+    animation: wimpy-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    line-height: 1.2;
+}
+
+.is-mirrored .wimpy-indicator {
+    --un-skew: 15deg;
+}
+
+.wimpy-indicator-label {
+    font-size: 8px;
+    opacity: 0.6;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1px;
+}
+
+.wimpy-indicator-value {
+    color: #ff2d2d;
+}
+
+.wimpy-indicator-arrow {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid rgba(0, 0, 0, 0.95);
+}
+
+@keyframes wimpy-pop {
+    0% { transform: translateX(-50%) skewX(var(--un-skew)) scale(0.8) translateY(5px); opacity: 0; }
+    100% { transform: translateX(-50%) skewX(var(--un-skew)) scale(1) translateY(0); opacity: 1; }
 }
 
 /* Opponent Mini Display */
@@ -260,6 +329,7 @@
 }
 
 .hp-icon { color: #ff2d2d; }
+.hp-icon.is-mirrored { transform: scaleX(-1); }
 .mana-icon { color: #a855f7; }
 .move-icon { color: #00ff6a; }
 
@@ -290,12 +360,12 @@
 }
 
 .blink-hit {
-    animation: blink-hit 1.2s ease-out forwards;
+    animation: blink-hit 0.8s ease-out forwards;
 }
 
 @keyframes blink-hit {
     0% { transform: scale(1); filter: brightness(1); color: inherit; }
-    5% { transform: scale(1.18); filter: brightness(2); color: #ff5252; text-shadow: 0 0 15px rgba(255, 82, 82, 0.9), 0 0 5px #fff; }
+    3% { transform: scale(1.05); filter: brightness(2.5); color: #ff3c3c; text-shadow: 0 0 15px rgba(255, 60, 60, 0.8); }
     100% { transform: scale(1); filter: brightness(1); color: inherit; }
 }
 

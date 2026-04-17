@@ -136,13 +136,13 @@ export function useCommParser(deps: CommParserDeps) {
             }
         } else {
             const commPatterns: [RegExp, string, boolean][] = [
-                // Allow optional space before the colon or opening quote
-                [/^(.+?)\s+(tells? you|tells?|whispers?|tells? the group)(?:\s+|:\s*|,\s*)(?:(['"].*)|)$/i, 'tell', true],
-                [/^(.+?)\s+(says?|asks?(?:\s+you)?|exclaims?)(?:\s+|:\s*|,\s*)(?:(['"].*)|)$/i, 'say', true],
-                [/^(.+?)\s+(narrates?)(?:\s+|:\s*|,\s*)(?:(['"].*)|)$/i, 'narrate', true],
-                [/^(.+?)\s+(shouts?|yells?)(?:\s+|:\s*|,\s*)(?:(['"].*)|)$/i, 'shout', true],
-                [/^(.+?)\s+(sings?)(?:\s+|:\s*|,\s*)(?:(['"].*)|)$/i, 'sing', true],
-                [/^(.+?)\s+(prays?)(?:\s+|:\s*|,\s*)(?:(['"].*)|)$/i, 'pray', true],
+                // Allow optional space before the colon or opening quote, and support intervening text like "from the west"
+                [/^(.+?)\s+(tells? you|tells?|whispers?|tells? the group)(?:\s+.*?|:\s*|,\s*)(?:(['"].*)|)$/i, 'tell', true],
+                [/^(.+?)\s+(says?|asks?(?:\s+you)?|exclaims?)(?:\s+.*?|:\s*|,\s*)(?:(['"].*)|)$/i, 'say', true],
+                [/^(.+?)\s+(narrates?)(?:\s+.*?|:\s*|,\s*)(?:(['"].*)|)$/i, 'narrate', true],
+                [/^(.+?)\s+(shouts?|yells?)(?:\s+.*?|:\s*|,\s*)(?:(['"].*)|)$/i, 'shout', true],
+                [/^(.+?)\s+(sings?)(?:\s+.*?|:\s*|,\s*)(?:(['"].*)|)$/i, 'sing', true],
+                [/^(.+?)\s+(prays?)(?:\s+.*?|:\s*|,\s*)(?:(['"].*)|)$/i, 'pray', true],
             ];
             for (const [re, cmd, hasSender] of commPatterns) {
                 const m = textOnly.match(re);

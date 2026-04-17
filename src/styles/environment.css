@@ -28,7 +28,7 @@
 }
 
 .lighting-state-sun .overlay-layer {
-    background: rgba(40, 30, 0, 0.1);
+    background: rgba(50, 50, 60, 0.08);
     /* Changed from bright golden to a deeper, more subtle ambient amber to make the shaft pop */
 }
 
@@ -124,16 +124,16 @@
 .lighting-sun .lighting-inner {
     /* Sun origin well off-screen top-right — only the soft falloff reaches the viewport */
     background: radial-gradient(ellipse 90% 160% at 92% -35%,
-            rgba(255, 245, 180, 0.7) 0%,
-            rgba(255, 230, 100, 0.25) 45%,
+            rgba(255, 252, 230, 0.7) 0%,
+            rgba(255, 242, 180, 0.25) 45%,
             transparent 80%);
 }
 
 .is-mobile .lighting-sun .lighting-inner {
     /* Same off-screen origin for mobile — wider ellipse to cover the horizontal span */
     background: radial-gradient(ellipse 160% 130% at 92% -35%,
-            rgba(255, 245, 180, 0.7) 0%,
-            rgba(255, 230, 100, 0.25) 40%,
+            rgba(255, 252, 230, 0.7) 0%,
+            rgba(255, 242, 180, 0.25) 40%,
             transparent 78%);
 }
 
