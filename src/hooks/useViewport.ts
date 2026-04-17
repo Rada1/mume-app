@@ -5,7 +5,8 @@ export function useViewport(
     disableSmoothScroll: boolean = false,
     disable3dScroll: boolean = false,
     isImmersionMode: boolean = true,
-    fontFamily: string = "'Space Mono', monospace"
+    fontFamily: string = "'Space Mono', monospace",
+    isTimestampEnabled: boolean = false
 ) {
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
@@ -248,8 +249,9 @@ export function useViewport(
             const charWidthRatio = (spanWidth / 20) / REF_SIZE; // advance width per px of font-size
 
             // font-size needed so that 80 chars fit within the usable text area
-            const targetCols = 80;
-            const messagePadding = 36; // Matching .message padding: 24px left + 12px right
+            const timestampWidth = isTimestampEnabled ? 12 : 0; // "[HH:MM:SS] " is 11 chars + 1 space
+            const targetCols = 80 + timestampWidth;
+            const messagePadding = 20; // Matching .message padding: 6px left + 12px right + buffer
             const usableWidth = Math.max(0, width - messagePadding);
 
             let calculatedFontSize = usableWidth / (targetCols * charWidthRatio);
@@ -292,7 +294,7 @@ export function useViewport(
             clearTimeout(timer2);
             ro?.disconnect();
         };
-    }, [isMobile, isLandscape, logFontSize, windowWidth, isKeyboardOpen, fontFamily]);
+    }, [isMobile, isLandscape, logFontSize, windowWidth, isKeyboardOpen, fontFamily, isTimestampEnabled]);
 
     const updateHeight = useCallback(() => {
         const viewport = window.visualViewport;

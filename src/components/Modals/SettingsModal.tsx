@@ -56,7 +56,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     showRecordingIndicator,
     setShowRecordingIndicator,
     autoSaveSessions,
-    setAutoSaveSessions
+    setAutoSaveSessions,
+    showSpectatePromptInLog,
+    setShowSpectatePromptInLog
 }) => {
     const {
         isMmapperMode, setIsMmapperMode,
@@ -140,6 +142,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setFontFamily={setFontFamily}
                                 autoSaveSessions={autoSaveSessions}
                                 setAutoSaveSessions={setAutoSaveSessions}
+                                showSpectatePromptInLog={showSpectatePromptInLog}
+                                setShowSpectatePromptInLog={setShowSpectatePromptInLog}
                             />
                             <DataManagement
                                 exportSettings={exportSettings}

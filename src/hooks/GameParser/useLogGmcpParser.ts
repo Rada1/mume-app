@@ -150,20 +150,28 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
 
             switch (namespace) {
                 case 'Char.Vitals':
-                    if (data.hp !== undefined || data.mana !== undefined || data.move !== undefined || data.mp !== undefined || data.hits !== undefined) {
+                    if (data.hp !== undefined || data.maxhp !== undefined || data.maxhits !== undefined ||
+                        data.mana !== undefined || data.sp !== undefined || data.maxmana !== undefined || data.maxsp !== undefined ||
+                        data.move !== undefined || data.mp !== undefined || data.mv !== undefined ||
+                        data.maxmove !== undefined || data.maxmoves !== undefined || data.maxmv !== undefined || data.maxmp !== undefined ||
+                        data.hits !== undefined || data.wimpy !== undefined) {
                         setSpectateStats(prev => {
                             const hpVal = data.hp ?? data.hits;
                             const maxHpVal = data.maxhp ?? data.maxhits;
-                            const manaVal = data.mana; // Note: sp/mp strings handled separately
-                            const moveVal = data.move ?? data.moves ?? data.mv ?? data.mp; 
-                            
+                            // mana = spell points; MUME may send as 'mana' or 'sp'
+                            const manaVal = data.mana ?? data.sp;
+                            const maxManaVal = data.maxmana ?? data.maxsp;
+                            // mp = move points in MUME; also aliased as move/moves/mv
+                            const moveVal = data.move ?? data.moves ?? data.mv ?? data.mp;
+                            const maxMoveVal = data.maxmove ?? data.maxmoves ?? data.maxmv ?? data.maxmp;
+
                             return {
                                 hp: typeof hpVal === 'number' ? hpVal : prev.hp,
                                 maxHp: typeof maxHpVal === 'number' ? maxHpVal : prev.maxHp,
                                 mana: typeof manaVal === 'number' ? manaVal : prev.mana,
-                                maxMana: typeof data.maxmana === 'number' ? data.maxmana : prev.maxMana,
+                                maxMana: typeof maxManaVal === 'number' ? maxManaVal : prev.maxMana,
                                 move: typeof moveVal === 'number' ? moveVal : prev.move,
-                                maxMove: typeof (data.maxmove ?? data.maxmoves) === 'number' ? (data.maxmove ?? data.maxmoves) : prev.maxMove,
+                                maxMove: typeof maxMoveVal === 'number' ? maxMoveVal : prev.maxMove,
                                 wimpy: typeof data.wimpy === 'number' ? data.wimpy : prev.wimpy
                             };
                         });

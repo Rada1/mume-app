@@ -181,23 +181,32 @@ export function usePromptParser(deps: PromptParserDeps) {
             (textOnly.includes('HP:') && textOnly.includes('MA:') && textOnly.includes('>'));
 
         // --- Verbose Status Parsing (Spectate Mode / Snooped Stat) ---
-        // Example: "87/98 hits, 46/130 mana, and 100/106 moves."
-        const verboseRegex = /(\d+)\/(\d+)\s+hits,?\s+(\d+)\/(\d+)\s+mana,?\s+and\s+(\d+)\/(\d+)\s+moves/i;
+        // Matches both "87/98 hits, 46/130 mana, and 100/106 moves."
+        // and "487/522 hits and 142/160 moves." (mana absent for non-caster classes)
+        const verboseRegex = /(\d+)\/(\d+)\s+hits(?:,?\s+(\d+)\/(\d+)\s+mana)?,?\s+and\s+(\d+)\/(\d+)\s+moves/i;
         const verboseMatch = textOnly.match(verboseRegex);
         if (verboseMatch) {
-            const stats = {
-                hp: parseInt(verboseMatch[1]),
-                maxHp: parseInt(verboseMatch[2]),
-                mana: parseInt(verboseMatch[3]),
-                maxMana: parseInt(verboseMatch[4]),
-                move: parseInt(verboseMatch[5]),
-                maxMove: parseInt(verboseMatch[6]),
-                wimpy: 0
-            };
+            const hp = parseInt(verboseMatch[1]);
+            const maxHp = parseInt(verboseMatch[2]);
+            const hasMana = verboseMatch[3] !== undefined;
+            const mana = hasMana ? parseInt(verboseMatch[3]) : undefined;
+            const maxMana = hasMana ? parseInt(verboseMatch[4]) : undefined;
+            const move = parseInt(verboseMatch[5]);
+            const maxMove = parseInt(verboseMatch[6]);
             if (isSpectateMode) {
-                setSpectateStats(stats);
+                setSpectateStats(prev => ({
+                    ...prev,
+                    hp, maxHp,
+                    move, maxMove,
+                    ...(mana !== undefined ? { mana, maxMana } : {})
+                }));
             } else {
-                deps.setStats(stats);
+                deps.setStats(prev => ({
+                    ...prev,
+                    hp, maxHp,
+                    move, maxMove,
+                    ...(mana !== undefined ? { mana, maxMana } : {})
+                }));
             }
         }
 

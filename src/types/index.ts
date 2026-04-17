@@ -393,14 +393,16 @@ export interface SettingsModalProps {
     setShowLegacyButtons: (val: boolean) => void;
     isNewbieMode: boolean;
     setIsNewbieMode: (val: boolean) => void;
-    isNoviceMode: boolean;
-    setIsNoviceMode: (val: boolean) => void;
+    isNoviceMode?: boolean;
+    setIsNoviceMode?: (val: boolean) => void;
     showRecordingIndicator: boolean;
     setShowRecordingIndicator: (val: boolean) => void;
     isTimestampEnabled: boolean;
     setIsTimestampEnabled: (val: boolean) => void;
     fontFamily: string;
     setFontFamily: (val: string) => void;
+    showSpectatePromptInLog: boolean;
+    setShowSpectatePromptInLog: (val: boolean) => void;
 }
 
 export interface ButtonSetSettings {
@@ -714,4 +716,14 @@ export interface AccountState {
     creationPrompt?: CreationPrompt;
     lastCreatedCharacterName?: string;
     isGathering?: boolean;
+}
+
+export interface MumeTime {
+    hour: number;
+    day: number;
+    month: string;
+    year: number;
+    weekday: string;
+    era: string;
+    lastSyncRealTime: number; // Date.now() when last synced
 }

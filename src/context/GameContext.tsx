@@ -292,6 +292,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         loadBuySellSound,
         playBashSound,
         loadBashSound,
+        playArrowHitSound,
+        loadArrowHitSound,
         triggerHaptic,
         setTriggerHaptic
     } = useGameAudio({
@@ -400,7 +402,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const btn = useButtons(abilities, characterClass, s.characterName, v.target, s.inlineCategories);
     const joystick = useJoystick(triggerHaptic, s.roomExits);
     const editor = useButtonEditor(btn, containerRef);
-    const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.disable3dScroll, s.isImmersionMode, s.fontFamily);
+    const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.disable3dScroll, s.isImmersionMode, s.fontFamily, s.isTimestampEnabled);
 
     const practice = usePracticeHandler(s.setAbilities);
     const shop = useShopHandler();
@@ -470,6 +472,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playSmiteSound,
         playPierceSound,
         playStabSound,
+        playArrowHitSound,
         playBashSound,
         loadBashSound,
         playRandomSound, 
@@ -602,6 +605,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsPasswordMode: s.setIsPasswordMode,
         setIsSpectateMode: s.setIsSpectateMode,
         playMovementSound,
+        setGameTime: s.setGameTime,
     });
 
 
@@ -630,6 +634,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             onRemoveNpc: (data: string | GmcpOccupant) => { gmcpHandlers.onRemoveNpc(data); removeNpcFn?.(data); },
             onCharNameChange: (name) => {
                 gmcpHandlers.onCharNameChange(name);
+                if (name && s.executeCommandRef.current) {
+                    // Send hidden time command when entering the game
+                    setTimeout(() => s.executeCommandRef.current?.('time', true, true, true, true), 1500);
+                }
                 if (name && !recorder.isRecording && s.autoSaveSessions) {
                     console.log(`[Recorder] Char.Name received. Auto-starting recording for character: ${name}`);
                     recorder.startRecording(name);

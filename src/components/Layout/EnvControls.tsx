@@ -1,6 +1,6 @@
-import React from 'react';
-import { CloudFog, Swords, Crosshair } from 'lucide-react';
+import { CloudFog, Swords, Clock } from 'lucide-react';
 import { useGame, useVitals, useUI } from '../../context/GameContext';
+import { useMumeTime } from '../../hooks/useMumeTime';
 
 interface EnvControlsProps {
     getLightingIcon: () => React.ReactNode;
@@ -9,9 +9,10 @@ interface EnvControlsProps {
 }
 
 export const EnvControls: React.FC<EnvControlsProps> = ({ getLightingIcon, getWeatherIcon, isLandscape }) => {
-    const { lighting, weather, isFoggy, inCombat, teleportTargets, viewport } = useGame();
+    const { lighting, weather, isFoggy, inCombat, teleportTargets, viewport, gameTime, gameState } = useGame();
     const { target, setTarget } = useVitals();
     const { setPopoverState } = useUI();
+    const currentTime = useMumeTime(gameTime);
     const teleportTargetsCount = teleportTargets.length;
     const onClearTarget = () => setTarget(null);
     const onTeleportClick = () => {
@@ -25,7 +26,7 @@ export const EnvControls: React.FC<EnvControlsProps> = ({ getLightingIcon, getWe
 
     return (
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', flex: 1, minWidth: 0, justifyContent: 'flex-start' }}>
-            {((lighting !== 'none' || weather !== 'none' || isFoggy) && !viewport.isMobile) && (
+            {((lighting !== 'none' || weather !== 'none' || isFoggy) && (gameState === 'playing' || !viewport.isMobile)) && (
                 <div
                     className="status-indicator"
                     style={{ color: 'var(--text-primary)', gap: 4, padding: '4px 6px' }}
@@ -38,6 +39,21 @@ export const EnvControls: React.FC<EnvControlsProps> = ({ getLightingIcon, getWe
                         {lighting && lighting !== 'none' ? lighting.toUpperCase() : ''}
                         {weather && weather !== 'none' && weather !== 'clear' ? ` | ${weather.toUpperCase().replace('-', ' ')}` : ''}
                         {isFoggy ? ' | FOG' : ''}
+                    </span>
+                </div>
+            )}
+            {currentTime && (
+                <div
+                    className="status-indicator"
+                    style={{ color: 'var(--text-primary)', gap: 4, padding: '4px 6px' }}
+                    title={`${currentTime.weekday}, ${currentTime.day} of ${currentTime.month}, Year ${currentTime.year} (${currentTime.era})`}
+                >
+                    <Clock size={14} className="text-gray-400" />
+                    <span style={{ fontSize: '0.75rem' }}>
+                        {currentTime.hour === 0 ? '12' : (currentTime.hour > 12 ? currentTime.hour - 12 : currentTime.hour)}
+                        {currentTime.hour >= 12 ? ' PM' : ' AM'}
+                        {!viewport.isMobile && ` | ${currentTime.weekday.substring(0, 3)}`}
+                        {!viewport.isMobile && ` ${currentTime.day}`}
                     </span>
                 </div>
             )}

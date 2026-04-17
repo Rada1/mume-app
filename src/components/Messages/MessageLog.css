@@ -136,7 +136,9 @@
     padding-right: 0 !important;
 }
 
-.newbie-mode .message:not(.is-hit-impact):not(.is-hitter-impact) {
+.newbie-mode .message:not(.is-hit-impact):not(.is-hitter-impact),
+.newbie-mode .message:not(.is-hit-impact):not(.is-hitter-impact) .combat-bubble,
+.newbie-mode .message:not(.is-hit-impact):not(.is-hitter-impact) .message-content {
     animation: none !important;
     transition: none !important;
 }
@@ -360,10 +362,6 @@
     font-weight: bold;
 }
 
-.movement-item {
-    color: #ffffff !important;
-    font-weight: bold;
-}
 
 .keyword-highlight.weapon-obj {
     color: #4b6eef !important;
@@ -583,12 +581,26 @@
     }
 }
 
-.message.is-hit-impact {
-    animation: hit-flash-bg 2s ease-out forwards;
+.message.is-hit-impact .combat-bubble,
+.message.is-hit-impact .message-content {
+    animation: hit-flash-bg 1.2s ease-out forwards;
+    display: table !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100%;
+    flex: 0 0 auto !important;
+    align-self: flex-start;
 }
 
-.message.is-hitter-impact {
-    animation: hitter-flash-bg 2s ease-out forwards;
+.message.is-hitter-impact .combat-bubble,
+.message.is-hitter-impact .message-content {
+    animation: hitter-flash-bg 1.2s ease-out forwards;
+    display: table !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100%;
+    flex: 0 0 auto !important;
+    align-self: flex-start;
 }
 
 .message.combat-player.recent-entry:not(.is-hit-impact):not(.is-hitter-impact),
@@ -624,7 +636,8 @@
     transform: none !important;
     box-shadow: none !important;
     margin: 1px 0 !important;
-    display: block !important;
+    display: inline-block !important;
+    width: fit-content;
 }
 
 .combat-bubble .message-content {

@@ -17,6 +17,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
     const stabSoundRef = useRef<AudioBuffer | null>(null);
     const buySellSoundRef = useRef<AudioBuffer | null>(null);
     const bashSoundRef = useRef<AudioBuffer | null>(null);
+    const arrowHitSoundRef = useRef<AudioBuffer | null>(null);
 
 
 
@@ -380,6 +381,29 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         }
     }, [loadStabSound, playSound]);
 
+    const loadArrowHitSound = useCallback(async () => {
+        if (!audioCtxRef.current || arrowHitSoundRef.current) return;
+        try {
+            const response = await fetch('/assets/Sounds/Sound effects/arrowhit.mp3');
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
+            arrowHitSoundRef.current = audioBuffer;
+        } catch (err) {
+            console.error('Failed to load arrow hit sound:', err);
+        }
+    }, []);
+
+    const playArrowHitSound = useCallback((options?: { pitch?: number, volume?: number }) => {
+        if (arrowHitSoundRef.current) {
+            playSound(arrowHitSoundRef.current, { 
+                pitch: options?.pitch,
+                volume: options?.volume || 1.0 
+            });
+        } else {
+            loadArrowHitSound();
+        }
+    }, [loadArrowHitSound, playSound]);
+
     const loadCommMessageSound = useCallback(async () => {
         if (!audioCtxRef.current || commMessageSoundRef.current) return;
         try {
@@ -543,6 +567,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         loadSmiteSound();
         loadPierceSound();
         loadStabSound();
+        loadArrowHitSound();
         loadHitImpactSound();
         loadOofSound();
         loadCommMessageSound();
@@ -599,6 +624,8 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         loadPierceSound,
         playStabSound,
         loadStabSound,
+        playArrowHitSound,
+        loadArrowHitSound,
         playBuySellSound,
         loadBuySellSound,
         playBashSound,

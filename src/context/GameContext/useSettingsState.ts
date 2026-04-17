@@ -44,6 +44,7 @@ export const useSettingsState = () => {
     const [isHighlighterEnabled, setIsHighlighterEnabled] = usePersistentState('mud-highlighter-enabled', true);
     const [isBloomEnabled, setIsBloomEnabled] = usePersistentState('mud-bloom-enabled', (MASTER_SETTINGS as any).isBloomEnabled ?? false);
     const [isSpectateMode, setIsSpectateMode] = usePersistentState('mud-spectate-mode', false);
+    const [showSpectatePromptInLog, setShowSpectatePromptInLog] = usePersistentState('mud-show-spectate-prompt', true);
     const [isTimestampEnabled, setIsTimestampEnabled] = usePersistentState('mud-timestamp-enabled', false);
     const [showRecordingIndicator, setShowRecordingIndicator] = usePersistentState('mud-show-recording-indicator', false);
     const [autoSaveSessions, setAutoSaveSessions] = usePersistentState('mud-auto-save-sessions', true);
@@ -80,6 +81,7 @@ export const useSettingsState = () => {
         isHighlighterEnabled, setIsHighlighterEnabled,
         isBloomEnabled, setIsBloomEnabled,
         isSpectateMode, setIsSpectateMode,
+        showSpectatePromptInLog, setShowSpectatePromptInLog,
         isTimestampEnabled, setIsTimestampEnabled,
         favorites, setFavorites,
         fontFamily, setFontFamily,

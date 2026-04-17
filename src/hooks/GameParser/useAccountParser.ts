@@ -275,13 +275,14 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                     executeCommandRef.current('stat', true, true, true, true);
                     setTimeout(() => executeCommandRef.current?.('score', true, true, true, true), 100);
                     setTimeout(() => executeCommandRef.current?.('info %m', true, true, true, true), 200);
-                    setTimeout(() => executeCommandRef.current?.('info', true, true, true, true), 300);
-                    setTimeout(() => executeCommandRef.current?.('eq', true, true, true, true), 400);
-                    setTimeout(() => executeCommandRef.current?.('inv', true, true, true, true), 500);
-                    setTimeout(() => executeCommandRef.current?.('practice', true, true, true, true), 600);
-                    setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 700);
-                    setTimeout(() => executeCommandRef.current?.('who', true, true, true, true), 800);
-                    setTimeout(() => executeCommandRef.current?.('where', true, true, true, true), 900);
+                    setTimeout(() => executeCommandRef.current?.('time', true, true, true, true), 300);
+                    setTimeout(() => executeCommandRef.current?.('info', true, true, true, true), 400);
+                    setTimeout(() => executeCommandRef.current?.('eq', true, true, true, true), 500);
+                    setTimeout(() => executeCommandRef.current?.('inv', true, true, true, true), 600);
+                    setTimeout(() => executeCommandRef.current?.('practice', true, true, true, true), 700);
+                    setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 800);
+                    setTimeout(() => executeCommandRef.current?.('who', true, true, true, true), 900);
+                    setTimeout(() => executeCommandRef.current?.('where', true, true, true, true), 1000);
                 }
             }, 1000); // Wait 1s for the login text to settle
 

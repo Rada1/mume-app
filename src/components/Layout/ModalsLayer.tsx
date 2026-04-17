@@ -90,6 +90,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setIsBloomEnabled,
         isSpectateMode,
         setIsSpectateMode,
+        showSpectatePromptInLog,
+        setShowSpectatePromptInLog,
         isTimestampEnabled,
         setIsTimestampEnabled,
         isNewbieMode,
@@ -221,6 +223,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setShowRecordingIndicator={setShowRecordingIndicator}
                     fontFamily={fontFamily}
                     setFontFamily={setFontFamily}
+                    showSpectatePromptInLog={showSpectatePromptInLog}
+                    setShowSpectatePromptInLog={setShowSpectatePromptInLog}
                 />
             )}
 

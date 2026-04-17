@@ -258,12 +258,6 @@ export const useMessageHighlighter = (
                 });
             }
 
-            if (verb) {
-                newHtml = safeHighlight(newHtml, verb, false, (m) => `<span class="movement-item">${m}</span>`);
-            }
-            if (direction) {
-                newHtml = safeHighlight(newHtml, direction, false, (m) => `<span class="movement-item">${m}</span>`);
-            }
         }
 
         // --- 0.6. Item Acquisition Highlighting ---

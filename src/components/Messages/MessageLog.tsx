@@ -89,11 +89,11 @@ const MessageItem = React.memo(({
     const [showHitterFlash, setShowHitterFlash] = useState(() => !!msg.isHitterImpact);
     useEffect(() => {
         if (msg.isHitImpact) {
-            const t = setTimeout(() => setShowHitFlash(false), 2000);
+            const t = setTimeout(() => setShowHitFlash(false), 1200);
             return () => clearTimeout(t);
         }
         if (msg.isHitterImpact) {
-            const t = setTimeout(() => setShowHitterFlash(false), 2000);
+            const t = setTimeout(() => setShowHitterFlash(false), 1200);
             return () => clearTimeout(t);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -235,7 +235,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onDragEnd,
     onWheel
 }) => {
-    const { inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, isTimestampEnabled, isNewbieMode, isSpectateMode, input, setInput, sessionMode } = useBaseGame();
+    const { inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, isTimestampEnabled, isNewbieMode, isSpectateMode, showSpectatePromptInLog, input, setInput, sessionMode } = useBaseGame();
     const { replayer } = useUI();
     const { messages, processMessageHtml } = useLog();
     const { activePrompt, target, setTarget, opponentName, opponentHealthStatus } = useVitals();
@@ -334,10 +334,10 @@ const MessageLog: React.FC<MessageLogProps> = ({
         // If Newbie Mode is OFF, we show everything in the log (classic mode)
         if (!isNewbieMode) return messages;
 
-        // In Newbie Mode, we show most action but hide prompts (handled by HUD/Input).
-        // We now allow room names to show so they act as markers in the persistent history.
-        return messages.filter(m => m.type !== 'prompt' || m.isSnoop);
-    }, [messages, replayMessages, sessionMode, isNewbieMode]);
+        // In Newbie Mode, hide own prompts (handled by HUD bars) but show snooped prompts
+        // when the spectate-prompt toggle is on.
+        return messages.filter(m => m.type !== 'prompt' || (m.isSnoop && showSpectatePromptInLog));
+    }, [messages, replayMessages, sessionMode, isNewbieMode, showSpectatePromptInLog]);
 
     const lastUserMsgIndex = useMemo(() => {
         for (let i = displayMessages.length - 1; i >= 0; i--) {

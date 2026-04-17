@@ -65,6 +65,8 @@ export interface VitalsContextType {
     oppHitFlashEvent: number;
     triggerHitFlash: () => void;
     triggerOppHitFlash: () => void;
+    gameTime: import('../../types').MumeTime | null;
+    setGameTime: Dispatch<SetStateAction<import('../../types').MumeTime | null>>;
 }
 
 export interface LogContextType {
@@ -188,6 +190,8 @@ export interface GameContextType {
     setIsBloomEnabled: (val: boolean) => void;
     isSpectateMode: boolean;
     setIsSpectateMode: (val: boolean) => void;
+    showSpectatePromptInLog: boolean;
+    setShowSpectatePromptInLog: (val: boolean) => void;
     isTimestampEnabled: boolean;
     setIsTimestampEnabled: (val: boolean) => void;
     spectateTargetId: number | null;
@@ -483,5 +487,7 @@ export interface GameContextType {
         stopExport: () => void;
     };
     accountStageRef: MutableRefObject<import('../../types').AccountStage>;
+    gameTime: import('../../types').MumeTime | null;
+    setGameTime: Dispatch<SetStateAction<import('../../types').MumeTime | null>>;
 }
 

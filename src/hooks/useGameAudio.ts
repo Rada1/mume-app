@@ -105,6 +105,8 @@ export const useGameAudio = ({
         loadBuySellSound,
         playBashSound,
         loadBashSound,
+        playArrowHitSound,
+        loadArrowHitSound,
         loadSpellSounds
 
 
@@ -239,6 +241,8 @@ export const useGameAudio = ({
         loadBuySellSound,
         playBashSound,
         loadBashSound,
+        playArrowHitSound,
+        loadArrowHitSound,
         loadAllWeaponSounds,
         playIncantationSound,
         stopIncantationSound,

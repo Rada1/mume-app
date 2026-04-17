@@ -46,6 +46,8 @@ interface GeneralSettingsProps {
     setFontFamily: (val: string) => void;
     autoSaveSessions: boolean;
     setAutoSaveSessions: (val: boolean) => void;
+    showSpectatePromptInLog: boolean;
+    setShowSpectatePromptInLog: (val: boolean) => void;
 }
 
 const GeneralSettings: React.FC<GeneralSettingsProps> = ({
@@ -91,7 +93,9 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     fontFamily,
     setFontFamily,
     autoSaveSessions,
-    setAutoSaveSessions
+    setAutoSaveSessions,
+    showSpectatePromptInLog,
+    setShowSpectatePromptInLog
 }) => {
     let protocol = 'wss:';
     let host = '';
@@ -611,6 +615,25 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                         </button>
                     </div>
                 </div>
+
+                {isNewbieMode && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
+                        <div style={{ flex: '1 1 200px' }}>
+                            <label className="setting-label" style={{ color: 'var(--text-primary)', margin: 0 }}>Show Spectated Player's Prompt</label>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Display the snooped player's prompt line in the message log during spectate mode.</div>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontSize: '0.8rem', color: showSpectatePromptInLog ? '#ec4899' : '#64748b' }}>{showSpectatePromptInLog ? 'ON' : 'OFF'}</span>
+                            <button
+                                className={`setting-toggle ${showSpectatePromptInLog ? 'active' : ''}`}
+                                onClick={() => setShowSpectatePromptInLog(!showSpectatePromptInLog)}
+                                style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: showSpectatePromptInLog ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                            >
+                                <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: showSpectatePromptInLog ? '22px' : '2px', transition: 'all 0.3s' }} />
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
                     <div style={{ flex: '1 1 200px' }}>

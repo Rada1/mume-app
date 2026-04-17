@@ -8,7 +8,7 @@ import { InlineCategoryConfig } from '../types';
 // palette definitions for consistency
 const COLOR_NPC = 'rgba(217, 70, 239, 0.9)';   // Softer Magenta (#d946ef)
 const COLOR_PLAYER = 'rgba(125, 211, 252, 0.9)'; // Match who-list/pc-highlighter (#7dd3fc)
-export const COLOR_OBJ = 'var(--color-obj, rgba(215, 120, 60, 0.9))';   // Object Brown
+export const COLOR_OBJ = 'rgba(235, 135, 65, 0.9)';   // Official Object Brown (matches log highlights)
 
 
 export const DEFAULT_INLINE_CATEGORIES: InlineCategoryConfig[] = [

@@ -250,6 +250,7 @@ export const useGameProviderState = () => {
     }, []);
 
     const [popoverState, setPopoverState] = useState<PopoverState | null>(null);
+    const [gameTime, setGameTime] = useState<import('../../types').MumeTime | null>(null);
 
 
     // Virtual Spectate State (for Textual GMCP/Prompt parsing)
@@ -545,11 +546,13 @@ export const useGameProviderState = () => {
         spectateOpponentId, setSpectateOpponentId,
         spectateOpponentStatus, setSpectateOpponentStatus,
         spectateQueue, setSpectateQueue,
-        lastSnoopStartTime, setLastSnoopStartTime
+        lastSnoopStartTime, setLastSnoopStartTime,
+        gameTime, setGameTime
     }), [stats, target, activePrompt, rumble, deathRoomId, heldButton, isMendingMode, mendingTarget,
         playerHealthStatus, opponentHealthStatus, opponentName, opponentId, bufferHealthStatus, bufferName, pendingMove, characterInfo, groupMembers,
         xpHistory, xpEvent, triggerXpTicker, hitFlashEvent, oppHitFlashEvent, accountState,
-        spectateStats, spectateHealthStatus, spectateOpponentName, spectateOpponentId, spectateOpponentStatus]);
+        spectateStats, spectateHealthStatus, spectateOpponentName, spectateOpponentId, spectateOpponentStatus,
+        gameTime]);
 
     const game = useMemo(() => ({
         inCombat: effectiveInCombat, setInCombat,
@@ -618,6 +621,8 @@ export const useGameProviderState = () => {
         autoSaveSessions, setAutoSaveSessions,
         isSpectateMode: settings.isSpectateMode,
         setIsSpectateMode: settings.setIsSpectateMode,
+        showSpectatePromptInLog: settings.showSpectatePromptInLog,
+        setShowSpectatePromptInLog: settings.setShowSpectatePromptInLog,
         spectateTargetId, setSpectateTargetId,
         favorites, setFavorites,
         activeDragData, setActiveDragData,
@@ -671,7 +676,8 @@ export const useGameProviderState = () => {
         spectateQueue, setSpectateQueue,
         lastSnoopStartTime, setLastSnoopStartTime,
         fontFamily, setFontFamily,
-        accountStageRef
+        accountStageRef,
+        gameTime, setGameTime
     }), [
         effectiveInCombat, status, gameState, isPasswordMode, characterName, mood, spellSpeed, alertness, playerPosition, isRiding,
         isNewbieMode, setIsNewbieMode, isSoundEnabled, isMmapperMode, theme, showControls,
@@ -685,7 +691,7 @@ export const useGameProviderState = () => {
         parley, whoList, whereList, popoverState, discoveredItems, zoneMusic,
         quests, groupMembers, spectateGroupMembers, mumeEditState, handleSaveMumeEdit, executeCommandRef,
         entities, setEntities, registerEntity, getEntity, clearRegistry, selectedObjectIds, toggleObjectSelection, clearObjectSelection,
-        settings.isSpectateMode, settings.setIsSpectateMode, spectateTargetId, setSpectateTargetId,
+        settings.isSpectateMode, settings.setIsSpectateMode, settings.showSpectatePromptInLog, spectateTargetId, setSpectateTargetId,
         isTimestampEnabled, setIsTimestampEnabled,
         spectatePosition, spectateWaiting, spectateRoomName, 
         spectateTerrain, spectateRoomZone, spectateLighting, spectateWeather, spectateIsFoggy,
@@ -693,7 +699,8 @@ export const useGameProviderState = () => {
         spectateStats, setSpectateStats, spectateHealthStatus, spectateOpponentName, spectateOpponentStatus,
         spectateQueue, setSpectateQueue, lastSnoopStartTime, setLastSnoopStartTime,
         opponentName, opponentId, fontFamily, setFontFamily, accountStageRef,
-        connectionUrl, setConnectionUrl
+        connectionUrl, setConnectionUrl,
+        gameTime
     ]);
 
 

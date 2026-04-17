@@ -4,7 +4,7 @@ export interface UseGameParserDeps {
     entities: Record<string, GameEntity>;
     isInventoryOpen: boolean; isEquipmentOpen: boolean; isCharacterOpen: boolean; isStatsOpen: boolean; isPlayersOpen: boolean; mapperRef: React.RefObject<any>;
     btn: { buttonsRef: React.RefObject<any[]>; setButtons: React.Dispatch<React.SetStateAction<any[]>>; buttonTimers: React.RefObject<Record<string, ReturnType<typeof setTimeout>>>; setActiveSet: (setId: string) => void; };
-    addMessage: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, combatSide?: 'player' | 'opponent' | 'groupmate', providedIsHitImpact?: boolean) => void;
+    addMessage: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, combatSide?: 'player' | 'opponent' | 'groupmate', providedIsHitImpact?: boolean, providedIsHitterImpact?: boolean, providedIsSnoop?: boolean, providedIsSnoopInput?: boolean) => void;
     addSystemMessage: (text: string) => void;
     pendingGmcpCommRef?: React.MutableRefObject<{ sender: string; chan: string; msg?: string } | null>;
     lastCommIdBySenderRef?: React.MutableRefObject<Map<string, string>>;
@@ -16,6 +16,7 @@ export interface UseGameParserDeps {
     playSmiteSound?: (options?: { pitch?: number, volume?: number }) => void;
     playPierceSound?: (options?: { pitch?: number, volume?: number }) => void;
     playStabSound?: (options?: { pitch?: number, volume?: number }) => void;
+    playArrowHitSound?: (options?: { pitch?: number, volume?: number }) => void;
     playCommMessageSound?: (options?: { volume?: number }) => void;
     playBuySellSound?: (options?: { volume?: number }) => void;
     playBashSound?: (options?: { pitch?: number, volume?: number }) => void;
@@ -144,4 +145,6 @@ export interface UseGameParserDeps {
     lastSnoopStartTime: number | null;
     setLastSnoopStartTime: (val: number | null) => void;
     setIsSpectateMode: (val: boolean) => void;
+    setGameTime: (time: import('../../types').MumeTime | null) => void;
+    playArrowHitSound?: (options?: { pitch?: number, volume?: number }) => void;
 }

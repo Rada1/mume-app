@@ -25,6 +25,7 @@ import { useLineProcessor } from './useLineProcessor';
 import { useStageInitializer } from './useStageInitializer';
 import { useMessageRouter } from './useMessageRouter';
 import { useAccountParser } from './useAccountParser';
+import { useTimeParser } from './useTimeParser';
 import { useLogGmcpParser } from './useLogGmcpParser';
 import { useSpectateAutomator } from '../useSpectateAutomator';
 import { occupantAnims, getOccupantKey, DIR_WORD_TO_CODE } from '../../components/Mapper/occupantAnimStore';
@@ -38,6 +39,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         playSmiteSound,
         playPierceSound,
         playStabSound,
+        playArrowHitSound,
         playCommMessageSound,
         playBashSound,
         loadBashSound,
@@ -76,7 +78,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         setSpectateQueue,
         lastSnoopStartTime,
         setLastSnoopStartTime,
-        addSystemMessage
+        addSystemMessage,
+        setGameTime
     } = deps;
 
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef, playRandomSound });
@@ -213,6 +216,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         setIsPasswordMode
     });
     
+    const { parseTimeLine } = useTimeParser({ setGameTime });
+    
     const automator = useSpectateAutomator({
         spectateQueue,
         setSpectateQueue,
@@ -338,9 +343,75 @@ export function useGameParser(deps: UseGameParserDeps) {
                 else if (cleanForSearch.includes('*')) type = 'sun';
                 else if (cleanForSearch.includes(')') || cleanForSearch.includes('(')) type = 'moon';
                 else if (/\bo\b/i.test(cleanForSearch) || cleanForSearch.includes(' o ') || cleanForSearch.endsWith(' o>')) type = 'dark';
-                
+
                 if (type !== 'none') {
                     deps.setSpectateLighting(type);
+                }
+            }
+
+            // --- Snooped Prompt Stat Parsing ---
+            // Parse HP/MA/MV status words from the spectated player's prompt as an additional
+            // reference to update spectate stat bars, acting as a fallback when exact GMCP
+            // current values haven't arrived yet.
+            if (isSpectateMode && isSnoop) {
+                const SNOOP_HP_STATUS: Record<string, import('../../types').CombatHealthStatus> = {
+                    'healthy': 'Healthy', 'fine': 'Fine', 'hurt': 'Hurt',
+                    'wounded': 'Wounded', 'bad': 'Bad', 'awful': 'Awful',
+                    'stunned': 'Stunned', 'dying': 'Dying', 'bleeding': 'Dying'
+                };
+                const SNOOP_HP_PCT: Record<string, number> = {
+                    'healthy': 100, 'fine': 90, 'hurt': 70, 'wounded': 45,
+                    'bad': 25, 'awful': 12, 'stunned': 25, 'dying': 5, 'bleeding': 5
+                };
+                // Mana (MA / SP): Full→100, Aflame/Burning→88, Flowing→75, Warm→50, Cool→30, Cold→15, Icy→5, Empty→0
+                const SNOOP_MANA_PCT: Record<string, number> = {
+                    'full': 100, 'aflame': 88, 'burning': 88, 'flowing': 75,
+                    'warm': 50, 'cool': 30, 'cold': 15, 'icy': 5, 'empty': 0
+                };
+                // Move (MV): Full→100, Fresh→88, Alert→75, Tired→50, Winded→30, Weary→15, Fainting→5, Exhausted→0
+                const SNOOP_MOVE_PCT: Record<string, number> = {
+                    'full': 100, 'fresh': 88, 'alert': 75, 'tired': 50,
+                    'winded': 30, 'weary': 15, 'fainting': 5, 'exhausted': 0
+                };
+
+                const hpWord = promptInfo.promptPart.match(/HP:(\w+)/i)?.[1]?.toLowerCase();
+                const maWord = promptInfo.promptPart.match(/(?:MA|SP):(\w+)/i)?.[1]?.toLowerCase();
+                const mvWord = promptInfo.promptPart.match(/MV:(\w+)/i)?.[1]?.toLowerCase();
+
+                if (hpWord) {
+                    const status = SNOOP_HP_STATUS[hpWord] ?? null;
+                    if (status) deps.setSpectateHealthStatus(status);
+                    const hpPct = SNOOP_HP_PCT[hpWord];
+                    if (hpPct !== undefined) {
+                        deps.setSpectateStats(prev =>
+                            // Only apply estimate if current hp is 0 but max is known (GMCP not yet received)
+                            prev.hp === 0 && prev.maxHp > 0
+                                ? { ...prev, hp: Math.round((hpPct / 100) * prev.maxHp) }
+                                : prev
+                        );
+                    }
+                }
+
+                if (maWord) {
+                    const manaPct = SNOOP_MANA_PCT[maWord];
+                    if (manaPct !== undefined) {
+                        deps.setSpectateStats(prev =>
+                            prev.mana === 0 && prev.maxMana > 0
+                                ? { ...prev, mana: Math.round((manaPct / 100) * prev.maxMana) }
+                                : prev
+                        );
+                    }
+                }
+
+                if (mvWord) {
+                    const movePct = SNOOP_MOVE_PCT[mvWord];
+                    if (movePct !== undefined) {
+                        deps.setSpectateStats(prev =>
+                            prev.move === 0 && prev.maxMove > 0
+                                ? { ...prev, move: Math.round((movePct / 100) * prev.maxMove) }
+                                : prev
+                        );
+                    }
                 }
             }
 
@@ -348,7 +419,9 @@ export function useGameParser(deps: UseGameParserDeps) {
                 if (isSnoop) {
                     // Snooped standalone prompt — this is the spectated player's '>' prompt,
                     // which is part of the spectated POV and should be shown.
-                    addMessage('prompt', cleanLine, false, undefined, undefined, undefined, undefined, undefined, undefined, false, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, isSnoop, isSnoopInput);
+                    // NOTE: must pass undefined for providedIsHitterImpact (param 19) so that
+                    // isSnoop lands on providedIsSnoop (param 20), not one position early.
+                    addMessage('prompt', cleanLine, false, undefined, undefined, undefined, undefined, undefined, undefined, false, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, isSnoop, isSnoopInput);
                 }
                 // User's own standalone prompt is not part of the spectated POV — drop silently.
                 return;
@@ -380,21 +453,22 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         // --- Verbose Stat Parsing (standalone score line in spectate mode) ---
         // e.g. "70/98 hits, 75/130 mana, and 106/106 moves."
+        // Also handles "487/522 hits and 142/160 moves." (no mana for non-caster classes)
         // These lines in snoops usually have the &G prefix already stripped.
         // We only parse this if we're in spectate mode and the line is a snoop.
         if (isSnoop) {
-            const verboseRegex = /(\d+)\/(\d+)\s+hits,?\s+(\d+)\/(\d+)\s+mana,?\s+and\s+(\d+)\/(\d+)\s+moves/i;
+            const verboseRegex = /(\d+)\/(\d+)\s+hits(?:,?\s+(\d+)\/(\d+)\s+mana)?,?\s+and\s+(\d+)\/(\d+)\s+moves/i;
             const vm = textOnly.match(verboseRegex);
             if (vm) {
-                setSpectateStats({
+                const hasMana = vm[3] !== undefined;
+                setSpectateStats(prev => ({
+                    ...prev,
                     hp: parseInt(vm[1]),
                     maxHp: parseInt(vm[2]),
-                    mana: parseInt(vm[3]),
-                    maxMana: parseInt(vm[4]),
                     move: parseInt(vm[5]),
                     maxMove: parseInt(vm[6]),
-                    wimpy: 0
-                });
+                    ...(hasMana ? { mana: parseInt(vm[3]), maxMana: parseInt(vm[4]) } : {})
+                }));
             }
         }
 
@@ -507,6 +581,8 @@ export function useGameParser(deps: UseGameParserDeps) {
                     playSlashSound?.({ pitch, volume });
                 } else if (lower.match(/\bbash(?:es)?\b/i)) {
                     playBashSound?.({ pitch, volume });
+                } else if (lower.match(/\bshoots?\b/i)) {
+                    playArrowHitSound?.({ pitch, volume });
                 } else {
                     console.log(`[Parser] No specialized match for "${combatInfo.verb}", using generic impact.`);
                     playHitImpactSound?.({ pitch, volume });
@@ -524,6 +600,9 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         // Check for Account/Login prompts
         if (parseAccountLine(line, false)) return;
+
+        // --- Game Time Parsing ---
+        if (parseTimeLine(line)) return;
 
         // --- Spell Casting Sounds ---
         // We trigger the starting sound via text parsing to ensure they sync with the log message.
