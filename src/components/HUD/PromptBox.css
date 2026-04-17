@@ -50,11 +50,12 @@
 }
 
 .name-label {
-    font-size: 0.62rem;
-    font-weight: 800;
+    font-size: var(--prompt-name-font-size, 1.1rem);
+    font-weight: 900;
+    font-family: var(--font-mono, monospace);
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    opacity: 0.8;
+    opacity: 1;
 }
 
 .name-label .inline-btn {

@@ -143,15 +143,15 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
             // Mimic horse gallop: two beats (4 legs) in the same time as one human step
             // Doubled speed as requested
             const playbackRate = 2.0;
-            playSound(buffer, { pitch: playbackRate, volume: 0.4, label: 'move-riding-1' });
+            playSound(buffer, { pitch: playbackRate, volume: 0.6, label: 'move-riding-1' });
             
             // Play second beat after the first one finishes (at 2x speed, it takes half the duration)
             setTimeout(() => {
-                playSound(buffer, { pitch: playbackRate, volume: 0.3, label: 'move-riding-2' });
+                playSound(buffer, { pitch: playbackRate, volume: 0.45, label: 'move-riding-2' });
             }, (buffer.duration / 2.0) * 1000);
         } else {
             // Single snappy footfall for walking
-            playSound(buffer, { pitch: 1.05, volume: 0.4, label: 'move-step' });
+            playSound(buffer, { pitch: 1.05, volume: 0.6, label: 'move-step' });
         }
     }, [playSound, isSoundEnabled, initAudio]);
 
@@ -522,10 +522,13 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
     }, []);
 
     const playBuySellSound = useCallback((options?: { volume?: number }) => {
+        const vol = options?.volume || 1.5;
         if (buySellSoundRef.current) {
-            playSound(buySellSoundRef.current, { volume: options?.volume || 1.0, label: 'Buy/Sell' });
+            playSound(buySellSoundRef.current, { volume: vol, label: 'Buy/Sell' });
         } else {
-            loadBuySellSound();
+            loadBuySellSound().then(() => {
+                if (buySellSoundRef.current) playSound(buySellSoundRef.current, { volume: vol, label: 'Buy/Sell' });
+            });
         }
     }, [loadBuySellSound, playSound]);
 

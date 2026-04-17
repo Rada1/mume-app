@@ -3,7 +3,6 @@ import { MessageCircle, Reply, Repeat, XCircle } from 'lucide-react';
 import { SpatButtons } from './SpatButtons';
 import { SpatButton, PopoverState } from '../../types';
 import { useUI, useBaseGame, useVitals, useGame } from '../../context/GameContext';
-import XpTicker from '../Combat/XpTicker';
 
 
 
@@ -372,7 +371,6 @@ const InputArea: React.FC<InputAreaProps> = ({
                         <MessageCircle size={18} />
                     </button>
                 )}
-                <XpTicker isLandscape={viewport.isLandscape} align="right" />
             </div>
         );
 };

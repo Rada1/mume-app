@@ -84,7 +84,10 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
         const zoneChanged = roomZone !== lastZoneRef.current;
 
         lastIsDayRef.current = isDay;
-        const normalizedZone = roomZone?.toLowerCase().replace(/^the\s+/i, '') || '';
+        const normalizedZone = (roomZone || '').toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/^the\s+/i, '');
         const isAlwaysOnZone = ALWAYS_PLAY_ZONES.includes(normalizedZone);
 
         if (!isDay && gameState !== 'account' && !isAlwaysOnZone) {

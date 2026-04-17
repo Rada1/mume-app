@@ -4,10 +4,11 @@
  */
 
 import React, { memo, FC, useState, useRef, useCallback, useEffect } from 'react';
-import { Swords, Heart, Zap, Footprints } from 'lucide-react';
+import { Swords, Heart, Zap, Footprints, Info, Sliders } from 'lucide-react';
 import './PromptBox.css';
 import { GameStats, CharacterInfo, CombatHealthStatus } from '../../types';
 import { useGame, useVitals } from '../../context/GameContext';
+import XpTicker from '../Combat/XpTicker';
 import { CombatSliderPopout } from '../Drawers/StatsDrawer/CombatSliderPopout';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
 
@@ -221,11 +222,14 @@ const PromptBox: FC<PromptBoxProps> = ({
     processMessageHtml,
     onWimpyChange
 }) => {
-    const { triggerHaptic, executeCommand, setPlayerPosition, inlineCategories, isNewbieMode } = useGame();
+    const { triggerHaptic, executeCommand, setPlayerPosition, inlineCategories, isNewbieMode, viewport } = useGame();
     const [activeSlider, setActiveSlider] = useState<'pos' | null>(null);
     const [activeButtonRect, setActiveButtonRect] = useState<DOMRect | null>(null);
     const [showNumbers, setShowNumbers] = useState(false);
     const numbersTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Dynamic scaling linked directly to the authoritative log font size
+    const nameFontSize = `var(--dynamic-log-size)`;
 
     // --- Wimpy Slider Drag Logic ---
     const [isDragging, setIsDragging] = useState(false);
@@ -335,7 +339,7 @@ const PromptBox: FC<PromptBoxProps> = ({
     };
 
     return (
-        <div className="prompt-box-container" id="prompt-box">
+        <div className="prompt-box-container" id="prompt-box" style={{ '--prompt-name-font-size': nameFontSize } as any}>
             <div className="prompt-box-content">
                 {/* Names Row — only shown in combat */}
                 {inCombat && (
@@ -392,7 +396,8 @@ const PromptBox: FC<PromptBoxProps> = ({
                     </div>
 
                     {/* Center Anchor */}
-                    <div className="vitals-center-anchor">
+                    <div className="vitals-center-anchor" style={{ position: 'relative' }}>
+                        <XpTicker isLandscape={viewport.isLandscape} align="center" />
                         <button 
                             className={`pos-combat-square-btn ${inCombat ? 'is-fighting' : ''} ${activeSlider === 'pos' ? 'active' : ''}`}
                             onClick={!isSpectateMode ? handlePosClick : undefined}

@@ -715,7 +715,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
         parseAtmosphere(lower, isSnoop);
 
-        if (lower.startsWith('you buy ') || lower.startsWith('you sell ')) {
+        if (/\b(you buy|you sell|you sold)\b/i.test(lower)) {
             playBuySellSound?.();
         }
 
