@@ -418,12 +418,11 @@ export const buildHighlighterCandidates = (
         length: 5
     });
 
-    // 8. Key Status Words & Experience
-    const allStatusWords = [...statusKeywords, 'receive your share of experience', 'receive \\d+ experience'];
-    allStatusWords.forEach(word => {
+    // 8. Experience Highlighting
+    ['receive your share of experience', 'receive \\d+ experience'].forEach(word => {
         candidates.push({
-            pattern: word.includes('\\d+') ? word : `\\b${word}\\b`,
-            isRegex: word.includes('\\d+'),
+            pattern: word,
+            isRegex: true,
             priority: 10,
             replacer: (m) => `<span class="keyword-highlight status-word">${m}</span>`,
             length: word.length
@@ -433,37 +432,7 @@ export const buildHighlighterCandidates = (
     // 9. Combat Actions
     // (Section removed: combat action highlighting disabled)
 
-    // 10. Room Exits - Only highlight if this is an exits line
-    if (type === 'room-exits') {
-        const dirs = exitDirections.join('|');
-        candidates.push({
-            pattern: `(\\[|\\()?\\b(${dirs})\\b(\\]|\\))?`,
-            isRegex: true,
-            priority: 1,
-            replacer: (m, match) => {
-                if (!match) return m;
-                const prefix = match[0] || '';
-                const dir = match[1];
-                const suffix = match[2] || '';
-
-                // Brackets/Parentheses color yellow and toggle doors
-                let bracketCmd = '';
-                if (prefix === '(') bracketCmd = `close exit ${dir}`;
-                else if (prefix === '[') bracketCmd = `open exit ${dir}`;
-
-                const bracketStyle = `color: var(--ansi-yellow); font-weight: bold;`;
-                const openBracket = prefix ? 
-                    `<span class="inline-btn exit-bracket" data-mid="${mid}" data-action="command" data-cmd="${esc(bracketCmd)}" data-context="${esc(prefix)}" style="${bracketStyle}">${prefix}</span>` : '';
-                const closeBracket = suffix ? 
-                    `<span class="inline-btn exit-bracket" data-mid="${mid}" data-action="command" data-cmd="${esc(bracketCmd)}" data-context="${esc(suffix)}" style="${bracketStyle}">${suffix}</span>` : '';
-                const glowColor = 'var(--color-exit)';
-                const dirBtn = `<span class="inline-btn exit-word" data-mid="${mid}" data-action="command" data-cmd="${esc(dir)}" data-context="${esc(dir)}" style="--glow-color: ${glowColor}; color: ${glowColor}">${dir}</span>`;
-
-                return `${openBracket}${dirBtn}${closeBracket}`;
-            },
-            length: 8 // dummy length, will be sorted properly
-        });
-    }
+    // 10. Room Exits - Removed per user request
 
     // 11. Magic Words
     magicKeywords.forEach(magic => {

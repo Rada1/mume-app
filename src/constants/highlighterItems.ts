@@ -4,7 +4,6 @@
  */
 
 export const statusKeywords = [
-    'incapacitated', 'mortally wounded', 'dead!', 'stunned', 'paralyzed'
 ];
 
 export const combatActions = [
@@ -12,8 +11,6 @@ export const combatActions = [
 ];
 
 export const exitDirections = [
-    'north', 'east', 'south', 'west', 'up', 'down',
-    'northwest', 'northeast', 'southwest', 'southeast'
 ];
 
 export const magicKeywords = [

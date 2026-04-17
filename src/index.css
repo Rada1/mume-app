@@ -456,6 +456,7 @@
     gap: 8px;
     flex-shrink: 0;
     margin-left: auto;
+    position: relative;
 }
 
 .msg-repeat-btn {

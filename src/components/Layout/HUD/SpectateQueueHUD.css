@@ -1,8 +1,8 @@
 .spectate-queue-hud {
     position: absolute;
-    top: 60px;
-    right: 12px;
-    width: 160px;
+    top: 80px;
+    right: 16px;
+    width: 280px;
     background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(0, 255, 255, 0.2);
@@ -28,34 +28,78 @@
 }
 
 .hud-timer {
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 1.2rem;
+    font-weight: 700;
     color: #00ffff;
-    text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
-    line-height: 1; /* Tighten line height to prevent overlap */
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    line-height: 1;
 }
 
 .spectate-hud-current {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 0 4px 0 10px; /* Restored some right padding for balance */
-    background: rgba(0, 255, 255, 0.05);
-    border-radius: 6px;
-    border: 1px solid rgba(0, 255, 255, 0.1);
-    min-height: 38px;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(0, 255, 255, 0.08);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 255, 255, 0.2);
     position: relative;
-    pointer-events: auto !important; /* Force interaction on the row */
+    pointer-events: auto !important;
 }
 
-.active-remove {
-    /* No manual margin needed, parent flex handles it */
+.hud-current-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.hud-current-actions {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.hud-action-btn {
+    flex: 1;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.next-btn {
+    background: rgba(0, 255, 255, 0.15);
+    border-color: rgba(0, 255, 255, 0.3);
+    color: #00ffff;
+}
+
+.next-btn:hover {
+    background: rgba(0, 255, 255, 0.25);
+    border-color: #00ffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 255, 255, 0.2);
+}
+
+.stop-btn:hover {
+    background: rgba(255, 77, 77, 0.2);
+    border-color: #ff4d4d;
+    color: #ff4d4d;
+    transform: translateY(-2px);
 }
 
 .hud-current-name {
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-size: 1.2rem;
+    font-weight: 600;
     color: #fff;
     white-space: nowrap;
     overflow: hidden;
@@ -79,35 +123,32 @@
 .hud-list-header {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 0.65rem;
+    gap: 8px;
+    font-size: 0.85rem;
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.4);
-    letter-spacing: 0.05rem;
-    margin-top: 4px;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.1rem;
+    margin-top: 8px;
+    text-transform: uppercase;
 }
 
 .hud-list-item {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.7);
-    padding-left: 18px;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 6px 6px 6px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     transition: background 0.2s ease;
-    border-radius: 4px;
-    pointer-events: auto !important; /* Force interaction on list items */
-}
-
-.hud-list-item:hover {
-    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    pointer-events: auto !important;
 }
 
 .queue-name {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 90px;
+    max-width: 180px;
 }
 
 .remove-queue-btn {

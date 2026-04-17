@@ -132,12 +132,18 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
     const onCharRide = useCallback((data: any) => {
         console.log('[GMCP] Char.Ride:', data);
         const riding = data && (data.mount || data.mount_name || data.riding);
+        const targetSetter = props.isSpectateMode ? props.setPlayerPosition : props.setPlayerPosition; // Wait, setPlayerPosition is already mapped in GameContext
+        
+        // props.setPlayerPosition is mapped to s.setSpectatePosition in GameContext when in spectate mode!
+        
         if (riding) {
             if (props.setIsRiding) props.setIsRiding(true);
+            props.setPlayerPosition('riding');
         } else {
             if (props.setIsRiding) props.setIsRiding(false);
+            props.setPlayerPosition('standing');
         }
-    }, [props.setIsRiding]);
+    }, [props.setIsRiding, props.setPlayerPosition, props.isSpectateMode]);
 
     return {
         onRoomInfo,

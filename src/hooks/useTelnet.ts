@@ -177,6 +177,8 @@ export function useTelnet(options: TelnetOptions) {
 
             if (isLikelyPrompt) {
                 // Track this prompt so we don't double-process it if a newline follows
+                // We update this BEFORE calling processLine to prevent recursive races 
+                // if processLine is slow or triggers a state update that Re-renders before return.
                 lastProcessedPromptRef.current = remaining;
                 
                 // CRITICAL: We bypass the null-return check here because prompts

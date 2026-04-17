@@ -411,7 +411,7 @@ export const useMessageHighlighter = (
                     const glowColor = b.style.backgroundColor || 'var(--accent)';
                     
                     // Wrap the entire line HTML in the spat trigger
-                    newHtml = `<span class="inline-btn spat-row-trigger${isSelected ? ' selected' : ''}" data-id="${b.id}" data-mid="${mid}" data-cmd="${esc(finalCommand)}" data-context="${esc(textOnly)}" data-icon="${esc(b.icon || '')}" data-label="${esc(finalLabel)}" data-color="${b.style.backgroundColor}" data-action="${b.actionType || 'command'}" data-menu-display="${b.menuDisplay || 'list'}" data-spit="true" data-duration="${b.trigger?.duration || ''}" style="--glow-color: ${glowColor}">${newHtml}</span>`;
+                    newHtml = `<span class="inline-btn spat-row-trigger${isSelected ? ' selected' : ''}" data-id="${b.id}" data-mid="${mid}" data-cmd="${esc(finalCommand)}" data-context="${esc(textOnly)}" data-icon="${esc(b.icon || '')}" data-label="${esc(finalLabel)}" data-color="${b.style.backgroundColor}" data-action="${b.actionType || 'command'}" data-menu-display="${b.menuDisplay || 'list'}" data-spit="true" data-duration="${b.trigger?.duration || 20}" style="--glow-color: ${glowColor}">${newHtml}</span>`;
                 }
             });
         }

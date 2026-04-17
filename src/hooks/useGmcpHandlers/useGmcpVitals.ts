@@ -15,6 +15,7 @@ interface UseGmcpVitalsProps {
     findStatus: (str: string | undefined) => CombatHealthStatus | null;
     detectLighting?: (symbol: string | number) => void;
     isSpectateMode?: boolean;
+    setInCombat?: (val: boolean, force?: boolean) => void;
     playerPositionRef: React.MutableRefObject<string>;
     opponentName: string | null;
     opponentId: string | null;
@@ -35,6 +36,7 @@ export const useGmcpVitals = ({
     findStatus,
     detectLighting,
     isSpectateMode,
+    setInCombat,
     playerPositionRef,
     opponentName,
     opponentId,
@@ -57,7 +59,7 @@ export const useGmcpVitals = ({
             }
         }
 
-        if (data.position && !isSpectateMode) {
+        if (data.position) {
             console.log('[GMCP] Position Update:', data.position);
             // Don't let 'standing' stomp 'riding' because MUME often says 'standing' while mounted.
             const isCurrentlyRiding = playerPositionRef.current === 'riding' || playerPositionRef.current === 'mounted';
@@ -66,6 +68,18 @@ export const useGmcpVitals = ({
             } else {
                 setPlayerPosition(data.position);
                 playerPositionRef.current = data.position;
+                
+                // Sync combat state from position
+                if (setInCombat && !isSpectateMode) {
+                    setInCombat(data.position === 'fighting');
+                }
+            }
+        }
+
+        // Strict clearing signal: if opponent is null/empty, we ARE NOT fighting
+        if (data.opponent === null || data.opponent === "" || (data.opponent === undefined && data.position === 'standing')) {
+            if (setInCombat && !isSpectateMode) {
+                setInCombat(false);
             }
         }
 

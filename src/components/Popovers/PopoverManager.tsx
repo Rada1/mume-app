@@ -177,7 +177,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     }, [popoverState, triggerHaptic, setPopoverState]);
 
     if (!popoverState) return null;
-    console.log('[PopoverManager] Current state:', { type: popoverState.type, setId: popoverState.setId, context: popoverState.context });
+    console.log('[PopoverManager] Current state:', { type: popoverState.type, setId: popoverState.setId, context: popoverState.context, direction: popoverState.direction });
 
     // Resolve theme color for this menu
     let themeColor = setSettings[popoverState.setId]?.themeColor || popoverState.accentColor;
@@ -212,7 +212,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                         setPopoverState(null);
                         addMessage('system', `${isExecute ? 'Executed and assigned' : 'Assigned'} '${btn.label}'${dir ? ` to swipe ${dir}` : ''}.`);
                     } else {
-                        handleButtonClick(btn, e as any, popoverState.context);
+                        handleButtonClick(btn, e as any, popoverState.context, undefined, undefined, popoverState.direction);
                     }
                 }}
                 triggerHaptic={triggerHaptic}
@@ -319,6 +319,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     accountCharacters={accountCharacters}
                     accountState={accountState}
                     setAccountState={setAccountState}
+                    direction={popoverState.direction}
                 />            )}
         </div>
     );

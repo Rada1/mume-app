@@ -18,10 +18,10 @@ const createDoorButton = (id: string, label: string, command: string) =>
     });
 
 export const DOOR_BUTTONS = [
-    createDoorButton('open', 'Open', 'open exit'),
-    createDoorButton('close', 'Close', 'close exit'),
-    createDoorButton('lock', 'Lock', 'lock exit'),
-    createDoorButton('unlock', 'Unlock', 'unlock exit'),
-    createDoorButton('pick', 'Pick', 'pick exit'),
-    createDoorButton('scout', 'Scout', 'scout')
+    createDoorButton('open', 'Open', 'open exit %d'),
+    createDoorButton('close', 'Close', 'close exit %d'),
+    createDoorButton('lock', 'Lock', 'lock exit %d'),
+    createDoorButton('unlock', 'Unlock', 'unlock exit %d'),
+    createDoorButton('pick', 'Pick', 'pick exit %d'),
+    createDoorButton('scout', 'Scout', 'scout %d')
 ];

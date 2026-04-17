@@ -262,6 +262,7 @@ export class GmcpDecoder {
             }));
         }
 
+        const opp = getField(['opponent', 'opp', 'o']);
         if (opp !== undefined) {
             const newOpp = opp === "" ? null : opp;
             this.charVitalsState.opponent = newOpp;

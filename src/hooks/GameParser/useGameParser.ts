@@ -32,7 +32,15 @@ import { occupantAnims, getOccupantKey, DIR_WORD_TO_CODE } from '../../component
 export function useGameParser(deps: UseGameParserDeps) {
     const { 
         mapperRef, btn, addMessage, playSound,        playHitImpactSound,
+        playOofSound,
+        playSlashSound,
+        playCleaveSound,
+        playSmiteSound,
+        playPierceSound,
+        playStabSound,
         playCommMessageSound,
+        playBashSound,
+        loadBashSound,
 
         playIncantationSound,
 
@@ -44,7 +52,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         setInCombat, inCombatRef, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, 
         executeCommandRef, setInventoryLines, setStatsLines, setInfoLines, setScoreLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines, setEqLines, setWhoList, setWhereList, setRoomItems, 
         captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
-        keywordOverrides, roomNameRef, roomDescRef, setRoomName, setRoomDesc, showDebugEchoes, addDiagnosticLog, popoverState, setPopoverState,
+        keywordOverrides, roomNameRef, roomDescRef, setRoomName, setRoomDesc, setRoomZone, setCurrentTerrain, showDebugEchoes, addDiagnosticLog, popoverState, setPopoverState,
         setDiscoveredItems, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName,
         setBufferHealthStatus, setBufferName, setCharacterInfo, setQuests, quests,
         mumeEditState, setMumeEditState, isPlayersOpen, isInventoryOpen, isEquipmentOpen,
@@ -117,20 +125,24 @@ export function useGameParser(deps: UseGameParserDeps) {
         setSpectateGroupMembers: deps.setSpectateGroupMembers,
         setRoomPlayers: deps.setRoomPlayers, setRoomNpcs: deps.setRoomNpcs,
         setRoomItems: deps.setRoomItems,
-        setRoomName, setRoomDesc, setRoomExits: deps.setRoomExits,
+        setRoomName, setRoomDesc, setRoomZone, setCurrentTerrain, setRoomExits: deps.setRoomExits,
         characterName: deps.characterName,
         mapperRef,
         detectLighting: deps.detectLighting,
         setWeather: deps.setWeather,
         setIsFoggy: deps.setIsFoggy,
+        spectateCharacterName: deps.spectateCharacterName,
         isSpectateMode: deps.isSpectateMode,
-        sessionMode
+        sessionMode,
+        playMovementSound: deps.playMovementSound,
+        playDoorSound: deps.playDoorSound
     });
 
     const { checkCombatMatch, handleCombatExit, handleXpTicker } = useCombatParser({
         inCombatRef, setInCombat, setOpponentHealthStatus, setOpponentName, setCharacterInfo,
         triggerXpTicker, groupMembers, mapperRef, setDeathRoomId: deps.setDeathRoomId,
-        spectateCharacterName, roomPlayers
+        spectateCharacterName, roomPlayers,
+        setSpectateInCombat, setSpectateOpponentName, setSpectateOpponentStatus
     });
 
     const { parseGlobalStatus, parseDetailedScore } = useStatParser({
@@ -145,7 +157,9 @@ export function useGameParser(deps: UseGameParserDeps) {
     });
 
     const { parseAtmosphere } = useAtmosphereParser({
-        setWeather, setIsFoggy, setLightningEnabled, triggerHaptic, playDoorSound, setPlayerPosition
+        setWeather, setIsFoggy, setLightningEnabled, triggerHaptic, playDoorSound, setPlayerPosition,
+        setSpectatePosition: deps.setSpectatePosition, 
+        isSpectateMode: deps.isSpectateMode
     });
 
     const { trackAction } = useActionTracker({
@@ -259,10 +273,10 @@ export function useGameParser(deps: UseGameParserDeps) {
             return null;
         }
 
-        // --- Spectate Mode (Snoop Mapping) ---
         // Snoop prefixes typically look like '&I ' (Input/Command) or '&O ' (Output)
         // In some cases (or tightly packed streams), the space might be missing if followed by '>'
-        const snoopRegex = /^((?:\x1b\[[0-9;]*m)*)&([a-zA-Z])(?:\s|(?=>))/;
+        // We allow for leading whitespace or 'junk' characters (\uFFFD diamonds, etc.) often found in snoop streams.
+        const snoopRegex = /^(?:[\s\uFFFD\x00-\x1F\x7F-\xFF]*((?:\x1b\[[0-9;]*m)*))&([a-zA-Z])(?:\s|(?=>))/;
         let isSnoopInput = false;
         let isSnoop = false;
         
@@ -272,7 +286,8 @@ export function useGameParser(deps: UseGameParserDeps) {
                 isSnoop = true;
                 const snoopType = snoopMatch[2].toUpperCase();
                 if (snoopType === 'I') isSnoopInput = true;
-                cleanLine = cleanLine.replace(snoopRegex, '$1');
+                // Preserve the ANSI codes (group 1) but remove the junk and the snoop prefix
+                cleanLine = cleanLine.replace(snoopRegex, (_, g1) => g1 || '');
             }
         }
 
@@ -280,7 +295,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         let textOnly = textOnlyWithSpaces;
         
         // Final safety catch for commands: if it was snooped and the text starts with '>', it's a command.
-        if (isSnoop && textOnly.trim().startsWith('>')) {
+        // We ignore leading junk characters here as well.
+        if (isSnoop && textOnly.trim().replace(/^[\s\uFFFD\x00-\x1F\x7F-\xFF]*/, '').startsWith('>')) {
             isSnoopInput = true;
             
             // Trigger 2: Detect snooped player sending <stop>
@@ -327,8 +343,12 @@ export function useGameParser(deps: UseGameParserDeps) {
             }
 
             if (!attachedText) {
-                // In spectate mode the user's own prompt is not part of the POV we want to show,
-                // so we drop it entirely instead of rendering it as a standalone '>' line.
+                if (isSnoop) {
+                    // Snooped standalone prompt — this is the spectated player's '>' prompt,
+                    // which is part of the spectated POV and should be shown.
+                    addMessage('prompt', cleanLine, false);
+                }
+                // User's own standalone prompt is not part of the spectated POV — drop silently.
                 return;
             }
             
@@ -344,7 +364,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             // For OUR prompts, we strip the prompt text to show only the description/message.
             // For SNOOPED inputs, we keep the prompt (>) as it identifies the command.
             if (!isSnoopInput) {
-                cleanLine = cleanLine.replace(/^(?:\x1b\[[0-9;]*m)*[^>]*>/, '').trim();
+                cleanLine = cleanLine.replace(/^(?:[\s\uFFFD\x00-\x1F\x7F-\xFF\x1b\[0-9;]*m)*[^>]*>/, '').trim();
                 textOnly = attachedText;
                 lower = attachedText.toLowerCase();
             }
@@ -437,37 +457,69 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
         initializeStage(textOnly, lower, content, contentLower, attachedText || undefined);
-
-        const combatInfo = checkCombatMatch(lower);
+        
+        const combatInfo = checkCombatMatch(lower, isSnoop);
         const isCombatMatch = combatInfo.isMatch;
 
-        if (deps.isSpectateMode && lower.includes('(snooped)')) {
-            const regexes = [
-                /\(snooped\) .*?(?:hits|misses|wounds|pierces|smites|strikes|pounds|cleaves|dodges) (.*?)'s/,
-                /\(snooped\) .*?(?:tries to hit) (.*?)[,\.]/,
-                /(.*?) (?:fails to hit|hits|misses|wounds|pierces|smites|strikes|pounds|cleaves) .*? \(snooped\)/
-            ];
-            for (const r of regexes) {
-                const m = lower.match(r);
-                if (m) {
-                    const opponentText = m[1];
-                    let cleanName = opponentText.replace(/^(a|an|the) /, '');
-                    cleanName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
-                    deps.setOpponentName(cleanName);
-                    deps.setOpponentHealthStatus('Healthy'); // Mock health
-                    break;
-                }
+        if (isCombatMatch && combatInfo.isImpact) {
+            // Auto-start combat state only if the line directly involves the player —
+            // either the player is dealing the hit (side === 'player': "You smite...") or
+            // is the target of the hit (isPlayerTarget: "A wolf bites you.").
+            // Third-party combat in the same room ("Thorondor smites the wolf",
+            // "A troll bashes the ranger") has side === 'opponent' / 'groupmate' and
+            // isPlayerTarget === false, so it must NOT trigger the local player's combat state.
+            const isPlayerInvolved = combatInfo.side === 'player' || combatInfo.isPlayerTarget;
+            if (!isSnoop && !inCombatRef.current && isPlayerInvolved) {
+                setInCombat(true);
             }
-        }
 
-        if (combatInfo.isMatch && combatInfo.isImpact) {
-            if (combatInfo.side === 'player') {
-                if (inCombatRef.current) {
-                    playHitImpactSound?.();
-                    triggerOppHitFlash?.();
+            const PITCH_MAP: Record<string, number> = {
+                'extremely hard': 0.68,
+                'very hard': 0.75,
+                'hard': 0.83,
+                'strongly': 0.91,
+                'lightly': 1.10,
+                'barely': 1.20
+            };
+            const VOLUME_MAP: Record<string, number> = {
+                'extremely hard': 2.0,
+                'very hard': 1.6,
+                'hard': 1.3,
+                'strongly': 1.15,
+                'lightly': 0.8,
+                'barely': 0.5
+            };
+            const pitch = (combatInfo.modifier && PITCH_MAP[combatInfo.modifier]) || 1.0;
+            let volume = (combatInfo.modifier && VOLUME_MAP[combatInfo.modifier]) || 1.0;
+            
+            // Differentiate sounds in spectate mode (quieter)
+            if (isSnoop) volume *= 0.75;
+
+            if (combatInfo.side === 'player' || (isSnoop && combatInfo.side === 'groupmate')) {
+                // We allow the sound to play if we just started combat (isMatch) 
+                // to avoid missing the very first hit sound.
+                console.log(`[Parser] Processing player hit: "${combatInfo.verb}" (Modifier: ${combatInfo.modifier || 'none'})`);
+                if (lower.match(/\bcleaves?\b/i)) {
+                    playCleaveSound?.({ pitch, volume });
+                } else if (lower.match(/\bsmites?\b/i)) {
+                    playSmiteSound?.({ pitch, volume });
+                } else if (lower.match(/\bpierces?\b/i)) {
+                    playPierceSound?.({ pitch, volume });
+                } else if (lower.match(/\bstabs?\b/i)) {
+                    playStabSound?.({ pitch, volume });
+                } else if (lower.match(/\bslash(?:es)?\b/i)) {
+                    playSlashSound?.({ pitch, volume });
+                } else if (lower.match(/\bbash(?:es)?\b/i)) {
+                    playBashSound?.({ pitch, volume });
+                } else {
+                    console.log(`[Parser] No specialized match for "${combatInfo.verb}", using generic impact.`);
+                    playHitImpactSound?.({ pitch, volume });
                 }
+                triggerOppHitFlash?.();
             } else if (combatInfo.side === 'opponent') {
-                if (inCombatRef.current) {
+                // Only play "oof" if the message confirmed the player was the target (isPlayerTarget)
+                if (combatInfo.isPlayerTarget) {
+                    playOofSound?.({ pitch, volume: volume * 1.2 });
                     triggerHitFlash?.();
                 }
             }
@@ -508,8 +560,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
         parseGlobalStatus(content, contentLower);
-        handleCombatExit(lower);
-        handleXpTicker(lower);
+        handleCombatExit(lower, isSnoop);
+        handleXpTicker(lower, isSnoop);
 
         if (captureStage.current !== 'none') {
             if (captureStage.current === 'quest') {
@@ -547,7 +599,11 @@ export function useGameParser(deps: UseGameParserDeps) {
             resetContainerStack();
             resetNounCounts();
         }
-        parseAtmosphere(lower);
+        parseAtmosphere(lower, isSnoop);
+
+        if (lower.startsWith('you buy ') || lower.startsWith('you sell ')) {
+            playBuySellSound?.();
+        }
 
         if (['inv', 'eq', 'stat', 'container', 'practice', 'shop', 'shop-detail', 'info', 'whois', 'who', 'where', 'help'].includes(captureStage.current)) {
             if (captureStage.current === 'inv') {
@@ -683,6 +739,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (isSnoopInput) msgType = 'snoop-command';
         detectItemsInRoom(textOnly, cleanLine, !shouldShow);
 
+
         let targetMid: string | undefined = undefined;
         if (msgType === 'comm-continue') {
             const senderKey = commInfo.commSender || commInfo.lastCommMsgIdRef.current?.split(':')[1] || 'last';
@@ -695,7 +752,7 @@ export function useGameParser(deps: UseGameParserDeps) {
 
             // For snooped commands, we want to hide the leading '>' prompt to keep the bubble clean.
             if (msgType === 'snoop-command') {
-                finalRawText = finalRawText.replace(/^((?:\x1b\[[0-9;]*m)*)>/, '$1').trim();
+                finalRawText = finalRawText.replace(/^([\s\uFFFD\x00-\x1F\x7F-\xFF]*((?:\x1b\[[0-9;]*m)*))>/, (_, g1) => g1 || '').trim();
             }
 
             const currentMid = msgType === 'comm-continue' ? targetMid! : `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`;
@@ -703,8 +760,14 @@ export function useGameParser(deps: UseGameParserDeps) {
                 commInfo.lastCommMsgIdRef.current = currentMid;
                 commInfo.lastCommTimeRef.current = Date.now();
                 if (commInfo.commSender && commInfo.lastCommIdBySenderRef) commInfo.lastCommIdBySenderRef.current.set(commInfo.commSender, currentMid);
+                
+                // Play comm sound for incoming messages (not from "You")
+                const isIncoming = commInfo.commSender?.toLowerCase() !== 'you' && !textOnly.toLowerCase().startsWith('you ');
+                if (isIncoming && msgType === 'comm') {
+                    playCommMessageSound?.();
+                }
             }
-            addMessage(msgType, finalRawText, isCombatMatch, currentMid, isRoomName, { textOnly, lower }, undefined, undefined, undefined, false, commInfo.replyTarget, commInfo.replyCommand, commInfo.commSender, commInfo.commAction, commInfo.commText, commInfo.commColor, combatInfo.side);
+            addMessage(msgType, finalRawText, isCombatMatch, currentMid, isRoomName, { textOnly, lower }, undefined, undefined, undefined, false, commInfo.replyTarget, commInfo.replyCommand, commInfo.commSender, commInfo.commAction, commInfo.commText, commInfo.commColor, combatInfo.side, combatInfo.isImpact && combatInfo.side === 'player');
 
         }
 

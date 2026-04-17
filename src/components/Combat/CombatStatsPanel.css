@@ -13,20 +13,20 @@
     opacity: 1;
 }
 
-/* Mapper Overlay Specific Styles */
 .mobile-mapper-combat-overlay .combat-stats-panel {
-    top: 8px;
-    right: 8px;
-    bottom: auto;
-    left: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     transform: none;
+    width: 100%;
+    height: 100%;
 }
 
 .csp-l-container {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 6px;
+    position: relative;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
 }
 
@@ -35,55 +35,42 @@
     flex-direction: row;
     gap: 12px;
     padding: 6px 14px;
-    background: rgba(10, 13, 21, 0.45);
+    background: rgba(10, 13, 21, 0.65);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 8px;
+    border-radius: 12px;
     pointer-events: auto;
-    height: 36px;
+    height: 38px;
     align-items: center;
-    margin-top: 1px; /* Align with top of row padding */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    /* Horizontal Center Bottom */
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
 }
 
 .csp-controls-column {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 4px;
-    background: rgba(10, 13, 21, 0.45);
+    gap: 6px;
+    padding: 8px 6px;
+    background: rgba(10, 13, 21, 0.65);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 8px;
+    border-radius: 12px;
     pointer-events: auto;
-    width: 62px;
+    width: auto;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-}
-
-.csp-row {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1px;
-}
-
-.csp-label {
-    font-size: 0.6rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    color: rgba(255, 255, 255, 0.4);
-    text-transform: uppercase;
-    line-height: 1;
-}
-
-.csp-value {
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: #4ade80;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
+    /* Vertical Center Right */
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
 }
 
 .csp-divider {
@@ -104,8 +91,27 @@
     position: relative; /* Anchor for the menu */
 }
 
-.csp-trigger:active {
-    background: rgba(255, 255, 255, 0.1);
+.csp-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+}
+
+.csp-row .csp-label {
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    line-height: 1;
+}
+
+.csp-row .csp-value {
+    font-size: 11px; /* Significantly smaller than log font */
+    font-weight: 800;
+    color: #4ade80;
+    line-height: 1.2;
 }
 
 /* Common Popup Menu */

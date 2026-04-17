@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useVitals, useGame } from '../../context/GameContext';
+import { useMapper } from '../../context/useMapper';
 import './CombatStatsPanel.css';
 
 const MOODS = [
@@ -33,6 +34,7 @@ const ALERTS = [
 const CombatStatsPanel: React.FC = () => {
     const { stats } = useVitals();
     const { inCombat, mood, spellSpeed, alertness, executeCommand, isSpectateMode, viewport, btn } = useGame();
+    const { isMapFloating } = useMapper();
     const { isMobile } = viewport;
     
     // Menu States
@@ -98,10 +100,12 @@ const CombatStatsPanel: React.FC = () => {
 
     if (isSpectateMode) return null;
 
-    // Show on mobile always during combat.
-    // On desktop, hide during play mode entirely to keep the log clear.
-    // Use can still see it in "Edit Mode" to position it for mobile.
-    const isVisible = btn.isEditMode || (isMobile && inCombat);
+    // Handle visibility logic:
+    // 1. Always visible in Edit Mode
+    // 2. Always visible on mobile portrait when in the map "gutter" (not floating)
+    // 3. Otherwise, visible only during combat
+    const isMobilePortraitGutter = isMobile && !isSpectateMode && !isMapFloating;
+    const isVisible = btn.isEditMode || isMobilePortraitGutter || inCombat;
 
     return (
         <div className={`combat-stats-panel${isVisible ? ' active' : ''}`}>

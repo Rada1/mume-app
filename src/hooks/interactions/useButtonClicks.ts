@@ -13,12 +13,13 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         playClickSound, isSoundEnabled, initAudio
     } = deps;
 
-    const handleButtonClick = useCallback((button: CustomButton & { entityId?: string, _skipInteractionFire?: boolean }, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => {
+    const handleButtonClick = useCallback((button: CustomButton & { entityId?: string, _skipInteractionFire?: boolean }, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string, direction?: string) => {
         console.log('[useButtonClicks] handleButtonClick:', { 
             buttonId: button.id, 
             actionType: button.actionType,
             command: button.command,
             context,
+            direction: direction || popoverState?.direction,
             isEditMode: btn.isEditMode
         });
         initAudio();
@@ -102,6 +103,24 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             cmd = cmd.replace(/%n/g, target);
         }
         if (parentNoun) { cmd = cmd.includes('%p') ? cmd.replace(/%p/g, parentNoun) : cmd; }
+        
+        // Direction resolution with fallback
+        const isDirection = (s: string) => ['n','s','e','w','u','d','north','south','east','west','up','down','ne','nw','se','sw'].includes(s.toLowerCase());
+        const resolvedDir = direction || (finalContext && isDirection(finalContext) ? finalContext : undefined) || (target && isDirection(target) ? target : undefined);
+        
+        if (resolvedDir) { cmd = cmd.includes('%d') ? cmd.replace(/%d/g, resolvedDir) : cmd; }
+        
+        // Smart Append for Doors: If a door button command has no placeholders, append the resolved direction or target
+        if (button.setId === 'doors' && !button.command.includes('%')) {
+            const appendTarget = resolvedDir || target || finalContext;
+            if (appendTarget && !cmd.toLowerCase().includes(appendTarget.toLowerCase())) {
+                cmd = `${cmd} ${appendTarget}`;
+                console.log('[useButtonClicks] Smart Append for doors:', cmd);
+            }
+        }
+
+        // Strip any remaining placeholders to avoid sending raw templates to game
+        cmd = cmd.replace(/%[ndp]/g, '').replace(/%%n/g, '').trim();
 
         let finalCmd = cmd;
         if (deps.isTrackpadModifierActive && !(button as any)._skipJoystick) {
@@ -139,6 +158,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
                 executeAndAssign: popoverState?.executeAndAssign,
                 isContainer,
                 parentNoun,
+                direction: direction || popoverState?.direction,
                 entityId: button.entityId,
                 type: button.command === 'give-target-select' ? 'give-target-select' : undefined
             });
@@ -168,6 +188,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
                 assignSourceId: (button.actionType === 'assign' || button.actionType === 'select-assign') ? button.id : undefined,
                 isContainer,
                 parentNoun,
+                direction: direction || popoverState?.direction,
                 entityId: button.entityId,
                 category: popoverState?.category,
                 type: button.actionType === 'select-recipient' ? 'give-recipient-select' : (button.actionType === 'select-container' ? 'put-container-select' : undefined)

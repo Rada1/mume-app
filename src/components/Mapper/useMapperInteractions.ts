@@ -344,6 +344,9 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             const { mode, joystick, executeCommand, triggerHaptic, stopWalking, setInfoRoomId, setSelectedRoomIds, setIsDragging, setRooms } = depsRef.current;
             
             if (longPressTimerRef.current) { clearTimeout(longPressTimerRef.current); longPressTimerRef.current = null; }
+            
+            // Capture the fired state before resetting it
+            const wasLongPress = contextMenuTriggeredRef.current;
             contextMenuTriggeredRef.current = false;
             comboFiredRef.current = false;
             scrollLockRef.current = false;
@@ -378,13 +381,13 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         };
                         const dirName = directions[exitHit.direction];
                         
-                        if (contextMenuTriggeredRef.current) {
+                        if (wasLongPress) {
                             // Long Press -> Menu
                             setPopoverState({
                                 x: e.clientX,
                                 y: e.clientY,
                                 setId: 'doors',
-                                context: dirName,
+                                direction: dirName,
                                 accentColor: '#78350f' 
                             });
                         } else {
@@ -455,7 +458,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                 }
                             }
                         }
-                    } else if (isTap && !contextMenuTriggeredRef.current) {
+                    } else if (isTap && !wasLongPress) {
                         // Priority 3: Standard Room Info
                         const clickedRoomId = getRoomAt(world.x, world.y);
                         if (clickedRoomId) setInfoRoomId(clickedRoomId);

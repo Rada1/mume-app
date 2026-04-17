@@ -9,6 +9,14 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
     const magicExplosionSoundRef = useRef<AudioBuffer | null>(null);
     const activeIncantationRef = useRef<{ source: AudioBufferSourceNode, gain: GainNode } | null>(null);
     const activeCommMessageRef = useRef<{ source: AudioBufferSourceNode, gain: GainNode } | null>(null);
+    const oofSoundRef = useRef<AudioBuffer | null>(null);
+    const slashSoundRef = useRef<AudioBuffer | null>(null);
+    const cleaveSoundRef = useRef<AudioBuffer | null>(null);
+    const smiteSoundRef = useRef<AudioBuffer | null>(null);
+    const pierceSoundRef = useRef<AudioBuffer | null>(null);
+    const stabSoundRef = useRef<AudioBuffer | null>(null);
+    const buySellSoundRef = useRef<AudioBuffer | null>(null);
+    const bashSoundRef = useRef<AudioBuffer | null>(null);
 
 
 
@@ -21,8 +29,11 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         }
     }, []);
 
+    const loadingRefs = useRef<Record<string, boolean>>({});
+
     const loadClickSound = useCallback(async () => {
-        if (!audioCtxRef.current || clickSoundRef.current) return;
+        if (!audioCtxRef.current || clickSoundRef.current || loadingRefs.current['click']) return;
+        loadingRefs.current['click'] = true;
         try {
             const response = await fetch('/assets/Sounds/Sound effects/click.wav');
             const arrayBuffer = await response.arrayBuffer();
@@ -33,10 +44,11 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         }
     }, []);
 
-    const playSound = useCallback((buffer: AudioBuffer, options?: { pitch?: number, reverse?: boolean, volume?: number }) => {
+    const playSound = useCallback((buffer: AudioBuffer, options?: { pitch?: number, reverse?: boolean, volume?: number, label?: string, filterFrequency?: number }) => {
         if (!audioCtxRef.current || !isSoundEnabled) {
             return;
         }
+        if (options?.label) console.log(`[Sound] Playing: ${options.label}`, { pitch: options.pitch, volume: options.volume });
         const ctx = audioCtxRef.current;
         const doPlay = () => {
             let actualBuffer = buffer;
@@ -65,8 +77,16 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
             const gainNode = ctx.createGain();
             gainNode.gain.value = options?.volume ?? 1.0;
 
+            if (options?.filterFrequency) {
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = options.filterFrequency;
+                source.connect(filter);
+                filter.connect(gainNode);
+            } else {
+                source.connect(gainNode);
+            }
             
-            source.connect(gainNode);
             gainNode.connect(ctx.destination);
             source.start(0);
         };
@@ -80,7 +100,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
     const movementSoundRef = useRef<AudioBuffer | null>(null);
     const loadMovementSound = useCallback(async () => {
         if (!audioCtxRef.current || movementSoundRef.current) return;
-        const url = '/assets/Sounds/Sound effects/grassy-thud.wav';
+        const url = '/assets/Sounds/Sound effects/move.mp3';
         try {
             const response = await fetch(url);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -101,7 +121,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
             if (!audioCtxRef.current) initAudio();
             if (!audioCtxRef.current) return;
             try {
-                const url = '/assets/Sounds/Sound effects/grassy-thud.wav';
+                const url = '/assets/Sounds/Sound effects/move.mp3';
                 const response = await fetch(url);
                 const arrayBuffer = await response.arrayBuffer();
                 const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
@@ -117,15 +137,11 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
 
 
         if (isRiding) {
-            // "Clip"
-            playSound(buffer, { pitch: 0.85 });
-            // "Clop"
-            setTimeout(() => {
-                playSound(buffer, { pitch: 1.15 });
-            }, 110);
+            // Single snappy riding sound 
+            playSound(buffer, { pitch: 1.1, label: 'move-riding' });
         } else {
-            // Normal footfall with slight jitter (already handled by playSound jitter)
-            playSound(buffer);
+            // Single snappy footfall for walking
+            playSound(buffer, { pitch: 1.05, label: 'move-step' });
         }
     }, [playSound, isSoundEnabled, initAudio]);
 
@@ -199,18 +215,168 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         }
     }, []);
 
-    const playHitImpactSound = useCallback((options?: { volume?: number }) => {
+    const playHitImpactSound = useCallback((options?: { pitch?: number, volume?: number }) => {
         if (hitImpactSoundRef.current) {
-            playSound(hitImpactSoundRef.current, { volume: options?.volume });
+            playSound(hitImpactSoundRef.current, { 
+                pitch: options?.pitch,
+                volume: options?.volume 
+            });
         } else {
             loadHitImpactSound();
         }
     }, [loadHitImpactSound, playSound]);
 
+    const loadOofSound = useCallback(async () => {
+        if (!audioCtxRef.current || oofSoundRef.current) return;
+        try {
+            const response = await fetch('/assets/Sounds/Sound effects/oof.mp3');
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
+            oofSoundRef.current = audioBuffer;
+        } catch (err) {
+            console.error('Failed to load oof sound:', err);
+        }
+    }, []);
+
+    const playOofSound = useCallback((options?: { pitch?: number, volume?: number }) => {
+        if (oofSoundRef.current) {
+            playSound(oofSoundRef.current, { 
+                pitch: options?.pitch,
+                volume: options?.volume || 1.2 
+            });
+        } else {
+            loadOofSound();
+        }
+    }, [loadOofSound, playSound]);
+
+    const loadSlashSound = useCallback(async () => {
+        if (!audioCtxRef.current || slashSoundRef.current) return;
+        try {
+            const response = await fetch('/assets/Sounds/Sound effects/slash.mp3');
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
+            slashSoundRef.current = audioBuffer;
+        } catch (err) {
+            console.error('Failed to load slash sound:', err);
+        }
+    }, []);
+
+    const playSlashSound = useCallback((options?: { pitch?: number, volume?: number }) => {
+        if (slashSoundRef.current) {
+            playSound(slashSoundRef.current, { 
+                pitch: options?.pitch,
+                volume: options?.volume || 1.0 
+            });
+        } else {
+            loadSlashSound();
+        }
+    }, [loadSlashSound, playSound]);
+
+    const loadCleaveSound = useCallback(async () => {
+        if (!audioCtxRef.current || cleaveSoundRef.current) return;
+        try {
+            const response = await fetch('/assets/Sounds/Sound effects/cleave.mp3');
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
+            cleaveSoundRef.current = audioBuffer;
+        } catch (err) {
+            console.error('Failed to load cleave sound:', err);
+        }
+    }, []);
+
+    const playCleaveSound = useCallback((options?: { pitch?: number, volume?: number }) => {
+        if (cleaveSoundRef.current) {
+            playSound(cleaveSoundRef.current, { 
+                pitch: options?.pitch,
+                volume: options?.volume || 1.0 
+            });
+        } else {
+            loadCleaveSound();
+        }
+    }, [loadCleaveSound, playSound]);
+
+    const loadSmiteSound = useCallback(async () => {
+        if (!audioCtxRef.current || smiteSoundRef.current || loadingRefs.current['smite']) return;
+        loadingRefs.current['smite'] = true;
+        try {
+            const response = await fetch('/assets/Sounds/Sound effects/smite.mp3');
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
+            smiteSoundRef.current = audioBuffer;
+            console.log('[Sound] Smite sound loaded successfully');
+        } catch (err) {
+            console.error('Failed to load smite sound:', err);
+        } finally {
+            loadingRefs.current['smite'] = false;
+        }
+    }, []);
+
+    const playSmiteSound = useCallback((options?: { pitch?: number, volume?: number }) => {
+        if (smiteSoundRef.current) {
+            playSound(smiteSoundRef.current, { 
+                pitch: options?.pitch,
+                volume: options?.volume || 1.0,
+                filterFrequency: 1800, // Reduced muffle intensity (was 800Hz)
+                label: 'smite'
+            });
+        } else {
+            console.warn('[Sound] Smite sound not ready, triggering load');
+            loadSmiteSound();
+        }
+    }, [loadSmiteSound, playSound]);
+
+    const loadPierceSound = useCallback(async () => {
+        if (!audioCtxRef.current || pierceSoundRef.current) return;
+        try {
+            const response = await fetch('/assets/Sounds/Sound effects/pierce.mp3');
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
+            pierceSoundRef.current = audioBuffer;
+        } catch (err) {
+            console.error('Failed to load pierce sound:', err);
+        }
+    }, []);
+
+    const playPierceSound = useCallback((options?: { pitch?: number, volume?: number }) => {
+        if (pierceSoundRef.current) {
+            // Apply a substantial 1.6x base pitch shift to all pierce variations
+            const shiftedPitch = (options?.pitch ?? 1.0) * 1.6;
+            playSound(pierceSoundRef.current, { 
+                pitch: shiftedPitch,
+                volume: options?.volume || 1.0 
+            });
+        } else {
+            loadPierceSound();
+        }
+    }, [loadPierceSound, playSound]);
+
+    const loadStabSound = useCallback(async () => {
+        if (!audioCtxRef.current || stabSoundRef.current) return;
+        try {
+            const response = await fetch('/assets/Sounds/Sound effects/stab.mp3');
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
+            stabSoundRef.current = audioBuffer;
+        } catch (err) {
+            console.error('Failed to load stab sound:', err);
+        }
+    }, []);
+
+    const playStabSound = useCallback((options?: { pitch?: number, volume?: number }) => {
+        if (stabSoundRef.current) {
+            playSound(stabSoundRef.current, { 
+                pitch: options?.pitch,
+                volume: options?.volume || 1.0 
+            });
+        } else {
+            loadStabSound();
+        }
+    }, [loadStabSound, playSound]);
+
     const loadCommMessageSound = useCallback(async () => {
         if (!audioCtxRef.current || commMessageSoundRef.current) return;
         try {
-            const response = await fetch('/assets/Sounds/Sound effects/commmessage.mp3');
+            const response = await fetch('/assets/Sounds/Sound effects/commbubble.mp3');
             const arrayBuffer = await response.arrayBuffer();
             const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
             commMessageSoundRef.current = audioBuffer;
@@ -262,6 +428,39 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         activeCommMessageRef.current = { source, gain };
     }, [loadCommMessageSound, stopCommMessageSound, isSoundEnabled]);
 
+
+    const loadBuySellSound = useCallback(async () => {
+        if (!audioCtxRef.current || buySellSoundRef.current) return;
+        try {
+            const response = await fetch('/assets/Sounds/Sound effects/sellandbuy.mp3');
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
+            buySellSoundRef.current = audioBuffer;
+        } catch (err) {
+            console.error('Failed to load buy/sell sound:', err);
+        }
+    }, []);
+
+    const playBuySellSound = useCallback((options?: { volume?: number }) => {
+        if (buySellSoundRef.current) {
+            playSound(buySellSoundRef.current, { volume: options?.volume || 1.0, label: 'Buy/Sell' });
+        } else {
+            loadBuySellSound();
+        }
+    }, [loadBuySellSound, playSound]);
+
+    const loadAllWeaponSounds = useCallback(() => {
+        console.log('[Sound] Pre-loading all game sounds...');
+        loadSlashSound();
+        loadCleaveSound();
+        loadSmiteSound();
+        loadPierceSound();
+        loadStabSound();
+        loadHitImpactSound();
+        loadOofSound();
+        loadCommMessageSound();
+        loadBuySellSound();
+    }, [loadSlashSound, loadCleaveSound, loadSmiteSound, loadPierceSound, loadStabSound, loadHitImpactSound, loadOofSound, loadCommMessageSound, loadBuySellSound]);
 
     const loadSpellSounds = useCallback(async () => {
         if (!audioCtxRef.current) return;
@@ -335,6 +534,30 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         activeIncantationRef.current = null;
     }, [playMagicExplosionSound]);
 
+    const loadBashSound = useCallback(async () => {
+        if (!audioCtxRef.current || bashSoundRef.current) return;
+        try {
+            const response = await fetch('/assets/Sounds/Sound effects/bash.mp3');
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
+            bashSoundRef.current = audioBuffer;
+        } catch (err) {
+            console.error('Failed to load bash sound:', err);
+        }
+    }, []);
+
+    const playBashSound = useCallback((options?: { pitch?: number, volume?: number }) => {
+        const pitch = options?.pitch ?? (0.9 + Math.random() * 0.2);
+        const volume = options?.volume ?? 1.0;
+        if (bashSoundRef.current) {
+            playSound(bashSoundRef.current, { pitch, volume, label: 'bash' });
+        } else {
+            loadBashSound().then(() => {
+                if (bashSoundRef.current) playSound(bashSoundRef.current, { pitch, volume, label: 'bash' });
+            });
+        }
+    }, [playSound, loadBashSound]);
+
     return {
         audioCtxRef,
         initAudio,
@@ -348,12 +571,27 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         loadClickSound,
         playHitImpactSound,
         loadHitImpactSound,
+        playOofSound,
+        loadOofSound,
+        playSlashSound,
+        loadSlashSound,
+        playCleaveSound,
+        loadCleaveSound,
+        playSmiteSound,
+        loadSmiteSound,
+        playPierceSound,
+        loadPierceSound,
+        playStabSound,
+        loadStabSound,
+        playBuySellSound,
+        loadBuySellSound,
+        playBashSound,
+        loadBashSound,
+        loadAllWeaponSounds,
         playCommMessageSound,
         stopCommMessageSound,
         loadCommMessageSound,
         playIncantationSound,
-
-
         stopIncantationSound,
         playMagicExplosionSound,
         loadSpellSounds,

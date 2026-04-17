@@ -14,7 +14,7 @@ interface StandardMenuProps {
     availableSets: string[];
     setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
     setButtons: React.Dispatch<React.SetStateAction<CustomButton[]>>;
-    handleButtonClick: (button: CustomButton, e: any, context?: string, isContainer?: boolean, parentNoun?: string) => void;
+    handleButtonClick: (button: CustomButton, e: any, context?: string, isContainer?: boolean, parentNoun?: string, direction?: string) => void;
     setTarget: (target: string | null) => void;
     addMessage: (type: MessageType, content: string) => void;
     themeColor?: string;
@@ -45,6 +45,7 @@ interface StandardMenuProps {
     accountCharacters?: import('../../types').CharacterEntry[];
     accountState?: import('../../types').AccountState;
     setAccountState?: React.Dispatch<React.SetStateAction<import('../../types').AccountState>>;
+    direction?: string;
 }
 
 export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
@@ -54,7 +55,8 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
     parley, setParley, whoList, executeCommand, inlineCategories, setInlineCategories,
     isMendingMode, setIsMendingMode, setMendingTarget, setIsEquipmentOpen, setIsInventoryOpen, refreshLogHighlights, triggerHaptic, openKeywordEdit, roomPlayers, roomNpcs, roomItems,
     entities, selectedObjectIds, clearObjectSelection,
-    accountCharacters, accountState, setAccountState
+    accountCharacters, accountState, setAccountState,
+    direction
 }) => {
     const [isChoosingCategory, setIsChoosingCategory] = React.useState(false);
     const [selectedCatId, setSelectedCatId] = React.useState<string | null>(null);
@@ -107,7 +109,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                             swipeCommands: { ...(b.swipeCommands || {}), [dir]: button.command }, 
                             swipeActionTypes: { ...(b.swipeActionTypes || {}), [dir]: button.actionType || 'command' } 
                         } : { ...b, command: button.command, label: button.label, actionType: button.actionType || 'command' }) : b));
-                        if (isExecute) handleButtonClick(button, e, popoverState.context, undefined, popoverState.parentNoun);
+                        if (isExecute) handleButtonClick(button, e, popoverState.context, undefined, popoverState.parentNoun, direction);
                         setPopoverState(null);
                         addMessage('system', `${isExecute ? 'Executed and assigned' : 'Assigned'} '${button.label}'${dir ? ` to swipe ${dir}` : ''}.`);
                     } else if (button.label === 'Look In') {
@@ -141,12 +143,12 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                              .replace(/-[a-f0-9]+$/, '').replace(/-/g, ' ');
                                 }
                                 
-                                handleButtonClick(button, e as any, noun, undefined, popoverState.parentNoun);
+                                handleButtonClick(button, e as any, noun, undefined, popoverState.parentNoun, direction);
                             });
                             clearObjectSelection();
                             setPopoverState(null);
                         } else {
-                            handleButtonClick(button, e as any, popoverState.context, undefined, popoverState.parentNoun);
+                            handleButtonClick(button, e as any, popoverState.context, undefined, popoverState.parentNoun, direction);
                         }
                     }
                 }}
@@ -353,7 +355,11 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                         {isSetManager ? 'Main Menu' : (
                             (selectedObjectIds?.size || 0) > 1 
                             ? `${selectedObjectIds!.size} Items Selected` 
-                            : (popoverState.context ? popoverState.context : popoverState.setId.replace(/^inline-?/, '').toUpperCase())
+                            : (popoverState.context 
+                                ? popoverState.context 
+                                : (popoverState.direction 
+                                    ? `${popoverState.setId.toUpperCase()} (${popoverState.direction.toUpperCase()})` 
+                                    : popoverState.setId.replace(/^inline-?/, '').toUpperCase()))
                         )}
                     </span>
                     <span style={{ fontSize: '0.6rem', opacity: 0.6, fontWeight: 'normal', marginTop: '1px' }}>

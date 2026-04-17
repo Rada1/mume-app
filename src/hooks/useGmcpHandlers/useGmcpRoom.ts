@@ -72,7 +72,7 @@ export const useGmcpRoom = ({
 
         // Drive lighting from GMCP Room Info
         const light = data.light ?? data.l;
-        if (light !== undefined && light !== null && detectLighting && !isSpectateMode) {
+        if (light !== undefined && light !== null && detectLighting) {
             detectLighting(light);
         }
 

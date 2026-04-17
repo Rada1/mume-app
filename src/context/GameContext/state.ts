@@ -15,7 +15,9 @@ export const useGameProviderState = () => {
         showDebugEchoes, setShowDebugEchoes, uiMode, setUiMode, disable3dScroll, setDisable3dScroll, disableSmoothScroll, setDisableSmoothScroll, isImmersionMode, setIsImmersionMode, showOrganicTerrain, setShowOrganicTerrain, inlineCategories, setInlineCategories, isHighlighterEnabled, setIsHighlighterEnabled,
         isBloomEnabled, setIsBloomEnabled, isTimestampEnabled, setIsTimestampEnabled, favorites, setFavorites, zoneMusic, setZoneMusic,
         fontFamily, setFontFamily,
-        connectionUrl, setConnectionUrl
+        connectionUrl, setConnectionUrl,
+        showRecordingIndicator, setShowRecordingIndicator,
+        autoSaveSessions, setAutoSaveSessions
     } = settings;
 
     // Registry
@@ -44,6 +46,7 @@ export const useGameProviderState = () => {
     // for a short window. This prevents stale GMCP packets from re-enabling
     // combat and then the normal latch delaying exit by 3 seconds.
     const forceClearUntilRef = useRef(0);
+    const spectateCombatTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const setInCombat = useCallback((val: boolean, force: boolean = false) => {
         // Upgrade to forced clear if within the force-clear window
@@ -59,23 +62,14 @@ export const useGameProviderState = () => {
             // Re-engaging in combat cancels any active force-clear window
             forceClearUntilRef.current = 0;
             _setInCombat(true);
-        } else if (force) {
-            // Forced clear (flee/slay) — immediately exit combat
+        } else {
+            // Immediate clear
             if (combatTimeoutRef.current) {
                 clearTimeout(combatTimeoutRef.current);
                 combatTimeoutRef.current = null;
             }
             _setInCombat(false);
-            forceClearUntilRef.current = Date.now() + 2000;
-        } else if (!combatTimeoutRef.current) {
-            // Start the exit latch only if one isn't already running AND we aren't spectating.
-            // Spectate combat is driven strictly by snooped GMCP.
-            if (settings.isSpectateMode) return;
-
-            combatTimeoutRef.current = setTimeout(() => {
-                _setInCombat(false);
-                combatTimeoutRef.current = null;
-            }, 3000);
+            if (force) forceClearUntilRef.current = Date.now() + 2000;
         }
     }, []);
 
@@ -84,7 +78,34 @@ export const useGameProviderState = () => {
     useEffect(() => {
         return () => {
             if (combatTimeoutRef.current) clearTimeout(combatTimeoutRef.current);
+            if (spectateCombatTimeoutRef.current) clearTimeout(spectateCombatTimeoutRef.current);
         };
+    }, []);
+
+    const [rawSpectateInCombat, _setSpectateInCombat] = useState(false);
+    const setSpectateInCombat = useCallback((val: boolean, force: boolean = false) => {
+        if (val) {
+            if (spectateCombatTimeoutRef.current) {
+                clearTimeout(spectateCombatTimeoutRef.current);
+                spectateCombatTimeoutRef.current = null;
+            }
+            _setSpectateInCombat(true);
+            // Heartbeat guard: auto-clear if we don't receive another combat=true signal
+            // within 8 seconds. Snooped Char.Vitals sometimes stops sending `position`
+            // after combat ends, leaving spectateInCombat stuck at true indefinitely.
+            // Each call to setSpectateInCombat(true) resets the timer, so rapid combat
+            // packets keep it alive; silence after combat ends clears it automatically.
+            spectateCombatTimeoutRef.current = setTimeout(() => {
+                spectateCombatTimeoutRef.current = null;
+                _setSpectateInCombat(false);
+            }, 8000);
+        } else {
+            if (spectateCombatTimeoutRef.current) {
+                clearTimeout(spectateCombatTimeoutRef.current);
+                spectateCombatTimeoutRef.current = null;
+            }
+            _setSpectateInCombat(false);
+        }
     }, []);
 
     const [characterName, setCharacterName] = useState<string | null>(null);
@@ -263,7 +284,7 @@ export const useGameProviderState = () => {
     const [spectateLighting, setSpectateLighting] = useState<LightingType>('none');
     const [spectateWeather, setSpectateWeather] = useState<WeatherType>('none');
     const [spectateIsFoggy, setSpectateIsFoggy] = useState(false);
-    const [spectateInCombat, setSpectateInCombat] = useState(false);
+    const spectateInCombat = rawSpectateInCombat;
     const [spectateCharacterName, setSpectateCharacterName] = useState<string | null>(null);
 
     const captureStage = useRef<import('../../types').CaptureStage>('none');
@@ -483,8 +504,8 @@ export const useGameProviderState = () => {
     });
 
     const effectiveInCombat = useMemo(() => {
-        return settings.isSpectateMode ? spectateInCombat : rawInCombat;
-    }, [settings.isSpectateMode, spectateInCombat, rawInCombat]);
+        return settings.isSpectateMode ? rawSpectateInCombat : rawInCombat;
+    }, [settings.isSpectateMode, rawSpectateInCombat, rawInCombat]);
 
     const inCombatRef = useRef(effectiveInCombat);
     useEffect(() => { inCombatRef.current = effectiveInCombat; }, [effectiveInCombat]);
@@ -604,6 +625,8 @@ export const useGameProviderState = () => {
         isHighlighterEnabled, setIsHighlighterEnabled,
         isBloomEnabled, setIsBloomEnabled,
         isTimestampEnabled, setIsTimestampEnabled,
+        showRecordingIndicator, setShowRecordingIndicator,
+        autoSaveSessions, setAutoSaveSessions,
         isSpectateMode: settings.isSpectateMode,
         setIsSpectateMode: settings.setIsSpectateMode,
         spectateTargetId, setSpectateTargetId,

@@ -40,7 +40,11 @@ export const useSpatButtons = (
         } catch (e) { }
 
         const durationAttr = el.dataset.duration;
-        const duration = durationAttr ? parseInt(durationAttr, 10) : undefined;
+        let duration = durationAttr ? parseInt(durationAttr, 10) : undefined;
+        // Ensure ALL triggers have a finite duration to prevent stale bubbles
+        if (!duration || duration <= 0) {
+            duration = 20; 
+        }
 
         const newSpat: SpatButton = {
             id,
@@ -60,7 +64,8 @@ export const useSpatButtons = (
             menuDisplay: el.dataset.menuDisplay as 'list' | 'dial',
             closeKeyboard: el.dataset.closeKeyboard === 'true',
             offKeyboard: el.dataset.offKeyboard === 'true',
-            duration
+            duration,
+            mid: el.dataset.mid
         };
 
         setSpatButtons(prev => {
@@ -86,7 +91,8 @@ export const useSpatButtons = (
         const startX = 0; 
         const targetX = 100; 
 
-        const duration = b.trigger?.duration;
+        let duration = b.trigger?.duration;
+        if (!duration || duration <= 0) duration = 20;
 
         const newSpat: SpatButton = {
             id,
@@ -106,7 +112,8 @@ export const useSpatButtons = (
             menuDisplay: b.menuDisplay,
             closeKeyboard: b.trigger?.closeKeyboard,
             offKeyboard: b.trigger?.offKeyboard,
-            duration
+            duration,
+            mid: b.mid
         };
 
         setSpatButtons(prev => {
@@ -175,6 +182,18 @@ export const useSpatButtons = (
 
         return () => observer.disconnect();
     }, [triggerSpit, scrollContainerRef, messages.length === 0]);
+
+    // Secondary cleanup: remove spat buttons whose parent message has scrolled out of the buffer
+    useEffect(() => {
+        if (messages.length === 0 || spatButtons.length === 0) return;
+
+        const messageIds = new Set(messages.map(m => m.id));
+        setSpatButtons(prev => {
+            const filtered = prev.filter(sb => !sb.mid || messageIds.has(sb.mid));
+            if (filtered.length !== prev.length) return filtered;
+            return prev;
+        });
+    }, [messages]);
 
     return {
         spatButtons,

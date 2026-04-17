@@ -14,7 +14,8 @@ const TERRAIN_SOUND_MAP: Record<string, string> = {
     'FOREST': '/assets/Sounds/Terrain Sounds/forest.mp3',
     'FIELD': '/assets/Sounds/Terrain Sounds/field.mp3',
     'HILLS': '/assets/Sounds/Terrain Sounds/hills.mp3',
-    'MOUNTAIN': '/assets/Sounds/Terrain Sounds/mountain.mp3',
+    'MOUNTAIN': '/assets/Sounds/Terrain Sounds/mountains.wav',
+    'MOUNTAINS': '/assets/Sounds/Terrain Sounds/mountains.wav',
     'WATER': '/assets/Sounds/Terrain Sounds/water.mp3',
     'TUNNEL': '/assets/Sounds/Terrain Sounds/tunnel.mp3',
 };

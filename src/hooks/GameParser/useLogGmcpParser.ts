@@ -20,14 +20,17 @@ interface LogGmcpParserDeps {
     setSpectateLighting: (light: import('../../types').LightingType) => void;
     setSpectateWeather: (w: import('../../types').WeatherType) => void;
     setSpectateIsFoggy: (f: boolean) => void;
-    setSpectateInCombat: (val: boolean) => void;
+    setSpectateInCombat: (val: boolean, force?: boolean) => void;
     setSpectateCharacterName: (name: string | null) => void;
+    spectateCharacterName: string | null;
     setSpectateGroupMembers: React.Dispatch<React.SetStateAction<import('../../types').GroupMember[]>>;
     setRoomPlayers: React.Dispatch<React.SetStateAction<any[]>>;
     setRoomNpcs: React.Dispatch<React.SetStateAction<any[]>>;
     setRoomItems: React.Dispatch<React.SetStateAction<any[]>>;
     setRoomName: (name: string | null) => void;
     setRoomDesc: (desc: string | null) => void;
+    setRoomZone: (zone: string | null) => void;
+    setCurrentTerrain: (terrain: string) => void;
     setRoomExits: (exits: string[]) => void;
     characterName: string | null;
     mapperRef: React.RefObject<any>;
@@ -36,6 +39,8 @@ interface LogGmcpParserDeps {
     setIsFoggy?: (f: boolean) => void;
     isSpectateMode?: boolean;
     sessionMode?: 'live' | 'replay';
+    playMovementSound?: (isRiding?: boolean) => void;
+    playDoorSound?: (isOpen: boolean) => void;
 }
 
 export function useLogGmcpParser(deps: LogGmcpParserDeps) {
@@ -55,19 +60,24 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         setSpectateIsFoggy,
         setSpectateInCombat,
         setSpectateCharacterName,
+        spectateCharacterName,
         setSpectateGroupMembers,
         setRoomPlayers,
         setRoomNpcs,
         setRoomItems,
         setRoomName,
         setRoomDesc,
+        setRoomZone,
+        setCurrentTerrain,
         setRoomExits,
         characterName,
         mapperRef,
         detectLighting,
         setWeather,
         setIsFoggy,
-        isSpectateMode
+        isSpectateMode,
+        playMovementSound,
+        playDoorSound
     } = deps;
 
     // Stable refs for values that can change without the callback being recreated.
@@ -77,6 +87,8 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
     const isSpectateModeRef = useRef(isSpectateMode);
     const sessionModeRef = useRef(deps.sessionMode);
     const lastSpectateRoomIdRef = useRef<string | number | null>(null);
+    const lastSpectateExitsRef = useRef<Record<string, any>>({});
+    const spectatePositionRef = useRef<string>('standing');
     useEffect(() => { isSpectateModeRef.current = isSpectateMode; }, [isSpectateMode]);
     useEffect(() => { sessionModeRef.current = deps.sessionMode; }, [deps.sessionMode]);
 
@@ -105,7 +117,7 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         // Robust GMCP regex handles optional GMCP prefix and ampersand prefixes
         // Sometimes snooped logs leak naked namespaces like "Core.Ping"
         // In session replays, non-printable "replacement characters" (diamonds) often appear at the start.
-        const gmcpRegex = /^[\s\uFFFD\x00-\x1F\x7F-\xFF]*(?:&[a-zA-Z]\s+)*(?:GMCP\s+)?([A-Za-z]+\.[A-Za-z\.]+)(?:\s+(.+))?$/i;
+        const gmcpRegex = /^[\s\uFFFD\x00-\x1F\x7F-\xFF]*(?:&[a-zA-Z]\s+)*(?:GMCP\s+)?([A-Za-z]+\.[A-Za-z\.]+)(?:\s*(.+))?$/i;
         const match = stripped.match(gmcpRegex);
         
         if (!match) return false;
@@ -155,16 +167,25 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                         setSpectatePosition(data.position);
                         const posLower = data.position.toLowerCase();
                         setSpectateWaiting(posLower === 'waiting' || posLower.includes('waiting'));
-                        // Combat state is driven strictly by the position field. A position update
-                        // that is anything other than 'fighting' clears combat mode. We intentionally
-                        // do NOT use the opponent field as a combat signal — it can linger as stale
-                        // state from a previous fight and cause false combat re-entries.
-                        setSpectateInCombat(posLower === 'fighting');
+                        const isFighting = posLower === 'fighting';
+                        setSpectateInCombat(isFighting);
+                        // If we are fighting, we definitely are NOT waiting
+                        if (isFighting) setSpectateWaiting(false);
+                    }
+
+                    // Strict clearing signal: if opponent is null/empty, we ARE NOT fighting
+                    if (data.opponent === null || data.opponent === "") {
+                        setSpectateInCombat(false);
                     }
                     if (data.opponent !== undefined) {
                         setSpectateOpponentName(data.opponent || null);
                         setSpectateOpponentStatus(findStatus(data['opponent-hp']));
                     }
+                    if (data.terrain) {
+                        setSpectateTerrain(data.terrain);
+                        if (inSpectate) setCurrentTerrain(data.terrain);
+                    }
+
                     // --- Environmental sync from snooped Char.Vitals ---
                     if (data.light !== undefined && data.light !== null) {
                         if (inSpectate) {
@@ -173,7 +194,7 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                                 const l = data.light;
                                 let type: import('../../types').LightingType = 'none';
                                 if (l <= 0) type = 'dark';
-                                else if (l <= 2) type = 'dim';
+                                else if (l <= 2) type = 'moon';
                                 else type = 'sun';
                                 setSpectateLighting(type);
                             } else {
@@ -214,10 +235,13 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                     break;
                 }
                 case 'Group.Update': {
-                    if (!data.id) break;
-                    setSpectateGroupMembers(prev => prev.map(m =>
-                        String(m.id) === String(data.id) ? { ...m, ...data } : m
-                    ));
+                    if (data.id === undefined) break;
+                    const id = Number(data.id);
+                    setSpectateGroupMembers(prev => prev.map(m => m.id === id ? { ...m, ...data } : m));
+                    // NOTE: Do NOT sync combat state from Group.Update. Group packets are
+                    // unreliable for this — they can fire with stale/mismatched fighting fields
+                    // for other group members, causing false combat-start or premature stop.
+                    // Combat state is driven exclusively by Char.Vitals (position/opponent).
                     break;
                 }
                 case 'Group.Remove': {
@@ -228,10 +252,24 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                 }
 
                 case 'Room.Info': {
-                    if (data.name) setSpectateRoomName(data.name);
-                    if (data.desc !== undefined) setSpectateRoomDesc(data.desc);
-                    if (data.terrain || data.environment) setSpectateTerrain(data.terrain || data.environment);
-                    if (data.zone || data.area) setSpectateRoomZone(data.zone || data.area);
+                    if (data.name) {
+                        setSpectateRoomName(data.name);
+                        setRoomName(data.name);
+                    }
+                    if (data.desc !== undefined) {
+                        setSpectateRoomDesc(data.desc);
+                        setRoomDesc(data.desc);
+                    }
+                    if (data.terrain || data.environment) {
+                        const terrain = data.terrain || data.environment;
+                        setSpectateTerrain(terrain);
+                        if (inSpectate) setCurrentTerrain(terrain);
+                    }
+                    if (data.zone || data.area) {
+                        const zone = data.zone || data.area;
+                        setSpectateRoomZone(zone);
+                        if (inSpectate) setRoomZone(zone);
+                    }
 
                     // Track the last spectated gmcp room id. When it changes (new room or a fresh
                     // target after a snoop switch), clear occupants — Room.Chars.Add/Update is
@@ -242,20 +280,50 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                         setRoomPlayers([]);
                         setRoomNpcs([]);
                         lastSpectateRoomIdRef.current = incomingId;
+                        
+                        // Pass riding status to ensure correct sound effect (horse vs footsteps)
+                        const isRiding = spectatePositionRef.current === 'riding' || spectatePositionRef.current?.includes('riding');
+                        playMovementSound?.(isRiding);
                     }
                     setRoomItems([]);
                     if (mapperRef.current?.handleRoomInfo) {
                         mapperRef.current.handleRoomInfo({ ...data, spectating: true });
                     }
-                    if (data.exits) setRoomExits(Object.keys(data.exits));
+                    if (data.exits) {
+                        setRoomExits(Object.keys(data.exits));
+                        lastSpectateExitsRef.current = data.exits;
+                    }
                     break;
                 }
                 
                 case 'Room.UpdateExits':
+                    if (data.exits) {
+                        // Door detection logic for spectate mode
+                        if (playDoorSound) {
+                            const oldExits = lastSpectateExitsRef.current || {};
+                            const newExits = data.exits || {};
+
+                            const getVisibleCount = (ex: Record<string, any>) =>
+                                Object.values(ex).filter(v => v !== false && (typeof v !== 'object' || !v.flags?.includes('closed'))).length;
+
+                            const oldVisibleCount = getVisibleCount(oldExits);
+                            const newVisibleCount = getVisibleCount(newExits);
+
+                            // Only trigger sound if we have a baseline (oldVisibleCount > 0) 
+                            // to avoid "clunking" on first entry to a snooped room.
+                            if (newVisibleCount > oldVisibleCount && oldVisibleCount > 0) {
+                                playDoorSound(true);
+                            } else if (newVisibleCount < oldVisibleCount && oldVisibleCount > 0) {
+                                playDoorSound(false);
+                            }
+                        }
+                        
+                        lastSpectateExitsRef.current = data.exits;
+                        setRoomExits(Object.keys(data.exits));
+                    }
                     if (mapperRef.current?.handleUpdateExits) {
                         mapperRef.current.handleUpdateExits({ ...data, spectating: true });
                     }
-                    if (data.exits) setRoomExits(Object.keys(data.exits));
                     break;
 
                 case 'Room.Items.Set':
@@ -326,13 +394,18 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                         const sanitized = extractedName.replace(/[.,:;!]$/, '');
                         if (sanitized.length <= 1) return c;
 
-                        // Heuristic: PC if the source didn't lead with an article AND the name starts
-                        // with an uppercase letter. MUME player names are always capitalized (Ildaeth,
-                        // Khach) while NPC nouns — even when the article is absent from the GMCP payload
-                        // ("mountain mule", "worm-like") — always start lowercase.
-                        // This prevents pre-stripped NPC names from being misclassified as players.
+                        // Heuristic: PC if the source didn't lead with an article AND the name looks
+                        // like a proper player name. MUME player names are always a single capitalized
+                        // word ("Ildaeth", "Khach"), optionally followed by "the <Title>" ("Ildaeth the Elf").
+                        // NPC names sent without an article (article stripped by the server) may still
+                        // be sentence-cased ("Mother eagle", "Pack horse"), so "starts uppercase" alone
+                        // is not enough — that catches too many NPCs as false positives.
+                        // Rule: infer PC only when the name is one word OR its second word is "the".
                         const startsUpperCase = /^[A-Z\u00C0-\u00DE]/.test(sanitized);
-                        const inferredPc = !hadExplicitType ? (!startsWithArticle && startsUpperCase) : undefined;
+                        const nameWords = sanitized.split(/\s+/).filter(Boolean);
+                        const secondWord = nameWords[1] ?? '';
+                        const looksLikePlayerName = nameWords.length === 1 || secondWord.toLowerCase() === 'the';
+                        const inferredPc = !hadExplicitType ? (!startsWithArticle && startsUpperCase && looksLikePlayerName) : undefined;
 
                         return {
                             ...c,
@@ -359,6 +432,16 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                             if (!c.name) return;
                             const isPc = c.pc || c.type === 'pc' || c.type === 'player';
                             const setter = isPc ? setRoomPlayers : setRoomNpcs;
+                            
+                            // If this update is for the person we are spectating, and it includes position,
+                            // synchronize our global spectateInCombat state immediately.
+                            const targetToSync = inSpectate ? spectateCharacterName : characterName;
+                            if (c.name === targetToSync && c.position !== undefined) {
+                                const posLower = c.position.toLowerCase();
+                                setSpectateInCombat(posLower === 'fighting');
+                                if (posLower === 'fighting') setSpectateWaiting(false);
+                            }
+
                             setter(prev => {
                                 const idx = prev.findIndex(x => (x.id && x.id === c.id) || x.name === c.name);
                                 if (idx >= 0) {
@@ -373,6 +456,31 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                     break;
                 }
 
+                case 'Room.Chars.Combat': {
+                    if (!Array.isArray(data)) break;
+                    // If any character in the room (including the spectated target) is reported as 
+                    // fighting, we check if they are the spectated player's opponent or the player themselves.
+                    // But effectively, if we see Room.Chars.Combat involving the spectated character,
+                    // it means combat is active.
+                    let foundTarget = false;
+                    data.forEach((char: any) => {
+                        const status = findStatus(char.health || char.condition || char.hp_status || char.status);
+                        const targetToSync = inSpectate ? spectateCharacterName : characterName;
+                        if (char.name === targetToSync) {
+                            foundTarget = true;
+                            // If we see combat data specifically for our target, it's a strong signal combat is ongoing.
+                            // Unlike Char.Vitals position, this is room-level combat data.
+                            if (char.fighting || status === 'Stunned') {
+                                setSpectateInCombat(true);
+                            } else {
+                                setSpectateInCombat(false);
+                            }
+                        }
+                    });
+                    // Optional: If target not in room combat list, and we are in spectate,
+                    // we might want to clear it, but let's stick to explicit flags for now.
+                    break;
+                }
                 case 'Room.Chars.Remove': {
                     const id = typeof data === 'object' ? data.id : data;
                     const filter = (p: any) => p.id !== id;
@@ -390,8 +498,9 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
     }, [
         setSpectateStats, setSpectateHealthStatus, setSpectateOpponentName, 
         setSpectateOpponentStatus, setSpectatePosition, setSpectateWaiting, setSpectateRoomName,
-        setSpectateInCombat, setSpectateCharacterName, mapperRef,
+        setSpectateInCombat, setSpectateCharacterName, spectateCharacterName, mapperRef,
         detectLighting, setWeather, setIsFoggy, setRoomPlayers, setRoomNpcs, setRoomItems, 
+        setRoomName, setRoomDesc, setRoomZone, setCurrentTerrain,
         setRoomExits, characterName
     ]);
 
@@ -405,6 +514,10 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         setRoomItems([]);
         setSpectateRoomName(null);
         setSpectateRoomDesc(null);
+        setRoomName(null);
+        setRoomDesc(null);
+        setRoomZone(null);
+        setCurrentTerrain('city');
         setSpectateGroupMembers([]);
         if (mapperRef.current?.stableRoomIdRef) {
             // Drop the mapper's notion of "which room the player is currently in" so that the

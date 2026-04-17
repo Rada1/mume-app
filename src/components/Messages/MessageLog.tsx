@@ -78,6 +78,21 @@ const MessageItem = React.memo(({
     const isRecent = Date.now() - msg.timestamp < 2000;
     const isOldBatchDim = latestBatchId !== undefined && (msg.batchId === undefined || msg.batchId < latestBatchId);
 
+    // Initialize the flash as ON immediately (first render already has the class), then
+    // clear it after the animation duration. This avoids two bugs:
+    // 1. A useEffect-based approach fires after the first paint, so the class misses the
+    //    first render and the CSS `recent-entry` rule (`animation: none !important`) can
+    //    still suppress it on the second render.
+    // 2. Storing `isHitImpact` as a permanent message flag caused the animation to
+    //    re-fire on the previous hit when `recent-entry` dropped off during a re-render.
+    const [showHitFlash, setShowHitFlash] = useState(() => !!msg.isHitImpact);
+    useEffect(() => {
+        if (!msg.isHitImpact) return;
+        const t = setTimeout(() => setShowHitFlash(false), 1400);
+        return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // intentionally empty — fire once on mount only
+
     const triggerParley = useCallback((e: React.MouseEvent) => {
         if (!setParley || !triggerHaptic || !playClickSound) return;
         e.stopPropagation();
@@ -114,7 +129,7 @@ const MessageItem = React.memo(({
 
     return (
         <div
-            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${isOutdatedRoom ? ' is-outdated-room' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
+            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${isOutdatedRoom ? ' is-outdated-room' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showHitFlash ? ' is-hit-impact' : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
         >
             {msg.type === 'user' || msg.type === 'snoop-command' ? (
                 <div 
@@ -397,10 +412,20 @@ const MessageLog: React.FC<MessageLogProps> = ({
         getScrollElement: () => scrollContainerRef.current,
         getItemKey: useCallback((index: number) => displayMessages[index]?.id || index, [displayMessages]),
         estimateSize: useCallback((index: number) => {
-            const msg = displayMessages[index];
+            // Read from ref, not reactive state — avoids blowing the virtualizer's
+            // size cache (and causing every visible item to re-estimate) on each
+            // new message arrival.
+            const msg = messagesRef.current[index];
             if (!msg) return 24;
             const isComm = msg.type === 'comm' || msg.isComm;
-            if (isComm && msg.commSender) return 64;
+            if (isComm && msg.commSender) {
+                // Comm bubbles are narrower than the full column width (~60%).
+                // Use text length to estimate line count so tall bubbles don't
+                // get placed too close to the item below them.
+                const bubbleCols = Math.floor((viewport.columns || 80) * 0.6);
+                const lineCount = Math.max(1, Math.ceil((msg.commText || '').length / bubbleCols));
+                return 46 + lineCount * 22;
+            }
             if (msg.type === 'shop-item') return 120;
             if (msg.type === 'practice-skill') return 84;
             if (msg.type === 'practice-header') return 52;
@@ -411,10 +436,10 @@ const MessageLog: React.FC<MessageLogProps> = ({
             const cols = viewport.columns || 80;
             const lineCount = Math.max(1, Math.ceil(charCount / cols));
             let h = lineCount * (viewport.logFontSize * 16 * 1.1) + (isComm ? 48 : 4);
-            if (msg.type === 'user') h += 24; // Condensed bubble height estimate
+            if (msg.type === 'user') h += 24;
             if (msg.isCombat) h += 10;
             return h;
-        }, [viewport.columns, viewport.logFontSize, displayMessages]),
+        }, [viewport.columns, viewport.logFontSize]),
         overscan: 12,
     });
 

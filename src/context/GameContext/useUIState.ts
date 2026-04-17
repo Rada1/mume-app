@@ -15,6 +15,7 @@ export const useUIState = (
         menuView: 'main' | 'availableSets';
         peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map';
         characterTab: 'info' | 'practice' | 'quests';
+        showMapperToolbar: boolean;
     }>(() => {
         const isMobileInitial = typeof window !== 'undefined' &&
             (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768);
@@ -29,7 +30,8 @@ export const useUIState = (
             isSetMenuOpen: false,
             menuView: 'main',
             peekingSource: 'none',
-            characterTab: 'info'
+            characterTab: 'info',
+            showMapperToolbar: false
         };
     });
 

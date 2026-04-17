@@ -51,10 +51,14 @@ export const useSettingsState = () => {
     const [fontFamily, setFontFamily] = usePersistentState<string>('mud-font-family', "'Roboto Mono', monospace");
     const [zoneMusic, setZoneMusic] = usePersistentState<ZoneMusicMapping[]>('mud-zone-music', [
         { zone: 'Bree', url: '/assets/Sounds/Zone Sounds/BreeSound.wav' },
-        { zone: 'the Shire', url: '/assets/Music/shire.mp3' },
-        { zone: 'the Blue Mountains', url: '/assets/Music/blue_mountains.mp3' },
-        { zone: 'the Old Forest', url: '/assets/Music/old_forest.mp3' },
-        { zone: 'the Barrow-downs', url: '/assets/Music/downs.mp3' },
+        { zone: 'the Shire', url: '/assets/Sounds/Zone Sounds/Shire1.mp3' },
+        { zone: 'the Blue Mountains', url: '/assets/Sounds/Zone Sounds/Blue Mountains.mp3' },
+        { zone: 'the Old Forest', url: '/assets/Sounds/Zone Sounds/Old Forest.mp3' },
+        { zone: 'the Barrow-downs', url: '/assets/Sounds/Zone Sounds/barrow downs2.mp3' },
+        { zone: 'Lorien', url: '/assets/Sounds/Zone Sounds/Lorien1.mp3' },
+        { zone: 'Rivendell', url: '/assets/Sounds/Zone Sounds/Rivendell1.mp3' },
+        { zone: 'Moria', url: '/assets/Sounds/Zone Sounds/Moria.mp3' },
+        { zone: 'Fangorn Forest', url: '/assets/Sounds/Zone Sounds/Fangorn Forest.mp3' },
     ]);
 
     return {

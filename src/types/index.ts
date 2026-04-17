@@ -1,6 +1,6 @@
 import { LucideIcon } from 'lucide-react';
 
-export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt' | 'comm' | 'comm-continue' | 'comm-sender' | 'comm-text' | 'shop-item' | 'practice-skill' | 'practice-header' | 'practice-class-header' | 'practice-column-header' | 'who-list' | 'where-list' | 'room-description' | 'equipment-list' | 'inventory-list' | 'room-exits' | 'snoop-command' | 'account-prompt' | 'account-menu-item';
+export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt' | 'comm' | 'comm-continue' | 'comm-sender' | 'comm-text' | 'shop-item' | 'practice-skill' | 'practice-header' | 'practice-class-header' | 'practice-column-header' | 'who-list' | 'where-list' | 'room-description' | 'equipment-list' | 'inventory-list' | 'room-exits' | 'snoop-command' | 'account-prompt' | 'account-menu-item' | 'account-selection' | 'account-selection-edit' | 'account-stat-edit' | 'account-character-list' | 'quest-list';
 export type LightingType = 'sun' | 'artificial' | 'moon' | 'dark' | 'none';
 export type WeatherType = 'clear' | 'cloud' | 'rain' | 'heavy-rain' | 'snow' | 'none';
 export type Direction = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | 'u' | 'd';
@@ -58,6 +58,7 @@ export interface Message {
     batchId?: number;
     isBatchEnd?: boolean;
     inRoomBatch?: boolean;
+    isHitImpact?: boolean;
 }
 
 export interface ShopItem {
@@ -284,6 +285,7 @@ export interface PopoverState {
     practiceData?: PracticeData;
     helpData?: string;
     accentColor?: string;
+    direction?: string;
     accountCharacters?: CharacterEntry[];
     accountState?: AccountState;
     setAccountState?: React.Dispatch<React.SetStateAction<AccountState>>;
@@ -301,7 +303,7 @@ export interface PopoverManagerProps {
     setTarget: (target: string | null) => void;
     teleportTargets: TeleportTarget[];
     setTeleportTargets: React.Dispatch<React.SetStateAction<TeleportTarget[]>>;
-    handleButtonClick: (button: CustomButton, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => void;
+    handleButtonClick: (button: CustomButton, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string, direction?: string) => void;
     triggerHaptic: (ms: number) => void;
     roomPlayers: (string | GmcpOccupant)[];
     roomNpcs: (string | GmcpOccupant)[];
@@ -468,6 +470,7 @@ export interface SpatButton {
     closeKeyboard?: boolean;
     offKeyboard?: boolean;
     duration?: number;
+    mid?: string;
 }
 
 // --- GMCP INTERFACES ---

@@ -85,9 +85,7 @@ export function usePromptParser(deps: PromptParserDeps) {
 
         // --- Condition Extraction from Flags (W, !, etc.) ---
         const hasWaiting = /[\s\*\[\(\!]\*[\s\*\]\)>]/.test(promptPart);
-        const hasFightingChar = /[\s\*\[\(\!][!fF][\s\*\]\)>]/.test(promptPart);
-
-        // --- Combat Health Extraction (Opponents and Tanks/Buffers) ---
+// --- Combat Health Extraction (Opponents and Tanks/Buffers) ---
         // This is moved up so we can use the 'pairs' detection to verify hasFighting
         const combatantsPart = promptPart
             .replace(/\b(?:HP|MA|MV|SP|Move|Mana)\s*:\s*\w+/gi, '') // Remove vital statuses
@@ -124,15 +122,15 @@ export function usePromptParser(deps: PromptParserDeps) {
             }
         }
 
-        const hasFighting = hasFightingChar || pairs.some(p => !p.isParen);
-
         if (isSpectateMode) {
             setSpectateStats(prev => ({
                 ...prev,
                 conditions: { ...prev.conditions, waiting: hasWaiting }
             }));
-            if (hasFighting) setSpectateInCombat(true);
-            else setSpectateInCombat(false); // Explicitly clear if no longer fighting in prompt
+            // NOTE: spectateInCombat is driven exclusively by Char.Vitals GMCP position field
+            // (in useLogGmcpParser). Do NOT set it here — parsePrompt fires on the user's own
+            // prompt too, so prompt-based detection would incorrectly trigger combat music
+            // whenever the user themselves is fighting while spectating someone else.
         } else {
             deps.setStats(prev => ({
                 ...prev,

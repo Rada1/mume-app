@@ -26,8 +26,8 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
     mode, setMode, autoCenter, setAutoCenter, setIsMinimized, isMobile, isExpanded, onCenterClick, onAddRoom, setIsDropdownOpen,
     unveilMap, setUnveilMap, onResetSync, onUndock, isDarkMode, isMapFloating, setIsMapFloating
 }) => {
-    const { viewport, triggerHaptic } = useGame();
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { viewport, triggerHaptic, ui } = useGame();
+    // Removed local isMenuOpen state, now using ui.showMapperToolbar
 
     // Removed isExpanded check to ensure the toolbar is always visible for troubleshooting
     // if (isMobile && !isExpanded) return null;
@@ -41,14 +41,14 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
             <div style={{ display: 'flex', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden', flexShrink: 0 }}>
                 <button
                     style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'edit' ? '#89b4fa' : 'transparent', color: mode === 'edit' ? '#11111b' : '#cdd6f4', fontWeight: 'bold', transition: 'all 0.2s' }}
-                    onClick={(e) => { e.stopPropagation(); setMode('edit'); if (isPortrait) setIsMenuOpen(false); }}
+                    onClick={(e) => { e.stopPropagation(); setMode('edit'); }}
                     title="Edit Mode"
                 >
                     {showLabels ? 'Edit' : 'E'}
                 </button>
                 <button
                     style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'play' ? '#a6e3a1' : 'transparent', color: mode === 'play' ? '#11111b' : '#cdd6f4', fontWeight: 'bold', transition: 'all 0.2s' }}
-                    onClick={(e) => { e.stopPropagation(); setMode('play'); if (isPortrait) setIsMenuOpen(false); }}
+                    onClick={(e) => { e.stopPropagation(); setMode('play'); }}
                     title="Play Mode"
                 >
                     {showLabels ? 'Play' : 'P'}
@@ -63,7 +63,7 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
                     backgroundColor: autoCenter ? '#f9e2af' : 'transparent', color: autoCenter ? '#11111b' : '#cdd6f4',
                     display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, transition: 'all 0.2s'
                 }}
-                onClick={(e) => { e.stopPropagation(); onCenterClick(); if (isPortrait) setIsMenuOpen(false); }}
+                onClick={(e) => { e.stopPropagation(); onCenterClick(); }}
                 title="Center on player"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
@@ -78,7 +78,7 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
                     backgroundColor: 'transparent', color: '#cdd6f4', display: 'flex',
                     alignItems: 'center', gap: '4px', transition: 'all 0.2s'
                 }}
-                onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(prev => !prev); if (isPortrait) setIsMenuOpen(false); }}
+                onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(prev => !prev); }}
                 title="Map Menu"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -92,6 +92,8 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
     );
 
     if (isPortrait) {
+        if (!ui.showMapperToolbar) return null;
+
         return (
             <div 
                 className="mapper-minimal-settings"
@@ -103,57 +105,24 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
                     pointerEvents: 'auto'
                 }}
             >
-                {isMenuOpen && (
-                    <div 
-                        style={{
-                            position: 'absolute',
-                            bottom: '40px',
-                            right: '0',
-                            backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                            backdropFilter: 'blur(30px)',
-                            WebkitBackdropFilter: 'blur(30px)',
-                            padding: '8px',
-                            borderRadius: '12px',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            display: 'flex',
-                            gap: '8px',
-                            alignItems: 'center',
-                            flexDirection: 'row',
-                            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.6)',
-                            whiteSpace: 'nowrap'
-                        }}
-                    >
-                        {toolbarContent}
-                    </div>
-                )}
-                
-                <button
-                    className="mapper-settings-btn"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        triggerHaptic?.(20);
-                        setIsMenuOpen(!isMenuOpen);
-                    }}
+                <div 
                     style={{
-                        width: '36px',
-                        height: '36px',
-                        borderRadius: '18px',
-                        backgroundColor: isMenuOpen ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-                        color: 'var(--accent, #f9e2af)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                        backdropFilter: 'blur(30px)',
+                        WebkitBackdropFilter: 'blur(30px)',
+                        padding: '8px',
+                        borderRadius: '12px',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
                         display: 'flex',
+                        gap: '8px',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        backdropFilter: 'blur(16px)',
-                        WebkitBackdropFilter: 'blur(16px)',
-                        boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
-                        transition: 'all 0.2s',
-                        zIndex: 9000
+                        flexDirection: 'row',
+                        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.6)',
+                        whiteSpace: 'nowrap'
                     }}
                 >
-                    <MoreVertical size={20} />
-                </button>
+                    {toolbarContent}
+                </div>
             </div>
         );
     }

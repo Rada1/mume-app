@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Crosshair, WifiOff, RefreshCw, Circle, Save, X, FileText } from 'lucide-react';
+import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Crosshair, WifiOff, RefreshCw, Circle, Save, X, FileText, Map as MapIcon } from 'lucide-react';
 import { EnvControls } from '../Layout/EnvControls';
 import { RecorderHUD } from '../Layout/HUD/RecorderHUD';
 import { LightingType, WeatherType } from '../../types';
@@ -406,6 +406,17 @@ const Header: React.FC<HeaderProps> = ({
                                     >
                                         {effectiveShowControls ? <Eye size={16} /> : <EyeOff size={16} />}
                                         <span>{effectiveShowControls ? 'Hide HUD Controls' : 'Show HUD Controls'}</span>
+                                    </div>
+
+                                    <div
+                                        className={`dropdown-item ${ui.showMapperToolbar ? 'active' : ''}`}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setUI(prev => ({ ...prev, showMapperToolbar: !prev.showMapperToolbar }));
+                                        }}
+                                    >
+                                        <MapIcon size={16} />
+                                        <span>{ui.showMapperToolbar ? 'Hide Map Settings' : 'Show Map Settings'}</span>
                                     </div>
 
                                     {isEditMode && (

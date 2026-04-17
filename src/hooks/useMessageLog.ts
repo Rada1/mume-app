@@ -38,6 +38,9 @@ export function useMessageLog(
     const lastMessageRef = useRef<Message | null>(null);
     const messageBufferRef = useRef<Message[]>([]);
     const flushTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    // Tracks every mid that has been committed to the buffer or state. Used for
+    // deduplication instead of `messages.some(...)` which captures a stale closure.
+    const addedMidSetRef = useRef<Set<string>>(new Set());
 
     const batchIdRef = useRef(0);
 
@@ -81,9 +84,20 @@ export function useMessageLog(
         const prompts = pending.filter(m => m.type === 'prompt');
         const ordered = nonPrompts.length > 0 ? [...nonPrompts, ...prompts] : pending;
         if (ordered.length > 0) ordered[ordered.length - 1] = { ...ordered[ordered.length - 1], isBatchEnd: true };
+        // Register all flushed mids before committing to state so deduplication
+        // is current even before the next render cycle.
+        ordered.forEach(m => { if (m.id) addedMidSetRef.current.add(m.id); });
+
         setMessages(prev => {
             const nextMessages = [...prev, ...ordered];
-            return nextMessages.length >= 500 ? nextMessages.slice(nextMessages.length - 500) : nextMessages;
+            if (nextMessages.length >= 500) {
+                const trimmed = nextMessages.slice(nextMessages.length - 500);
+                // Remove evicted IDs from the set so it stays bounded.
+                const kept = new Set(trimmed.map(m => m.id).filter(Boolean));
+                addedMidSetRef.current.forEach(id => { if (!kept.has(id)) addedMidSetRef.current.delete(id); });
+                return trimmed;
+            }
+            return nextMessages;
         });
         flushTimeoutRef.current = null;
     }, []);
@@ -105,7 +119,8 @@ export function useMessageLog(
         commAction?: string,
         commText?: string,
         commColor?: string,
-        providedCombatSide?: 'player' | 'opponent' | 'groupmate'
+        providedCombatSide?: 'player' | 'opponent' | 'groupmate',
+        providedIsHitImpact?: boolean
     ) => {
         const combatOverride = extra === true || (typeof extra === 'object' && extra?.isCombat);
         let currentText = text;
@@ -345,7 +360,7 @@ export function useMessageLog(
             commAction,
             commText,
             commColor,
-
+            isHitImpact: providedIsHitImpact
         };
 
         if (isCombat) {
@@ -372,13 +387,27 @@ export function useMessageLog(
             const nonPrompts = buffered.filter(m => m.type !== 'prompt');
             const prompts = buffered.filter(m => m.type === 'prompt');
             const drained = nonPrompts.length > 0 ? [...nonPrompts, ...prompts] : buffered;
+
+            // Deduplicate: if an ID is provided, ensure it's not already in the log
+            if (mid) {
+                if (addedMidSetRef.current.has(mid) || drained.some(m => m.id === mid)) return;
+            }
+
             lastMessageRef.current = msg;
+            if (mid) addedMidSetRef.current.add(mid);
             setMessages(prev => {
                 const nextMessages = [...prev, ...drained, msg];
                 return nextMessages.length >= 500 ? nextMessages.slice(nextMessages.length - 500) : nextMessages;
             });
         } else {
+            // Deduplicate: if an ID is provided, ensure it's not already in the buffer or state.
+            // addedMidSetRef is always current (no stale closure), unlike messages state.
+            if (mid) {
+                if (addedMidSetRef.current.has(mid)) return;
+            }
+
             lastMessageRef.current = msg;
+            if (mid) addedMidSetRef.current.add(mid);
             messageBufferRef.current.push(msg);
             // Batch at ~20fps (50ms) to reduce React render thrashing on the main thread
             if (!flushTimeoutRef.current) {
@@ -389,6 +418,7 @@ export function useMessageLog(
 
     const clearLog = useCallback(() => {
         messageBufferRef.current = [];
+        addedMidSetRef.current.clear();
         if (flushTimeoutRef.current) {
             clearTimeout(flushTimeoutRef.current);
             flushTimeoutRef.current = null;

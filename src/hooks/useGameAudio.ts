@@ -24,6 +24,7 @@ export interface GameAudioDeps {
     spectateWeather?: WeatherType;
     spectateIsFoggy?: boolean;
     spectateInCombat?: boolean;
+    spectatePosition?: string;
 }
 
 export const useGameAudio = ({
@@ -44,23 +45,24 @@ export const useGameAudio = ({
     spectateLighting,
     spectateWeather,
     spectateIsFoggy,
-    spectateInCombat
+    spectateInCombat,
+    spectatePosition
 }: GameAudioDeps) => {
-    const isSleeping = playerPosition === 'sleeping';
+    const effectivePosition = isSpectateMode ? (spectatePosition || 'standing') : (playerPosition || 'standing');
+    const isSleeping = effectivePosition === 'sleeping';
+    const effectiveInCombat = isSpectateMode ? spectateInCombat : inCombat;
 
     // Use spectate values if in spectate mode
     const effectiveRoomZone = isSpectateMode ? spectateRoomZone : roomZone;
     const effectiveTerrain = isSpectateMode ? spectateTerrain : currentTerrain;
     const effectiveLighting = isSpectateMode ? spectateLighting : lighting;
     const effectiveWeather = isSpectateMode ? spectateWeather : weather;
-    const effectiveInCombat = isSpectateMode ? spectateInCombat : inCombat;
 
     const playSoundRef = useRef<(buffer: AudioBuffer) => void>(() => { });
     const setPlaySound = useCallback((fn: (buffer: AudioBuffer) => void) => { playSoundRef.current = fn; }, []);
     const playSound = useCallback((buffer: AudioBuffer) => playSoundRef.current(buffer), []);
 
     const playMovementSoundRef = useRef<(isRiding?: boolean) => void>(() => { });
-    const playMovementSound = useCallback((isRiding?: boolean) => playMovementSoundRef.current(isRiding), []);
 
     const triggerHapticRef = useRef<(ms: number) => void>(() => { });
     const setTriggerHaptic = useCallback((fn: (ms: number) => void) => { triggerHapticRef.current = fn; }, []);
@@ -68,24 +70,41 @@ export const useGameAudio = ({
 
     const {
         audioCtxRef,
-        initAudio,
+        initAudio: soundSystemInit,
         triggerHaptic: soundSystemHaptic,
         playSound: soundSystemPlay,
         playRandomSound,
         playMovementSound: soundSystemMove,
         loadMovementSound,
-        playDoorSound,
+        playDoorSound: soundSystemPlayDoorSound,
         loadDoorSound,
         playClickSound,
         loadClickSound,
         playHitImpactSound,
         loadHitImpactSound,
+        playOofSound,
+        loadOofSound,
+        playSlashSound,
+        loadSlashSound,
+        playCleaveSound,
+        loadCleaveSound,
+        playSmiteSound,
+        loadSmiteSound,
+        playPierceSound,
+        loadPierceSound,
+        playStabSound,
+        loadStabSound,
+        loadAllWeaponSounds,
         playIncantationSound,
         stopIncantationSound,
         playMagicExplosionSound,
         loadCommMessageSound,
         playCommMessageSound,
         stopCommMessageSound,
+        playBuySellSound,
+        loadBuySellSound,
+        playBashSound,
+        loadBashSound,
         loadSpellSounds
 
 
@@ -118,6 +137,30 @@ export const useGameAudio = ({
         isSleeping 
     });
 
+    // Throttles to prevent audio spam from duplicated GMCP/Snoop packets
+    const lastMoveTimeRef = useRef(0);
+    const lastDoorTimeRef = useRef(0);
+
+    const playMovementSound = useCallback((isRidingOverride?: boolean) => {
+        const now = Date.now();
+        if (now - lastMoveTimeRef.current < 150) return; // Reduced throttle for rapid movement
+        lastMoveTimeRef.current = now;
+        
+        // Use override if provided (manual trigger), otherwise infer from current state
+        const isCurrentlyRiding = isRidingOverride !== undefined 
+            ? isRidingOverride 
+            : (effectivePosition === 'riding' || effectivePosition?.includes('riding'));
+            
+        playMovementSoundRef.current(isCurrentlyRiding);
+    }, [effectivePosition]);
+
+    const playDoorSound = useCallback((isOpen: boolean) => {
+        const now = Date.now();
+        if (now - lastDoorTimeRef.current < 800) return;
+        lastDoorTimeRef.current = now;
+        soundSystemPlayDoorSound(isOpen);
+    }, [soundSystemPlayDoorSound]);
+
     // Stop incantation if we are no longer waiting (interrupt or end of cast)
     const lastWaitingRef = useRef(waiting);
     useEffect(() => {
@@ -140,6 +183,11 @@ export const useGameAudio = ({
         lastWaitingRef.current = waiting;
     }, [waiting, stopIncantationSound, manualCancelRef, isSpectateMode]);
 
+    const initAudio = useCallback(() => {
+        soundSystemInit();
+        loadAllWeaponSounds();
+    }, [soundSystemInit, loadAllWeaponSounds]);
+
     // Wire the real functions into refs immediately
     triggerHapticRef.current = soundSystemHaptic;
     playSoundRef.current = soundSystemPlay;
@@ -159,6 +207,23 @@ export const useGameAudio = ({
         loadClickSound,
         playHitImpactSound,
         loadHitImpactSound,
+        playOofSound,
+        loadOofSound,
+        playSlashSound,
+        loadSlashSound,
+        playCleaveSound,
+        loadCleaveSound,
+        playSmiteSound,
+        loadSmiteSound,
+        playPierceSound,
+        loadPierceSound,
+        playStabSound,
+        loadStabSound,
+        playBuySellSound,
+        loadBuySellSound,
+        playBashSound,
+        loadBashSound,
+        loadAllWeaponSounds,
         playIncantationSound,
         stopIncantationSound,
         playMagicExplosionSound,

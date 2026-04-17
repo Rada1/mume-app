@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { useGame } from '../../../context/GameContext';
-import { List, Timer, User, X } from 'lucide-react';
+import { ChevronRight, List, Timer, User, X } from 'lucide-react';
 import './SpectateQueueHUD.css';
 
 const SNOOP_ROTATION_MS = 10 * 60 * 1000;
@@ -39,28 +39,45 @@ export const SpectateQueueHUD: React.FC = () => {
             </div>
             
             <div className="spectate-hud-current">
-                <User size={14} className="hud-icon-active" />
-                <span className="hud-current-name">{spectateCharacterName || 'None'}</span>
-                {spectateCharacterName && spectateCharacterName !== 'None' && (
-                    <button 
-                        className="remove-queue-btn active-remove"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            console.log('[Spectate] Manual Rotate Clicked for:', spectateCharacterName);
-                            rotateQueue(true);
-                        }}
-                        title="Skip/Stop Current Spectate"
-                    >
-                        <X size={14} />
-                    </button>
-                )}
+                <div className="hud-current-info">
+                    <User size={20} className="hud-icon-active" />
+                    <span className="hud-current-name">{spectateCharacterName || 'None'}</span>
+                </div>
+                
+                <div className="hud-current-actions">
+                    {spectateQueue.length > 0 && (
+                        <button 
+                            className="hud-action-btn next-btn"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                rotateQueue(true);
+                            }}
+                            title="Next Player (Cycle to bottom)"
+                        >
+                            <ChevronRight size={18} />
+                            <span>NEXT</span>
+                        </button>
+                    )}
+                    {spectateCharacterName && spectateCharacterName !== 'None' && (
+                        <button 
+                            className="hud-action-btn stop-btn"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                rotateQueue(false);
+                            }}
+                            title="Stop Current"
+                        >
+                            <X size={18} />
+                        </button>
+                    )}
+                </div>
             </div>
 
             {spectateQueue.length > 0 && (
                 <div className="spectate-hud-list">
                     <div className="hud-list-header">
-                        <List size={12} className="hud-icon" />
-                        <span>NEXT UP</span>
+                        <List size={16} className="hud-icon" />
+                        <span>NEXT IN QUEUE</span>
                     </div>
                     {spectateQueue.map((name, i) => (
                         <div key={`${name}-${i}`} className="hud-list-item">
@@ -70,7 +87,7 @@ export const SpectateQueueHUD: React.FC = () => {
                                 onClick={() => removeFromQueue(name)}
                                 title={`Remove ${name} from queue`}
                             >
-                                <X size={10} />
+                                <X size={14} />
                             </button>
                         </div>
                     ))}

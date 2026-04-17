@@ -93,6 +93,7 @@ export interface UIContextType {
         isSetMenuOpen: boolean;
         menuView: 'main' | 'availableSets';
         peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map';
+        showMapperToolbar: boolean;
     };
     setUI: Dispatch<SetStateAction<{
         drawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'session-log';
@@ -104,6 +105,7 @@ export interface UIContextType {
         isSetMenuOpen: boolean;
         menuView: 'main' | 'availableSets';
         peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map';
+        showMapperToolbar: boolean;
     }>>;
     popoverState: PopoverState | null;
     setPopoverState: (val: PopoverState | null) => void;

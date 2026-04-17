@@ -1,21 +1,31 @@
 import { GameStats, DrawerLine, GameAction, PopoverState, CaptureStage, CombatHealthStatus, QuestData, GameEntity, EntityLocation } from '../../types';
 
 export interface UseGameParserDeps {
+    entities: Record<string, GameEntity>;
     isInventoryOpen: boolean; isEquipmentOpen: boolean; isCharacterOpen: boolean; isStatsOpen: boolean; isPlayersOpen: boolean; mapperRef: React.RefObject<any>;
     btn: { buttonsRef: React.RefObject<any[]>; setButtons: React.Dispatch<React.SetStateAction<any[]>>; buttonTimers: React.RefObject<Record<string, ReturnType<typeof setTimeout>>>; setActiveSet: (setId: string) => void; };
-    addMessage: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, combatSide?: 'player' | 'opponent' | 'groupmate') => void;
+    addMessage: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, combatSide?: 'player' | 'opponent' | 'groupmate', providedIsHitImpact?: boolean) => void;
     addSystemMessage: (text: string) => void;
     pendingGmcpCommRef?: React.MutableRefObject<{ sender: string; chan: string; msg?: string } | null>;
     lastCommIdBySenderRef?: React.MutableRefObject<Map<string, string>>;
     playSound: (buffer: AudioBuffer) => void;
-    playHitImpactSound?: () => void;
+    playHitImpactSound?: (options?: { pitch?: number, volume?: number }) => void;
+    playOofSound?: (options?: { pitch?: number, volume?: number }) => void;
+    playSlashSound?: (options?: { pitch?: number, volume?: number }) => void;
+    playCleaveSound?: (options?: { pitch?: number, volume?: number }) => void;
+    playSmiteSound?: (options?: { pitch?: number, volume?: number }) => void;
+    playPierceSound?: (options?: { pitch?: number, volume?: number }) => void;
+    playStabSound?: (options?: { pitch?: number, volume?: number }) => void;
     playCommMessageSound?: (options?: { volume?: number }) => void;
-    playMagicExplosionSound?: () => void;
-
+    playBuySellSound?: (options?: { volume?: number }) => void;
+    playBashSound?: (options?: { pitch?: number, volume?: number }) => void;
+    loadBashSound?: () => void;
+    playIncantationSound?: () => void;
     stopIncantationSound?: (andExplode: boolean) => void;
     playMagicExplosionSound?: () => void;
     playRandomSound: (buffers: AudioBuffer[]) => void;
     playDoorSound: (isOpen: boolean) => void;
+    playMovementSound?: (isRiding?: boolean) => void;
     triggerHaptic: (ms: number) => void;
     setPlayerPosition: (val: string) => void; 
     setCurrentTerrain?: (terrain: string) => void;
@@ -129,5 +139,5 @@ export interface UseGameParserDeps {
     setSpectateQueue: (val: string[] | ((prev: string[]) => string[])) => void;
     lastSnoopStartTime: number | null;
     setLastSnoopStartTime: (val: number | null) => void;
-    setIsSpectateMode?: (val: boolean) => void;
+    setIsSpectateMode: (val: boolean) => void;
 }
