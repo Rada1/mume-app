@@ -565,7 +565,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             // Differentiate sounds in spectate mode (quieter)
             if (isSnoop) volume *= 0.75;
 
-            if (combatInfo.side === 'player' || (isSnoop && combatInfo.side === 'groupmate')) {
+            if (combatInfo.isMainActor) {
                 // We allow the sound to play if we just started combat (isMatch) 
                 // to avoid missing the very first hit sound.
                 console.log(`[Parser] Processing player hit: "${combatInfo.verb}" (Modifier: ${combatInfo.modifier || 'none'})`);

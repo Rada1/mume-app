@@ -12,6 +12,7 @@ export const META_BUTTONS = [
     createButton({ id: 'z6237j', label: 'Eat Food', command: 'eat food', setId: 'autoeat', color: '#4ade80', x: 61.99, y: 22.17, width: 120, shape: 'rect' }),
     
     // --- INLINE PLAYER ---
+    createButton({ id: 'inlp-group', label: 'Group', command: 'group %n', setId: 'inlineplayer', color: '#22c55e' }),
     createButton({ id: 'inlp-ex', label: 'Examine', command: 'examine %n', setId: 'inlineplayer', color: '#2563eb' }),
     createButton({ id: 'inlp-whois', label: 'Whois', command: 'whois %n', setId: 'inlineplayer', color: '#0ea5e9' }),
     createButton({ id: 'inlp-soc', label: 'Social', command: 'social list', setId: 'inlineplayer', color: '#06b6d4', actionType: 'menu' }),
@@ -26,6 +27,7 @@ export const META_BUTTONS = [
     createButton({ id: 'tgt-clear', label: 'Clear Target', command: '__clear_target__', setId: 'target', color: 'rgba(100,100,100,0.6)', width: 110 }),
 
     // --- INLINE NPC ---
+    createButton({ id: 'innpc-group', label: 'Group', command: 'group %n', setId: 'inlinenpc', color: '#22c55e' }),
     createButton({ id: 'innpc-kill', label: 'Kill', command: 'kill %n', setId: 'inlinenpc', color: '#dc2626' }),
     createButton({ id: 'innpc-ex', label: 'Examine', command: 'examine %n', setId: 'inlinenpc', color: '#2563eb' }),
     createButton({ id: 'innpc-consider', label: 'Consider', command: 'consider %n', setId: 'inlinenpc', color: '#facc15' }),

@@ -154,15 +154,30 @@
     top: 0;
     bottom: 0;
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 0.85; /* More vibrant */
-    box-shadow: 0 0 6px currentColor; /* Slightly tighter glow for thinner bar */
-    filter: saturate(2) brightness(1.3);
+    opacity: 0.9;
+    box-shadow: 0 0 4px currentColor;
+    z-index: 2;
 }
 
-.hp .status-bar-fill { color: #ff2d2d; background-color: currentColor; }
-.mana .status-bar-fill { color: #a855f7; background-color: currentColor; }
-.move .status-bar-fill { color: #00ff6a; background-color: currentColor; }
-.opponent .status-bar-fill { color: #ff2d2d; background-color: currentColor; }
+.status-bar-ghost {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 1;
+    z-index: 1;
+}
+
+.hp .status-bar-ghost { background-color: #ff0000 !important; box-shadow: 0 0 12px rgba(255, 0, 0, 0.8); }
+.mana .status-bar-ghost { background-color: #bf40ff !important; box-shadow: 0 0 12px rgba(191, 64, 255, 0.8); }
+.move .status-bar-ghost { background-color: #22ff55 !important; box-shadow: 0 0 12px rgba(34, 255, 85, 0.8); }
+.opponent .status-bar-ghost { background-color: #ff0000 !important; box-shadow: 0 0 12px rgba(255, 0, 0, 0.8); }
+
+.hp .status-bar-fill { color: #ff8080; background-color: currentColor; }
+.mana .status-bar-fill { color: #c084fc; background-color: currentColor; }
+.move .status-bar-fill { color: #86efac; background-color: currentColor; }
+.opponent .status-bar-fill { color: #ff8080; background-color: currentColor; }
 
 /* Placeholder bars (unknown data) */
 .placeholder .status-bar-fill {
@@ -328,10 +343,10 @@
     filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.5));
 }
 
-.hp-icon { color: #ff2d2d; }
+.hp-icon { color: #ff8080; }
 .hp-icon.is-mirrored { transform: scaleX(-1); }
-.mana-icon { color: #a855f7; }
-.move-icon { color: #00ff6a; }
+.mana-icon { color: #c084fc; }
+.move-icon { color: #86efac; }
 
 .opponent-stats-group {
     display: flex;

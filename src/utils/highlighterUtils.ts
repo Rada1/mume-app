@@ -6,8 +6,9 @@
 import { RefObject } from 'react';
 import { CustomButton, InlineCategoryConfig, MessageType } from '../types';
 import { pluralizeMumeSubject } from './gameUtils';
-import { getCategoryForName, getGlowColorForCategory } from './categorizationUtils';
+import { getGlowColorForCategory, getCategoryForName } from './categorizationUtils';
 import { getEffectiveKeyword } from './keywordUtils';
+import { getMemberColor } from './groupUtils';
 import {
     statusKeywords,
     combatActions,
@@ -212,7 +213,15 @@ export const buildHighlighterCandidates = (
                 isRegex: true,
                 priority: 5,
                 replacer: (m, _match) => {
-                    const { glow, classExtra } = getTargetAwareStyles(m, name, 'rgba(125, 211, 252, 1)', target);
+                    const groupMemberIndex = groupMembers?.findIndex(gm => gm.name.toLowerCase() === name.toLowerCase());
+                    const isGroupmate = groupMemberIndex !== undefined && groupMemberIndex !== -1;
+                    
+                    let baseColor = 'rgba(125, 211, 252, 1)'; // Default PC blue
+                    if (isGroupmate && groupMembers) {
+                        baseColor = getMemberColor(groupMemberIndex).core;
+                    }
+                    
+                    const { glow, classExtra } = getTargetAwareStyles(m, name, baseColor, target);
                     const buttonId = `auto-${name}`;
                     const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'inlineplayer');
                     return `<span class="inline-btn auto-occupant pc-highlighter${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(name)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}; font-weight: 800">${m.replace(/,/g, '')}</span>`;
@@ -307,8 +316,6 @@ export const buildHighlighterCandidates = (
                 });
             } else {
                 const category = getCategoryForName(originalName, inlineCategories);
-                // Default to 'inlinenpc' which is Magenta.
-                const glowColor = getGlowColorForCategory(category || 'inlinenpc', inlineCategories);
                 const command = 'inlinenpc';
                 const context = getEffectiveKeyword(originalName, undefined, undefined, keywordOverrides);
 
@@ -317,7 +324,20 @@ export const buildHighlighterCandidates = (
                     isRegex: true,
                     priority: 6, // Slightly higher than items to favor NPC match in ambiguous cases
                     replacer: (m, _match) => {
-                        const { glow, classExtra } = getTargetAwareStyles(m, originalName, glowColor, target);
+                        // Default to 'inlinenpc' which is Magenta.
+                        let baseColor = getGlowColorForCategory(category || 'inlinenpc', inlineCategories) || 'rgba(217, 70, 239, 0.9)';
+                        
+                        // Check if this NPC is in the group (charmies)
+                        const groupMemberIndex = groupMembers?.findIndex(gm => 
+                            gm.name.toLowerCase() === originalName.toLowerCase() ||
+                            gm.name.toLowerCase() === stripped.toLowerCase()
+                        );
+                        
+                        if (groupMemberIndex !== undefined && groupMemberIndex !== -1) {
+                            baseColor = getMemberColor(groupMemberIndex).core;
+                        }
+
+                        const { glow, classExtra } = getTargetAwareStyles(m, originalName, baseColor, target);
                         const buttonId = `auto-npc-${originalName}`;
                         const isSelected = isObjectSelected(selectedObjectIds, buttonId, command);
                         return `<span class="inline-btn auto-npc npc-highlighter${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(context)}" data-category="${esc(category || '')}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}">${m.replace(/,/g, '')}</span>`;
@@ -517,7 +537,8 @@ export const applyColorTaggedObjects = (
     keywordOverrides: Record<string, string> = {},
     selectedObjectIds: Set<string> = new Set(),
     roomPlayers: import('../types').GmcpOccupant[] = [],
-    roomNpcs: import('../types').GmcpOccupant[] = []
+    roomNpcs: import('../types').GmcpOccupant[] = [],
+    groupMembers: import('../types').GroupMember[] = []
 ): string => {
     if (!html.includes(OBJECT_SIGNAL_COLOR)) return html;
 
@@ -571,6 +592,12 @@ export const applyColorTaggedObjects = (
             finalCmd = 'inlinenpc';
         } else if (normalizedPcSet.has(normalizedName) || normalizedPcSet.has(normalizedStripped)) {
             finalCmd = 'inlineplayer';
+            
+            // Re-check for group status here to ensure color-tagged names also get the group color
+            const groupMemberIndex = groupMembers?.findIndex(gm => normalize(gm.name) === normalizedName || normalize(gm.name) === normalizedStripped);
+            if (groupMemberIndex !== -1 && groupMemberIndex !== undefined) {
+                category = `group-${groupMemberIndex}`; // Temporary internal ID for color matching
+            }
         }
         
         // Prevent objects from inheriting NPC colors just because their name contains an NPC keyword
@@ -578,7 +605,13 @@ export const applyColorTaggedObjects = (
             category = 'inline-obj-room'; // Force object styling
         }
         
-        const baseGlow = getGlowColorForCategory(category || finalCmd, inlineCategories);
+        let baseGlow = getGlowColorForCategory(category || finalCmd, inlineCategories);
+        
+        // Special case for our temporary group ID
+        if (category?.startsWith('group-')) {
+            const idx = parseInt(category.split('-')[1]);
+            baseGlow = getMemberColor(idx).core;
+        }
         const { glow, classExtra } = getTargetAwareStyles(displayName, finalContext, baseGlow, target);
         
         const buttonId = `auto-obj-${keyword}`;

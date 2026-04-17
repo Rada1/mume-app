@@ -71,49 +71,82 @@ const ConditionBadge: React.FC<{
     wimpyRatio?: number;
     isDragging?: boolean;
     dragVal?: number | null;
-}> = ({ status, percent, colorClass, onClick, altStatus, showAlt, mirrored, onPointerDown, wimpyRatio, isDragging, dragVal }) => (
-    <div className={`condition-badge ${colorClass}`} onClick={onClick} onPointerDown={onPointerDown}>
-        <div className={`status-bar-segment ${mirrored ? 'is-mirrored' : ''}`}>
-            <div 
-                className="status-bar-fill" 
-                style={{ 
-                    width: `${Math.max(0, Math.min(100, percent))}%`,
-                    left: mirrored ? 'auto' : 0,
-                    right: mirrored ? 0 : 'auto'
-                }} 
-            />
-            <div className="status-bar-dividers">
-                <div className="bar-divider" />
-                <div className="bar-divider" />
-                <div className="bar-divider" />
-                <div className="bar-divider" />
-            </div>
-            {wimpyRatio !== undefined && (
+}> = ({ status, percent, colorClass, onClick, altStatus, showAlt, mirrored, onPointerDown, wimpyRatio, isDragging, dragVal }) => {
+    // --- Logic for Resource Loss "Magnitude" Bar ---
+    const [lossMagnitude, setLossMagnitude] = useState(0);
+    const prevPercentRef = useRef(percent);
+
+    useEffect(() => {
+        const prev = prevPercentRef.current;
+        prevPercentRef.current = percent;
+
+        if (percent < prev) {
+            // Health lost - show only the magnitude of this specific hit
+            const delta = prev - percent;
+            setLossMagnitude(delta);
+            
+            const timer = setTimeout(() => {
+                setLossMagnitude(0);
+            }, 800);
+            return () => clearTimeout(timer);
+        } else if (percent > prev) {
+            // Health gained - reset loss indicator
+            setLossMagnitude(0);
+        }
+    }, [percent]);
+
+    return (
+        <div className={`condition-badge ${colorClass}`} onClick={onClick} onPointerDown={onPointerDown}>
+            <div className={`status-bar-segment ${mirrored ? 'is-mirrored' : ''}`}>
                 <div 
-                    className="wimpy-tick" 
+                    className="status-bar-ghost" 
                     style={{ 
-                        left: `${wimpyRatio * 100}%`,
-                        position: 'absolute',
-                        top: '-2px',
-                        bottom: '-2px',
-                        width: '2px',
-                        backgroundColor: '#fff',
-                        boxShadow: '0 0 4px #fff',
-                        zIndex: 20
+                        width: `${Math.max(0, Math.min(100, lossMagnitude))}%`,
+                        left: mirrored ? 'auto' : `${percent}%`,
+                        right: mirrored ? `${percent}%` : 'auto'
                     }} 
                 />
-            )}
-            {isDragging && dragVal !== null && wimpyRatio !== undefined && (
-                <div className="wimpy-indicator">
-                    <span className="wimpy-indicator-label">Wimpy At</span>
-                    <span className="wimpy-indicator-value">{dragVal} HP</span>
-                    <div className="wimpy-indicator-arrow" />
+                <div 
+                    className="status-bar-fill" 
+                    style={{ 
+                        width: `${Math.max(0, Math.min(100, percent))}%`,
+                        left: mirrored ? 'auto' : 0,
+                        right: mirrored ? 0 : 'auto'
+                    }} 
+                />
+                <div className="status-bar-dividers">
+                    <div className="bar-divider" />
+                    <div className="bar-divider" />
+                    <div className="bar-divider" />
+                    <div className="bar-divider" />
                 </div>
-            )}
-            <span className="status-text">{showAlt && altStatus ? altStatus : ""}</span>
+                {wimpyRatio !== undefined && (
+                    <div 
+                        className="wimpy-tick" 
+                        style={{ 
+                            left: `${wimpyRatio * 100}%`,
+                            position: 'absolute',
+                            top: '-2px',
+                            bottom: '-2px',
+                            width: '2px',
+                            backgroundColor: '#fff',
+                            boxShadow: '0 0 4px #fff',
+                            zIndex: 20
+                        }} 
+                    />
+                )}
+                {isDragging && dragVal !== null && wimpyRatio !== undefined && (
+                    <div className="wimpy-indicator">
+                        <span className="wimpy-indicator-label">Wimpy At</span>
+                        <span className="wimpy-indicator-value">{dragVal} HP</span>
+                        <div className="wimpy-indicator-arrow" />
+                    </div>
+                )}
+                <span className="status-text">{showAlt && altStatus ? altStatus : ""}</span>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 // --- Custom Pose Icons ---
 const PoseIcon: React.FC<{ pose: string; size?: number }> = ({ pose, size = 14 }) => {

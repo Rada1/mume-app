@@ -24,6 +24,8 @@ export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, 
     const currentGainRef = useRef<GainNode | null>(null);
     const lastTerrainRef = useRef<string | null>(null);
     const lastLightingRef = useRef<string | null>(null);
+    const fadeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const FADE_TIME = 2.0; // Seconds
 
     // --- State for Pause/Resume ---
     const bufferCacheRef = useRef<Record<string, AudioBuffer>>({});
@@ -93,6 +95,11 @@ export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, 
     const fadeOutAndStop = () => {
         saveCurrentPosition();
 
+        if (fadeTimeoutRef.current) {
+            clearTimeout(fadeTimeoutRef.current);
+            fadeTimeoutRef.current = null;
+        }
+
         if (currentGainRef.current && audioCtxRef.current) {
             const ctx = audioCtxRef.current;
             const gain = currentGainRef.current;
@@ -101,19 +108,20 @@ export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, 
             console.log('[TerrainSounds] Fading out terrain audio');
             gain.gain.cancelScheduledValues(ctx.currentTime);
             gain.gain.setValueAtTime(gain.gain.value, ctx.currentTime);
-            gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 3);
+            gain.gain.linearRampToValueAtTime(0, ctx.currentTime + FADE_TIME);
             
-            setTimeout(() => {
-                try {
-                    source?.stop();
-                    source?.disconnect();
-                    gain.disconnect();
-                } catch (e) { }
-            }, 3100);
-            
-            currentGainRef.current = null;
-            currentSourceRef.current = null;
-            activeUrlRef.current = null;
+            fadeTimeoutRef.current = setTimeout(() => {
+                if (currentSourceRef.current === source) {
+                    try {
+                        source?.stop();
+                        source?.disconnect();
+                        gain.disconnect();
+                    } catch (e) { }
+                    currentGainRef.current = null;
+                    currentSourceRef.current = null;
+                    activeUrlRef.current = null;
+                }
+            }, FADE_TIME * 1000 + 100);
         }
     };
 
@@ -142,17 +150,26 @@ export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, 
                 bufferCacheRef.current[url] = audioBuffer;
             }
 
-            // Fade out previous
+            // Fade out previous immediately
+            if (fadeTimeoutRef.current) {
+                clearTimeout(fadeTimeoutRef.current);
+                fadeTimeoutRef.current = null;
+            }
+
             const oldGain = currentGainRef.current;
             const oldSource = currentSourceRef.current;
             if (oldGain) {
                 try {
-                    oldGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.5);
+                    oldGain.gain.cancelScheduledValues(ctx.currentTime);
+                    oldGain.gain.setValueAtTime(oldGain.gain.value, ctx.currentTime);
+                    oldGain.gain.linearRampToValueAtTime(0, ctx.currentTime + FADE_TIME);
                     setTimeout(() => {
-                        oldSource?.stop();
-                        oldSource?.disconnect();
-                        oldGain.disconnect();
-                    }, 1600);
+                        try {
+                            oldSource?.stop();
+                            oldSource?.disconnect();
+                            oldGain.disconnect();
+                        } catch (e) { }
+                    }, FADE_TIME * 1000 + 100);
                 } catch (e) {
                     oldSource?.stop();
                 }
@@ -166,7 +183,7 @@ export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, 
             const gain = ctx.createGain();
             gain.gain.setValueAtTime(0, ctx.currentTime);
             // Balanced volume level (0.25)
-            gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 3);
+            gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + FADE_TIME);
 
             source.connect(gain);
             gain.connect(ctx.destination);

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUME BPM Analyzer v2</title>
+    <style>
+        body {
+            background: #111;
+            color: #eee;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        h1 { color: #f39c12; }
+        .log {
+            background: #000;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            height: 600px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            white-space: pre-wrap;
+        }
+        .success { color: #2ecc71; }
+        .error { color: #e74c3c; }
+        .info { color: #3498db; }
+        .bpm { color: #f1c40f; font-weight: bold; }
+        button {
+            padding: 10px 20px;
+            background: #f39c12;
+            border: none;
+            border-radius: 4px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        button:disabled { background: #555; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <h1>MUME BPM Analyzer v2</h1>
+    <p>This tool analyzes zone music to find accurate BPM values for drumbeat synchronization.</p>
+    <button id="startBtn">Start Analysis</button>
+    <div id="log" class="log">Ready to start...</div>
+
+    <script>
+        const log = document.getElementById('log');
+        const startBtn = document.getElementById('startBtn');
+
+        function appendLog(text, className = '') {
+            const span = document.createElement('span');
+            span.className = className;
+            span.textContent = text + '\n';
+            log.appendChild(span);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        const files = [
+            'Ancient Broken Road.mp3', 'Blue Mountains.mp3', 'BreeSound.wav', 'Dunland.mp3', 'Emyn.mp3',
+            'Eregion.mp3', 'Ettenmoors.mp3', 'Fangorn Forest.mp3', 'Fornost.mp3', 'Gladden Fields.mp3',
+            'Goblin Town.mp3', 'Gray Havens1.mp3', 'Lhun Valley.mp3', 'Lorien1.mp3', 'MidgeWater.mp3',
+            'Misty Mountains 2.mp3', 'Misty Mountains.mp3', 'Moria.mp3', 'North Anduin.mp3', 'Old Forest.mp3',
+            'Ost-in-edhil.mp3', 'Rivendell1.mp3', 'Rivendell2.mp3', 'Rivendell3.mp3', 'Road to Grey Havens.mp3',
+            'Road to Tharbad.mp3', 'Rohan.mp3', 'Shire1.mp3', 'Shire2.mp3', 'Tharbad.mp3', 'Troll Shaws.mp3',
+            'Valinor.mp3', 'Weathertop.mp3', 'barrow downs2.mp3', 'northanduin.mp3', 'oldeastroad.mp3',
+            'oldeastroad2.mp3', 'roadtofornost1.mp3', 'roadtotharbad.mp3', 'warrens.mp3'
+        ];
+
+        // Specific paths
+        const zonePrefix = '/assets/Sounds/Zone Sounds/';
+        const effectPrefix = '/assets/Sounds/Sound effects/';
+        
+        const allTracks = [
+            ...files.map(f => zonePrefix + f),
+            effectPrefix + 'drumbeat.mp3'
+        ];
+
+        const results = {};
+
+        async function analyzeBPM(url) {
+            const filename = url.split('/').pop();
+            appendLog(`Analyzing ${filename}...`, 'info');
+            
+            try {
+                const response = await fetch(url);
+                const arrayBuffer = await response.arrayBuffer();
+                
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+                
+                const offlineCtx = new OfflineAudioContext(1, audioBuffer.length, audioBuffer.sampleRate);
+                
+                const source = offlineCtx.createBufferSource();
+                source.buffer = audioBuffer;
+
+                const filter = offlineCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 150; // Focus on bass/drums
+
+                source.connect(filter);
+                filter.connect(offlineCtx.destination);
+                source.start(0);
+
+                const renderedBuffer = await offlineCtx.startRendering();
+                const data = renderedBuffer.getChannelData(0);
+
+                // Peak detection with adaptive threshold
+                let threshold = 0.8;
+                let peaks = [];
+                
+                while (peaks.length < 15 && threshold > 0.3) {
+                    peaks = [];
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[i] > threshold) {
+                            peaks.push(i);
+                            // Skip samples (min 0.25s between peaks = max 240 BPM)
+                            i += Math.floor(renderedBuffer.sampleRate * 0.25);
+                        }
+                    }
+                    if (peaks.length < 15) threshold -= 0.05;
+                }
+
+                if (peaks.length < 2) {
+                    throw new Error("Not enough peaks found");
+                }
+
+                // Intervals between peaks
+                const intervals = [];
+                for (let i = 1; i < peaks.length; i++) {
+                    intervals.push(peaks[i] - peaks[i-1]);
+                }
+
+                // Group intervals into bins (tempo)
+                const counts = {};
+                intervals.forEach(interval => {
+                    const bpm = Math.round((60 * renderedBuffer.sampleRate) / interval);
+                    // Standardize to 60-180 range
+                    let adjustedBpm = bpm;
+                    while (adjustedBpm < 60) adjustedBpm *= 2;
+                    while (adjustedBpm > 180) adjustedBpm /= 2;
+                    adjustedBpm = Math.round(adjustedBpm);
+                    
+                    counts[adjustedBpm] = (counts[adjustedBpm] || 0) + 1;
+                });
+
+                // Find most common BPM
+                let maxCount = 0;
+                let finalBpm = 100;
+                for (const bpm in counts) {
+                    if (counts[bpm] > maxCount) {
+                        maxCount = counts[bpm];
+                        finalBpm = parseInt(bpm);
+                    }
+                }
+
+                appendLog(`Result for ${filename}: `, 'success');
+                appendLog(`${finalBpm} BPM`, 'bpm');
+                results[filename] = finalBpm;
+                
+                await audioCtx.close();
+            } catch (err) {
+                appendLog(`Error analyzing ${filename}: ${err.message}`, 'error');
+                results[filename] = 100; // Default fallback
+            }
+        }
+
+        startBtn.onclick = async () => {
+            startBtn.disabled = true;
+            log.textContent = '';
+            appendLog("Starting Analysis...", "info");
+            
+            for (const url of allTracks) {
+                await analyzeBPM(url);
+            }
+            
+            appendLog("\n--- FINAL BPM MAP ---", "info");
+            appendLog(JSON.stringify(results, null, 2), "success");
+            
+            // Expose to window for browser_subagent to read easily
+            window.analysisFinished = true;
+            window.analysisResults = results;
+        };
+    </script>
+</body>
+</html>

@@ -11,6 +11,7 @@ export const NPC_BUTTONS = [
     createButton({ id: 'cat-innkeeper-rent', label: 'Rent', command: 'rent', setId: 'inline-innkeeper', color: '#8b5cf6' }),
 
     // --- MOUNTS ---
+    createButton({ id: 'cat-mount-group', label: 'Group', command: 'group %n', setId: 'inline-mounts', color: '#22c55e' }),
     createButton({ id: 'cat-mount-ride', label: 'Ride', command: 'ride %n', setId: 'inline-mounts', color: '#78350f' }),
     createButton({ id: 'cat-mount-lead', label: 'Lead', command: 'lead %n', setId: 'inline-mounts', color: '#92400e' }),
     createButton({ id: 'cat-mount-unsaddle-all', label: 'Unsaddle All', command: 'unsaddle %n all', setId: 'inline-mounts', color: '#451a03', width: 110 }),

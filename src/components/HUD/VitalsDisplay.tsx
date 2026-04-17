@@ -16,6 +16,72 @@ interface VitalsDisplayProps {
     isLandscape?: boolean;
 }
 
+const ResourceBar: React.FC<{ 
+    percent: number; 
+    color: string; 
+    ghostColor: string;
+    isVertical: boolean;
+    inCombat?: boolean;
+    isDragging?: boolean;
+    rowRef?: React.RefObject<HTMLDivElement>;
+}> = ({ percent, color, ghostColor, isVertical, inCombat, isDragging, rowRef }) => {
+    const [lossMagnitude, setLossMagnitude] = useState(0);
+    const prevPercentRef = useRef(percent);
+
+    useEffect(() => {
+        const prev = prevPercentRef.current;
+        prevPercentRef.current = percent;
+
+        if (percent < prev) {
+            // Stat lost - show only the magnitude of this specific drop
+            const delta = prev - percent;
+            setLossMagnitude(delta);
+            
+            const timer = setTimeout(() => {
+                setLossMagnitude(0);
+            }, 800);
+            return () => clearTimeout(timer);
+        } else if (percent > prev) {
+            // Stat gained - reset loss indicator
+            setLossMagnitude(0);
+        }
+    }, [percent]);
+
+    return (
+        <div ref={rowRef} style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: '4px', pointerEvents: 'none' }}>
+             <div
+                style={{
+                    position: 'absolute',
+                    background: ghostColor,
+                    bottom: isVertical ? `${percent}%` : 0,
+                    left: isVertical ? 0 : `${percent}%`,
+                    height: isVertical ? `${lossMagnitude}%` : '100%',
+                    width: isVertical ? '100%' : `${lossMagnitude}%`,
+                    transition: isDragging ? 'none' : 'width 0.6s cubic-bezier(0.16, 1, 0.3, 1), height 0.6s cubic-bezier(0.16, 1, 0.3, 1), left 0.3s ease, bottom 0.3s ease',
+                    borderRadius: '4px',
+                    zIndex: 1,
+                    boxShadow: `0 0 10px ${ghostColor}`
+                }}
+            />
+            <div
+                className={inCombat ? 'pulse-combat' : ''}
+                style={{
+                    position: 'absolute',
+                    background: color,
+                    bottom: 0,
+                    left: 0,
+                    height: isVertical ? `${percent}%` : '100%',
+                    width: isVertical ? '100%' : `${percent}%`,
+                    transition: isDragging ? 'none' : 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    borderRadius: '4px',
+                    zIndex: 2,
+                    boxShadow: '0 0 6px rgba(0,0,0,0.3)'
+                }}
+            />
+        </div>
+    );
+};
+
 const VitalsDisplay: React.FC<VitalsDisplayProps> = ({
     stats, hpRatio: propsHpRatio, manaRatio: propsManaRatio, moveRatio: propsMoveRatio, inCombat,
     onClick, orientation = 'vertical', onWimpyChange, onPointerDown, isLandscape
@@ -136,22 +202,15 @@ const VitalsDisplay: React.FC<VitalsDisplayProps> = ({
                         pointerEvents: 'auto'
                     }}
                 >
-                    <div ref={hpRowRef} style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: '4px', pointerEvents: 'none' }}>
-                        <div
-                            className={`stat-bar-fill ${inCombat ? 'pulse-combat' : ''}`}
-                            style={{
-                                '--fill-ratio': `${hpRatio * 100}%`,
-                                background: 'linear-gradient(to top, #600, #d00)',
-                                bottom: 0,
-                                left: 0,
-                                height: isVertical ? 'var(--fill-ratio)' : '100%',
-                                width: isVertical ? '100%' : 'var(--fill-ratio)',
-                                transition: isDragging ? 'none' : 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                                borderRadius: '4px',
-                                zIndex: 1
-                            } as React.CSSProperties}
-                        />
-                    </div>
+                    <ResourceBar 
+                        percent={hpRatio * 100} 
+                        color="linear-gradient(to top, #ff8080, #ffb3b3)" 
+                        ghostColor="#ff0000"
+                        isVertical={isVertical}
+                        inCombat={inCombat}
+                        isDragging={isDragging}
+                        rowRef={hpRowRef}
+                    />
 
                     {/* Wimpy Tick & Label */}
                     {onWimpyChange && (
@@ -229,19 +288,18 @@ const VitalsDisplay: React.FC<VitalsDisplayProps> = ({
                 </div>
                 <div className="stat-bar-track" style={{
                     height: isVertical ? `${(stats.maxMana / maxStatVal) * barDimBase}px` : (isLandscape ? '8px' : '12px'),
-                    width: isVertical ? '24px' : '100%'
-                }} ref={manaRowRef}>
-                    <div
-                        className="stat-bar-fill"
-                        style={{
-                            '--fill-ratio': `${manaRatio * 100}%`,
-                            background: 'linear-gradient(to top, #407, #b0f)',
-                            bottom: 0,
-                            left: 0,
-                            height: isVertical ? 'var(--fill-ratio)' : '100%',
-                            width: isVertical ? '100%' : 'var(--fill-ratio)',
-                            transition: isVertical ? 'height 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-                        } as React.CSSProperties}
+                    width: isVertical ? '24px' : '100%',
+                    position: 'relative',
+                    background: 'var(--input-bg, rgba(0,0,0,0.3))',
+                    borderRadius: '4px'
+                }}>
+                    <ResourceBar 
+                        percent={manaRatio * 100} 
+                        color="linear-gradient(to top, #c084fc, #d8b4fe)" 
+                        ghostColor="#bf40ff"
+                        isVertical={isVertical}
+                        isDragging={isDragging}
+                        rowRef={manaRowRef}
                     />
                 </div>
             </div>
@@ -259,24 +317,25 @@ const VitalsDisplay: React.FC<VitalsDisplayProps> = ({
                 </div>
                 <div className="stat-bar-track" style={{
                     height: isVertical ? `${(stats.maxMove / maxStatVal) * barDimBase}px` : (isLandscape ? '8px' : '12px'),
-                    width: isVertical ? '24px' : '100%'
-                }} ref={moveRowRef}>
-                    <div
-                        className="stat-bar-fill"
-                        style={{
-                            '--fill-ratio': `${moveRatio * 100}%`,
-                            background: 'linear-gradient(to top, #042, #0c4)',
-                            bottom: 0,
-                            left: 0,
-                            height: isVertical ? 'var(--fill-ratio)' : '100%',
-                            width: isVertical ? '100%' : 'var(--fill-ratio)',
-                            transition: isVertical ? 'height 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-                        } as React.CSSProperties}
+                    width: isVertical ? '24px' : '100%',
+                    position: 'relative',
+                    background: 'var(--input-bg, rgba(0,0,0,0.3))',
+                    borderRadius: '4px'
+                }}>
+                    <ResourceBar 
+                        percent={moveRatio * 100} 
+                        color="linear-gradient(to top, #86efac, #bbf7d0)" 
+                        ghostColor="#22ff55"
+                        isVertical={isVertical}
+                        isDragging={isDragging}
+                        rowRef={moveRowRef}
                     />
                 </div>
             </div>
         </div>
     );
 };
+
+export default React.memo(VitalsDisplay);
 
 export default React.memo(VitalsDisplay);

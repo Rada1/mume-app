@@ -225,7 +225,7 @@ export const useMessageHighlighter = (
         let newHtml = targetHtml;
 
         // --- 0. Color-tagged object detection (runs first so highlightDepth protects these spans) ---
-        newHtml = applyColorTaggedObjects(newHtml, mid, inlineCategories, target, type, keywordOverrides, selectedObjectIds, roomPlayers, roomNpcs);
+        newHtml = applyColorTaggedObjects(newHtml, mid, inlineCategories, target, type, keywordOverrides, selectedObjectIds, roomPlayers, roomNpcs, groupMembers);
 
         const textOnly = targetHtml
             .replace(/<[^>]+>/g, '')

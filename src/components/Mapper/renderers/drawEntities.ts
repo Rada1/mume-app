@@ -14,12 +14,13 @@ export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: num
 const lastPetalPositions = new Map<string, { dx: number, dy: number, isPlayer: boolean }>();
 
 /**
- * Draws small colored orbs for NPCs and players in the current room that are not in your group.
- * They are positioned in a petal layout around the player's primary orb.
+ * Draws small colored orbs for NPCs and players in the current room.
+ * Group members are positioned in an inner petal ring, while everyone else is in an outer ring.
  */
 export const drawRoomOccupants = (
     rCtx: RenderContext,
-    playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>
+    playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>,
+    characterName: string | null = null
 ) => {
     const { ctx, currentZ, now, roomPlayers, roomNpcs, roomItems, groupMembers, camera, inlineCategories, opponentId, opponentName, triggerRender, centerOverride } = rCtx;
     
@@ -30,28 +31,49 @@ export const drawRoomOccupants = (
     const px = anchor.x * GRID_SIZE + GRID_SIZE / 2;
     const py = anchor.y * GRID_SIZE + GRID_SIZE / 2;
 
-    // 1. Gather group member names to avoid double-drawing
-    const groupMemberNames = new Set(groupMembers?.map(m => m.name.toLowerCase()));
+    // 1. Partition occupants into Group (inner) and Others (outer)
+    const groupOccupants: { name: string, color: string, id?: string | number }[] = [];
+    const otherOccupants: { name: string, color: string, id?: string | number }[] = [];
 
-    // 2. Prepare current live occupants
-    const occupants: { name: string, color: string, id?: string | number }[] = [];
+    const isNameInGroup = (name: string) => {
+        if (!name || !groupMembers) return -1;
+        const lower = name.toLowerCase();
+        return groupMembers.findIndex(m => {
+            const mName = m.name?.toLowerCase();
+            return mName === lower || lower.startsWith(mName + ' ') || lower.endsWith(' ' + mName);
+        });
+    };
 
     (roomPlayers || []).forEach(p => {
         const name = typeof p === 'string' ? p : p.name;
-        if (!name || groupMemberNames.has(name.toLowerCase())) return;
-        occupants.push({ name, color: 'rgba(125, 211, 252, 1)', id: typeof p === 'string' ? undefined : p.id });
+        if (!name) return;
+        
+        // Exclude the player themselves (they are the center orb)
+        if (characterName && name.toLowerCase() === characterName.toLowerCase()) return;
+        
+        const gIdx = isNameInGroup(name);
+        if (gIdx !== -1) {
+            groupOccupants.push({ name, color: getMemberColor(gIdx).core, id: typeof p === 'string' ? undefined : p.id });
+        } else {
+            otherOccupants.push({ name, color: 'rgba(125, 211, 252, 1)', id: typeof p === 'string' ? undefined : p.id });
+        }
     });
 
     (roomNpcs || []).forEach(n => {
         const name = typeof n === 'string' ? n : n.name;
         if (!name) return;
-        const category = getCategoryForName(name, inlineCategories || []);
-        const color = getGlowColorForCategory(category || 'inlinenpc', inlineCategories || []);
-        occupants.push({ name, color, id: typeof n === 'string' ? undefined : n.id });
+        
+        const gIdx = isNameInGroup(name);
+        if (gIdx !== -1) {
+            groupOccupants.push({ name, color: getMemberColor(gIdx).core, id: typeof n === 'string' ? undefined : n.id });
+        } else {
+            const category = getCategoryForName(name, inlineCategories || []);
+            const color = getGlowColorForCategory(category || 'inlinenpc', inlineCategories || []);
+            otherOccupants.push({ name, color, id: typeof n === 'string' ? undefined : n.id });
+        }
     });
 
     // 3. Clean expired anim entries; collect exit-animating occupants
-    //    Exit anims are drawn separately so the remaining petal layout doesn't shift.
     const exitAnims: { key: string }[] = [];
     for (const [key, anim] of occupantAnims.entries()) {
         if (now - anim.startTime >= OCCUPANT_ANIM_DURATION) {
@@ -59,18 +81,19 @@ export const drawRoomOccupants = (
             continue;
         }
         if (anim.type === 'exit') {
-            const stillPresent = occupants.some(o =>
+            const stillPresent = [...groupOccupants, ...otherOccupants].some(o =>
                 getOccupantKey(o.id, o.name) === key ||
                 ('name:' + o.name.toLowerCase()) === key
             );
             if (!stillPresent) {
-                // We'll determine the color dynamically in the drawing loop to account for cached status
                 exitAnims.push({ key });
             }
         }
     }
 
-    const PETAL_RADIUS = 18.0 / (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
+    const zoomFactor = (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
+    const OUTER_RADIUS = 24.0 / zoomFactor;
+    const INNER_RADIUS = 12.0 / zoomFactor;
     const pulse = (Math.sin(now / 400) + 1) / 2;
 
     const drawDot = (orbX: number, orbY: number, color: string, alpha: number) => {
@@ -85,67 +108,68 @@ export const drawRoomOccupants = (
         ctx.restore();
     };
 
-    // 4. Draw live occupants in petal layout, with enter-animation offset applied
-    const count = occupants.length;
-    occupants.forEach((occ, index) => {
-        const angle = (index / count) * Math.PI * 2;
-        const petalX = px + Math.cos(angle) * PETAL_RADIUS;
-        const petalY = py + Math.sin(angle) * PETAL_RADIUS;
+    const drawRing = (occupants: any[], radius: number) => {
+        const count = occupants.length;
+        occupants.forEach((occ, index) => {
+            const angle = (index / count) * Math.PI * 2;
+            const petalX = px + Math.cos(angle) * radius;
+            const petalY = py + Math.sin(angle) * radius;
 
-        const key = getOccupantKey(occ.id, occ.name);
-        
-        // Record current position for future exit animations (Dual-key for robustness)
-        const pos = { dx: petalX - px, dy: petalY - py, isPlayer: occ.color.includes('125, 211, 252') };
-        lastPetalPositions.set(key, pos);
-        lastPetalPositions.set('name:' + occ.name.toLowerCase(), pos);
+            const key = getOccupantKey(occ.id, occ.name);
+            const pos = { dx: petalX - px, dy: petalY - py, isPlayer: occ.color.includes('125, 211, 252') };
+            lastPetalPositions.set(key, pos);
+            lastPetalPositions.set('name:' + occ.name.toLowerCase(), pos);
 
-        const anim = occupantAnims.get(key) ?? occupantAnims.get('name:' + occ.name.toLowerCase());
+            const anim = occupantAnims.get(key) ?? occupantAnims.get('name:' + occ.name.toLowerCase());
+            let orbX = petalX, orbY = petalY, alpha = 0.85;
 
-        let orbX = petalX, orbY = petalY, alpha = 0.85;
+            if (anim && anim.type === 'enter' && DIRS[anim.dir]) {
+                const { dx, dy } = DIRS[anim.dir];
+                const t = Math.min((now - anim.startTime) / OCCUPANT_ANIM_DURATION, 1.0);
+                const eased = 1 - Math.pow(1 - t, 3);
+                const startX = px + dx * GRID_SIZE;
+                const startY = py + dy * GRID_SIZE;
+                orbX = startX + (petalX - startX) * eased;
+                orbY = startY + (petalY - startY) * eased;
+                alpha = 0.2 + 0.65 * eased;
+                if (t < 1.0) triggerRender?.();
+            }
 
-        if (anim && anim.type === 'enter' && DIRS[anim.dir]) {
-            const { dx, dy } = DIRS[anim.dir];
-            const t = Math.min((now - anim.startTime) / OCCUPANT_ANIM_DURATION, 1.0);
-            const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
-            // Start from the adjacent room centre in the arrival direction
-            const startX = px + dx * GRID_SIZE;
-            const startY = py + dy * GRID_SIZE;
-            orbX = startX + (petalX - startX) * eased;
-            orbY = startY + (petalY - startY) * eased;
-            alpha = 0.2 + 0.65 * eased;
-            if (t < 1.0) triggerRender?.();
-        }
+            drawDot(orbX, orbY, occ.color, alpha);
 
-        drawDot(orbX, orbY, occ.color, alpha);
+            // Opponent tether
+            let isOpponent = false;
+            if (opponentId != null && occ.id != null) {
+                isOpponent = String(opponentId) === String(occ.id);
+            } else if (opponentName) {
+                const ol = opponentName.toLowerCase(), nl = occ.name.toLowerCase();
+                isOpponent = ol === nl || ol.includes(nl) || nl.includes(ol);
+            }
+            if (isOpponent) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(239, 68, 68, 0.8)';
+                ctx.lineWidth = 2.0 / zoomFactor;
+                ctx.setLineDash([4, 4]);
+                ctx.moveTo(px, py);
+                ctx.lineTo(orbX, orbY);
+                ctx.stroke();
+                ctx.restore();
+            }
+        });
+    };
 
-        // Opponent tether
-        let isOpponent = false;
-        if (opponentId != null && occ.id != null) {
-            isOpponent = String(opponentId) === String(occ.id);
-        } else if (opponentName) {
-            const ol = opponentName.toLowerCase(), nl = occ.name.toLowerCase();
-            isOpponent = ol === nl || ol.includes(nl) || nl.includes(ol);
-        }
-        if (isOpponent) {
-            ctx.save();
-            ctx.beginPath();
-            ctx.strokeStyle = 'rgba(239, 68, 68, 0.8)';
-            ctx.lineWidth = 2.0 / (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
-            ctx.setLineDash([4, 4]);
-            ctx.moveTo(px, py);
-            ctx.lineTo(orbX, orbY);
-            ctx.stroke();
-            ctx.restore();
-        }
-    });
+    // 4. Draw Rings
+    drawRing(otherOccupants, OUTER_RADIUS);
+    drawRing(groupOccupants, INNER_RADIUS);
 
     // 4.5 Draw room items as squares in a line at the bottom
     if (roomItems && roomItems.length > 0) {
-        const itemSize = 4 / (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
+        const itemSize = 4 / zoomFactor;
         const itemGap = 2;
         const totalWidth = roomItems.length * (itemSize + itemGap) - itemGap;
         let startX = px - totalWidth / 2;
-        const itemY = py + (GRID_SIZE / 2) - 6; // Position near bottom wall
+        const itemY = py + (GRID_SIZE / 2) - 6;
 
         roomItems.forEach(item => {
             ctx.save();
@@ -158,19 +182,17 @@ export const drawRoomOccupants = (
         });
     }
 
-    // 5. Draw exit-animating occupants: slide from petal edge toward departure direction
+    // 5. Draw exit-animating occupants
     for (const { key } of exitAnims) {
         const anim = occupantAnims.get(key);
         if (!anim || !DIRS[anim.dir]) continue;
         const { dx, dy } = DIRS[anim.dir];
         const t = Math.min((now - anim.startTime) / OCCUPANT_ANIM_DURATION, 1.0);
-        const eased = t * t; // ease-in quadratic
+        const eased = t * t;
 
-        // Start from the specific last known petal position if available
         if (!anim.startOffset) {
             let offset = lastPetalPositions.get(key);
             if (!offset && anim.name) {
-                // Fallback to name-only key if the primary key (id-based) didn't match
                 offset = lastPetalPositions.get('name:' + anim.name.toLowerCase());
             }
             anim.startOffset = offset || { dx: 0, dy: 0 };
@@ -181,10 +203,8 @@ export const drawRoomOccupants = (
 
         const startX = px + anim.startOffset.dx;
         const startY = py + anim.startOffset.dy;
-        
         const targetX = px + dx * GRID_SIZE;
         const targetY = py + dy * GRID_SIZE;
-        
         const orbX = startX + (targetX - startX) * eased;
         const orbY = startY + (targetY - startY) * eased;
         const alpha = 0.85 * (1 - t);
@@ -404,8 +424,8 @@ export const drawEntities = (
         }
     }
 
-    // 5. Room Occupants (NPCs & Non-group Players)
-    drawRoomOccupants(rCtx, playerPosRef);
+    // 5. Room Occupants (NPCs & Players, now partitioned by Group status)
+    drawRoomOccupants(rCtx, playerPosRef, characterName);
 };
 
 // --- Group Member Orbs ---
@@ -427,7 +447,7 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
     const TRAIL_DURATION = 450;
 
     const pulse = (Math.sin(now / 350) + 1) / 2;
-    const ORB_RADIUS = 7;
+    const ORB_RADIUS = 4;
 
     // --- Resolve Player Position once ---
     let prx: number | undefined, pry: number | undefined, prz = 0;
@@ -508,11 +528,11 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
         if (Math.abs(rz - currentZ) >= 1.0) return;
 
         // --- Calculate Petal Offset ---
-        let offsetX = 0, offsetY = 0;
         const index = occupants.indexOf(memberKey);
         const count = occupants.length;
-        
-        const PETAL_RADIUS = 4.2 / (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
+        let offsetX = 0, offsetY = 0;
+        const zoomFactor = (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
+        const PETAL_RADIUS = 12.0 / zoomFactor;
         const angle = (index / count) * Math.PI * 2;
         offsetX = Math.cos(angle) * PETAL_RADIUS;
         offsetY = Math.sin(angle) * PETAL_RADIUS;
@@ -623,7 +643,6 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
             ctx.restore();
         });
 
-        // --- Orb ---
         const orbRadius = ORB_RADIUS;
         ctx.save();
         ctx.globalAlpha = alpha * 0.92;

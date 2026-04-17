@@ -4,12 +4,12 @@
  */
 
 export const GROUP_COLORS = [
-    { core: '#22c55e', halo: '34, 197, 94', label: '#4ade80' },
-    { core: '#16a34a', halo: '22, 163, 74', label: '#22c55e' },
-    { core: '#15803d', halo: '21, 128, 61', label: '#16a34a' },
-    { core: '#4ade80', halo: '74, 222, 128', label: '#86efac' },
-    { core: '#10b981', halo: '16, 185, 129', label: '#34d399' },
-    { core: '#059669', halo: '5, 150, 105', label: '#10b981' }
+    { core: '#bbf7d0', halo: '187, 247, 208', label: '#dcfce7' },
+    { core: '#86efac', halo: '134, 239, 172', label: '#bbf7d0' },
+    { core: '#a7f3d0', halo: '167, 243, 208', label: '#d1fae5' },
+    { core: '#6ee7b7', halo: '110, 231, 183', label: '#a7f3d0' },
+    { core: '#dcfce7', halo: '220, 252, 231', label: '#f0fdf4' },
+    { core: '#4ade80', halo: '74, 222, 128', label: '#86efac' }
 ];
 
 export const getMemberColor = (index: number) => {

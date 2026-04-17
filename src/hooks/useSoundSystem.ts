@@ -141,21 +141,21 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
             // Mimic horse gallop: two beats (4 legs) in the same time as one human step
             // Doubled speed as requested
             const playbackRate = 2.0;
-            playSound(buffer, { pitch: playbackRate, label: 'move-riding-1' });
+            playSound(buffer, { pitch: playbackRate, volume: 0.4, label: 'move-riding-1' });
             
             // Play second beat after the first one finishes (at 2x speed, it takes half the duration)
             setTimeout(() => {
-                playSound(buffer, { pitch: playbackRate, label: 'move-riding-2' });
+                playSound(buffer, { pitch: playbackRate, volume: 0.3, label: 'move-riding-2' });
             }, (buffer.duration / 2.0) * 1000);
         } else {
             // Single snappy footfall for walking
-            playSound(buffer, { pitch: 1.05, label: 'move-step' });
+            playSound(buffer, { pitch: 1.05, volume: 0.4, label: 'move-step' });
         }
     }, [playSound, isSoundEnabled, initAudio]);
 
     const playClickSound = useCallback(() => {
         if (clickSoundRef.current) {
-            playSound(clickSoundRef.current, { volume: 0.7 });
+            playSound(clickSoundRef.current, { volume: 0.3 });
         } else {
             // If not loaded yet, try to load it (it will be ready for next time)
             loadClickSound();
@@ -177,7 +177,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
 
     const playDoorSound = useCallback(async (isOpen: boolean) => {
         if (doorSoundRef.current) {
-            playSound(doorSoundRef.current, { pitch: isOpen ? 1.0 : 0.8, volume: 3.0 });
+            playSound(doorSoundRef.current, { pitch: isOpen ? 1.0 : 0.8, volume: 1.5 });
         } else {
             // Load and then play if successful
             if (!audioCtxRef.current) {
@@ -191,7 +191,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
                 const arrayBuffer = await response.arrayBuffer();
                 const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
                 doorSoundRef.current = audioBuffer;
-                playSound(audioBuffer, { pitch: isOpen ? 1.0 : 0.8, volume: 3.0 });
+                playSound(audioBuffer, { pitch: isOpen ? 1.0 : 0.8, volume: 1.5 });
             } catch (err) {
                 console.error('[Sound] Failed to load door sound:', err);
             }
@@ -227,7 +227,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         if (hitImpactSoundRef.current) {
             playSound(hitImpactSoundRef.current, { 
                 pitch: options?.pitch,
-                volume: options?.volume 
+                volume: options?.volume || 0.7 
             });
         } else {
             loadHitImpactSound();
@@ -250,7 +250,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         if (oofSoundRef.current) {
             playSound(oofSoundRef.current, { 
                 pitch: options?.pitch,
-                volume: options?.volume || 1.2 
+                volume: options?.volume || 0.9 
             });
         } else {
             loadOofSound();
@@ -273,7 +273,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         if (slashSoundRef.current) {
             playSound(slashSoundRef.current, { 
                 pitch: options?.pitch,
-                volume: options?.volume || 1.0 
+                volume: options?.volume || 0.75 
             });
         } else {
             loadSlashSound();
@@ -296,7 +296,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         if (cleaveSoundRef.current) {
             playSound(cleaveSoundRef.current, { 
                 pitch: options?.pitch,
-                volume: options?.volume || 1.0 
+                volume: options?.volume || 0.75 
             });
         } else {
             loadCleaveSound();
@@ -323,7 +323,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         if (smiteSoundRef.current) {
             playSound(smiteSoundRef.current, { 
                 pitch: options?.pitch,
-                volume: options?.volume || 1.0,
+                volume: options?.volume || 0.75,
                 label: 'smite'
             });
         } else {
@@ -350,7 +350,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
             const shiftedPitch = (options?.pitch ?? 1.0) * 1.6;
             playSound(pierceSoundRef.current, { 
                 pitch: shiftedPitch,
-                volume: options?.volume || 1.0 
+                volume: options?.volume || 0.75 
             });
         } else {
             loadPierceSound();
@@ -373,7 +373,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         if (stabSoundRef.current) {
             playSound(stabSoundRef.current, { 
                 pitch: options?.pitch,
-                volume: options?.volume || 1.0 
+                volume: options?.volume || 0.75 
             });
         } else {
             loadStabSound();
@@ -396,7 +396,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         if (arrowHitSoundRef.current) {
             playSound(arrowHitSoundRef.current, { 
                 pitch: options?.pitch,
-                volume: options?.volume || 1.0 
+                volume: options?.volume || 0.75 
             });
         } else {
             loadArrowHitSound();
@@ -449,7 +449,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         source.buffer = commMessageSoundRef.current;
         
         const gain = ctx.createGain();
-        gain.gain.value = options?.volume || 1.2;
+        gain.gain.value = options?.volume || 0.9;
 
         source.connect(gain);
         gain.connect(ctx.destination);
@@ -499,7 +499,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
 
     const playMagicExplosionSound = useCallback((options?: { volume?: number }) => {
         if (magicExplosionSoundRef.current) {
-            playSound(magicExplosionSoundRef.current, { volume: options?.volume || 2.0 });
+            playSound(magicExplosionSoundRef.current, { volume: options?.volume || 1.5 });
         } else {
             loadSpellSounds();
         }
@@ -528,7 +528,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
 
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(1.0, ctx.currentTime + 0.3);
+        gain.gain.linearRampToValueAtTime(0.7, ctx.currentTime + 0.3);
 
         source.connect(muffler);
         muffler.connect(gain);
@@ -588,7 +588,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
 
     const playBashSound = useCallback((options?: { pitch?: number, volume?: number }) => {
         const pitch = options?.pitch ?? (0.9 + Math.random() * 0.2);
-        const volume = options?.volume ?? 1.0;
+        const volume = options?.volume ?? 0.75;
         if (bashSoundRef.current) {
             playSound(bashSoundRef.current, { pitch, volume, label: 'bash' });
         } else {
