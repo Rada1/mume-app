@@ -8,7 +8,6 @@ import { GroupMember, CharacterInfo, CombatHealthStatus } from '../../types';
 
 export interface CombatParserDeps {
     inCombatRef: React.RefObject<boolean>;
-    setInCombat: (val: boolean, force?: boolean) => void;
     setOpponentHealthStatus: (val: CombatHealthStatus | null) => void;
     setOpponentName: (val: string | null) => void;
     setCharacterInfo: (val: CharacterInfo | ((prev: CharacterInfo) => CharacterInfo)) => void;
@@ -30,7 +29,6 @@ const COMBAT_REGEX = new RegExp(`\\b(${COMBAT_VERBS_STR})(?:es|s)?\\b`, 'i');
 export function useCombatParser(deps: CombatParserDeps) {
     const {
         inCombatRef,
-        setInCombat,
         setOpponentHealthStatus,
         setOpponentName,
         setCharacterInfo,
@@ -45,7 +43,7 @@ export function useCombatParser(deps: CombatParserDeps) {
         setSpectateOpponentStatus
     } = deps;
 
-    const checkCombatMatch = useCallback((lower: string, isSnoop: boolean = false) => {
+    const checkCombatMatch = useCallback((lower: string) => {
         // Exclude specific flavor text that shouldn't be combat
         if (lower.includes('hissing shriek') || lower.includes('the nine')) return { isMatch: false };
 
@@ -119,7 +117,9 @@ export function useCombatParser(deps: CombatParserDeps) {
                     setSpectateOpponentStatus?.(null);
                     setSpectateOpponentName?.(null);
                 } else {
-                    setInCombat(false, true);
+                    // NOTE: setInCombat is intentionally NOT called here.
+                    // Combat mode is driven exclusively by GMCP position data.
+                    // We still clear the opponent HUD display on unambiguous exit signals.
                     setOpponentHealthStatus(null);
                     setOpponentName(null);
                 }
@@ -141,7 +141,7 @@ export function useCombatParser(deps: CombatParserDeps) {
             }
         }
         return false;
-    }, [inCombatRef, setInCombat, setOpponentHealthStatus, setOpponentName, setDeathRoomId, mapperRef, setSpectateInCombat, setSpectateOpponentStatus, setSpectateOpponentName]);
+    }, [inCombatRef, setOpponentHealthStatus, setOpponentName, setDeathRoomId, mapperRef, setSpectateInCombat, setSpectateOpponentStatus, setSpectateOpponentName]);
 
     const handleXpTicker = useCallback((lower: string, isSnoop: boolean = false) => {
         const xpTextMatch = lower.match(/you receive (\d+) experience/i);

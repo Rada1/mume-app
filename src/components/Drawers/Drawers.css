@@ -23,6 +23,13 @@
     }
 }
 
+/* Unified intensity: match message log brightness for all highlighted elements */
+.log-card-drawer .inline-btn,
+.log-card-drawer .auto-item {
+    filter: brightness(1.3);
+    font-weight: bold !important;
+}
+
 /* Base: position: fixed so drawers float over the layout on all screen sizes.
    Desktop overrides with position: absolute (relative to app-container) below. */
 .log-card-drawer {

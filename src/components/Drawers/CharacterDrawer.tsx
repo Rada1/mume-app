@@ -3,7 +3,7 @@ import { X, BookOpen, RefreshCw } from 'lucide-react';
 import { useGame, useVitals, useUI } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
 import { isObjectSelected } from '../../utils/selectionUtils';
-import { getCategoryForName } from '../../utils/categorizationUtils';
+import { getCategoryForName, COLOR_OBJ } from '../../utils/categorizationUtils';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
 import './CharacterDrawer.css';
 
@@ -159,7 +159,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
 
         const cat = getCategoryForName(line.text);
         const isActuallyContainer = line.isContainer || cat === 'inline-containers';
-        const brown = 'rgba(180, 100, 50, 0.9)';
+        const brown = COLOR_OBJ;
         const dim = 'var(--text-primary)';
 
         if (line.isItem) {
@@ -187,7 +187,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                             lineHeight: '1.5',
                             padding: '0',
                             margin: '0',
-                            background: isSelected ? `rgba(180,100,50,0.15)` : 'transparent',
+                            background: isSelected ? `${COLOR_OBJ}26` : 'transparent',
                             border: 'none',
                             borderRadius: '0',
                             boxShadow: 'none',

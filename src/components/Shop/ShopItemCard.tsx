@@ -1,6 +1,7 @@
 import React from 'react';
 import { ShopItem } from '../../types';
 import { formatMumePrice } from '../../utils/gameUtils';
+import { COLOR_OBJ } from '../../utils/categorizationUtils';
 
 interface ShopItemCardProps {
     item: ShopItem;
@@ -39,7 +40,7 @@ const ShopItemCard: React.FC<ShopItemCardProps> = ({ item }) => {
             data-context={item.id}
             data-menu-display="list"
             style={{ 
-                '--glow-color': 'rgba(180, 100, 50, 0.4)',
+                '--glow-color': `${COLOR_OBJ}66`,
                 display: 'flex',
                 width: '100%',
                 flex: 1,
@@ -55,7 +56,7 @@ const ShopItemCard: React.FC<ShopItemCardProps> = ({ item }) => {
             } as any}
         >
             <span className="shop-item-id" style={{ opacity: 0.4, marginRight: '4px' }}>{item.id}. </span>
-            <span className="shop-item-name" style={{ color: 'rgba(180, 100, 50, 0.9)', fontWeight: '900', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</span>
+            <span className="shop-item-name" style={{ color: COLOR_OBJ, fontWeight: '900', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</span>
             
             {(item.condition && item.condition !== 'standard' || item.age) && (
                 <span className="shop-item-status" style={{ opacity: 0.6, fontStyle: 'italic', marginLeft: '6px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>

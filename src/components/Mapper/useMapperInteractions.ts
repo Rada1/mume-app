@@ -381,19 +381,46 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         };
                         const dirName = directions[exitHit.direction];
                         
+                        // Short Tap -> Open or Close
+                        let finalDirName = dirName;
+                        let finalAction = exitHit.isClosed ? 'open' : 'close';
+
+                        // --- Dynamic Direction Correction ---
+                        // If the exit we clicked belongs to room A, but we are in room B (A's neighbor),
+                        // we should send the command for the reciprocal direction from B.
+                        if (depsRef.current.currentRoomId && exitHit.roomId !== depsRef.current.currentRoomId) {
+                            const curRoom = roomsRef.current[depsRef.current.currentRoomId] || roomsRef.current[`m_${depsRef.current.currentRoomId}`];
+                            if (curRoom) {
+                                // Find which exit from our current room leads to the clicked room
+                                const normalizedClickedId = exitHit.roomId.replace(/^m_/, '');
+                                const localExitEntry = Object.entries(curRoom.exits).find(([_, ex]) => 
+                                    String(ex.target || ex.gmcpDestId || "").replace(/^m_/, '') === normalizedClickedId
+                                );
+
+                                if (localExitEntry) {
+                                    const [localDir] = localExitEntry;
+                                    const dirMap: Record<string, string> = { 
+                                        n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down',
+                                        ne: 'northeast', nw: 'northwest', se: 'southeast', sw: 'southwest'
+                                    };
+                                    finalDirName = dirMap[localDir] || localDir;
+                                    console.log(`[MapperInteractions] Corrected direction: ${dirName} -> ${finalDirName} (via ${exitHit.roomId})`);
+                                }
+                            }
+                        }
+
                         if (wasLongPress) {
                             // Long Press -> Menu
                             setPopoverState({
                                 x: e.clientX,
                                 y: e.clientY,
                                 setId: 'doors',
-                                direction: dirName,
+                                direction: finalDirName,
                                 accentColor: '#78350f' 
                             });
                         } else {
                             // Short Tap -> Open or Close
-                            const action = exitHit.isClosed ? 'open' : 'close';
-                            executeCommand(`${action} exit ${dirName}`, false, false, false, false, { fromUi: true });
+                            depsRef.current.executeCommand(`${finalAction} exit ${finalDirName}`, false, false, false, false, { fromUi: true });
                         }
                         depsRef.current.triggerHaptic(40);
                     } else if (dragTypeRef.current === 'joystick') {

@@ -8,11 +8,12 @@ import { useState, useCallback, useRef } from 'react';
 import { GameEntity, EntityCapability, EntityLocation } from '../types';
 import { extractNoun as smartExtractNoun } from '../utils/keywordUtils';
 import { isItemContainer } from '../utils/gameUtils';
+import { COLOR_OBJ as GLOBAL_COLOR_OBJ } from '../utils/categorizationUtils';
 
 // palette definitions for consistency (imported from categorizationUtils style)
 const COLOR_NPC = 'rgba(217, 70, 239, 0.9)';
 const COLOR_PLAYER = 'rgba(125, 211, 252, 0.9)';
-const COLOR_OBJ = 'rgba(180, 100, 50, 0.9)';
+const COLOR_OBJ = GLOBAL_COLOR_OBJ;
 
 export const useEntityRegistry = () => {
     const [entities, setEntities] = useState<Record<string, GameEntity>>({});

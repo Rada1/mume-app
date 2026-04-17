@@ -7,7 +7,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { useGame, useUI } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
-import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
+import { getCategoryForName, getGlowColorForCategory, COLOR_OBJ } from '../../utils/categorizationUtils';
 import { getEffectiveKeyword } from '../../utils/keywordUtils';
 import { isObjectSelected } from '../../utils/selectionUtils';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
@@ -140,7 +140,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             const displayName = cleanedText.includes(' (') ? cleanedText.split(' (')[0] : cleanedText;
             const extraInfo = cleanedText.includes(' (') ? cleanedText.split(' (')[1] : null;
 
-            const itemBrown = 'rgba(180, 100, 50, 0.9)';
+            const itemColor = COLOR_OBJ;
             const cat = getCategoryForName(line.text);
 
             return (
@@ -154,10 +154,10 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         data-category={cat || undefined}
                         data-cmd="inline-obj-worn"
                         style={{
-                            boxShadow: isSelected ? `inset 0 0 12px ${itemBrown}44` : 'none',
-                            borderColor: isSelected ? itemBrown : 'transparent',
-                            '--glow-color': itemBrown,
-                            color: itemBrown,
+                            boxShadow: isSelected ? `inset 0 0 12px ${itemColor}44` : 'none',
+                            borderColor: isSelected ? itemColor : 'transparent',
+                            '--glow-color': itemColor,
+                            color: itemColor,
                             cursor: 'default',
                             display: 'flex',
                             flexDirection: 'row',
@@ -176,7 +176,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                                 dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.prefixHtml) }}
                             />
                         )}
-                        <span className="drawer-item-name" style={{ color: itemBrown }}>{displayName}</span>
+                        <span className="drawer-item-name" style={{ color: itemColor }}>{displayName}</span>
                         {extraInfo && <span className="drawer-item-extra" style={{ color: 'var(--text-primary)' }}>({extraInfo}</span>}
                     </div>
                 </div>

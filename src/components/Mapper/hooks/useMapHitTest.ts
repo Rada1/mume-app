@@ -94,18 +94,61 @@ export const useMapHitTest = ({
         const roomId = getRoomAt(wx, wy);
         if (!roomId) return null;
 
-        const room = roomsRef.current[roomId] || (roomId.startsWith('m_') ? null : roomsRef.current[`m_${roomId}`]);
+        let room = roomsRef.current[roomId] || (roomId.startsWith('m_') ? null : roomsRef.current[`m_${roomId}`]);
         const s = GRID_SIZE;
         const margin = 12; // Hitbox margin
 
         let rx: number, ry: number;
         let exits: any = null;
 
+        // --- NEW: Prioritize Current Room ---
+        // If we are touching an area that might be an exit for our CURRENT room,
+        // we should try that room first. This prevents clicking "the other side" 
+        // when both are visible and overlapping.
+        let testRoomId = roomId;
+
+        if (currentRoomIdRef.current) {
+            const curId = currentRoomIdRef.current;
+            const curRoom = roomsRef.current[curId] || (curId.startsWith('m_') ? null : roomsRef.current[`m_${curId}`]);
+            
+            // Get coordinates for current room
+            let crx: number, cry: number;
+            if (curRoom) {
+                crx = curRoom.x; cry = curRoom.y;
+            } else if (preloadedCoordsRef.current) {
+                const rData = preloadedCoordsRef.current[curId.replace(/^m_/, '')];
+                if (rData) {
+                    crx = rData[0]; cry = rData[1];
+                } else {
+                    crx = NaN; cry = NaN;
+                }
+            } else {
+                crx = NaN; cry = NaN;
+            }
+
+            if (!isNaN(crx)) {
+                const roomWx = Math.round(crx) * s;
+                const roomWy = Math.round(cry) * s;
+                const dx = wx - roomWx;
+                const dy = wy - roomWy;
+
+                // If click is within the bounds of current room (with margin), prioritize it
+                if (dx >= -margin && dx <= s + margin && dy >= -margin && dy <= s + margin) {
+                    testRoomId = curId;
+                    room = curRoom;
+                }
+            }
+        }
+
+        if (!room) {
+            room = roomsRef.current[testRoomId] || (testRoomId.startsWith('m_') ? null : roomsRef.current[`m_${testRoomId}`]);
+        }
+
         if (room) {
             rx = room.x; ry = room.y;
             exits = room.exits;
         } else if (preloadedCoordsRef.current) {
-            const rawId = roomId.replace(/^m_/, '');
+            const rawId = testRoomId.replace(/^m_/, '');
             const rData = preloadedCoordsRef.current[rawId];
             if (!rData) return null;
             rx = rData[0]; ry = rData[1];
@@ -118,16 +161,18 @@ export const useMapHitTest = ({
         const roomWy = Math.round(ry) * s;
         const dx = wx - roomWx;
         const dy = wy - roomWy;
+        
+        const currentRoomId = testRoomId; // For the checkDoor closure
 
         // Check vertical exits first (corners)
         const cOff = 12;
         const anchorX = s / 2, anchorY = s / 2;
         
         const checkDoor = (dir: string) => {
-            const wE = preloadedCoordsRef.current?.[roomId.replace(/^m_/, '')]?.[4];
+            const wE = preloadedCoordsRef.current?.[currentRoomId.replace(/^m_/, '')]?.[4];
             const gate = getGateState(room, wE, dir, roomsRef.current, preloadedCoordsRef.current || {});
             if (gate && gate.hasDoor) {
-                return { direction: dir as any, roomId, isClosed: gate.isClosed, hasDoor: true };
+                return { direction: dir as any, roomId: currentRoomId, isClosed: gate.isClosed, hasDoor: true };
             }
             return null;
         };

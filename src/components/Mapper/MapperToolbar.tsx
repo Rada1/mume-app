@@ -99,8 +99,8 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
                 className="mapper-minimal-settings"
                 style={{
                     position: 'absolute',
-                    bottom: '12px',
-                    right: '12px',
+                    top: '12px',
+                    left: '12px',
                     zIndex: 9999,
                     pointerEvents: 'auto'
                 }}

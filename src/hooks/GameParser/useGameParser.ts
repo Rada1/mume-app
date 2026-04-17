@@ -49,7 +49,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         playRandomSound,
  playDoorSound, triggerHaptic, setStats, setWeather, setIsFoggy, 
         setLightningEnabled, setAbilities, setCharacterClass, 
-        setInCombat, inCombatRef, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, 
+        inCombatRef, actionsRef,
         executeCommandRef, setInventoryLines, setStatsLines, setInfoLines, setScoreLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines, setEqLines, setWhoList, setWhereList, setRoomItems, 
         captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
         keywordOverrides, roomNameRef, roomDescRef, setRoomName, setRoomDesc, setRoomZone, setCurrentTerrain, showDebugEchoes, addDiagnosticLog, popoverState, setPopoverState,
@@ -139,7 +139,7 @@ export function useGameParser(deps: UseGameParserDeps) {
     });
 
     const { checkCombatMatch, handleCombatExit, handleXpTicker } = useCombatParser({
-        inCombatRef, setInCombat, setOpponentHealthStatus, setOpponentName, setCharacterInfo,
+        inCombatRef, setOpponentHealthStatus, setOpponentName, setCharacterInfo,
         triggerXpTicker, groupMembers, mapperRef, setDeathRoomId: deps.setDeathRoomId,
         spectateCharacterName, roomPlayers,
         setSpectateInCombat, setSpectateOpponentName, setSpectateOpponentStatus
@@ -462,16 +462,10 @@ export function useGameParser(deps: UseGameParserDeps) {
         const isCombatMatch = combatInfo.isMatch;
 
         if (isCombatMatch && combatInfo.isImpact) {
-            // Auto-start combat state only if the line directly involves the player —
-            // either the player is dealing the hit (side === 'player': "You smite...") or
-            // is the target of the hit (isPlayerTarget: "A wolf bites you.").
-            // Third-party combat in the same room ("Thorondor smites the wolf",
-            // "A troll bashes the ranger") has side === 'opponent' / 'groupmate' and
-            // isPlayerTarget === false, so it must NOT trigger the local player's combat state.
-            const isPlayerInvolved = combatInfo.side === 'player' || combatInfo.isPlayerTarget;
-            if (!isSnoop && !inCombatRef.current && isPlayerInvolved) {
-                setInCombat(true);
-            }
+            // NOTE: setInCombat is intentionally NOT called here.
+            // Combat mode is driven exclusively by GMCP position data (GmcpDecoder / useGmcpVitals).
+            // Text-based detection is unreliable — combat verbs appear in bystander messages,
+            // flavor text, and group combat, which all caused false triggers.
 
             const PITCH_MAP: Record<string, number> = {
                 'extremely hard': 0.68,
