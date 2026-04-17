@@ -18,6 +18,8 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
     const buySellSoundRef = useRef<AudioBuffer | null>(null);
     const bashSoundRef = useRef<AudioBuffer | null>(null);
     const arrowHitSoundRef = useRef<AudioBuffer | null>(null);
+    const killSoundRef = useRef<AudioBuffer | null>(null);
+    const levelSoundRef = useRef<AudioBuffer | null>(null);
 
 
 
@@ -403,6 +405,54 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         }
     }, [loadArrowHitSound, playSound]);
 
+    const loadKillSound = useCallback(async () => {
+        if (!audioCtxRef.current || killSoundRef.current) return;
+        try {
+            const response = await fetch('/assets/Sounds/Sound effects/kill.wav');
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
+            killSoundRef.current = audioBuffer;
+        } catch (err) {
+            console.error('Failed to load kill sound:', err);
+        }
+    }, []);
+
+    const playKillSound = useCallback((options?: { pitch?: number, volume?: number }) => {
+        if (killSoundRef.current) {
+            playSound(killSoundRef.current, { 
+                pitch: options?.pitch,
+                volume: options?.volume || 1.1,
+                label: 'kill'
+            });
+        } else {
+            loadKillSound();
+        }
+    }, [loadKillSound, playSound]);
+
+    const loadLevelSound = useCallback(async () => {
+        if (!audioCtxRef.current || levelSoundRef.current) return;
+        try {
+            const response = await fetch('/assets/Sounds/Sound effects/level.wav');
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
+            levelSoundRef.current = audioBuffer;
+        } catch (err) {
+            console.error('Failed to load level sound:', err);
+        }
+    }, []);
+
+    const playLevelSound = useCallback((options?: { pitch?: number, volume?: number }) => {
+        if (levelSoundRef.current) {
+            playSound(levelSoundRef.current, { 
+                pitch: options?.pitch,
+                volume: options?.volume || 1.3,
+                label: 'level'
+            });
+        } else {
+            loadLevelSound();
+        }
+    }, [loadLevelSound, playSound]);
+
     const loadCommMessageSound = useCallback(async () => {
         if (!audioCtxRef.current || commMessageSoundRef.current) return;
         try {
@@ -513,7 +563,12 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
             });
             return;
         }
-        if (activeIncantationRef.current) return;
+        if (activeIncantationRef.current) {
+            console.log('[Sound] playIncantationSound: already playing, ignoring');
+            return;
+        }
+
+        console.log('[Sound] Starting incantations (looping)...');
 
         const ctx = audioCtxRef.current;
         const source = ctx.createBufferSource();
@@ -539,7 +594,13 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
     }, [loadSpellSounds, isSoundEnabled]);
 
     const stopIncantationSound = useCallback((playExplosion: boolean = false) => {
-        if (!activeIncantationRef.current || !audioCtxRef.current) return;
+        if (!activeIncantationRef.current) {
+            console.log('[Sound] stopIncantationSound: no active incantation to stop');
+            return;
+        }
+        if (!audioCtxRef.current) return;
+        
+        console.log(`[Sound] Stopping incantation: playExplosion=${playExplosion}`);
         const { source, gain } = activeIncantationRef.current;
         const ctx = audioCtxRef.current;
 
@@ -572,7 +633,9 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         loadCommMessageSound();
         loadBuySellSound();
         loadSpellSounds();
-    }, [loadSlashSound, loadCleaveSound, loadSmiteSound, loadPierceSound, loadStabSound, loadHitImpactSound, loadOofSound, loadCommMessageSound, loadBuySellSound, loadSpellSounds]);
+        loadKillSound();
+        loadLevelSound();
+    }, [loadSlashSound, loadCleaveSound, loadSmiteSound, loadPierceSound, loadStabSound, loadHitImpactSound, loadOofSound, loadCommMessageSound, loadBuySellSound, loadSpellSounds, loadKillSound, loadLevelSound]);
 
     const loadBashSound = useCallback(async () => {
         if (!audioCtxRef.current || bashSoundRef.current) return;
@@ -629,6 +692,10 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         loadBuySellSound,
         playBashSound,
         loadBashSound,
+        playKillSound,
+        loadKillSound,
+        playLevelSound,
+        loadLevelSound,
         loadAllWeaponSounds,
         playCommMessageSound,
         stopCommMessageSound,
@@ -636,6 +703,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         playIncantationSound,
         stopIncantationSound,
         playMagicExplosionSound,
+        activeIncantationRef,
         loadSpellSounds,
         triggerHaptic
     };

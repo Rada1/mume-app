@@ -19,7 +19,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
 }) => {
 
     useLayoutEffect(() => {
-        if (popoverState && popoverRef.current) {
+        if (popoverState && popoverState.type !== 'shop-card' && popoverRef.current) {
             const el = popoverRef.current;
             const rect = el.getBoundingClientRect();
             const winH = window.innerHeight, winW = window.innerWidth;
@@ -44,7 +44,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     const scrollIntervalRef = React.useRef<number | null>(null);
 
     React.useEffect(() => {
-        if (!popoverState || popoverState.menuDisplay === 'dial') return;
+        if (!popoverState || popoverState.menuDisplay === 'dial' || popoverState.type === 'shop-card' || popoverState.type === 'help-card') return;
 
         const handlePointerMove = (e: PointerEvent) => {
             const menuContainer = document.querySelector('.popover-menu') as HTMLElement;

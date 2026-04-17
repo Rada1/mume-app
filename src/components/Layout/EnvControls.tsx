@@ -51,6 +51,7 @@ export const EnvControls: React.FC<EnvControlsProps> = ({ getLightingIcon, getWe
                     <Clock size={14} className="text-gray-400" />
                     <span style={{ fontSize: '0.75rem' }}>
                         {currentTime.hour === 0 ? '12' : (currentTime.hour > 12 ? currentTime.hour - 12 : currentTime.hour)}
+                        :{currentTime.minute < 10 ? `0${currentTime.minute}` : currentTime.minute}
                         {currentTime.hour >= 12 ? ' PM' : ' AM'}
                         {!viewport.isMobile && ` | ${currentTime.weekday.substring(0, 3)}`}
                         {!viewport.isMobile && ` ${currentTime.day}`}

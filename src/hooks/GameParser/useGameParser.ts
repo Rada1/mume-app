@@ -40,6 +40,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         playPierceSound,
         playStabSound,
         playArrowHitSound,
+        playKillSound,
+        playLevelSound,
         playCommMessageSound,
         playBashSound,
         loadBashSound,
@@ -48,7 +50,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         playBuySellSound,
 
         stopIncantationSound,
-        primeSpectateSpellSuccess,
+        primeSpellSuccess,
         playMagicExplosionSound,
         playRandomSound,
  playDoorSound, triggerHaptic, setStats, setWeather, setIsFoggy, 
@@ -79,7 +81,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         lastSnoopStartTime,
         setLastSnoopStartTime,
         addSystemMessage,
-        setGameTime
+        setGameTime,
+        gameTime
     } = deps;
 
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef, playRandomSound });
@@ -146,7 +149,7 @@ export function useGameParser(deps: UseGameParserDeps) {
     const { checkCombatMatch, handleCombatExit, handleXpTicker } = useCombatParser({
         inCombatRef, setOpponentHealthStatus, setOpponentName, setCharacterInfo,
         triggerXpTicker, groupMembers, mapperRef, setDeathRoomId: deps.setDeathRoomId,
-        spectateCharacterName, roomPlayers,
+        spectateCharacterName, roomPlayers, playKillSound, playLevelSound,
         setSpectateInCombat, setSpectateOpponentName, setSpectateOpponentStatus
     });
 
@@ -187,6 +190,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         setScoreLines, setStatsLines, setInfoLines,
         tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef,
         finalizeCapture, help,
+        executeCommand: (cmd, silent, isSystem) => executeCommandRef.current?.(cmd, silent, isSystem),
         isMobile: deps.isMobile
     });
 
@@ -216,7 +220,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         setIsPasswordMode
     });
     
-    const { parseTimeLine } = useTimeParser({ setGameTime });
+    const { parseTimeLine } = useTimeParser({ setGameTime, gameTime });
     
     const automator = useSpectateAutomator({
         spectateQueue,
@@ -629,13 +633,15 @@ export function useGameParser(deps: UseGameParserDeps) {
                                lower.includes('is filled with a sudden warmth') ||
                                lower.includes('a shield of light') ||
                                lower.includes('you call a lightning') ||
-                               lower.includes('you wish for ');
+                               lower.includes('you wish for ') ||
+                               lower.includes('scratches and bruises disappear');
 
         if (isSpellSuccess) {
             if (isSpectateMode) {
                 // In spectate mode, we prime the success but wait for the position switch to stop
-                if (isSnoop) primeSpectateSpellSuccess?.(true);
+                if (isSnoop) primeSpellSuccess?.(true);
             } else {
+                primeSpellSuccess?.(true);
                 stopIncantationSound?.(true);
             }
         } else if (lower.includes('lose your concentration') || 
@@ -648,10 +654,11 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (isSpectateMode) {
                 // Interruptions in spectate mode are often immediate, but we also clear the success prime
                 if (isSnoop) {
-                    primeSpectateSpellSuccess?.(false);
+                    primeSpellSuccess?.(false);
                     stopIncantationSound?.(false);
                 }
             } else {
+                primeSpellSuccess?.(false);
                 stopIncantationSound?.(false);
             }
         }

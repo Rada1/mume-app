@@ -21,6 +21,8 @@ export interface CombatParserDeps {
     setSpectateInCombat?: (val: boolean, force?: boolean) => void;
     setSpectateOpponentName?: (val: string | null) => void;
     setSpectateOpponentStatus?: (val: CombatHealthStatus | null) => void;
+    playKillSound?: (options?: { pitch?: number, volume?: number }) => void;
+    playLevelSound?: (options?: { pitch?: number, volume?: number }) => void;
 }
 
 const COMBAT_VERBS_STR = ['hit', 'miss', 'wound', 'kill', 'maul', 'pierce', 'cleave', 'stab', 'slash', 'pound', 'crush', 'smite', 'strike', 'backstab', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shocked', 'stunned', 'blinded', 'silenced', 'hurt', 'die', 'fighting', 'recovered', 'shoot', 'shoots', 'blast', 'shatters', 'joins?', 'assists?'].join('|');
@@ -40,7 +42,9 @@ export function useCombatParser(deps: CombatParserDeps) {
         roomPlayers,
         setSpectateInCombat,
         setSpectateOpponentName,
-        setSpectateOpponentStatus
+        setSpectateOpponentStatus,
+        playKillSound,
+        playLevelSound
     } = deps;
 
     const checkCombatMatch = useCallback((lower: string, isSnoop: boolean = false) => {
@@ -107,11 +111,13 @@ export function useCombatParser(deps: CombatParserDeps) {
 
     const handleCombatExit = useCallback((lower: string, isSnoop: boolean = false) => {
         if (inCombatRef.current || (isSnoop && setSpectateInCombat)) {
-            if (/you (?:have )?sl(?:ay|ew|ain)\b/i.test(lower) ||
-                /\bis dead!\s*r\.?i\.?p/i.test(lower) ||
+            const isDeath = /you (?:have )?sl(?:ay|ew|ain)\b/i.test(lower) || /\bis dead!\s*r\.?i\.?p/i.test(lower);
+            if (isDeath ||
                 /^you flee\b/i.test(lower) ||
                 /\bflees\s/i.test(lower) ||
                 /you stop fighting/i.test(lower)) {
+                
+                if (isDeath) playKillSound?.();
                 
                 if (isSnoop && setSpectateInCombat) {
                     setSpectateInCombat(false, true);
@@ -142,7 +148,7 @@ export function useCombatParser(deps: CombatParserDeps) {
             }
         }
         return false;
-    }, [inCombatRef, setOpponentHealthStatus, setOpponentName, setDeathRoomId, mapperRef, setSpectateInCombat, setSpectateOpponentStatus, setSpectateOpponentName]);
+    }, [inCombatRef, setOpponentHealthStatus, setOpponentName, setDeathRoomId, mapperRef, setSpectateInCombat, setSpectateOpponentStatus, setSpectateOpponentName, playKillSound]);
 
     const handleXpTicker = useCallback((lower: string, isSnoop: boolean = false) => {
         const xpTextMatch = lower.match(/you receive (\d+) experience/i);
@@ -154,9 +160,12 @@ export function useCombatParser(deps: CombatParserDeps) {
         } else if (/you receive your share of experience/i.test(lower)) {
             triggerXpTicker?.();
             return true;
+        } else if (/you gain a level!/i.test(lower)) {
+            playLevelSound?.();
+            return true;
         }
         return false;
-    }, [setCharacterInfo, triggerXpTicker]);
+    }, [setCharacterInfo, triggerXpTicker, playLevelSound]);
 
     return { checkCombatMatch, handleCombatExit, handleXpTicker };
 }

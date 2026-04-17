@@ -56,8 +56,42 @@ export function useStatParser(deps: StatParserDeps) {
                 return true;
             }
         }
+
+        // --- NEW REBUILT GOLD PARSER ---
+        const trimmed = content.trim();
+        const isRawNumeric = /^\d+$/.test(trimmed);
+        const hasGoldKeywords = contentLower.includes('gold') || contentLower.includes('silver') || contentLower.includes('copper') ||
+                              contentLower.includes('lauren') || contentLower.includes('celeb') || contentLower.includes('busc');
+        
+        if (hasGoldKeywords || isRawNumeric) {
+            if (isRawNumeric) {
+                // If the output is a raw number (e.g. "114"), per user instruction this is Gold (1g = 240c)
+                const g = parseInt(trimmed);
+                const total = g * 240;
+                console.log(`[GoldParser] REBUILT (Raw): Detected ${g} gold (${total} total copper) from line: "${trimmed}"`);
+                setCharacterInfo(prev => ({ ...prev, gold: total }));
+                return true;
+            }
+
+            const cleanContent = content.replace(/[,:]/g, ' '); 
+            const goldM = cleanContent.match(/(\d+)\s*(?:gold|lauren)/i);
+            const silverM = cleanContent.match(/(\d+)\s*(?:silver|celeb)/i);
+            const copperM = cleanContent.match(/(\d+)\s*(?:copper|busc|pennies?|coins?|coins?)/i);
+            
+            if (goldM || silverM || copperM) {
+                const g = goldM ? parseInt(goldM[1]) : 0;
+                const s = silverM ? parseInt(silverM[1]) : 0;
+                const c = copperM ? parseInt(copperM[1]) : 0;
+                const total = (g * 240) + (s * 12) + c;
+                
+                console.log(`[GoldParser] REBUILT (Keywords): Detected ${g}g, ${s}s, ${c}c (Total: ${total}) from line: "${content.trim()}"`);
+                setCharacterInfo(prev => ({ ...prev, gold: total }));
+                return true;
+            }
+        }
+
         return false;
-    }, [setMood, setStats, inCombatRef, executeCommandRef]);
+    }, [setMood, setStats, setCharacterInfo, inCombatRef, executeCommandRef]);
 
     const parseDetailedScore = useCallback((textOnly: string, lower: string) => {
         // Redundant structured parsing removed per user request.

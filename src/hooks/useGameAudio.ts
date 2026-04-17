@@ -51,6 +51,9 @@ export const useGameAudio = ({
     spectateInCombat,
     spectatePosition
 }: GameAudioDeps) => {
+    // Log every render to track state flow
+    console.log(`[Audio/Render] waiting=${waiting}, isSpectateMode=${isSpectateMode}`);
+
     const effectivePosition = isSpectateMode ? (spectatePosition || 'standing') : (playerPosition || 'standing');
     const isSleeping = effectivePosition === 'sleeping';
     const effectiveInCombat = isSpectateMode ? spectateInCombat : inCombat;
@@ -101,6 +104,7 @@ export const useGameAudio = ({
         playIncantationSound,
         stopIncantationSound,
         playMagicExplosionSound,
+        activeIncantationRef,
         loadCommMessageSound,
         playCommMessageSound,
         stopCommMessageSound,
@@ -110,10 +114,11 @@ export const useGameAudio = ({
         loadBashSound,
         playArrowHitSound,
         loadArrowHitSound,
-        loadSpellSounds
-
-
-
+        loadSpellSounds,
+        playKillSound,
+        loadKillSound,
+        playLevelSound,
+        loadLevelSound
     } = useSoundSystem(isSoundEnabled);
 
     useZoneMusic({
@@ -167,42 +172,46 @@ export const useGameAudio = ({
     }, [soundSystemPlayDoorSound]);
 
     // --- Spectate Spell Success Tracking ---
-    const spectateSpellSuccessRef = useRef(false);
-    const primeSpectateSpellSuccess = useCallback((success: boolean) => {
-        spectateSpellSuccessRef.current = success;
+    const spellSuccessRef = useRef(false);
+    const primeSpellSuccess = useCallback((success: boolean) => {
+        spellSuccessRef.current = success;
     }, []);
 
     // Synchronize incantation sounds with the waiting (casting) state
     const lastWaitingRef = useRef(waiting);
     useEffect(() => {
-        // We prefer log parsing to start incantations (for perfect sync with text),
-        // but we use the GMCP 'waiting' state as a reliable fallback to ensure the sound starts.
-        if (!lastWaitingRef.current && waiting) {
-            // NOTE: We do NOT automatically start the incantation sound here anymore.
-            // In MUME, 'waiting' is also used for tracking, searching, and other non-spell skills.
-            // Starting the sound here causes accidental triggers for mundane actions.
-            // The sound must only be started by the explicit text parser in useGameParser.ts.
-            console.log('[Audio] Waiting state activated via GMCP (waiting for text trigger or skill completion)');
-        } else if (lastWaitingRef.current && !waiting) {
-            if (isSpectateMode) {
-                // In spectate mode, we wait for the position switch to trigger the stop,
-                // but we only play the explosion if the last text message was a success.
-                console.log(`[Audio] Spectate waiting state cleared, success=${spectateSpellSuccessRef.current}`);
-                stopIncantationSound(spectateSpellSuccessRef.current);
-                spectateSpellSuccessRef.current = false;
-            } else {
-                if (manualCancelRef?.current) {
-                    console.log('[Audio] Manual cancel detected, silent stop');
-                    stopIncantationSound(false);
-                    manualCancelRef.current = false;
-                } else {
-                    console.log('[Audio] Waiting state cleared, triggering explosion if cast was successful');
-                    stopIncantationSound(true); 
+        const prevWaiting = lastWaitingRef.current;
+        if (prevWaiting !== waiting) {
+            console.log(`[Audio] Waiting state changed: ${prevWaiting} -> ${waiting} (isSpectateMode=${isSpectateMode})`);
+        }
+
+        if (waiting) {
+            // GMCP says we are waiting (casting/skill). 
+            // We don't auto-start here to avoid non-spell skill triggers,
+            // but we log it for diagnostics.
+            console.log('[Audio] Waiting state activated via GMCP');
+        } else {
+            // Authoritative stop: if GMCP says we are NOT waiting, the sound must stop.
+            // We add a tiny delay to allow for race conditions where the log text arrivals
+            // and GMCP updates are slightly out of sync.
+            setTimeout(() => {
+                if (lastWaitingRef.current !== true) {
+                    if (activeIncantationRef?.current) {
+                        console.log(`[Audio] Authority stop: waiting=false, success=${spellSuccessRef.current}`);
+                    }
+                    
+                    if (manualCancelRef?.current && !isSpectateMode) {
+                        stopIncantationSound(false);
+                        manualCancelRef.current = false;
+                    } else {
+                        stopIncantationSound(spellSuccessRef.current);
+                    }
+                    spellSuccessRef.current = false;
                 }
-            }
+            }, 500); // 500ms grace period for state sync
         }
         lastWaitingRef.current = waiting;
-    }, [waiting, playIncantationSound, stopIncantationSound, manualCancelRef, isSpectateMode]);
+    }, [waiting, playIncantationSound, stopIncantationSound, manualCancelRef, isSpectateMode, activeIncantationRef]);
 
     const initAudio = useCallback(() => {
         soundSystemInit();
@@ -246,6 +255,10 @@ export const useGameAudio = ({
         loadBashSound,
         playArrowHitSound,
         loadArrowHitSound,
+        playKillSound,
+        loadKillSound,
+        playLevelSound,
+        loadLevelSound,
         loadAllWeaponSounds,
         playIncantationSound,
         stopIncantationSound,
@@ -254,7 +267,7 @@ export const useGameAudio = ({
         playCommMessageSound,
         stopCommMessageSound,
         loadCommMessageSound,
-        primeSpectateSpellSuccess,
+        primeSpellSuccess,
 
         triggerHaptic,
 

@@ -195,3 +195,25 @@ export const formatCopperToCoins = (totalCopper: number) => {
     const copper = totalCopper % 12;
     return { gold, silver, copper };
 };
+
+/**
+ * Parses a MUME price string into a total copper value.
+ */
+export const parsePriceToCopper = (priceStr: string): number => {
+    if (!priceStr) return 0;
+    const cleanPrice = priceStr.replace(/<[^>]+>/g, '').replace(/\x1b\[[0-9;]*m/g, '').trim();
+    const parts = cleanPrice.toLowerCase().split(/ and |, /);
+    let totalCopper = 0;
+    parts.forEach(part => {
+        const match = part.trim().match(/^(.*?)\s+(gold|silver|copper|lauren|celeb|busc|pennies?|coins?)$/);
+        if (match) {
+            const numPart = match[1].trim();
+            const unit = match[2].trim();
+            const value = parseEnglishNumber(numPart);
+            if (unit.startsWith('gold') || unit.startsWith('lauren')) totalCopper += value * 240;
+            else if (unit.startsWith('silver') || unit.startsWith('celeb')) totalCopper += value * 12;
+            else totalCopper += value;
+        }
+    });
+    return totalCopper;
+};

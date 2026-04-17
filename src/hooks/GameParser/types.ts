@@ -23,7 +23,7 @@ export interface UseGameParserDeps {
     loadBashSound?: () => void;
     playIncantationSound?: () => void;
     stopIncantationSound?: (andExplode: boolean) => void;
-    primeSpectateSpellSuccess?: (success: boolean) => void;
+    primeSpellSuccess?: (success: boolean) => void;
     playMagicExplosionSound?: () => void;
     playRandomSound: (buffers: AudioBuffer[]) => void;
     playDoorSound: (isOpen: boolean) => void;
@@ -146,5 +146,6 @@ export interface UseGameParserDeps {
     setLastSnoopStartTime: (val: number | null) => void;
     setIsSpectateMode: (val: boolean) => void;
     setGameTime: (time: import('../../types').MumeTime | null) => void;
+    gameTime: import('../../types').MumeTime | null;
     playArrowHitSound?: (options?: { pitch?: number, volume?: number }) => void;
 }

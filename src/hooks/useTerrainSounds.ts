@@ -16,7 +16,6 @@ const TERRAIN_SOUND_MAP: Record<string, string> = {
     'MOUNTAIN': '/assets/Sounds/Terrain Sounds/mountains.wav',
     'TUNNEL': '/assets/Sounds/Terrain Sounds/cave_tunnel.mp3',
     'CAVE': '/assets/Sounds/Terrain Sounds/cave_tunnel.mp3',
-    'CITY': '/assets/Sounds/Terrain Sounds/city.mp3',
 };
 
 export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, lighting, isSleeping }: TerrainSoundsDeps) => {

@@ -87,8 +87,10 @@ export function usePromptParser(deps: PromptParserDeps) {
             setPlayerHealthStatus('Healthy');
         }
 
-        // --- Condition Extraction from Flags (W, !, etc.) ---
-        const hasWaiting = /[\s\*\[\(\!]\*[\s\*\]\)>]/.test(promptPart);
+        // NOTE: 'waiting' (casting) state is driven exclusively by GMCP Group position updates
+        // (see useGmcpGroup.ts). Do NOT derive it from the prompt — the prompt arrives on every
+        // tick and would immediately race with and override the GMCP 'true', breaking both the
+        // cancel-button visibility and the audio stop mechanism.
 // --- Combat Health Extraction (Opponents and Tanks/Buffers) ---
         // This is moved up so we can use the 'pairs' detection to verify hasFighting
         const combatantsPart = promptPart
@@ -126,21 +128,10 @@ export function usePromptParser(deps: PromptParserDeps) {
             }
         }
 
-        if (isSpectateMode) {
-            setSpectateStats(prev => ({
-                ...prev,
-                conditions: { ...prev.conditions, waiting: hasWaiting }
-            }));
-            // NOTE: spectateInCombat is driven exclusively by Char.Vitals GMCP position field
-            // (in useLogGmcpParser). Do NOT set it here — parsePrompt fires on the user's own
-            // prompt too, so prompt-based detection would incorrectly trigger combat music
-            // whenever the user themselves is fighting while spectating someone else.
-        } else {
-            deps.setStats(prev => ({
-                ...prev,
-                conditions: { ...prev.conditions, waiting: hasWaiting }
-            }));
-        }
+        // NOTE: spectateInCombat is driven exclusively by Char.Vitals GMCP position field
+        // (in useLogGmcpParser). Do NOT set it here — parsePrompt fires on the user's own
+        // prompt too, so prompt-based detection would incorrectly trigger combat music
+        // whenever the user themselves is fighting while spectating someone else.
 
         let oppName: string | null = null;
         let oppStatus: CombatHealthStatus | null = null;

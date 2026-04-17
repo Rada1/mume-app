@@ -251,15 +251,9 @@ export class GmcpDecoder {
             const p = pos.toLowerCase();
             this.charVitalsState.position = p;
             if (this.handlers.onPositionChange) this.handlers.onPositionChange(p);
-
-            // Sync waiting condition with position
-            this.handlers.setStats((prev: GameStats) => ({
-                ...prev,
-                conditions: { 
-                    ...prev.conditions, 
-                    waiting: p === 'waiting' || p.includes('waiting')
-                }
-            }));
+            
+            // NOTE: We no longer sync 'waiting' condition from position here.
+            // Spells can be cast while 'standing'.
         }
 
         const opp = getField(['opponent', 'opp', 'o']);

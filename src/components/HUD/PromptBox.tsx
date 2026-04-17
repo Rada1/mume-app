@@ -355,7 +355,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                     {/* Player Side */}
                     <div className="vitals-side-container side-left">
                         <div className="player-stats-group">
-                            {isNewbieMode && <Heart size={11} className="vitals-icon hp-icon" strokeWidth={3} />}
+                            <Heart size={11} className="vitals-icon hp-icon" strokeWidth={3} />
                             <div ref={hpBarRef} style={{ flex: 1, display: 'flex', minWidth: 0 }}>
                                 <ConditionBadge
                                     status={playerHealthStatus || 'Healthy'}
@@ -370,7 +370,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                                     dragVal={dragVal}
                                 />
                             </div>
-                            {isNewbieMode && <Zap size={11} className="vitals-icon mana-icon" strokeWidth={3} />}
+                            <Zap size={11} className="vitals-icon mana-icon" strokeWidth={3} />
                             <ConditionBadge 
                                 status={mpStatus} 
                                 percent={getManaPercent(stats.mana, stats.maxMana)}
@@ -379,7 +379,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                                 showAlt={showNumbers}
                                 altStatus={`${stats.mana}/${stats.maxMana}`}
                             />
-                            {isNewbieMode && <Footprints size={11} className="vitals-icon move-icon" strokeWidth={3} />}
+                            <Footprints size={11} className="vitals-icon move-icon" strokeWidth={3} />
                             <ConditionBadge 
                                 status={stStatus} 
                                 percent={getMovePercent(stats.move, stats.maxMove)}
@@ -413,7 +413,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                                     colorClass="move placeholder" 
                                     mirrored
                                 />
-                                {isNewbieMode && <Footprints size={11} className="vitals-icon move-icon placeholder" strokeWidth={3} />}
+                                <Footprints size={11} className="vitals-icon move-icon placeholder" strokeWidth={3} />
 
                                 <ConditionBadge 
                                     status="Unknown" 
@@ -421,7 +421,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                                     colorClass="mana placeholder" 
                                     mirrored
                                 />
-                                {isNewbieMode && <Zap size={11} className="vitals-icon mana-icon placeholder" strokeWidth={3} />}
+                                <Zap size={11} className="vitals-icon mana-icon placeholder" strokeWidth={3} />
 
                                 <ConditionBadge
                                     status={opponentHealthStatus || 'Fighting'}
@@ -429,7 +429,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                                     colorClass="opponent" 
                                     mirrored
                                 />
-                                {isNewbieMode && <Heart size={11} className="vitals-icon hp-icon is-mirrored" strokeWidth={3} />}
+                                <Heart size={11} className="vitals-icon hp-icon is-mirrored" strokeWidth={3} />
                             </div>
                         )}
                     </div>

@@ -426,7 +426,7 @@ export interface GameContextType {
     playClickSound: () => void;
     playCommMessageSound: (options?: { volume?: number }) => void;
     stopCommMessageSound: () => void;
-    primeSpectateSpellSuccess?: (success: boolean) => void;
+    primeSpellSuccess?: (success: boolean) => void;
     triggerHaptic: (ms: number) => void;
 
 

@@ -92,8 +92,8 @@ export const drawRoomOccupants = (
     }
 
     const zoomFactor = (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
-    const OUTER_RADIUS = 24.0 / zoomFactor;
-    const INNER_RADIUS = 12.0 / zoomFactor;
+    const OUTER_RADIUS = 18.0 / zoomFactor;
+    const INNER_RADIUS = 9.0 / zoomFactor;
     const pulse = (Math.sin(now / 400) + 1) / 2;
 
     const drawDot = (orbX: number, orbY: number, color: string, alpha: number) => {
@@ -348,12 +348,21 @@ export const drawEntities = (
                 ctx.setLineDash([]);
                 ctx.restore();
 
-                // White prediction dot
+                // White prediction arrow pointing in the direction of travel
                 ctx.save();
                 ctx.globalAlpha = alpha;
                 ctx.fillStyle = '#ffffff';
+                ctx.translate(toX, toY);
+                const angle = Math.atan2(toY - fromY, toX - fromX);
+                ctx.rotate(angle);
+                
+                const arrowSize = 6;
                 ctx.beginPath();
-                ctx.arc(toX, toY, 6, 0, Math.PI * 2);
+                ctx.moveTo(arrowSize * 1.5, 0);
+                ctx.lineTo(-arrowSize, -arrowSize);
+                ctx.lineTo(-arrowSize * 0.4, 0);
+                ctx.lineTo(-arrowSize, arrowSize);
+                ctx.closePath();
                 ctx.fill();
                 ctx.restore();
 
@@ -532,7 +541,7 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
         const count = occupants.length;
         let offsetX = 0, offsetY = 0;
         const zoomFactor = (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
-        const PETAL_RADIUS = 12.0 / zoomFactor;
+        const PETAL_RADIUS = 9.0 / zoomFactor;
         const angle = (index / count) * Math.PI * 2;
         offsetX = Math.cos(angle) * PETAL_RADIUS;
         offsetY = Math.sin(angle) * PETAL_RADIUS;

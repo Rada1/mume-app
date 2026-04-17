@@ -325,7 +325,7 @@ export const buildHighlighterCandidates = (
                     priority: 6, // Slightly higher than items to favor NPC match in ambiguous cases
                     replacer: (m, _match) => {
                         // Default to 'inlinenpc' which is Magenta.
-                        let baseColor = getGlowColorForCategory(category || 'inlinenpc', inlineCategories) || 'rgba(217, 70, 239, 0.9)';
+                        let baseColor = getGlowColorForCategory(category || 'inlinenpc', inlineCategories) || 'rgba(254, 240, 138, 0.9)';
                         
                         // Check if this NPC is in the group (charmies)
                         const groupMemberIndex = groupMembers?.findIndex(gm => 

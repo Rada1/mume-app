@@ -32,6 +32,7 @@ interface StageInitializerDeps {
     tempWhereRef: React.MutableRefObject<DrawerLine[]>;
     help: any;
     finalizeCapture: () => void;
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean) => void;
     isMobile: boolean;
 }
 
@@ -44,6 +45,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef,
         help,
         finalizeCapture,
+        executeCommand,
         isMobile
     } = deps;
 
@@ -133,6 +135,9 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
             if (captureStage.current !== 'none') finalizeCapture();
             startStage('shop');
             if (practice.shop?.setIsShopListingActive) practice.shop.setIsShopListingActive(true);
+            
+            // Trigger gold check right when shop listing starts
+            executeCommand('info %g', true, true);
         }
 
         // 5. Container

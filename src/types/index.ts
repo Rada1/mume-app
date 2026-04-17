@@ -720,6 +720,7 @@ export interface AccountState {
 
 export interface MumeTime {
     hour: number;
+    minute: number;
     day: number;
     month: string;
     year: number;

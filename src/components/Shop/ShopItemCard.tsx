@@ -41,12 +41,12 @@ const ShopItemCard: React.FC<ShopItemCardProps> = ({ item }) => {
             style={{ 
                 '--glow-color': 'rgba(180, 100, 50, 0.4)',
                 display: 'flex',
+                flexDirection: 'column',
                 width: '100%',
                 flex: 1,
-                alignItems: 'baseline',
-                flexWrap: 'nowrap',
-                gap: '8px',
-                padding: '0px 2px',
+                alignItems: 'flex-start',
+                gap: '2px',
+                padding: '4px 2px',
                 margin: '0',
                 background: 'transparent',
                 border: 'none',
@@ -54,18 +54,18 @@ const ShopItemCard: React.FC<ShopItemCardProps> = ({ item }) => {
                 boxSizing: 'border-box'
             } as any}
         >
-            <span className="shop-item-id" style={{ opacity: 0.4, marginRight: '4px' }}>{item.id}. </span>
-            <span className="shop-item-name" style={{ color: 'rgba(180, 100, 50, 0.9)', fontWeight: '900', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</span>
+            <div className="item-row-top" style={{ display: 'flex', alignItems: 'baseline', gap: '8px', width: '100%' }}>
+                <span className="shop-item-id" style={{ opacity: 0.3, fontSize: '0.8em', minWidth: '24px' }}>{item.id}. </span>
+                <span className="shop-item-name" style={{ color: 'rgba(180, 100, 50, 0.9)', fontWeight: '900', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</span>
+                
+                {(item.condition && item.condition !== 'standard' || item.age) && (
+                    <span className="shop-item-status" style={{ opacity: 0.6, fontSize: '0.9em', fontStyle: 'italic', marginLeft: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        ({[item.condition !== 'standard' ? item.condition : null, item.age].filter(Boolean).join(', ')})
+                    </span>
+                )}
+            </div>
             
-            {(item.condition && item.condition !== 'standard' || item.age) && (
-                <span className="shop-item-status" style={{ opacity: 0.6, fontStyle: 'italic', marginLeft: '6px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    ({[item.condition !== 'standard' ? item.condition : null, item.age].filter(Boolean).join(', ')})
-                </span>
-            )}
-            
-            <div style={{ flex: 1 }} />
-            
-            <div className="price-container" style={{ display: 'inline-flex', alignItems: 'baseline' }}>
+            <div className="price-container" style={{ display: 'flex', alignItems: 'center', paddingLeft: '24px', opacity: 0.8 }}>
                 {renderPrice(item.price)}
             </div>
         </div>

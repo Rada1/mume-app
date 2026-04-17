@@ -23,8 +23,10 @@ export interface ZoneMusicDeps {
  */
 export const getMumeHour = (gameTime: MumeTime | null): number | null => {
     if (!gameTime) return null;
-    const elapsedMinutes = Math.floor((Date.now() - gameTime.lastSyncRealTime) / 60000);
-    return (gameTime.hour + elapsedMinutes) % 24;
+    const realTimeElapsedMs = Date.now() - gameTime.lastSyncRealTime;
+    const mumeMinutesElapsed = Math.floor(realTimeElapsedMs / 1000); // 1 MUME minute = 1 real second
+    const totalMinutes = gameTime.hour * 60 + gameTime.minute + mumeMinutesElapsed;
+    return Math.floor(totalMinutes / 60) % 24;
 };
 
 /**

@@ -331,13 +331,10 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const displayMessages = useMemo(() => {
         if (sessionMode === 'replay') return replayMessages;
         
-        // If Newbie Mode is OFF, we show everything in the log (classic mode)
-        if (!isNewbieMode) return messages;
-
-        // In Newbie Mode, hide own prompts (handled by HUD bars) but show snooped prompts
+        // Hide own prompts (handled by HUD PromptBox) but show snooped prompts
         // when the spectate-prompt toggle is on.
         return messages.filter(m => m.type !== 'prompt' || (m.isSnoop && showSpectatePromptInLog));
-    }, [messages, replayMessages, sessionMode, isNewbieMode, showSpectatePromptInLog]);
+    }, [messages, replayMessages, sessionMode, showSpectatePromptInLog]);
 
     const lastUserMsgIndex = useMemo(() => {
         for (let i = displayMessages.length - 1; i >= 0; i--) {
@@ -505,7 +502,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
 
     const activePromptContent = useMemo(() => {
-        if (!activePrompt || isSpectateMode || isNewbieMode) return null;
+        if (!activePrompt || isSpectateMode) return null;
         const promptMid = `prompt-${activePrompt.length}-${activePrompt.replace(/\x1b\[[0-9;]*m/g, '').substring(0, 20)}`;
         return (
             <div className="message prompt msg-latest" style={{ transition: 'none' }}>

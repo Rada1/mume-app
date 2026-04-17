@@ -40,6 +40,20 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
     // immediately before starting a new one, guaranteeing only 1 instance at a time.
     const drumFadingSourceRef = useRef<AudioBufferSourceNode | null>(null);
 
+    // --- Centralized Drum Cleanup ---
+    // Every code path that stops or replaces zoneTrack.current MUST call this first
+    // to avoid orphaning a looping AudioBufferSourceNode connected to ctx.destination.
+    const killDrumLayer = (fadeDuration: number = 0.3) => {
+        const { drumSource, drumGain, drumFilter } = zoneTrack.current;
+        if (drumSource) {
+            drumFadingSourceRef.current = drumSource;
+            fadeOutAndStop(drumSource, drumGain, drumFilter, fadeDuration);
+        }
+        zoneTrack.current.drumSource = null;
+        zoneTrack.current.drumGain = null;
+        zoneTrack.current.drumFilter = null;
+    };
+
     // --- Main Logic ---
     useEffect(() => {
         console.log(`[ZoneMusic] Effect Triggered: State=${gameState}, Zone=${roomZone}, Sound=${isSoundEnabled}, Sleeping=${isSleeping}, Ctx=${!!audioCtxRef.current}`);
@@ -75,14 +89,11 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
 
         if (!isDay && gameState !== 'account' && !isAlwaysOnZone) {
             // Silence area music at night
-            if (zoneTrack.current.source) {
+            if (zoneTrack.current.source || zoneTrack.current.drumSource) {
                 console.log('[ZoneMusic] Night detected (MUME clock), silencing area music.');
                 isStoppingManualRef.current = true;
                 fadeOutAndStop(zoneTrack.current.source, zoneTrack.current.gain, zoneTrack.current.filter);
-                if (zoneTrack.current.drumSource) {
-                    drumFadingSourceRef.current = zoneTrack.current.drumSource;
-                    fadeOutAndStop(zoneTrack.current.drumSource, zoneTrack.current.drumGain, zoneTrack.current.drumFilter, 0.3);
-                }
+                killDrumLayer();
                 zoneTrack.current = { source: null, gain: null, filter: null, url: null, buffer: null, drumBuffer: zoneTrack.current.drumBuffer, startTime: 0, pauseOffset: zoneTrack.current.pauseOffset || 0 };
                 isStoppingManualRef.current = false;
             }
@@ -109,14 +120,13 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
     const stopAll = () => {
         isStoppingManualRef.current = true;
         fadeOutAndStop(zoneTrack.current.source, zoneTrack.current.gain);
-        if (zoneTrack.current.drumSource) {
-            fadeOutAndStop(zoneTrack.current.drumSource, zoneTrack.current.drumGain, zoneTrack.current.drumFilter);
-        }
+        killDrumLayer();
         fadeOutAndStop(combatTrack.current.source, combatTrack.current.gain);
         if (silenceTimeoutRef.current) {
             clearTimeout(silenceTimeoutRef.current);
             silenceTimeoutRef.current = null;
         }
+        zoneTrack.current = { source: null, gain: null, filter: null, url: null, buffer: null, drumBuffer: zoneTrack.current.drumBuffer, startTime: 0, pauseOffset: 0 };
         lastZoneRef.current = null;
         isStoppingManualRef.current = false;
     };
@@ -218,7 +228,8 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
         if (!audioCtxRef.current || isSleeping) {
             if (isSleeping) {
                 if (zoneTrack.current.source) fadeOutAndStop(zoneTrack.current.source, zoneTrack.current.gain);
-                zoneTrack.current = { source: null, gain: null, url: null, buffer: null, startTime: 0, pauseOffset: 0 };
+                killDrumLayer();
+                zoneTrack.current = { source: null, gain: null, url: null, buffer: null, drumBuffer: zoneTrack.current.drumBuffer, startTime: 0, pauseOffset: 0 };
             }
             return;
         }
@@ -237,6 +248,7 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
             if (!buffer || isStale()) return;
 
             if (zoneTrack.current.source) fadeOutAndStop(zoneTrack.current.source, zoneTrack.current.gain);
+            killDrumLayer();
 
             const source = ctx.createBufferSource();
             source.buffer = buffer;
@@ -263,10 +275,11 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
         }
         
         if (!roomZone) {
-            if (zoneTrack.current.source) {
+            if (zoneTrack.current.source || zoneTrack.current.drumSource) {
                 isStoppingManualRef.current = true;
                 fadeOutAndStop(zoneTrack.current.source, zoneTrack.current.gain);
-                zoneTrack.current = { source: null, gain: null, url: null, buffer: null, startTime: 0, pauseOffset: 0 };
+                killDrumLayer();
+                zoneTrack.current = { source: null, gain: null, url: null, buffer: null, drumBuffer: zoneTrack.current.drumBuffer, startTime: 0, pauseOffset: 0 };
                 isStoppingManualRef.current = false;
             }
             return;
@@ -276,7 +289,8 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
         const rawUrl = dynamicMatch?.url || STATIC_MUSIC_MAP[normalizedZone];
         if (!rawUrl) {
             if (zoneTrack.current.source) fadeOutAndStop(zoneTrack.current.source, zoneTrack.current.gain);
-            zoneTrack.current = { source: null, gain: null, url: null, buffer: null, startTime: 0, pauseOffset: 0 };
+            killDrumLayer();
+            zoneTrack.current = { source: null, gain: null, url: null, buffer: null, drumBuffer: zoneTrack.current.drumBuffer, startTime: 0, pauseOffset: 0 };
             return;
         }
 
@@ -296,10 +310,7 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
             isStoppingManualRef.current = true;
             fadeOutAndStop(zoneTrack.current.source, zoneTrack.current.gain, zoneTrack.current.filter);
         }
-        if (zoneTrack.current.drumSource) {
-            drumFadingSourceRef.current = zoneTrack.current.drumSource;
-            fadeOutAndStop(zoneTrack.current.drumSource, zoneTrack.current.drumGain, zoneTrack.current.drumFilter, 0.3);
-        }
+        killDrumLayer();
         const preservedDrumBuffer = zoneTrack.current.drumBuffer;
 
         const source = ctx.createBufferSource();

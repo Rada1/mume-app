@@ -10,7 +10,7 @@ import { extractNoun as smartExtractNoun } from '../utils/keywordUtils';
 import { isItemContainer } from '../utils/gameUtils';
 
 // palette definitions for consistency (imported from categorizationUtils style)
-const COLOR_NPC = 'rgba(217, 70, 239, 0.9)';
+const COLOR_NPC = 'rgba(254, 240, 138, 0.9)';
 const COLOR_PLAYER = 'rgba(125, 211, 252, 0.9)';
 const COLOR_OBJ = 'rgba(180, 100, 50, 0.9)';
 

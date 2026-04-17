@@ -253,6 +253,37 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     }, [messages]);
 
+    const playerWaiting = v.stats.conditions?.waiting;
+    const effectiveWaiting = s.isSpectateMode ? s.spectateWaiting : playerWaiting;
+
+    // Diagnostic log for props flow
+    if (v.stats.conditions && 'waiting' in v.stats.conditions) {
+        console.log(`[Context/Vitals] playerWaiting=${playerWaiting}, effectiveWaiting=${effectiveWaiting}`);
+    }
+
+    const audio = useGameAudio({
+        isSoundEnabled: s.isSoundEnabled,
+        roomZone: s.roomZone,
+        zoneMusic: s.zoneMusic,
+        inCombat: s.inCombat,
+        lighting: s.lighting,
+        gameTime: s.gameTime,
+        currentTerrain: s.currentTerrain,
+        weather: s.weather,
+        playerPosition: s.playerPosition,
+        waiting: effectiveWaiting,
+        manualCancelRef,
+        gameState: s.gameState,
+        isSpectateMode: s.isSpectateMode,
+        spectateRoomZone: s.spectateRoomZone,
+        spectateTerrain: s.spectateTerrain,
+        spectateLighting: s.spectateLighting,
+        spectateWeather: s.spectateWeather,
+        spectateIsFoggy: s.spectateIsFoggy,
+        spectateInCombat: s.spectateInCombat,
+        spectatePosition: s.spectatePosition
+    });
+
     const {
         audioCtxRef,
         initAudio,
@@ -283,7 +314,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playIncantationSound,
         stopIncantationSound,
         playMagicExplosionSound,
-        primeSpectateSpellSuccess,
+        primeSpellSuccess,
         loadSpellSounds,
         playCommMessageSound,
         stopCommMessageSound,
@@ -294,30 +325,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         loadBashSound,
         playArrowHitSound,
         loadArrowHitSound,
+        playKillSound,
+        loadKillSound,
+        playLevelSound,
+        loadLevelSound,
         triggerHaptic,
         setTriggerHaptic
-    } = useGameAudio({
-        isSoundEnabled: s.isSoundEnabled,
-        roomZone: s.roomZone,
-        zoneMusic: s.zoneMusic,
-        inCombat: s.inCombat,
-        lighting: s.lighting,
-        gameTime: s.gameTime,
-        currentTerrain: s.currentTerrain,
-        weather: s.weather,
-        playerPosition: s.playerPosition,
-        waiting: s.isSpectateMode ? s.spectateWaiting : v.stats.conditions?.waiting,
-        manualCancelRef,
-        gameState: s.gameState,
-        isSpectateMode: s.isSpectateMode,
-        spectateRoomZone: s.spectateRoomZone,
-        spectateTerrain: s.spectateTerrain,
-        spectateLighting: s.spectateLighting,
-        spectateWeather: s.spectateWeather,
-        spectateIsFoggy: s.spectateIsFoggy,
-        spectateInCombat: s.spectateInCombat,
-        spectatePosition: s.spectatePosition
-    });
+    } = audio;
 
     useEffect(() => {
         if (initAudio) {
@@ -474,6 +488,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playPierceSound,
         playStabSound,
         playArrowHitSound,
+        playKillSound,
+        playLevelSound,
         playBashSound,
         loadBashSound,
         playRandomSound, 
@@ -568,7 +584,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playCommMessageSound,
         playBuySellSound,
         stopIncantationSound,
-        primeSpectateSpellSuccess,
+        primeSpellSuccess,
         playMagicExplosionSound,
         deathRoomId: v.deathRoomId,
         setDeathRoomId: v.setDeathRoomId,
@@ -601,12 +617,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         entities: s.entities,
         inlineCategories: s.inlineCategories,
         spectateStats: v.spectateStats,
+        setStats: v.setStats,
         characterName: s.characterName,
         sessionMode: sessionMode,
         setIsPasswordMode: s.setIsPasswordMode,
         setIsSpectateMode: s.setIsSpectateMode,
         playMovementSound,
         setGameTime: s.setGameTime,
+        gameTime: s.gameTime,
     });
 
 
@@ -1145,7 +1163,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             playRandomSound: isReplaying ? () => {} : playRandomSound, 
             playDoorSound: isReplaying ? () => {} : playDoorSound, 
             setPlaySound, triggerHaptic: isReplaying ? () => {} : triggerHaptic, 
-            setTriggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, primeSpectateSpellSuccess,
+            setTriggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, primeSpellSuccess,
 
             btn, joystick, editor, containerRef, viewport, env,
             initAudio,

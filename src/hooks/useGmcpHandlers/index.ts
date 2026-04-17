@@ -55,6 +55,7 @@ interface GmcpHandlersProps {
     registerEntity?: (id: string, name: string, location: import('../../types').EntityLocation, category?: string) => import('../../types').GameEntity;
     roomDescRef?: React.RefObject<string>;
     setInCombat?: (val: boolean, force?: boolean) => void;
+    setStats: (stats: any) => void;
     isSpectateMode?: boolean;
     inlineCategories: import('../../types').InlineCategoryConfig[];
 }
@@ -109,7 +110,9 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
     });
 
     const { onGroupAdd, onGroupUpdate, onGroupRemove, onGroupSet } = useGmcpGroup({
-        ...props
+        setGroupMembers: props.setGroupMembers,
+        setStats: props.setStats,
+        characterName: props.characterName
     });
 
     const onCharNameChange = useCallback((name: string | null) => {

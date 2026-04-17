@@ -118,7 +118,6 @@ export const useGmcpVitals = ({
             subrace: data.subrace ?? prev.subrace,
             subclass: data.subclass ?? prev.subclass,
             class: data.class ?? prev.class,
-            gold: data.gold !== undefined ? Number(data.gold) : prev.gold,
             description: data.description ?? prev.description,
             whois: data.whois ?? prev.whois
         }));

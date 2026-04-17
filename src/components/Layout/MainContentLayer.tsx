@@ -225,7 +225,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                 {/* Mobile portrait LineCluster is rendered inside MapperCluster (near the map gutter) */}
             </div>
 
-            {isNewbieMode && gameState !== 'account' && (
+            {gameState !== 'account' && (
                 <PromptBox
                     stats={isSpectateMode ? spectateStats : stats}
                     characterInfo={characterInfo}
