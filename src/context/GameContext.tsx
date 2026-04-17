@@ -302,6 +302,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         zoneMusic: s.zoneMusic,
         inCombat: s.inCombat,
         lighting: s.lighting,
+        gameTime: s.gameTime,
         currentTerrain: s.currentTerrain,
         weather: s.weather,
         playerPosition: s.playerPosition,

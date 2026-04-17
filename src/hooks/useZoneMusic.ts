@@ -3,22 +3,31 @@
  * @description Hook for managing zone-specific background music and combat audio layers.
  */
 
-import { useEffect, useRef } from 'react';
-import { 
-    ZoneMusicDeps, 
-    TrackState, 
-    STATIC_MUSIC_MAP, 
-    BPM_MAP, 
-    DRUM_LOOP_URL, 
-    ALWAYS_PLAY_ZONES 
+import { useEffect, useRef, useState } from 'react';
+import {
+    ZoneMusicDeps,
+    TrackState,
+    STATIC_MUSIC_MAP,
+    BPM_MAP,
+    DRUM_LOOP_URL,
+    ALWAYS_PLAY_ZONES,
+    isGameDay
 } from './useZoneMusicConstants';
 
-export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic, isInCombat, lighting, isSleeping, gameState }: ZoneMusicDeps) => {
+export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic, isInCombat, gameTime, isSleeping, gameState }: ZoneMusicDeps) => {
     const zoneTrack = useRef<TrackState>({ source: null, gain: null, url: null, buffer: null, startTime: 0, pauseOffset: 0 });
     const combatTrack = useRef<TrackState>({ source: null, gain: null, url: null, buffer: null, startTime: 0, pauseOffset: 0 });
     const lastZoneRef = useRef<string | null>(null);
-    const lastLightingRef = useRef<string | null>(null);
+    const lastIsDayRef = useRef<boolean | null>(null);
     const silenceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Tick every real minute (= 1 MUME hour) so the main effect re-runs and
+    // catches day→night / night→day transitions without relying on external events.
+    const [_tick, setTick] = useState(0);
+    useEffect(() => {
+        const id = setInterval(() => setTick(t => t + 1), 60000);
+        return () => clearInterval(id);
+    }, []);
     const isStoppingManualRef = useRef(false);
     const zoneLoadingUrlRef = useRef<string | null>(null);
     const combatLoadingUrlRef = useRef<string | null>(null);
@@ -54,19 +63,20 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
         }
 
         // 2. Handle Zone Track Updates
-        const isDay = lighting === 'sun';
-        const lightingChanged = isDay !== (lastLightingRef.current === 'sun');
+        // Derive day/night from MUME clock rather than the lighting flag.
+        const isDay = isGameDay(gameTime);
+        const isDayChanged = isDay !== lastIsDayRef.current;
         const stateChanged = gameState !== lastZoneRef.current;
         const zoneChanged = roomZone !== lastZoneRef.current;
-        
-        lastLightingRef.current = lighting || null;
+
+        lastIsDayRef.current = isDay;
         const normalizedZone = roomZone?.toLowerCase().replace(/^the\s+/i, '') || '';
         const isAlwaysOnZone = ALWAYS_PLAY_ZONES.includes(normalizedZone);
 
         if (!isDay && gameState !== 'account' && !isAlwaysOnZone) {
             // Silence area music at night
             if (zoneTrack.current.source) {
-                console.log('[ZoneMusic] Night detected, silencing area music.');
+                console.log('[ZoneMusic] Night detected (MUME clock), silencing area music.');
                 isStoppingManualRef.current = true;
                 fadeOutAndStop(zoneTrack.current.source, zoneTrack.current.gain, zoneTrack.current.filter);
                 if (zoneTrack.current.drumSource) {
@@ -76,10 +86,10 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
                 zoneTrack.current = { source: null, gain: null, filter: null, url: null, buffer: null, drumBuffer: zoneTrack.current.drumBuffer, startTime: 0, pauseOffset: zoneTrack.current.pauseOffset || 0 };
                 isStoppingManualRef.current = false;
             }
-        } else if ((roomZone || gameState === 'account') && (zoneChanged || stateChanged || lightingChanged)) {
+        } else if ((roomZone || gameState === 'account') && (zoneChanged || stateChanged || isDayChanged)) {
             // 3. Handle Zone Track Updates
-            console.log(`[ZoneMusic] Transition Detected: LastZone=${lastZoneRef.current}, NewState=${gameState}, NewZone=${roomZone}`);
-            
+            console.log(`[ZoneMusic] Transition Detected: LastZone=${lastZoneRef.current}, NewState=${gameState}, NewZone=${roomZone}, isDay=${isDay}`);
+
             if (gameState === 'account') lastZoneRef.current = 'account';
             else lastZoneRef.current = roomZone;
 
@@ -94,7 +104,7 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
         // 4. Handle Volume Ducking and Drum layer updates based on Combat state
         updateVolumes();
 
-    }, [roomZone, isSoundEnabled, isInCombat, zoneMusic, lighting, isSleeping, gameState]);
+    }, [roomZone, isSoundEnabled, isInCombat, zoneMusic, gameTime, isSleeping, gameState, _tick]);
 
     const stopAll = () => {
         isStoppingManualRef.current = true;

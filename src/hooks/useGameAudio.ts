@@ -3,7 +3,7 @@ import { useSoundSystem } from './useSoundSystem';
 import { useZoneMusic } from './useZoneMusic';
 import { useTerrainSounds } from './useTerrainSounds';
 import { useWeatherSounds } from './useWeatherSounds';
-import { ZoneMusicMapping, WeatherType } from '../types';
+import { ZoneMusicMapping, WeatherType, MumeTime } from '../types';
 
 export interface GameAudioDeps {
     isSoundEnabled: boolean;
@@ -11,6 +11,8 @@ export interface GameAudioDeps {
     zoneMusic: ZoneMusicMapping[];
     inCombat: boolean;
     lighting: string;
+    /** MUME game clock used to determine day/night for zone music. */
+    gameTime: MumeTime | null;
     currentTerrain: string;
     weather: WeatherType;
     playerPosition?: string;
@@ -33,6 +35,7 @@ export const useGameAudio = ({
     zoneMusic,
     inCombat,
     lighting,
+    gameTime,
     currentTerrain,
     weather,
     playerPosition,
@@ -113,15 +116,15 @@ export const useGameAudio = ({
 
     } = useSoundSystem(isSoundEnabled);
 
-    useZoneMusic({ 
-        roomZone: effectiveRoomZone || null, 
-        isSoundEnabled, 
-        audioCtxRef, 
-        zoneMusic, 
-        isInCombat: effectiveInCombat, 
-        lighting: effectiveLighting, 
-        isSleeping, 
-        gameState 
+    useZoneMusic({
+        roomZone: effectiveRoomZone || null,
+        isSoundEnabled,
+        audioCtxRef,
+        zoneMusic,
+        isInCombat: effectiveInCombat,
+        gameTime,
+        isSleeping,
+        gameState
     });
     
     useTerrainSounds({ 

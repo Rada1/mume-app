@@ -3,7 +3,7 @@
  * @description Constants and type definitions for the zone music system.
  */
 
-import { ZoneMusicMapping } from '../types';
+import { ZoneMusicMapping, MumeTime } from '../types';
 
 export interface ZoneMusicDeps {
     roomZone: string | null;
@@ -11,10 +11,32 @@ export interface ZoneMusicDeps {
     audioCtxRef: React.MutableRefObject<AudioContext | null>;
     zoneMusic: ZoneMusicMapping[];
     isInCombat?: boolean;
-    lighting?: string;
+    /** MUME game clock. Day/night is derived from this instead of the lighting flag. */
+    gameTime: MumeTime | null;
     isSleeping?: boolean;
     gameState?: string;
 }
+
+/**
+ * Compute the current MUME in-game hour (0-23), advancing from the last sync point.
+ * Returns null when no time data is available.
+ */
+export const getMumeHour = (gameTime: MumeTime | null): number | null => {
+    if (!gameTime) return null;
+    const elapsedMinutes = Math.floor((Date.now() - gameTime.lastSyncRealTime) / 60000);
+    return (gameTime.hour + elapsedMinutes) % 24;
+};
+
+/**
+ * Returns true when it is daytime in MUME (approx. 6 AM – 8 PM game time).
+ * Falls back to true (assume day) when no clock data is available so music
+ * always plays rather than being silenced unnecessarily.
+ */
+export const isGameDay = (gameTime: MumeTime | null): boolean => {
+    const hour = getMumeHour(gameTime);
+    if (hour === null) return true;
+    return hour >= 6 && hour <= 20;
+};
 
 export interface TrackState {
     source: AudioBufferSourceNode | null;

@@ -324,7 +324,6 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
             playSound(smiteSoundRef.current, { 
                 pitch: options?.pitch,
                 volume: options?.volume || 1.0,
-                filterFrequency: 1800, // Reduced muffle intensity (was 800Hz)
                 label: 'smite'
             });
         } else {
