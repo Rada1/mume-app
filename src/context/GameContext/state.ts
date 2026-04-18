@@ -152,16 +152,37 @@ export const useGameProviderState = () => {
 
     const executeCommandRef = useRef<(cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void>(() => { });
 
+    // Capture refs — declared early so useUIState can reset them on drawer switch
+    const captureStage = useRef<import('../../types').CaptureStage>('none');
+    const isDrawerCapture = useRef<number>(0);
+    const isSilentCapture = useRef<number>(0);
+    const isWaitingForStats = useRef<boolean>(false);
+    const isWaitingForEq = useRef<boolean>(false);
+    const isWaitingForInv = useRef<boolean>(false);
+    const isWaitingForInfo = useRef<boolean>(false);
+    // Tracks which drawer initiated the current capture — used by visibility logic
+    // so that even if ui.drawer changes mid-capture, lines are still hidden correctly.
+    const captureOwnerDrawer = useRef<'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players'>('none');
+
     // UI state
     const { 
         ui, setUI, setIsStatsOpen, setIsCharacterOpen, setIsEquipmentOpen, setIsInventoryOpen, 
         setIsPlayersOpen, setIsMapExpanded, setIsSetManagerOpen,
         handleTabClick, toggleMap 
     } = useUIState(executeCommandRef, {
-        statsCount: statsLines.length + scoreLines.length,
-        characterCount: infoLines.length + practiceLines.length + questLines.length,
-        inventoryCount: inventoryLines.length + eqLines.length,
-        playersCount: whoLines.length + whereLines.length
+        stats: statsLines.length + scoreLines.length,
+        info: infoLines.length + practiceLines.length + questLines.length,
+        inventory: inventoryLines.length + eqLines.length,
+        players: whoLines.length + whereLines.length
+    }, {
+        captureStage,
+        isWaitingForStats,
+        isWaitingForEq,
+        isWaitingForInv,
+        isWaitingForInfo,
+        isSilentCapture,
+        isDrawerCapture,
+        captureOwnerDrawer
     });
 
     // Environmental state
@@ -276,8 +297,6 @@ export const useGameProviderState = () => {
     const spectateInCombat = rawSpectateInCombat;
     const [spectateCharacterName, setSpectateCharacterName] = useState<string | null>(null);
 
-    const captureStage = useRef<import('../../types').CaptureStage>('none');
-
     // --- Spectate Automation State ---
     const [spectateQueue, setSpectateQueue] = useState<string[]>([]);
     const [lastSnoopStartTime, setLastSnoopStartTime] = useState<number | null>(null);
@@ -381,12 +400,6 @@ export const useGameProviderState = () => {
         }
     }, []);
 
-    const isDrawerCapture = useRef<number>(0);
-    const isSilentCapture = useRef<number>(0);
-    const isWaitingForStats = useRef<boolean>(false);
-    const isWaitingForEq = useRef<boolean>(false);
-    const isWaitingForInv = useRef<boolean>(false);
-    const isWaitingForInfo = useRef<boolean>(false);
     // Signals parser to inject container contents into a drawer instead of popover
     const pendingDrawerContainerRef = useRef<{ containerId: string; cmd: 'inventorylist' | 'equipmentlist'; afterId: string } | null>(null);
     const [activeDragData, setActiveDragData] = useState<any>(null);
@@ -597,7 +610,7 @@ export const useGameProviderState = () => {
         displayInventoryLines: optimisticInventoryLines ?? inventoryLines,
         displayEqLines: optimisticEqLines ?? eqLines,
         applyOptimisticChange,
-        captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, pendingDrawerContainerRef,
+        captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, captureOwnerDrawer, pendingDrawerContainerRef,
         autoConnect, setAutoConnect,
         showDebugEchoes, setShowDebugEchoes,
         uiMode, setUiMode,

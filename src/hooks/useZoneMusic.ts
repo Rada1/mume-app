@@ -11,7 +11,8 @@ import {
     BPM_MAP,
     DRUM_LOOP_URL,
     ALWAYS_PLAY_ZONES,
-    isGameDay
+    isGameDay,
+    normalizeZoneName
 } from './useZoneMusicConstants';
 
 export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic, isInCombat, gameTime, isSleeping, gameState }: ZoneMusicDeps) => {
@@ -82,13 +83,10 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
         const isDayChanged = isDay !== lastIsDayRef.current;
         const stateChanged = gameState !== lastZoneRef.current;
         const zoneChanged = roomZone !== lastZoneRef.current;
-
-        lastIsDayRef.current = isDay;
-        const normalizedZone = (roomZone || '').toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/^the\s+/i, '');
+        
+        const normalizedZone = normalizeZoneName(roomZone);
         const isAlwaysOnZone = ALWAYS_PLAY_ZONES.includes(normalizedZone);
+        console.log(`[ZoneMusic] Logic Check: Zone=${roomZone}, Normalized=${normalizedZone}, AlwaysOn=${isAlwaysOnZone}, isDay=${isDay}`);
 
         if (!isDay && gameState !== 'account' && !isAlwaysOnZone) {
             // Silence area music at night
@@ -238,7 +236,7 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
         }
 
         const ctx = audioCtxRef.current!;
-        const normalizedZone = roomZone?.toLowerCase().replace(/^the\s+/i, '') || '';
+        const normalizedZone = normalizeZoneName(roomZone);
 
         // --- Account Music Logic ---
         if (gameState === 'account') {
@@ -288,9 +286,11 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
             return;
         }
         
-        const dynamicMatch = zoneMusic.find(m => m.zone.toLowerCase().replace(/^the\s+/i, '') === normalizedZone);
+        const dynamicMatch = zoneMusic.find(m => normalizeZoneName(m.zone) === normalizedZone);
         const rawUrl = dynamicMatch?.url || STATIC_MUSIC_MAP[normalizedZone];
+        
         if (!rawUrl) {
+            console.log(`[ZoneMusic] No music mapping found for zone: "${roomZone}" (Normalized: "${normalizedZone}")`);
             if (zoneTrack.current.source) fadeOutAndStop(zoneTrack.current.source, zoneTrack.current.gain);
             killDrumLayer();
             zoneTrack.current = { source: null, gain: null, url: null, buffer: null, drumBuffer: zoneTrack.current.drumBuffer, startTime: 0, pauseOffset: 0 };

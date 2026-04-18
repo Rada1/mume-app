@@ -36,8 +36,27 @@ export const getMumeHour = (gameTime: MumeTime | null): number | null => {
  */
 export const isGameDay = (gameTime: MumeTime | null): boolean => {
     const hour = getMumeHour(gameTime);
+    // If we have no clock data, assume it's daytime so music plays by default.
     if (hour === null) return true;
-    return hour >= 6 && hour <= 20;
+    // MUME Daytime: 6 AM to 8 PM (20:00)
+    const isDay = hour >= 6 && hour <= 20;
+    return isDay;
+};
+
+/**
+ * Standardizes a zone name for mapping lookups.
+ * Removes 'the ', trims whitespace, collapses double spaces, and handles dashes.
+ */
+export const normalizeZoneName = (name: string | null): string => {
+    if (!name) return '';
+    return name.toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // Remove accents
+        .trim()
+        .replace(/^the\s+/i, '')
+        .trim()
+        .replace(/-/g, ' ')             // Convert dashes to spaces for unified lookup
+        .replace(/\s+/g, ' ');          // Collapse multiple spaces
 };
 
 export interface TrackState {
@@ -105,11 +124,7 @@ export const STATIC_MUSIC_MAP: Record<string, string | string[]> = {
     'the road to fornost': '/assets/Sounds/Zone Sounds/roadtofornost1.mp3',
     'fornost': '/assets/Sounds/Zone Sounds/Fornost.mp3',
     "deadmen's dike": '/assets/Sounds/Zone Sounds/Fornost.mp3',
-    "the deadmen's dike": '/assets/Sounds/Zone Sounds/Fornost.mp3',
     'lhun valley': '/assets/Sounds/Zone Sounds/Lhun Valley.mp3',
-    'the lhun valley': '/assets/Sounds/Zone Sounds/Lhun Valley.mp3',
-    'lhun-valley': '/assets/Sounds/Zone Sounds/Lhun Valley.mp3',
-    'the lhun-valley': '/assets/Sounds/Zone Sounds/Lhun Valley.mp3',
     'ancient broken road': '/assets/Sounds/Zone Sounds/Ancient Broken Road.mp3',
     'the ancient broken road': '/assets/Sounds/Zone Sounds/Ancient Broken Road.mp3',
     'barrow-downs': '/assets/Sounds/Zone Sounds/barrow downs2.mp3',

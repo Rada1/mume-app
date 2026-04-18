@@ -63,6 +63,7 @@ export interface UseGameParserDeps {
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
     isWaitingForInfo: React.MutableRefObject<boolean>;
+    captureOwnerDrawer: React.MutableRefObject<'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players'>;
     keywordOverrides: Record<string, string>;
     roomNameRef: React.RefObject<string | null>;
     roomDescRef?: React.RefObject<string>;

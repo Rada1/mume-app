@@ -63,14 +63,9 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
         return () => ro.disconnect();
     }, [activeTab, isOpen, ui.characterTab]);
 
-    // Silent refresh on open: old lines stay visible until new capture swaps in
-    useEffect(() => {
-        if (!isOpen) return;
-        executeCommand('info', true, true, true, true);
-        const t1 = setTimeout(() => executeCommand('quest', true, true, true, true), 100);
-        const t2 = setTimeout(() => executeCommand('practice', true, true, true, true), 200);
-        return () => { clearTimeout(t1); clearTimeout(t2); };
-    }, [isOpen, executeCommand]);
+    // Refresh commands are fired by handleTabClick when the drawer opens.
+    // No useEffect needed here — firing again would double-send commands
+    // and race with the tab-click commands on rapid drawer switching.
 
     useEffect(() => {
         if (isOpen && characterInfo) {

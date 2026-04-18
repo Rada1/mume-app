@@ -57,14 +57,9 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
         return () => ro.disconnect();
     }, [isOpen]);
 
-    // Silent refresh on open: old lines stay visible until new capture swaps in
-    useEffect(() => {
-        if (!isOpen) return;
-        executeCommand('stat', true, true, true, true);
-        const t1 = setTimeout(() => executeCommand('score', true, true, true, true), 100);
-        const t2 = setTimeout(() => executeCommand('info %m', true, true, true, true), 200);
-        return () => { clearTimeout(t1); clearTimeout(t2); };
-    }, [isOpen, executeCommand]);
+    // Refresh commands are fired by handleTabClick when the drawer opens.
+    // No useEffect needed here — firing again would double-send commands
+    // and race with the tab-click commands on rapid drawer switching.
 
     const onPointerDownInternal = (e: React.PointerEvent) => {
         const target = e.target as HTMLElement;

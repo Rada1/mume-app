@@ -14,6 +14,7 @@ export interface StageManagerDeps {
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
     isWaitingForInfo: React.MutableRefObject<boolean>;
+    captureOwnerDrawer: React.MutableRefObject<'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players'>;
     addDiagnosticLog?: (msg: string) => void;
     addMessage: (type: MessageType, text: string, ...args: any[]) => void;
     setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
@@ -53,7 +54,7 @@ export function useStageManager(deps: StageManagerDeps) {
         isSilentCapture,
         isWaitingForStats,
         isWaitingForEq,
-        isWaitingForInv, isWaitingForInfo,
+        isWaitingForInv, isWaitingForInfo, captureOwnerDrawer,
         addDiagnosticLog,
         addMessage,
         setPopoverState,
@@ -96,6 +97,9 @@ export function useStageManager(deps: StageManagerDeps) {
         // are correctly cleaned up when a prompt arrives.
         if (currentStage === 'none' && isSilentCapture.current > 0) {
             isSilentCapture.current--; // Decrement background silence on a prompt
+            // When no more silent commands are in flight, clear the owner so the
+            // fallback suppression in determineVisibility stops.
+            if (isSilentCapture.current === 0) captureOwnerDrawer.current = 'none';
             return false;
         }
 
@@ -191,6 +195,7 @@ export function useStageManager(deps: StageManagerDeps) {
             }
 
             captureStage.current = 'none';
+            captureOwnerDrawer.current = 'none';
             isDrawerCapture.current = 0;
             // Decrement silent capture
             if (isSilentCapture.current > 0) isSilentCapture.current--;

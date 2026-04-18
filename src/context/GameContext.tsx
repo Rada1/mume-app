@@ -534,6 +534,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isWaitingForEq: s.isWaitingForEq,
         isWaitingForInv: s.isWaitingForInv,
         isWaitingForInfo: s.isWaitingForInfo,
+        captureOwnerDrawer: s.captureOwnerDrawer,
         roomNameRef: s.roomNameRef,
         roomDescRef,
         roomName: s.roomName,

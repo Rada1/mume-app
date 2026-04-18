@@ -6,6 +6,7 @@ interface MessageRouterDeps {
     captureStage: React.MutableRefObject<CaptureStage>;
     isSilentCapture: React.MutableRefObject<number>;
     isDrawerCapture: React.MutableRefObject<number>;
+    captureOwnerDrawer: React.MutableRefObject<'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players'>;
     isInventoryOpen: boolean;
     isEquipmentOpen: boolean;
     isCharacterOpen: boolean;
@@ -29,7 +30,7 @@ interface MessageRouterDeps {
 
 export const useMessageRouter = (deps: MessageRouterDeps) => {
     const {
-        captureStage, isSilentCapture, isDrawerCapture,
+        captureStage, isSilentCapture, isDrawerCapture, captureOwnerDrawer,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
         isWaitingForInv, isWaitingForEq, isWaitingForStats, isWaitingForInfo,
         setWhoList, setWhereList, setRoomItems, registerEntity, setCharacterInfo, setDiscoveredItems, extractNoun, ansiConvert,
@@ -45,27 +46,45 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         }
 
         let isDrawerHiding = false;
-        
+
         const stage = captureStage.current as any;
+        // Use captureOwnerDrawer (stamped when the capture started) so that
+        // visibility decisions are stable even if the user switches drawers
+        // while a capture is in flight.
+        const owner = captureOwnerDrawer.current;
+        const ownerIsInventory = owner === 'inventory';
+        const ownerIsEquipment = owner === 'equipment';
+        const ownerIsCharacter = owner === 'character';
+        const ownerIsStats = owner === 'stats';
+        const ownerIsPlayers = owner === 'players';
+
         if (stage !== 'none') {
-            if (stage === 'inv' && isInventoryOpen) isDrawerHiding = true;
-            else if (stage === 'eq' && (isInventoryOpen || isEquipmentOpen || isCharacterOpen)) isDrawerHiding = true;
-            else if (stage === 'stat' && (isStatsOpen || isCharacterOpen)) isDrawerHiding = true;
-            else if (['info', 'quest', 'whois'].includes(stage) && isCharacterOpen) isDrawerHiding = true;
-            else if (stage === 'practice' && (isCharacterOpen || isSilentCapture.current > 0 || isDrawerCapture.current > 0)) isDrawerHiding = true;
+            if (stage === 'inv' && (ownerIsInventory || isInventoryOpen)) isDrawerHiding = true;
+            else if (stage === 'eq' && (ownerIsInventory || ownerIsEquipment || ownerIsCharacter || isInventoryOpen || isEquipmentOpen || isCharacterOpen)) isDrawerHiding = true;
+            else if (stage === 'stat' && (ownerIsStats || ownerIsCharacter || isStatsOpen || isCharacterOpen)) isDrawerHiding = true;
+            else if (['info', 'quest', 'whois'].includes(stage) && (ownerIsCharacter || isCharacterOpen)) isDrawerHiding = true;
+            else if (stage === 'practice' && (ownerIsCharacter || isCharacterOpen || isSilentCapture.current > 0 || isDrawerCapture.current > 0)) isDrawerHiding = true;
             else if (stage === 'container' && (isDrawerCapture.current > 0 || isSilentCapture.current > 0)) isDrawerHiding = true;
-            else if (['who', 'where'].includes(stage) && isPlayersOpen) isDrawerHiding = true;
+            else if (['who', 'where'].includes(stage) && (ownerIsPlayers || isPlayersOpen)) isDrawerHiding = true;
             else if (stage === 'shop' || stage === 'help') isDrawerHiding = true;
         } else if (isSilentCapture.current > 0 || isDrawerCapture.current > 0) {
-            if (/you are carrying|your inventory contains/i.test(lower) && isInventoryOpen) isDrawerHiding = true;
-            if ((/you are (using|equipped with)/i.test(lower) || /ob:|armor:|mood:|str:|exp:|level:/i.test(lower) || /practice sessions left/i.test(lower)) && isCharacterOpen) isDrawerHiding = true;
-            if (/ob:|armor:|mood:|str:|exp:|level:/i.test(lower) && isStatsOpen) isDrawerHiding = true;
-            if ((lower === 'who' || lower === 'where') && isPlayersOpen) isDrawerHiding = true;
+            if (/you are carrying|your inventory contains/i.test(lower) && (ownerIsInventory || isInventoryOpen)) isDrawerHiding = true;
+            if ((/you are (using|equipped with)/i.test(lower) || /ob:|armor:|mood:|str:|exp:|level:/i.test(lower) || /practice sessions left/i.test(lower)) && (ownerIsCharacter || isCharacterOpen)) isDrawerHiding = true;
+            if (/ob:|armor:|mood:|str:|exp:|level:/i.test(lower) && (ownerIsStats || isStatsOpen)) isDrawerHiding = true;
+            if ((lower === 'who' || lower === 'where') && (ownerIsPlayers || isPlayersOpen)) isDrawerHiding = true;
             if (isEndPrompt) {
-                 if ((isInventoryOpen || isEquipmentOpen) && (isWaitingForInv.current || isWaitingForEq.current)) isDrawerHiding = true;
-                 if (isCharacterOpen && (isWaitingForStats.current || isWaitingForEq.current || isWaitingForInfo.current || captureStage.current === 'practice' || captureStage.current === 'info' || captureStage.current === 'quest' || captureStage.current === 'shop')) isDrawerHiding = true;
-                 if (isStatsOpen && isWaitingForStats.current) isDrawerHiding = true;
-                 if (isPlayersOpen && captureStage.current === 'none') isDrawerHiding = true;
+                 if ((ownerIsInventory || ownerIsEquipment || isInventoryOpen || isEquipmentOpen) && (isWaitingForInv.current || isWaitingForEq.current)) isDrawerHiding = true;
+                 if ((ownerIsCharacter || isCharacterOpen) && (isWaitingForStats.current || isWaitingForEq.current || isWaitingForInfo.current || captureStage.current === 'practice' || captureStage.current === 'info' || captureStage.current === 'quest' || captureStage.current === 'shop')) isDrawerHiding = true;
+                 if ((ownerIsStats || isStatsOpen) && isWaitingForStats.current) isDrawerHiding = true;
+                 if ((ownerIsPlayers || isPlayersOpen) && captureStage.current === 'none') isDrawerHiding = true;
+            }
+            // Fallback: if silent commands are in flight (isSilentCapture > 0)
+            // but no capture stage has started, this is likely a stale response
+            // from a previous drawer whose waiting flags were cleared on switch.
+            // Suppress it so it doesn't leak into the log. Important messages
+            // and room content still pass through via the isDrawerHiding check below.
+            if (!isDrawerHiding && isSilentCapture.current > 0 && owner !== 'none') {
+                isDrawerHiding = true;
             }
         }
 

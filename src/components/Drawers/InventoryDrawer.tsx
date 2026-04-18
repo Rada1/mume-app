@@ -58,13 +58,9 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     const eqContainerRef = useRef<HTMLDivElement>(null);
     const [eqFontSize, setEqFontSize] = useState<string>('inherit');
 
-    // Silent refresh on open: old lines stay visible until new capture swaps in
-    useEffect(() => {
-        if (!isOpen) return;
-        executeCommand('inv', true, true, true, true);
-        const t = setTimeout(() => executeCommand('eq', true, true, true, true), 100);
-        return () => clearTimeout(t);
-    }, [isOpen, executeCommand]);
+    // Refresh commands are fired by handleTabClick when the drawer opens.
+    // No useEffect needed here — firing again would double-send commands
+    // and race with the tab-click commands on rapid drawer switching.
 
     useLayoutEffect(() => {
         if (!eqContainerRef.current) return;

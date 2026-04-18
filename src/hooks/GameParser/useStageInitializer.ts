@@ -9,6 +9,7 @@ interface StageInitializerDeps {
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
     isWaitingForInfo: React.MutableRefObject<boolean>;
+    captureOwnerDrawer: React.MutableRefObject<'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players'>;
     isInventoryOpen: boolean;
     isEquipmentOpen: boolean;
     isCharacterOpen: boolean;
@@ -38,9 +39,9 @@ interface StageInitializerDeps {
 
 export const useStageInitializer = (deps: StageInitializerDeps) => {
     const {
-        captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
+        captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, captureOwnerDrawer,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
-        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, 
+        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState,
         setScoreLines, setStatsLines, setInfoLines,
         tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef,
         help,
@@ -49,9 +50,22 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         isMobile
     } = deps;
 
+    // Determine which drawer is currently open (used to stamp captureOwnerDrawer)
+    const resolveOwner = (): 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' => {
+        if (isCharacterOpen) return 'character';
+        if (isStatsOpen) return 'stats';
+        if (isEquipmentOpen) return 'equipment';
+        if (isInventoryOpen) return 'inventory';
+        if (isPlayersOpen) return 'players';
+        return 'none';
+    };
+
     const startStage = (stage: CaptureStage) => {
         if (stage === 'help') help.setIsHelpActive(true);
         captureStage.current = stage;
+        // Stamp which drawer initiated this capture so visibility decisions
+        // remain stable even if the user switches drawers before it finalizes.
+        captureOwnerDrawer.current = resolveOwner();
     };
 
     const initializeStage = useCallback((textOnly: string, lower: string, content: string, contentLower: string, attachedText?: string) => {
@@ -61,10 +75,10 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         if ((lower.includes('skill') && lower.includes('knowledge')) || lower.includes('can teach you') || (captureStage.current === 'practice' && (lower.includes('knowledge:') || lower.includes('difficulty:')))) {
             if (captureStage.current === 'practice') return;
             if (captureStage.current !== 'none') finalizeCapture();
-            captureStage.current = 'practice';
+            startStage('practice');
             tempPracticeRef.current = [];
-            
-            // Only silence if explicitly requested by UI refresh or system sync. 
+
+            // Only silence if explicitly requested by UI refresh or system sync.
             // Manual commands from the log remain visible.
             if (practice.isUiRequested || practice.silentSyncPendingRef.current) {
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
@@ -73,7 +87,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         else if (lower.includes('practice sessions left')) {
             if (captureStage.current === 'practice') return;
             if (captureStage.current !== 'none') finalizeCapture();
-            captureStage.current = 'practice';
+            startStage('practice');
             tempPracticeRef.current = [];
             if (practice.isUiRequested || practice.silentSyncPendingRef.current) {
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
@@ -88,7 +102,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         })) && captureStage.current !== 'practice') {
             if (captureStage.current === 'quest') return;
             if (captureStage.current !== 'none') finalizeCapture();
-            captureStage.current = 'quest';
+            startStage('quest');
             tempQuestRef.current = [];
             if (isCharacterOpen) {
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
@@ -99,7 +113,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         else if (strippedLower === 'who' || strippedLower === 'who:' || strippedLower === 'players' || strippedLower === 'allies' || strippedLower === 'minions' || strippedLower.startsWith("who's online") || strippedLower.startsWith("allies online") || strippedLower.startsWith("minions online")) {
             if (captureStage.current === 'who') return;
             if (captureStage.current !== 'none') finalizeCapture();
-            captureStage.current = 'who'; 
+            startStage('who');
             tempWhoRef.current = [];
             if (isPlayersOpen) {
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
@@ -112,7 +126,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         else if ((textOnly.startsWith('Player') && textOnly.includes('Room')) || (textOnly.startsWith('Who') && textOnly.includes('Location'))) {
             if (captureStage.current === 'where') return;
             if (captureStage.current !== 'none') finalizeCapture();
-            captureStage.current = 'where'; 
+            startStage('where');
             tempWhereRef.current = [];
             if (isPlayersOpen) {
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
@@ -144,7 +158,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         else if (((contentLower.includes('in the ') || contentLower.includes('in your ') || contentLower.includes('in a ')) && contentLower.endsWith(':') && !contentLower.includes('equipped')) || (contentLower.includes('corpse') && contentLower.includes('contains:'))) {
             if (captureStage.current === 'container') return;
             if (captureStage.current !== 'none') finalizeCapture();
-            captureStage.current = 'container';
+            startStage('container');
         }
 
         // 6. Stats / Score / Spell Speed / Affects
@@ -155,8 +169,8 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
             if (captureStage.current === targetStage) return;
             if (captureStage.current !== 'none') finalizeCapture();
             
-            isWaitingForStats.current = false; 
-            captureStage.current = targetStage;
+            isWaitingForStats.current = false;
+            startStage(targetStage);
             tempStatsRef.current = [];
             tempScoreRef.current = [];
             
@@ -175,7 +189,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         else if ((isWaitingForEq.current || captureStage.current === 'none') && (/you are using|you are equipped with/i.test(lower) || (isWaitingForEq.current && lower.startsWith('<')))) {
             if (captureStage.current === 'eq') return;
             if (captureStage.current !== 'none') finalizeCapture();
-            isWaitingForEq.current = false; captureStage.current = 'eq';
+            isWaitingForEq.current = false; startStage('eq');
             if (isEquipmentOpen || isCharacterOpen) {
                 if (isDrawerCapture.current === 0) isDrawerCapture.current = 1;
             }
@@ -185,7 +199,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         else if ((isWaitingForInv.current || captureStage.current === 'none') && /you are carrying|your inventory contains|is carrying:|is using:/i.test(lower)) {
             if (captureStage.current === 'inv') return;
             if (captureStage.current !== 'none') finalizeCapture();
-            isWaitingForInv.current = false; captureStage.current = 'inv';
+            isWaitingForInv.current = false; startStage('inv');
             if (isInventoryOpen) {
                 if (isDrawerCapture.current === 0) isDrawerCapture.current = 1;
             }
@@ -208,7 +222,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         )) {
             if (captureStage.current === 'info') return;
             if (captureStage.current !== 'none') finalizeCapture();
-            captureStage.current = 'info';
+            startStage('info');
             tempInfoRef.current = [];
             
             if (isCharacterOpen || isStatsOpen) {
@@ -224,7 +238,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         else if (lower.includes('whois information for') || lower.startsWith('whois:') || lower.startsWith('whois status:')) {
             if (captureStage.current === 'whois') return;
             if (captureStage.current !== 'none') finalizeCapture();
-            captureStage.current = 'whois';
+            startStage('whois');
             setCharacterInfo((prev: any) => ({ ...prev, whois: '' }));
             if (isCharacterOpen) {
                 if (isSilentCapture.current === 0) isSilentCapture.current = 1;
@@ -248,7 +262,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
             }
         }
     }, [
-        captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
+        captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, captureOwnerDrawer,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
         practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, 
         setScoreLines, setStatsLines, setInfoLines,

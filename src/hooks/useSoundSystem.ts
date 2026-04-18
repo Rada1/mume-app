@@ -38,7 +38,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         if (!audioCtxRef.current || clickSoundRef.current || loadingRefs.current['click']) return;
         loadingRefs.current['click'] = true;
         try {
-            const response = await fetch('/assets/Sounds/Sound effects/click.wav');
+            const response = await fetch('/assets/Sounds/Sound effects/click.mp3');
             const arrayBuffer = await response.arrayBuffer();
             const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
             clickSoundRef.current = audioBuffer;
@@ -157,7 +157,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
 
     const playClickSound = useCallback(() => {
         if (clickSoundRef.current) {
-            playSound(clickSoundRef.current, { volume: 0.3 });
+            playSound(clickSoundRef.current, { volume: 2.0 });
         } else {
             // If not loaded yet, try to load it (it will be ready for next time)
             loadClickSound();

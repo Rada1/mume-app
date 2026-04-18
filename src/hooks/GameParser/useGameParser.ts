@@ -57,7 +57,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         setLightningEnabled, setAbilities, setCharacterClass, 
         inCombatRef, actionsRef,
         executeCommandRef, setInventoryLines, setStatsLines, setInfoLines, setScoreLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines, setEqLines, setWhoList, setWhereList, setRoomItems, 
-        captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
+        captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, captureOwnerDrawer,
         keywordOverrides, roomNameRef, roomDescRef, setRoomName, setRoomDesc, setRoomZone, setCurrentTerrain, showDebugEchoes, addDiagnosticLog, popoverState, setPopoverState,
         setDiscoveredItems, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName,
         setBufferHealthStatus, setBufferName, setCharacterInfo, setQuests, quests,
@@ -107,7 +107,7 @@ export function useGameParser(deps: UseGameParserDeps) {
 
     // Initialize Specialized Hooks
     const { finalizeCapture } = useStageManager({
-        captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
+        captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, captureOwnerDrawer,
         addDiagnosticLog, addMessage,
         setPopoverState, setEqLines, setInventoryLines,
         setStatsLines, setInfoLines, setScoreLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines,
@@ -185,8 +185,9 @@ export function useGameParser(deps: UseGameParserDeps) {
 
     const { initializeStage } = useStageInitializer({
         captureStage, isSilentCapture, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
+        captureOwnerDrawer,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
-        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState, 
+        practice, quests, setCharacterInfo, setWhoList, setWhereList, setPopoverState,
         setScoreLines, setStatsLines, setInfoLines,
         tempStatsRef, tempScoreRef, tempInfoRef, tempPracticeRef, tempQuestRef, tempWhoRef, tempWhereRef,
         finalizeCapture, help,
@@ -197,6 +198,7 @@ export function useGameParser(deps: UseGameParserDeps) {
 
     const { routeMessage, determineVisibility, detectItemsInRoom } = useMessageRouter({
         captureStage, isSilentCapture, isDrawerCapture,
+        captureOwnerDrawer,
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
         isWaitingForInv, isWaitingForInfo, isWaitingForEq, isWaitingForStats,
         setWhoList, setWhereList, setRoomItems, registerEntity, setCharacterInfo, setDiscoveredItems, extractNoun, ansiConvert,
