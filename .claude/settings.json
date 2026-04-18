@@ -10,7 +10,9 @@
       "Read(//c/Users/pwetz/Downloads/mume/ app/src/types/**)",
       "Read(//c/Users/pwetz/Downloads/mume/ app/src/components/**)",
       "Read(//c/Users/pwetz/.claude/projects/c--Users-pwetz-Downloads-mume-app/memory/**)",
-      "Bash(grep -n \"buildHighlighterCandidates\\\\|useMessageHighlighter\" src/**/*.tsx)"
+      "Bash(grep -n \"buildHighlighterCandidates\\\\|useMessageHighlighter\" src/**/*.tsx)",
+      "Bash(grep -r \"Comm\\\\\\\\.Send\\\\|Comm\\\\\\\\.Channel\\\\|Broadcast\" \"c:\\\\Users\\\\pwetz\\\\Downloads\\\\mume app\\\\src\")",
+      "Bash(grep -n \"Comm\\\\\\\\.Channel\" \"c:\\\\Users\\\\pwetz\\\\Downloads\\\\mume app\\\\src/components/Messages/MessageLog.tsx\")"
     ]
   }
 }

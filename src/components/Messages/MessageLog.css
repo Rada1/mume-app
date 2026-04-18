@@ -316,14 +316,19 @@
     filter: none !important;
 }
 
+.message-content .inline-btn.npc-highlighter {
+    color: var(--glow-color, #fde047) !important;
+    filter: none !important;
+}
+
 .pc-highlighter {
     color: var(--glow-color, #7dd3fc);
     /* Sky Blue 300 */
 }
 
 .npc-highlighter {
-    color: var(--glow-color, #f0abfc);
-    /* Neon Purple / Fuchsia 300 */
+    color: var(--glow-color, #fde047);
+    /* Bright Yellow 300 */
 }
 
 .keyword-highlight.combat-verb {

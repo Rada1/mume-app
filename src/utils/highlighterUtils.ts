@@ -244,7 +244,7 @@ export const buildHighlighterCandidates = (
         }
     }
 
-    const corpseGlowColor = getGlowColorForCategory('inline-corpses', inlineCategories) || 'rgba(180, 100, 50, 0.9)';
+    const corpseGlowColor = getGlowColorForCategory('inline-corpses', inlineCategories) || 'rgba(251, 146, 60, 0.95)';
 
     // Pre-detect which NPC names appear in "corpse of ..." context in this message.
     // MUME often splits "corpse of a pack horse" across HTML color spans, so we can't
@@ -324,8 +324,8 @@ export const buildHighlighterCandidates = (
                     isRegex: true,
                     priority: 6, // Slightly higher than items to favor NPC match in ambiguous cases
                     replacer: (m, _match) => {
-                        // Default to 'inlinenpc' which is Magenta.
-                        let baseColor = getGlowColorForCategory(category || 'inlinenpc', inlineCategories) || 'rgba(254, 240, 138, 0.9)';
+                        // Default to NPC Yellow.
+                        let baseColor = getGlowColorForCategory(category || 'inlinenpc', inlineCategories) || 'rgba(253, 224, 71, 0.95)';
                         
                         // Check if this NPC is in the group (charmies)
                         const groupMemberIndex = groupMembers?.findIndex(gm => 

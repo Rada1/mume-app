@@ -7,7 +7,7 @@ import { ansiConvert } from '../utils/ansi';
 // ---------------------------------------------------------------------------
 
 export const ARRIVE_REGEX = /^(.+?)\s+(has arrived from|arrives from|enters from)\s+(the\s+)?(.+?)\.?$/i;
-export const LEAVE_REGEX = /^(.+?)\s+(leaves|enters)\s+(the\s+)?(.+?)\.?$/i;
+export const LEAVE_REGEX = /^(.+?)\s+(leaves|enters|flees|fled)\s+(the\s+)?(.+?)\.?$/i;
 export const NPC_LINE_REGEX = /^((?:A|An|The|Some)?\s*[\w\s,-]+?'?s?)\s+(\w+s)\b\s*(.*)$/i;
 
 export const ROOM_EXIT_REGEX = /^(North|South|East|West|Up|Down|North|Southwest|Northeast|Southwest|Southeast)\s+-\s+/i;
@@ -199,7 +199,10 @@ export function useMessageLog(
             currentTextLower.includes('arrives from') ||
             currentTextLower.includes('has arrived from') ||
             currentTextLower.includes(' leaves ') ||
-            currentTextLower.includes(' leave ');
+            currentTextLower.includes(' leave ') ||
+            currentTextLower.includes(' flees ') ||
+            currentTextLower.includes(' flee ') ||
+            currentTextLower.includes(' fled ');
 
         const isLiveEvent = isCombat || isComm || isArriveLeave || type === 'user';
 
@@ -314,7 +317,7 @@ export function useMessageLog(
             'hit', 'miss', 'stab', 'cleave', 'sting', 'lash', 'scratch', 'bruise', 'dodge',
             'gets', 'takes', 'drops', 'puts', 'gives', 'opens', 'closes', 'locks', 'unlocks',
             'get', 'take', 'drop', 'put', 'give', 'open', 'close', 'lock', 'unlock',
-            'arrives', 'leaves', 'enters'
+            'arrives', 'leaves', 'enters', 'flees', 'fled', 'panics', 'attempts'
         ];
 
         let processedText = currentText;

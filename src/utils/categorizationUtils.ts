@@ -6,9 +6,9 @@
 import { InlineCategoryConfig } from '../types';
 
 // palette definitions for consistency
-const COLOR_NPC = 'rgba(254, 240, 138, 0.9)';   // Pastel Yellow (#fef08a)
+const COLOR_NPC = 'rgba(253, 224, 71, 0.95)';   // Bright Pastel Yellow (#fde047)
 const COLOR_PLAYER = 'rgba(125, 211, 252, 0.9)'; // Match who-list/pc-highlighter (#7dd3fc)
-export const COLOR_OBJ = 'rgba(235, 135, 65, 0.9)';   // Official Object Brown (matches log highlights)
+export const COLOR_OBJ = 'rgba(251, 146, 60, 0.95)';   // Vibrant Orange (#fb923c)
 
 
 export const DEFAULT_INLINE_CATEGORIES: InlineCategoryConfig[] = [

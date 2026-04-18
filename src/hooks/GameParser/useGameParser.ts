@@ -815,7 +815,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         
         // If Newbie Mode is OFF, we want to see descriptions and exits in the log.
         // Room content (NPCs, exits, items) should be preserved even during silent captures.
-        const isRoomContent = isRoomName || lower.startsWith('exits:') || lower.includes(' is here.') || lower.includes(' are here.') || lower.includes('standing here') || lower.includes('resting here') || lower.includes('sitting here') || lower.includes('sleeping here');
+        // Room content (NPCs, exits, items) should be preserved even during silent captures.
+        const isRoomContent = isRoomName || lower.startsWith('exits:') || lower.includes(' is here.') || lower.includes(' are here.') || lower.includes('standing here') || lower.includes('resting here') || lower.includes('sitting here') || lower.includes('sleeping here') || lower.includes(' leaves ') || lower.includes(' arrives from ') || lower.includes(' arrived from ') || lower.includes(' followed ') || lower.includes(' follows ') || lower.includes(' following ') || lower.includes(' flees ') || lower.includes(' fled ') || lower.includes(' panics') || lower.includes(' attempts');
         const shouldShow = determineVisibility(lower, isImportantMessage, isRoomContent, isRoomDescription, promptInfo.isEndPrompt, deps.isNewbieMode, isRoomWindow);
 
         const commInfo = parseComm(cleanLine, textOnly, lower);

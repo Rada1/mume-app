@@ -120,7 +120,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         // In spectate mode, ANY line starting with '>' is a commanded action from the spectated player
         else if (deps.isSpectateMode && trimmed.startsWith('>') && trimmed.length > 1) finalType = 'snoop-command';
         else if (isMatch && attachedText.length <= 2) finalType = 'prompt';
-        else if (lower.startsWith('you go ') || lower.includes(' leaves ') || lower.includes(' arrives from ') || lower.includes('alas, you cannot go that way') || lower.includes('there is no exit')) finalType = 'move';
+        else if (lower.startsWith('you go ') || lower.includes(' leaves ') || lower.includes(' arrives from ') || lower.includes(' arrived from ') || lower.includes(' flees ') || lower.includes(' fled ') || lower.includes(' panics') || lower.includes(' attempts') || lower.includes('alas, you cannot go that way') || lower.includes('there is no exit')) finalType = 'move';
 
         if (finalType === 'who-list') {
             const nameMatch = textOnly.match(/\s*((?:[<\[].*?[>\]]\s*)*)([A-Z\u00C0-\u00DE][a-zA-Z\u00C0-\u00FF]+)/);

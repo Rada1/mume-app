@@ -12,7 +12,7 @@ import { useEnvironment } from '../hooks/useEnvironment';
 import { useMessageHighlighter } from '../hooks/useMessageHighlighter';
 import { useTelnet } from '../hooks/useTelnet';
 import { ProtocolHandler } from '../utils/telnet/ProtocolHandler';
-import { IAC, SB, SE, TELNET_GMCP } from '../constants';
+import { GmcpDecoder } from '../utils/telnet/GmcpDecoder';
 import { useGameParser } from '../hooks/GameParser/useGameParser';
 import { useCommandController } from '../hooks/useCommandController';
 import { useSettings } from '../hooks/useSettings';
@@ -799,46 +799,120 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const replayerBufferRef = useRef('');
     const replayerProtocolHandlerRef = useRef<ProtocolHandler | null>(null);
 
+    // Replay-side GMCP decoder. Reuses the exact routing logic of the live
+    // GmcpDecoder (pkg -> handler + Char.Vitals stats/weather/light extraction +
+    // Comm.Channel parsing), so replay fires the same handlers as live play.
+    // A handlers-ref indirection (mirroring useTelnet) keeps callbacks fresh
+    // across re-renders without re-instantiating the decoder (its charVitalsState
+    // must persist across the playback).
+    const replayGmcpHandlersRef = useRef<any>(null);
+    useEffect(() => {
+        replayGmcpHandlersRef.current = {
+            setStats: v.setStats,
+            setWeather: s.setWeather,
+            setIsFoggy: s.setIsFoggy,
+            setInCombat: (val: boolean, force?: boolean) => s.setInCombat(val, force),
+            detectLighting: (light: string) => {
+                if (s.isSpectateMode) s.setSpectateLighting(light as any);
+                else env.detectLighting?.(light);
+            },
+            onOpponentChange: (name: string | null) => v.setOpponentName(name),
+            onBufferChange: (name: string | null) => v.setBufferName(name),
+            onAddPlayer: gmcpHandlers.onAddPlayer,
+            onRemovePlayer: gmcpHandlers.onRemovePlayer,
+            onRoomItems: gmcpHandlers.onRoomItems,
+            onRoomInfo: (data: any) => {
+                gmcpHandlers.onRoomInfo(data);
+                if (mapperRef.current) mapperRef.current.handleRoomInfo(data);
+                if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new CustomEvent('mume-mapper-room-info', { detail: { ...data, spectating: true } }));
+                }
+            },
+            onRoomUpdateExits: gmcpHandlers.onRoomUpdateExits,
+            onCharVitals: (data: any) => {
+                gmcpHandlers.onCharVitals(data);
+                if (data?.terrain && mapperRef.current) mapperRef.current.handleTerrain(data.terrain);
+                if (data?.terrain && typeof window !== 'undefined') {
+                    window.dispatchEvent(new CustomEvent('mume-mapper-terrain', { detail: data.terrain }));
+                }
+            },
+            onRoomPlayers: gmcpHandlers.onRoomPlayers,
+            onRoomNpcs: gmcpHandlers.onRoomNpcs,
+            onAddNpc: gmcpHandlers.onAddNpc,
+            onRemoveNpc: gmcpHandlers.onRemoveNpc,
+            onCharNameChange: gmcpHandlers.onCharNameChange,
+            onCharInfo: gmcpHandlers.onCharInfo,
+            onPositionChange: gmcpHandlers.onPositionChange,
+            // Mirror live behavior: stash GMCP comm metadata for the text-line
+            // parser to attach to the upcoming plain-text message.
+            onComm: (sender: string, chan: string, msg: string) => {
+                pendingGmcpCommRef.current = { sender, chan, msg };
+                gmcpHandlers.onComm?.(sender, chan, msg);
+            },
+            onGroupAdd: gmcpHandlers.onGroupAdd,
+            onGroupUpdate: gmcpHandlers.onGroupUpdate,
+            onGroupRemove: gmcpHandlers.onGroupRemove,
+            onGroupSet: gmcpHandlers.onGroupSet,
+            onMumeEdit: gmcpHandlers.onMumeEdit,
+            onDisconnect: gmcpHandlers.onDisconnect,
+            onRoomCharsCombat: gmcpHandlers.onRoomCharsCombat,
+            onCharRide: gmcpHandlers.onCharRide,
+            onCorePing: () => {},
+            onCoreGoodbye: () => {}
+        };
+    });
+
+    const replayGmcpDecoderRef = useRef<GmcpDecoder | null>(null);
+    if (!replayGmcpDecoderRef.current) {
+        const proxy = (k: string) => (...args: any[]) => replayGmcpHandlersRef.current?.[k]?.(...args);
+        replayGmcpDecoderRef.current = new GmcpDecoder({
+            setStats: proxy('setStats') as any,
+            setWeather: proxy('setWeather') as any,
+            setIsFoggy: proxy('setIsFoggy') as any,
+            setInCombat: proxy('setInCombat') as any,
+            detectLighting: proxy('detectLighting') as any,
+            onOpponentChange: proxy('onOpponentChange'),
+            onBufferChange: proxy('onBufferChange'),
+            onAddPlayer: proxy('onAddPlayer'),
+            onRemovePlayer: proxy('onRemovePlayer'),
+            onRoomItems: proxy('onRoomItems'),
+            onRoomInfo: proxy('onRoomInfo'),
+            onRoomUpdateExits: proxy('onRoomUpdateExits'),
+            onCharVitals: proxy('onCharVitals'),
+            onRoomPlayers: proxy('onRoomPlayers'),
+            onRoomNpcs: proxy('onRoomNpcs'),
+            onAddNpc: proxy('onAddNpc'),
+            onRemoveNpc: proxy('onRemoveNpc'),
+            onCharNameChange: proxy('onCharNameChange'),
+            onCharInfo: proxy('onCharInfo'),
+            onPositionChange: proxy('onPositionChange'),
+            onComm: proxy('onComm'),
+            onGroupAdd: proxy('onGroupAdd'),
+            onGroupUpdate: proxy('onGroupUpdate'),
+            onGroupRemove: proxy('onGroupRemove'),
+            onGroupSet: proxy('onGroupSet'),
+            onMumeEdit: proxy('onMumeEdit'),
+            onDisconnect: proxy('onDisconnect'),
+            onRoomCharsCombat: proxy('onRoomCharsCombat'),
+            onCharRide: proxy('onCharRide'),
+            onCorePing: proxy('onCorePing'),
+            onCoreGoodbye: proxy('onCoreGoodbye')
+        });
+    }
+
     if (!replayerProtocolHandlerRef.current) {
         replayerProtocolHandlerRef.current = new ProtocolHandler({
-            sendBytes: () => {}, 
-            sendGMCP: () => {},  
+            sendBytes: () => {},
+            sendGMCP: () => {},
             addMessage: (type, text, ...args) => {
                 addMessage(type as any, text, ...args);
             },
-            handleSubnegotiation: (buffer) => {
-                const cmd = buffer[0];
-                if (cmd === TELNET_GMCP) {
-                    const raw = new TextDecoder().decode(new Uint8Array(buffer.slice(1)));
-                    let splitIdx = raw.search(/[\s\{\[]/);
-                    const pkg = splitIdx > -1 ? raw.substring(0, splitIdx).trim() : raw;
-                    const json = splitIdx > -1 ? raw.substring(splitIdx).trim() : '';
-                    const data = json ? JSON.parse(json) : null;
-                    const parts = pkg.split('.');
-                    const leaf = parts[parts.length - 1];
-                    const handlerName = `on${leaf}`;
-                    if ((gmcpHandlers as any)[handlerName]) {
-                        (gmcpHandlers as any)[handlerName](data);
-                    }
-                    
-                    if (pkg === 'Room.Info' && mapperRef.current) {
-                        mapperRef.current.handleRoomInfo(data);
-                        if (typeof window !== 'undefined') {
-                            window.dispatchEvent(new CustomEvent('mume-mapper-room-info', { 
-                                detail: { ...data, spectating: true } 
-                            }));
-                        }
-                    }
-                    if (pkg === 'Char.Vitals' && data.terrain && mapperRef.current) {
-                        mapperRef.current.handleTerrain(data.terrain);
-                        if (typeof window !== 'undefined') {
-                            window.dispatchEvent(new CustomEvent('mume-mapper-terrain', { 
-                                detail: data.terrain 
-                            }));
-                        }
-                    }
-                }
-            },
+            // GMCP subnegotiation is intentionally ignored here. Recordings
+            // include both raw rx bytes (which pass through this protocol
+            // handler) and separate 'gmcp' entries. The gmcp-entry path below
+            // feeds replayGmcpDecoder, so dispatching here too would double-fire
+            // every handler (duplicate comm bubbles, stats updates, etc.).
+            handleSubnegotiation: () => {},
             processText: (text) => {
                 const scrubbed = applyPrivacyScrubbing(text, isPrivacyModeActiveRef.current);
                 replayerBufferRef.current += scrubbed;
@@ -869,30 +943,33 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (isSilent) {
             if (type === 'gmcp') {
                 const { pkg, data } = payload;
+                // Recorded as { pkg, data: jsonString } (useTelnet.ts); older
+                // logs or non-replay callers may already pass a parsed object.
+                const dataObj = typeof data === 'string' ? (data ? JSON.parse(data) : null) : data;
                 setReplayHUDState(prev => {
                     const next = { ...prev };
-                    if (pkg === 'Room.Info') {
-                        next.roomName = data.name || '';
-                        next.roomDesc = data.desc || '';
-                        next.roomTerrain = data.terrain || data.environment || '';
-                        next.roomZone = data.zone || data.area || '';
-                        
+                    if (pkg === 'Room.Info' && dataObj) {
+                        next.roomName = dataObj.name || '';
+                        next.roomDesc = dataObj.desc || '';
+                        next.roomTerrain = dataObj.terrain || dataObj.environment || '';
+                        next.roomZone = dataObj.zone || dataObj.area || '';
+
                         if (mapperRef.current) {
-                            mapperRef.current.handleRoomInfo(data);
+                            mapperRef.current.handleRoomInfo(dataObj);
                         }
-                    } else if (pkg === 'Char.Vitals') {
-                        if (data.hp !== undefined) next.hp = data.hp;
-                        if (data.maxhp !== undefined) next.maxHp = data.maxhp;
-                        if (data.mana !== undefined) next.mana = data.mana;
-                        if (data.maxmana !== undefined) next.maxMana = data.maxmana;
-                        if (data.move !== undefined) next.move = data.move;
-                        if (data.maxmove !== undefined) next.maxMove = data.maxmove;
-                        if (data.opponent !== undefined) {
-                            next.opponentName = data.opponent ? 'Opponent' : null;
+                    } else if (pkg === 'Char.Vitals' && dataObj) {
+                        if (dataObj.hp !== undefined) next.hp = dataObj.hp;
+                        if (dataObj.maxhp !== undefined) next.maxHp = dataObj.maxhp;
+                        if (dataObj.mana !== undefined) next.mana = dataObj.mana;
+                        if (dataObj.maxmana !== undefined) next.maxMana = dataObj.maxmana;
+                        if (dataObj.move !== undefined) next.move = dataObj.move;
+                        if (dataObj.maxmove !== undefined) next.maxMove = dataObj.maxmove;
+                        if (dataObj.opponent !== undefined) {
+                            next.opponentName = dataObj.opponent ? 'Opponent' : null;
                         }
-                        
-                        if (data.terrain && mapperRef.current) {
-                            mapperRef.current.handleTerrain(data.terrain);
+
+                        if (dataObj.terrain && mapperRef.current) {
+                            mapperRef.current.handleTerrain(dataObj.terrain);
                         }
                     }
                     return next;
@@ -905,28 +982,28 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             replayerProtocolHandlerRef.current?.handleRawData(new Uint8Array(payload));
         } else if (type === 'gmcp') {
             const { pkg, data } = payload;
-            
+            const jsonStr = typeof data === 'string' ? data : (data != null ? JSON.stringify(data) : '');
+            const dataObj = typeof data === 'string' ? (data ? JSON.parse(data) : null) : data;
+
             setReplayHUDState(prev => {
                 const next = { ...prev };
-                if (pkg === 'Room.Info') {
-                    next.roomName = data.name || '';
-                    next.roomDesc = data.desc || '';
-                    next.roomTerrain = data.terrain || data.environment || '';
-                    next.roomZone = data.zone || data.area || '';
-                } else if (pkg === 'Char.Vitals') {
-                    if (data.hp !== undefined) next.hp = data.hp;
-                    if (data.maxhp !== undefined) next.maxHp = data.maxhp;
-                    if (data.hp_status) next.opponentHealth = data.hp_status;
+                if (pkg === 'Room.Info' && dataObj) {
+                    next.roomName = dataObj.name || '';
+                    next.roomDesc = dataObj.desc || '';
+                    next.roomTerrain = dataObj.terrain || dataObj.environment || '';
+                    next.roomZone = dataObj.zone || dataObj.area || '';
+                } else if (pkg === 'Char.Vitals' && dataObj) {
+                    if (dataObj.hp !== undefined) next.hp = dataObj.hp;
+                    if (dataObj.maxhp !== undefined) next.maxHp = dataObj.maxhp;
+                    if (dataObj.hp_status) next.opponentHealth = dataObj.hp_status;
                 }
                 return next;
             });
 
-            const parts = pkg.split('.');
-            const leaf = parts[parts.length - 1];
-            const handlerName = `on${leaf}`;
-            if ((gmcpHandlers as any)[handlerName]) {
-                (gmcpHandlers as any)[handlerName](data);
-            }
+            // Route through the same GmcpDecoder used in live play so every
+            // dependent system (lighting, weather, zone music, comm bubbles,
+            // combat state, groups, etc.) fires exactly as it did during recording.
+            replayGmcpDecoderRef.current?.decode(pkg, jsonStr);
         } else if (type === 'tx') {
             addMessage('user', applyPrivacyScrubbing(payload, isPrivacyMode), false);
         }
