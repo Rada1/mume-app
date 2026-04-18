@@ -158,6 +158,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // --- Mode State ---
     const [sessionMode, setSessionMode] = useState<SessionMode>('live');
+    useEffect(() => { sessionModeRef.current = sessionMode; }, [sessionMode]);
     // uiMode is already managed by 's' (game state)
 
     // --- Replayer "Shadow" State for HUD ---
@@ -198,6 +199,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     useEffect(() => { inCombatHookRef.current = inCombat; }, [inCombat]);
 
     const recorder = useSessionRecorder();
+    const isSilentReplayRef = useRef(false);
+    const sessionModeRef = useRef<SessionMode>('live');
+    const replayerRef = useRef<any>(null);
 
     const roomContext = useMemo(() => ({
         players: s.roomPlayers,
@@ -261,86 +265,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         console.log(`[Context/Vitals] playerWaiting=${playerWaiting}, effectiveWaiting=${effectiveWaiting}`);
     }
 
-    const audio = useGameAudio({
-        isSoundEnabled: s.isSoundEnabled,
-        roomZone: s.roomZone,
-        zoneMusic: s.zoneMusic,
-        inCombat: s.inCombat,
-        lighting: s.lighting,
-        gameTime: s.gameTime,
-        currentTerrain: s.currentTerrain,
-        weather: s.weather,
-        playerPosition: s.playerPosition,
-        waiting: effectiveWaiting,
-        manualCancelRef,
-        gameState: s.gameState,
-        isSpectateMode: s.isSpectateMode,
-        spectateRoomZone: s.spectateRoomZone,
-        spectateTerrain: s.spectateTerrain,
-        spectateLighting: s.spectateLighting,
-        spectateWeather: s.spectateWeather,
-        spectateIsFoggy: s.spectateIsFoggy,
-        spectateInCombat: s.spectateInCombat,
-        spectatePosition: s.spectatePosition
-    });
-
-    const {
-        audioCtxRef,
-        initAudio,
-        playSound,
-        setPlaySound,
-        playRandomSound,
-        playMovementSound,
-        loadMovementSound,
-        playDoorSound,
-        loadDoorSound,
-        playClickSound,
-        loadClickSound,
-        playHitImpactSound,
-        loadHitImpactSound,
-        playOofSound,
-        loadOofSound,
-        playSlashSound,
-        loadSlashSound,
-        playCleaveSound,
-        loadCleaveSound,
-        playSmiteSound,
-        loadSmiteSound,
-        playPierceSound,
-        loadPierceSound,
-        playStabSound,
-        loadStabSound,
-        loadAllWeaponSounds,
-        playIncantationSound,
-        stopIncantationSound,
-        playMagicExplosionSound,
-        primeSpellSuccess,
-        loadSpellSounds,
-        playCommMessageSound,
-        stopCommMessageSound,
-        loadCommMessageSound,
-        playBuySellSound,
-        loadBuySellSound,
-        playBashSound,
-        loadBashSound,
-        playArrowHitSound,
-        loadArrowHitSound,
-        playKillSound,
-        loadKillSound,
-        playLevelSound,
-        loadLevelSound,
-        triggerHaptic,
-        setTriggerHaptic
-    } = audio;
-
-    useEffect(() => {
-        if (initAudio) {
-            initAudio();
-        }
-    }, [initAudio]);
-
-
-
     const containerRef = useRef<HTMLDivElement>(null);
     const mapperRef = useRef<MapperRef>(null);
 
@@ -361,6 +285,126 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setAlertness: s.setAlertness,
         setDetectLighting: (fn) => { /* internal use */ }
     });
+
+    const isReplaying = sessionMode === 'replay';
+    const finalRoomZone = isReplaying ? replayHUDState.roomZone : (s.isSpectateMode ? s.spectateRoomZone : s.roomZone);
+    const finalTerrain = isReplaying ? replayHUDState.roomTerrain : (s.isSpectateMode ? s.spectateTerrain : s.currentTerrain);
+    const finalLighting = isReplaying ? env.lighting : (s.isSpectateMode ? s.spectateLighting : s.lighting);
+    const finalWeather = isReplaying ? env.weather : (s.isSpectateMode ? s.spectateWeather : s.weather);
+    const finalInCombat = isReplaying ? false : (s.isSpectateMode ? s.spectateInCombat : s.inCombat);
+    const finalPosition = isReplaying ? 'standing' : (s.isSpectateMode ? s.spectatePosition : s.playerPosition);
+    const finalWaiting = isReplaying ? false : effectiveWaiting;
+
+    // DEBUG LOGS
+    if (isReplaying || s.isSpectateMode) {
+        console.log(`[Flow/Debug] sessionMode=${sessionMode}, roomZone=${finalRoomZone}, terrain=${finalTerrain}, lighting=${finalLighting}, weather=${finalWeather}, isImmersionMode=${s.isImmersionMode}`);
+    }
+
+    const audio = useGameAudio({
+        isSoundEnabled: s.isSoundEnabled,
+        roomZone: finalRoomZone,
+        zoneMusic: s.zoneMusic,
+        inCombat: finalInCombat,
+        lighting: typeof finalLighting === 'string' ? finalLighting : 'none',
+        gameTime: v.activePrompt?.time || s.gameTime,
+        currentTerrain: finalTerrain,
+        weather: finalWeather as any,
+        playerPosition: finalPosition,
+        waiting: finalWaiting,
+        manualCancelRef,
+        gameState: s.gameState,
+        isSpectateMode: false, // Picked effective values above
+    });
+
+    const {
+        audioCtxRef,
+        initAudio,
+        playSound: rawPlaySound,
+        setPlaySound,
+        playRandomSound: rawPlayRandomSound,
+        playMovementSound: rawPlayMovementSound,
+        loadMovementSound,
+        playDoorSound: rawPlayDoorSound,
+        loadDoorSound,
+        playClickSound,
+        loadClickSound,
+        playHitImpactSound: rawPlayHitImpactSound,
+        loadHitImpactSound,
+        playOofSound: rawPlayOofSound,
+        loadOofSound,
+        playSlashSound: rawPlaySlashSound,
+        loadSlashSound,
+        playCleaveSound: rawPlayCleaveSound,
+        loadCleaveSound,
+        playSmiteSound: rawPlaySmiteSound,
+        loadSmiteSound,
+        playPierceSound: rawPlayPierceSound,
+        loadPierceSound,
+        playStabSound: rawPlayStabSound,
+        loadStabSound,
+        loadAllWeaponSounds,
+        playIncantationSound: rawPlayIncantationSound,
+        stopIncantationSound: rawPlayStopIncantationSound,
+        playMagicExplosionSound: rawPlayMagicExplosionSound,
+        primeSpellSuccess: rawPrimeSpellSuccess,
+        loadSpellSounds,
+        playCommMessageSound: rawPlayCommMessageSound,
+        stopCommMessageSound: rawStopCommMessageSound,
+        playBuySellSound: rawPlayBuySellSound,
+        loadBuySellSound,
+        playBashSound: rawPlayBashSound,
+        loadBashSound,
+        playArrowHitSound: rawPlayArrowHitSound,
+        loadArrowHitSound,
+        playKillSound: rawPlayKillSound,
+        loadKillSound,
+        playLevelSound: rawPlayLevelSound,
+        loadLevelSound,
+        triggerHaptic: rawTriggerHaptic,
+        setTriggerHaptic
+    } = audio;
+
+    // --- Tactical Audio Suppression Logic ---
+    // We want tactical sounds to play during 1x Replay playback, but NOT during
+    // seeking (silent rehydration) or high-speed playback (2x/5x).
+    const checkSuppression = () => {
+        const isReplaying = sessionModeRef.current === 'replay';
+        const speed = replayerRef.current?.state?.speed || 1;
+        return isReplaying && (isSilentReplayRef.current || speed > 1);
+    };
+
+    const playSound = useCallback((...args: any[]) => !checkSuppression() && rawPlaySound(...args), [rawPlaySound]);
+    const playRandomSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayRandomSound(...args), [rawPlayRandomSound]);
+    const playMovementSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayMovementSound(...args), [rawPlayMovementSound]);
+    const playDoorSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayDoorSound(...args), [rawPlayDoorSound]);
+    const playHitImpactSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayHitImpactSound(...args), [rawPlayHitImpactSound]);
+    const playOofSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayOofSound(...args), [rawPlayOofSound]);
+    const playSlashSound = useCallback((...args: any[]) => !checkSuppression() && rawPlaySlashSound(...args), [rawPlaySlashSound]);
+    const playCleaveSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayCleaveSound(...args), [rawPlayCleaveSound]);
+    const playSmiteSound = useCallback((...args: any[]) => !checkSuppression() && rawPlaySmiteSound(...args), [rawPlaySmiteSound]);
+    const playPierceSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayPierceSound(...args), [rawPlayPierceSound]);
+    const playStabSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayStabSound(...args), [rawPlayStabSound]);
+    const playIncantationSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayIncantationSound(...args), [rawPlayIncantationSound]);
+    const stopIncantationSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayStopIncantationSound(...args), [rawPlayStopIncantationSound]);
+    const playMagicExplosionSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayMagicExplosionSound(...args), [rawPlayMagicExplosionSound]);
+    const primeSpellSuccess = useCallback((...args: any[]) => !checkSuppression() && rawPrimeSpellSuccess(...args), [rawPrimeSpellSuccess]);
+    const playCommMessageSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayCommMessageSound(...args), [rawPlayCommMessageSound]);
+    const stopCommMessageSound = useCallback((...args: any[]) => !checkSuppression() && rawStopCommMessageSound(...args), [rawStopCommMessageSound]);
+    const playBuySellSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayBuySellSound(...args), [rawPlayBuySellSound]);
+    const playBashSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayBashSound(...args), [rawPlayBashSound]);
+    const playArrowHitSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayArrowHitSound(...args), [rawPlayArrowHitSound]);
+    const playKillSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayKillSound(...args), [rawPlayKillSound]);
+    const playLevelSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayLevelSound(...args), [rawPlayLevelSound]);
+    const triggerHaptic = useCallback((...args: any[]) => !checkSuppression() && rawTriggerHaptic(...args), [rawTriggerHaptic]);
+
+    useEffect(() => {
+        if (initAudio) {
+            initAudio();
+        }
+    }, [initAudio]);
+
+
+
 
     const roomDescRef = React.useRef<string>('');
 
@@ -405,6 +449,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         },
         playMovementSound,
         playDoorSound,
+        setWeather: s.setWeather,
+        setIsFoggy: s.setIsFoggy,
+        setStats: s.setStats,
         playerPositionRef: s.playerPositionRef,
         setIsRiding: s.setIsRiding,
         isRidingRef: s.isRidingRef,
@@ -506,6 +553,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setPlayerPosition: s.setPlayerPosition,
         setMood: s.setMood,
         detectLighting: env.detectLighting,
+        setWeather: s.setWeather,
+        setIsFoggy: s.setIsFoggy,
         setCurrentTerrain: s.setCurrentTerrain,
         addDiagnosticLog,
         keywordOverrides,
@@ -552,6 +601,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setOpponentName: v.setOpponentName,
         setBufferHealthStatus: v.setBufferHealthStatus,
         setBufferName: v.setBufferName,
+        setGameTime: s.setGameTime,
+        setStats: v.setStats,
+        setAbilities: s.setAbilities,
+        setCharacterClass: s.setCharacterClass,
         setCharacterInfo: v.setCharacterInfo,
         setSpectateStats: s.setSpectateStats,
         setSpectateHealthStatus: s.setSpectateHealthStatus,
@@ -809,6 +862,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const replayer = useSessionReplayer(useCallback((type, payload, isPrivacyMode, isSilent = false) => {
         isPrivacyModeActiveRef.current = isPrivacyMode;
+        isSilentReplayRef.current = isSilent;
+        sessionModeRef.current = sessionMode;
+        replayerRef.current = replayer;
         
         if (isSilent) {
             if (type === 'gmcp') {
@@ -1160,10 +1216,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             onGroupUpdate: groupUpdateFn, setOnGroupUpdate: setGroupUpdateFn,
             onGroupRemove: groupRemoveFn, setOnGroupRemove: setGroupRemoveFn,
             onGroupSet: groupSetFn, setOnGroupSet: setGroupSetFn,
-            playSound: isReplaying ? () => {} : playSound, 
-            playRandomSound: isReplaying ? () => {} : playRandomSound, 
-            playDoorSound: isReplaying ? () => {} : playDoorSound, 
-            setPlaySound, triggerHaptic: isReplaying ? () => {} : triggerHaptic, 
+            playSound, 
+            playRandomSound, 
+            playDoorSound, 
+            setPlaySound, triggerHaptic, 
             setTriggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, primeSpellSuccess,
 
             btn, joystick, editor, containerRef, viewport, env,

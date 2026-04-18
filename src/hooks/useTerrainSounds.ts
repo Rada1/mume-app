@@ -16,6 +16,10 @@ const TERRAIN_SOUND_MAP: Record<string, string> = {
     'MOUNTAIN': '/assets/Sounds/Terrain Sounds/mountains.wav',
     'TUNNEL': '/assets/Sounds/Terrain Sounds/cave_tunnel.mp3',
     'CAVE': '/assets/Sounds/Terrain Sounds/cave_tunnel.mp3',
+    'RAPIDS': '/assets/Sounds/Terrain Sounds/rapids.wav',
+    'UNDERWATER': '/assets/Sounds/Terrain Sounds/underwater.mp3',
+    'SHALLOWS': '/assets/Sounds/Terrain Sounds/shallows.wav',
+    'WATER': '/assets/Sounds/Terrain Sounds/shallows.wav',
 };
 
 export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, lighting, isSleeping }: TerrainSoundsDeps) => {
@@ -49,6 +53,11 @@ export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, 
     };
 
     useEffect(() => {
+        // Diagnostic log to see exactly what string the game is sending for currentTerrain
+        if (currentTerrain) {
+            console.log(`[useTerrainSounds] Incoming terrain: "${currentTerrain}"`);
+        }
+
         if (!isSoundEnabled || !currentTerrain || !audioCtxRef.current || isSleeping) {
             fadeOutAndStop();
             lastTerrainRef.current = null;
@@ -181,8 +190,14 @@ export const useTerrainSounds = ({ currentTerrain, isSoundEnabled, audioCtxRef, 
 
             const gain = ctx.createGain();
             gain.gain.setValueAtTime(0, ctx.currentTime);
-            // Balanced volume level (0.25)
-            gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + FADE_TIME);
+            
+            // Per-terrain volume scaling
+            let targetVolume = 0.25; // Default balanced level
+            if (url.includes('shallows.wav')) {
+                targetVolume = 0.8; // Make shallows significantly louder
+            }
+            
+            gain.gain.linearRampToValueAtTime(targetVolume, ctx.currentTime + FADE_TIME);
 
             source.connect(gain);
             gain.connect(ctx.destination);

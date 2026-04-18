@@ -52,7 +52,7 @@ export const useGameAudio = ({
     spectatePosition
 }: GameAudioDeps) => {
     // Log every render to track state flow
-    console.log(`[Audio/Render] waiting=${waiting}, isSpectateMode=${isSpectateMode}`);
+    console.log(`[Audio/Render] zone=${roomZone}, terrain=${currentTerrain}, lighting=${lighting}, weather=${weather}, waiting=${waiting}, isSpectate=${isSpectateMode}`);
 
     const effectivePosition = isSpectateMode ? (spectatePosition || 'standing') : (playerPosition || 'standing');
     const isSleeping = effectivePosition === 'sleeping';
@@ -161,8 +161,8 @@ export const useGameAudio = ({
             ? isRidingOverride 
             : (effectivePosition === 'riding' || effectivePosition?.includes('riding'));
             
-        playMovementSoundRef.current(isCurrentlyRiding);
-    }, [effectivePosition]);
+        playMovementSoundRef.current(isCurrentlyRiding, effectiveTerrain);
+    }, [effectivePosition, effectiveTerrain]);
 
     const playDoorSound = useCallback((isOpen: boolean) => {
         const now = Date.now();

@@ -7,18 +7,30 @@ import React, { useState } from 'react';
 import { useUI } from '../../../context/GameContext';
 import { 
     Play, Pause, Square, FastForward, Rewind, Download, Video, X, Eye, EyeOff,
-    Search, ChevronLeft, ChevronRight, FileText
+    Search, ChevronLeft, ChevronRight, FileText, Scissors
 } from 'lucide-react';
 
 export const ReplayHUD: React.FC = () => {
     const { replayer, setUI } = useUI();
-    const { state, play, pause, seek, setSpeed, setPrivacyMode, loadLog, startExport, stopExport, setIsVisible, performSearch } = replayer;
+    const { state, play, pause, seek, setSpeed, setPrivacyMode, loadLog, startExport, exportAsText, stopExport, setIsVisible, performSearch, setTrimRange } = replayer;
     const [isHovered, setIsHovered] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [isTrimMode, setIsTrimMode] = useState(false);
+    const [showExportMenu, setShowExportMenu] = useState(false);
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
         performSearch(e.target.value);
+    };
+
+    const toggleTrimMode = () => {
+        if (!isTrimMode) {
+            // Default to whole log if no trim set
+            if (state.trimRange[0] === null) setTrimRange([0, state.duration]);
+            setIsTrimMode(true);
+        } else {
+            setIsTrimMode(false);
+        }
     };
 
     const jumpToResult = (dir: 'next' | 'prev') => {
@@ -151,7 +163,7 @@ export const ReplayHUD: React.FC = () => {
             </div>
 
             {/* Scrubber */}
-            <div style={{ position: 'relative', height: '6px', width: '100%', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '3px', cursor: 'pointer' }}
+            <div style={{ position: 'relative', height: '10px', width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '5px', cursor: 'pointer' }}
                  onClick={(e) => {
                      const rect = e.currentTarget.getBoundingClientRect();
                      const x = e.clientX - rect.left;
@@ -159,10 +171,31 @@ export const ReplayHUD: React.FC = () => {
                      seek(pct * state.duration);
                  }}
             >
+                {/* Background Full Track */}
+                <div style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: '100%', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '5px' }} />
+                
+                {/* Trimmed Selection Highlight */}
+                {isTrimMode && state.trimRange[0] !== null && state.trimRange[1] !== null && (
+                    <div style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: `${(state.trimRange[0] / state.duration) * 100}%`,
+                        width: `${((state.trimRange[1] - state.trimRange[0]) / state.duration) * 100}%`,
+                        height: '100%',
+                        backgroundColor: 'rgba(74, 144, 226, 0.3)',
+                        borderLeft: '2px solid #4a90e2',
+                        borderRight: '2px solid #4a90e2',
+                        zIndex: 1
+                    }} />
+                )}
+
+                {/* Progress Fill */}
                 <div style={{ 
                     position: 'absolute', top: 0, left: 0, height: '100%', 
                     width: `${progress}%`, backgroundColor: '#4a90e2', 
-                    borderRadius: '3px', boxShadow: '0 0 10px rgba(74, 144, 226, 0.5)'
+                    borderRadius: '5px', boxShadow: '0 0 10px rgba(74, 144, 226, 0.5)',
+                    opacity: 0.6,
+                    zIndex: 2
                 }} />
                 
                 {/* Search Markers */}
@@ -174,23 +207,51 @@ export const ReplayHUD: React.FC = () => {
                             left: `${(t / state.duration) * 100}%`,
                             top: '-2px',
                             width: '2px',
-                            height: '10px',
+                            height: '14px',
                             backgroundColor: '#fff',
                             boxShadow: '0 0 4px #4a90e2',
                             pointerEvents: 'none',
-                            zIndex: 1
+                            zIndex: 3
                         }}
                     />
                 ))}
 
+                {/* Main Playhead */}
                 <div style={{
                     position: 'absolute', top: '50%', left: `${progress}%`,
-                    width: '12px', height: '12px', backgroundColor: '#fff',
+                    width: '14px', height: '14px', backgroundColor: '#fff',
                     borderRadius: '50%', transform: 'translate(-50%, -50%)',
-                    boxShadow: '0 0 5px rgba(0,0,0,0.5)',
-                    zIndex: 2
+                    boxShadow: '0 0 8px rgba(0,0,0,0.8)',
+                    zIndex: 4
                 }} />
             </div>
+
+            {/* Trim Controls Row (Only shown in Trim Mode) */}
+            {isTrimMode && (
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center', padding: '4px', backgroundColor: 'rgba(74, 144, 226, 0.1)', borderRadius: '8px' }}>
+                    <button 
+                        onClick={() => setTrimRange([state.currentTime, state.trimRange[1] ?? state.duration])}
+                        style={{ background: '#4a90e2', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '0.7rem', cursor: 'pointer' }}
+                    >
+                        MARK START
+                    </button>
+                    <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)' }}>
+                        {formatTime(state.trimRange[0] || 0)} - {formatTime(state.trimRange[1] || state.duration)}
+                    </span>
+                    <button 
+                        onClick={() => setTrimRange([state.trimRange[0] ?? 0, state.currentTime])}
+                        style={{ background: '#4a90e2', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', fontSize: '0.7rem', cursor: 'pointer' }}
+                    >
+                        MARK END
+                    </button>
+                    <button 
+                         onClick={() => setTrimRange([0, state.duration])}
+                         style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: '0.65rem', cursor: 'pointer', marginLeft: '8px' }}
+                    >
+                        RESET
+                    </button>
+                </div>
+            )}
 
             {/* Controls Row */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -227,6 +288,22 @@ export const ReplayHUD: React.FC = () => {
 
                 <div style={{ display: 'flex', gap: '12px' }}>
                     <button 
+                        title="Toggle Trim Mode"
+                        onClick={toggleTrimMode}
+                        style={{ 
+                            background: isTrimMode ? 'rgba(74, 144, 226, 0.2)' : 'rgba(255,255,255,0.05)', 
+                            border: `1px solid ${isTrimMode ? '#4a90e2' : 'rgba(255,255,255,0.1)'}`, 
+                            color: isTrimMode ? '#4a90e2' : 'rgba(255,255,255,0.7)', 
+                            borderRadius: '8px', 
+                            padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
+                            transition: 'all 0.2s ease'
+                        }}
+                    >
+                        <Scissors size={16} />
+                        <span style={{ fontSize: '0.75rem' }}>TRIM</span>
+                    </button>
+
+                    <button 
                         title={state.isPrivacyMode ? "Disable Privacy Mode" : "Enable Privacy Mode"}
                         onClick={() => setPrivacyMode(!state.isPrivacyMode)}
                         style={{ 
@@ -242,30 +319,73 @@ export const ReplayHUD: React.FC = () => {
                         <span style={{ fontSize: '0.75rem' }}>PRIVACY</span>
                     </button>
 
-                    <button 
-                        title={state.isExporting ? "Stop Export" : "Export to MP4"}
-                        onClick={() => state.isExporting ? stopExport() : startExport()}
-                        style={{ 
-                            background: state.isExporting ? 'rgba(255, 68, 68, 0.2)' : 'rgba(255,255,255,0.05)', 
-                            border: `1px solid ${state.isExporting ? '#ff4444' : 'rgba(255,255,255,0.1)'}`, 
-                            color: state.isExporting ? '#ff4444' : 'rgba(255,255,255,0.7)', 
-                            borderRadius: '8px', 
-                            padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
-                            transition: 'all 0.2s ease'
-                        }}
-                    >
-                        {state.isExporting ? (
-                            <>
-                                <div style={{ width: '8px', height: '8px', backgroundColor: '#ff4444', borderRadius: '50%' }} className="animate-pulse" />
-                                <span style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>RECORDING...</span>
-                            </>
-                        ) : (
-                            <>
-                                <Video size={16} />
-                                <span style={{ fontSize: '0.75rem' }}>EXPORT</span>
-                            </>
+                    <div style={{ position: 'relative' }} onMouseEnter={() => setShowExportMenu(true)} onMouseLeave={() => setShowExportMenu(false)}>
+                        {showExportMenu && !state.isExporting && (
+                            <div style={{ 
+                                position: 'absolute', bottom: '100%', right: 0, marginBottom: '8px',
+                                background: 'rgba(20, 25, 35, 0.95)', border: '1px solid rgba(74, 144, 226, 0.4)',
+                                borderRadius: '12px', padding: '6px', display: 'flex', flexDirection: 'column', gap: '4px',
+                                backdropFilter: 'blur(12px)', boxShadow: '0 -4px 16px rgba(0,0,0,0.5)', zIndex: 10001,
+                                width: '120px'
+                            }}>
+                                <button 
+                                    onClick={() => { exportAsText(); setShowExportMenu(false); }}
+                                    style={{ 
+                                        background: 'none', border: 'none', color: '#fff', borderRadius: '6px',
+                                        padding: '8px 10px', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', 
+                                        alignItems: 'center', gap: '8px', transition: 'background 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(74, 144, 226, 0.1)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                                >
+                                    <FileText size={16} color="#4a90e2" />
+                                    TEXT
+                                </button>
+                                <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '2px 4px' }} />
+                                <button 
+                                    onClick={() => { startExport(); setShowExportMenu(false); }}
+                                    style={{ 
+                                        background: 'none', border: 'none', color: '#fff', borderRadius: '6px',
+                                        padding: '8px 10px', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', 
+                                        alignItems: 'center', gap: '8px', transition: 'background 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(74, 144, 226, 0.1)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                                >
+                                    <Video size={16} color="#4a90e2" />
+                                    VIDEO
+                                </button>
+                            </div>
                         )}
-                    </button>
+                        
+                        <button 
+                            title={state.isExporting ? "Stop Export" : "Choose Export Type"}
+                            onClick={() => {
+                                if (state.isExporting) stopExport();
+                                else setShowExportMenu(!showExportMenu);
+                            }}
+                            style={{ 
+                                background: state.isExporting ? 'rgba(255, 68, 68, 0.2)' : 'rgba(255,255,255,0.05)', 
+                                border: `1px solid ${state.isExporting ? '#ff4444' : 'rgba(255,255,255,0.1)'}`, 
+                                color: state.isExporting ? '#ff4444' : 'rgba(255,255,255,0.7)', 
+                                borderRadius: '8px', 
+                                padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
+                                transition: 'all 0.2s ease'
+                            }}
+                        >
+                            {state.isExporting ? (
+                                <>
+                                    <div style={{ width: '8px', height: '8px', backgroundColor: '#ff4444', borderRadius: '50%' }} className="animate-pulse" />
+                                    <span style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>RECORDING...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Download size={16} />
+                                    <span style={{ fontSize: '0.75rem' }}>EXPORT</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

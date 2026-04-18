@@ -10,6 +10,8 @@ interface UseGmcpVitalsProps {
     setOpponentName: (name: string | null) => void;
     setBufferName: (name: string | null) => void;
     setPlayerPosition: (pos: string) => void;
+    setCurrentWeather: (weather: import('../../types').WeatherType) => void;
+    setIsFoggy: (isFoggy: boolean) => void;
     setCharacterInfo: React.Dispatch<React.SetStateAction<import('../../types').CharacterInfo>>;
     getCharNameFromId: (id: string | null | undefined) => string | null;
     findStatus: (str: string | undefined) => CombatHealthStatus | null;
@@ -31,6 +33,8 @@ export const useGmcpVitals = ({
     setOpponentName,
     setBufferName,
     setPlayerPosition,
+    setCurrentWeather,
+    setIsFoggy,
     setCharacterInfo,
     getCharNameFromId,
     findStatus,
@@ -96,13 +100,20 @@ export const useGmcpVitals = ({
             if (!oppName && !oppId) setOpponentHealthStatus(null);
         }
 
-        if (data.buff !== undefined) {
-            const buffName = getCharNameFromId(data.buff);
-            setBufferName(buffName);
-            if (!buffName) setBufferHealthStatus(null);
+        if (data.weather !== undefined) {
+            // MUME sends weather as a string or null
+            if (data.weather === null || data.weather === 'clear') setCurrentWeather('clear');
+            else if (data.weather.includes('rain')) setCurrentWeather(data.weather.includes('heavy') ? 'heavy-rain' : 'rain');
+            else if (data.weather.includes('snow')) setCurrentWeather('snow');
+            else if (data.weather.includes('cloud')) setCurrentWeather('cloud');
         }
+
+        if (data.fog !== undefined) {
+            setIsFoggy(data.fog === 'on' || data.fog === 'thick' || data.fog === 'yes' || !!data.fog);
+        }
+
         console.log('[GMCP] CharVitals:', data);
-    }, [setCurrentTerrain, setPlayerHealthStatus, setOpponentId, setOpponentName, setOpponentHealthStatus, setBufferName, setBufferHealthStatus, setPlayerPosition, findStatus, getCharNameFromId, isSpectateMode, detectLighting, playerPositionRef]);
+    }, [setCurrentTerrain, setCurrentWeather, setIsFoggy, setPlayerHealthStatus, setOpponentId, setOpponentName, setOpponentHealthStatus, setBufferName, setBufferHealthStatus, setPlayerPosition, findStatus, getCharNameFromId, isSpectateMode, detectLighting, playerPositionRef]);
 
     const onCharInfo = useCallback((data: GmcpCharInfo) => {
         console.log('[GMCP] CharInfo:', data);

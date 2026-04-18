@@ -6,19 +6,19 @@
     --font-main: 'Roboto Mono', monospace;
 
     /* Dark Mode (Default) */
-    --bg-app: #060716;
-    --bg-panel: rgba(12, 14, 28, 0.65);
-    --bg-overlay: rgba(6, 7, 22, 0.85);
+    --bg-app: #03040c;
+    --bg-panel: rgba(8, 10, 22, 0.65);
+    --bg-overlay: rgba(4, 5, 15, 0.85);
     --text-primary: #d1d5db;   /* Cool Gray 300 - Softer than pure white */
     --text-dim: #9ca3af;       /* Gray 400 */
     --text-faded: #6b7280;     /* Gray 500 */
     --border-color: rgba(255, 255, 255, 0.1);
     --input-bg: rgba(0, 0, 0, 0.6);
     --header-bg: rgba(0, 0, 0, 0.75);
-    --bg-modal: #08091c;
+    --bg-modal: #050614;
     --border-modal: rgba(255, 255, 255, 0.15);
     --color-exit: rgba(255, 255, 255, 0.9);
-    --mapper-bg: rgba(15, 23, 42, 0.4);
+    --mapper-bg: rgba(10, 15, 28, 0.4);
     --mapper-border: rgba(255, 255, 255, 0.1);
     --color-obj: rgba(235, 135, 65, 0.9);   /* Official Object Brown (matches log highlights) */
 

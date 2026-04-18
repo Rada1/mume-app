@@ -117,7 +117,9 @@ export function useCombatParser(deps: CombatParserDeps) {
                 /\bflees\s/i.test(lower) ||
                 /you stop fighting/i.test(lower)) {
                 
-                if (isDeath) playKillSound?.();
+                if (isDeath) {
+                    // playKillSound?.(); // Removed as requested
+                }
                 
                 if (isSnoop && setSpectateInCombat) {
                     setSpectateInCombat(false, true);

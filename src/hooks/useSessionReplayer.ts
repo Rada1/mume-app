@@ -132,10 +132,27 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
     const entries = logRef.current.entries;
 
     // Search through rx, tx, and sys entries for the query
+    const decoder = new TextDecoder();
     for (const entry of entries) {
       if (entry.typ === 'rx' || entry.typ === 'tx' || entry.typ === 'sys') {
-        const text = typeof entry.d === 'string' ? entry.d : JSON.stringify(entry.d);
-        if (text.toLowerCase().includes(lowerQuery)) {
+        let text = '';
+        if (typeof entry.d === 'string') {
+          text = entry.d;
+        } else if (Array.isArray(entry.d) || entry.d instanceof Uint8Array) {
+          // Decode binary rx data
+          text = decoder.decode(new Uint8Array(entry.d));
+        } else {
+          text = JSON.stringify(entry.d);
+        }
+
+        // Strip telnet and ANSI codes to perform a clean text search
+        const cleanText = text
+          .replace(/\x1b\[[0-9;]*m/g, '') // Strip ANSI
+          .replace(/\xff\xfa[\s\S]*?\xff\xf0/g, '') // Strip Telnet Subnegotiation (IAC SB ... IAC SE)
+          .replace(/[\xff\xfb\xfc\xfd\xfe]./g, '') // Strip Telnet WILL/WONT/DO/DONT
+          .toLowerCase();
+
+        if (cleanText.includes(lowerQuery)) {
           // If we have multiple matches very close together, just take the first one
           // to avoid cluttering the scrubber with too many markers
           const lastMatch = matches[matches.length - 1];
@@ -237,6 +254,39 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
       }
   }, []);
 
+  const exportAsText = useCallback(() => {
+      if (!log) return;
+      const start = stateRef.current.trimRange[0] || 0;
+      const end = stateRef.current.trimRange[1] || stateRef.current.duration;
+      
+      const entries = log.log.filter(e => e.t >= start && e.t <= end);
+      const decoder = new TextDecoder();
+      let content = "";
+      
+      entries.forEach(entry => {
+          if (entry.typ === 'rx') {
+              const raw = decoder.decode(new Uint8Array(entry.d));
+              // Strip telnet and ANSI
+              const clean = raw.replace(/\x1b\[[0-9;]*m/g, '')
+                               .replace(/\xff[\xfb-\xfe][\x00-\xff]|\xff\xfa[\x01-\xff]+?\xff\xf0/g, '');
+              content += clean;
+          } else if (entry.typ === 'tx') {
+              const text = typeof entry.d === 'string' ? entry.d : String(entry.d);
+              const lower = text.toLowerCase();
+              if (!lower.includes('change width') && !lower.includes('change length') && !lower.includes('cha wid') && !lower.includes('cha len')) {
+                  content += `\n> ${text}\n`;
+              }
+          }
+      });
+
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `mume-log-${Date.now()}.txt`;
+      a.click();
+  }, [log]);
+
   const startExport = useCallback(async () => {
       try {
           const stream = await (navigator.mediaDevices as any).getDisplayMedia({
@@ -244,7 +294,11 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
               audio: false
           });
 
-          const recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+          const mimeType = MediaRecorder.isTypeSupported('video/mp4;codecs=h264') 
+              ? 'video/mp4;codecs=h264' 
+              : 'video/webm;codecs=vp9';
+
+          const recorder = new MediaRecorder(stream, { mimeType });
           mediaRecorderRef.current = recorder;
           chunksRef.current = [];
 
@@ -253,11 +307,12 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
           };
 
           recorder.onstop = () => {
-              const blob = new Blob(chunksRef.current, { type: 'video/webm' });
+              const blob = new Blob(chunksRef.current, { type: mimeType });
               const url = URL.createObjectURL(blob);
               const a = document.createElement('a');
               a.href = url;
-              a.download = `mume-replay-${Date.now()}.webm`;
+              const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
+              a.download = `mume-replay-${Date.now()}.${ext}`;
               a.click();
               
               stream.getTracks().forEach((track: any) => track.stop());
@@ -289,6 +344,7 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
     setPrivacyMode,
     performSearch,
     startExport,
+    exportAsText,
     stopExport,
     setTrimRange,
     state

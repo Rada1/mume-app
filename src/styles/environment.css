@@ -53,8 +53,8 @@
 }
 
 .lighting-state-moon .overlay-layer {
-    background: rgba(0, 5, 30, 0.16);
-    /* Softened bluish night tint */
+    background: rgba(130, 140, 170, 0.03);
+    /* Subtle silvery night wash */
 }
 
 .lighting-state-artificial .overlay-layer {
@@ -120,6 +120,10 @@
     /* Force high color saturation */
 }
 
+.lighting-moon {
+    filter: saturate(0.8) contrast(1.02);
+}
+
 .lighting-inner {
     width: 100%;
     height: 100%;
@@ -142,8 +146,8 @@
 }
 
 .lighting-moon .lighting-inner {
-    background: radial-gradient(circle at 50% 15%, rgba(140, 180, 255, 0.12), transparent 80%),
-        linear-gradient(to bottom, rgba(50, 100, 255, 0.04), transparent);
+    background: radial-gradient(circle at 50% 15%, rgba(200, 220, 255, 0.05), transparent 80%),
+        linear-gradient(to bottom, rgba(140, 160, 230, 0.01), transparent);
 }
 
 .lighting-artificial .lighting-inner {

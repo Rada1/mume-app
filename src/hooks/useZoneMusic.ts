@@ -102,6 +102,7 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
             // 3. Handle Zone Track Updates
             console.log(`[ZoneMusic] Transition Detected: LastZone=${lastZoneRef.current}, NewState=${gameState}, NewZone=${roomZone}, isDay=${isDay}`);
 
+            const oldZone = lastZoneRef.current;
             if (gameState === 'account') lastZoneRef.current = 'account';
             else lastZoneRef.current = roomZone;
 
@@ -110,7 +111,24 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
                 clearTimeout(silenceTimeoutRef.current);
                 silenceTimeoutRef.current = null;
             }
-            updateZoneMusic();
+
+            // If it's a real zone change (not just an initial load or state check), 
+            // and we aren't already loading something, enforce a 10s delay.
+            if (zoneChanged && oldZone !== null && gameState !== 'account') {
+                console.log('[ZoneMusic] Enforcing 10s atmospheric delay between zones.');
+                // Stop current music immediately so we have true silence
+                if (zoneTrack.current.source) {
+                    fadeOutAndStop(zoneTrack.current.source, zoneTrack.current.gain, zoneTrack.current.filter, 1.0);
+                    zoneTrack.current = { source: null, gain: null, filter: null, url: null, buffer: null, drumBuffer: zoneTrack.current.drumBuffer, startTime: 0, pauseOffset: zoneTrack.current.pauseOffset || 0 };
+                }
+                
+                silenceTimeoutRef.current = setTimeout(() => {
+                    silenceTimeoutRef.current = null;
+                    updateZoneMusic();
+                }, 10000);
+            } else {
+                updateZoneMusic();
+            }
         }
 
         // 4. Handle Volume Ducking and Drum layer updates based on Combat state
@@ -175,7 +193,7 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
 
                     const dGain = ctx.createGain();
                     dGain.gain.setValueAtTime(0, ctx.currentTime);
-                    dGain.gain.linearRampToValueAtTime(0.04, ctx.currentTime + 1.5);
+                    dGain.gain.linearRampToValueAtTime(0.03, ctx.currentTime + 1.5);
 
                     const dFilter = ctx.createBiquadFilter();
                     dFilter.type = 'lowpass';
@@ -211,7 +229,7 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
             const g = zoneTrack.current.gain.gain;
             g.cancelScheduledValues(ctx.currentTime);
             g.setValueAtTime(g.value, ctx.currentTime);
-            g.linearRampToValueAtTime(isInCombat ? 0.045 : 0.06, ctx.currentTime + 1.5);
+            g.linearRampToValueAtTime(isInCombat ? 0.035 : 0.045, ctx.currentTime + 1.5);
         }
 
         if (zoneTrack.current.filter) {
@@ -261,7 +279,7 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
 
             const gain = ctx.createGain();
             gain.gain.setValueAtTime(0, ctx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 3);
+            gain.gain.linearRampToValueAtTime(0.045, ctx.currentTime + 3);
 
             source.connect(filter);
             filter.connect(gain);
@@ -341,7 +359,7 @@ export const useZoneMusic = ({ roomZone, isSoundEnabled, audioCtxRef, zoneMusic,
 
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(isInCombat ? 0.045 : 0.06, ctx.currentTime + 2);
+        gain.gain.linearRampToValueAtTime(isInCombat ? 0.035 : 0.045, ctx.currentTime + 2);
 
         source.connect(filter);
         filter.connect(gain);

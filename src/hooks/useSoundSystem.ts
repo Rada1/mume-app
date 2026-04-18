@@ -20,6 +20,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
     const arrowHitSoundRef = useRef<AudioBuffer | null>(null);
     const killSoundRef = useRef<AudioBuffer | null>(null);
     const levelSoundRef = useRef<AudioBuffer | null>(null);
+    const waterMoveSoundRef = useRef<AudioBuffer | null>(null);
 
 
 
@@ -71,9 +72,10 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
             const source = ctx.createBufferSource();
             source.buffer = actualBuffer;
 
-            // Apply base pitch and add random jitter (+/- 5%) for natural variation
+            // Apply base pitch and add random jitter (+/- 12%) for natural variation
             const basePitch = options?.pitch ?? 1.0;
-            const jitter = (Math.random() * 0.1 - 0.05);
+            const jitterRange = 0.24;
+            const jitter = (Math.random() * jitterRange - (jitterRange / 2));
             source.playbackRate.value = basePitch + jitter;
 
             // Volume control via GainNode
@@ -117,10 +119,30 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         }
     }, []);
 
-    const playMovementSound = useCallback(async (isRiding: boolean = false) => {
+    const playMovementSound = useCallback(async (isRiding: boolean = false, terrain?: string) => {
         if (!audioCtxRef.current || !isSoundEnabled) return;
 
-        if (!movementSoundRef.current) {
+        const isWaterTerrain = terrain && (
+            terrain.toLowerCase().includes('water') || 
+            terrain.toLowerCase().includes('shall') || 
+            terrain.toLowerCase().includes('rapid')
+        );
+
+        if (isWaterTerrain) {
+            if (!waterMoveSoundRef.current) {
+                if (!audioCtxRef.current) initAudio();
+                if (!audioCtxRef.current) return;
+                try {
+                    const url = '/assets/Sounds/Sound effects/watermove.mp3';
+                    const response = await fetch(url);
+                    const arrayBuffer = await response.arrayBuffer();
+                    const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
+                    waterMoveSoundRef.current = audioBuffer;
+                } catch (err) {
+                    console.error('[Sound] Failed to load water movement sound:', err);
+                }
+            }
+        } else if (!movementSoundRef.current) {
             if (!audioCtxRef.current) initAudio();
             if (!audioCtxRef.current) return;
             try {
@@ -135,23 +157,19 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
             }
         }
 
-        const buffer = movementSoundRef.current;
+        const buffer = isWaterTerrain ? waterMoveSoundRef.current : movementSoundRef.current;
         if (!buffer) return;
 
-
         if (isRiding) {
-            // Mimic horse gallop: two beats (4 legs) in the same time as one human step
-            // Doubled speed as requested
+            // Mimic horse gallop/splash: two beats
             const playbackRate = 2.0;
-            playSound(buffer, { pitch: playbackRate, volume: 0.6, label: 'move-riding-1' });
+            playSound(buffer, { pitch: playbackRate, volume: 0.6, label: isWaterTerrain ? 'water-move-riding-1' : 'move-riding-1' });
             
-            // Play second beat after the first one finishes (at 2x speed, it takes half the duration)
             setTimeout(() => {
-                playSound(buffer, { pitch: playbackRate, volume: 0.45, label: 'move-riding-2' });
+                playSound(buffer, { pitch: playbackRate, volume: 0.45, label: isWaterTerrain ? 'water-move-riding-2' : 'move-riding-2' });
             }, (buffer.duration / 2.0) * 1000);
         } else {
-            // Single snappy footfall for walking
-            playSound(buffer, { pitch: 1.05, volume: 0.6, label: 'move-step' });
+            playSound(buffer, { pitch: 1.05, volume: 0.6, label: isWaterTerrain ? 'water-move-step' : 'move-step' });
         }
     }, [playSound, isSoundEnabled, initAudio]);
 

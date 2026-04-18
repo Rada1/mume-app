@@ -174,15 +174,6 @@ export const useGameProviderState = () => {
         info: infoLines.length + practiceLines.length + questLines.length,
         inventory: inventoryLines.length + eqLines.length,
         players: whoLines.length + whereLines.length
-    }, {
-        captureStage,
-        isWaitingForStats,
-        isWaitingForEq,
-        isWaitingForInv,
-        isWaitingForInfo,
-        isSilentCapture,
-        isDrawerCapture,
-        captureOwnerDrawer
     });
 
     // Environmental state

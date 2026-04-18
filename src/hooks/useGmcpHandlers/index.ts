@@ -55,6 +55,8 @@ interface GmcpHandlersProps {
     registerEntity?: (id: string, name: string, location: import('../../types').EntityLocation, category?: string) => import('../../types').GameEntity;
     roomDescRef?: React.RefObject<string>;
     setInCombat?: (val: boolean, force?: boolean) => void;
+    setWeather: (weather: import('../../types').WeatherType) => void;
+    setIsFoggy: (isFoggy: boolean) => void;
     setStats: (stats: any) => void;
     isSpectateMode?: boolean;
     inlineCategories: import('../../types').InlineCategoryConfig[];
@@ -99,6 +101,8 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
 
     const { onCharVitals, onCharInfo, onRoomCharsCombat } = useGmcpVitals({
         ...props,
+        setCurrentWeather: props.setWeather,
+        setIsFoggy: props.setIsFoggy,
         getCharNameFromId,
         findStatus,
         playerPositionRef: playerPositionRef as any

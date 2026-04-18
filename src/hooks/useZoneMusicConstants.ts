@@ -75,8 +75,8 @@ export interface TrackState {
 
 export const STATIC_MUSIC_MAP: Record<string, string | string[]> = {
     'bree': '/assets/Sounds/Zone Sounds/BreeSound.wav',
-    'bree-land': '/assets/Sounds/Zone Sounds/BreeSound.wav',
-    'the bree-land': '/assets/Sounds/Zone Sounds/BreeSound.wav',
+    'bree land': '/assets/Sounds/Zone Sounds/BreeSound.wav',
+    'the bree land': '/assets/Sounds/Zone Sounds/BreeSound.wav',
     'old east road': [
         '/assets/Sounds/Zone Sounds/oldeastroad.mp3', 
         '/assets/Sounds/Zone Sounds/oldeastroad2.mp3'
@@ -127,19 +127,17 @@ export const STATIC_MUSIC_MAP: Record<string, string | string[]> = {
     'lhun valley': '/assets/Sounds/Zone Sounds/Lhun Valley.mp3',
     'ancient broken road': '/assets/Sounds/Zone Sounds/Ancient Broken Road.mp3',
     'the ancient broken road': '/assets/Sounds/Zone Sounds/Ancient Broken Road.mp3',
-    'barrow-downs': '/assets/Sounds/Zone Sounds/barrow downs2.mp3',
-    'the barrow-downs': '/assets/Sounds/Zone Sounds/barrow downs2.mp3',
     'barrow downs': '/assets/Sounds/Zone Sounds/barrow downs2.mp3',
     'the barrow downs': '/assets/Sounds/Zone Sounds/barrow downs2.mp3',
     'dunland': '/assets/Sounds/Zone Sounds/Dunland.mp3',
-    'emyn-nu-fuin': '/assets/Sounds/Zone Sounds/Emyn.mp3',
+    'emyn nu fuin': '/assets/Sounds/Zone Sounds/Emyn.mp3',
     'eregion': '/assets/Sounds/Zone Sounds/Eregion.mp3',
     'ettenmoors': '/assets/Sounds/Zone Sounds/Ettenmoors.mp3',
     'the ettenmoors': '/assets/Sounds/Zone Sounds/Ettenmoors.mp3',
     'gladden fields': '/assets/Sounds/Zone Sounds/Gladden Fields.mp3',
     'the gladden fields': '/assets/Sounds/Zone Sounds/Gladden Fields.mp3',
-    'goblin-town': '/assets/Sounds/Zone Sounds/Goblin Town.mp3',
-    'the goblin-town': '/assets/Sounds/Zone Sounds/Goblin Town.mp3',
+    'goblin town': '/assets/Sounds/Zone Sounds/Goblin Town.mp3',
+    'the goblin town': '/assets/Sounds/Zone Sounds/Goblin Town.mp3',
     'goblin town': '/assets/Sounds/Zone Sounds/Goblin Town.mp3',
     'the goblin town': '/assets/Sounds/Zone Sounds/Goblin Town.mp3',
     'lorien': '/assets/Sounds/Zone Sounds/Lorien1.mp3',
@@ -156,7 +154,7 @@ export const STATIC_MUSIC_MAP: Record<string, string | string[]> = {
         '/assets/Sounds/Zone Sounds/Misty Mountains.mp3',
         '/assets/Sounds/Zone Sounds/Misty Mountains 2.mp3'
     ],
-    'ost-in-edhil': '/assets/Sounds/Zone Sounds/Ost-in-edhil.mp3',
+    'ost in edhil': '/assets/Sounds/Zone Sounds/Ost-in-edhil.mp3',
     'road to grey havens': '/assets/Sounds/Zone Sounds/Road to Grey Havens.mp3',
     'the road to grey havens': '/assets/Sounds/Zone Sounds/Road to Grey Havens.mp3',
     'rohan': '/assets/Sounds/Zone Sounds/Rohan.mp3',
@@ -224,4 +222,4 @@ export const BPM_MAP: Record<string, number> = {
     'drumbeat.mp3': 112,
 };
 
-export const ALWAYS_PLAY_ZONES = ['moria', 'goblin-town', 'goblin town', 'troll warrens', 'the moria', 'the goblin-town', 'the goblin town'];
+export const ALWAYS_PLAY_ZONES = ['moria', 'goblin town', 'troll warrens', 'the moria', 'the goblin town'];

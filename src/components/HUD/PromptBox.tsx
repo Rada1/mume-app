@@ -88,7 +88,7 @@ const ConditionBadge: React.FC<{
             
             const timer = setTimeout(() => {
                 setLossMagnitude(0);
-            }, 800);
+            }, 500);
             return () => clearTimeout(timer);
         } else if (percent > prev) {
             // Health gained - reset loss indicator
@@ -96,54 +96,79 @@ const ConditionBadge: React.FC<{
         }
     }, [percent]);
 
+    const segments = 5;
+
     return (
         <div className={`condition-badge ${colorClass}`} onClick={onClick} onPointerDown={onPointerDown}>
             <div className={`status-bar-segment ${mirrored ? 'is-mirrored' : ''}`}>
-                <div 
-                    className="status-bar-ghost" 
-                    style={{ 
-                        width: `${Math.max(0, Math.min(100, lossMagnitude))}%`,
-                        left: mirrored ? 'auto' : `${percent}%`,
-                        right: mirrored ? `${percent}%` : 'auto'
-                    }} 
-                />
-                <div 
-                    className="status-bar-fill" 
-                    style={{ 
-                        width: `${Math.max(0, Math.min(100, percent))}%`,
-                        left: mirrored ? 'auto' : 0,
-                        right: mirrored ? 0 : 'auto'
-                    }} 
-                />
-                <div className="status-bar-dividers">
-                    <div className="bar-divider" />
-                    <div className="bar-divider" />
-                    <div className="bar-divider" />
-                    <div className="bar-divider" />
+                <div className="status-bar-segments-grid">
+                    {[...Array(segments)].map((_, i) => {
+                        const segmentIndex = mirrored ? (segments - 1 - i) : i;
+                        const start = (segmentIndex / segments) * 100;
+                        const end = ((segmentIndex + 1) / segments) * 100;
+                        
+                        // Fill logic
+                        let fill = 0;
+                        if (percent >= end) fill = 100;
+                        else if (percent > start) fill = ((percent - start) / (end - start)) * 100;
+
+                        // Ghost logic
+                        let ghostFill = 0;
+                        if (lossMagnitude > 0) {
+                            const ghostStart = percent;
+                            const ghostEnd = percent + lossMagnitude;
+                            if (ghostEnd >= end) {
+                                ghostFill = Math.max(0, 100 - fill); 
+                            } else if (ghostEnd > start) {
+                                const segmentLocalGhostEnd = ((ghostEnd - start) / (end - start)) * 100;
+                                ghostFill = Math.max(0, segmentLocalGhostEnd - fill);
+                            }
+                        }
+
+                        return (
+                            <div key={i} className="bar-segment-block">
+                                {ghostFill > 0 && (
+                                    <div 
+                                        className="status-bar-ghost"
+                                        style={{ 
+                                            width: `${ghostFill}%`,
+                                            [mirrored ? 'right' : 'left']: `${fill}%`
+                                        }}
+                                    />
+                                )}
+                                <div 
+                                    className="status-bar-fill"
+                                    style={{ 
+                                        width: `${fill}%`,
+                                        ...(mirrored ? { right: 0 } : { left: 0 })
+                                    }}
+                                />
+                            </div>
+                        );
+                    })}
                 </div>
+                
                 {wimpyRatio !== undefined && (
                     <div 
                         className="wimpy-tick" 
                         style={{ 
                             left: `${wimpyRatio * 100}%`,
                             position: 'absolute',
-                            top: '-2px',
-                            bottom: '-2px',
+                            top: '-3px',
+                            bottom: '-3px',
                             width: '2px',
                             backgroundColor: '#fff',
-                            boxShadow: '0 0 4px #fff',
-                            zIndex: 20
+                            boxShadow: '0 0 6px #fff',
+                            zIndex: 25
                         }} 
                     />
                 )}
                 {isDragging && dragVal !== null && wimpyRatio !== undefined && (
-                    <div className="wimpy-indicator">
-                        <span className="wimpy-indicator-label">Wimpy At</span>
-                        <span className="wimpy-indicator-value">{dragVal} HP</span>
+                    <div className="wimpy-indicator" style={{ left: `${wimpyRatio * 100}%` }}>
+                        <span className="wimpy-indicator-value">{dragVal}</span>
                         <div className="wimpy-indicator-arrow" />
                     </div>
                 )}
-                <span className="status-text">{showAlt && altStatus ? altStatus : ""}</span>
             </div>
         </div>
     );

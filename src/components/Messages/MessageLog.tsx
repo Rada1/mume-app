@@ -248,6 +248,18 @@ const MessageLog: React.FC<MessageLogProps> = ({
         const results: Message[] = [];
         let combinedRx = '';
         let lastTimestamp = 0;
+        let pendingComm: any = null;
+
+        const COMM_COLORS: Record<string, string> = {
+            'tell': '#ff55ff',
+            'yell': '#ff5555',
+            'say': '#00ffff',
+            'shout': '#ffbbee',
+            'narrate': '#ffff55',
+            'chat': '#55ff55',
+            'group': '#77ff77',
+            'whisper': '#aaaaaa'
+        };
 
         replayer.log.entries.forEach((entry: any, idx: number) => {
             // LogEntry uses compact field names: typ, d, t
@@ -255,48 +267,86 @@ const MessageLog: React.FC<MessageLogProps> = ({
             const data = entry.d ?? entry.data;
             const ts = entry.t ?? entry.timestamp ?? 0;
 
-            if (typ === 'rx') {
-                // data may be stored as a plain number array (Array.from(Uint8Array)) by useTelnet
-                let text: string;
-                if (typeof data === 'string') {
-                    text = data;
-                } else if (data instanceof Uint8Array) {
-                    text = new TextDecoder().decode(data);
-                } else if (Array.isArray(data)) {
-                    text = new TextDecoder().decode(new Uint8Array(data));
-                } else {
-                    text = String(data);
+            if (typ === 'gmcp') {
+                const method = data?.method;
+                const gData = data?.data;
+                if (method === 'Comm.Channel') {
+                    pendingComm = {
+                        sender: gData.sender,
+                        action: gData.channel,
+                        text: gData.message,
+                        color: COMM_COLORS[gData.channel] || '#ffffff',
+                        id: `replay-comm-${idx}`
+                    };
                 }
-                combinedRx += text;
+            } else if (typ === 'rx') {
+                // rx data in logs is often a raw byte array. We MUST strip telnet 
+                // subnegotiations (like GMCP) so they don't appear as raw text entries 
+                // in the Archive View.
+                let bytes: Uint8Array;
+                if (data instanceof Uint8Array) bytes = data;
+                else if (Array.isArray(data)) bytes = new Uint8Array(data);
+                else if (typeof data === 'string') bytes = new TextEncoder().encode(data);
+                else bytes = new Uint8Array();
+
+                // Simple telnet stripper: hides everything between IAC SB and IAC SE
+                const cleanBytes: number[] = [];
+                for (let i = 0; i < bytes.length; i++) {
+                    if (bytes[i] === 255 && bytes[i + 1] === 250) { // IAC SB (255 250)
+                        i += 2;
+                        while (i < bytes.length && !(bytes[i - 1] === 255 && bytes[i] === 240)) i++; // Skip to IAC SE
+                        continue;
+                    }
+                    if (bytes[i] === 255 && bytes[i + 1] >= 251 && bytes[i + 1] <= 254) { // IAC WILL/WONT/DO/DONT (3 bytes)
+                        i += 2;
+                        continue;
+                    }
+                    if (bytes[i] === 255) continue; // Skip naked IAC
+                    cleanBytes.push(bytes[i]);
+                }
+
+                combinedRx += new TextDecoder().decode(new Uint8Array(cleanBytes));
                 lastTimestamp = ts;
             } else if (typ === 'tx' || typ === 'sys' || typ === 'ui') {
                 // Flush pending RX as message lines
                 if (combinedRx) {
-                    const lines = combinedRx.split('\n');
-                    lines.forEach((line, lIdx) => {
-                        if (line.trim() || lIdx < lines.length - 1) {
-                            results.push({
-                                id: `replay-rx-${idx}-${lIdx}`,
-                                type: 'system',
-                                textRaw: line,
-                                html: ansiConvert.toHtml(line),
-                                timestamp: lastTimestamp,
-                                isCombat: false
-                            });
-                        }
+                    const html = ansiConvert.toHtml(combinedRx);
+                    const msgId = pendingComm ? pendingComm.id : `replay-rx-${idx}`;
+                    
+                    results.push({
+                        id: msgId,
+                        type: (pendingComm ? 'comm' : 'system') as any,
+                        textRaw: combinedRx,
+                        html: processMessageHtml(html, msgId, false, (pendingComm ? 'comm' : 'system') as any),
+                        timestamp: lastTimestamp,
+                        isCombat: false,
+                        isComm: !!pendingComm,
+                        commSender: pendingComm?.sender,
+                        commAction: pendingComm?.action,
+                        commText: pendingComm?.text,
+                        commColor: pendingComm?.color,
+                        replyCommand: pendingComm?.action,
+                        replyTarget: pendingComm?.sender
                     });
                     combinedRx = '';
+                    pendingComm = null;
                 }
 
                 if (typ === 'tx') {
                     const text = typeof data === 'string' ? data : String(data);
-                    results.push({
-                        id: `replay-tx-${idx}`,
-                        type: 'user',
-                        textRaw: text,
-                        html: text,
-                        timestamp: ts
-                    });
+                    // Filter out automated synchronization commands
+                    const lower = text.toLowerCase();
+                    if (lower.includes('change width') || lower.includes('change length') || lower.includes('cha wid') || lower.includes('cha len')) {
+                        // Skip
+                    } else {
+                        results.push({
+                            id: `replay-tx-${idx}`,
+                            type: 'user',
+                            textRaw: text,
+                            html: text,
+                            timestamp: ts
+                        });
+                    }
                 } else if (typ === 'sys') {
                     const text = typeof data === 'string' ? data : JSON.stringify(data);
                     results.push({
@@ -312,15 +362,21 @@ const MessageLog: React.FC<MessageLogProps> = ({
         
         // Final flush of any remaining RX
         if (combinedRx) {
-            const lines = combinedRx.split('\n');
-            lines.forEach((line, lIdx) => {
-                results.push({
-                    id: `replay-final-${lIdx}`,
-                    type: 'system',
-                    textRaw: line,
-                    html: ansiConvert.toHtml(line),
-                    timestamp: lastTimestamp
-                });
+            const html = ansiConvert.toHtml(combinedRx);
+            const msgId = pendingComm ? pendingComm.id : `replay-final`;
+            results.push({
+                id: msgId,
+                type: (pendingComm ? 'comm' : 'system') as any,
+                textRaw: combinedRx,
+                html: processMessageHtml(html, msgId, false, (pendingComm ? 'comm' : 'system') as any),
+                timestamp: lastTimestamp,
+                isComm: !!pendingComm,
+                commSender: pendingComm?.sender,
+                commAction: pendingComm?.action,
+                commText: pendingComm?.text,
+                commColor: pendingComm?.color,
+                replyCommand: pendingComm?.action,
+                replyTarget: pendingComm?.sender
             });
         }
         
@@ -329,12 +385,27 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
 
     const displayMessages = useMemo(() => {
-        if (sessionMode === 'replay') return replayMessages;
+        if (sessionMode === 'replay') {
+            // Filter replay messages to only show what has been "played" according to currentTime.
+            // This prevents the log from being stuck at the bottom (end of session) and makes
+            // it feel live/theatrical.
+            const now = replayer.state.currentTime;
+            
+            // Replay messages are already sorted by timestamp. Binary search for efficiency.
+            let low = 0;
+            let high = replayMessages.length;
+            while (low < high) {
+                const mid = (low + high) >>> 1;
+                if (replayMessages[mid].timestamp <= now) low = mid + 1;
+                else high = mid;
+            }
+            return replayMessages.slice(0, low);
+        }
         
         // Hide own prompts (handled by HUD PromptBox) but show snooped prompts
         // when the spectate-prompt toggle is on.
         return messages.filter(m => m.type !== 'prompt' || (m.isSnoop && showSpectatePromptInLog));
-    }, [messages, replayMessages, sessionMode, showSpectatePromptInLog]);
+    }, [messages, replayMessages, sessionMode, showSpectatePromptInLog, replayer.state.currentTime]);
 
     const lastUserMsgIndex = useMemo(() => {
         for (let i = displayMessages.length - 1; i >= 0; i--) {
@@ -458,13 +529,13 @@ const MessageLog: React.FC<MessageLogProps> = ({
         const isThrottled = now - lastScrollCallRef.current < 16;
 
         if (isNewMessage) {
-            // In Spectate Mode, we always want to follow the action unless the user manually scrolled up.
-            // The isLockedToBottomRef already tracks if we are at the bottom.
-            if (viewport.isLockedToBottomRef.current || lastMsg?.type === 'user' || isSpectateMode) {
+            // In Spectate and Replay Mode, we always want to follow the action 
+            // unless the user manually scrolled up.
+            if (viewport.isLockedToBottomRef.current || lastMsg?.type === 'user' || isSpectateMode || sessionMode === 'replay') {
                 viewport.isLockedToBottomRef.current = true;
                 lastScrollCallRef.current = now;
                 requestAnimationFrame(() => {
-                    viewport.scrollToBottom(true, lastMsg?.type === 'user' || isSpectateMode, 'NewMessage');
+                    viewport.scrollToBottom(true, lastMsg?.type === 'user' || isSpectateMode || sessionMode === 'replay', 'NewMessage');
                 });
             }
         } else if (viewport.isLockedToBottomRef.current && !isThrottled) {

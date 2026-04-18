@@ -549,24 +549,16 @@ export function useGameParser(deps: UseGameParserDeps) {
             // Text-based detection is unreliable — combat verbs appear in bystander messages,
             // flavor text, and group combat, which all caused false triggers.
 
-            const PITCH_MAP: Record<string, number> = {
-                'extremely hard': 0.68,
-                'very hard': 0.75,
-                'hard': 0.83,
-                'strongly': 0.91,
-                'lightly': 1.10,
-                'barely': 1.20
-            };
             const VOLUME_MAP: Record<string, number> = {
-                'extremely hard': 2.0,
-                'very hard': 1.6,
-                'hard': 1.3,
-                'strongly': 1.15,
-                'lightly': 0.8,
-                'barely': 0.5
+                'extremely hard': 2.4,
+                'very hard': 1.8,
+                'hard': 1.35,
+                'strongly': 1.0,
+                'lightly': 0.5,
+                'barely': 0.3
             };
-            const pitch = (combatInfo.modifier && PITCH_MAP[combatInfo.modifier]) || 1.0;
-            let volume = (combatInfo.modifier && VOLUME_MAP[combatInfo.modifier]) || 1.0;
+            const volume = (combatInfo.modifier && VOLUME_MAP[combatInfo.modifier]) || 0.8;
+            const pitch = 1.0; 
             
             // Differentiate sounds in spectate mode (quieter)
             if (isSnoop) volume *= 0.75;
@@ -815,6 +807,8 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         trackAction(cleanLine, textOnly, lower);
         processTriggers(textOnly);
+        parseAtmosphere(cleanLine, textOnly, lower);
+        parseTimeLine(cleanLine);
 
         const isSnoopCommand = isSnoop && textOnly.trim().startsWith('>');
         const isImportantMessage = isCombatMatch || isSnoopCommand || /hits you|receive your share|is dead|tells you|say,|group:|following/i.test(lower);
