@@ -729,3 +729,8 @@ export interface MumeTime {
     era: string;
     lastSyncRealTime: number; // Date.now() when last synced
 }
+
+export interface ActivePrompt {
+    text: string;
+    time?: MumeTime;
+}

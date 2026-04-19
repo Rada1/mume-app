@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useRef, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useRef, useCallback, useMemo } from 'react';
 import {
     PopoverState, CustomButton, TeleportTarget, GmcpOccupant, SessionMode, CombatHealthStatus
 } from '../types';
@@ -137,7 +137,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [teleportTargets, setTeleportTargets] = usePersistentState<TeleportTarget[]>('mud-teleport-targets', []);
     const [diagnosticLogs, setDiagnosticLogs] = useState<string[]>([]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const handleCloseSettings = () => setIsSettingsOpen(false);
         window.addEventListener('mume-close-settings', handleCloseSettings);
         return () => window.removeEventListener('mume-close-settings', handleCloseSettings);
@@ -149,7 +149,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // --- Mode State ---
     const [sessionMode, setSessionMode] = useState<SessionMode>('live');
-    useEffect(() => { sessionModeRef.current = sessionMode; }, [sessionMode]);
+    React.useEffect(() => { sessionModeRef.current = sessionMode; }, [sessionMode]);
     // uiMode is already managed by 's' (game state)
 
     // --- Replayer "Shadow" State for HUD ---
@@ -187,7 +187,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const lastCommIdBySenderRef = useRef<Map<string, string>>(new Map());
 
     const inCombatHookRef = useRef(false);
-    useEffect(() => { inCombatHookRef.current = inCombat; }, [inCombat]);
+    React.useEffect(() => { inCombatHookRef.current = inCombat; }, [inCombat]);
 
     const recorder = useSessionRecorder();
     const isSilentReplayRef = useRef(false);
@@ -212,7 +212,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, [s.gameState, s.isPasswordMode, recorder.recordEntry, agent]);
 
     const isAccountModeRef = useRef(s.gameState === 'account');
-    useEffect(() => { isAccountModeRef.current = s.gameState === 'account'; }, [s.gameState]);
+    React.useEffect(() => { isAccountModeRef.current = s.gameState === 'account'; }, [s.gameState]);
 
     const captureStage = useRef<'stat' | 'eq' | 'inv' | 'practice' | 'who' | 'where' | 'container' | 'none'>('none');
     const isDrawerCapture = useRef(0);
@@ -239,7 +239,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // --- Safety Sanatization ---
     // [Mod] Disabled: don't clear the previous log data when logging in
     // const prevGameStateRef = useRef(s.gameState);
-    // useEffect(() => {
+    // React.useEffect(() => {
     //     if (prevGameStateRef.current === 'account' && s.gameState === 'playing') {
     //         console.log('[Sanitization] State transition detected: account -> playing. Clearing log.');
     //         clearLog();
@@ -251,7 +251,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // Keyword failure detection: watch last message for MUME "not found" patterns
     const FAILURE_RE = /\bi see no such thing\b|\byou don't see that\b|\bno such thing here\b|\bthat's not here\b/i;
-    useEffect(() => {
+    React.useEffect(() => {
         if (!messages.length) return;
         const last = messages[messages.length - 1];
         if (FAILURE_RE.test(last.textRaw || '') && lastCommandContextRef.current) {
@@ -377,31 +377,31 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return isReplaying && (isSilentReplayRef.current || speed > 1);
     };
 
-    const playSound = useCallback((...args: any[]) => !checkSuppression() && rawPlaySound(...args), [rawPlaySound]);
-    const playRandomSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayRandomSound(...args), [rawPlayRandomSound]);
-    const playMovementSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayMovementSound(...args), [rawPlayMovementSound]);
-    const playDoorSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayDoorSound(...args), [rawPlayDoorSound]);
-    const playHitImpactSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayHitImpactSound(...args), [rawPlayHitImpactSound]);
-    const playOofSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayOofSound(...args), [rawPlayOofSound]);
-    const playSlashSound = useCallback((...args: any[]) => !checkSuppression() && rawPlaySlashSound(...args), [rawPlaySlashSound]);
-    const playCleaveSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayCleaveSound(...args), [rawPlayCleaveSound]);
-    const playSmiteSound = useCallback((...args: any[]) => !checkSuppression() && rawPlaySmiteSound(...args), [rawPlaySmiteSound]);
-    const playPierceSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayPierceSound(...args), [rawPlayPierceSound]);
-    const playStabSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayStabSound(...args), [rawPlayStabSound]);
-    const playIncantationSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayIncantationSound(...args), [rawPlayIncantationSound]);
-    const stopIncantationSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayStopIncantationSound(...args), [rawPlayStopIncantationSound]);
-    const playMagicExplosionSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayMagicExplosionSound(...args), [rawPlayMagicExplosionSound]);
-    const primeSpellSuccess = useCallback((...args: any[]) => !checkSuppression() && rawPrimeSpellSuccess(...args), [rawPrimeSpellSuccess]);
-    const playCommMessageSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayCommMessageSound(...args), [rawPlayCommMessageSound]);
-    const stopCommMessageSound = useCallback((...args: any[]) => !checkSuppression() && rawStopCommMessageSound(...args), [rawStopCommMessageSound]);
-    const playBuySellSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayBuySellSound(...args), [rawPlayBuySellSound]);
-    const playBashSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayBashSound(...args), [rawPlayBashSound]);
-    const playArrowHitSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayArrowHitSound(...args), [rawPlayArrowHitSound]);
-    const playKillSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayKillSound(...args), [rawPlayKillSound]);
-    const playLevelSound = useCallback((...args: any[]) => !checkSuppression() && rawPlayLevelSound(...args), [rawPlayLevelSound]);
-    const triggerHaptic = useCallback((...args: any[]) => !checkSuppression() && rawTriggerHaptic(...args), [rawTriggerHaptic]);
+    const playSound = useCallback((...args: Parameters<typeof rawPlaySound>) => !checkSuppression() && rawPlaySound(...args), [rawPlaySound]);
+    const playRandomSound = useCallback((...args: Parameters<typeof rawPlayRandomSound>) => !checkSuppression() && rawPlayRandomSound(...args), [rawPlayRandomSound]);
+    const playMovementSound = useCallback((...args: Parameters<typeof rawPlayMovementSound>) => !checkSuppression() && rawPlayMovementSound(...args), [rawPlayMovementSound]);
+    const playDoorSound = useCallback((...args: Parameters<typeof rawPlayDoorSound>) => !checkSuppression() && rawPlayDoorSound(...args), [rawPlayDoorSound]);
+    const playHitImpactSound = useCallback((...args: Parameters<typeof rawPlayHitImpactSound>) => !checkSuppression() && rawPlayHitImpactSound(...args), [rawPlayHitImpactSound]);
+    const playOofSound = useCallback((...args: Parameters<typeof rawPlayOofSound>) => !checkSuppression() && rawPlayOofSound(...args), [rawPlayOofSound]);
+    const playSlashSound = useCallback((...args: Parameters<typeof rawPlaySlashSound>) => !checkSuppression() && rawPlaySlashSound(...args), [rawPlaySlashSound]);
+    const playCleaveSound = useCallback((...args: Parameters<typeof rawPlayCleaveSound>) => !checkSuppression() && rawPlayCleaveSound(...args), [rawPlayCleaveSound]);
+    const playSmiteSound = useCallback((...args: Parameters<typeof rawPlaySmiteSound>) => !checkSuppression() && rawPlaySmiteSound(...args), [rawPlaySmiteSound]);
+    const playPierceSound = useCallback((...args: Parameters<typeof rawPlayPierceSound>) => !checkSuppression() && rawPlayPierceSound(...args), [rawPlayPierceSound]);
+    const playStabSound = useCallback((...args: Parameters<typeof rawPlayStabSound>) => !checkSuppression() && rawPlayStabSound(...args), [rawPlayStabSound]);
+    const playIncantationSound = useCallback((...args: Parameters<typeof rawPlayIncantationSound>) => !checkSuppression() && rawPlayIncantationSound(...args), [rawPlayIncantationSound]);
+    const stopIncantationSound = useCallback((...args: Parameters<typeof rawPlayStopIncantationSound>) => !checkSuppression() && rawPlayStopIncantationSound(...args), [rawPlayStopIncantationSound]);
+    const playMagicExplosionSound = useCallback((...args: Parameters<typeof rawPlayMagicExplosionSound>) => !checkSuppression() && rawPlayMagicExplosionSound(...args), [rawPlayMagicExplosionSound]);
+    const primeSpellSuccess = useCallback((...args: Parameters<typeof rawPrimeSpellSuccess>) => !checkSuppression() && rawPrimeSpellSuccess(...args), [rawPrimeSpellSuccess]);
+    const playCommMessageSound = useCallback((...args: Parameters<typeof rawPlayCommMessageSound>) => !checkSuppression() && rawPlayCommMessageSound(...args), [rawPlayCommMessageSound]);
+    const stopCommMessageSound = useCallback((...args: Parameters<typeof rawStopCommMessageSound>) => !checkSuppression() && rawStopCommMessageSound(...args), [rawStopCommMessageSound]);
+    const playBuySellSound = useCallback((...args: Parameters<typeof rawPlayBuySellSound>) => !checkSuppression() && rawPlayBuySellSound(...args), [rawPlayBuySellSound]);
+    const playBashSound = useCallback((...args: Parameters<typeof rawPlayBashSound>) => !checkSuppression() && rawPlayBashSound(...args), [rawPlayBashSound]);
+    const playArrowHitSound = useCallback((...args: Parameters<typeof rawPlayArrowHitSound>) => !checkSuppression() && rawPlayArrowHitSound(...args), [rawPlayArrowHitSound]);
+    const playKillSound = useCallback((...args: Parameters<typeof rawPlayKillSound>) => !checkSuppression() && rawPlayKillSound(...args), [rawPlayKillSound]);
+    const playLevelSound = useCallback((...args: Parameters<typeof rawPlayLevelSound>) => !checkSuppression() && rawPlayLevelSound(...args), [rawPlayLevelSound]);
+    const triggerHaptic = useCallback((...args: Parameters<typeof rawTriggerHaptic>) => !checkSuppression() && rawTriggerHaptic(...args), [rawTriggerHaptic]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (initAudio) {
             initAudio();
         }
@@ -541,6 +541,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playBashSound,
         loadBashSound,
         playRandomSound,
+        playMovementSound,
         playDoorSound,
         triggerHaptic,
         actionsRef: s.actionsRef,
@@ -600,6 +601,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         roomNameRef: s.roomNameRef,
         roomDescRef: s.roomDescRef,
         roomPlayers: s.roomPlayers,
+        roomNpcs: s.roomNpcs,
+        roomItems: s.roomItems,
+        setRoomItems: s.setRoomItems,
+        setStats: v.setStats,
+        setWhoList: s.setWhoList,
+        setWhereList: s.setWhereList,
+        setDeathRoomId: s.setDeathRoomId,
         groupMembers,
         captureStage,
         isDrawerCapture,
@@ -635,8 +643,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         spectateRoomName: s.spectateRoomName,
         spectateRoomDesc: s.spectateRoomDesc,
         setRoomExits: s.setRoomExits,
-        playMovementSound: s.playMovementSound,
-        playDoorSound: s.playDoorSound,
         detectLighting: s.detectLighting,
         setWeather: s.setWeather,
         setIsFoggy: s.setIsFoggy,
@@ -647,10 +653,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setCharacterClass: s.setCharacterClass,
         setInCombat: s.setInCombat,
         inCombatRef: inCombatHookRef,
-        setLightningEnabled: s.setLightningEnabled,
-        setIsPasswordMode: s.setIsPasswordMode,
-        setGameTime: s.setGameTime,
-        setIsSpectateMode: s.setIsSpectateMode,
     };
 
     const parser = useGameParser(deps, s.userSession);
@@ -751,7 +753,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
 
     // --- Section: Auto-Save on Tab Close ---
-    useEffect(() => {
+    React.useEffect(() => {
         const handleBeforeUnload = () => {
             if (recorder.isRecording) {
                 // Browsers often block downloads on unload, but we attempt it here.
@@ -798,7 +800,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // across re-renders without re-instantiating the decoder (its charVitalsState
     // must persist across the playback).
     const replayGmcpHandlersRef = useRef<any>(null);
-    useEffect(() => {
+    React.useEffect(() => {
         replayGmcpHandlersRef.current = {
             setStats: v.setStats,
             setWeather: s.setWeather,
@@ -1048,7 +1050,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         target: v.target,
         setTarget: v.setTarget,
         setPendingMove: v.setPendingMove,
-        activePrompt: v.activePrompt,
+        activePrompt: v.activePrompt?.text ?? '',
         finalizeCapture: parser.finalizeCapture,
         popoverState: s.popoverState,
         setPopoverState: s.setPopoverState,
@@ -1139,13 +1141,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, [s.mumeEditState.key, executeCommand, s.setMumeEditState, playHitImpactSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound]);
 
     // Update the ref so the state and parser components can call it
-    useEffect(() => {
+    React.useEffect(() => {
         if (s.executeCommandRef) s.executeCommandRef.current = executeCommand;
     }, [executeCommand, s.executeCommandRef]);
 
     const { prepareLoginAttempt } = useSessionManager({
         status: s.status,
-        activePrompt: v.activePrompt,
+        activePrompt: v.activePrompt?.text ?? '',
         loginName: settings.loginName,
         loginPassword: settings.loginPassword,
         addSystemMessage,
@@ -1164,7 +1166,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // --- Section: Terminal Synchronization ---
     const lastSyncRef = useRef({ cols: 0, rows: 0 });
-    useEffect(() => {
+    React.useEffect(() => {
         if (s.gameState === 'disconnected' || s.gameState === 'account' || !viewport.columns || !viewport.rows) return;
 
         // Skip if dimensions haven't changed since last SUCCESSFUL sync command
@@ -1189,7 +1191,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, [viewport.columns, viewport.rows, s.gameState, executeCommand]);
 
     // Handle keyboard-triggered visibility for buttons
-    useEffect(() => {
+    React.useEffect(() => {
         const isKeyboardOpen = viewport.isKeyboardOpen;
         if (isKeyboardOpen) {
             btn.rawButtons.forEach(b => {
@@ -1374,7 +1376,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }), [messages, setMessages, addMessage, addSystemMessage, isCombatLine, processMessageHtml, refreshLogHighlights, handleLogPointerDown, handleLogPointerUp, s.selectedObjectIds, s.toggleObjectSelection, s.clearObjectSelection]);
 
     // Reset mending mode when drawer closes
-    useEffect(() => {
+    React.useEffect(() => {
         if (s.ui.drawer === 'none' && v.isMendingMode) {
             v.setIsMendingMode(false);
             v.setMendingTarget(null);

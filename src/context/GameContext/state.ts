@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
 import { usePersistentState } from '../../hooks/usePersistentState';
 import { 
     GameStats, LightingType, WeatherType, DrawerLine, GameAction, 
@@ -57,12 +57,12 @@ export const useGameProviderState = () => {
         stage: 'none', characters: [], selectedCharacter: null
     });
     const accountStageRef = useRef<import('../../types').AccountStage>('none');
-    useEffect(() => { accountStageRef.current = accountState.stage; }, [accountState.stage]);
+    React.useEffect(() => { accountStageRef.current = accountState.stage; }, [accountState.stage]);
 
     // --- Global Refs ---
     const roomDescRef = useRef<string | null>(null);
     const isAccountModeRef = useRef(false);
-    useEffect(() => { isAccountModeRef.current = gameState === 'account'; }, [gameState]);
+    React.useEffect(() => { isAccountModeRef.current = gameState === 'account'; }, [gameState]);
 
     // --- Session Slots ---
     const userSession = useSessionState(characterName, isNewbieMode, gameState, roomDescRef, isAccountModeRef);

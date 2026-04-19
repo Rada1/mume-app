@@ -4,7 +4,7 @@ import {
     LightingType, SoundTrigger, TeleportTarget, CustomButton,
     DrawerLine, GameAction, SpatButton, CombatHealthStatus, GroupMember,
     OptimisticChange,
-    SessionLog
+    SessionLog, ActivePrompt
 } from '../../types';
 import { useSessionRecorder } from '../../hooks/useSessionRecorder';
 import { useButtons } from '../../hooks/useButtons';
@@ -22,8 +22,8 @@ export interface VitalsContextType {
     setStats: Dispatch<SetStateAction<GameStats>>;
     target: string | null;
     setTarget: (val: string | null) => void;
-    activePrompt: string;
-    setActivePrompt: (prompt: string) => void;
+    activePrompt: ActivePrompt | null;
+    setActivePrompt: (prompt: string | ActivePrompt | null) => void;
     rumble: boolean;
     setRumble: (val: boolean) => void;
     deathRoomId: string | null;
@@ -58,6 +58,18 @@ export interface VitalsContextType {
     setCharacterInfo: Dispatch<SetStateAction<import('../../types').CharacterInfo>>;
     groupMembers: GroupMember[];
     setGroupMembers: Dispatch<SetStateAction<GroupMember[]>>;
+    pendingMove: { dir: string; timestamp: number } | null;
+    setPendingMove: (val: { dir: string; timestamp: number } | null) => void;
+    setPlayerHealthStatus: (val: CombatHealthStatus | null) => void;
+    setOpponentHealthStatus: (val: CombatHealthStatus | null) => void;
+    setBufferHealthStatus: (val: CombatHealthStatus | null) => void;
+    setOpponentName: (val: string | null) => void;
+    setSpectateHealthStatus: (val: CombatHealthStatus | null) => void;
+    setSpectateOpponentStatus: (val: CombatHealthStatus | null) => void;
+    setSpectateOpponentName: (val: string | null) => void;
+    setSpectateOpponentId: (val: string | null) => void;
+    spectateOpponentName: string | null;
+    spectateOpponentId: string | null;
     xpHistory: { old: number; new: number };
     xpEvent: number;
     triggerXpTicker: () => void;
@@ -67,6 +79,8 @@ export interface VitalsContextType {
     triggerOppHitFlash: () => void;
     gameTime: import('../../types').MumeTime | null;
     setGameTime: Dispatch<SetStateAction<import('../../types').MumeTime | null>>;
+    roomName: string | null;
+    characterName: string | null;
 }
 
 export interface LogContextType {
@@ -194,6 +208,12 @@ export interface SessionContextType {
         registry: ReturnType<typeof import('../../hooks/useEntityRegistry').useEntityRegistry>;
         teleportTargets: string[];
         setTeleportTargets: Dispatch<SetStateAction<string[]>>;
+        whoList: string[];
+        setWhoList: Dispatch<SetStateAction<string[]>>;
+        whereList: import('../../types').WhereEntry[];
+        setWhereList: Dispatch<SetStateAction<import('../../types').WhereEntry[]>>;
+        lightningEnabled: boolean;
+        setLightningEnabled: (val: boolean) => void;
     };
     log: LogContextType;
     recorder: ReturnType<typeof useSessionRecorder>;
@@ -212,6 +232,8 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     inCombat: boolean;
     roomName: string | null;
     roomDesc: string | null;
+    pendingMove: string | null;
+    setPendingMove: (val: string | null) => void;
 
     // Global App State (Common to all sessions)
     status: 'connected' | 'disconnected' | 'connecting';

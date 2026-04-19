@@ -24,6 +24,17 @@ The MUME Client is an **AI-Native, Hook-Driven Mobile Client** for the MUME MUD.
 | **Adjust Mapper** | `src/components/Mapper/`, `src/mapper/renderer.ts` |
 | **Spectate Rotation** | `src/hooks/useSpectateAutomator.ts`, `src/hooks/GameParser/useGameParser.ts` |
 
+## 🛠️ Team Lead Skill (Orchestrator Only)
+Antigravity acts as the **Team Lead**, delegating background tasks to **Jules** via the Gemini CLI.
+- **Skill**: `team-lead` (defined in `.gemini/skills/team-lead/SKILL.md`).
+- **Delegation**:
+  - **Antigravity (Tactical)**: UI, interactive debugging, immediate state fixes, code review.
+  - **Jules (Background)**: Large refactors (>300 lines), full test suites, dependency audits.
+- **Workflow**:
+  1. `gemini -p "/jules [TASK]"` to launch.
+  2. `git fetch origin && git merge origin/[JULES_BRANCH]` to integrate.
+  3. Validate with `npm run build`.
+
 ## 🧪 Automated Testing Skill (Agent Only)
 The Antigravity agent can log in autonomously to verify UI and logic changes.
 - **Config**: Root `config.agent.json` (gitignored). Contains `account`, `password`, and `play_command`.
