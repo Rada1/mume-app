@@ -149,20 +149,78 @@ export interface UIContextType {
     };
 }
 
-export interface GameContextType {
-    // High-frequency but log-related
+export interface SessionContextType {
+    vitals: VitalsContextType;
+    game: {
+        roomName: string | null;
+        roomDesc: string | null;
+        roomExits: string[];
+        roomZone: string | null;
+        currentTerrain: string;
+        lighting: LightingType;
+        weather: WeatherType;
+        isFoggy: boolean;
+        inCombat: boolean;
+        playerPosition: string;
+        isRiding: boolean;
+        roomPlayers: import('../../types').GmcpOccupant[];
+        roomNpcs: import('../../types').GmcpOccupant[];
+        roomItems: import('../../types').GmcpOccupant[];
+        inventoryLines: DrawerLine[];
+        statsLines: DrawerLine[];
+        infoLines: DrawerLine[];
+        scoreLines: DrawerLine[];
+        questLines: DrawerLine[];
+        practiceLines: DrawerLine[];
+        whoLines: DrawerLine[];
+        whereLines: DrawerLine[];
+        eqLines: DrawerLine[];
+        abilities: Record<string, number>;
+        setAbilities: Dispatch<SetStateAction<Record<string, number>>>;
+        characterClass: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none';
+        setCharacterClass: (val: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none') => void;
+        actions: import('../../types').GameAction[];
+        setActions: Dispatch<SetStateAction<import('../../types').GameAction[]>>;
+        mood: string;
+        setMood: (val: string) => void;
+        spellSpeed: string;
+        setSpellSpeed: (val: string) => void;
+        alertness: string;
+        setAlertness: (val: string) => void;
+        level: number;
+        setLevel: (val: number) => void;
+        characterName: string | null;
+        setCharacterName: (val: string | null) => void;
+        registry: ReturnType<typeof import('../../hooks/useEntityRegistry').useEntityRegistry>;
+        teleportTargets: string[];
+        setTeleportTargets: Dispatch<SetStateAction<string[]>>;
+    };
+    log: LogContextType;
+    recorder: ReturnType<typeof useSessionRecorder>;
+}
+
+export interface GameContextType extends Omit<SessionContextType['vitals'], 'stats' | 'target'>, Omit<SessionContextType['game'], 'inCombat' | 'roomName' | 'roomDesc'>, LogContextType {
+    // Session Management
+    activeSession: SessionSlot;
+    setActiveSession: (slot: SessionSlot) => void;
+    userSession: SessionContextType;
+    spectateSession: SessionContextType;
+
+    // The "Effective" state (active session)
+    stats: GameStats;
+    target: string | null;
     inCombat: boolean;
-    setInCombat: (val: boolean, force?: boolean) => void;
-    inCombatRef: RefObject<boolean>;
+    roomName: string | null;
+    roomDesc: string | null;
+
+    // Global App State (Common to all sessions)
     status: 'connected' | 'disconnected' | 'connecting';
     setStatus: (val: 'connected' | 'disconnected' | 'connecting') => void;
     gameState: import('../../types').GameState;
     setGameState: Dispatch<SetStateAction<import('../../types').GameState>>;
     characterName: string | null;
     setCharacterName: (name: string | null) => void;
-    popoverState: import('../../types').PopoverState | null;
-    setPopoverState: (val: import('../../types').PopoverState | null) => void;
-
+    
     // Settings & Mode
     isNewbieMode: boolean;
     setIsNewbieMode: (val: boolean) => void;
@@ -225,11 +283,7 @@ export interface GameContextType {
     setSpellSpeed: (val: string) => void;
     alertness: string;
     setAlertness: (val: string) => void;
-    playerPosition: string;
-    setPlayerPosition: (val: string) => void;
     playerPositionRef: RefObject<string>;
-    isRiding: boolean;
-    setIsRiding: (val: boolean) => void;
     isRidingRef: RefObject<boolean>;
     isTrackpadModifierActive: boolean;
     setIsTrackpadModifierActive: Dispatch<SetStateAction<boolean>>;
@@ -251,31 +305,13 @@ export interface GameContextType {
     accountState: import('../../types').AccountState;
     setAccountState: Dispatch<SetStateAction<import('../../types').AccountState>>;
 
-    // Environmental state
-    lighting: LightingType;
-    setLighting: Dispatch<SetStateAction<LightingType>>;
     lightningEnabled: boolean;
     setLightningEnabled: (val: boolean) => void;
-    weather: WeatherType;
-    setWeather: Dispatch<SetStateAction<WeatherType>>;
     isFoggy: boolean;
     setIsFoggy: (val: boolean) => void;
 
-    // Room Info
-    roomPlayers: import('../../types').GmcpOccupant[];
-    setRoomPlayers: Dispatch<SetStateAction<import('../../types').GmcpOccupant[]>>;
-    roomNpcs: import('../../types').GmcpOccupant[];
-    setRoomNpcs: Dispatch<SetStateAction<import('../../types').GmcpOccupant[]>>;
-    roomItems: import('../../types').GmcpOccupant[];
-    setRoomItems: Dispatch<SetStateAction<import('../../types').GmcpOccupant[]>>;
-    currentTerrain: string;
-    setCurrentTerrain: (terrain: string) => void;
     roomZone: string | null;
     setRoomZone: (zone: string | null) => void;
-    roomName: string | null;
-    roomDesc: string | null;
-    setRoomName: (name: string | null) => void;
-    setRoomDesc: (desc: string | null) => void;
     roomNameRef: RefObject<string | null>;
     roomDescRef: RefObject<string | null>;
 
@@ -384,17 +420,6 @@ export interface GameContextType {
     toggleMap: () => void;
 
     // Parser State
-    inventoryLines: DrawerLine[];
-    statsLines: DrawerLine[];
-    infoLines: DrawerLine[];
-    scoreLines: DrawerLine[];
-    questLines: DrawerLine[];
-    practiceLines: DrawerLine[];
-    whoLines: DrawerLine[];
-    whereLines: DrawerLine[];
-    eqLines: DrawerLine[];
-    displayInventoryLines: DrawerLine[];
-    displayEqLines: DrawerLine[];
     applyOptimisticChange: (change: OptimisticChange) => void;
     setInventoryLines: Dispatch<SetStateAction<DrawerLine[]>>;
     setStatsLines: Dispatch<SetStateAction<DrawerLine[]>>;
@@ -490,4 +515,3 @@ export interface GameContextType {
     gameTime: import('../../types').MumeTime | null;
     setGameTime: Dispatch<SetStateAction<import('../../types').MumeTime | null>>;
 }
-

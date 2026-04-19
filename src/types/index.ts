@@ -7,7 +7,8 @@ export type Direction = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | 'u' 
 export type SwipeDirection = 'up' | 'down' | 'left' | 'right' | 'ne' | 'nw' | 'se' | 'sw';
 
 export type TriggerAction = 'show' | 'switch_set';
-export type SessionMode = 'live' | 'replay';
+export type SessionSlot = 'user' | 'spectate';
+export type SessionMode = 'live' | 'replay' | 'scrubbing';
 export type UiMode = 'auto' | 'desktop' | 'portrait' | 'landscape';
 export type GameState = 'disconnected' | 'account' | 'playing';
 export type CaptureStage = 'none' | 'who' | 'where' | 'inv' | 'eq' | 'stat' | 'score' | 'container' | 'shop' | 'shop-detail' | 'practice' | 'whois' | 'description' | 'info' | 'quest' | 'account' | 'help';

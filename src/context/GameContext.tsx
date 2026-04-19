@@ -30,6 +30,7 @@ import { useGameAudio } from '../hooks/useGameAudio';
 import { useSessionRecorder } from '../hooks/useSessionRecorder';
 import { useSessionReplayer } from '../hooks/useSessionReplayer';
 import { useHelpHandler } from '../hooks/useHelpHandler';
+import { useAgentObservability } from '../hooks/useAgentObservability';
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);
 export const VitalsContext = createContext<VitalsContextType | undefined>(undefined);
@@ -78,24 +79,35 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const s = game;
 
     // Destructure some commonly used values for brevity in dependencies
-    const {
-        roomPlayers, roomNpcs, roomItems,
-        roomZone,
-        isNewbieMode, isSoundEnabled, characterClass, abilities,
-        lighting, lightningEnabled, weather, isFoggy,
-        actions, actionsRef,
-        inCombat, status, characterName,
-        mood, spellSpeed, alertness, playerPosition,
-        isImmersionMode,
-        isBloomEnabled,
-        fontFamily,
-        handleTabClick,
-        toggleMap
-    } = s;
-
-    const { stats, rumble, target, activePrompt } = v;
-    const { isSpectateMode, spectateTargetId, groupMembers } = s;
-
+    const roomPlayers = s.roomPlayers || [];
+    const roomNpcs = s.roomNpcs || [];
+    const roomItems = s.roomItems || [];
+    const roomZone = s.roomZone || '';
+    const isNewbieMode = s.isNewbieMode || false;
+    const isSoundEnabled = s.isSoundEnabled || false;
+    const characterClass = s.characterClass || 'none';
+    const abilities = s.abilities || {};
+    const lighting = s.lighting || 'none';
+    const lightningEnabled = s.lightningEnabled || false;
+    const weather = s.weather || 'none';
+    const isFoggy = s.isFoggy || false;
+    const actions = s.actions || [];
+    const actionsRef = s.actionsRef;
+    const groupMembers = s.groupMembers || [];
+    const inCombat = s.inCombat || false;
+    const status = s.status || 'disconnected';
+    const characterName = s.characterName || null;
+    const mood = s.mood || 'peaceful';
+    const spellSpeed = s.spellSpeed || 'normal';
+    const alertness = s.alertness || 'normal';
+    const playerPosition = s.playerPosition || 'standing';
+    const isImmersionMode = s.isImmersionMode ?? true;
+    const isBloomEnabled = s.isBloomEnabled ?? true;
+    const fontFamily = s.fontFamily || 'Inter';
+    const handleTabClick = s.handleTabClick;
+    const toggleMap = s.toggleMap;
+    const isSpectateMode = s.isSpectateMode;
+    const spectateTargetId = s.spectateTargetId;
     const spectateTarget = useMemo(() => {
         if (!isSpectateMode || spectateTargetId == null) return null;
         const target = groupMembers.find(m => {
@@ -103,31 +115,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const targetIdStr = String(spectateTargetId);
             return mIdStr === targetIdStr || m.name === targetIdStr;
         });
-        if (!target) {
-            console.warn('[Spectate] Target not found in groupMembers!', {
-                spectateTargetId,
-                memberIds: groupMembers.map(m => m.id),
-                memberNames: groupMembers.map(m => m.name)
-            });
-        }
         return target ?? null;
     }, [isSpectateMode, spectateTargetId, groupMembers]);
 
-    // Use a ref for the previous target to detect changes
-    const prevSpectateTargetIdRef = useRef<number | null>(null);
-    useEffect(() => {
-        if (spectateTarget && spectateTarget.id !== prevSpectateTargetIdRef.current) {
-            console.log('[Spectate] Switched Target to:', spectateTarget.name,
-                '| HP:', spectateTarget.hp, '| Mana:', spectateTarget.mana,
-                '| Room:', spectateTarget.room, '| MapID:', spectateTarget.mapid,
-                '| Fighting:', spectateTarget.fighting,
-                '| Full:', JSON.stringify(spectateTarget));
-            prevSpectateTargetIdRef.current = spectateTarget.id;
-        } else if (!spectateTarget && prevSpectateTargetIdRef.current !== null) {
-            console.log('[Spectate] Target cleared');
-            prevSpectateTargetIdRef.current = null;
-        }
-    }, [spectateTarget]);
+    const { stats, rumble, target, activePrompt } = v;
 
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isLibraryOpen, setIsLibraryOpen] = useState(false);
@@ -212,13 +203,26 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         roomDesc: s.roomDesc
     }), [s.roomPlayers, s.roomNpcs, s.roomItems, s.roomName, s.roomDesc, s.setIsPasswordMode]);
 
+    const agent = useAgentObservability(v, s);
+
     const sanitizedRecordEntry = useCallback((type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any, options?: { mask?: boolean }) => {
         const isSensitive = s.gameState !== 'playing' || s.isPasswordMode || options?.mask;
         recorder.recordEntry(type, data, { mask: isSensitive });
-    }, [s.gameState, s.isPasswordMode, recorder.recordEntry]);
+        agent.recordEvent(type, isSensitive ? (type === 'tx' ? '********' : data) : data);
+    }, [s.gameState, s.isPasswordMode, recorder.recordEntry, agent]);
 
     const isAccountModeRef = useRef(s.gameState === 'account');
     useEffect(() => { isAccountModeRef.current = s.gameState === 'account'; }, [s.gameState]);
+
+    const captureStage = useRef<'stat' | 'eq' | 'inv' | 'practice' | 'who' | 'where' | 'container' | 'none'>('none');
+    const isDrawerCapture = useRef(0);
+    const isSilentCapture = useRef(0);
+    const isWaitingForStats = useRef(false);
+    const isWaitingForEq = useRef(false);
+    const isWaitingForInv = useRef(false);
+    const isWaitingForInfo = useRef(false);
+    const captureOwnerDrawer = useRef<'stat' | 'eq' | 'inv' | 'practice' | 'who' | 'where' | 'container' | 'none'>('none');
+    const pendingDrawerContainerRef = useRef<{ containerId: string; cmd: 'inventorylist' | 'equipmentlist'; afterId: string } | null>(null);
 
     const { messages, setMessages, addMessage, flushMessages, isCombatLine, clearLog } = useMessageLog(
         inCombatHookRef,
@@ -406,11 +410,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
 
 
-    const roomDescRef = React.useRef<string>('');
 
     const gmcpHandlers = useGmcpHandlers({
         mapperRef,
-        roomDescRef,
+        roomDescRef: s.roomDescRef,
         setCurrentTerrain: s.isSpectateMode ? s.setSpectateTerrain : s.setCurrentTerrain,
         setRoomPlayers: s.isSpectateMode ? s.setSpectateGroupMembers : s.setRoomPlayers, // Note: occupants handling might need more thought, but this helps vitals
         setRoomNpcs: s.setRoomNpcs,
@@ -451,8 +454,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playDoorSound,
         setWeather: s.setWeather,
         setIsFoggy: s.setIsFoggy,
-        setStats: s.setStats,
+        setStats: s.isSpectateMode ? s.setSpectateStats : s.setStats,
+
         playerPositionRef: s.playerPositionRef,
+
         setIsRiding: s.setIsRiding,
         isRidingRef: s.isRidingRef,
         isSpectateMode: s.isSpectateMode,
@@ -461,7 +466,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const { spatButtons, setSpatButtons, triggerSpit, triggerSpitManual } = useSpatButtons(messages, containerRef, triggerHaptic);
 
-    const btn = useButtons(abilities, characterClass, s.characterName, v.target, s.inlineCategories);
+    const btn = useButtons({
+        abilities,
+        characterClass,
+        characterName,
+        target: v.target,
+        inlineCategories: s.inlineCategories
+    });
     const joystick = useJoystick(triggerHaptic, s.roomExits);
     const editor = useButtonEditor(btn, containerRef);
     const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.disable3dScroll, s.isImmersionMode, s.fontFamily, s.isTimestampEnabled);
@@ -512,24 +523,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const navIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-    const parser = useGameParser({
-        isInventoryOpen: s.ui.drawer === 'inventory',
-        isEquipmentOpen: s.ui.drawer === 'equipment',
-        isCharacterOpen: s.ui.drawer === 'character',
-        isStatsOpen: s.ui.drawer === 'stats',
-        isPlayersOpen: s.ui.drawer === 'players',
+    const deps: any = {
         mapperRef,
-        btn: {
-            buttonsRef: btn.buttonsRef,
-            setButtons: btn.setButtons,
-            buttonTimers: btn.buttonTimers,
-            setActiveSet: btn.setActiveSet,
-        },
-        addMessage, 
-        playSound, 
-        playHitImpactSound, 
-        playOofSound, 
-        playSlashSound, 
+        btn,
+        addMessage,
+        playSound,
+        playHitImpactSound,
+        playOofSound,
+        playSlashSound,
         playCleaveSound,
         playSmiteSound,
         playPierceSound,
@@ -539,73 +540,82 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playLevelSound,
         playBashSound,
         loadBashSound,
-        playRandomSound, 
-        playDoorSound, 
+        playRandomSound,
+        playDoorSound,
         triggerHaptic,
-        setWeather: s.setWeather,
-        setIsFoggy: s.setIsFoggy,
-        setStats: v.setStats,
-        setAbilities: s.setAbilities,
-        setCharacterClass: s.setCharacterClass,
-        setInCombat: s.setInCombat,
-        inCombatRef: s.inCombatRef,
-        setLightningEnabled: s.setLightningEnabled,
-        setPlayerPosition: s.setPlayerPosition,
-        setMood: s.setMood,
-        detectLighting: env.detectLighting,
-        setWeather: s.setWeather,
-        setIsFoggy: s.setIsFoggy,
-        setCurrentTerrain: s.setCurrentTerrain,
+        actionsRef: s.actionsRef,
+        executeCommandRef: s.executeCommandRef,
         addDiagnosticLog,
         keywordOverrides,
         isSoundEnabledRef: settings.isSoundEnabledRef,
         soundTriggersRef: settings.soundTriggersRef,
-        actionsRef: s.actionsRef,
-        executeCommandRef: s.executeCommandRef,
-        setInventoryLines: s.setInventoryLines,
-        setStatsLines: s.setStatsLines,
-        setInfoLines: s.setInfoLines,
-        setScoreLines: s.setScoreLines,
-        setQuestLines: s.setQuestLines,
-        setPracticeLines: s.setPracticeLines,
-        setWhoLines: s.setWhoLines,
-        setWhereLines: s.setWhereLines,
-        setEqLines: s.setEqLines,
-        setWhoList: s.setWhoList,
-        setWhereList: s.setWhereList,
-        captureStage: s.captureStage,
-        practice,
-        shop,
-        help,
-        isDrawerCapture: s.isDrawerCapture,
-        isSilentCapture: s.isSilentCapture,
-        isWaitingForStats: s.isWaitingForStats,
-        isWaitingForEq: s.isWaitingForEq,
-        isWaitingForInv: s.isWaitingForInv,
-        isWaitingForInfo: s.isWaitingForInfo,
-        captureOwnerDrawer: s.captureOwnerDrawer,
-        roomNameRef: s.roomNameRef,
-        roomDescRef,
-        roomName: s.roomName,
-        setRoomName: s.setRoomName,
-        setRoomDesc: s.setRoomDesc,
-        setRoomZone: s.setRoomZone,
-        setRoomExits: s.setRoomExits,
-        isNewbieMode: s.isNewbieMode,
+        showDebugEchoes: s.showDebugEchoes,
         popoverState: s.popoverState,
         setPopoverState: s.setPopoverState,
-        pendingDrawerContainerRef: s.pendingDrawerContainerRef,
         setDiscoveredItems: s.setDiscoveredItems,
-        setPlayerHealthStatus: v.setPlayerHealthStatus,
-        setOpponentHealthStatus: v.setOpponentHealthStatus,
-        setOpponentName: v.setOpponentName,
-        setBufferHealthStatus: v.setBufferHealthStatus,
-        setBufferName: v.setBufferName,
+        setQuests: s.setQuests,
+        quests: s.quests,
+        mumeEditState: s.mumeEditState,
+        setMumeEditState: s.setMumeEditState,
+        shop,
+        practice,
+        registerEntity: s.registerEntity,
+        setEntities: s.setEntities,
+        isPlayersOpen: s.ui.drawer === 'players',
+        isInventoryOpen: s.ui.drawer === 'inventory',
+        isEquipmentOpen: s.ui.drawer === 'equipment',
+        isCharacterOpen: s.ui.drawer === 'character',
+        isStatsOpen: s.ui.drawer === 'stats',
+        triggerXpTicker: v.triggerXpTicker,
+        triggerHitFlash: v.triggerHitFlash,
+        triggerOppHitFlash: v.triggerOppHitFlash,
+        pendingGmcpCommRef,
+        lastCommIdBySenderRef: s.userSession.log.lastCommIdBySenderRef,
+        lastCommMsgIdRef: s.userSession.log.lastCommMsgIdRef,
+        lastCommTimeRef: s.userSession.log.lastCommTimeRef,
+        accountState: s.accountState,
+        setAccountState: s.setAccountState,
+        accountStageRef: s.accountStageRef,
+        setGameState: s.setGameState,
+        setMessages,
+        isSpectateMode: s.isSpectateMode,
+        spectateCharacterName: s.spectateCharacterName,
+        processMessageHtml,
+        sessionMode,
+        help,
+        setLightningEnabled: s.setLightningEnabled || s.userSession.game.setLightningEnabled,
+        setIsPasswordMode: s.setIsPasswordMode,
+        spectateQueue: s.spectateQueue,
+        setSpectateQueue: s.setSpectateQueue,
+        lastSnoopStartTime: s.lastSnoopStartTime,
+        setLastSnoopStartTime: s.setLastSnoopStartTime,
+        addSystemMessage,
         setGameTime: s.setGameTime,
-        setStats: v.setStats,
-        setAbilities: s.setAbilities,
-        setCharacterClass: s.setCharacterClass,
-        setCharacterInfo: v.setCharacterInfo,
+        gameTime: s.gameTime,
+        setIsSpectateMode: s.setIsSpectateMode,
+        isMobile: viewport.isMobile,
+        entities: s.entities,
+        inlineCategories: s.inlineCategories,
+        roomName: s.roomName,
+        roomNameRef: s.roomNameRef,
+        roomDescRef: s.roomDescRef,
+        roomPlayers: s.roomPlayers,
+        groupMembers,
+        captureStage,
+        isDrawerCapture,
+        isSilentCapture,
+        isWaitingForStats,
+        isWaitingForEq,
+        isWaitingForInv,
+        isWaitingForInfo,
+        captureOwnerDrawer,
+        pendingDrawerContainerRef,
+        playIncantationSound,
+        playCommMessageSound,
+        playBuySellSound,
+        stopIncantationSound,
+        primeSpellSuccess,
+        playMagicExplosionSound,
         setSpectateStats: s.setSpectateStats,
         setSpectateHealthStatus: s.setSpectateHealthStatus,
         setSpectateOpponentName: s.setSpectateOpponentName,
@@ -621,68 +631,44 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setSpectateInCombat: s.setSpectateInCombat,
         setSpectateCharacterName: s.setSpectateCharacterName,
         setSpectateGroupMembers: s.setSpectateGroupMembers,
-        characterInfo: v.characterInfo,
-        setQuests: s.setQuests,
-        quests: s.quests,
-        mumeEditState: s.mumeEditState,
-        setMumeEditState: s.setMumeEditState,
-        triggerXpTicker: v.triggerXpTicker,
-        triggerHitFlash: v.triggerHitFlash,
-        triggerOppHitFlash: v.triggerOppHitFlash,
-        addSystemMessage,
-        pendingGmcpCommRef,
-        lastCommIdBySenderRef,
-        groupMembers: s.groupMembers,
-        setEntities: s.setEntities,
-        playIncantationSound,
-        playCommMessageSound,
-        playBuySellSound,
-        stopIncantationSound,
-        primeSpellSuccess,
-        playMagicExplosionSound,
-        deathRoomId: v.deathRoomId,
-        setDeathRoomId: v.setDeathRoomId,
-        accountState: v.accountState,
-        setAccountState: v.setAccountState,
-        accountStageRef: s.accountStageRef,
-        setGameState: s.setGameState,
-        activePrompt: v.activePrompt,
-        gameState: s.gameState,
-        isMobile: viewport.isMobile,
-        playerPosition: s.playerPosition,
-        isSpectateMode: s.isSpectateMode,
-        processMessageHtml: processMessageHtml,
-        spectateTarget,
-        setMessages,
-        clearLog,
-        setRoomPlayers: s.setRoomPlayers,
-        setRoomNpcs: s.setRoomNpcs,
-        setRoomItems: s.setRoomItems,
-        roomPlayers: s.roomPlayers,
-        spectateCharacterName: s.spectateCharacterName,
+        setSpectateRoomDesc: s.setSpectateRoomDesc,
         spectateRoomName: s.spectateRoomName,
         spectateRoomDesc: s.spectateRoomDesc,
-        setSpectateRoomDesc: s.setSpectateRoomDesc,
-        spectateQueue: s.spectateQueue,
-        setSpectateQueue: s.setSpectateQueue,
-        lastSnoopStartTime: s.lastSnoopStartTime,
-        setLastSnoopStartTime: s.setLastSnoopStartTime,
-        registerEntity: s.registerEntity,
-        entities: s.entities,
-        inlineCategories: s.inlineCategories,
-        spectateStats: v.spectateStats,
-        setStats: v.setStats,
-        characterName: s.characterName,
-        sessionMode: sessionMode,
+        setRoomExits: s.setRoomExits,
+        playMovementSound: s.playMovementSound,
+        playDoorSound: s.playDoorSound,
+        detectLighting: s.detectLighting,
+        setWeather: s.setWeather,
+        setIsFoggy: s.setIsFoggy,
+        setRoomName: s.setRoomName,
+        setRoomDesc: s.setRoomDesc,
+        setRoomZone: s.setRoomZone,
+        setAbilities: s.setAbilities,
+        setCharacterClass: s.setCharacterClass,
+        setInCombat: s.setInCombat,
+        inCombatRef: inCombatHookRef,
+        setLightningEnabled: s.setLightningEnabled,
         setIsPasswordMode: s.setIsPasswordMode,
-        setIsSpectateMode: s.setIsSpectateMode,
-        playMovementSound,
         setGameTime: s.setGameTime,
-        gameTime: s.gameTime,
-    });
+        setIsSpectateMode: s.setIsSpectateMode,
+    };
 
+    const parser = useGameParser(deps, s.userSession);
+    const spectateParser = useGameParser(deps, s.spectateSession);
 
-    const { processLine } = parser;
+    const processLine = useCallback((line: string) => {
+        // --- Prefix Routing Logic ---
+        if (line.startsWith('&')) {
+            const match = line.match(/^&([A-Z])\s*(.*)/); // Match &<Letter> [Space] <Content>
+            if (match) {
+                const content = match[2];
+                spectateParser.processLine(content);
+                return;
+            }
+        }
+        // Fallback or non-prefixed lines go to User session
+        parser.processLine(line);
+    }, [parser, spectateParser]);
 
     const telnet = useTelnet({
         connectionUrl: settings.connectionUrl,
@@ -711,9 +697,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     // Send hidden time command when entering the game
                     setTimeout(() => s.executeCommandRef.current?.('time', true, true, true, true), 1500);
                 }
-                if (name && !recorder.isRecording && s.autoSaveSessions) {
-                    console.log(`[Recorder] Char.Name received. Auto-starting recording for character: ${name}`);
-                    recorder.startRecording(name);
+                if (name && !s.userSession.recorder.isRecording && s.autoSaveSessions) {
+                    console.log(`[Recorder] User Char.Name received. Auto-starting recording: ${name}`);
+                    s.userSession.recorder.startRecording(name);
                 }
             },
             onCharInfo: gmcpHandlers.onCharInfo,
@@ -729,17 +715,23 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 // Initializer moved to onCharNameChange
             },
             onCoreGoodbye: () => {
-                if (recorder.isRecording && s.autoSaveSessions) {
-                    console.log('[Recorder] Core.Goodbye received. Auto-saving session...');
-                    recorder.stopAndSave();
+                if (s.userSession.recorder.isRecording && s.autoSaveSessions) {
+                    console.log('[Recorder] Core.Goodbye received. Saving User session...');
+                    s.userSession.recorder.stopAndSave();
+                }
+                if (s.spectateSession.recorder.isRecording && s.autoSaveSessions) {
+                    console.log('[Recorder] Core.Goodbye received. Saving Spectate session...');
+                    s.spectateSession.recorder.stopAndSave();
                 }
             },
             onDisconnect: () => {
                 console.log('[GameContext] Disconnect! Clearing tactical buffers.');
                 s.setIsPasswordMode(false);
-                if (recorder.isRecording && s.autoSaveSessions) {
-                    console.log('[Recorder] Disconnect detected. Auto-saving session...');
-                    recorder.stopAndSave();
+                if (s.userSession.recorder.isRecording && s.autoSaveSessions) {
+                    s.userSession.recorder.stopAndSave();
+                }
+                if (s.spectateSession.recorder.isRecording && s.autoSaveSessions) {
+                    s.spectateSession.recorder.stopAndSave();
                 }
                 s.setStatsLines([]);
                 s.setScoreLines([]);
@@ -1102,8 +1094,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isPasswordMode: s.isPasswordMode,
         sessionMode,
         replayer,
-        accountState: v.accountState,
-        setAccountState: v.setAccountState,
+        accountState: s.accountState,
+        setAccountState: s.setAccountState,
         accountStageRef: s.accountStageRef,
         clearLog
     }), [
@@ -1117,7 +1109,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         keywordOverrides, openKeywordEdit, lastCommandContextRef, s.entities, s.applyOptimisticChange,
         s.selectedObjectIds, s.toggleObjectSelection, s.clearObjectSelection, playClickSound, s.isSoundEnabled,
         v.stats.conditions?.waiting, sanitizedRecordEntry, v.activePrompt, clearLog, s.gameState,
-        sessionMode, theaterReplayer, v.accountState, v.setAccountState, s.accountStageRef,
+        sessionMode, theaterReplayer, s.accountState, s.setAccountState, s.accountStageRef,
         clearLog
     ]);
 
@@ -1166,7 +1158,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         spatButtons,
         triggerSpitManual,
         gameState: s.gameState,
-        accountStage: v.accountState.stage,
+        accountStage: s.accountState.stage,
         isPasswordMode: s.isPasswordMode
     });
 
@@ -1320,7 +1312,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             isMendingMode: v.isMendingMode, setIsMendingMode: v.setIsMendingMode,
             mendingTarget: v.mendingTarget, setMendingTarget: v.setMendingTarget,
             heldButton: v.heldButton, setHeldButton: v.setHeldButton,
-            accountState: v.accountState, setAccountState: v.setAccountState,
+            accountState: s.accountState, setAccountState: s.setAccountState,
             keywordOverrides, openKeywordEdit,
             keywordEditState, setKeywordEditState,
             setKeywordOverride, removeOverride: removeKeywordOverride,
@@ -1338,6 +1330,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setSpectateQueue: s.setSpectateQueue,
             lastSnoopStartTime: s.lastSnoopStartTime,
             setLastSnoopStartTime: s.setLastSnoopStartTime,
+            parley: s.parley,
+            setParley: s.setParley,
+            selectedObjectIds: s.selectedObjectIds,
+            toggleObjectSelection: s.toggleObjectSelection,
+            clearObjectSelection: s.clearObjectSelection,
             isSpectateMode,
             spectateCharacterName: s.spectateCharacterName || base.characterName,
             setSpectateCharacterName: s.setSpectateCharacterName,
@@ -1392,7 +1389,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, [s.isSpectateMode, s.spectateStats, v.stats]);
 
     const effectiveVitals = useMemo(() => {
-        const isReplaying = sessionMode === 'replay';
+        const isReplaying = sessionMode === 'replay' || sessionMode === 'scrubbing';
         
         if (isReplaying) {
             return {

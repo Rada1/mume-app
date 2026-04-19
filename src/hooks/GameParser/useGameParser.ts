@@ -30,60 +30,43 @@ import { useLogGmcpParser } from './useLogGmcpParser';
 import { useSpectateAutomator } from '../useSpectateAutomator';
 import { occupantAnims, getOccupantKey, DIR_WORD_TO_CODE } from '../../components/Mapper/occupantAnimStore';
 
-export function useGameParser(deps: UseGameParserDeps) {
+import { SessionContextType } from '../../context/GameContext/types';
+
+export function useGameParser(deps: UseGameParserDeps, session: SessionContextType) {
     const { 
-        mapperRef, btn, addMessage, playSound,        playHitImpactSound,
-        playOofSound,
-        playSlashSound,
-        playCleaveSound,
-        playSmiteSound,
-        playPierceSound,
-        playStabSound,
-        playArrowHitSound,
-        playKillSound,
-        playLevelSound,
-        playCommMessageSound,
-        playBashSound,
-        loadBashSound,
-
-        playIncantationSound,
-        playBuySellSound,
-
-        stopIncantationSound,
-        primeSpellSuccess,
-        playMagicExplosionSound,
-        playRandomSound,
- playDoorSound, triggerHaptic, setStats, setWeather, setIsFoggy, 
-        setLightningEnabled, setAbilities, setCharacterClass, 
-        inCombatRef, actionsRef,
-        executeCommandRef, setInventoryLines, setStatsLines, setInfoLines, setScoreLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines, setEqLines, setWhoList, setWhereList, setRoomItems, 
-        captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, captureOwnerDrawer,
-        keywordOverrides, roomNameRef, roomDescRef, setRoomName, setRoomDesc, setRoomZone, setCurrentTerrain, showDebugEchoes, addDiagnosticLog, popoverState, setPopoverState,
-        setDiscoveredItems, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName,
-        setBufferHealthStatus, setBufferName, setCharacterInfo, setQuests, quests,
-        mumeEditState, setMumeEditState, isPlayersOpen, isInventoryOpen, isEquipmentOpen,
-        triggerXpTicker, triggerHitFlash, triggerOppHitFlash, pendingGmcpCommRef, lastCommIdBySenderRef, groupMembers,
-        shop, practice, registerEntity, setEntities, setPlayerPosition,
-        isCharacterOpen, isStatsOpen,
+        mapperRef, btn, addMessage, playSound, playHitImpactSound,
+        playOofSound, playSlashSound, playCleaveSound, playSmiteSound,
+        playPierceSound, playStabSound, playArrowHitSound, playKillSound,
+        playLevelSound, playCommMessageSound, playBashSound, loadBashSound,
+        playIncantationSound, playBuySellSound, stopIncantationSound,
+        primeSpellSuccess, playMagicExplosionSound, playRandomSound,
+        playDoorSound, triggerHaptic, actionsRef, executeCommandRef,
+        keywordOverrides, showDebugEchoes, addDiagnosticLog, popoverState,
+        setPopoverState, setDiscoveredItems, quests, setQuests, mumeEditState,
+        setMumeEditState, isPlayersOpen, isInventoryOpen, isEquipmentOpen,
+        triggerXpTicker, triggerHitFlash, triggerOppHitFlash, pendingGmcpCommRef, lastCommIdBySenderRef,
+        lastCommMsgIdRef, lastCommTimeRef,
+        shop, practice, registerEntity, setEntities, isCharacterOpen, isStatsOpen,
         accountState, setAccountState, accountStageRef, setGameState, setMessages,
-        isSpectateMode,
-        setSpectateStats, setSpectateHealthStatus, setSpectateOpponentName, setSpectateOpponentStatus,
-        setSpectatePosition, setSpectateWaiting, setSpectateRoomName,
-        setSpectateTerrain, setSpectateRoomZone, setSpectateLighting, setSpectateWeather, setSpectateIsFoggy,
-        setSpectateInCombat, setSpectateCharacterName,
-        spectateCharacterName, roomPlayers, spectateRoomName, spectateRoomDesc, setSpectateRoomDesc,
-        processMessageHtml,
-        sessionMode,
-        help,
-        setIsPasswordMode,
-        spectateQueue,
-        setSpectateQueue,
-        lastSnoopStartTime,
-        setLastSnoopStartTime,
-        addSystemMessage,
-        setGameTime,
-        gameTime
+        isSpectateMode, spectateCharacterName, processMessageHtml, sessionMode, help,
+        setIsPasswordMode, spectateQueue, setSpectateQueue, lastSnoopStartTime,
+        setLastSnoopStartTime, addSystemMessage, setGameTime, gameTime,
+        captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, captureOwnerDrawer,
+        setSpectateStats, setSpectateHealthStatus, setSpectateOpponentName,
+        setSpectateOpponentStatus, setSpectatePosition, setSpectateWaiting,
+        setSpectateRoomName, setSpectateTerrain, setSpectateRoomZone,
+        setSpectateLighting, setSpectateWeather, setSpectateIsFoggy,
+        setSpectateInCombat, setSpectateCharacterName, setSpectateGroupMembers,
+        setSpectateRoomDesc, inCombatRef, groupMembers, setDeathRoomId, roomPlayers,
+        roomNpcs, roomItems, roomNameRef, roomDescRef,
+        spectateRoomName, spectateRoomDesc,
+        setWhoList, setWhereList, setRoomItems
     } = deps;
+
+    // Map session setters to common names used in sub-parsers
+    const { setStats, setTarget, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName, setBufferHealthStatus, setBufferName, setCharacterInfo } = session.vitals as any;
+    const { setRoomName, setRoomDesc, setRoomZone, setCurrentTerrain, setInCombat, setPlayerPosition, setWeather, setIsFoggy, setLightningEnabled, setInventoryLines, setStatsLines, setInfoLines, setScoreLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines, setEqLines, setRoomPlayers, setRoomNpcs, setRoomItems: sessionSetRoomItems, setRoomExits } = session.game as any;
+    const { addMessage: sessionAddMessage } = session.log;
 
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef, playRandomSound });
     const { parseQuestLine, finalizeQuests } = useQuestsHandler(setQuests, quests.activeQuests);
@@ -263,7 +246,8 @@ export function useGameParser(deps: UseGameParserDeps) {
     }, [isSpectateMode, deps.gameState, setGameState, setAccountState]);
 
     const processLine = useCallback((line: string) => {
-        let cleanLine = line.replace(/\r$/, '').normalize('NFC');
+        try {
+            let cleanLine = line.replace(/\r$/, '').normalize('NFC');
         // We no longer return early on empty lines to allow "compact off" (blank lines) to be visible.
         // This is crucial for properly rendering the game's spacing when compact mode is disabled.
 
@@ -490,8 +474,8 @@ export function useGameParser(deps: UseGameParserDeps) {
                     // Strip leading article so text-parsed key matches GMCP name (e.g. "a pack horse" → "pack horse")
                     const name = rawName.replace(/^(a|an|the)\s+/i, '').trim();
                     const key = getOccupantKey(null, name);
-                    occupantAnims.set(key, { dir, type: 'exit', startTime: Date.now(), name, isPlayer: false });
-                    mapperRef.current?.triggerRender?.();
+                    if (occupantAnims) occupantAnims.set(key, { dir, type: 'exit', startTime: Date.now(), name, isPlayer: false });
+                    mapperRef?.current?.triggerRender?.();
                 }
             }
             const enterMatch = textOnly.match(/^(.+?) (?:has arrived|arrives?) from (?:the )?(north|south|east|west|up|down|northeast|northwest|southeast|southwest|above|below)\b/i);
@@ -504,8 +488,8 @@ export function useGameParser(deps: UseGameParserDeps) {
                     // Strip leading article so text-parsed key matches GMCP name (e.g. "a pack horse" → "pack horse")
                     const name = rawName.replace(/^(a|an|the)\s+/i, '').trim();
                     const key = getOccupantKey(null, name);
-                    occupantAnims.set(key, { dir, type: 'enter', startTime: Date.now(), name, isPlayer: false });
-                    mapperRef.current?.triggerRender?.();
+                    if (occupantAnims) occupantAnims.set(key, { dir, type: 'enter', startTime: Date.now(), name, isPlayer: false });
+                    mapperRef?.current?.triggerRender?.();
                 }
             }
         }
@@ -855,8 +839,8 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         let targetMid: string | undefined = undefined;
         if (msgType === 'comm-continue') {
-            const senderKey = commInfo.commSender || commInfo.lastCommMsgIdRef.current?.split(':')[1] || 'last';
-            targetMid = commInfo.lastCommIdBySenderRef?.current.get(senderKey) || commInfo.lastCommMsgIdRef.current || undefined;
+            const senderKey = commInfo.commSender || commInfo.lastCommMsgIdRef?.current?.split(':')[1] || 'last';
+            targetMid = commInfo.lastCommIdBySenderRef?.current?.get(senderKey) || commInfo.lastCommMsgIdRef?.current || undefined;
         }
 
         if (shouldShow) {
@@ -870,7 +854,7 @@ export function useGameParser(deps: UseGameParserDeps) {
 
             const currentMid = msgType === 'comm-continue' ? targetMid! : `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`;
             if (msgType === 'comm' || commInfo.replyCommand) {
-                commInfo.lastCommMsgIdRef.current = currentMid;
+                if (commInfo.lastCommMsgIdRef) commInfo.lastCommMsgIdRef.current = currentMid;
                 commInfo.lastCommTimeRef.current = Date.now();
                 if (commInfo.commSender && commInfo.lastCommIdBySenderRef) commInfo.lastCommIdBySenderRef.current.set(commInfo.commSender, currentMid);
                 
@@ -885,7 +869,12 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
 
-        if (promptInfo.isEndPrompt) finalizeCapture();
+            if (promptInfo.isEndPrompt) finalizeCapture();
+        } catch (error) {
+            console.error('[GameParser] Fatal error parsing line:', line, error);
+            // Fallback: Add the raw line to the log so the user at least sees the game text
+            addMessage('log', line, false, `err-${Date.now()}`, false);
+        }
     }, [addMessage, setInventoryLines, setStatsLines, setPracticeLines, setWhoLines, setWhereLines, setEqLines, setWhoList, setWhereList, deps, processTriggers, roomNameRef, setPopoverState, finalizeCapture, parsePrompt, checkCombatMatch, handleCombatExit, handleXpTicker, parseGlobalStatus, parseDetailedScore, detectRoom, parseAtmosphere, trackAction, parseComm, createLines, resetNounCounts, resetContainerStack, practice, shop, quests, setCharacterInfo, setDiscoveredItems, executeCommandRef, captureStage, ansiConvert, extractNoun, initializeStage, determineVisibility, routeMessage, detectItemsInRoom, mumeEditState.isOpen, setMumeEditState, 
         setSpectateStats, setSpectateHealthStatus, setSpectateOpponentName, setSpectateOpponentStatus,
         setSpectatePosition, setSpectateWaiting, setSpectateRoomName,

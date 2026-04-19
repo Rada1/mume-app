@@ -13,56 +13,62 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
     } = context;
     const lowerCmd = cmd.toLowerCase().trim();
 
+    // Safety: If core context is missing, bail out so the command can still be sent
+    if (!captureStage) {
+        console.warn(`[CaptureMiddleware] Command context is incomplete. Bypassing capture for "${cmd}"`);
+        return undefined;
+    }
+
     // Silent Capture Management
-    if (silent && isSystem) {
+    if (silent && isSystem && isSilentCapture) {
         isSilentCapture.current++;
         // Safety timeout moved back to Executor for access to context.finalizeCapture
     }
 
     // Container Interception
     if (lowerCmd.startsWith('look in ')) {
-        captureStage.current = 'container';
-        isDrawerCapture.current = 1;
+        if (captureStage) captureStage.current = 'container';
+        if (isDrawerCapture) isDrawerCapture.current = 1;
         // Only reset popover if this is NOT a silent (drawer-triggered) look in
-        if (!silent) {
+        if (!silent && setPopoverState) {
             setPopoverState((prev: any) => prev ? { ...prev, type: 'container', containerItems: [] } : prev);
         }
     }
 
-    if (fromDrawer) {
+    if (fromDrawer && isDrawerCapture) {
         isDrawerCapture.current++;
     } else if (!isSystem) {
         // CRITICAL: If the user sends a manual command, we MUST ensure they aren't stuck 
-        isDrawerCapture.current = 0;
-        isSilentCapture.current = 0;
-        if (lowerCmd !== 'who' && lowerCmd !== 'where') {
+        if (isDrawerCapture) isDrawerCapture.current = 0;
+        if (isSilentCapture) isSilentCapture.current = 0;
+        if (lowerCmd !== 'who' && lowerCmd !== 'where' && finalizeCapture) {
             finalizeCapture();
         }
     }
 
     // Capture Flags
     if (lowerCmd === 'inventory' || lowerCmd === 'inv' || lowerCmd === 'i') {
-        isWaitingForInv.current = true;
-        captureStage.current = 'none';
+        if (isWaitingForInv) isWaitingForInv.current = true;
+        if (captureStage) captureStage.current = 'none';
     } else if (lowerCmd === 'stat' || lowerCmd === 'st' || lowerCmd === 'status' || lowerCmd === 'score' || lowerCmd === 'sc' || lowerCmd === 'at' || lowerCmd.startsWith('info %m')) {
         console.log(`[Middleware] Setting isWaitingForStats! Cmd: "${cmd}" (Matches: stat/score/at/info)`);
-        isWaitingForStats.current = true;
-        captureStage.current = 'none';
-        if (!silent && !isSystem && !fromDrawer) {
+        if (isWaitingForStats) isWaitingForStats.current = true;
+        if (captureStage) captureStage.current = 'none';
+        if (!silent && !isSystem && !fromDrawer && setStatsLines && setScoreLines) {
             setStatsLines([]);
             setScoreLines([]);
         }
     } else if (lowerCmd === 'eq' || lowerCmd === 'equipment') {
-        isWaitingForEq.current = true;
-        captureStage.current = 'none';
+        if (isWaitingForEq) isWaitingForEq.current = true;
+        if (captureStage) captureStage.current = 'none';
     } else if (lowerCmd === 'info') {
-        isWaitingForInfo.current = true;
-        if (!silent && !isSystem && !fromDrawer) {
+        if (isWaitingForInfo) isWaitingForInfo.current = true;
+        if (!silent && !isSystem && !fromDrawer && setInfoLines) {
             setInfoLines([]);
         }
     } else if (lowerCmd === 'practice' || lowerCmd === 'prac') {
         // Practice detection is also handled by useStageInitializer
-        captureStage.current = 'practice';
+        if (captureStage) captureStage.current = 'practice';
     }
 
     return undefined; // No change to command itself

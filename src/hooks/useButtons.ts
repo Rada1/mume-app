@@ -6,7 +6,14 @@ import { useButtonPersistence } from './useButtonPersistence';
 import { useButtonLogic } from './useButtonLogic';
 import { getCategoryForName } from '../utils/categorizationUtils';
 
-export const useButtons = (abilities: Record<string, number>, characterClass: string, characterName: string | null, target: string | null = null, inlineCategories: import('../types').InlineCategoryConfig[] = []) => {
+export const useButtons = (deps: {
+    abilities: Record<string, number>,
+    characterClass: string,
+    characterName: string | null,
+    target: string | null,
+    inlineCategories: import('../types').InlineCategoryConfig[]
+}) => {
+    const { abilities, characterClass, characterName, target, inlineCategories } = deps;
     const [activeSet, setActiveSet] = useState('main');
     const [isEditMode, setIsEditMode] = useState(false);
     const [editingButtonId, setEditingButtonId] = useState<string | null>(null);
@@ -63,7 +70,17 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
         return defaultButtons;
     });
 
-    const buttons = useButtonLogic(rawButtons, activeSet, abilities, characterClass, characterName, isEditMode, isSmartPopulateEnabled, target, inlineCategories);
+    const buttons = useButtonLogic({
+        rawButtons,
+        activeSet,
+        abilities,
+        characterClass,
+        characterName,
+        isEditMode,
+        isSmartPopulateEnabled,
+        target,
+        inlineCategories
+    });
     const { resetToDefaults } = useButtonPersistence(rawButtons, setRawButtons, uiPositions, setUiPositions);
 
     const buttonsRef = useRef(buttons);

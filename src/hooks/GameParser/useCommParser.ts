@@ -9,14 +9,16 @@ import { MessageType } from '../../types';
 export interface CommParserDeps {
     pendingGmcpCommRef?: React.MutableRefObject<{ sender: string; chan: string; msg?: string } | null>;
     lastCommIdBySenderRef?: React.MutableRefObject<Map<string, string>>;
+    lastCommMsgIdRef?: React.MutableRefObject<string | null>;
+    lastCommTimeRef?: React.MutableRefObject<number>;
 }
 
 export function useCommParser(deps: CommParserDeps) {
     const { pendingGmcpCommRef, lastCommIdBySenderRef } = deps;
     const ignoredCommBufferRef = useRef<string | null>(null);
-    const lastCommMsgIdRef = useRef<string | null>(null);
-    const lastCommTimeRef = useRef<number>(0);
-    const openCommRef = useRef(false); // true when last comm line had no closing quote (server-wrapped message)
+    const lastCommMsgIdRef = deps.lastCommMsgIdRef || useRef<string | null>(null);
+    const lastCommTimeRef = deps.lastCommTimeRef || useRef<number>(0);
+    const openCommRef = useRef(false);
 
     const parseComm = useCallback((line: string, textOnly: string, lower: string) => {
         const gmcpComm = pendingGmcpCommRef?.current ?? null;

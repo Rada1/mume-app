@@ -138,6 +138,10 @@ export interface UseGameParserDeps {
     processMessageHtml?: (originalHtml: string, mid: string, isRoomName: boolean, type?: import('../../types').MessageType, isCombatMessage?: boolean, combatSide?: 'player' | 'opponent' | 'groupmate') => string;
     spectateCharacterName: string | null;
     roomPlayers: import('../../types').GmcpOccupant[];
+    roomNameRef: React.RefObject<string | null>;
+    roomDescRef: React.RefObject<string | null>;
+    lastCommMsgIdRef: React.RefObject<string | null>;
+    lastCommTimeRef: React.RefObject<number>;
     sessionMode?: 'live' | 'replay';
     help: any;
     setIsPasswordMode: (val: boolean) => void;

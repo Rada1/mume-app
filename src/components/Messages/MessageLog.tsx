@@ -239,7 +239,26 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const { replayer } = useUI();
     const { messages, processMessageHtml } = useLog();
     const { activePrompt, target, setTarget, opponentName, opponentHealthStatus } = useVitals();
-    const { scrollContainerRef, messagesEndRef, scrollToBottom } = viewport;
+    const { scrollContainerRef, messagesEndRef, scrollToBottom, isLockedToBottomRef } = viewport;
+
+    const { userSession, spectateSession, activeSession } = useBaseGame();
+
+    // --- Live Attach Logic ---
+    useEffect(() => {
+        // If we are not locked to the bottom and not in a full replay, 
+        // we attach the replayer to the active session's buffer.
+        if (!isLockedToBottomRef.current && sessionMode === 'live') {
+            const currentSession = activeSession === 'user' ? userSession : spectateSession;
+            // Get a snapshot of the current entries
+            const logSnapshot = {
+                version: 1,
+                startTime: new Date().toISOString(),
+                entries: [...currentSession.recorder.entries],
+                metadata: { client: 'MUME AI Studio', version: '1.0.0' }
+            };
+            replayer.attachToLive(logSnapshot);
+        }
+    }, [isLockedToBottomRef.current, sessionMode, activeSession, userSession, spectateSession, replayer]);
 
     // --- Replay Mode Mapping ---
     const replayMessages = useMemo(() => {
@@ -643,6 +662,40 @@ const MessageLog: React.FC<MessageLogProps> = ({
                     })}
                 </div>
                 {activePromptContent}
+
+                {/* --- Timeline Scrubber --- */}
+                {!viewport.isLockedToBottomRef.current && sessionMode !== 'replay' && (
+                    <div className="timeline-scrubber-overlay">
+                        <div className="scrubber-track-outer">
+                            <input 
+                                type="range"
+                                min={0}
+                                max={replayer.state.duration}
+                                value={replayer.state.currentTime}
+                                onChange={(e) => {
+                                    const time = parseInt(e.target.value);
+                                    if (sessionMode !== 'scrubbing') setSessionMode('scrubbing');
+                                    replayer.seek(time);
+                                }}
+                                className="scrubber-slider"
+                            />
+                            <div className="scrubber-timestamp">
+                                {formatTimestamp(Date.now() - (replayer.state.duration - replayer.state.currentTime))}
+                            </div>
+                        </div>
+                        <button 
+                            className="back-to-live-btn"
+                            onClick={() => {
+                                setSessionMode('live');
+                                viewport.isLockedToBottomRef.current = true;
+                                viewport.scrollToBottom(true, true, 'BackToLive');
+                            }}
+                        >
+                            Back To Live
+                        </button>
+                    </div>
+                )}
+
                 <div className="log-bottom-spacer" ref={messagesEndRef} style={{ height: '12px', flexShrink: 0 }} />
             </div>
         </div>

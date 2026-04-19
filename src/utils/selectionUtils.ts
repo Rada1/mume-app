@@ -8,7 +8,7 @@
  * Handles the various formats used across the app (id, setId:id, mid:setId:id, etc.)
  */
 export const isObjectSelected = (selectedObjectIds: Set<string>, id: string, setId?: string): boolean => {
-    if (!id) return false;
+    if (!selectedObjectIds || !id) return false;
     
     // 1. Check for exact match in the set
     if (selectedObjectIds.has(id)) return true;

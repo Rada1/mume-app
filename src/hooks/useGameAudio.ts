@@ -52,7 +52,7 @@ export const useGameAudio = ({
     spectatePosition
 }: GameAudioDeps) => {
     // Log every render to track state flow
-    console.log(`[Audio/Render] zone=${roomZone}, terrain=${currentTerrain}, lighting=${lighting}, weather=${weather}, waiting=${waiting}, isSpectate=${isSpectateMode}`);
+    // console.log(`[Audio/Render] zone=${roomZone}, terrain=${currentTerrain}, lighting=${lighting}, weather=${weather}, waiting=${waiting}, isSpectate=${isSpectateMode}`);
 
     const effectivePosition = isSpectateMode ? (spectatePosition || 'standing') : (playerPosition || 'standing');
     const isSleeping = effectivePosition === 'sleeping';

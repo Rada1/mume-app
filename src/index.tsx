@@ -26,6 +26,7 @@ import { SpatButtons } from './components/Controls/SpatButtons';
 import { useSpatButtons } from './hooks/useSpatButtons';
 import SwipeFeedbackOverlay from './components/Overlay/SwipeFeedbackOverlay';
 import { MultiSelectToolbar } from './components/Popovers/MultiSelectToolbar';
+import { AgentHUD } from './components/Utility/AgentHUD';
 
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
@@ -318,6 +319,7 @@ const MudClient = () => {
                 document.body
             )}
 
+            <AgentHUD />
         </div>
     );
 };

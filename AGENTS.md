@@ -24,6 +24,20 @@ The MUME Client is an **AI-Native, Hook-Driven Mobile Client** for the MUME MUD.
 | **Adjust Mapper** | `src/components/Mapper/`, `src/mapper/renderer.ts` |
 | **Spectate Rotation** | `src/hooks/useSpectateAutomator.ts`, `src/hooks/GameParser/useGameParser.ts` |
 
+## 🧪 Automated Testing Skill (Agent Only)
+The Antigravity agent can log in autonomously to verify UI and logic changes.
+- **Config**: Root `config.agent.json` (gitignored). Contains `account`, `password`, and `play_command`.
+- **Character**: Use `ellessar` (God character) for testing.
+- **Boot Sequence**:
+  1. Open `http://localhost:3000`.
+  2. Wait for `By what name...?`. 
+  3. Enter Account Name.
+  4. Wait for `Password:`. 
+  5. Enter Password.
+  6. Handle paginators/MOTD by sending empty newlines.
+  7. Type `play ellessar` at the account prompt.
+- **Verification**: Check `MessageLog.tsx` or the browser console for successful login triggers.
+
 ## 🚀 Efficiency Shortcuts for AI
 - **GMCP over Text:** Always prefer GMCP data updates over regex-parsing game text when possible.
 - **Surgical Edits:** Use the `replace` tool by targeting the `// --- Section ---` comments.

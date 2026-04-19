@@ -35,16 +35,17 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 
 ### 🧠 Logic & Networking
 - **Low-level Telnet/GMCP:** `src/hooks/useTelnet.ts`
-- **GMCP Data Handling:** `src/hooks/useGmcpHandlers.ts`
+- **GMCP Data Handlers:** `src/hooks/useGmcpHandlers/` (Vitals, Room, Group, Occupants)
 - **Game Output Parsing (Text):** `src/hooks/GameParser/useGameParser.ts` (Orchestrator)
-- **Parser Sub-Hooks:** `src/hooks/GameParser/` (Combat, Comm, Room, Stat, Atmosphere, Prompt, etc.)
+- **Parser Sub-Hooks:** `src/hooks/GameParser/` (Combat, Comm, Room, Stat, Atmosphere, Prompt, Account, Time, etc.)
 - **Action Filtering:** `src/utils/actionUtils.ts` (Capability -> Button Map)
 - **Command Parsing (User Input):** `src/services/parser/services/mudParser.ts`
 - **Message Log & Combat:** `src/hooks/useMessageLog.ts`
 - **Command Control (Sending to Game):** `src/hooks/useCommandController.ts`
 - **Specialized Handlers:** `usePracticeHandler.ts`, `useShopHandler.ts`, `useQuestsHandler.ts`
-- **Buttons & UI Interactions:** `useButtons.ts`, `useSpatButtons.ts`, `useInteractionHandlers.ts`, `useViewport.ts`
+- **Buttons & UI Interactions:** `useButtons.ts`, `useSpatButtons.ts`, `src/hooks/interactions/` (Pointer, Gestures, Taps), `useViewport.ts`
 - **Spectate Automation (Rotation/Tells):** `useSpectateAutomator.ts`
+- **Session Control:** `useSessionManager.ts`, `useSessionRecorder.ts`, `useSessionReplayer.ts`
 - **Advanced Processing:** `useTriggerProcessor.ts`, `useKeywordOverrides.ts`, `useMessageHighlighter.ts`
 - **Audio & Atmosphere:** `useAtmosphereAudio.ts`, `useSoundSystem.ts`, `useZoneMusic.ts`, `useWeatherSounds.ts`, `useTerrainSounds.ts`
 
@@ -62,6 +63,7 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 | **Update Button Logic** | `useButtons.ts`, `useButtonLogic.ts`, `ButtonUtils.ts` |
 | **Adjust Audio/Atmosphere** | `useAtmosphereAudio.ts`, `useSoundSystem.ts`, `useZoneMusic.ts` |
 | **Modify Drawers/UI Tabs** | `src/components/Drawers/`, `DrawerManager.tsx` |
+| **Replay a Session** | `useSessionReplayer.ts`, `useSessionManager.ts` |
 
 ## 🚫 Avoid Scanning (Use .geminiignore)
 - **Data/Logs:** Do NOT open `.txt`, `.xml`, `.mm2`, or large `.json` files in the root.

@@ -3,20 +3,26 @@ import { CustomButton } from '../types';
 import { MAGE_SPELLS, CLERIC_SPELLS, WARRIOR_SKILLS, RANGER_SKILLS, THIEF_SKILLS, CLASS_MAPPINGS } from '../utils/spellLists';
 import { getCategoryForName } from '../utils/categorizationUtils';
 
-export const useButtonLogic = (
+export const useButtonLogic = (deps: {
     rawButtons: CustomButton[],
     activeSet: string,
     abilities: Record<string, number>,
     characterClass: string,
     characterName: string | null,
     isEditMode: boolean,
-    isSmartPopulateEnabled: boolean = true,
-    target: string | null = null,
-    inlineCategories: import('../types').InlineCategoryConfig[] = []
-) => {
+    isSmartPopulateEnabled?: boolean,
+    target: string | null,
+    inlineCategories: import('../types').InlineCategoryConfig[]
+}) => {
+    const { 
+        rawButtons, activeSet, abilities, characterClass, characterName, 
+        isEditMode, isSmartPopulateEnabled = true, target = null, inlineCategories = [] 
+    } = deps;
+
     return useMemo(() => {
         const classNames = ['ranger', 'warrior', 'mage', 'cleric', 'thief'];
-        const activeSetLower = activeSet.toLowerCase();
+        const activeSetLower = (activeSet || 'main').toLowerCase();
+        const safeAbilities = abilities || {};
 
         // 1. Static filtering & Modification
         const filtered = rawButtons.filter(b => {
@@ -37,7 +43,7 @@ export const useButtonLogic = (
                     if (!characterName) return false;
                     
                     const skills = CLASS_MAPPINGS[classKey] || [];
-                    const knownCount = skills.filter(s => (abilities[s.toLowerCase()] || 0) > 0).length;
+                    const knownCount = skills.filter(s => (safeAbilities[s.toLowerCase()] || 0) > 0).length;
                     if (knownCount === 0) return false;
                 }
                 return true;
@@ -66,7 +72,7 @@ export const useButtonLogic = (
                 }
 
                 if (isSpellOrSkill) {
-                    const prof = abilities[name] || abilities[labelLower] || abilities[cmdLower] || 0;
+                    const prof = safeAbilities[name] || safeAbilities[labelLower] || safeAbilities[cmdLower] || 0;
                     if (prof <= 0) return false;
                 }
             }
@@ -76,7 +82,7 @@ export const useButtonLogic = (
                 if (characterClass !== 'none' && !b.requirement.characterClass.includes(characterClass)) return false;
             }
             if (b.requirement.ability) {
-                const prof = abilities[b.requirement.ability.toLowerCase()] || 0;
+                const prof = safeAbilities[b.requirement.ability.toLowerCase()] || 0;
                 if (prof < (b.requirement.minProficiency || 1)) return false;
             }
 
@@ -86,8 +92,8 @@ export const useButtonLogic = (
 
             // Dim buttons that are unknown but visible because smart populate is off
             if (!isSmartPopulateEnabled && b.hideIfUnknown && !isEditMode) {
-                const cmdLower = b.command.toLowerCase();
-                const labelLower = b.label.toLowerCase();
+                const cmdLower = (b.command || '').toLowerCase();
+                const labelLower = (b.label || '').toLowerCase();
                 let name = labelLower;
                 let isSpellOrSkill = false;
 
@@ -105,7 +111,7 @@ export const useButtonLogic = (
                 }
 
                 if (isSpellOrSkill) {
-                    const prof = abilities[name] || abilities[labelLower] || abilities[cmdLower] || 0;
+                    const prof = safeAbilities[name] || safeAbilities[labelLower] || safeAbilities[cmdLower] || 0;
                     if (prof <= 0) modified.isDimmed = true;
                 }
             }
@@ -122,9 +128,9 @@ export const useButtonLogic = (
             const mapKey = setNameLower.replace('skilllist', '').replace('spelllist', '');
             let baseList: string[] = setNameLower === 'spellbook' ? [...MAGE_SPELLS, ...CLERIC_SPELLS] : (CLASS_MAPPINGS[mapKey] || []);
 
-            const existingCommands = new Set(filtered.filter(b => b.setId.toLowerCase() === setNameLower).map(b => b.command.toLowerCase()));
+            const existingCommands = new Set(filtered.filter(b => (b.setId || '').toLowerCase() === setNameLower).map(b => (b.command || '').toLowerCase()));
 
-            baseList.map(name => ({ name, prof: abilities[name.toLowerCase()] || 0 })).forEach(({ name, prof }, idx) => {
+            baseList.map(name => ({ name, prof: (safeAbilities?.[name.toLowerCase()] || 0) })).forEach(({ name, prof }, idx) => {
                 if (isSmartPopulateEnabled && prof <= 0) return;
 
                 const cmd = name.toLowerCase() === 'teleport' ? "cast 'teleport'" : name.toLowerCase();

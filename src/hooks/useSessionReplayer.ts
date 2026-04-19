@@ -74,28 +74,50 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
       console.error('[Replayer] Invalid log uploaded:', newLog);
       return;
     }
-    console.log('[Replayer] Loading log with entries:', newLog.entries.length);
     setLog(newLog);
     logRef.current = newLog;
-    const duration = newLog.entries.length > 0 
+    const durationCount = newLog.entries.length > 0 
       ? newLog.entries[newLog.entries.length - 1].t 
       : 0;
-    console.log('[Replayer] Calculated duration:', duration);
     
-    console.log('[Replayer] Updating state with duration:', duration);
     setState({
       isPlaying: false,
       currentTime: 0,
-      duration,
+      duration: durationCount,
       speed: 1,
       currentIndex: 0,
       isExporting: false,
       isVisible: true,
       isPrivacyMode: stateRef.current.isPrivacyMode,
       searchResults: [],
-      trimRange: [null, null]
+      trimRange: [null, null],
+      isLive: false
     });
   }, []);
+
+  const attachToLive = useCallback((liveLog: SessionLog) => {
+    console.log('[Replayer] Attaching to live log');
+    setLog(liveLog);
+    logRef.current = liveLog;
+    const duration = liveLog.entries.length > 0 ? liveLog.entries[liveLog.entries.length - 1].t : 0;
+    setState(s => ({
+      ...s,
+      isPlaying: false,
+      currentTime: duration,
+      duration: duration,
+      currentIndex: liveLog.entries.length,
+      isVisible: true,
+      isLive: true
+    }));
+  }, []);
+
+  const updateLiveDuration = useCallback(() => {
+    if (!logRef.current || !state.isLive) return;
+    const lastEntry = logRef.current.entries[logRef.current.entries.length - 1];
+    if (lastEntry && lastEntry.t > state.duration) {
+      setState(s => ({ ...s, duration: lastEntry.t }));
+    }
+  }, [state.duration, state.isLive]);
 
   const pause = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);

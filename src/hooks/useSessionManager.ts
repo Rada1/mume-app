@@ -149,7 +149,7 @@ export const useSessionManager = ({
     useEffect(() => {
         const checkStr = (val: any) => typeof val === 'string' && (val.toLowerCase().includes('fight') || val.toLowerCase().includes('combat'));
         
-        const isAnyoneFighting = groupMembers.some(m => 
+        const isAnyoneFighting = (groupMembers || []).some(m => 
             checkStr(m.position) || checkStr((m as any).pos) || checkStr((m as any).status) || checkStr((m as any).state) || (m as any).fighting || (m as any).combat
         );
         
@@ -158,7 +158,7 @@ export const useSessionManager = ({
             return;
         }
 
-        const hasExistingAssist = spatButtons.some(sb => sb.btnId === 'auto-assist-generic');
+        const hasExistingAssist = (spatButtons || []).some(sb => sb.btnId === 'auto-assist-generic');
         if (!hasExistingAssist && !isAssistActiveRef.current) {
             isAssistActiveRef.current = true;
             
