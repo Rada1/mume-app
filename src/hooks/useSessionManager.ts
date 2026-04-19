@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import * as React from 'react';
 
 export interface SessionManagerDeps {
     status: string;
@@ -38,17 +38,17 @@ export const useSessionManager = ({
     isPasswordMode
 }: SessionManagerDeps) => {
     // --- Auto-login session tracking ---
-    const autoLoginSessionRef = useRef({ nameSent: false, passwordSent: false, lastStatus: '' });
-    const telnetSendCommandRef = useRef(telnetSendCommand);
-    useEffect(() => { telnetSendCommandRef.current = telnetSendCommand; }, [telnetSendCommand]);
+    const autoLoginSessionRef = React.useRef({ nameSent: false, passwordSent: false, lastStatus: '' });
+    const telnetSendCommandRef = React.useRef(telnetSendCommand);
+    React.useEffect(() => { telnetSendCommandRef.current = telnetSendCommand; }, [telnetSendCommand]);
 
     // Use refs for credentials so the effect only fires on prompt changes, not on each keystroke
-    const loginNameRef = useRef(loginName);
-    const loginPasswordRef = useRef(loginPassword);
-    useEffect(() => { loginNameRef.current = loginName; }, [loginName]);
-    useEffect(() => { loginPasswordRef.current = loginPassword; }, [loginPassword]);
+    const loginNameRef = React.useRef(loginName);
+    const loginPasswordRef = React.useRef(loginPassword);
+    React.useEffect(() => { loginNameRef.current = loginName; }, [loginName]);
+    React.useEffect(() => { loginPasswordRef.current = loginPassword; }, [loginPassword]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         // Reset session tracking when we start a new connection
         if (status === 'connecting' && autoLoginSessionRef.current.lastStatus !== 'connecting') {
             autoLoginSessionRef.current = { nameSent: false, passwordSent: false, lastStatus: 'connecting' };
@@ -117,14 +117,14 @@ export const useSessionManager = ({
     // Exposed so LoginView can signal a manual login attempt is starting.
     // Sets nameSent=true (caller sends name) and resets passwordSent=false
     // (auto-login will handle the upcoming "Password:" prompt).
-    const prepareLoginAttempt = useCallback(() => {
+    const prepareLoginAttempt = React.useCallback(() => {
         autoLoginSessionRef.current.nameSent = true;
         autoLoginSessionRef.current.passwordSent = false;
     }, []);
 
     // --- Practice sync on character detection ---
-    const lastSyncedCharRef = useRef<string | null>(null);
-    useEffect(() => {
+    const lastSyncedCharRef = React.useRef<string | null>(null);
+    React.useEffect(() => {
         if (characterName && characterName !== lastSyncedCharRef.current && status === 'connected') {
             lastSyncedCharRef.current = characterName;
             // Delay slightly to ensure login sequence is fully finished
@@ -137,7 +137,7 @@ export const useSessionManager = ({
     }, [characterName, status, executeCommand]);
 
     // --- Only on mount / Auto Connect ---
-    useEffect(() => {
+    React.useEffect(() => {
         if (autoConnect && status === 'disconnected') {
             telnetConnect();
         }
@@ -145,8 +145,8 @@ export const useSessionManager = ({
         }, []);
 
     // When any groupmate is fighting, show a single 'Assist' spit button.
-    const isAssistActiveRef = useRef<boolean>(false);
-    useEffect(() => {
+    const isAssistActiveRef = React.useRef<boolean>(false);
+    React.useEffect(() => {
         const checkStr = (val: any) => typeof val === 'string' && (val.toLowerCase().includes('fight') || val.toLowerCase().includes('combat'));
         
         const isAnyoneFighting = (groupMembers || []).some(m => 

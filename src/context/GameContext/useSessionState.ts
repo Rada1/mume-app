@@ -3,10 +3,10 @@
  * Manages the state for a single game session (God or Spectated).
  */
 
-import { useState, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { 
     GameStats, Message, CombatHealthStatus, GroupMember, DrawerLine, 
-    LightingType, WeatherType 
+    LightingType, WeatherType, WhereEntry 
 } from '../../types';
 import { useMessageLog } from '../../hooks/useMessageLog';
 import { useSessionRecorder } from '../../hooks/useSessionRecorder';
@@ -66,9 +66,9 @@ export const useSessionState = (
     const lastCommTimeRef = useRef<number>(0);
     const [lightningEnabled, setLightningEnabled] = useState(false);
 
-    useEffect(() => { roomNameRef.current = roomName; }, [roomName]);
-    useEffect(() => { roomDescRefInternal.current = roomDesc; }, [roomDesc]);
-    useEffect(() => {
+    React.useEffect(() => { roomNameRef.current = roomName; }, [roomName]);
+    React.useEffect(() => { roomDescRefInternal.current = roomDesc; }, [roomDesc]);
+    React.useEffect(() => {
         if (roomDescRef) (roomDescRef as any).current = roomDesc;
     }, [roomDesc, roomDescRef]);
     const [roomItems, setRoomItems] = useState<import('../../types').GmcpOccupant[]>([]);
@@ -115,6 +115,8 @@ export const useSessionState = (
     const [practiceLines, setPracticeLines] = useState<DrawerLine[]>([]);
     const [whoLines, setWhoLines] = useState<DrawerLine[]>([]);
     const [whereLines, setWhereLines] = useState<DrawerLine[]>([]);
+    const [whoList, setWhoList] = useState<string[]>([]);
+    const [whereList, setWhereList] = useState<WhereEntry[]>([]);
     const [eqLines, setEqLines] = useState<DrawerLine[]>([]);
 
     const vitals = useMemo<VitalsContextType>(() => ({
@@ -169,7 +171,9 @@ export const useSessionState = (
             quests, setQuests,
             roomNameRef, roomDescRef: roomDescRefInternal,
             lastCommMsgIdRef, lastCommTimeRef,
-            lightningEnabled, setLightningEnabled
+            lightningEnabled, setLightningEnabled,
+            whoList, setWhoList,
+            whereList, setWhereList
         },
         log: {
             ...log,

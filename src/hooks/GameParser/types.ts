@@ -127,7 +127,7 @@ export interface UseGameParserDeps {
     setRoomZone: (zone: string | null) => void;
     setRoomExits: (exits: string[]) => void;
     setAbilities: (val: Record<string, number> | ((prev: Record<string, number>) => Record<string, number>)) => void;
-    setCharacterClass: (val: any) => void;
+    setCharacterClass: (val: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none') => void;
     setInCombat: (val: boolean, force?: boolean) => void;
     inCombatRef: React.RefObject<boolean>;
     setLightningEnabled: (val: boolean) => void;
@@ -138,6 +138,9 @@ export interface UseGameParserDeps {
     processMessageHtml?: (originalHtml: string, mid: string, isRoomName: boolean, type?: import('../../types').MessageType, isCombatMessage?: boolean, combatSide?: 'player' | 'opponent' | 'groupmate') => string;
     spectateCharacterName: string | null;
     roomPlayers: import('../../types').GmcpOccupant[];
+    setWhoList?: (val: string[]) => void;
+    setWhereList?: (val: import('../../types').WhereEntry[]) => void;
+    setDeathRoomId?: (val: string | null) => void;
     roomNameRef: React.RefObject<string | null>;
     roomDescRef: React.RefObject<string | null>;
     lastCommMsgIdRef: React.RefObject<string | null>;

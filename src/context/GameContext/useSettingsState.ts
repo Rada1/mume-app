@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React from 'react';
 import { usePersistentState } from '../../hooks/usePersistentState';
 import MASTER_SETTINGS from '../../constants/mastersettings.json';
 import { DEFAULT_INLINE_CATEGORIES } from '../../utils/categorizationUtils';
@@ -9,7 +9,7 @@ export const useSettingsState = () => {
     const [connectionUrl, setConnectionUrl] = usePersistentState('mud-connection-url', (MASTER_SETTINGS as any).connectionUrl || DEFAULT_URL);
 
     // Migration: if the user has an old URL stuck in localStorage, force it to the new DEFAULT_URL
-    useEffect(() => {
+    React.useEffect(() => {
         const legacyUrls = [
             'wss://mume.org/ws-proxy',
             'wss://mume.org/ws-proxy/',

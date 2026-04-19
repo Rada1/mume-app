@@ -44,54 +44,20 @@ interface LogGmcpParserDeps {
 }
 
 export function useLogGmcpParser(deps: LogGmcpParserDeps) {
-    const {
-        setSpectateStats,
-        setSpectateHealthStatus,
-        setSpectateOpponentName,
-        setSpectateOpponentStatus,
-        setSpectatePosition,
-        setSpectateWaiting,
-        setSpectateRoomName,
-        setSpectateRoomDesc,
-        setSpectateTerrain,
-        setSpectateRoomZone,
-        setSpectateLighting,
-        setSpectateWeather,
-        setSpectateIsFoggy,
-        setSpectateInCombat,
-        setSpectateCharacterName,
-        spectateCharacterName,
-        setSpectateGroupMembers,
-        setRoomPlayers,
-        setRoomNpcs,
-        setRoomItems,
-        setRoomName,
-        setRoomDesc,
-        setRoomZone,
-        setCurrentTerrain,
-        setRoomExits,
-        characterName,
-        mapperRef,
-        detectLighting,
-        setWeather,
-        setIsFoggy,
-        isSpectateMode,
-        playMovementSound,
-        playDoorSound
-    } = deps;
+    const latestDeps = useRef(deps);
+    React.useEffect(() => {
+        latestDeps.current = deps;
+    });
 
-    // Stable refs for values that can change without the callback being recreated.
-    // parseLogGmcp's dep array intentionally stays narrow (setters are stable), so we read
-    // mode flags + the last-known spectate room from refs to avoid a stale-closure bug where
-    // spectate GMCP lines stopped being suppressed/parsed once the user toggled spectate on.
-    const isSpectateModeRef = useRef(isSpectateMode);
+    const isSpectateModeRef = useRef(deps.isSpectateMode);
     const sessionModeRef = useRef(deps.sessionMode);
     const lastSpectateRoomIdRef = useRef<string | number | null>(null);
     const lastSpectateExitsRef = useRef<Record<string, any>>({});
     const spectatePositionRef = useRef<string>('standing');
     const spectateTargetIdRef = useRef<number | null>(null);
-    useEffect(() => { isSpectateModeRef.current = isSpectateMode; }, [isSpectateMode]);
-    useEffect(() => { sessionModeRef.current = deps.sessionMode; }, [deps.sessionMode]);
+
+    React.useEffect(() => { isSpectateModeRef.current = deps.isSpectateMode; }, [deps.isSpectateMode]);
+    React.useEffect(() => { sessionModeRef.current = deps.sessionMode; }, [deps.sessionMode]);
 
     const findStatus = (str: string | undefined): CombatHealthStatus | null => {
         if (!str) return null;
@@ -108,6 +74,10 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
     };
 
     const parseLogGmcp = useCallback((line: string) => {
+        const d = latestDeps.current;
+        if (!d) return false;
+
+        const inSpectate = isSpectateModeRef.current;
         // Strip ANSI escape codes first — cleanLine from processLine still contains them
         const stripped = line.replace(/\x1b\[[0-9;]*m/g, '');
         
@@ -130,7 +100,6 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         // If we are NOT in spectate mode, we only suppress if it is EXPLICITLY marked as GMCP,
         // UNLESS we are in replay mode (Theater Mode). In replays, ANY GMCP leak should be hidden.
         // This prevents suppressing "Core.Hello" (no payload) which is common in documentation/help text.
-        const inSpectate = isSpectateModeRef.current;
         const isReplay = sessionModeRef.current === 'replay';
         if (!inSpectate && !isExplicitGmcp && !isReplay) return false;
 
@@ -180,7 +149,7 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                         setSpectateHealthStatus(findStatus(data.hp_status || data['hp-string'] || data.hits));
                     }
                     if (data.position) {
-                        setSpectatePosition(data.position);
+                        d.setSpectatePosition(data.position);
                         spectatePositionRef.current = data.position;
                         const posLower = data.position.toLowerCase();
                         setSpectateWaiting(posLower === 'waiting' || posLower.includes('waiting'));
@@ -305,28 +274,28 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                 case 'Group.Remove': {
                     const removeId = data.id ?? data;
                     if (removeId == null) break;
-                    setSpectateGroupMembers(prev => prev.filter(m => String(m.id) !== String(removeId)));
+                    d.setSpectateGroupMembers(prev => prev.filter(m => String(m.id) !== String(removeId)));
                     break;
                 }
 
                 case 'Room.Info': {
                     if (data.name) {
-                        setSpectateRoomName(data.name);
-                        setRoomName(data.name);
+                        d.setSpectateRoomName(data.name);
+                        d.setRoomName(data.name);
                     }
                     if (data.desc !== undefined) {
-                        setSpectateRoomDesc(data.desc);
-                        setRoomDesc(data.desc);
+                        d.setSpectateRoomDesc(data.desc);
+                        d.setRoomDesc(data.desc);
                     }
                     if (data.terrain || data.environment) {
                         const terrain = data.terrain || data.environment;
-                        setSpectateTerrain(terrain);
-                        if (inSpectate) setCurrentTerrain(terrain);
+                        d.setSpectateTerrain(terrain);
+                        if (inSpectate) d.setCurrentTerrain(terrain);
                     }
                     if (data.zone || data.area) {
                         const zone = data.zone || data.area;
-                        setSpectateRoomZone(zone);
-                        if (inSpectate) setRoomZone(zone);
+                        d.setSpectateRoomZone(zone);
+                        if (inSpectate) d.setRoomZone(zone);
                     }
 
                     // Track the last spectated gmcp room id. When it changes (new room or a fresh
@@ -335,20 +304,21 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                     // (or from the previous snoop target) pollute the tracker.
                     const incomingId = data.num ?? (data as any).vnum ?? (data as any).id ?? null;
                     if (incomingId !== null && incomingId !== lastSpectateRoomIdRef.current) {
-                        setRoomPlayers([]);
-                        setRoomNpcs([]);
+                        d.setRoomPlayers([]);
+                        d.setRoomNpcs([]);
                         lastSpectateRoomIdRef.current = incomingId;
                         
                         // Pass riding status to ensure correct sound effect (horse vs footsteps)
                         const isRiding = spectatePositionRef.current === 'riding' || spectatePositionRef.current?.includes('riding');
-                        playMovementSound?.(isRiding);
+                        d.playMovementSound?.(isRiding);
                     }
-                    setRoomItems([]);
-                    if (mapperRef.current?.handleRoomInfo) {
-                        mapperRef.current.handleRoomInfo({ ...data, spectating: true });
+                    d.setRoomPlayers([]); // Wait, looking at original: setRoomItems([]);
+                    d.setRoomItems([]);
+                    if (d.mapperRef?.current?.handleRoomInfo) {
+                        d.mapperRef.current.handleRoomInfo({ ...data, spectating: true });
                     }
                     if (data.exits) {
-                        setRoomExits(Object.keys(data.exits));
+                        d.setRoomExits(Object.keys(data.exits));
                         lastSpectateExitsRef.current = data.exits;
                     }
                     break;
@@ -377,10 +347,10 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                         }
                         
                         lastSpectateExitsRef.current = data.exits;
-                        setRoomExits(Object.keys(data.exits));
+                        d.setRoomExits(Object.keys(data.exits));
                     }
-                    if (mapperRef.current?.handleUpdateExits) {
-                        mapperRef.current.handleUpdateExits({ ...data, spectating: true });
+                    if (d.mapperRef?.current?.handleUpdateExits) {
+                        d.mapperRef.current.handleUpdateExits({ ...data, spectating: true });
                     }
                     break;
 
@@ -496,7 +466,7 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                             const targetToSync = inSpectate ? spectateCharacterName : characterName;
                             if (c.name === targetToSync && c.position !== undefined) {
                                 const posLower = c.position.toLowerCase();
-                                setSpectatePosition(c.position);
+                                d.setSpectatePosition(c.position);
                                 spectatePositionRef.current = c.position;
                                 setSpectateInCombat(posLower === 'fighting');
                                 if (posLower === 'fighting') setSpectateWaiting(false);
@@ -555,38 +525,28 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
             // Even if JSON fails, if it's a GMCP line, we suppress it from the log
             return true;
         }
-    }, [
-        setSpectateStats, setSpectateHealthStatus, setSpectateOpponentName, 
-        setSpectateOpponentStatus, setSpectatePosition, setSpectateWaiting, setSpectateRoomName,
-        setSpectateInCombat, setSpectateCharacterName, spectateCharacterName, mapperRef,
-        detectLighting, setWeather, setIsFoggy, setRoomPlayers, setRoomNpcs, setRoomItems, 
-        setRoomName, setRoomDesc, setRoomZone, setCurrentTerrain,
-        setRoomExits, characterName
-    ]);
+    }, []);
 
-    // Called when the user rotates to a new snoop target. Clears everything that is tied to
-    // the previous spectated character so the next Room.Info / Char.Vitals / Room.Chars.Set
-    // starts from a clean slate instead of mixing old and new state.
     const resetSpectateContext = useCallback(() => {
+        const d = latestDeps.current;
+        if (!d) return;
+
         lastSpectateRoomIdRef.current = null;
         spectateTargetIdRef.current = null;
-        setRoomPlayers([]);
-        setRoomNpcs([]);
-        setRoomItems([]);
-        setSpectateRoomName(null);
-        setSpectateRoomDesc(null);
-        setRoomName(null);
-        setRoomDesc(null);
-        setRoomZone(null);
-        setCurrentTerrain('city');
-        setSpectateGroupMembers([]);
-        if (mapperRef.current?.stableRoomIdRef) {
-            // Drop the mapper's notion of "which room the player is currently in" so that the
-            // next snooped Room.Info is treated as a fresh sync rather than a failed move
-            // correlation against the previous snoop target's last known location.
-            mapperRef.current.stableRoomIdRef.current = null;
+        d.setRoomPlayers([]);
+        d.setRoomNpcs([]);
+        d.setRoomItems([]);
+        d.setSpectateRoomName(null);
+        d.setSpectateRoomDesc(null);
+        d.setRoomName(null);
+        d.setRoomDesc(null);
+        d.setRoomZone(null);
+        d.setCurrentTerrain('city');
+        d.setSpectateGroupMembers([]);
+        if (d.mapperRef?.current?.stableRoomIdRef) {
+            d.mapperRef.current.stableRoomIdRef.current = null;
         }
-    }, [setRoomPlayers, setRoomNpcs, setRoomItems, setSpectateRoomName, setSpectateRoomDesc, setSpectateGroupMembers, mapperRef]);
+    }, []);
 
     return { parseLogGmcp, resetSpectateContext };
 }

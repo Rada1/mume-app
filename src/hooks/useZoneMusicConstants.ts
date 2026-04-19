@@ -138,8 +138,6 @@ export const STATIC_MUSIC_MAP: Record<string, string | string[]> = {
     'the gladden fields': '/assets/Sounds/Zone Sounds/Gladden Fields.mp3',
     'goblin town': '/assets/Sounds/Zone Sounds/Goblin Town.mp3',
     'the goblin town': '/assets/Sounds/Zone Sounds/Goblin Town.mp3',
-    'goblin town': '/assets/Sounds/Zone Sounds/Goblin Town.mp3',
-    'the goblin town': '/assets/Sounds/Zone Sounds/Goblin Town.mp3',
     'lorien': '/assets/Sounds/Zone Sounds/Lorien1.mp3',
     'the lorien surroundings': '/assets/Sounds/Zone Sounds/Lorien1.mp3',
     'midgewaters': '/assets/Sounds/Zone Sounds/MidgeWater.mp3',
