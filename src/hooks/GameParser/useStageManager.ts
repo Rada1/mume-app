@@ -14,7 +14,7 @@ export interface StageManagerDeps {
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
     isWaitingForInfo: React.MutableRefObject<boolean>;
-    captureOwnerDrawer: React.MutableRefObject<'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players'>;
+    captureOwnerDrawer: React.MutableRefObject<'none' | 'stat' | 'eq' | 'inv' | 'practice' | 'who' | 'where' | 'container' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players'>;
     addDiagnosticLog?: (msg: string) => void;
     addMessage: (type: MessageType, text: string, ...args: any[]) => void;
     setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;

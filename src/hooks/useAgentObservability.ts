@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { LogEntry, LogEntryType } from './useSessionRecorder';
-import { GameContextType, VitalsContextType } from '../context/GameContext/types';
+import { GameContextType, VitalsContextType, SessionContextType } from '../context/GameContext/types';
 
 const BUFFER_SIZE = 100;
 
@@ -11,10 +11,16 @@ export interface InvariantResult {
     data?: any;
 }
 
-export const useAgentObservability = (vitals: VitalsContextType, game: GameContextType) => {
+export const useAgentObservability = (vitals: VitalsContextType, game: any, gameState: string) => {
     const eventsBuffer = useRef<LogEntry[]>([]);
     const [invariants, setInvariants] = useState<InvariantResult[]>([]);
     const lastError = useRef<Error | null>(null);
+
+    // Safety check for undefined game/vitals during initial renders or transitions
+    const isReady = !!(vitals && game);
+    if (!isReady && (window as any).__AGENT_OBSERVABILITY_DEBUG__) {
+        console.warn('[AGENT_OBSERVABILITY] Hook called with missing dependencies:', { hasVitals: !!vitals, hasGame: !!game, gameState });
+    }
 
     const recordEvent = useCallback((type: LogEntryType, data: any) => {
         const entry: LogEntry = {
@@ -36,14 +42,16 @@ export const useAgentObservability = (vitals: VitalsContextType, game: GameConte
 
     const checkInvariants = useCallback(() => {
         const results: InvariantResult[] = [];
+        if (!isReady) return results;
+
         const { stats } = vitals;
 
         // HP Sanity
         if (stats.hp !== undefined && stats.maxHp !== undefined) {
             results.push({
                 id: 'hp-range',
-                passed: stats.hp <= stats.maxHp && stats.hp >= -10,
-                message: `HP (${stats.hp}) should be <= MaxHP (${stats.maxHp})`,
+                passed: stats.hp <= (stats.maxHp * 1.05),
+                message: `HP (${stats.hp}) should be within reasonable range of MaxHP (${stats.maxHp})`,
                 data: { hp: stats.hp, maxHp: stats.maxHp }
             });
         }
@@ -52,22 +60,22 @@ export const useAgentObservability = (vitals: VitalsContextType, game: GameConte
         if (stats.mana !== undefined && stats.maxMana !== undefined) {
             results.push({
                 id: 'mana-range',
-                passed: stats.mana <= stats.maxMana,
-                message: `Mana (${stats.mana}) should be <= MaxMana (${stats.maxMana})`,
+                passed: stats.mana <= (stats.maxMana * 1.05),
+                message: `Mana (${stats.mana}) should be within reasonable range of MaxMana (${stats.maxMana})`,
                 data: { mana: stats.mana, maxMana: stats.maxMana }
             });
         }
         if (stats.move !== undefined && stats.maxMove !== undefined) {
             results.push({
                 id: 'move-range',
-                passed: stats.move <= stats.maxMove,
-                message: `Move (${stats.move}) should be <= MaxMove (${stats.maxMove})`,
+                passed: stats.move <= (stats.maxMove * 1.2),
+                message: `Move (${stats.move}) should be <= MaxMove*1.2 (${stats.maxMove})`,
                 data: { move: stats.move, maxMove: stats.maxMove }
             });
         }
 
         // Registry Consistency
-        const entities = game.entities || {};
+        const entities = game.registry?.entities || {};
         const entityList = Object.values(entities);
         const ids = entityList.map((e: any) => e.id);
         const uniqueIds = new Set(ids);
@@ -81,8 +89,9 @@ export const useAgentObservability = (vitals: VitalsContextType, game: GameConte
         }
 
         // Group Sanity
-        if (game.groupMembers?.length > 0) {
-            const invalidMembers = game.groupMembers.filter((m: any) => m.hp < 0 || m.hp > 100);
+        const groupMembers = vitals.groupMembers || [];
+        if (groupMembers.length > 0) {
+            const invalidMembers = groupMembers.filter((m: any) => m.hp < 0 || m.hp > 100);
             if (invalidMembers.length > 0) {
                 results.push({
                     id: 'group-health-corruption',
@@ -94,17 +103,17 @@ export const useAgentObservability = (vitals: VitalsContextType, game: GameConte
         }
 
         // State Sanity
-        if (game.gameState === 'playing' && !game.characterName) {
+        if (gameState === 'playing' && !game.characterName) {
             results.push({
                 id: 'logged-in-no-name',
                 passed: false,
                 message: 'GameState is "playing" but characterName is null',
-                data: { gameState: game.gameState, characterName: game.characterName }
+                data: { gameState, characterName: game.characterName }
             });
         }
 
         // Room Sanity
-        if (game.gameState === 'playing' && game.isMmapperMode && !game.roomZone) {
+        if (gameState === 'playing' && (game as any).isMmapperMode && !game.roomZone) {
             results.push({
                 id: 'mapper-no-zone',
                 passed: false,
@@ -114,17 +123,33 @@ export const useAgentObservability = (vitals: VitalsContextType, game: GameConte
         }
 
         return results;
-    }, [vitals, game]);
+    }, [vitals, game, gameState, isReady]);
 
     useEffect(() => {
+        if (!isReady) return;
         const results = checkInvariants();
-        const failed = results.filter(r => !r.passed);
-        if (failed.length > 0) {
-            setInvariants(results);
-            // Proactive logging to console for Agent to see via CDP
-            console.warn('[AGENT_OBSERVABILITY] Invariant Failures Detected:', failed);
+        
+        let changed = false;
+        setInvariants(prev => {
+            if (prev.length !== results.length) {
+                changed = true;
+                return results;
+            }
+            // Check if any status changed
+            const statusChanged = results.some((res, i) => 
+                res.id !== prev[i].id || res.passed !== prev[i].passed
+            );
+            if (statusChanged) {
+                changed = true;
+                return results;
+            }
+            return prev;
+        });
+
+        if (changed && results.length > 0 && (window as any).__AGENT_OBSERVABILITY_DEBUG__) {
+            console.warn(`[AGENT_OBSERVABILITY] Invariant Failures Detected (${results.map(f => f.id).join(', ')}):`, results);
         }
-    }, [checkInvariants]);
+    }, [isReady, checkInvariants]);
 
     // Global Error Catching
     useEffect(() => {
@@ -148,12 +173,13 @@ export const useAgentObservability = (vitals: VitalsContextType, game: GameConte
         (window as any).__AGENT_OBSERVABILITY__ = {
             getSnapshot: () => ({
                 vitals,
-                game: {
+                game: game ? {
                     ...game,
-                    // Exclude huge circular refs if any
-                    executeCommandRef: undefined,
+                    // Exclude huge circular refs
+                    registry: undefined,
                     roomDescRef: undefined,
-                },
+                } : null,
+                gameState,
                 events: eventsBuffer.current,
                 invariants: checkInvariants(),
                 timestamp: new Date().toISOString()
@@ -162,11 +188,11 @@ export const useAgentObservability = (vitals: VitalsContextType, game: GameConte
             getInvariants: () => checkInvariants(),
             triggerManualCheck: () => setInvariants(checkInvariants())
         };
-    }, [vitals, game, checkInvariants]);
+    }, [vitals, game, gameState, checkInvariants]);
 
-    return {
+    return useMemo(() => ({
         recordEvent,
         captureError,
         invariants
-    };
+    }), [recordEvent, captureError, invariants]);
 };

@@ -234,9 +234,11 @@ const PromptBox: FC<PromptBoxProps> = ({
     // --- Active State Selectors ---
     const { 
         hp, maxHp, mana, maxMana, move, maxMove, wimpy,
-        playerHealthStatus, isRiding, playerPosition 
+        hpStatus: playerHealthStatus, position, inCombat
     } = useActiveVitals();
-    const { inCombat, opponentName, opponentHealthStatus } = useActiveCombat();
+    const isRiding = position === 'riding' || position === 'mounted';
+    const playerPosition = position;
+    const { opponentName, opponentHealthStatus } = useActiveCombat();
     const characterName = useActiveCharacter();
     const isSpectateMode = useModeStore(state => state.isSpectating);
 

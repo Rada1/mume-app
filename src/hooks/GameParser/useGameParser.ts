@@ -67,7 +67,8 @@ export function useGameParser(deps: UseGameParserDeps, session: SessionContextTy
         playMagicExplosionSound, triggerHaptic, roomNameRef, roomDescRef,
         spectateRoomName, spectateRoomDesc, addSystemMessage, setIsSpectateMode,
         playSound, shop, gameState, ansiConvert,
-        isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen
+        isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
+        isSoundEnabledRef, soundTriggersRef
     } = deps;
 
     // Map session setters to common names used in sub-parsers
@@ -75,7 +76,18 @@ export function useGameParser(deps: UseGameParserDeps, session: SessionContextTy
     const { setRoomName, setRoomDesc, setRoomZone, setCurrentTerrain, setInCombat, setPlayerPosition, setWeather, setIsFoggy, setLightningEnabled, setInventoryLines, setStatsLines, setInfoLines, setScoreLines, setQuestLines, setPracticeLines, setWhoLines, setWhereLines, setEqLines, setRoomPlayers, setRoomNpcs, setRoomItems: sessionSetRoomItems, setRoomExits } = session.game as any;
     const { addMessage: sessionAddMessage } = session.log;
 
-    const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: gameButtons.buttonsRef, setButtons: gameButtons.setButtons, buttonTimers: gameButtons.buttonTimers, setActiveSet: gameButtons.setActiveSet, actionsRef, executeCommandRef, playRandomSound });
+    const { processTriggers } = useTriggerProcessor({ 
+        isSoundEnabledRef, 
+        soundTriggersRef, 
+        playSound, 
+        playRandomSound, 
+        buttonsRef: gameButtons.buttonsRef, 
+        setButtons: gameButtons.setButtons, 
+        buttonTimers: gameButtons.buttonTimers, 
+        setActiveSet: gameButtons.setActiveSet, 
+        actionsRef, 
+        executeCommandRef 
+    });
     const { parseQuestLine, finalizeQuests } = useQuestsHandler(setQuests, quests.activeQuests);
     const { detectCapabilities, extractNoun } = useEntityRegistry();
 
@@ -927,11 +939,11 @@ export function useGameParser(deps: UseGameParserDeps, session: SessionContextTy
         }
     }, []);
 
-    return {
+    return useMemo(() => ({
         processLine,
         finalizeCapture,
         addToQueue: automator.addToQueue,
         rotateQueue: automator.rotateQueue,
         removeFromQueue: automator.removeFromQueue
-    };
+    }), [processLine, finalizeCapture, automator.addToQueue, automator.rotateQueue, automator.removeFromQueue]);
 }

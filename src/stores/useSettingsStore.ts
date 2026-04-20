@@ -91,8 +91,8 @@ export const useSettingsStore = create<SettingsState>()(
     persist(
         (set) => ({
             // Default Values
-            connectionUrl: 'wss://mume.org:4242',
-            autoConnect: false,
+            connectionUrl: 'ws://localhost:8081',
+            autoConnect: true,
             loginName: '',
             loginPassword: '',
             

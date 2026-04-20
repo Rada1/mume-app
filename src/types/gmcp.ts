@@ -28,6 +28,7 @@ export interface GmcpCharVitals {
     terrain?: string | null;
     move_status?: string;
     stamina_status?: string;
+    wimpy?: number;
 }
 
 export interface GmcpExitInfo {

@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-
-export type SessionMode = 'live' | 'replay';
+import { SessionMode } from '../types';
 
 interface ModeState {
     mode: SessionMode;

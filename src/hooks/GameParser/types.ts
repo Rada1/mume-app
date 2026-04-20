@@ -63,7 +63,7 @@ export interface UseGameParserDeps {
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
     isWaitingForInfo: React.MutableRefObject<boolean>;
-    captureOwnerDrawer: React.MutableRefObject<'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players'>;
+    captureOwnerDrawer: React.MutableRefObject<'none' | 'stat' | 'eq' | 'inv' | 'practice' | 'who' | 'where' | 'container' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players'>;
     keywordOverrides: Record<string, string>;
     roomNameRef: React.RefObject<string | null>;
     roomDescRef?: React.RefObject<string>;
@@ -145,7 +145,7 @@ export interface UseGameParserDeps {
     ansiConvert: any;
     lastCommMsgIdRef: React.RefObject<string | null>;
     lastCommTimeRef: React.RefObject<number>;
-    sessionMode?: 'live' | 'replay';
+    sessionMode?: import('../../types').SessionMode;
     help: any;
     setIsPasswordMode: (val: boolean) => void;
     spectateQueue: string[];

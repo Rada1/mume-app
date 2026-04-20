@@ -373,6 +373,8 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
     exportAsText,
     stopExport,
     setTrimRange,
+    attachToLive,
+    updateLiveDuration,
     state
   };
 };

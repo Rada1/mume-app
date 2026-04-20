@@ -6,7 +6,7 @@ interface MessageRouterDeps {
     captureStage: React.MutableRefObject<CaptureStage>;
     isSilentCapture: React.MutableRefObject<number>;
     isDrawerCapture: React.MutableRefObject<number>;
-    captureOwnerDrawer: React.MutableRefObject<'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players'>;
+    captureOwnerDrawer: React.MutableRefObject<'none' | 'stat' | 'eq' | 'inv' | 'practice' | 'who' | 'where' | 'container' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players'>;
     isInventoryOpen: boolean;
     isEquipmentOpen: boolean;
     isCharacterOpen: boolean;

@@ -38,7 +38,7 @@ interface LogGmcpParserDeps {
     setWeather?: (w: any) => void;
     setIsFoggy?: (f: boolean) => void;
     isSpectateMode?: boolean;
-    sessionMode?: 'live' | 'replay';
+    sessionMode?: import('../../types').SessionMode;
     playMovementSound?: (isRiding?: boolean) => void;
     playDoorSound?: (isOpen: boolean) => void;
 }

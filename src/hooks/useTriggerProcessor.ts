@@ -17,14 +17,14 @@ export const useTriggerProcessor = (deps: {
 
     const processTriggers = useCallback((textOnly: string) => {
         // Sound Triggers
-        soundTriggersRef.current?.forEach(trig => {
+        soundTriggersRef?.current?.forEach(trig => {
             if (!trig.pattern) return;
             const hasBuffers = trig.buffers && trig.buffers.length > 0;
             const hasBuffer = !!trig.buffer;
             if (!hasBuffer && !hasBuffers) return;
 
             const match = trig.isRegex ? new RegExp(trig.pattern, 'i').test(textOnly) : textOnly.toLowerCase().includes(trig.pattern.toLowerCase());
-            if (match && isSoundEnabledRef.current) {
+            if (match && isSoundEnabledRef?.current) {
                 if (hasBuffers) {
                     const randomIndex = Math.floor(Math.random() * trig.buffers!.length);
                     playSound(trig.buffers![randomIndex]);
@@ -35,7 +35,7 @@ export const useTriggerProcessor = (deps: {
         });
 
         // Button Triggers
-        buttonsRef.current?.forEach(b => {
+        buttonsRef?.current?.forEach(b => {
             if (!b.trigger?.enabled || !b.trigger.pattern) return;
             
             let match: RegExpExecArray | null = null;
@@ -87,8 +87,8 @@ export const useTriggerProcessor = (deps: {
                     }));
 
                     if (b.trigger.duration > 0) {
-                        if (buttonTimers.current?.[b.id]) clearTimeout(buttonTimers.current[b.id]);
-                        if (buttonTimers.current) {
+                        if (buttonTimers?.current?.[b.id]) clearTimeout(buttonTimers.current[b.id]);
+                        if (buttonTimers?.current) {
                             buttonTimers.current[b.id] = setTimeout(() => {
                                 setButtons(prev => prev.map(x => x.id === b.id ? { ...x, isVisible: false } : x));
                             }, b.trigger.duration * 1000);
@@ -100,10 +100,10 @@ export const useTriggerProcessor = (deps: {
         });
 
         // User-Defined Actions
-        actionsRef.current?.forEach(action => {
+        actionsRef?.current?.forEach(action => {
             if (!action.enabled || !action.pattern) return;
             const match = action.isRegex ? new RegExp(action.pattern, 'i').test(textOnly) : textOnly.includes(action.pattern);
-            if (match && executeCommandRef.current) {
+            if (match && executeCommandRef?.current) {
                 executeCommandRef.current(action.command, true, true);
             }
         });

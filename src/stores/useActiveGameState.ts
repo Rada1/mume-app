@@ -1,10 +1,10 @@
 import { useModeStore } from './useModeStore';
 import { useVitalsStore, VitalsStore } from './useVitalsStore';
-import { useSpectateVitalsStore } from './useSpectateVitalsStore';
+import { useSpectateVitalsStore } from './spectate/useSpectateVitalsStore';
 import { useRoomStore, RoomStore } from './useRoomStore';
-import { useSpectateRoomStore } from './useSpectateRoomStore';
+import { useSpectateRoomStore } from './spectate/useSpectateRoomStore';
 import { useCombatStore, CombatStore } from './useCombatStore';
-import { useSpectateCombatStore } from './useSpectateCombatStore';
+import { useSpectateCombatStore } from './spectate/useSpectateCombatStore';
 
 /**
  * @file useActiveGameState.ts
@@ -21,7 +21,7 @@ export const useActiveVitals = (): VitalsStore => {
     const mainStore = useVitalsStore();
     const spectateStore = useSpectateVitalsStore();
     
-    return isSpectating ? spectateStore : mainStore;
+    return (isSpectating ? spectateStore : mainStore) as VitalsStore;
 };
 
 /**
@@ -29,7 +29,7 @@ export const useActiveVitals = (): VitalsStore => {
  */
 export const getActiveVitals = (): VitalsStore => {
     const isSpectating = useModeStore.getState().isSpectating;
-    return isSpectating ? useSpectateVitalsStore.getState() : useVitalsStore.getState();
+    return (isSpectating ? useSpectateVitalsStore.getState() : useVitalsStore.getState()) as VitalsStore;
 };
 
 /**
@@ -48,7 +48,7 @@ export const useActiveRoom = (): RoomStore => {
     const mainStore = useRoomStore();
     const spectateStore = useSpectateRoomStore();
     
-    return isSpectating ? spectateStore : mainStore;
+    return (isSpectating ? spectateStore : mainStore) as RoomStore;
 };
 
 /**
@@ -56,7 +56,7 @@ export const useActiveRoom = (): RoomStore => {
  */
 export const getActiveRoom = (): RoomStore => {
     const isSpectating = useModeStore.getState().isSpectating;
-    return isSpectating ? useSpectateRoomStore.getState() : useRoomStore.getState();
+    return (isSpectating ? useSpectateRoomStore.getState() : useRoomStore.getState()) as RoomStore;
 };
 
 /**
@@ -67,7 +67,7 @@ export const useActiveCombat = (): CombatStore => {
     const mainStore = useCombatStore();
     const spectateStore = useSpectateCombatStore();
     
-    return isSpectating ? spectateStore : mainStore;
+    return (isSpectating ? spectateStore : mainStore) as CombatStore;
 };
 
 /**
@@ -75,7 +75,7 @@ export const useActiveCombat = (): CombatStore => {
  */
 export const getActiveCombat = (): CombatStore => {
     const isSpectating = useModeStore.getState().isSpectating;
-    return isSpectating ? useSpectateCombatStore.getState() : useCombatStore.getState();
+    return (isSpectating ? useSpectateCombatStore.getState() : useCombatStore.getState()) as CombatStore;
 };
 
 /**
@@ -83,7 +83,7 @@ export const getActiveCombat = (): CombatStore => {
  */
 export const useActiveTarget = () => {
     const vitals = useActiveVitals();
-    return vitals.target;
+    return (vitals as any).target;
 };
 
 /**
@@ -91,5 +91,5 @@ export const useActiveTarget = () => {
  */
 export const useActivePrompt = () => {
     const vitals = useActiveVitals();
-    return vitals.activePrompt;
+    return (vitals as any).activePrompt;
 };

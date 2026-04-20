@@ -8,7 +8,7 @@ import { useVitalsStore } from '../../stores/useVitalsStore';
 describe('Event Bus to Store Integration', () => {
     beforeEach(() => {
         // Reset stores before each test
-        useRoomStore.getState().clear();
+        useRoomStore.setState({ roomName: null, roomDesc: null, exits: [], players: [], npcs: [], items: [] } as any);
         useCombatStore.setState({ opponentId: null, opponentName: null, opponentHealthStatus: null, groupMembers: [] });
         useModeStore.setState({ isSpectating: false });
         useVitalsStore.setState({ hp: 0, maxHp: 0 });

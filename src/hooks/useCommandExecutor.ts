@@ -102,7 +102,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         const finalCmd = result;
 
         // --- 4. Navigation Safety ---
-        if (!isSystem && navIntervalRef.current) {
+        if (!isSystem && navIntervalRef?.current) {
             clearInterval(navIntervalRef.current);
             navIntervalRef.current = null;
             addMessage('system', 'Navigation stopped.');
@@ -112,10 +112,10 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         if (silent && isSystem) {
             const timeoutMs = (finalCmd.toLowerCase().startsWith('prac')) ? 15000 : 8000;
             setTimeout(() => {
-                if (isSilentCapture.current > 0) {
+                if (isSilentCapture?.current && isSilentCapture.current > 0) {
                     console.log(`[Executor] Silent capture safety reset (Count: ${isSilentCapture.current}, Cmd: ${finalCmd})`);
                     isSilentCapture.current = 0;
-                    if (captureStage.current !== 'container') {
+                    if (captureStage?.current !== 'container') {
                         d.finalizeCapture();
                     }
                 }
@@ -125,9 +125,9 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         // --- 6. Post-Execution Drawer Safety ---
         if (fromDrawer) {
             setTimeout(() => {
-                if (isDrawerCapture.current > 0) {
+                if (isDrawerCapture?.current && isDrawerCapture.current > 0) {
                     isDrawerCapture.current = 0;
-                    if (captureStage.current !== 'container') d.finalizeCapture();
+                    if (captureStage?.current !== 'container') d.finalizeCapture();
                 }
             }, 8000);
         }
@@ -152,9 +152,9 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         
         const dir = dirMap[moveCmd];
         if (dir) {
-            const currentRoomId = mapperRef.current?.stableRoomIdRef?.current;
-            const rooms = mapperRef.current?.stableRoomsRef?.current;
-            const preloaded = mapperRef.current?.preloadedCoordsRef?.current;
+            const currentRoomId = mapperRef?.current?.stableRoomIdRef?.current;
+            const rooms = mapperRef?.current?.stableRoomsRef?.current;
+            const preloaded = mapperRef?.current?.preloadedCoordsRef?.current;
             
             if (currentRoomId && rooms && preloaded) {
                 const room = rooms[currentRoomId] || rooms[`m_${currentRoomId}`];

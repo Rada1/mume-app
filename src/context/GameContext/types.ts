@@ -254,6 +254,8 @@ export interface SessionContextType {
         setWhereList: Dispatch<SetStateAction<import('../../types').WhereEntry[]>>;
         lightningEnabled: boolean;
         setLightningEnabled: (val: boolean) => void;
+        discoveredItems: string[];
+        setDiscoveredItems: Dispatch<SetStateAction<string[]>>;
     };
     log: LogData;
     recorder: ReturnType<typeof useSessionRecorder>;

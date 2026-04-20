@@ -70,14 +70,14 @@ export const useGameProviderState = () => {
     const vitals = {
         ...active.vitals,
         stats: {
-            hp: active.vitals.hp,
-            maxHp: active.vitals.maxHp,
-            mana: active.vitals.mana,
-            maxMana: active.vitals.maxMana,
-            move: active.vitals.move,
-            maxMove: active.vitals.maxMove,
-            wimpy: active.vitals.wimpy,
-            conditions: active.vitals.conditions
+            hp: active.vitals.stats?.hp || 0,
+            maxHp: active.vitals.stats?.maxHp || 0,
+            mana: active.vitals.stats?.mana || 0,
+            maxMana: active.vitals.stats?.maxMana || 0,
+            move: active.vitals.stats?.move || 0,
+            maxMove: active.vitals.stats?.maxMove || 0,
+            wimpy: active.vitals.stats?.wimpy || 0,
+            conditions: active.vitals.stats?.conditions || {}
         }
     } as any;
 

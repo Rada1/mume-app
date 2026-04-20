@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { MessageType, Message } from '../types';
 import { ansiConvert } from '../utils/ansi';
 
@@ -463,5 +463,15 @@ export function useMessageLog(
         });
     }, [setMessages]);
 
-    return { messages, setMessages, addMessage, addSystemMessage, flushMessages, isCombatLine, clearLog };
+    return useMemo(() => ({ 
+        messages, 
+        setMessages, 
+        addMessage, 
+        addSystemMessage, 
+        flushMessages, 
+        isCombatLine, 
+        clearLog 
+    }), [
+        messages, setMessages, addMessage, addSystemMessage, flushMessages, isCombatLine, clearLog
+    ]);
 }

@@ -15,9 +15,9 @@ import { useUIStore } from '../../stores/useUIStore';
 import { useVitalsStore } from '../../stores/useVitalsStore';
 import { useRoomStore } from '../../stores/useRoomStore';
 import { useCombatStore } from '../../stores/useCombatStore';
-import { useSpectateVitalsStore } from '../../stores/useSpectateVitalsStore';
-import { useSpectateRoomStore } from '../../stores/useSpectateRoomStore';
-import { useSpectateCombatStore } from '../../stores/useSpectateCombatStore';
+import { useSpectateVitalsStore } from '../../stores/spectate/useSpectateVitalsStore';
+import { useSpectateRoomStore } from '../../stores/spectate/useSpectateRoomStore';
+import { useSpectateCombatStore } from '../../stores/spectate/useSpectateCombatStore';
 import { SessionContextType, VitalsContextType, LogData } from './types';
 
 export const useSessionState = (
@@ -29,21 +29,25 @@ export const useSessionState = (
     isSpectateSession: boolean = false
 ): SessionContextType => {
     // --- Store Selection ---
-    const useVitals = isSpectateSession ? useSpectateVitalsStore : useVitalsStore;
-    const useRoom = isSpectateSession ? useSpectateRoomStore : useRoomStore;
-    const useCombat = isSpectateSession ? useSpectateCombatStore : useCombatStore;
+    // --- Store Selection (Unconditional hook calls to respect Rules of Hooks) ---
+    const vStoreMain = useVitalsStore();
+    const vStoreSpectate = useSpectateVitalsStore();
+    const rStoreMain = useRoomStore();
+    const rStoreSpectate = useSpectateRoomStore();
+    const cStoreMain = useCombatStore();
+    const cStoreSpectate = useSpectateCombatStore();
 
-    const vStore = useVitals();
-    const rStore = useRoom();
-    const cStore = useCombat();
+    const vStore = isSpectateSession ? vStoreSpectate : vStoreMain;
+    const rStore = isSpectateSession ? rStoreSpectate : rStoreMain;
+    const cStore = isSpectateSession ? cStoreSpectate : cStoreMain;
 
     // Map store values to legacy names for compatibility
-    const stats = {
+    const stats = useMemo(() => ({
         hp: vStore.hp, maxHp: vStore.maxHp, 
         mana: vStore.mana, maxMana: vStore.maxMana, 
         move: vStore.move, maxMove: vStore.maxMove, 
         wimpy: (vStore as any).wimpy ?? 0
-    };
+    }), [vStore.hp, vStore.maxHp, vStore.mana, vStore.maxMana, vStore.move, vStore.maxMove, (vStore as any).wimpy]);
     const playerHealthStatus = vStore.hpStatus;
     const playerPosition = vStore.position;
     const inCombat = vStore.inCombat;
@@ -52,7 +56,7 @@ export const useSessionState = (
     const weather = vStore.weather;
     const isFoggy = vStore.isFoggy;
     const isRiding = (vStore as any).isRiding ?? false;
-    const setIsRiding = (flags: any) => {}; // Shimming setter for now
+    const setIsRiding = useCallback((_flags: any) => {}, []); // Shimming setter for now
 
     const roomName = rStore.roomName;
     const roomDesc = rStore.roomDesc;
@@ -76,7 +80,7 @@ export const useSessionState = (
     const setRoomExits = rStore.setExits;
     const setRoomZone = rStore.setRoomZone;
     const setCurrentTerrain = rStore.setTerrain;
-    const setLighting = (l: any) => (vStore as any).setLighting?.(l);
+    const setLighting = useCallback((l: any) => (vStore as any).setLighting?.(l), [vStore]);
     const setWeather = vStore.setWeather;
     const setIsFoggy = vStore.setIsFoggy;
     const setInCombat = vStore.setInCombat;
@@ -99,6 +103,7 @@ export const useSessionState = (
     const lastCommMsgIdRef = useRef<string | null>(null);
     const lastCommTimeRef = useRef<number>(0);
     const [lightningEnabled, setLightningEnabled] = useState(false);
+    const [discoveredItems, setDiscoveredItems] = useState<string[]>([]);
     const [target, setTargetInternal] = useState<string | null>(null);
     const setTarget = useCallback((val: string | null) => {
         setTargetInternal(val);
@@ -218,7 +223,7 @@ export const useSessionState = (
         xpHistory, xpEvent, hitFlashEvent, oppHitFlashEvent, gameTime
     ]);
 
-    return {
+    return useMemo(() => ({
         vitals,
         game: {
             roomName, setRoomName,
@@ -258,7 +263,9 @@ export const useSessionState = (
             lastCommMsgIdRef, lastCommTimeRef,
             lightningEnabled, setLightningEnabled,
             whoList, setWhoList,
-            whereList, setWhereList
+            whereList, setWhereList,
+            discoveredItems, setDiscoveredItems,
+            gameTime, setGameTime
         },
         log: {
             ...log,
@@ -269,5 +276,17 @@ export const useSessionState = (
             lastCommIdBySenderRef
         },
         recorder
-    };
+    }), [
+        vitals, roomName, setRoomName, roomDesc, setRoomDesc, roomExits, setRoomExits,
+        roomZone, setRoomZone, currentTerrain, setCurrentTerrain, lighting, setLighting,
+        weather, setWeather, isFoggy, setIsFoggy, inCombat, setInCombat,
+        playerPosition, setPlayerPosition, isRiding, setIsRiding, roomPlayers, setRoomPlayers,
+        roomNpcs, setRoomNpcs, roomItems, setRoomItems, inventoryLines, statsLines,
+        infoLines, scoreLines, questLines, practiceLines, whoLines, whereLines,
+        eqLines, abilities, characterClass, actions, mood, spellSpeed, alertness,
+        level, currentName, setCurrentName, registry, teleportTargets, quests,
+        lightningEnabled, whoList, whereList, log, selectedObjectIds,
+        toggleObjectSelection, clearObjectSelection, recorder, discoveredItems,
+        gameTime, setGameTime
+    ]);
 };
