@@ -112,7 +112,7 @@ export const useGmcpOccupants = ({
 
         // MUME distinguishing between room items and inventory items
         if ((data as any).location && (data as any).location !== 'room' && (data as any).location !== 'objects') {
-           return;
+            return;
         }
 
         let rawList = Array.isArray(data) ? data : ((data as any).items || (data as any).objects || (data as any).obj || (data as any).objs || []);

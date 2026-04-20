@@ -11,7 +11,8 @@
     "bridge": "node mume-bridge.js",
     "sim": "node mume-sim.js",
     "test": "playwright test",
-    "test:ui": "playwright test --ui"
+    "test:ui": "playwright test --ui",
+    "test:unit": "vitest run"
   },
   "dependencies": {
     "@google/genai": "^1.41.0",
@@ -26,13 +27,17 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^22.19.15",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.0.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "jsdom": "^29.0.2",
     "typescript": "~5.8.2",
     "vite": "^6.2.0",
     "vite-plugin-pwa": "^1.2.0",
+    "vitest": "^4.1.4",
     "workbox-window": "^7.4.0"
   }
 }

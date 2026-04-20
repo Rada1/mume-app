@@ -17,7 +17,7 @@ export interface LogEntry {
 export interface SessionLog {
   version: number;
   startTime: string;
-  entries: LogEntry[];
+  log: LogEntry[];
   metadata: {
     client: string;
     version: string;
@@ -84,7 +84,7 @@ export const useSessionRecorder = () => {
     const log: SessionLog = {
       version: 1,
       startTime: new Date(startTimeRef.current).toISOString(),
-      entries: entriesRef.current,
+      log: entriesRef.current,
       metadata: {
         character: characterName || recordedCharacterRef.current || undefined,
         client: 'MUME AI Studio',

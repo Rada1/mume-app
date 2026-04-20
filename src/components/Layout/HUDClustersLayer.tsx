@@ -15,7 +15,7 @@ import { useMapper } from '../../context/useMapper';
 import { MumeEditor } from '../Utility/MumeEditor';
 
 interface HUDClustersLayerProps {
-    handleDragStart: (e: React.PointerEvent, id: string, type: string) => void;
+    handleDragStart: (e: React.PointerEvent, id: string, type: string, force?: boolean) => void;
     wasDraggingRef: React.MutableRefObject<boolean>;
     commandPreview: string | null;
     setCommandPreview: React.Dispatch<React.SetStateAction<string | null>>;
@@ -101,7 +101,7 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
                                     setPopoverState={setPopoverState}
                                     setEditingButtonId={btn.setEditingButtonId}
                                     setSelectedIds={btn.setSelectedIds}
-                                    activePrompt={activePrompt}
+                                    activePrompt={activePrompt as any}
                                     executeCommand={executeCommand}
                                     setCommandPreview={setCommandPreview}
                                     heldButton={heldButton}
@@ -129,7 +129,7 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
                                 if (btn.isEditMode) return isFromActiveSet;
                                 return isFromActiveSet || isTriggered;
                             }).map(button => (
-                                <GameButton key={button.id} button={button} isEditMode={btn.isEditMode} isGridEnabled={btn.isGridEnabled} gridSize={btn.gridSize} isSelected={btn.selectedButtonIds.has(button.id)} dragState={btn.dragState} handleDragStart={handleDragStart} handleButtonClick={handleButtonClick} wasDraggingRef={wasDraggingRef} triggerHaptic={triggerHaptic} setPopoverState={setPopoverState} setEditButton={(b) => { btn.setEditingButtonId(b.id); if (!btn.selectedButtonIds.has(b.id)) btn.setSelectedIds(new Set([b.id])); }} activePrompt={activePrompt} executeCommand={executeCommand} setCommandPreview={setCommandPreview} setHeldButton={setHeldButton} heldButton={heldButton} joystick={{ isActive: joystick.joystickActive, currentDir: joystick.currentDir, isTargetModifierActive: joystick.isTargetModifierActive, setIsJoystickConsumed: joystick.setIsJoystickConsumed }} target={target} setActiveSet={btn.setActiveSet} setButtons={btn.setButtons} isMobile={isMobile} />
+                                <GameButton key={button.id} button={button} isEditMode={btn.isEditMode} isGridEnabled={btn.isGridEnabled} gridSize={btn.gridSize} isSelected={btn.selectedButtonIds.has(button.id)} dragState={btn.dragState} handleDragStart={handleDragStart} handleButtonClick={handleButtonClick} wasDraggingRef={wasDraggingRef} triggerHaptic={triggerHaptic} setPopoverState={setPopoverState} setEditButton={(b) => { btn.setEditingButtonId(b.id); if (!btn.selectedButtonIds.has(b.id)) btn.setSelectedIds(new Set([b.id])); }} activePrompt={activePrompt as any} executeCommand={executeCommand} setCommandPreview={setCommandPreview} setHeldButton={setHeldButton} heldButton={heldButton} joystick={{ isActive: joystick.joystickActive, currentDir: joystick.currentDir, isTargetModifierActive: joystick.isTargetModifierActive, setIsJoystickConsumed: joystick.setIsJoystickConsumed }} target={target} setActiveSet={btn.setActiveSet} setButtons={btn.setButtons} isMobile={isMobile} />
                             ))}
                         </div>
                     </>

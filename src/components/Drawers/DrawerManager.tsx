@@ -17,9 +17,9 @@ import { DrawerLine, CustomButton, SoundTrigger } from '../../types';
 
 interface DrawerManagerProps {
     ui: {
-        drawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players';
+        drawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'session-log';
         isDrawerPeeking: boolean;
-        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map';
+        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map' | 'session-log';
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;
@@ -27,9 +27,9 @@ interface DrawerManagerProps {
         menuView: 'main' | 'availableSets';
     };
     setUI: React.Dispatch<React.SetStateAction<{
-        drawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players';
+        drawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'session-log';
         isDrawerPeeking: boolean;
-        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map';
+        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map' | 'session-log';
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;

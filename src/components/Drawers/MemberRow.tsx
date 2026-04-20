@@ -51,7 +51,7 @@ export const MemberRow: React.FC<MemberRowProps> = ({ member, index }) => {
         if (newId != null) {
             // Selecting a member — ensure spectate mode is on
             if (!isSpectateMode) setIsSpectateMode(true);
-            setSpectateTargetId(newId);
+            setSpectateTargetId(Number(newId));
         } else {
             // Deselecting — clear target and turn off spectate mode
             setSpectateTargetId(null);

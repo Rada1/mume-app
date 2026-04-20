@@ -15,7 +15,7 @@ interface StatsClusterProps {
 export const StatsCluster: React.FC<StatsClusterProps> = ({
     uiPositions, isEditMode, dragState, handleDragStart, isLandscape, isMobile
 }) => {
-    const { inCombat, executeCommand, mood } = useGame();
+    const { inCombat, executeCommand, mood, stats } = useGame();
 
     const pos = uiPositions.stats || {};
     const isDefault = pos.x === undefined && pos.y === undefined;

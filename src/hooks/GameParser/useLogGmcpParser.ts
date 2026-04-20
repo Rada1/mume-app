@@ -45,7 +45,7 @@ interface LogGmcpParserDeps {
 
 export function useLogGmcpParser(deps: LogGmcpParserDeps) {
     const latestDeps = useRef(deps);
-    React.useEffect(() => {
+    useEffect(() => {
         latestDeps.current = deps;
     });
 
@@ -56,8 +56,8 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
     const spectatePositionRef = useRef<string>('standing');
     const spectateTargetIdRef = useRef<number | null>(null);
 
-    React.useEffect(() => { isSpectateModeRef.current = deps.isSpectateMode; }, [deps.isSpectateMode]);
-    React.useEffect(() => { sessionModeRef.current = deps.sessionMode; }, [deps.sessionMode]);
+    useEffect(() => { isSpectateModeRef.current = deps.isSpectateMode; }, [deps.isSpectateMode]);
+    useEffect(() => { sessionModeRef.current = deps.sessionMode; }, [deps.sessionMode]);
 
     const findStatus = (str: string | undefined): CombatHealthStatus | null => {
         if (!str) return null;
@@ -76,6 +76,14 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
     const parseLogGmcp = useCallback((line: string) => {
         const d = latestDeps.current;
         if (!d) return false;
+
+        const {
+            setSpectateStats, setSpectateHealthStatus, setSpectateWaiting, setSpectateInCombat,
+            setSpectateOpponentStatus, setSpectateOpponentName, setSpectateTerrain, setCurrentTerrain,
+            setSpectateLighting, detectLighting, setSpectateWeather, setSpectateIsFoggy,
+            setWeather, setIsFoggy, setSpectateGroupMembers, playDoorSound, setRoomItems,
+            setSpectateCharacterName, setRoomPlayers, setRoomNpcs, spectateCharacterName, characterName,
+        } = d;
 
         const inSpectate = isSpectateModeRef.current;
         // Strip ANSI escape codes first — cleanLine from processLine still contains them

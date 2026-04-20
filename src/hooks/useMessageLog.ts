@@ -73,7 +73,13 @@ export function useMessageLog(
         });
 
         if (containsPrompt) {
-            const lastRoomIdx = pending.findLastIndex(m => m.isRoomBlock);
+            let lastRoomIdx = -1;
+            for (let i = pending.length - 1; i >= 0; i--) {
+                if (pending[i].isRoomBlock) {
+                    lastRoomIdx = i;
+                    break;
+                }
+            }
             if (lastRoomIdx !== -1) {
                 pending[lastRoomIdx].isRoomBlockEnd = true;
             }
@@ -278,7 +284,14 @@ export function useMessageLog(
         if (type === 'room-description') {
             const descHtml = ansiConvert.toHtml(text);
             const buffer = messageBufferRef.current;
-            const lastRoomIdx = buffer.findLastIndex(m => m.isRoomName);
+            
+            let lastRoomIdx = -1;
+            for (let i = buffer.length - 1; i >= 0; i--) {
+                if (buffer[i].isRoomName) {
+                    lastRoomIdx = i;
+                    break;
+                }
+            }
             
             if (lastRoomIdx !== -1) {
                 // Case 1: Room name is still in the pending buffer

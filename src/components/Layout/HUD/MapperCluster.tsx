@@ -131,7 +131,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         whoList={whoList}
                         gameState={gameState}
                         terrain={currentTerrain}
-                        characterName={characterName}
                     />
                 </div>
                 

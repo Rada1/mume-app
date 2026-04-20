@@ -21,7 +21,7 @@ function extractFile(patchFile) {
             capturing = false;
             content = [];
             let match = line.match(/^diff --git a\/(\S+) b\/(\S+)/);
-            if (match && (match[2].startsWith('src/__tests__/stores/') || match[2].startsWith('src/stores/') || match[2].startsWith('tests/stores/'))) {
+            if (match && (match[2].startsWith('src/hooks/GameParser/') || match[2].startsWith('src/stores/') || match[2].startsWith('src/utils/'))) {
                 currentFile = match[2];
                 capturing = true;
             }
@@ -48,4 +48,4 @@ function extractFile(patchFile) {
     }
 }
 
-['phase11.patch'].forEach(extractFile);
+['phase8.patch'].forEach(extractFile);

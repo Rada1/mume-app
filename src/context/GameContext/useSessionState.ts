@@ -3,7 +3,7 @@
  * Manages the state for a single game session (God or Spectated).
  */
 
-import React, { useState, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { 
     GameStats, Message, CombatHealthStatus, GroupMember, DrawerLine, 
     LightingType, WeatherType, WhereEntry 
@@ -11,53 +11,87 @@ import {
 import { useMessageLog } from '../../hooks/useMessageLog';
 import { useSessionRecorder } from '../../hooks/useSessionRecorder';
 import { useEntityRegistry } from '../../hooks/useEntityRegistry';
-import { SessionContextType, VitalsContextType, LogContextType } from './types';
+import { useUIStore } from '../../stores/useUIStore';
+import { useVitalsStore } from '../../stores/useVitalsStore';
+import { useRoomStore } from '../../stores/useRoomStore';
+import { useCombatStore } from '../../stores/useCombatStore';
+import { useSpectateVitalsStore } from '../../stores/useSpectateVitalsStore';
+import { useSpectateRoomStore } from '../../stores/useSpectateRoomStore';
+import { useSpectateCombatStore } from '../../stores/useSpectateCombatStore';
+import { SessionContextType, VitalsContextType, LogData } from './types';
 
 export const useSessionState = (
     characterName: string | null,
     isNewbieMode: boolean,
     gameState: string,
     roomDescRef: React.RefObject<string | null>,
-    isAccountModeRef: React.RefObject<boolean>
+    isAccountModeRef: React.RefObject<boolean>,
+    isSpectateSession: boolean = false
 ): SessionContextType => {
-    // --- Vitals State ---
-    const [stats, setStats] = useState<GameStats>({
-        hp: 0, maxHp: 1, mana: 0, maxMana: 1, move: 0, maxMove: 1, wimpy: 0
-    });
-    const [target, setTarget] = useState<string | null>(null);
-    const [activePrompt, setActivePrompt] = useState("");
-    const [rumble, setRumble] = useState(false);
-    const [deathRoomId, setDeathRoomId] = useState<string | null>(null);
-    const [playerHealthStatus, setPlayerHealthStatus] = useState<CombatHealthStatus | null>(null);
-    const [opponentName, setOpponentName] = useState<string | null>(null);
-    const [opponentId, setOpponentId] = useState<string | null>(null);
-    const [opponentHealthStatus, setOpponentHealthStatus] = useState<CombatHealthStatus | null>(null);
-    const [bufferName, setBufferName] = useState<string | null>(null);
-    const [bufferHealthStatus, setBufferHealthStatus] = useState<CombatHealthStatus | null>(null);
-    const [groupMembers, setGroupMembers] = useState<GroupMember[]>([]);
-    const [gameTime, setGameTime] = useState<import('../../types').MumeTime | null>(null);
-    const [xpHistory, setXpHistory] = useState({ old: 0, new: 0 });
-    const [xpEvent, setXpEvent] = useState(0);
-    const triggerXpTicker = useCallback(() => setXpEvent(Date.now()), []);
-    const [hitFlashEvent, setHitFlashEvent] = useState(0);
-    const [oppHitFlashEvent, setOppHitFlashEvent] = useState(0);
-    const triggerHitFlash = useCallback(() => setHitFlashEvent(c => c + 1), []);
-    const triggerOppHitFlash = useCallback(() => setOppHitFlashEvent(c => c + 1), []);
+    // --- Store Selection ---
+    const useVitals = isSpectateSession ? useSpectateVitalsStore : useVitalsStore;
+    const useRoom = isSpectateSession ? useSpectateRoomStore : useRoomStore;
+    const useCombat = isSpectateSession ? useSpectateCombatStore : useCombatStore;
 
-    // --- Game State ---
-    const [roomName, setRoomName] = useState<string | null>(null);
-    const [roomDesc, setRoomDesc] = useState<string | null>(null);
-    const [roomExits, setRoomExits] = useState<string[]>([]);
-    const [roomZone, setRoomZone] = useState<string | null>(null);
-    const [currentTerrain, setCurrentTerrain] = useState<string>('city');
-    const [lighting, setLighting] = useState<LightingType>('none');
-    const [weather, setWeather] = useState<WeatherType>('none');
-    const [isFoggy, setIsFoggy] = useState(false);
-    const [inCombat, setInCombat] = useState(false);
-    const [playerPosition, setPlayerPosition] = useState('standing');
-    const [isRiding, setIsRiding] = useState(false);
-    const [roomPlayers, setRoomPlayers] = useState<import('../../types').GmcpOccupant[]>([]);
-    const [roomNpcs, setRoomNpcs] = useState<import('../../types').GmcpOccupant[]>([]);
+    const vStore = useVitals();
+    const rStore = useRoom();
+    const cStore = useCombat();
+
+    // Map store values to legacy names for compatibility
+    const stats = {
+        hp: vStore.hp, maxHp: vStore.maxHp, 
+        mana: vStore.mana, maxMana: vStore.maxMana, 
+        move: vStore.move, maxMove: vStore.maxMove, 
+        wimpy: (vStore as any).wimpy ?? 0
+    };
+    const playerHealthStatus = vStore.hpStatus;
+    const playerPosition = vStore.position;
+    const inCombat = vStore.inCombat;
+    const currentTerrain = vStore.currentTerrain;
+    const lighting = (vStore as any).lighting ?? 'none';
+    const weather = vStore.weather;
+    const isFoggy = vStore.isFoggy;
+    const isRiding = (vStore as any).isRiding ?? false;
+    const setIsRiding = (flags: any) => {}; // Shimming setter for now
+
+    const roomName = rStore.roomName;
+    const roomDesc = rStore.roomDesc;
+    const roomExits = Array.isArray(rStore.exits) ? rStore.exits : Object.keys(rStore.exits || {});
+    const roomZone = rStore.roomZone;
+    const roomPlayers = rStore.players;
+    const roomNpcs = rStore.npcs;
+    const roomItems = rStore.items;
+
+    const opponentName = cStore.opponentName;
+    const opponentId = cStore.opponentId === null ? null : String(cStore.opponentId);
+    const opponentHealthStatus = cStore.opponentHealthStatus;
+    const bufferName = cStore.bufferName;
+    const bufferHealthStatus = cStore.bufferHealthStatus;
+    const groupMembers = cStore.groupMembers;
+
+    // Legacy setters mapped to store actions
+    const setStats = (update: any) => vStore.applyCharVitals(typeof update === 'function' ? update(stats) : update);
+    const setRoomName = rStore.setRoomName;
+    const setRoomDesc = rStore.setRoomDesc;
+    const setRoomExits = rStore.setExits;
+    const setRoomZone = rStore.setRoomZone;
+    const setCurrentTerrain = rStore.setTerrain;
+    const setLighting = (l: any) => (vStore as any).setLighting?.(l);
+    const setWeather = vStore.setWeather;
+    const setIsFoggy = vStore.setIsFoggy;
+    const setInCombat = vStore.setInCombat;
+    const setPlayerPosition = vStore.setPosition;
+    const setRoomPlayers = rStore.setPlayers;
+    const setRoomNpcs = rStore.setNpcs;
+    const setRoomItems = rStore.setItems;
+    const setOpponentName = (cStore as any).setOpponentName;
+    const setOpponentId = (cStore as any).setOpponentId;
+    const setOpponentHealthStatus = (cStore as any).setOpponentStatus;
+    const setBufferName = (cStore as any).setBufferName;
+    const setBufferHealthStatus = (cStore as any).setBufferStatus;
+    const setGroupMembers = cStore.setGroupMembers;
+    const setPlayerHealthStatus = (vStore as any).setHpStatus;
+
 
     // --- Parser Refs & Synchronization ---
     const roomNameRef = useRef<string | null>(null);
@@ -65,13 +99,36 @@ export const useSessionState = (
     const lastCommMsgIdRef = useRef<string | null>(null);
     const lastCommTimeRef = useRef<number>(0);
     const [lightningEnabled, setLightningEnabled] = useState(false);
+    const [target, setTargetInternal] = useState<string | null>(null);
+    const setTarget = useCallback((val: string | null) => {
+        setTargetInternal(val);
+        vStore.setTarget(val);
+    }, [vStore]);
 
-    React.useEffect(() => { roomNameRef.current = roomName; }, [roomName]);
-    React.useEffect(() => { roomDescRefInternal.current = roomDesc; }, [roomDesc]);
-    React.useEffect(() => {
+    const [activePrompt, setActivePromptInternal] = useState<import('../../types').ActivePrompt | null>(null);
+    const setActivePrompt = useCallback((prompt: string | import('../../types').ActivePrompt | null) => {
+        const p = typeof prompt === 'string' ? { text: prompt } : prompt;
+        setActivePromptInternal(p);
+        vStore.setActivePrompt(p);
+    }, [vStore]);
+
+    const [rumble, setRumble] = useState(false);
+    const [deathRoomId, setDeathRoomId] = useState<string | null>(null);
+    const [gameTime, setGameTime] = useState<import('../../types').MumeTime | null>(null);
+    const [xpHistory, _setXpHistory] = useState({ old: 0, new: 0 });
+    const [xpEvent, _setXpEvent] = useState(0);
+    const triggerXpTicker = () => {};
+    const [hitFlashEvent, _setHitFlashEvent] = useState(0);
+    const [oppHitFlashEvent, _setOppHitFlashEvent] = useState(0);
+    const triggerHitFlash = () => {};
+    const triggerOppHitFlash = () => {};
+
+    useEffect(() => { roomNameRef.current = roomName; }, [roomName]);
+    useEffect(() => { roomDescRefInternal.current = roomDesc; }, [roomDesc]);
+    useEffect(() => {
         if (roomDescRef) (roomDescRef as any).current = roomDesc;
     }, [roomDesc, roomDescRef]);
-    const [roomItems, setRoomItems] = useState<import('../../types').GmcpOccupant[]>([]);
+
     const [abilities, setAbilities] = useState<Record<string, number>>({});
     const [characterClass, setCharacterClass] = useState<'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none'>('none');
     const [actions, setActions] = useState<import('../../types').GameAction[]>([]);
@@ -80,8 +137,22 @@ export const useSessionState = (
     const [alertness, setAlertness] = useState('normal');
     const [level, setLevel] = useState(1);
     const [currentName, setCurrentName] = useState<string | null>(characterName);
-    const [teleportTargets, setTeleportTargets] = useState<string[]>([]);
+    const [teleportTargets, setTeleportTargets] = useState<import('../../types').TeleportTarget[]>([]);
     const [quests, setQuests] = useState<import('../../types').QuestData>({ activeQuests: [], lastUpdated: 0 });
+    const [selectedObjectIds, setSelectedObjectIds] = useState<Set<string>>(new Set());
+    const toggleObjectSelection = useCallback((id: string, setId?: string, _context?: string) => {
+        setSelectedObjectIds(prev => {
+            const next = setId ? new Set<string>(prev) : new Set<string>();
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
+    }, []);
+
+    const clearObjectSelection = useCallback(() => {
+        setSelectedObjectIds(new Set());
+    }, []);
+
     const registry = useEntityRegistry();
 
     // --- Message Log ---
@@ -119,15 +190,29 @@ export const useSessionState = (
     const [whereList, setWhereList] = useState<WhereEntry[]>([]);
     const [eqLines, setEqLines] = useState<DrawerLine[]>([]);
 
+    const setActivePromptCompat = useCallback((prompt: string | import('../../types').ActivePrompt | null) => {
+        if (typeof prompt === 'string') {
+            setActivePrompt({ text: prompt });
+        } else {
+            setActivePrompt(prompt);
+        }
+    }, []);
+
     const vitals = useMemo<VitalsContextType>(() => ({
-        stats, setStats, target, setTarget, activePrompt, setActivePrompt, rumble, setRumble,
+        stats, setStats, target, setTarget, activePrompt, setActivePrompt: setActivePromptCompat, rumble, setRumble,
         deathRoomId, setDeathRoomId, heldButton: null, setHeldButton: () => {},
         isMendingMode: false, setIsMendingMode: () => {}, mendingTarget: null, setMendingTarget: () => {},
         bufferName, setBufferName, playerHealthStatus, setPlayerHealthStatus, opponentName, opponentId,
-        setOpponentId, opponentHealthStatus, bufferHealthStatus, characterInfo: {} as any, 
+        setOpponentId, opponentHealthStatus, bufferHealthStatus, characterInfo: {} as any,
         setCharacterInfo: () => {}, groupMembers, setGroupMembers, xpHistory, xpEvent, triggerXpTicker,
-        hitFlashEvent, oppHitFlashEvent, triggerHitFlash, triggerOppHitFlash, gameTime, setGameTime
-    }), [
+        hitFlashEvent, oppHitFlashEvent, triggerHitFlash, triggerOppHitFlash, gameTime, setGameTime,
+        pendingMove: null, setPendingMove: () => {},
+        setOpponentHealthStatus, setBufferHealthStatus, setOpponentName,
+        setSpectateHealthStatus: () => {}, setSpectateOpponentStatus: () => {},
+        setSpectateOpponentName: () => {}, setSpectateOpponentId: () => {},
+        spectateOpponentName: null, spectateOpponentId: null,
+        roomName, characterName
+    } as VitalsContextType), [
         stats, target, activePrompt, rumble, deathRoomId, bufferName, playerHealthStatus,
         opponentName, opponentId, opponentHealthStatus, bufferHealthStatus, groupMembers,
         xpHistory, xpEvent, hitFlashEvent, oppHitFlashEvent, gameTime
@@ -177,6 +262,10 @@ export const useSessionState = (
         },
         log: {
             ...log,
+            selectedObjectIds,
+            toggleObjectSelection,
+            clearObjectSelection,
+            processMessageHtml: (html: string) => html, // Placeholder, elevated in GameContext
             lastCommIdBySenderRef
         },
         recorder

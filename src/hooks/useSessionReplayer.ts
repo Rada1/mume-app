@@ -3,8 +3,11 @@
  * @description Hook for playing back recorded MUME sessions.
  */
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { SessionLog } from '../types';
+import { useSessionStore } from '../stores/useSessionStore';
+import { useUIStore } from '../stores/useUIStore';
+import { useSettingsStore } from '../stores/useSettingsStore';
 
 export interface ReplayerState {
   isPlaying: boolean;
@@ -21,18 +24,37 @@ export interface ReplayerState {
 
 export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: any, isPrivacyMode: boolean, isSilent?: boolean) => void) => {
   const [log, setLog] = useState<SessionLog | null>(null);
-  const [state, setState] = useState<ReplayerState>({
-    isPlaying: false,
-    currentTime: 0,
-    duration: 0,
-    speed: 1,
-    currentIndex: 0,
-    isExporting: false,
-    isVisible: false,
-    isPrivacyMode: false,
-    searchResults: [],
-    trimRange: [null, null]
-  });
+  
+  // Use Zustand stores for state
+  const isPlaying = useSessionStore(s => s.isPlaying);
+  const currentTime = useSessionStore(s => s.currentTime);
+  const duration = useSessionStore(s => s.duration);
+  const speed = useSessionStore(s => s.playbackSpeed);
+  const currentIndex = useSessionStore(s => s.currentIndex);
+  const searchResults = useSessionStore(s => s.searchResults);
+  const trimRange = useSessionStore(s => s.trimRange);
+  
+  const setReplayerState = useSessionStore(s => s.setReplayerState);
+  
+  const isVisible = useUIStore(s => s.showReplayHud);
+  const setIsVisible = useUIStore(s => s.setShowReplayHud);
+
+  const [isExporting, setIsExporting] = useState(false);
+  const [isPrivacyMode, setPrivacyMode] = useState(false);
+
+  // Computed state for backward compatibility with components using this hook
+  const state = useMemo(() => ({
+    isPlaying,
+    currentTime,
+    duration,
+    speed,
+    currentIndex,
+    isExporting,
+    isVisible,
+    isPrivacyMode,
+    searchResults,
+    trimRange
+  }), [isPlaying, currentTime, duration, speed, currentIndex, isExporting, isVisible, isPrivacyMode, searchResults, trimRange]);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
@@ -54,15 +76,12 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
     console.log('[Replayer] Clearing log');
     setLog(null);
     logRef.current = null;
-    setState({
+    setReplayerState({
       isPlaying: false,
       currentTime: 0,
       duration: 0,
-      speed: 1,
+      playbackSpeed: 1,
       currentIndex: 0,
-      isExporting: false,
-      isVisible: false,
-      isPrivacyMode: stateRef.current.isPrivacyMode,
       searchResults: [],
       trimRange: [null, null]
     });
@@ -70,60 +89,55 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
   }, []);
 
   const loadLog = useCallback((newLog: SessionLog) => {
-    if (!newLog || !newLog.entries) {
+    if (!newLog || !newLog.log) {
       console.error('[Replayer] Invalid log uploaded:', newLog);
       return;
     }
     setLog(newLog);
     logRef.current = newLog;
-    const durationCount = newLog.entries.length > 0 
-      ? newLog.entries[newLog.entries.length - 1].t 
+    const durationCount = newLog.log.length > 0 
+      ? newLog.log[newLog.log.length - 1].t 
       : 0;
     
-    setState({
+    setReplayerState({
       isPlaying: false,
       currentTime: 0,
       duration: durationCount,
-      speed: 1,
+      playbackSpeed: 1,
       currentIndex: 0,
-      isExporting: false,
-      isVisible: true,
-      isPrivacyMode: stateRef.current.isPrivacyMode,
       searchResults: [],
       trimRange: [null, null],
-      isLive: false
     });
+    setIsVisible(true);
   }, []);
 
   const attachToLive = useCallback((liveLog: SessionLog) => {
     console.log('[Replayer] Attaching to live log');
     setLog(liveLog);
     logRef.current = liveLog;
-    const duration = liveLog.entries.length > 0 ? liveLog.entries[liveLog.entries.length - 1].t : 0;
-    setState(s => ({
-      ...s,
+    const durationValue = liveLog.log.length > 0 ? liveLog.log[liveLog.log.length - 1].t : 0;
+    setReplayerState({
       isPlaying: false,
-      currentTime: duration,
-      duration: duration,
-      currentIndex: liveLog.entries.length,
-      isVisible: true,
-      isLive: true
-    }));
+      currentTime: durationValue,
+      duration: durationValue,
+      currentIndex: liveLog.log.length,
+    });
+    setIsVisible(true);
   }, []);
 
   const updateLiveDuration = useCallback(() => {
-    if (!logRef.current || !state.isLive) return;
-    const lastEntry = logRef.current.entries[logRef.current.entries.length - 1];
-    if (lastEntry && lastEntry.t > state.duration) {
-      setState(s => ({ ...s, duration: lastEntry.t }));
+    if (!logRef.current) return;
+    const lastEntry = logRef.current.log[logRef.current.log.length - 1];
+    if (lastEntry && lastEntry.t > duration) {
+      setReplayerState({ duration: lastEntry.t });
     }
-  }, [state.duration, state.isLive]);
+  }, [duration, setReplayerState]);
 
   const pause = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = null;
-    setState(s => ({ ...s, isPlaying: false }));
-  }, []);
+    setReplayerState({ isPlaying: false });
+  }, [setReplayerState]);
 
   const stopExport = useCallback(() => {
       if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
@@ -131,27 +145,19 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
       }
   }, []);
 
-  const setIsVisible = useCallback((visible: boolean) => {
-      setState(s => ({ ...s, isVisible: visible }));
-  }, []);
-  
-  const setPrivacyMode = useCallback((active: boolean) => {
-      setState(s => ({ ...s, isPrivacyMode: active }));
-  }, []);
-
   const setTrimRange = useCallback((range: [number | null, number | null]) => {
-      setState(s => ({ ...s, trimRange: range }));
-  }, []);
+      setReplayerState({ trimRange: range });
+  }, [setReplayerState]);
 
   const performSearch = useCallback((query: string) => {
     if (!logRef.current || !query.trim()) {
-      setState(s => ({ ...s, searchResults: [] }));
+      setReplayerState({ searchResults: [] });
       return;
     }
 
     const lowerQuery = query.toLowerCase();
     const matches: number[] = [];
-    const entries = logRef.current.entries;
+    const entries = logRef.current.log;
 
     // Search through rx, tx, and sys entries for the query
     const decoder = new TextDecoder();
@@ -185,8 +191,8 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
       }
     }
 
-    setState(s => ({ ...s, searchResults: matches }));
-  }, []);
+    setReplayerState({ searchResults: matches });
+  }, [setReplayerState]);
 
   const play = useCallback(() => {
     if (!logRef.current) return;
@@ -195,10 +201,10 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
     const startFrom = isAtEnd ? 0 : stateRef.current.currentTime;
     
     if (isAtEnd) {
-        setState(s => ({ ...s, isPlaying: true, currentTime: 0, currentIndex: 0 }));
+        setReplayerState({ isPlaying: true, currentTime: 0, currentIndex: 0 });
         stateRef.current = { ...stateRef.current, isPlaying: true, currentTime: 0, currentIndex: 0 };
     } else {
-        setState(s => ({ ...s, isPlaying: true }));
+        setReplayerState({ isPlaying: true });
     }
 
     startTimeRef.current = Date.now() - (startFrom / stateRef.current.speed);
@@ -210,16 +216,16 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
       
       if (elapsed >= stateRef.current.duration || (stateRef.current.isExporting && stateRef.current.trimRange?.[1] !== null && elapsed >= stateRef.current.trimRange?.[1])) {
         pause();
-        const finalTime = (stateRef.current.isExporting && stateRef.current.trimRange?.[1] !== null) ? stateRef.current.trimRange[1] : stateRef.current.duration;
-        setState(s => ({ ...s, currentTime: finalTime, isPlaying: false }));
-        if (stateRef.current.isExporting) {
+        const finalTime = (isExporting && stateRef.current.trimRange?.[1] !== null) ? stateRef.current.trimRange[1] : stateRef.current.duration;
+        setReplayerState({ currentTime: finalTime, isPlaying: false });
+        if (isExporting) {
             stopExport();
         }
         return;
       }
 
       // Process entries between old and new time
-      const entries = logRef.current!.entries;
+      const entries = logRef.current!.log;
       let idx = stateRef.current.currentIndex;
       
       while (idx < entries.length && entries[idx].t <= elapsed) {
@@ -230,14 +236,14 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
         idx++;
       }
 
-      setState(s => ({ ...s, currentTime: elapsed, currentIndex: idx }));
+      setReplayerState({ currentTime: elapsed, currentIndex: idx });
     }, 50); // 20fps check
-  }, [pause, stopExport]);
+  }, [pause, stopExport, isExporting, setReplayerState]);
 
   const rehydrate = useCallback((timeMs: number) => {
     if (!logRef.current) return;
     
-    const entries = logRef.current.entries;
+    const entries = logRef.current.log;
     let idx = 0;
     
     // Process all entries silently up to the target time
@@ -258,23 +264,20 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
     if (!logRef.current) return;
     
     const newIndex = rehydrate(timeMs);
-
-    setState(s => ({ ...s, currentTime: timeMs, currentIndex: newIndex || 0 }));
+    setReplayerState({ currentTime: timeMs, currentIndex: newIndex || 0 });
     if (stateRef.current.isPlaying) {
         startTimeRef.current = Date.now() - (timeMs / stateRef.current.speed);
     }
-  }, [rehydrate]);
+  }, [rehydrate, setReplayerState]);
 
   const setSpeed = useCallback((speed: number) => {
-      const isPlaying = stateRef.current.isPlaying;
-      const currentTime = stateRef.current.currentTime;
-      
-      setState(s => ({ ...s, speed }));
-      
-      if (isPlaying) {
-          startTimeRef.current = Date.now() - (currentTime / speed);
+      const isCurrentlyPlaying = stateRef.current.isPlaying;
+      const currentReplayTime = stateRef.current.currentTime;
+      setReplayerState({ playbackSpeed: speed });
+      if (isCurrentlyPlaying) {
+          startTimeRef.current = Date.now() - (currentReplayTime / speed);
       }
-  }, []);
+  }, [setReplayerState]);
 
   const exportAsText = useCallback(() => {
       if (!log) return;
@@ -338,10 +341,11 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
               a.click();
               
               stream.getTracks().forEach((track: any) => track.stop());
-              setState(s => ({ ...s, isExporting: false }));
+              setIsExporting(false);
           };
 
-          setState(s => ({ ...s, isExporting: true, speed: 1 }));
+          setIsExporting(true);
+          setSpeed(1);
           
           setTimeout(() => {
               const startAt = stateRef.current.trimRange?.[0] || 0;

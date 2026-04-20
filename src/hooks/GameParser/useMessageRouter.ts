@@ -26,6 +26,7 @@ interface MessageRouterDeps {
     ansiConvert: any;
     playerPosition?: string;
     inlineCategories?: InlineCategoryConfig[];
+    isSpectateMode: boolean;
 }
 
 export const useMessageRouter = (deps: MessageRouterDeps) => {

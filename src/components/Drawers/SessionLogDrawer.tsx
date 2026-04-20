@@ -40,7 +40,7 @@ export const SessionLogDrawer: React.FC<{ isOpen: boolean; onClose: () => void }
         let combinedRx = '';
         let lastRxTs = 0;
 
-        replayer.log.entries.forEach((entry, idx) => {
+        replayer.log.log.forEach((entry, idx) => {
             const typ = entry.typ;
             const data = entry.d;
             const ts = entry.t;

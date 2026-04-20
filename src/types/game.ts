@@ -1,0 +1,141 @@
+/**
+ * @file game.ts
+ * @description Core game engine, stats, vitals, and message types.
+ */
+
+export type GameState = 'disconnected' | 'account' | 'playing';
+
+export type CaptureStage = 'none' | 'room' | 'stats' | 'inv' | 'eq' | 'practice' | 'score' | 'container' | 'teleport' | 'who' | 'where' | 'help' | 'info' | 'quest' | 'shop' | 'shop-detail' | 'description' | 'whois' | 'stat';
+
+export interface RoomNode {
+    id: string;
+    name: string;
+    x: number;
+    y: number;
+    z: number;
+    exits: Record<string, string>;
+    terrain?: string;
+    zone?: string;
+    color?: string;
+}
+
+export type ExecuteCommand = (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean, fromUi?: boolean }) => void;
+
+export type LightingType = 'sun' | 'artificial' | 'moon' | 'dark' | 'none';
+export type WeatherType = 'clear' | 'cloud' | 'rain' | 'heavy-rain' | 'snow' | 'none';
+
+export type Direction = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | 'u' | 'd';
+export type SwipeDirection = 'up' | 'down' | 'left' | 'right' | 'ne' | 'nw' | 'se' | 'sw';
+
+export type CombatHealthStatus = 'Healthy' | 'Fine' | 'Hurt' | 'Wounded' | 'Bad' | 'Awful' | 'Dying' | 'Stunned' | 'None';
+
+export interface GameStats {
+    hp: number;
+    maxHp: number;
+    mana: number;
+    maxMana: number;
+    move: number;
+    maxMove: number;
+    wimpy?: number;
+    ob?: number;
+    db?: number;
+    pb?: number;
+    armour?: number;
+    conditions?: Record<string, boolean>;
+    staminaStatus?: string;
+}
+
+export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt' | 'comm' | 'comm-continue' | 'comm-sender' | 'comm-text' | 'shop-item' | 'practice-skill' | 'practice-header' | 'practice-class-header' | 'practice-column-header' | 'who-list' | 'where-list' | 'room-description' | 'equipment-list' | 'inventory-list' | 'room-exits' | 'snoop-command' | 'account-prompt' | 'account-menu-item' | 'account-selection' | 'account-selection-edit' | 'account-stat-edit' | 'account-stat-points' | 'account-character-list' | 'quest-list';
+
+export interface Message {
+    id: string;
+    html: string; // Pre-converted ANSI html
+    textRaw: string; // Raw text for logic checks
+    type: MessageType;
+    timestamp: number;
+    isCombat?: boolean; // True if this line is combat-related
+    combatSide?: 'player' | 'opponent' | 'groupmate'; // Who is acting in this combat line
+    dimmedInCombat?: boolean; // True if this non-combat line arrived during a fight (permanently dim)
+    isComm?: boolean; // True if this is a communication message (says, tells, etc.)
+    replyTarget?: string; // Sender name for comm messages — enables the inline reply button
+    replyCommand?: string; // Channel command for the reply button (e.g. 'tell', 'say', 'narrate')
+    isRoomName?: boolean; // True if this line is a room title/name
+    isRoomBlock?: boolean; // True if this line is a room name (with embedded description)
+    isRoomBlockStart?: boolean;
+    isRoomBlockEnd?: boolean;
+    isEmpty?: boolean;
+    isNarrate?: boolean;
+    isUrgent?: boolean; // True if this is a critical non-combat message (arrive/leave/spell)
+    commSender?: string; // Structured sender for bubbles
+    commAction?: string; // Structured action (says, tells, etc.)
+    commText?: string; // Structured message text
+    commColor?: string;
+    batchId?: number;
+    isBatchEnd?: boolean;
+    inRoomBatch?: boolean;
+    isHitImpact?: boolean;
+    isHitterImpact?: boolean;
+    isSnoop?: boolean;
+    isSnoopInput?: boolean;
+    // Add specific data objects for UI support
+    shopItem?: any; 
+    practiceSkill?: any;
+    practiceHeader?: { sessionsLeft: number };
+}
+
+export interface MumeTime {
+    hour: number;
+    minute: number;
+    day: number;
+    month: string;
+    year: number;
+    weekday: string;
+    era: string;
+    lastSyncRealTime: number; // Date.now() when last synced
+}
+
+export interface CharacterInfo {
+    name: string | null;
+    level: number;
+    xp: number;
+    xpMax: number;
+    tp: number;
+    tpMax: number;
+    race: string;
+    subrace: string;
+    subclass: string;
+    class: string;
+    gold: number;
+    description?: string;
+    whois?: string;
+    alignment?: string;
+    warPoints?: number;
+    actsForWar?: number;
+    stats?: {
+        str: number;
+        int: number;
+        wis: number;
+        dex: number;
+        con: number;
+        wil: number;
+        per: number;
+    };
+    perception?: {
+        vision: string;
+        hearing: string;
+        smell: string;
+    };
+    age?: string;
+    weight?: string;
+    eqWeight?: string;
+    alertness?: string;
+    session?: string;
+    affectedBy?: string[];
+    spells?: string[];
+}
+
+
+export interface ActivePrompt {
+    text: string;
+    time?: MumeTime;
+}

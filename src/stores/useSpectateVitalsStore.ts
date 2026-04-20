@@ -3,7 +3,6 @@ import { GmcpCharVitals, CombatHealthStatus, WeatherType, GmcpCharInfo } from '.
 import { gmcpBus } from '../events/gmcpBus';
 import { useModeStore } from './useModeStore';
 
-// We add the CharacterInfo here as per user prompt feedback
 interface CharacterInfo {
     name: string | null;
     level: number;
@@ -40,19 +39,17 @@ export interface VitalsState {
 }
 
 export interface VitalsActions {
-    setHp: (hp: number) => void;
-    setMana: (mana: number) => void;
-    setMove: (move: number) => void;
+    setStats: (stats: any) => void;
     setHpStatus: (status: CombatHealthStatus | null) => void;
     setPosition: (pos: string) => void;
     setInCombat: (val: boolean) => void;
     setTerrain: (t: string) => void;
     setWeather: (w: WeatherType) => void;
     setIsFoggy: (f: boolean) => void;
-    setStats: (stats: any) => void;
     setTarget: (target: string | null) => void;
     setActivePrompt: (prompt: import('../types').ActivePrompt | null) => void;
     setConditions: (conditions: Record<string, boolean>) => void;
+    setCharacterName: (name: string | null) => void;
     applyCharVitals: (data: GmcpCharVitals) => void;
     applyCharInfo: (data: GmcpCharInfo) => void;
 }
@@ -73,7 +70,7 @@ const findStatus = (str: string | undefined): CombatHealthStatus | null => {
     return 'None';
 };
 
-export const useVitalsStore = create<VitalsStore>((set, get) => ({
+export const useSpectateVitalsStore = create<VitalsStore>((set, get) => ({
     hp: 0,
     maxHp: 0,
     mana: 0,
@@ -84,7 +81,7 @@ export const useVitalsStore = create<VitalsStore>((set, get) => ({
     hpStatus: null,
     position: 'standing',
     inCombat: false,
-    currentTerrain: '',
+    currentTerrain: 'city',
     weather: 'none',
     isFoggy: false,
     target: null,
@@ -103,9 +100,12 @@ export const useVitalsStore = create<VitalsStore>((set, get) => ({
         class: ''
     },
 
-    setHp: (hp) => set({ hp }),
-    setMana: (mana) => set({ mana }),
-    setMove: (move) => set({ move }),
+    setStats: (statsUpdate) => {
+        set((state) => {
+            const next = typeof statsUpdate === 'function' ? statsUpdate(state) : statsUpdate;
+            return { ...next };
+        });
+    },
     setHpStatus: (hpStatus) => set({ hpStatus }),
     setPosition: (position) => set({ position }),
     setInCombat: (inCombat) => set({ inCombat }),
@@ -115,13 +115,7 @@ export const useVitalsStore = create<VitalsStore>((set, get) => ({
     setTarget: (target) => set({ target }),
     setActivePrompt: (activePrompt) => set({ activePrompt }),
     setConditions: (conditions) => set({ conditions }),
-    setStats: (statsUpdate) => {
-        set((state) => {
-            const next = typeof statsUpdate === 'function' ? statsUpdate(state) : statsUpdate;
-            if (typeof next !== 'object' || next === null) return state;
-            return { ...next };
-        });
-    },
+    setCharacterName: (name) => set((state) => ({ characterInfo: { ...state.characterInfo, name } })),
 
     applyCharVitals: (data: GmcpCharVitals) => {
         set((state) => {
@@ -137,45 +131,25 @@ export const useVitalsStore = create<VitalsStore>((set, get) => ({
             if (data.maxmove !== undefined) updates.maxMove = data.maxmove;
             if (data.moves !== undefined) updates.move = data.moves;
             if (data.maxmoves !== undefined) updates.maxMove = data.maxmoves;
-            if (data.mv !== undefined) updates.move = data.mv;
-            if (data.maxmv !== undefined) updates.maxMove = data.maxmv;
             if (data.stamina !== undefined) updates.move = data.stamina;
             if (data.maxstamina !== undefined) updates.maxMove = data.maxstamina;
 
             if (data.terrain !== undefined && data.terrain !== null) {
                 updates.currentTerrain = data.terrain;
-                if (typeof window !== 'undefined') {
-                    window.dispatchEvent(new CustomEvent('mume-mapper-terrain', { detail: data.terrain }));
-                }
-            }
-
-            if (data.light !== undefined && data.light !== null) {
-                if (typeof window !== 'undefined') {
-                    window.dispatchEvent(new CustomEvent('mume-mapper-lighting', { detail: data.light }));
-                }
             }
 
             if (data.position) {
-                // Don't let 'standing' stomp 'riding' because MUME often says 'standing' while mounted.
                 const isCurrentlyRiding = state.position === 'riding' || state.position === 'mounted';
                 if (!(data.position === 'standing' && isCurrentlyRiding)) {
                     updates.position = data.position;
-                    // Sync combat state from position
                     updates.inCombat = data.position === 'fighting';
                 }
             }
 
-            // Strict clearing signal: if opponent is null/empty, we ARE NOT fighting
-            if (
-                data.opponent === null ||
-                data.opponent === "" ||
-                (data.opponent === undefined && updates.position === 'standing') ||
-                (data.opponent === undefined && !updates.position && state.position === 'standing')
-            ) {
+            if (data.opponent === null || data.opponent === "") {
                 updates.inCombat = false;
             }
 
-            // Combat Info via Vitals
             if (data.hp_status) {
                 updates.hpStatus = findStatus(data.hp_status);
             }
@@ -207,28 +181,25 @@ export const useVitalsStore = create<VitalsStore>((set, get) => ({
                 name: data.name ?? data.fullname ?? state.characterInfo.name,
                 level: data.level !== undefined ? Number(data.level) : state.characterInfo.level,
                 xp: data.xp !== undefined ? Number(data.xp) : state.characterInfo.xp,
-                xpMax: data.xp_max !== undefined ? Number(data.xp_max) : (data['next-level-xp'] !== undefined ? Number(data['next-level-xp']) : state.characterInfo.xpMax),
+                xpMax: data.xp_max !== undefined ? Number(data.xp_max) : state.characterInfo.xpMax,
                 tp: data.tp !== undefined ? Number(data.tp) : state.characterInfo.tp,
-                tpMax: data.tp_max !== undefined ? Number(data.tp_max) : (data['next-level-tp'] !== undefined ? Number(data['next-level-tp']) : state.characterInfo.tpMax),
+                tpMax: data.tp_max !== undefined ? Number(data.tp_max) : state.characterInfo.tpMax,
                 race: data.race ?? state.characterInfo.race,
-                subrace: data.subrace ?? state.characterInfo.subrace,
-                subclass: data.subclass ?? state.characterInfo.subclass,
                 class: data.class ?? state.characterInfo.class,
                 description: data.description ?? state.characterInfo.description,
-                whois: data.whois ?? state.characterInfo.whois
             }
         }));
     }
 }));
 
-export const getVitals = () => useVitalsStore.getState();
+export const getSpectateVitals = () => useSpectateVitalsStore.getState();
 
 gmcpBus.on('Char.Vitals', (data) => {
-    if (useModeStore.getState().isSpectating) return;
-    getVitals().applyCharVitals(data);
+    if (!useModeStore.getState().isSpectating) return;
+    getSpectateVitals().applyCharVitals(data);
 });
 
 gmcpBus.on('Char.Info', (data) => {
-    if (useModeStore.getState().isSpectating) return;
-    getVitals().applyCharInfo(data);
+    if (!useModeStore.getState().isSpectating) return;
+    getSpectateVitals().applyCharInfo(data);
 });

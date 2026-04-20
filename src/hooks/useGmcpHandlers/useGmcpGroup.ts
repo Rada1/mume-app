@@ -35,7 +35,7 @@ export const useGmcpGroup = ({
         const isYou = member.type === 'you' || (characterName && member.name && member.name.toLowerCase() === characterName.toLowerCase());
 
         if (isYou) {
-            if (member.id !== undefined) youIdRef.current = member.id;
+            if (member.id !== undefined) youIdRef.current = Number(member.id);
             const explicitWaiting = member.waiting !== undefined ? !!member.waiting : undefined;
             const posWaiting = member.position !== undefined
                 ? member.position.toLowerCase().includes('waiting')
@@ -50,7 +50,7 @@ export const useGmcpGroup = ({
             return;
         }
         setGroupMembers(prev => {
-            if (prev.find(m => String(m.id) === String(member.id))) return prev;
+            if (prev.find(m => Number(m.id) === Number(member.id))) return prev;
             return [...prev, member];
         });
     }, [setGroupMembers, characterName]);
@@ -76,7 +76,7 @@ export const useGmcpGroup = ({
 
             if (isYou) {
                 console.log(`[GMCP] Syncing player waiting state: ${effectiveWaiting} (id:${updates.id})`);
-                if (updates.id !== undefined) youIdRef.current = updates.id;
+                if (updates.id !== undefined) youIdRef.current = Number(updates.id);
                 setStats((prev: any) => ({
                     ...prev,
                     conditions: { ...prev.conditions, waiting: effectiveWaiting }
@@ -111,7 +111,7 @@ export const useGmcpGroup = ({
         
         const you = members.find(m => m.type === 'you' || (characterName && m.name && m.name.toLowerCase() === characterName.toLowerCase()));
         if (you) {
-            if (you.id !== undefined) youIdRef.current = you.id;
+            if (you.id !== undefined) youIdRef.current = Number(you.id);
             const explicitWaiting = you.waiting !== undefined ? !!you.waiting : undefined;
             const posWaiting = you.position !== undefined
                 ? you.position.toLowerCase().includes('waiting')

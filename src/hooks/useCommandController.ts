@@ -87,6 +87,8 @@ export interface CommandControllerDeps {
     accountState: import('../types').AccountState;
     setAccountState: React.Dispatch<React.SetStateAction<import('../types').AccountState>>;
     accountStageRef: React.MutableRefObject<import('../types').AccountStage>;
+    gameState: import('../types').GameState;
+    sessionMode: import('../types').SessionMode;
 }
 
 

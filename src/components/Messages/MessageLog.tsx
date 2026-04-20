@@ -235,8 +235,8 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onDragEnd,
     onWheel
 }) => {
-    const { inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, isTimestampEnabled, isNewbieMode, isSpectateMode, showSpectatePromptInLog, input, setInput, sessionMode } = useBaseGame();
-    const { replayer } = useUI();
+    const { inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, isTimestampEnabled, isNewbieMode, isSpectateMode, showSpectatePromptInLog, input, setInput, sessionMode, setSessionMode } = useBaseGame() as any;
+    const { replayer } = useUI() as any;
     const { messages, processMessageHtml } = useLog();
     const { activePrompt, target, setTarget, opponentName, opponentHealthStatus } = useVitals();
     const { scrollContainerRef, messagesEndRef, scrollToBottom, isLockedToBottomRef } = viewport;
@@ -253,7 +253,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             const logSnapshot = {
                 version: 1,
                 startTime: new Date().toISOString(),
-                entries: [...currentSession.recorder.entries],
+                entries: [...((currentSession.recorder as any).entries || [])],
                 metadata: { client: 'MUME AI Studio', version: '1.0.0' }
             };
             replayer.attachToLive(logSnapshot);
@@ -593,10 +593,12 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
     const activePromptContent = useMemo(() => {
         if (!activePrompt || isSpectateMode) return null;
-        const promptMid = `prompt-${activePrompt.length}-${activePrompt.replace(/\x1b\[[0-9;]*m/g, '').substring(0, 20)}`;
+        const promptText = typeof activePrompt === 'string' ? activePrompt : activePrompt.text;
+        if (!promptText) return null;
+        const promptMid = `prompt-${promptText.length}-${promptText.replace(/\x1b\[[0-9;]*m/g, '').substring(0, 20)}`;
         return (
             <div className="message prompt msg-latest" style={{ transition: 'none' }}>
-                <div className="message-content" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(activePrompt), promptMid, false)) }} />
+                <div className="message-content" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(promptText), promptMid, false)) }} />
             </div>
         );
     }, [activePrompt, processMessageHtml, isSpectateMode]);

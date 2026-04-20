@@ -1,28 +1,27 @@
 import React, { useState, useRef, useCallback, useMemo } from 'react';
-import { usePersistentState } from '../../hooks/usePersistentState';
-import { 
-    GameStats, LightingType, WeatherType, DrawerLine, GameAction, 
-    ParleyState, PopoverState, CombatHealthStatus, QuestData, 
-    GroupMember, OptimisticChange, SessionSlot 
+import {
+    GameStats, LightingType, WeatherType, DrawerLine, GameAction,
+    ParleyState, PopoverState, CombatHealthStatus, QuestData,
+    GroupMember, OptimisticChange, SessionSlot
 } from '../../types';
-import MASTER_SETTINGS from '../../constants/mastersettings.json';
 import { extractNoun, extractColorTaggedKeyword, sanitizeGameTarget } from '../../utils/gameUtils';
-import { useSettingsState } from './useSettingsState';
-import { useUIState } from './useUIState';
 import { useEntityRegistry } from '../../hooks/useEntityRegistry';
 import { useSessionState } from './useSessionState';
+import { useUIStore } from '../../stores/useUIStore';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 
 export const useGameProviderState = () => {
-    // Settings & Mode
-    const settings = useSettingsState();
+    // Settings & UI Stores
+    const settings = useSettingsStore();
+    const uiStore = useUIStore();
+
     const {
-        isNewbieMode, isSoundEnabled, setIsSoundEnabled, isMmapperMode, setIsMmapperMode, theme, setTheme, showControls, setShowControls, autoConnect, setAutoConnect,
-        showDebugEchoes, setShowDebugEchoes, uiMode, setUiMode, disable3dScroll, setDisable3dScroll, disableSmoothScroll, setDisableSmoothScroll, isImmersionMode, setIsImmersionMode, showOrganicTerrain, setShowOrganicTerrain, inlineCategories, setInlineCategories, isHighlighterEnabled, setIsHighlighterEnabled,
-        isBloomEnabled, setIsBloomEnabled, isTimestampEnabled, setIsTimestampEnabled, favorites, setFavorites, zoneMusic, setZoneMusic,
+        isNewbieMode, isSoundEnabled, setIsSoundEnabled, theme, setTheme, autoConnect, setAutoConnect,
+        showDebugEchoes, setShowDebugEchoes, uiMode, setUiMode, disable3dScroll, setDisable3dScroll, disableSmoothScroll, setDisableSmoothScroll, isImmersionMode, setIsImmersionMode, isHighlighterEnabled, setIsHighlighterEnabled,
+        isBloomEnabled, setIsBloomEnabled, isTimestampEnabled, setIsTimestampEnabled,
         fontFamily, setFontFamily,
         connectionUrl, setConnectionUrl,
-        showRecordingIndicator, setShowRecordingIndicator,
-        autoSaveSessions, setAutoSaveSessions
+        showRecordingIndicator, setShowRecordingIndicator
     } = settings;
 
     // Registry
@@ -35,24 +34,11 @@ export const useGameProviderState = () => {
     const [isPasswordMode, setIsPasswordMode] = useState(false);
     const [popoverState, setPopoverState] = useState<PopoverState | null>(null);
     const [parley, setParley] = useState<ParleyState>({ active: false, command: 'tell', target: null });
-    const [mumeEditState, setMumeEditState] = useState<{ isOpen: boolean; title: string; text: string; key: string }>({
-        isOpen: false, title: '', text: '', key: ''
-    });
-    const [selectedObjectIds, setSelectedObjectIds] = useState<Set<string>>(new Set());
-    const toggleObjectSelection = useCallback((id: string, setId?: string, context?: string) => {
-        setSelectedObjectIds(prev => {
-            const next = new Set(prev);
-            if (next.has(id)) next.delete(id);
-            else next.add(id);
-            return next;
-        });
-    }, []);
-    const clearObjectSelection = useCallback(() => setSelectedObjectIds(new Set()), []);
+    const [mumeEditState, setMumeEditState] = [uiStore.mumeEditState, uiStore.setMumeEditState] as const;
 
     const [draggedTarget, setDraggedTarget] = useState<{ name: string; type: string; x: number; y: number } | null>(null);
     const [activeDragData, setActiveDragData] = useState<unknown>(null);
 
-    const [diagnosticLogs, setDiagnosticLogs] = useState<string[]>([]);
     const [accountState, setAccountState] = useState<import('../../types').AccountState>({
         stage: 'none', characters: [], selectedCharacter: null
     });
@@ -65,27 +51,43 @@ export const useGameProviderState = () => {
     React.useEffect(() => { isAccountModeRef.current = gameState === 'account'; }, [gameState]);
 
     // --- Session Slots ---
-    const userSession = useSessionState(characterName, isNewbieMode, gameState, roomDescRef, isAccountModeRef);
-    const spectateSession = useSessionState(characterName, isNewbieMode, gameState, roomDescRef, isAccountModeRef);
+    const userSession = useSessionState(characterName, isNewbieMode, gameState, roomDescRef, isAccountModeRef, false);
+    const spectateSession = useSessionState(characterName, isNewbieMode, gameState, roomDescRef, isAccountModeRef, true);
 
     const active = activeSession === 'user' ? userSession : spectateSession;
 
     // --- UI State ---
     const executeCommandRef = useRef<(cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void>(() => { });
-    const ui = useUIState(executeCommandRef, {
+    const ui = {
+        ...uiStore,
         stats: active.game.statsLines.length + active.game.scoreLines.length,
         info: active.game.infoLines.length + active.game.practiceLines.length + active.game.questLines.length,
         inventory: active.game.inventoryLines.length + active.game.eqLines.length,
         players: active.game.whoLines.length + active.game.whereLines.length
-    });
+    };
 
     // --- Parser Engine (Aliased to active session) ---
-    const vitals = active.vitals;
+    const vitals = {
+        ...active.vitals,
+        stats: {
+            hp: active.vitals.hp,
+            maxHp: active.vitals.maxHp,
+            mana: active.vitals.mana,
+            maxMana: active.vitals.maxMana,
+            move: active.vitals.move,
+            maxMove: active.vitals.maxMove,
+            wimpy: active.vitals.wimpy,
+            conditions: active.vitals.conditions
+        }
+    } as any;
+
     const game = {
         ...active.game,
         ...settings,
         ...active.game.registry,
         ...ui,
+        ui, // Keep nested ui for compatibility
+        stats: (vitals as any).stats, // Keep stats in game object too
         status, setStatus,
         gameState, setGameState,
         activeSession, setActiveSession,
@@ -109,9 +111,9 @@ export const useGameProviderState = () => {
         setSpectateOpponentName: spectateSession.vitals.setOpponentName,
         setSpectateOpponentStatus: spectateSession.vitals.setOpponentHealthStatus,
         setSpectatePosition: spectateSession.game.setPlayerPosition,
-        setSpectateWaiting: (waiting: boolean) => spectateSession.vitals.setStats(prev => ({ 
-            ...prev, 
-            conditions: { ...prev.conditions, waiting } 
+        setSpectateWaiting: (waiting: boolean) => spectateSession.vitals.setStats(prev => ({
+            ...prev,
+            conditions: { ...prev.conditions, waiting }
         })),
         setSpectateRoomName: spectateSession.game.setRoomName,
         setSpectateTerrain: spectateSession.game.setCurrentTerrain,
@@ -128,10 +130,13 @@ export const useGameProviderState = () => {
         popoverState, setPopoverState,
         parley, setParley,
         mumeEditState, setMumeEditState,
-        selectedObjectIds, toggleObjectSelection, clearObjectSelection,
+        selectedObjectIds: active.log.selectedObjectIds,
+        toggleObjectSelection: active.log.toggleObjectSelection,
+        clearObjectSelection: active.log.clearObjectSelection,
         draggedTarget, setDraggedTarget,
         activeDragData, setActiveDragData,
-        diagnosticLogs, addDiagnosticLog: (msg: string) => setDiagnosticLogs(p => [msg, ...p].slice(0, 50)),
+        diagnosticLogs: uiStore.diagnosticLogs,
+        addDiagnosticLog: uiStore.addDiagnosticLog,
         accountState, setAccountState, accountStageRef,
         executeCommandRef,
         roomDescRef,

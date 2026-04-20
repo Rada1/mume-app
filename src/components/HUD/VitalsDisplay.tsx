@@ -337,5 +337,3 @@ const VitalsDisplay: React.FC<VitalsDisplayProps> = ({
 };
 
 export default React.memo(VitalsDisplay);
-
-export default React.memo(VitalsDisplay);

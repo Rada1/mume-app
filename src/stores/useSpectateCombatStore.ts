@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { CombatHealthStatus, GroupMember } from '../types';
-import { gmcpBus } from '../events/gmcpBus';
 import { findStatus } from '../utils/combatUtils';
+import { gmcpBus } from '../events/gmcpBus';
 import { useModeStore } from './useModeStore';
 
 export interface CombatState {
@@ -22,6 +22,7 @@ export interface CombatActions {
     setBufferName: (name: string | null) => void;
     setBufferStatus: (status: CombatHealthStatus | null) => void;
     setGroupMembers: (members: any) => void;
+    
     applyRoomCharsCombat: (data: any[]) => void;
     applyGroupUpdate: (update: any) => void;
     applyGroupRemove: (id: string | number) => void;
@@ -31,7 +32,7 @@ export interface CombatActions {
 
 export type CombatStore = CombatState & CombatActions;
 
-export const useCombatStore = create<CombatStore>((set, get) => ({
+export const useSpectateCombatStore = create<CombatStore>((set, get) => ({
     opponentId: null,
     opponentName: null,
     opponentHealthStatus: null,
@@ -39,19 +40,15 @@ export const useCombatStore = create<CombatStore>((set, get) => ({
     bufferHealthStatus: null,
     groupMembers: [],
 
-    setOpponent: (id, name, status) => {
-        set({ opponentId: id, opponentName: name, opponentHealthStatus: status });
-    },
+    setOpponent: (id, name, status) => set({ opponentId: id, opponentName: name, opponentHealthStatus: status }),
     setOpponentId: (opponentId) => set({ opponentId }),
     setOpponentName: (opponentName) => set({ opponentName }),
     setOpponentStatus: (opponentHealthStatus) => set({ opponentHealthStatus }),
-
-    setBuffer: (name, status) => {
-        set({ bufferName: name, bufferHealthStatus: status });
-    },
+    
+    setBuffer: (name, status) => set({ bufferName: name, bufferHealthStatus: status }),
     setBufferName: (bufferName) => set({ bufferName }),
     setBufferStatus: (bufferHealthStatus) => set({ bufferHealthStatus }),
-
+    
     setGroupMembers: (update) => set((state) => {
         const next = typeof update === 'function' ? update(state.groupMembers) : update;
         return { groupMembers: next };
@@ -68,18 +65,15 @@ export const useCombatStore = create<CombatStore>((set, get) => ({
             const status = findStatus(char.health || char.condition || char.hp_status || char.status);
             if (!status) return;
 
-            // Prioritize ID match for opponent
             if (opponentId && char.id === opponentId) {
                 newOpponentHealth = status;
             } else if (opponentName && !opponentId) {
-                // Fallback to name match if no ID yet (only if no direct ID match exists)
                 const name = char.name || char.short || char.keyword;
                 if (name && (name.toLowerCase() === opponentName.toLowerCase())) {
                     newOpponentHealth = status;
                 }
             }
 
-            // Buffer match
             if (bufferName) {
                 const name = char.name || char.short || char.keyword;
                 if (name && (name.toLowerCase() === bufferName.toLowerCase())) {
@@ -110,7 +104,7 @@ export const useCombatStore = create<CombatStore>((set, get) => ({
 
     applyGroupAdd: (member) => {
         set((state) => ({
-            groupMembers: [...state.groupMembers, member]
+            groupMembers: [...state.groupMembers.filter(m => m.id !== member.id), member]
         }));
     },
 
@@ -119,56 +113,53 @@ export const useCombatStore = create<CombatStore>((set, get) => ({
     }
 }));
 
+export const getSpectateCombat = () => useSpectateCombatStore.getState();
+
 gmcpBus.on('Char.Opponent', (data: string | null) => {
-    if (useModeStore.getState().isSpectating) return;
-    if (typeof data === 'string') {
-        const idNum = parseInt(data, 10);
-        if (!isNaN(idNum) && idNum > 0) {
-             useCombatStore.getState().setOpponent(idNum, null, null);
+    if (!useModeStore.getState().isSpectating) return;
+    const combat = getSpectateCombat();
+    if (data === null || data === "") {
+        combat.setOpponent(null, null, null);
+    } else {
+        const id = parseInt(data);
+        if (!isNaN(id)) {
+            combat.setOpponent(id, null, null);
         } else {
-             useCombatStore.getState().setOpponent(null, data, null);
+            combat.setOpponent(null, data, null);
         }
-    } else if (data === null) {
-        useCombatStore.getState().setOpponent(null, null, null);
     }
 });
 
 gmcpBus.on('Char.Buffer', (data: string | null) => {
-    if (useModeStore.getState().isSpectating) return;
-    if (typeof data === 'string') {
-        useCombatStore.getState().setBuffer(data, null);
-    } else if (data === null) {
-        useCombatStore.getState().setBuffer(null, null);
-    }
+    if (!useModeStore.getState().isSpectating) return;
+    getSpectateCombat().setBuffer(data, null);
 });
 
 gmcpBus.on('Room.CharsCombat', (data: any[]) => {
-    if (useModeStore.getState().isSpectating) return;
-    useCombatStore.getState().applyRoomCharsCombat(data);
+    if (!useModeStore.getState().isSpectating) return;
+    getSpectateCombat().applyRoomCharsCombat(data);
 });
 
 gmcpBus.on('Group.Set', (data: any[]) => {
-    if (useModeStore.getState().isSpectating) return;
-    useCombatStore.getState().applyGroupSet(data);
+    if (!useModeStore.getState().isSpectating) return;
+    getSpectateCombat().applyGroupSet(data);
 });
 
 gmcpBus.on('Group.Add', (data: any) => {
-    if (useModeStore.getState().isSpectating) return;
-    useCombatStore.getState().applyGroupAdd(data);
+    if (!useModeStore.getState().isSpectating) return;
+    getSpectateCombat().applyGroupAdd(data);
 });
 
 gmcpBus.on('Group.Remove', (data: any) => {
-    if (useModeStore.getState().isSpectating) return;
+    if (!useModeStore.getState().isSpectating) return;
     if (data && data.id) {
-        useCombatStore.getState().applyGroupRemove(data.id);
+        getSpectateCombat().applyGroupRemove(data.id);
     } else if (typeof data === 'string' || typeof data === 'number') {
-        useCombatStore.getState().applyGroupRemove(data);
+        getSpectateCombat().applyGroupRemove(data);
     }
 });
 
 gmcpBus.on('Group.Update', (data: any) => {
-    if (useModeStore.getState().isSpectating) return;
-    useCombatStore.getState().applyGroupUpdate(data);
+    if (!useModeStore.getState().isSpectating) return;
+    getSpectateCombat().applyGroupUpdate(data);
 });
-
-export const getCombat = () => useCombatStore.getState();

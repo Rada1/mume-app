@@ -334,7 +334,16 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
             />
 
             <DrawerManager
-                ui={ui}
+                ui={{
+                    drawer: ui.drawer,
+                    isDrawerPeeking: ui.isDrawerPeeking,
+                    peekingDrawer: (ui as any).peekingDrawer || 'none',
+                    setManagerOpen: (ui as any).setManagerOpen || false,
+                    mapExpanded: ui.mapExpanded,
+                    isMenuOpen: (ui as any).isMenuOpen || false,
+                    isSetMenuOpen: (ui as any).isSetMenuOpen || false,
+                    menuView: (ui as any).menuView || 'main'
+                }}
                 setUI={setUI}
                 inventoryLines={displayInventoryLines}
                 statsLines={statsLines}

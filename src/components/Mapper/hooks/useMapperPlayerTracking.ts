@@ -35,7 +35,6 @@ export const useMapperPlayerTracking = (
                     y: playerPosRef.current.y,
                     z: playerPosRef.current.z,
                     alpha: 1.0,
-                    startTime: Date.now()
                 });
                 if (playerTrailRef.current.length > 40) playerTrailRef.current.shift();
             }

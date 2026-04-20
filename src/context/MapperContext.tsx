@@ -6,13 +6,13 @@
 
 import React, { createContext, useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useGame, useLog, useUI, useVitals } from './GameContext';
-import { usePersistentState } from '../hooks/usePersistentState';
 import { useMapData } from '../components/Mapper/hooks/useMapData';
 import { useMapPersistence } from '../components/Mapper/hooks/useMapPersistence';
 import { useMapActions } from '../components/Mapper/hooks/useMapActions';
 import { useMapGmcphandlers } from '../components/Mapper/hooks/useMapGmcphandlers';
 import { DIRS } from '../components/Mapper/mapperUtils';
 import { MapperRoom, MapperMarker } from '../components/Mapper/mapperTypes';
+import { useSettingsStore } from '../stores/useSettingsStore';
 
 interface MapperContextType {
     rooms: Record<string, MapperRoom>;
@@ -99,14 +99,14 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [autoCenter, setAutoCenter] = useState(true);
     const [viewZ, setViewZ] = useState<number | null>(null);
     const [infoRoomId, setInfoRoomId] = useState<string | null>(null);
-    const [isMapFloating, setIsMapFloating] = usePersistentState<boolean>('mud-is-map-floating', false);
 
-    // Settings
-    const [allowPersistence, setAllowPersistence] = useState(() => localStorage.getItem('mume_mapper_persistence') !== 'false');
-    const [unveilMap, setUnveilMap] = useState(() => {
-        const saved = localStorage.getItem('mume_mapper_unveil');
-        return saved === null ? false : saved === 'true'; // Default to false (hide unexplored)
-    });
+    // Settings from Zustand
+    const isMapFloating = useSettingsStore(s => s.isMapFloating);
+    const setIsMapFloating = useSettingsStore(s => s.setIsMapFloating);
+    const allowPersistence = useSettingsStore(s => s.allowMapPersistence);
+    const setAllowPersistence = useSettingsStore(s => s.setAllowMapPersistence);
+    const unveilMap = useSettingsStore(s => s.unveilMap);
+    const setUnveilMap = useSettingsStore(s => s.setUnveilMap);
 
     // Refs
     const pendingMovesRef = useRef<{ dir: string, time: number, resolved?: boolean }[]>([]);

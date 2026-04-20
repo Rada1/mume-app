@@ -7,22 +7,14 @@ import React, { memo, FC, useState, useRef, useCallback, useEffect } from 'react
 import { Swords, Heart, Zap, Footprints, Info, Sliders } from 'lucide-react';
 import './PromptBox.css';
 import { GameStats, CharacterInfo, CombatHealthStatus } from '../../types';
-import { useGame, useVitals } from '../../context/GameContext';
+import { useGame } from '../../context/GameContext';
 import XpTicker from '../Combat/XpTicker';
 import { CombatSliderPopout } from '../Drawers/StatsDrawer/CombatSliderPopout';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
+import { useActiveVitals, useActiveCombat, useActiveCharacter } from '../../stores/useActiveGameState';
+import { useModeStore } from '../../stores/useModeStore';
 
 interface PromptBoxProps {
-    stats: GameStats;
-    characterInfo: CharacterInfo;
-    characterName: string | null;
-    inCombat: boolean;
-    playerPosition: string;
-    opponentName: string | null;
-    opponentHealthStatus: CombatHealthStatus | null;
-    playerHealthStatus: CombatHealthStatus | null;
-    isRiding?: boolean;
-    isSpectateMode?: boolean;
     processMessageHtml?: (html: string, mid: string, isRoomName: boolean, type?: string, isCombat?: boolean, side?: string) => string;
     onWimpyChange?: (val: number) => void;
 }
@@ -234,20 +226,20 @@ const PoseIcon: React.FC<{ pose: string; size?: number }> = ({ pose, size = 14 }
 };
 
 const PromptBox: FC<PromptBoxProps> = ({
-    stats,
-    characterInfo,
-    characterName,
-    inCombat,
-    playerPosition,
-    opponentName,
-    opponentHealthStatus,
-    playerHealthStatus,
-    isRiding,
-    isSpectateMode,
     processMessageHtml,
     onWimpyChange
 }) => {
     const { triggerHaptic, executeCommand, setPlayerPosition, inlineCategories, isNewbieMode, viewport } = useGame();
+    
+    // --- Active State Selectors ---
+    const { 
+        hp, maxHp, mana, maxMana, move, maxMove, wimpy,
+        playerHealthStatus, isRiding, playerPosition 
+    } = useActiveVitals();
+    const { inCombat, opponentName, opponentHealthStatus } = useActiveCombat();
+    const characterName = useActiveCharacter();
+    const isSpectateMode = useModeStore(state => state.isSpectating);
+
     const [activeSlider, setActiveSlider] = useState<'pos' | null>(null);
     const [activeButtonRect, setActiveButtonRect] = useState<DOMRect | null>(null);
     const [showNumbers, setShowNumbers] = useState(false);
@@ -263,7 +255,7 @@ const PromptBox: FC<PromptBoxProps> = ({
     const hpBarRef = useRef<HTMLDivElement>(null);
 
     const updateDrag = useCallback((e: PointerEvent | React.PointerEvent) => {
-        if (!hpBarRef.current || stats.maxHp <= 0) return;
+        if (!hpBarRef.current || maxHp <= 0) return;
         const rect = hpBarRef.current.getBoundingClientRect();
         
         let clientX = 0;
@@ -273,19 +265,19 @@ const PromptBox: FC<PromptBoxProps> = ({
 
         let ratio = (clientX - rect.left) / rect.width;
         ratio = Math.max(0, Math.min(1, ratio));
-        const val = Math.round(ratio * stats.maxHp);
+        const val = Math.round(ratio * maxHp);
         dragValRef.current = val;
         setDragVal(val);
-    }, [stats.maxHp]);
+    }, [maxHp]);
 
     const handleHpPointerDown = (e: React.PointerEvent) => {
         if (!onWimpyChange) return;
         
         // Initial calculation
-        if (!hpBarRef.current || stats.maxHp <= 0) return;
+        if (!hpBarRef.current || maxHp <= 0) return;
         const rect = hpBarRef.current.getBoundingClientRect();
         const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-        const val = Math.round(ratio * stats.maxHp);
+        const val = Math.round(ratio * maxHp);
         
         dragValRef.current = val;
         setDragVal(val);
@@ -319,8 +311,8 @@ const PromptBox: FC<PromptBoxProps> = ({
         };
     }, [isDragging, onWimpyChange, updateDrag, triggerHaptic]);
 
-    const displayWimpy = dragVal !== null ? dragVal : (stats.wimpy ?? 0);
-    const wimpyRatio = stats.maxHp > 0 ? displayWimpy / stats.maxHp : 0;
+    const displayWimpy = dragVal !== null ? dragVal : (wimpy ?? 0);
+    const wimpyRatio = maxHp > 0 ? displayWimpy / maxHp : 0;
 
     // Dynamic color for opponent (NPC/Player/etc) to match log higlighter
     const opponentColor = React.useMemo(() => {
@@ -346,8 +338,8 @@ const PromptBox: FC<PromptBoxProps> = ({
         setActiveSlider(activeSlider === 'pos' ? null : 'pos');
     }, [activeSlider, triggerHaptic]);
 
-    const mpStatus = getManaStatus(stats.mana, stats.maxMana);
-    const stStatus = getMoveStatus(stats.move, stats.maxMove);
+    const mpStatus = getManaStatus(mana, maxMana);
+    const stStatus = getMoveStatus(move, maxMove);
 
     const getPositionIcon = () => {
         if (inCombat) return <Swords size={14} className="combat-divider-icon" />;
@@ -388,11 +380,11 @@ const PromptBox: FC<PromptBoxProps> = ({
                             <div ref={hpBarRef} style={{ flex: 1, display: 'flex', minWidth: 0 }}>
                                 <ConditionBadge
                                     status={playerHealthStatus || 'Healthy'}
-                                    percent={stats.maxHp > 0 ? (stats.hp / stats.maxHp) * 100 : (HEALTH_MAP[playerHealthStatus || 'Healthy']?.percent || 0)}
+                                    percent={maxHp > 0 ? (hp / maxHp) * 100 : (HEALTH_MAP[playerHealthStatus || 'Healthy']?.percent || 0)}
                                     colorClass="hp"
                                     onClick={triggerNumbers}
                                     showAlt={showNumbers || isDragging}
-                                    altStatus={isDragging ? `` : `${stats.hp}/${stats.maxHp}`}
+                                    altStatus={isDragging ? `` : `${hp}/${maxHp}`}
                                     onPointerDown={handleHpPointerDown}
                                     wimpyRatio={wimpyRatio}
                                     isDragging={isDragging}
@@ -402,20 +394,20 @@ const PromptBox: FC<PromptBoxProps> = ({
                             <Zap size={11} className="vitals-icon mana-icon" strokeWidth={3} />
                             <ConditionBadge 
                                 status={mpStatus} 
-                                percent={getManaPercent(stats.mana, stats.maxMana)}
+                                percent={getManaPercent(mana, maxMana)}
                                 colorClass="mana" 
                                 onClick={triggerNumbers}
                                 showAlt={showNumbers}
-                                altStatus={`${stats.mana}/${stats.maxMana}`}
+                                altStatus={`${mana}/${maxMana}`}
                             />
                             <Footprints size={11} className="vitals-icon move-icon" strokeWidth={3} />
                             <ConditionBadge 
                                 status={stStatus} 
-                                percent={getMovePercent(stats.move, stats.maxMove)}
+                                percent={getMovePercent(move, maxMove)}
                                 colorClass="move" 
                                 onClick={triggerNumbers}
                                 showAlt={showNumbers}
-                                altStatus={`${stats.move}/${stats.maxMove}`}
+                                altStatus={`${move}/${maxMove}`}
                             />
                         </div>
                     </div>

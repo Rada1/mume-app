@@ -18,7 +18,7 @@ export const isObjectSelected = (selectedObjectIds: Set<string>, id: string, set
 
     // 3. Robust partial match (logic from useLogPointerDown)
     // We search the set for any entry that matches this ID or ends with this ID
-    for (const entry of selectedObjectIds) {
+    return Array.from(selectedObjectIds).some(entry => {
         if (entry === id) return true;
         if (entry.endsWith(':' + id)) return true;
         
@@ -45,7 +45,8 @@ export const isObjectSelected = (selectedObjectIds: Set<string>, id: string, set
             
             if (isEntryItem && isIdItem) return true;
         }
-    }
+        return false;
+    });
 
     return false;
 };

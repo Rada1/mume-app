@@ -40,10 +40,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     handleDragStart,
     wasDraggingRef
 }) => {
-    const { 
-        stats, setStats, characterInfo, opponentName, opponentHealthStatus, target, activePrompt, playerHealthStatus,
-        spectateStats, spectateHealthStatus, spectateOpponentName, spectateOpponentStatus
-    } = useVitals();
+    const { setStats, activePrompt, target } = useVitals() as any;
     const {
         env,
         input,
@@ -65,16 +62,12 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         parley,
         setParley,
         whoList,
-        inCombat,
         showControls,
-        playerPosition,
         isNewbieMode,
-        isRiding,
-        characterName,
         gameState,
         isSpectateMode,
-        spectateCharacterName
-    } = useGame();
+        inCombat
+    } = useGame() as any;
     const { processMessageHtml } = useLog();
 
     const prevInCombatRef = React.useRef(false);
@@ -172,7 +165,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             <div className="message-log-wrapper" style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative', gap: '8px' }}>
                 <div className="message-log-container" ref={logContainerRef} style={{ flex: 1 }}>
                     {isNewbieMode && roomName && (
-                        <div className={`sticky-room-header terrain-${(currentTerrain || 'field').toLowerCase()}`} key="newbie-room-header">
+                        <div className={`sticky-room-header terrain-${String(currentTerrain || 'field').toLowerCase()}`} key="newbie-room-header">
                             <div className="room-info-text">
                                 <div className="message-content room-name" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(`\x1b[1;32m${roomName}\x1b[0m`), 'roomname', true, 'room-name' as any)) }} />
                                 {roomDesc && (
@@ -189,7 +182,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         onDragStart={handleDragStart as any}
                         onDragEnd={handleDragEnd as any}
                     />
-                    {(!isMobile || viewport.isForceDesktop || isLandscape) && <CombatStatsPanel />}
+                    {(!isMobile || (viewport as any).isForceDesktop || isLandscape) && <CombatStatsPanel />}
                 </div>
 
                 {!isMobile && (
@@ -227,24 +220,14 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
             {gameState !== 'account' && (
                 <PromptBox
-                    stats={isSpectateMode ? spectateStats : stats}
-                    characterInfo={characterInfo}
-                    characterName={isSpectateMode ? spectateCharacterName : characterName}
-                    inCombat={inCombat}
-                    playerPosition={playerPosition}
-                    opponentName={isSpectateMode ? spectateOpponentName : opponentName}
-                    opponentHealthStatus={isSpectateMode ? spectateOpponentStatus : opponentHealthStatus}
-                    playerHealthStatus={isSpectateMode ? spectateHealthStatus : playerHealthStatus}
-                    isRiding={isRiding}
                     processMessageHtml={processMessageHtml}
-                    isSpectateMode={isSpectateMode}
                     onWimpyChange={!isSpectateMode ? handleWimpyChange : undefined}
                 />
             )}
 
             {/* Render InputArea only on desktop, landscape mobile, or during account phase 
                 This prevents the duplicate command bar in portrait mobile play mode. */}
-            {(gameState === 'account' || (!isMobile && !viewport.isForcePortrait) || isLandscape) && (
+            {(gameState === 'account' || (!isMobile && !(viewport as any).isForcePortrait) || isLandscape) && (
                 <InputArea
                     input={input}
                     setInput={setInput}

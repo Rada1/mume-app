@@ -70,6 +70,8 @@ export interface InteractionDeps {
     isSoundEnabled: boolean;
     initAudio: () => void;
     setAccountState: React.Dispatch<React.SetStateAction<AccountState>>;
+    accountState: AccountState;
+    accountStageRef: React.MutableRefObject<import('../types').AccountStage>;
 }
 
 

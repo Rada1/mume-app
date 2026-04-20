@@ -69,6 +69,7 @@ export function useCombatParser(deps: CombatParserDeps) {
         // Determine side and target
         let side: 'player' | 'opponent' | 'groupmate' | undefined = undefined;
         let isPlayerTarget = false;
+        let groupNameMatch = '';
 
         if (cleanLower.startsWith('you ') || cleanLower.startsWith('your ')) {
             side = 'player';
@@ -80,8 +81,6 @@ export function useCombatParser(deps: CombatParserDeps) {
             extraNames.push(...(groupMembers.map(m => m.name).filter(Boolean) as string[]));
             
             const allAllies = Array.from(new Set([...pcNames, ...extraNames]));
-
-            let groupNameMatch = '';
             const gName = allAllies.find(name => {
                 const lowerName = name.toLowerCase();
                 return cleanLower.startsWith(lowerName + ' ') || 

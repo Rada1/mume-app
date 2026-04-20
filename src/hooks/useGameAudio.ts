@@ -68,7 +68,7 @@ export const useGameAudio = ({
     const setPlaySound = useCallback((fn: (buffer: AudioBuffer) => void) => { playSoundRef.current = fn; }, []);
     const playSound = useCallback((buffer: AudioBuffer) => playSoundRef.current(buffer), []);
 
-    const playMovementSoundRef = useRef<(isRiding?: boolean) => void>(() => { });
+    const playMovementSoundRef = useRef<(isRiding?: boolean, terrain?: string) => void>(() => { });
 
     const triggerHapticRef = useRef<(ms: number) => void>(() => { });
     const setTriggerHaptic = useCallback((fn: (ms: number) => void) => { triggerHapticRef.current = fn; }, []);

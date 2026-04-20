@@ -1,4 +1,5 @@
 # MUME App Refactor Blueprint
+
 This document describes a phased migration from the current monolithic `GameContext` architecture to a store-based architecture with a typed GMCP event bus. It is designed to be executed by multiple agents working asynchronously without stepping on each other.
 
 ---

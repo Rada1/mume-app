@@ -6,7 +6,63 @@ import DataManagement from '../Settings/DataManagement';
 import SoundSettings from '../Settings/SoundSettings';
 import ActionSettings from '../Settings/ActionSettings';
 import HelpGuides from '../Settings/HelpGuides';
-import { SettingsModalProps } from '../../types';
+import { SoundTrigger, UiMode } from '../../types';
+
+interface SettingsModalProps {
+    connectionUrl: string;
+    setConnectionUrl: (val: string) => void;
+    bgImage: string;
+    setBgImage: (val: string) => void;
+    handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    exportSettings: () => void;
+    importSettings: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    isLoading: boolean;
+    newSoundPattern: string;
+    setNewSoundPattern: (val: string) => void;
+    newSoundRegex: boolean;
+    setNewSoundRegex: (val: boolean) => void;
+    handleSoundUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    soundTriggers: SoundTrigger[];
+    setSoundTriggers: React.Dispatch<React.SetStateAction<SoundTrigger[]>>;
+    resetButtons: () => void;
+    connect: () => void;
+    loginName: string;
+    setLoginName: (val: string) => void;
+    loginPassword: string;
+    setLoginPassword: (val: string) => void;
+    autoConnect: boolean;
+    setAutoConnect: (val: boolean) => void;
+    showDebugEchoes: boolean;
+    setShowDebugEchoes: (val: boolean) => void;
+    uiMode: UiMode;
+    setUiMode: (val: UiMode) => void;
+    disable3dScroll: boolean;
+    setDisable3dScroll: (val: boolean) => void;
+    disableSmoothScroll: boolean;
+    setDisableSmoothScroll: (val: boolean) => void;
+    isImmersionMode: boolean;
+    setIsImmersionMode: (val: boolean) => void;
+    isHighlighterEnabled: boolean;
+    setIsHighlighterEnabled: (val: boolean) => void;
+    isBloomEnabled: boolean;
+    setIsBloomEnabled: (val: boolean) => void;
+    isSpectateMode: boolean;
+    setIsSpectateMode: (val: boolean) => void;
+    isTimestampEnabled: boolean;
+    setIsTimestampEnabled: (val: boolean) => void;
+    fontFamily: string;
+    setFontFamily: (val: string) => void;
+    isNewbieMode: boolean;
+    setIsNewbieMode: (val: boolean) => void;
+    showLegacyButtons?: boolean;
+    setShowLegacyButtons?: (val: boolean) => void;
+    showRecordingIndicator?: boolean;
+    setShowRecordingIndicator?: (val: boolean) => void;
+    autoSaveSessions?: boolean;
+    setAutoSaveSessions?: (val: boolean) => void;
+    showSpectatePromptInLog?: boolean;
+    setShowSpectatePromptInLog?: (val: boolean) => void;
+}
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
     connectionUrl,

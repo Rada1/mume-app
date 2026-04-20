@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, ReactNode, useRef, useCallb
 import {
     PopoverState, CustomButton, TeleportTarget, GmcpOccupant, SessionMode, CombatHealthStatus
 } from '../types';
-import { usePersistentState } from '../hooks/usePersistentState';
 import { useMessageLog } from '../hooks/useMessageLog';
 import { useButtons } from '../hooks/useButtons';
 import { useJoystick } from '../hooks/useJoystick';
@@ -15,7 +14,6 @@ import { ProtocolHandler } from '../utils/telnet/ProtocolHandler';
 import { GmcpDecoder } from '../utils/telnet/GmcpDecoder';
 import { useGameParser } from '../hooks/GameParser/useGameParser';
 import { useCommandController } from '../hooks/useCommandController';
-import { useSettings } from '../hooks/useSettings';
 import { useSpatButtons } from '../hooks/useSpatButtons';
 import { usePracticeHandler } from '../hooks/usePracticeHandler';
 import { MapperRef } from '../components/Mapper/mapperTypes';
@@ -30,7 +28,16 @@ import { useGameAudio } from '../hooks/useGameAudio';
 import { useSessionRecorder } from '../hooks/useSessionRecorder';
 import { useSessionReplayer } from '../hooks/useSessionReplayer';
 import { useHelpHandler } from '../hooks/useHelpHandler';
+import { useSettings } from '../hooks/useSettings';
 import { useAgentObservability } from '../hooks/useAgentObservability';
+
+// --- Store Imports ---
+import { useUIStore } from '../stores/useUIStore';
+import { useSettingsStore } from '../stores/useSettingsStore';
+import { useVitalsStore } from '../stores/useVitalsStore';
+import { useNetworkStore } from '../stores/useNetworkStore';
+import { useModeStore } from '../stores/useModeStore';
+import { useSessionStore } from '../stores/useSessionStore';
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);
 export const VitalsContext = createContext<VitalsContextType | undefined>(undefined);
@@ -106,8 +113,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const fontFamily = s.fontFamily || 'Inter';
     const handleTabClick = s.handleTabClick;
     const toggleMap = s.toggleMap;
-    const isSpectateMode = s.isSpectateMode;
-    const spectateTargetId = s.spectateTargetId;
+    const mode = useModeStore();
+    const isSpectateMode = mode.isSpectating;
+    const spectateTargetId = mode.spectateTarget;
     const spectateTarget = useMemo(() => {
         if (!isSpectateMode || spectateTargetId == null) return null;
         const target = groupMembers.find(m => {
@@ -120,22 +128,34 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const { stats, rumble, target, activePrompt } = v;
 
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    const [isLibraryOpen, setIsLibraryOpen] = useState(false);
-    const [settingsTab, setSettingsTab] = useState<'general' | 'sound' | 'actions' | 'help'>('general');
+    // --- Zustand Selectors (Migration Path) ---
+    const ui = useUIStore();
+    const settingsStore = useSettingsStore();
+    const network = useNetworkStore();
+    
+    // UI state mapping
+    const {
+        isSettingsOpen, setIsSettingsOpen, isLibraryOpen, setIsLibraryOpen,
+        settingsTab, setSettingsTab, diagnosticLogs, addDiagnosticLog,
+        keywordEditState, setKeywordEditState, keywordFailureBanner, setKeywordFailureBanner
+    } = ui;
+
+    // Settings state mapping
+    const {
+        accentColor, setAccentColor,
+        teleportTargets, setTeleportTargets,
+        showControls, setShowControls,
+    } = settingsStore;
 
     // --- Keyword Override System ---
     const { overrides: keywordOverrides, setOverride: setKeywordOverride, removeOverride: removeKeywordOverride } = useKeywordOverrides();
-    const [keywordEditState, setKeywordEditState] = useState<{ context: string; displayText: string } | null>(null);
-    const [keywordFailureBanner, setKeywordFailureBanner] = useState<{ context: string; displayText: string } | null>(null);
     const lastCommandContextRef = useRef<{ context: string; displayText: string } | null>(null);
     const manualCancelRef = useRef(false);
+    const pendingGmcpCommRef = useRef<{ sender: string; chan: string; msg?: string } | null>(null);
+
     const openKeywordEdit = useCallback((context: string, displayText: string) => {
         setKeywordEditState({ context, displayText });
-    }, []);
-    const [accentColor, setAccentColor] = usePersistentState('mud-accent-color', '#4a90e2');
-    const [teleportTargets, setTeleportTargets] = usePersistentState<TeleportTarget[]>('mud-teleport-targets', []);
-    const [diagnosticLogs, setDiagnosticLogs] = useState<string[]>([]);
+    }, [setKeywordEditState]);
 
     React.useEffect(() => {
         const handleCloseSettings = () => setIsSettingsOpen(false);
@@ -143,55 +163,32 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return () => window.removeEventListener('mume-close-settings', handleCloseSettings);
     }, []);
 
-    const addDiagnosticLog = useCallback((msg: string) => {
-        setDiagnosticLogs(prev => [msg, ...prev].slice(0, 50));
-    }, []);
+    // Diagnostic log action is now in the store
 
-    // --- Mode State ---
-    const [sessionMode, setSessionMode] = useState<SessionMode>('live');
+    // --- Session & Replayer State ---
+    const session = useSessionStore();
+    const { 
+        sessionMode, setSessionMode, replayHUDState, setReplayHUDState, isSilentReplay,
+        setRoomInfoFn, setRoomExitsFn, setCharVitalsFn, setRoomPlayersFn, setRoomNpcsFn,
+        setRoomItemsFn, setAddPlayerFn, setAddNpcFn, setRemovePlayerFn, setRemoveNpcFn,
+        setOpponentChangeFn, setCommFn, setGroupAddFn, setGroupUpdateFn, setGroupRemoveFn, setGroupSetFn
+    } = session;
+
+    const activeLog = s.activeSession === 'user' ? s.userSession.log : s.spectateSession.log;
+    const { messages, setMessages, addMessage, addSystemMessage, flushMessages, isCombatLine, clearLog } = activeLog;
+
+    const sessionModeRef = useRef<SessionMode>('live');
     React.useEffect(() => { sessionModeRef.current = sessionMode; }, [sessionMode]);
-    // uiMode is already managed by 's' (game state)
 
-    // --- Replayer "Shadow" State for HUD ---
-    const [replayHUDState, setReplayHUDState] = useState({
-        roomName: '',
-        roomDesc: '',
-        roomTerrain: '',
-        roomZone: '',
-        hp: 0,
-        maxHp: 0,
-        mana: 0,
-        maxMana: 0,
-        move: 0,
-        maxMove: 0,
-        opponentName: null as string | null,
-        opponentHealth: null as CombatHealthStatus | null,
-    });
-    const [roomInfoFn, setRoomInfoFn] = useState<(data: any) => void>();
-    const [roomExitsFn, setRoomExitsFn] = useState<(data: any) => void>();
-    const [charVitalsFn, setCharVitalsFn] = useState<(data: any) => void>();
-    const [roomPlayersFn, setRoomPlayersFn] = useState<(data: any) => void>();
-    const [roomNpcsFn, setRoomNpcsFn] = useState<(data: any) => void>();
-    const [roomItemsFn, setRoomItemsFn] = useState<(data: any) => void>();
-    const [addPlayerFn, setAddPlayerFn] = useState<(data: any) => void>();
-    const [addNpcFn, setAddNpcFn] = useState<(data: any) => void>();
-    const [removePlayerFn, setRemovePlayerFn] = useState<(data: any) => void>();
-    const [removeNpcFn, setRemoveNpcFn] = useState<(data: any) => void>();
-    const [opponentChangeFn, setOpponentChangeFn] = useState<(name: string | null) => void>();
-    const [commFn, setCommFn] = useState<(sender: string, chan: string, msg: string) => void>();
-    const pendingGmcpCommRef = useRef<{ sender: string; chan: string; msg?: string } | null>(null);
-    const [groupAddFn, setGroupAddFn] = useState<(data: any) => void>();
-    const [groupUpdateFn, setGroupUpdateFn] = useState<(data: any) => void>();
-    const [groupRemoveFn, setGroupRemoveFn] = useState<(id: number) => void>();
-    const [groupSetFn, setGroupSetFn] = useState<(data: any[]) => void>();
+    const isSilentReplayRef = useRef(false);
+    React.useEffect(() => { isSilentReplayRef.current = isSilentReplay; }, [isSilentReplay]);
+
     const lastCommIdBySenderRef = useRef<Map<string, string>>(new Map());
 
     const inCombatHookRef = useRef(false);
     React.useEffect(() => { inCombatHookRef.current = inCombat; }, [inCombat]);
 
     const recorder = useSessionRecorder();
-    const isSilentReplayRef = useRef(false);
-    const sessionModeRef = useRef<SessionMode>('live');
     const replayerRef = useRef<any>(null);
 
     const roomContext = useMemo(() => ({
@@ -224,18 +221,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const captureOwnerDrawer = useRef<'stat' | 'eq' | 'inv' | 'practice' | 'who' | 'where' | 'container' | 'none'>('none');
     const pendingDrawerContainerRef = useRef<{ containerId: string; cmd: 'inventorylist' | 'equipmentlist'; afterId: string } | null>(null);
 
-    const { messages, setMessages, addMessage, flushMessages, isCombatLine, clearLog } = useMessageLog(
-        inCombatHookRef,
-        roomContext,
-        lastCommIdBySenderRef,
-        isNewbieMode,
-        sanitizedRecordEntry,
-        s.roomDescRef,
-        v.pendingMove,
-        v.setPendingMove,
-        isAccountModeRef
-    );
-
     // --- Safety Sanatization ---
     // [Mod] Disabled: don't clear the previous log data when logging in
     // const prevGameStateRef = useRef(s.gameState);
@@ -247,7 +232,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     //     prevGameStateRef.current = s.gameState;
     // }, [s.gameState, clearLog]);
 
-    const addSystemMessage = useCallback((text: string) => addMessage('system', text, undefined, undefined, undefined, { textOnly: text, lower: text.toLowerCase() }, undefined, undefined, undefined, true), [addMessage]);
 
     // Keyword failure detection: watch last message for MUME "not found" patterns
     const FAILURE_RE = /\bi see no such thing\b|\byou don't see that\b|\bno such thing here\b|\bthat's not here\b/i;
@@ -488,7 +472,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         abilities, setAbilities: s.setAbilities,
         characterClass, setCharacterClass: s.setCharacterClass,
         actions: s.actions, setActions: s.setActions,
-        setSettings: btn.setSettings, setSetSettings: btn.setSetSettings,
+        setSetSettings: btn.setSetSettings,
         autoConnect: s.autoConnect, setAutoConnect: s.setAutoConnect,
         connectionUrl: s.connectionUrl, setConnectionUrl: s.setConnectionUrl,
         showDebugEchoes: s.showDebugEchoes, setShowDebugEchoes: s.setShowDebugEchoes,
@@ -562,11 +546,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         practice,
         registerEntity: s.registerEntity,
         setEntities: s.setEntities,
-        isPlayersOpen: s.ui.drawer === 'players',
-        isInventoryOpen: s.ui.drawer === 'inventory',
-        isEquipmentOpen: s.ui.drawer === 'equipment',
-        isCharacterOpen: s.ui.drawer === 'character',
-        isStatsOpen: s.ui.drawer === 'stats',
+        isPlayersOpen: s.drawer === 'players',
+        isInventoryOpen: s.drawer === 'inventory',
+        isEquipmentOpen: s.drawer === 'equipment',
+        isCharacterOpen: s.drawer === 'character',
+        isStatsOpen: s.drawer === 'stats',
         triggerXpTicker: v.triggerXpTicker,
         triggerHitFlash: v.triggerHitFlash,
         triggerOppHitFlash: v.triggerOppHitFlash,
@@ -683,16 +667,16 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setStatus: s.setStatus, setStats: v.setStats, setWeather: s.setWeather,
             setIsFoggy: s.setIsFoggy, setInCombat: s.setInCombat,
             addMessage, flushMessages, detectLighting: env.detectLighting,
-            onRoomInfo: (data) => { gmcpHandlers.onRoomInfo(data); roomInfoFn?.(data); },
-            onRoomUpdateExits: (data) => { gmcpHandlers.onRoomUpdateExits(data); roomExitsFn?.(data); },
-            onCharVitals: (data) => { gmcpHandlers.onCharVitals(data); charVitalsFn?.(data); },
-            onRoomPlayers: (data) => { gmcpHandlers.onRoomPlayers(data); roomPlayersFn?.(data); },
-            onRoomNpcs: (data) => { gmcpHandlers.onRoomNpcs(data); roomNpcsFn?.(data); },
-            onRoomItems: (data) => { gmcpHandlers.onRoomItems(data); roomItemsFn?.(data); },
-            onAddPlayer: (data: string | GmcpOccupant) => { gmcpHandlers.onAddPlayer(data); addPlayerFn?.(data); },
-            onAddNpc: (data: string | GmcpOccupant) => { gmcpHandlers.onAddNpc(data); addNpcFn?.(data); },
-            onRemovePlayer: (data: string | GmcpOccupant) => { gmcpHandlers.onRemovePlayer(data); removePlayerFn?.(data); },
-            onRemoveNpc: (data: string | GmcpOccupant) => { gmcpHandlers.onRemoveNpc(data); removeNpcFn?.(data); },
+            onRoomInfo: (data) => { gmcpHandlers.onRoomInfo(data); },
+            onRoomUpdateExits: (data) => { gmcpHandlers.onRoomUpdateExits(data); },
+            onCharVitals: (data) => { gmcpHandlers.onCharVitals(data); },
+            onRoomPlayers: (data) => { gmcpHandlers.onRoomPlayers(data); },
+            onRoomNpcs: (data) => { gmcpHandlers.onRoomNpcs(data); },
+            onRoomItems: (data) => { gmcpHandlers.onRoomItems(data); },
+            onAddPlayer: (data: string | GmcpOccupant) => { gmcpHandlers.onAddPlayer(data); },
+            onAddNpc: (data: string | GmcpOccupant) => { gmcpHandlers.onAddNpc(data); },
+            onRemovePlayer: (data: string | GmcpOccupant) => { gmcpHandlers.onRemovePlayer(data); },
+            onRemoveNpc: (data: string | GmcpOccupant) => { gmcpHandlers.onRemoveNpc(data); },
             onCharNameChange: (name) => {
                 gmcpHandlers.onCharNameChange(name);
                 if (name && s.executeCommandRef.current) {
@@ -706,12 +690,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             },
             onCharInfo: gmcpHandlers.onCharInfo,
             onPositionChange: gmcpHandlers.onPositionChange,
-            onOpponentChange: (name) => { opponentChangeFn?.(name); v.setOpponentName(name); },
-            onComm: (sender, chan, msg) => { pendingGmcpCommRef.current = { sender, chan, msg }; commFn?.(sender, chan, msg); },
-            onGroupAdd: (data) => { gmcpHandlers.onGroupAdd(data); groupAddFn?.(data); },
-            onGroupUpdate: (data) => { gmcpHandlers.onGroupUpdate(data); groupUpdateFn?.(data); },
-            onGroupRemove: (id) => { gmcpHandlers.onGroupRemove(id); groupRemoveFn?.(id); },
-            onGroupSet: (data) => { gmcpHandlers.onGroupSet(data); groupSetFn?.(data); },
+            onOpponentChange: (name) => { v.setOpponentName(name); },
+            onComm: (sender, chan, msg) => { pendingGmcpCommRef.current = { sender, chan, msg }; },
+            onGroupAdd: (data) => { gmcpHandlers.onGroupAdd(data); },
+            onGroupUpdate: (data) => { gmcpHandlers.onGroupUpdate(data); },
+            onGroupRemove: (id) => { gmcpHandlers.onGroupRemove(id); },
+            onGroupSet: (data) => { gmcpHandlers.onGroupSet(data); },
             onCharRide: gmcpHandlers.onCharRide,
             onCorePing: () => {
                 // Initializer moved to onCharNameChange
@@ -774,19 +758,19 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const isPrivacyModeActiveRef = useRef(false);
     const applyPrivacyScrubbing = useCallback((text: string, isPrivacyMode: boolean) => {
         if (!isPrivacyMode) return text;
-        
+
         let scrubbed = text.replace(/\b(Str|Int|Wis|Dex|Con|Wil|Per):\s*(\d+)/gi, (match, label, val) => {
             return `${label}:${'I'.repeat(val.length)}`;
         });
-        
+
         scrubbed = scrubbed.replace(/(\d+)\/(\d+)\s*(hits|hp|mana|sp|moves|mv)/gi, (match, current, max, unit) => {
             return `${'I'.repeat(current.length)}/${'I'.repeat(max.length)} ${unit}`;
         });
-        
+
         scrubbed = scrubbed.replace(/(\d+)(h|m|v)\b/gi, (match, val, unit) => {
             return `${'I'.repeat(val.length)}${unit}`;
         });
-        
+
         return scrubbed;
     }, []);
 
@@ -851,8 +835,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             onDisconnect: gmcpHandlers.onDisconnect,
             onRoomCharsCombat: gmcpHandlers.onRoomCharsCombat,
             onCharRide: gmcpHandlers.onCharRide,
-            onCorePing: () => {},
-            onCoreGoodbye: () => {}
+            onCorePing: () => { },
+            onCoreGoodbye: () => { }
         };
     });
 
@@ -896,8 +880,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     if (!replayerProtocolHandlerRef.current) {
         replayerProtocolHandlerRef.current = new ProtocolHandler({
-            sendBytes: () => {},
-            sendGMCP: () => {},
+            sendBytes: () => { },
+            sendGMCP: () => { },
             addMessage: (type, text, ...args) => {
                 addMessage(type as any, text, ...args);
             },
@@ -906,7 +890,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             // handler) and separate 'gmcp' entries. The gmcp-entry path below
             // feeds replayGmcpDecoder, so dispatching here too would double-fire
             // every handler (duplicate comm bubbles, stats updates, etc.).
-            handleSubnegotiation: () => {},
+            handleSubnegotiation: () => { },
             processText: (text) => {
                 const scrubbed = applyPrivacyScrubbing(text, isPrivacyModeActiveRef.current);
                 replayerBufferRef.current += scrubbed;
@@ -915,7 +899,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 for (let i = 0; i < lines.length; i++) {
                     parser.processLine(lines[i]);
                 }
-                
+
                 const remaining = replayerBufferRef.current;
                 if (remaining) {
                     const clean = remaining.replace(/\x1b\[[0-9;]*m/g, '').trim();
@@ -933,41 +917,37 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isSilentReplayRef.current = isSilent;
         sessionModeRef.current = sessionMode;
         replayerRef.current = replayer;
-        
+
         if (isSilent) {
             if (type === 'gmcp') {
                 const { pkg, data } = payload;
                 // Recorded as { pkg, data: jsonString } (useTelnet.ts); older
                 // logs or non-replay callers may already pass a parsed object.
                 const dataObj = typeof data === 'string' ? (data ? JSON.parse(data) : null) : data;
-                setReplayHUDState(prev => {
-                    const next = { ...prev };
-                    if (pkg === 'Room.Info' && dataObj) {
-                        next.roomName = dataObj.name || '';
-                        next.roomDesc = dataObj.desc || '';
-                        next.roomTerrain = dataObj.terrain || dataObj.environment || '';
-                        next.roomZone = dataObj.zone || dataObj.area || '';
-
-                        if (mapperRef.current) {
-                            mapperRef.current.handleRoomInfo(dataObj);
-                        }
-                    } else if (pkg === 'Char.Vitals' && dataObj) {
-                        if (dataObj.hp !== undefined) next.hp = dataObj.hp;
-                        if (dataObj.maxhp !== undefined) next.maxHp = dataObj.maxhp;
-                        if (dataObj.mana !== undefined) next.mana = dataObj.mana;
-                        if (dataObj.maxmana !== undefined) next.maxMana = dataObj.maxmana;
-                        if (dataObj.move !== undefined) next.move = dataObj.move;
-                        if (dataObj.maxmove !== undefined) next.maxMove = dataObj.maxmove;
-                        if (dataObj.opponent !== undefined) {
-                            next.opponentName = dataObj.opponent ? 'Opponent' : null;
-                        }
-
-                        if (dataObj.terrain && mapperRef.current) {
-                            mapperRef.current.handleTerrain(dataObj.terrain);
-                        }
+                if (pkg === 'Room.Info' && dataObj) {
+                    setReplayHUDState({
+                        roomName: dataObj.name || '',
+                        roomDesc: dataObj.desc || '',
+                        roomTerrain: dataObj.terrain || dataObj.environment || '',
+                        roomZone: dataObj.zone || dataObj.area || '',
+                    });
+                    if (mapperRef.current) {
+                        mapperRef.current.handleRoomInfo(dataObj);
                     }
-                    return next;
-                });
+                } else if (pkg === 'Char.Vitals' && dataObj) {
+                    const patch: Record<string, any> = {};
+                    if (dataObj.hp !== undefined) patch.hp = dataObj.hp;
+                    if (dataObj.maxhp !== undefined) patch.maxHp = dataObj.maxhp;
+                    if (dataObj.mana !== undefined) patch.mana = dataObj.mana;
+                    if (dataObj.maxmana !== undefined) patch.maxMana = dataObj.maxmana;
+                    if (dataObj.move !== undefined) patch.move = dataObj.move;
+                    if (dataObj.maxmove !== undefined) patch.maxMove = dataObj.maxmove;
+                    if (dataObj.opponent !== undefined) patch.opponentName = dataObj.opponent ? 'Opponent' : null;
+                    setReplayHUDState(patch);
+                    if (dataObj.terrain && mapperRef.current) {
+                        mapperRef.current.handleTerrain(dataObj.terrain);
+                    }
+                }
             }
             return;
         }
@@ -979,20 +959,20 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const jsonStr = typeof data === 'string' ? data : (data != null ? JSON.stringify(data) : '');
             const dataObj = typeof data === 'string' ? (data ? JSON.parse(data) : null) : data;
 
-            setReplayHUDState(prev => {
-                const next = { ...prev };
-                if (pkg === 'Room.Info' && dataObj) {
-                    next.roomName = dataObj.name || '';
-                    next.roomDesc = dataObj.desc || '';
-                    next.roomTerrain = dataObj.terrain || dataObj.environment || '';
-                    next.roomZone = dataObj.zone || dataObj.area || '';
-                } else if (pkg === 'Char.Vitals' && dataObj) {
-                    if (dataObj.hp !== undefined) next.hp = dataObj.hp;
-                    if (dataObj.maxhp !== undefined) next.maxHp = dataObj.maxhp;
-                    if (dataObj.hp_status) next.opponentHealth = dataObj.hp_status;
-                }
-                return next;
-            });
+            if (pkg === 'Room.Info' && dataObj) {
+                setReplayHUDState({
+                    roomName: dataObj.name || '',
+                    roomDesc: dataObj.desc || '',
+                    roomTerrain: dataObj.terrain || dataObj.environment || '',
+                    roomZone: dataObj.zone || dataObj.area || '',
+                });
+            } else if (pkg === 'Char.Vitals' && dataObj) {
+                const patch: Record<string, any> = {};
+                if (dataObj.hp !== undefined) patch.hp = dataObj.hp;
+                if (dataObj.maxhp !== undefined) patch.maxHp = dataObj.maxhp;
+                if (dataObj.hp_status) patch.opponentHealth = dataObj.hp_status;
+                setReplayHUDState(patch);
+            }
 
             // Route through the same GmcpDecoder used in live play so every
             // dependent system (lighting, weather, zone music, comm bubbles,
@@ -1008,7 +988,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         loadLog: (log: import('../hooks/useSessionRecorder').SessionLog) => {
             console.log('[Replayer] Loading log and entering Theater Mode');
             setSessionMode('replay');
-            setMessages([]); 
+            setMessages([]);
             replayer.loadLog(log);
         },
         clearLog: () => {
@@ -1148,14 +1128,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const { prepareLoginAttempt } = useSessionManager({
         status: s.status,
         activePrompt: v.activePrompt?.text ?? '',
-        loginName: settings.loginName,
-        loginPassword: settings.loginPassword,
         addSystemMessage,
         telnetSendCommand: telnet.sendCommand,
         telnetConnect: telnet.connect,
         characterName: s.characterName,
         executeCommand,
-        autoConnect: s.autoConnect,
         groupMembers: s.groupMembers,
         spatButtons,
         triggerSpitManual,
@@ -1179,10 +1156,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 viewport.rows === lastSyncRef.current.rows) return;
 
             console.log(`[Sync] Terminal: ${viewport.columns}x${viewport.rows}`);
-            
+
             // Combine into one command to minimize silent capture overhead (decrements only 1 per prompt)
             executeCommand(`change width ${viewport.columns}; change length ${viewport.rows}`, true, true);
-            
+
             // Update the ref so we don't spam if executeCommand identity shifts again
             lastSyncRef.current = { cols: viewport.columns, rows: viewport.rows };
         }, 500); // 500ms settle time
@@ -1253,7 +1230,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const gameValue = useMemo(() => {
         const isReplaying = sessionMode === 'replay';
         const base = { ...s };
-        
+
         if (isReplaying) {
             base.roomName = replayHUDState.roomName || 'Archive View';
             base.roomDesc = replayHUDState.roomDesc;
@@ -1271,26 +1248,15 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             sessionMode, setSessionMode,
             accentColor, setAccentColor,
             teleportTargets, setTeleportTargets,
-            onRoomInfo: roomInfoFn, setOnRoomInfo: setRoomInfoFn,
-            onRoomUpdateExits: roomExitsFn, setOnRoomUpdateExits: setRoomExitsFn,
-            onCharVitals: charVitalsFn, setOnCharVitals: setCharVitalsFn,
-            onRoomPlayers: roomPlayersFn, setOnRoomPlayers: setRoomPlayersFn,
-            onRoomNpcs: roomNpcsFn, setOnRoomNpcs: setRoomNpcsFn,
-            onRoomItems: roomItemsFn, setOnRoomItems: setRoomItemsFn,
-            onAddPlayer: addPlayerFn, setOnAddPlayer: setAddPlayerFn,
-            onAddNpc: addNpcFn, setOnAddNpc: setAddNpcFn,
-            onRemovePlayer: removePlayerFn, setOnRemovePlayer: setRemovePlayerFn,
-            onRemoveNpc: removeNpcFn, setOnRemoveNpc: setRemoveNpcFn,
-            onOpponentChange: opponentChangeFn, setOnOpponentChange: setOpponentChangeFn,
+            isSettingsOpen, setIsSettingsOpen, isLibraryOpen, setIsLibraryOpen,
+            settingsTab, setSettingsTab, diagnosticLogs, addDiagnosticLog,
+            showControls, setShowControls,
+            ui,
             opponentId: v.opponentId, setOpponentId: v.setOpponentId,
-            onGroupAdd: groupAddFn, setOnGroupAdd: setGroupAddFn,
-            onGroupUpdate: groupUpdateFn, setOnGroupUpdate: setGroupUpdateFn,
-            onGroupRemove: groupRemoveFn, setOnGroupRemove: setGroupRemoveFn,
-            onGroupSet: groupSetFn, setOnGroupSet: setGroupSetFn,
-            playSound, 
-            playRandomSound, 
-            playDoorSound, 
-            setPlaySound, triggerHaptic, 
+            playSound,
+            playRandomSound,
+            playDoorSound,
+            setPlaySound, triggerHaptic,
             setTriggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, primeSpellSuccess,
 
             btn, joystick, editor, containerRef, viewport, env,
@@ -1308,7 +1274,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             telnet, parser, practice, help,
             spatButtons, setSpatButtons,
             gameState: s.gameState, setGameState: s.setGameState, prepareLoginAttempt,
-            diagnosticLogs, addDiagnosticLog,
             refreshLogHighlights,
             addMessage, addSystemMessage,
             isMendingMode: v.isMendingMode, setIsMendingMode: v.setIsMendingMode,
@@ -1346,8 +1311,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         };
     }, [
         s, sessionMode, replayHUDState, isSpectateMode, spectateTarget, accentColor, teleportTargets,
-        roomInfoFn, roomExitsFn, charVitalsFn, roomPlayersFn, roomNpcsFn, roomItemsFn,
-        addPlayerFn, addNpcFn, removePlayerFn, removeNpcFn, opponentChangeFn,
         playSound, triggerHaptic, playCommMessageSound, stopCommMessageSound,
         btn, joystick, editor, viewport, env, v,
         input, handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
@@ -1361,19 +1324,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     ]);
 
     const logValue = useMemo(() => ({
-        messages,
-        setMessages,
-        addMessage,
-        addSystemMessage,
-        isCombatLine,
-        processMessageHtml,
+        ...activeLog,
+        processMessageHtml, // Override placeholder with real highlighter
         refreshLogHighlights,
         handleLogPointerDown,
-        handleLogPointerUp,
-        selectedObjectIds: s.selectedObjectIds,
-        toggleObjectSelection: s.toggleObjectSelection,
-        clearObjectSelection: s.clearObjectSelection
-    }), [messages, setMessages, addMessage, addSystemMessage, isCombatLine, processMessageHtml, refreshLogHighlights, handleLogPointerDown, handleLogPointerUp, s.selectedObjectIds, s.toggleObjectSelection, s.clearObjectSelection]);
+        handleLogPointerUp
+    }), [activeLog, processMessageHtml, refreshLogHighlights, handleLogPointerDown, handleLogPointerUp]);
 
     // Reset mending mode when drawer closes
     React.useEffect(() => {
@@ -1392,7 +1348,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const effectiveVitals = useMemo(() => {
         const isReplaying = sessionMode === 'replay' || sessionMode === 'scrubbing';
-        
+
         if (isReplaying) {
             return {
                 ...v,
@@ -1410,7 +1366,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 roomName: replayHUDState.roomName
             };
         }
-        
+
         if (s.isSpectateMode) {
             return {
                 ...v,

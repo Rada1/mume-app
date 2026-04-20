@@ -1,16 +1,14 @@
 import * as React from 'react';
+import { useSettingsStore } from '../stores/useSettingsStore';
 
 export interface SessionManagerDeps {
     status: string;
     activePrompt: string;
-    loginName?: string;
-    loginPassword?: string;
     addSystemMessage: (msg: string) => void;
     telnetSendCommand: (cmd: string) => void;
     telnetConnect: () => void;
     characterName: string | null;
     executeCommand: (cmd: string, echo?: boolean, fromMacro?: boolean) => void;
-    autoConnect: boolean;
     groupMembers: any[];
     spatButtons: any[];
     triggerSpitManual: (btn: any) => void;
@@ -22,14 +20,11 @@ export interface SessionManagerDeps {
 export const useSessionManager = ({
     status,
     activePrompt,
-    loginName,
-    loginPassword,
     addSystemMessage,
     telnetSendCommand,
     telnetConnect,
     characterName,
     executeCommand,
-    autoConnect,
     groupMembers,
     spatButtons,
     triggerSpitManual,
@@ -37,16 +32,15 @@ export const useSessionManager = ({
     accountStage,
     isPasswordMode
 }: SessionManagerDeps) => {
+    // Sourcing credentials directly from store
+    const loginName = useSettingsStore(s => s.loginName);
+    const loginPassword = useSettingsStore(s => s.loginPassword);
+    const autoConnect = useSettingsStore(s => s.autoConnect);
+
     // --- Auto-login session tracking ---
     const autoLoginSessionRef = React.useRef({ nameSent: false, passwordSent: false, lastStatus: '' });
     const telnetSendCommandRef = React.useRef(telnetSendCommand);
     React.useEffect(() => { telnetSendCommandRef.current = telnetSendCommand; }, [telnetSendCommand]);
-
-    // Use refs for credentials so the effect only fires on prompt changes, not on each keystroke
-    const loginNameRef = React.useRef(loginName);
-    const loginPasswordRef = React.useRef(loginPassword);
-    React.useEffect(() => { loginNameRef.current = loginName; }, [loginName]);
-    React.useEffect(() => { loginPasswordRef.current = loginPassword; }, [loginPassword]);
 
     React.useEffect(() => {
         // Reset session tracking when we start a new connection
@@ -55,16 +49,10 @@ export const useSessionManager = ({
         }
         autoLoginSessionRef.current.lastStatus = status;
 
-        const currentName = loginNameRef.current;
-        const currentPassword = loginPasswordRef.current;
-
         // If no saved credentials, do nothing — let the user type manually
-        if (!currentName && !currentPassword) {
-            console.log('[SessionManager] No credentials found (status:', status, 'prompt:', activePrompt, ' gameState:', gameState, ')');
+        if (!loginName && !loginPassword) {
             return;
         }
-
-        console.log('[SessionManager] EVALUATING (status:', status, 'prompt:', activePrompt, ' gameState:', gameState, ')');
 
         if (status !== 'connected' || !activePrompt) return;
 
@@ -79,40 +67,27 @@ export const useSessionManager = ({
         const isPasswordPrompt = /password\s*:/i.test(lower) || (gameState === 'account' && accountStage === 'login' && isPasswordMode);
         const isIllegalName = /illegal name/i.test(lower);
 
-        console.log('[SessionManager] Checking prompt:', { 
-            lower, 
-            isNamePrompt, 
-            isPasswordPrompt,
-            isIllegalName, 
-            nameSent: autoLoginSessionRef.current.nameSent,
-            passwordSent: autoLoginSessionRef.current.passwordSent,
-            currentNamePresent: !!currentName,
-            currentPasswordPresent: !!currentPassword,
-            accountStage,
-            isPasswordMode
-        });
-
         // Handle Name Prompt
         if (isNamePrompt && !isIllegalName) {
             // Only reset passwordSent on a CLEAN name prompt (not after a rejection)
             autoLoginSessionRef.current.passwordSent = false;
 
-            if (currentName && !autoLoginSessionRef.current.nameSent) {
+            if (loginName && !autoLoginSessionRef.current.nameSent) {
                 autoLoginSessionRef.current.nameSent = true;
-                addSystemMessage(`Auto-login: Sending name: ${currentName}`);
-                telnetSendCommandRef.current(currentName);
+                addSystemMessage(`Auto-login: Sending name: ${loginName}`);
+                telnetSendCommandRef.current(loginName);
             }
         }
 
         // Handle Password Prompt
-        if (currentPassword && !autoLoginSessionRef.current.passwordSent) {
+        if (loginPassword && !autoLoginSessionRef.current.passwordSent) {
             if (isPasswordPrompt) {
                 autoLoginSessionRef.current.passwordSent = true;
                 addSystemMessage(`Auto-login: Sending password...`);
-                telnetSendCommandRef.current(currentPassword);
+                telnetSendCommandRef.current(loginPassword);
             }
         }
-    }, [activePrompt, status, addSystemMessage, gameState]);
+    }, [activePrompt, status, addSystemMessage, gameState, loginName, loginPassword, accountStage, isPasswordMode]);
 
     // Exposed so LoginView can signal a manual login attempt is starting.
     // Sets nameSent=true (caller sends name) and resets passwordSent=false

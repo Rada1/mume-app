@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { gmcpBus } from '../../src/events/gmcpBus';
-import { useRoomStore } from '../../src/stores/useRoomStore';
-import { useCombatStore } from '../../src/stores/useCombatStore';
-import { useModeStore } from '../../src/stores/useModeStore';
-import { useVitalsStore } from '../../src/stores/useVitalsStore';
+import { gmcpBus } from '../../events/gmcpBus';
+import { useRoomStore } from '../../stores/useRoomStore';
+import { useCombatStore } from '../../stores/useCombatStore';
+import { useModeStore } from '../../stores/useModeStore';
+import { useVitalsStore } from '../../stores/useVitalsStore';
 
 describe('Event Bus to Store Integration', () => {
     beforeEach(() => {
@@ -15,9 +15,8 @@ describe('Event Bus to Store Integration', () => {
     });
 
     describe('Char.Vitals', () => {
-        it.skip('updates vitals store when Char.Vitals is emitted', () => {
-            // TODO: Unskip and implement once Vitals logic is complete
-            gmcpBus.emit('Char.Vitals', { hp: 50, maxHp: 100 });
+        it('updates vitals store when Char.Vitals is emitted', () => {
+            gmcpBus.emit('Char.Vitals', { hp: 50, maxhp: 100 });
             expect(useVitalsStore.getState().hp).toBe(50);
         });
     });
@@ -49,8 +48,7 @@ describe('Event Bus to Store Integration', () => {
 
     describe('Combat Targeting', () => {
         it('resolves opponent health status from Room.CharsCombat based on Char.Opponent', () => {
-            // 1. Set opponent via GMCP
-            gmcpBus.emit('Char.Opponent', { id: 99, name: 'Orc', status: 'Healthy' });
+            gmcpBus.emit('Char.Opponent', '99');
             expect(useCombatStore.getState().opponentId).toBe(99);
 
             // 2. CharsCombat updates health

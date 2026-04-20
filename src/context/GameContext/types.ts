@@ -4,7 +4,7 @@ import {
     LightingType, SoundTrigger, TeleportTarget, CustomButton,
     DrawerLine, GameAction, SpatButton, CombatHealthStatus, GroupMember,
     OptimisticChange,
-    SessionLog, ActivePrompt
+    SessionLog, ActivePrompt, SessionSlot
 } from '../../types';
 import { useSessionRecorder } from '../../hooks/useSessionRecorder';
 import { useButtons } from '../../hooks/useButtons';
@@ -83,19 +83,23 @@ export interface VitalsContextType {
     characterName: string | null;
 }
 
-export interface LogContextType {
+export interface LogData {
     messages: Message[];
     setMessages: Dispatch<SetStateAction<Message[]>>;
     addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: import('../../types').ShopItem, practiceSkill?: import('../../types').PracticeSkill, practiceHeader?: { sessionsLeft: number }, skipBrevity?: boolean, replyTarget?: string, replyCommand?: string) => void;
     addSystemMessage: (text: string) => void;
     isCombatLine: (text: string) => boolean;
     processMessageHtml: (html: string, mid?: string, isRoomName?: boolean, type?: MessageType) => string;
-    refreshLogHighlights: () => void;
-    handleLogPointerDown: (e: React.PointerEvent) => void;
-    handleLogPointerUp: (e: React.PointerEvent) => void;
     selectedObjectIds: Set<string>;
     toggleObjectSelection: (id: string, setId?: string, context?: string) => void;
     clearObjectSelection: () => void;
+    lastCommIdBySenderRef?: React.MutableRefObject<Map<string, string>>;
+}
+
+export interface LogContextType extends LogData {
+    refreshLogHighlights: () => void;
+    handleLogPointerDown: (e: React.PointerEvent) => void;
+    handleLogPointerUp: (e: React.PointerEvent) => void;
 }
 
 export interface UIContextType {
@@ -110,6 +114,7 @@ export interface UIContextType {
         menuView: 'main' | 'availableSets';
         peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map';
         showMapperToolbar: boolean;
+        characterTab: 'info' | 'practice' | 'quests';
     };
     setUI: Dispatch<SetStateAction<{
         drawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'session-log';
@@ -122,11 +127,14 @@ export interface UIContextType {
         menuView: 'main' | 'availableSets';
         peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map';
         showMapperToolbar: boolean;
+        characterTab: 'info' | 'practice' | 'quests';
     }>>;
     popoverState: PopoverState | null;
     setPopoverState: (val: PopoverState | null) => void;
     isSettingsOpen: boolean;
     setIsSettingsOpen: (val: boolean) => void;
+    isLibraryOpen: boolean;
+    setIsLibraryOpen: (val: boolean) => void;
     settingsTab: 'general' | 'sound' | 'actions' | 'help';
     setSettingsTab: (val: 'general' | 'sound' | 'actions' | 'help') => void;
     setIsStatsOpen: (open: boolean) => void;
@@ -145,6 +153,7 @@ export interface UIContextType {
     setShowRecordingIndicator: (val: boolean) => void;
     startRecording: (characterName?: string) => void;
     stopRecording: () => import('../../hooks/useSessionRecorder').SessionLog;
+    stopAndSave: () => void;
     saveLog: (log: import('../../hooks/useSessionRecorder').SessionLog) => void;
     replayer: {
         log: import('../../types').SessionLog | null;
@@ -160,6 +169,8 @@ export interface UIContextType {
         setTrimRange: (range: [number | null, number | null]) => void;
         startExport: () => Promise<void>;
         stopExport: () => void;
+        exportAsText: () => void;
+        performSearch: (query: string) => void;
     };
 }
 
@@ -167,28 +178,51 @@ export interface SessionContextType {
     vitals: VitalsContextType;
     game: {
         roomName: string | null;
+        setRoomName: Dispatch<SetStateAction<string | null>>;
         roomDesc: string | null;
+        setRoomDesc: Dispatch<SetStateAction<string | null>>;
         roomExits: string[];
+        setRoomExits: Dispatch<SetStateAction<string[]>>;
         roomZone: string | null;
+        setRoomZone: Dispatch<SetStateAction<string | null>>;
         currentTerrain: string;
+        setCurrentTerrain: Dispatch<SetStateAction<string>>;
         lighting: LightingType;
+        setLighting: Dispatch<SetStateAction<LightingType>>;
         weather: WeatherType;
+        setWeather: Dispatch<SetStateAction<WeatherType>>;
         isFoggy: boolean;
+        setIsFoggy: Dispatch<SetStateAction<boolean>>;
         inCombat: boolean;
+        setInCombat: Dispatch<SetStateAction<boolean>>;
         playerPosition: string;
+        setPlayerPosition: Dispatch<SetStateAction<string>>;
         isRiding: boolean;
+        setIsRiding: Dispatch<SetStateAction<boolean>>;
         roomPlayers: import('../../types').GmcpOccupant[];
+        setRoomPlayers: Dispatch<SetStateAction<import('../../types').GmcpOccupant[]>>;
         roomNpcs: import('../../types').GmcpOccupant[];
+        setRoomNpcs: Dispatch<SetStateAction<import('../../types').GmcpOccupant[]>>;
         roomItems: import('../../types').GmcpOccupant[];
+        setRoomItems: Dispatch<SetStateAction<import('../../types').GmcpOccupant[]>>;
         inventoryLines: DrawerLine[];
+        setInventoryLines: Dispatch<SetStateAction<DrawerLine[]>>;
         statsLines: DrawerLine[];
+        setStatsLines: Dispatch<SetStateAction<DrawerLine[]>>;
         infoLines: DrawerLine[];
+        setInfoLines: Dispatch<SetStateAction<DrawerLine[]>>;
         scoreLines: DrawerLine[];
+        setScoreLines: Dispatch<SetStateAction<DrawerLine[]>>;
         questLines: DrawerLine[];
+        setQuestLines: Dispatch<SetStateAction<DrawerLine[]>>;
         practiceLines: DrawerLine[];
+        setPracticeLines: Dispatch<SetStateAction<DrawerLine[]>>;
         whoLines: DrawerLine[];
+        setWhoLines: Dispatch<SetStateAction<DrawerLine[]>>;
         whereLines: DrawerLine[];
+        setWhereLines: Dispatch<SetStateAction<DrawerLine[]>>;
         eqLines: DrawerLine[];
+        setEqLines: Dispatch<SetStateAction<DrawerLine[]>>;
         abilities: Record<string, number>;
         setAbilities: Dispatch<SetStateAction<Record<string, number>>>;
         characterClass: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none';
@@ -206,8 +240,14 @@ export interface SessionContextType {
         characterName: string | null;
         setCharacterName: (val: string | null) => void;
         registry: ReturnType<typeof import('../../hooks/useEntityRegistry').useEntityRegistry>;
-        teleportTargets: string[];
-        setTeleportTargets: Dispatch<SetStateAction<string[]>>;
+        teleportTargets: import('../../types').TeleportTarget[];
+        setTeleportTargets: Dispatch<SetStateAction<import('../../types').TeleportTarget[]>>;
+        quests: import('../../types').QuestData;
+        setQuests: Dispatch<SetStateAction<import('../../types').QuestData>>;
+        roomNameRef: React.MutableRefObject<string | null>;
+        roomDescRef: React.MutableRefObject<string | null>;
+        lastCommMsgIdRef: React.MutableRefObject<string | null>;
+        lastCommTimeRef: React.MutableRefObject<number>;
         whoList: string[];
         setWhoList: Dispatch<SetStateAction<string[]>>;
         whereList: import('../../types').WhereEntry[];
@@ -215,11 +255,11 @@ export interface SessionContextType {
         lightningEnabled: boolean;
         setLightningEnabled: (val: boolean) => void;
     };
-    log: LogContextType;
+    log: LogData;
     recorder: ReturnType<typeof useSessionRecorder>;
 }
 
-export interface GameContextType extends Omit<SessionContextType['vitals'], 'stats' | 'target'>, Omit<SessionContextType['game'], 'inCombat' | 'roomName' | 'roomDesc'>, LogContextType {
+export interface GameContextType extends Omit<SessionContextType['vitals'], 'stats' | 'target' | 'pendingMove' | 'setPendingMove'>, Omit<SessionContextType['game'], 'inCombat' | 'roomName' | 'roomDesc' | 'characterName' | 'setCharacterName' | 'mood' | 'setMood' | 'spellSpeed' | 'setSpellSpeed' | 'alertness' | 'setAlertness' | 'whoList' | 'whereList' | 'setWhereList' | 'lightningEnabled' | 'setLightningEnabled' | 'abilities' | 'setAbilities' | 'actions' | 'setActions' | 'characterClass' | 'setCharacterClass' | 'quests' | 'setQuests' | 'roomNameRef' | 'roomDescRef'>, LogContextType {
     // Session Management
     activeSession: SessionSlot;
     setActiveSession: (slot: SessionSlot) => void;
@@ -232,8 +272,24 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     inCombat: boolean;
     roomName: string | null;
     roomDesc: string | null;
-    pendingMove: string | null;
-    setPendingMove: (val: string | null) => void;
+    pendingMove: { dir: string; timestamp: number } | null;
+    setPendingMove: (val: { dir: string; timestamp: number } | null) => void;
+    popoverState: PopoverState | null;
+    setPopoverState: (val: PopoverState | null) => void;
+    ui: {
+        drawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'session-log';
+        isDrawerPeeking: boolean;
+        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map' | 'session-log';
+        setManagerOpen: boolean;
+        mapExpanded: boolean;
+        isMenuOpen: boolean;
+        isSetMenuOpen: boolean;
+        menuView: 'main' | 'availableSets';
+        peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map';
+        showMapperToolbar: boolean;
+        characterTab: 'info' | 'practice' | 'quests';
+    };
+    setUI: import('react').Dispatch<import('react').SetStateAction<GameContextType['ui']>>;
 
     // Global App State (Common to all sessions)
     status: 'connected' | 'disconnected' | 'connecting';
@@ -243,11 +299,15 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     characterName: string | null;
     setCharacterName: (name: string | null) => void;
     
+    help: ReturnType<typeof import('../../hooks/useHelpHandler').useHelpHandler>;
+
     // Settings & Mode
     isNewbieMode: boolean;
     setIsNewbieMode: (val: boolean) => void;
-    isSoundEnabled: boolean;
+    isMmapperMode: boolean;
     setIsMmapperMode: (val: boolean) => void;
+    isSoundEnabled: boolean;
+    setIsSoundEnabled: (val: boolean) => void;
     theme: 'light' | 'dark';
     setTheme: (val: 'light' | 'dark') => void;
     autoConnect: boolean;
@@ -274,6 +334,10 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     setShowSpectatePromptInLog: (val: boolean) => void;
     isTimestampEnabled: boolean;
     setIsTimestampEnabled: (val: boolean) => void;
+    showControls: boolean;
+    setShowControls: (val: boolean) => void;
+    isPasswordMode: boolean;
+    spectateCharacterName: string | null;
     spectateTargetId: number | null;
     setSpectateTargetId: (val: number | null) => void;
     showLegacyButtons: boolean;
@@ -365,40 +429,6 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
 
     teleportTargets: TeleportTarget[];
     setTeleportTargets: (val: TeleportTarget[] | ((prev: TeleportTarget[]) => TeleportTarget[])) => void;
-
-    // GMCP Handlers
-    onRoomInfo?: (data: import('../../types').GmcpRoomInfo) => void;
-    setOnRoomInfo: (fn: (data: import('../../types').GmcpRoomInfo) => void) => void;
-    onRoomUpdateExits?: (data: import('../../types').GmcpUpdateExits) => void;
-    setOnRoomUpdateExits: (fn: (data: import('../../types').GmcpUpdateExits) => void) => void;
-    onCharVitals?: (data: import('../../types').GmcpCharVitals) => void;
-    setOnCharVitals: (fn: (data: import('../../types').GmcpCharVitals) => void) => void;
-    onRoomPlayers?: (data: import('../../types').GmcpRoomPlayers) => void;
-    setOnRoomPlayers: (fn: (data: import('../../types').GmcpRoomPlayers) => void) => void;
-    onRoomNpcs?: (data: import('../../types').GmcpRoomNpcs) => void;
-    setOnRoomNpcs: (fn: (data: import('../../types').GmcpRoomNpcs) => void) => void;
-    onRoomItems?: (data: import('../../types').GmcpRoomItems) => void;
-    setOnRoomItems: (fn: (data: import('../../types').GmcpRoomItems) => void) => void;
-    onAddPlayer?: (data: import('../../types').GmcpOccupant | string | number) => void;
-    setOnAddPlayer: (fn: (data: import('../../types').GmcpOccupant | string | number) => void) => void;
-    onAddNpc?: (data: import('../../types').GmcpOccupant | string | number) => void;
-    setOnAddNpc: (fn: (data: import('../../types').GmcpOccupant | string | number) => void) => void;
-    onRemovePlayer?: (data: import('../../types').GmcpOccupant | string | number) => void;
-    setOnRemovePlayer: (fn: (data: import('../../types').GmcpOccupant | string | number) => void) => void;
-    onRemoveNpc?: (data: import('../../types').GmcpOccupant | string | number) => void;
-    setOnRemoveNpc: (fn: (data: import('../../types').GmcpOccupant | string | number) => void) => void;
-    onOpponentChange?: (name: string | null) => void;
-    setOnOpponentChange: (fn: (name: string | null) => void) => void;
-    onGroupAdd?: (data: GroupMember) => void;
-    setOnGroupAdd: (fn: (data: GroupMember) => void) => void;
-    onGroupUpdate?: (data: GroupMember) => void;
-    setOnGroupUpdate: (fn: (data: GroupMember) => void) => void;
-    onGroupRemove?: (data: number) => void;
-    setOnGroupRemove: (fn: (data: number) => void) => void;
-    onGroupSet?: (data: GroupMember[]) => void;
-    setOnGroupSet: (fn: (data: GroupMember[]) => void) => void;
-    onMumeEdit?: (data: import('../../types').GmcpMumeEdit) => void;
-    setOnMumeEdit: (fn: (data: import('../../types').GmcpMumeEdit) => void) => void;
 
     // Settings
     bgImage: string;
@@ -518,6 +548,7 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     duration: number;
     startRecording: (characterName?: string) => void;
     stopRecording: () => import('../../hooks/useSessionRecorder').SessionLog;
+    stopAndSave: () => void;
     saveLog: (log: import('../../hooks/useSessionRecorder').SessionLog) => void;
     replayer: {
         log: import('../../types').SessionLog | null;

@@ -134,15 +134,15 @@ export interface UseGameParserDeps {
     setMessages: React.Dispatch<React.SetStateAction<import('../../types').Message[]>>;
     clearLog: () => void;
     isNewbieMode: boolean;
-    inlineCategories: Record<string, string>;
+    inlineCategories: import('../../types').InlineCategoryConfig[];
     processMessageHtml?: (originalHtml: string, mid: string, isRoomName: boolean, type?: import('../../types').MessageType, isCombatMessage?: boolean, combatSide?: 'player' | 'opponent' | 'groupmate') => string;
     spectateCharacterName: string | null;
     roomPlayers: import('../../types').GmcpOccupant[];
-    setWhoList?: (val: string[]) => void;
-    setWhereList?: (val: import('../../types').WhereEntry[]) => void;
-    setDeathRoomId?: (val: string | null) => void;
-    roomNameRef: React.RefObject<string | null>;
-    roomDescRef: React.RefObject<string | null>;
+    roomNpcs: import('../../types').GmcpOccupant[];
+    roomItems: import('../../types').GmcpOccupant[];
+    playKillSound?: (options?: { pitch?: number; volume?: number }) => void;
+    playLevelSound?: () => void;
+    ansiConvert: any;
     lastCommMsgIdRef: React.RefObject<string | null>;
     lastCommTimeRef: React.RefObject<number>;
     sessionMode?: 'live' | 'replay';
@@ -155,5 +155,4 @@ export interface UseGameParserDeps {
     setIsSpectateMode: (val: boolean) => void;
     setGameTime: (time: import('../../types').MumeTime | null) => void;
     gameTime: import('../../types').MumeTime | null;
-    playArrowHitSound?: (options?: { pitch?: number, volume?: number }) => void;
 }

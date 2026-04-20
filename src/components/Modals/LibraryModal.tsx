@@ -161,7 +161,7 @@ export const LibraryModal: React.FC<LibraryModalProps> = ({ isOpen, onClose }) =
 
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px', paddingLeft: '46px' }}>
                                         <div style={{ color: 'var(--text-dim)', opacity: 0.5, fontSize: '0.7rem' }}>
-                                            {session.entries.length} events recorded
+                                            {session.log.length} events recorded
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--accent)', fontSize: '0.85rem' }}>
                                             Replay <ChevronRight size={14} />
