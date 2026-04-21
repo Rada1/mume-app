@@ -103,30 +103,6 @@
     }
 }
 
-@keyframes vanish-into-distance {
-
-    0%,
-    40% {
-        transform: scale(1) translateZ(0) rotateX(0deg);
-        opacity: var(--msg-opacity, 1);
-    }
-
-    75% {
-        transform: scale(0.95) translateZ(-40px) rotateX(4deg);
-        opacity: calc(var(--msg-opacity, 1) * 0.85);
-    }
-
-    95% {
-        transform: scale(0.7) translateZ(-150px) rotateX(12deg);
-        opacity: 0.2;
-    }
-
-    100% {
-        transform: scale(0.4) translateZ(-400px) rotateX(25deg);
-        opacity: 0;
-    }
-}
-
 @keyframes dropdownFadeIn {
     from {
         opacity: 0;

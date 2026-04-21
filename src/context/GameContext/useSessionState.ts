@@ -46,13 +46,13 @@ export const useSessionState = (
         hp: vStore.hp, maxHp: vStore.maxHp, 
         mana: vStore.mana, maxMana: vStore.maxMana, 
         move: vStore.move, maxMove: vStore.maxMove, 
-        wimpy: (vStore as any).wimpy ?? 0
-    }), [vStore.hp, vStore.maxHp, vStore.mana, vStore.maxMana, vStore.move, vStore.maxMove, (vStore as any).wimpy]);
+        wimpy: vStore.wimpy
+    }), [vStore.hp, vStore.maxHp, vStore.mana, vStore.maxMana, vStore.move, vStore.maxMove, vStore.wimpy]);
     const playerHealthStatus = vStore.hpStatus;
     const playerPosition = vStore.position;
     const inCombat = vStore.inCombat;
     const currentTerrain = vStore.currentTerrain;
-    const lighting = (vStore as any).lighting ?? 'none';
+    const lighting = vStore.lighting;
     const weather = vStore.weather;
     const isFoggy = vStore.isFoggy;
     const isRiding = (vStore as any).isRiding ?? false;
@@ -80,7 +80,7 @@ export const useSessionState = (
     const setRoomExits = rStore.setExits;
     const setRoomZone = rStore.setRoomZone;
     const setCurrentTerrain = rStore.setTerrain;
-    const setLighting = useCallback((l: any) => (vStore as any).setLighting?.(l), []);
+    const setLighting = vStore.setLighting;
     const setWeather = vStore.setWeather;
     const setIsFoggy = vStore.setIsFoggy;
     const setInCombat = vStore.setInCombat;

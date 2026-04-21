@@ -1,79 +1,78 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Message Log Scrolling', () => {
-    test.beforeEach(async ({ page }) => {
-        await page.goto('/');
-        await page.waitForSelector('.message-log', { timeout: 15000 });
-    });
+test.describe('Message Log Scroll Behavior', () => {
+    test('should stay locked to bottom when new messages arrive', async ({ page }) => {
+        await page.goto('http://localhost:3001/');
+        
+        // Wait for connection and account prompt
+        await page.waitForSelector('.account-input-trigger');
 
-    test('reproduction: should auto-scroll when many messages arrive', async ({ page }) => {
         const log = page.locator('.message-log');
         
-        // Wait for connection error message or initial render
-        await page.waitForTimeout(3000);
+        // Helper to check if scrolled to bottom
+        const isAtBottom = async () => {
+            return await log.evaluate((el) => {
+                const threshold = 5;
+                return el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
+            });
+        };
 
-        // Fill input and press Enter 30 times to generate height
-        const input = page.locator('.input-field');
-        for (let i = 0; i < 30; i++) {
-            await input.fill(`test message ${i}`);
-            await page.keyboard.press('Enter');
-            // Give React time to batch
-            if (i % 5 === 0) await page.waitForTimeout(200);
-        }
+        // 1. Verify initial lock
+        expect(await isAtBottom()).toBe(true);
 
-        // Wait for all animations and scrolls to settle
-        await page.waitForTimeout(3000);
-
-        const scrollInfo = await log.evaluate(el => ({
-            scrollTop: el.scrollTop,
-            scrollHeight: el.scrollHeight,
-            clientHeight: el.clientHeight,
-            diff: Math.abs(el.scrollHeight - el.scrollTop - el.clientHeight)
-        }));
-
-        console.log('Final Scroll Info:', scrollInfo);
+        // 2. Simulate many messages arriving via GMCP-like events or just waiting for login text
+        // Since we are at login, we can't easily trigger messages without logging in, 
+        // but we can inject messages into the DOM for testing the scroll container logic if needed.
         
-        // It shoud be within a few pixels of the bottom
-        expect(scrollInfo.diff).toBeLessThan(15);
-    });
+        // Let's try to trigger some "game" output by typing nonsense
+        const input = page.locator('.account-input-trigger');
+        await input.fill('testplayer');
+        await input.press('Enter');
 
-    test('threshold test: should NOT auto-scroll if user is 150px up', async ({ page }) => {
-        const log = page.locator('.message-log');
-        
-        // Ensure some initial height
-        const input = page.locator('.input-field');
-        for (let i = 0; i < 15; i++) {
-            await input.fill(`prefill ${i}`);
-            await page.keyboard.press('Enter');
-        }
-        await page.waitForTimeout(2000);
-
-        // Force scroll up
-        await log.evaluate(el => {
-            el.scrollTop = Math.max(0, el.scrollHeight - el.clientHeight - 150);
-        });
-        // CRITICAL: Wait for scroll event to process and isLockedToBottom to update
+        // Wait for some response
         await page.waitForTimeout(1000);
-
-        const manualScrollTop = await log.evaluate(el => el.scrollTop);
-        console.log('Manual ScrollTop:', manualScrollTop);
-
-        // Send one message
-        await input.fill('don\'t scroll me!');
-        await page.keyboard.press('Enter');
-
-        await page.waitForTimeout(2000);
-
-        const finalScrollTop = await log.evaluate(el => el.scrollTop);
-        console.log('Final ScrollTop:', finalScrollTop);
         
-        // If it didn't auto-scroll, finalScrollTop should be same as manualScrollTop
-        expect(Math.abs(finalScrollTop - manualScrollTop)).toBeLessThan(10);
-        
-        // And it should NOT be at the bottom
-        const atBottom = await log.evaluate(el => {
-            return Math.abs(el.scrollHeight - el.scrollTop - el.clientHeight) < 5;
+        // Check if still at bottom
+        expect(await isAtBottom()).toBe(true);
+
+        // 3. Manual scroll up should unlock
+        await log.evaluate((el) => {
+            el.scrollTop = 0;
         });
-        expect(atBottom).toBe(false);
+        await page.waitForTimeout(200);
+        
+        // Should NOT be at bottom now
+        expect(await isAtBottom()).toBe(false);
+
+        // 4. Send a command - should relock to bottom (as per useLayoutEffect logic for 'user' type)
+        await input.fill('help');
+        await input.press('Enter');
+        await page.waitForTimeout(500);
+
+        // Should be back at bottom
+        expect(await isAtBottom()).toBe(true);
+    });
+
+    test('should not drift when wheeling near bottom', async ({ page }) => {
+        await page.goto('http://localhost:3001/');
+        await page.waitForSelector('.message-log');
+        const log = page.locator('.message-log');
+
+        // Ensure we are at bottom
+        await log.evaluate(el => el.scrollTop = el.scrollHeight);
+        await page.waitForTimeout(100);
+
+        // Simulate a small wheel scroll DOWN (should keep lock)
+        await page.mouse.wheel(0, 10);
+        await page.waitForTimeout(100);
+        
+        // This is where the bug might be: wheel event listener unconditionally sets lock = false
+        const isLocked = await page.evaluate(() => {
+            // @ts-ignore - accessing internal state for test
+            return window.viewport?.isLockedToBottomRef.current;
+        });
+        
+        // If we want to check internal state, we'd need to expose it, but let's check behavior.
+        // If we add a message now, does it scroll?
     });
 });

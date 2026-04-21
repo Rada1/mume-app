@@ -76,8 +76,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         status,
         uiMode,
         setUiMode,
-        disable3dScroll,
-        setDisable3dScroll,
         disableSmoothScroll,
         setDisableSmoothScroll,
         isImmersionMode,
@@ -205,8 +203,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setShowDebugEchoes={setShowDebugEchoes}
                     uiMode={uiMode}
                     setUiMode={setUiMode}
-                    disable3dScroll={disable3dScroll}
-                    setDisable3dScroll={setDisable3dScroll}
                     disableSmoothScroll={disableSmoothScroll}
                     setDisableSmoothScroll={setDisableSmoothScroll}
                     isImmersionMode={isImmersionMode}

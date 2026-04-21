@@ -7,8 +7,6 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    perspective: 1200px;
-    transform-style: preserve-3d;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -31,11 +29,6 @@
 
 .has-drawer-open .message-log-container {
     filter: none;
-}
-
-.no-3d-scroll .message-log-container {
-    perspective: none !important;
-    transform-style: flat !important;
 }
 
 .message-log-container.drop-hover-active {
@@ -93,13 +86,6 @@
 
 .immersion-mode .message-log {
     padding-bottom: 5px !important;
-    /* Tightest safe margin for 3D tilt */
-}
-
-.no-3d-scroll .message-log {
-    perspective: none !important;
-    transform-style: flat !important;
-    mask-image: none !important;
 }
 
 .message-log::-webkit-scrollbar {
@@ -529,11 +515,6 @@
     color: #22c55e !important;
     /* Success Green */
     font-weight: bold;
-}
-
-.no-3d-scroll .message {
-    transition: none !important;
-    transform: none !important;
 }
 
 

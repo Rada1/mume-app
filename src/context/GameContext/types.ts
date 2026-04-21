@@ -320,8 +320,6 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     setSessionMode: (val: import('../../types').SessionMode) => void;
     uiMode: import('../../types').UiMode;
     setUiMode: (val: import('../../types').UiMode) => void;
-    disable3dScroll: boolean;
-    setDisable3dScroll: (val: boolean) => void;
     disableSmoothScroll: boolean;
     setDisableSmoothScroll: (val: boolean) => void;
     isImmersionMode: boolean;

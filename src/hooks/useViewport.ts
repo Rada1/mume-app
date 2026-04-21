@@ -3,7 +3,6 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 export function useViewport(
     uiMode: import('../types').UiMode = 'auto',
     disableSmoothScroll: boolean = false,
-    disable3dScroll: boolean = false,
     isImmersionMode: boolean = true,
     fontFamily: string = "'Space Mono', monospace",
     isTimestampEnabled: boolean = false
@@ -407,12 +406,10 @@ export function useViewport(
 
     useEffect(() => {
         const root = document.documentElement;
-        if (disable3dScroll || !isImmersionMode) root.classList.add('no-3d-scroll');
-        else root.classList.remove('no-3d-scroll');
 
         if (isImmersionMode) root.classList.add('immersion-mode');
         else root.classList.remove('immersion-mode');
-    }, [disable3dScroll, isImmersionMode]);
+    }, [isImmersionMode]);
 
     return useMemo(() => ({
         isMobile,

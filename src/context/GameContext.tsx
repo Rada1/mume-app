@@ -495,7 +495,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
     const joystick = useJoystick(triggerHaptic, s.roomExits);
     const editor = useButtonEditor(btn, containerRef);
-    const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.disable3dScroll, s.isImmersionMode, s.fontFamily, s.isTimestampEnabled);
+    const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.isImmersionMode, s.fontFamily, s.isTimestampEnabled);
 
     const practice = usePracticeHandler(s.setAbilities);
     const shop = useShopHandler();
@@ -513,7 +513,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         connectionUrl: s.connectionUrl, setConnectionUrl: s.setConnectionUrl,
         showDebugEchoes: s.showDebugEchoes, setShowDebugEchoes: s.setShowDebugEchoes,
         uiMode: s.uiMode, setUiMode: s.setUiMode,
-        disable3dScroll: s.disable3dScroll, setDisable3dScroll: s.setDisable3dScroll,
         disableSmoothScroll: s.disableSmoothScroll, setDisableSmoothScroll: s.setDisableSmoothScroll,
         isImmersionMode: s.isImmersionMode, setIsImmersionMode: s.setIsImmersionMode,
         showRecordingIndicator: s.showRecordingIndicator, setShowRecordingIndicator: s.setShowRecordingIndicator,
@@ -1165,8 +1164,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsHighlighterEnabled: settingsStore.setIsHighlighterEnabled,
         isTimestampEnabled: settingsStore.isTimestampEnabled,
         setIsTimestampEnabled: settingsStore.setIsTimestampEnabled,
-        disable3dScroll: settingsStore.disable3dScroll,
-        setDisable3dScroll: settingsStore.setDisable3dScroll,
         disableSmoothScroll: settingsStore.disableSmoothScroll,
         setDisableSmoothScroll: settingsStore.setDisableSmoothScroll,
         showRecordingIndicator: settingsStore.showRecordingIndicator,
@@ -1200,7 +1197,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         settingsStore.isBloomEnabled, settingsStore.setIsBloomEnabled,
         settingsStore.isHighlighterEnabled, settingsStore.setIsHighlighterEnabled,
         settingsStore.isTimestampEnabled, settingsStore.setIsTimestampEnabled,
-        settingsStore.disable3dScroll, settingsStore.setDisable3dScroll,
         settingsStore.disableSmoothScroll, settingsStore.setDisableSmoothScroll,
         settingsStore.showRecordingIndicator, settingsStore.setShowRecordingIndicator,
         settingsStore.showLegacyButtons, settingsStore.setShowLegacyButtons,
@@ -1437,8 +1433,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setIsHighlighterEnabled: settingsStore.setIsHighlighterEnabled,
             isTimestampEnabled: settingsStore.isTimestampEnabled,
             setIsTimestampEnabled: settingsStore.setIsTimestampEnabled,
-            disable3dScroll: settingsStore.disable3dScroll,
-            setDisable3dScroll: settingsStore.setDisable3dScroll,
             disableSmoothScroll: settingsStore.disableSmoothScroll,
             setDisableSmoothScroll: settingsStore.setDisableSmoothScroll,
             showRecordingIndicator: settingsStore.showRecordingIndicator,

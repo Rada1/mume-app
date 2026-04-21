@@ -4,7 +4,7 @@
  * This slice is used by both the main useVitalsStore and the useSpectateVitalsStore.
  */
 
-import { GmcpCharVitals, CombatHealthStatus, WeatherType, GmcpCharInfo } from '../../types';
+import { GmcpCharVitals, CombatHealthStatus, WeatherType, GmcpCharInfo, LightingType } from '../../types';
 
 export interface CharacterInfo {
     name: string | null;
@@ -32,6 +32,7 @@ export interface VitalsState {
     position: string;
     inCombat: boolean;
     currentTerrain: string;
+    lighting: LightingType;
     weather: WeatherType;
     isFoggy: boolean;
     characterInfo: CharacterInfo;
@@ -46,6 +47,7 @@ export interface VitalsState {
     setHpStatus: (status: CombatHealthStatus | null | ((prev: CombatHealthStatus | null) => CombatHealthStatus | null)) => void;
     setPosition: (pos: string | ((prev: string) => string)) => void;
     setInCombat: (val: boolean | ((prev: boolean) => boolean)) => void;
+    setLighting: (l: LightingType | ((prev: LightingType) => LightingType)) => void;
     setWeather: (w: WeatherType | ((prev: WeatherType) => WeatherType)) => void;
     setIsFoggy: (f: boolean | ((prev: boolean) => boolean)) => void;
     setCurrentTerrain: (t: string | ((prev: string) => string)) => void;
@@ -64,6 +66,7 @@ export const initialVitalsState = {
     position: 'standing',
     inCombat: false,
     currentTerrain: '',
+    lighting: 'none' as LightingType,
     weather: 'none' as WeatherType,
     isFoggy: false,
     characterInfo: {
@@ -134,6 +137,22 @@ export const createVitalsActions = (set: any, get: any) => ({
             }
 
             if (data.light !== undefined && data.light !== null) {
+                // Determine LightingType from GMCP data
+                let type: LightingType = 'none';
+                if (typeof data.light === 'number') {
+                    type = data.light <= 0 ? 'dark' : 'sun';
+                } else if (typeof data.light === 'string') {
+                    const l = data.light.toLowerCase();
+                    if (l.includes('dark') || l.includes('night') || l.includes('o')) type = 'dark';
+                    else if (l.includes('light') || l.includes('day') || l.includes('bright') || l.includes('*')) type = 'sun';
+                    else if (l.includes('moon') || l.includes('moonlight') || l.includes(')') || l.includes('(')) type = 'moon';
+                    else if (l.includes('!') || l.includes('artificial')) type = 'artificial';
+                }
+                
+                if (type !== 'none') {
+                    updates.lighting = type;
+                }
+
                 if (typeof window !== 'undefined') {
                     window.dispatchEvent(new CustomEvent('mume-mapper-lighting', { detail: data.light }));
                 }
@@ -230,6 +249,9 @@ export const createVitalsActions = (set: any, get: any) => ({
 
     setInCombat: (inCombat: boolean | ((prev: boolean) => boolean)) => 
         set((state: VitalsState) => ({ inCombat: typeof inCombat === 'function' ? inCombat(state.inCombat) : inCombat })),
+
+    setLighting: (lighting: LightingType | ((prev: LightingType) => LightingType)) => 
+        set((state: VitalsState) => ({ lighting: typeof lighting === 'function' ? lighting(state.lighting) : lighting })),
 
     setWeather: (weather: WeatherType | ((prev: WeatherType) => WeatherType)) => 
         set((state: VitalsState) => ({ weather: typeof weather === 'function' ? weather(state.weather) : weather })),

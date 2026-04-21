@@ -65,9 +65,10 @@ export function isButtonValidForEntity(
 
             if (matchingNpc) {
                 const npcName = (typeof matchingNpc === 'string' ? matchingNpc : matchingNpc.name || matchingNpc.shortdesc || '').toLowerCase();
-                if (button.setId === 'inline-innkeeper' && /innkeeper|barman|butterbur|tender|lodging/i.test(npcName)) isMatch = true;
-                if (button.setId === 'inline-shopkeeper' && /shopkeeper|blacksmith|dealer|keeper|merchant|weaponsmith|armourer|smith|trader|grocer|librarian|provisioner|alchemist|herbalist|tailor/i.test(npcName)) isMatch = true;
-                if (button.setId === 'inline-guildmaster' && /guildmaster|teacher|master|trainer|huor/i.test(npcName)) isMatch = true;
+                const npcCatId = getCategoryForName(npcName, inlineCategories);
+                if (button.setId === 'inline-innkeeper' && npcCatId === 'inline-innkeeper') isMatch = true;
+                if (button.setId === 'inline-shopkeeper' && npcCatId === 'inline-shopkeeper') isMatch = true;
+                if (button.setId === 'inline-guildmaster' && npcCatId === 'inline-guildmaster') isMatch = true;
             }
         }
 
@@ -101,7 +102,7 @@ export function isButtonValidForEntity(
     if (isShopCmd && !fullSetChain.includes('inline-shopkeeper')) {
         const hasShopkeeper = roomNpcs?.some(npc => {
             const npcName = (typeof npc === 'string' ? npc : npc.name || npc.shortdesc || '').toLowerCase();
-            return /shopkeeper|blacksmith|barman|dealer|keeper|merchant|weaponsmith|armourer|smith|trader|grocer|librarian|provisioner|alchemist|herbalist|tailor/i.test(npcName);
+            return getCategoryForName(npcName, inlineCategories) === 'inline-shopkeeper';
         });
         if (!hasShopkeeper) return false;
     }

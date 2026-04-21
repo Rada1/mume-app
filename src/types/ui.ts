@@ -137,7 +137,6 @@ export interface SavedSettings {
     autoConnect?: boolean;
     showDebugEchoes?: boolean;
     uiMode?: UiMode;
-    disable3dScroll?: boolean;
     disableSmoothScroll?: boolean;
     isImmersionMode?: boolean;
     showRecordingIndicator?: boolean;
