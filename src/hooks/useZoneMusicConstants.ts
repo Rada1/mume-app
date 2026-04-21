@@ -15,6 +15,8 @@ export interface ZoneMusicDeps {
     gameTime: MumeTime | null;
     isSleeping?: boolean;
     gameState?: string;
+    masterVolume: number;
+    musicVolume: number;
 }
 
 /**

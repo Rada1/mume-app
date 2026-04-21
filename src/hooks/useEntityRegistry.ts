@@ -8,6 +8,7 @@ import { useState, useCallback, useRef } from 'react';
 import { GameEntity, EntityCapability, EntityLocation } from '../types';
 import { extractNoun as smartExtractNoun } from '../utils/keywordUtils';
 import { isItemContainer } from '../utils/gameUtils';
+import { getCategoryForName, getCategoryType } from '../utils/categorizationUtils';
 
 // palette definitions for consistency (imported from categorizationUtils style)
 const COLOR_NPC = 'rgba(253, 224, 71, 0.95)';
@@ -31,72 +32,49 @@ export const useEntityRegistry = () => {
     const detectCapabilities = useCallback((name: string, location: EntityLocation, category?: string): EntityCapability[] => {
         const caps: EntityCapability[] = [];
         const lower = name.toLowerCase();
-        const noun = extractNoun(name).toLowerCase();
+        
+        // 1. Resolve Category
+        const detectedCat = category || getCategoryForName(name) || '';
+        const catType = getCategoryType(detectedCat);
+        const baseId = detectedCat.startsWith('inline-') ? detectedCat.slice(7) : detectedCat;
 
-        // 1. Determine base type (NPC vs Player vs Item)
-        if (category === 'inlineplayer' || location === 'roomplayers') {
+        // 2. Base Type Assignment
+        if (catType === 'player' || location === 'roomplayers') {
             caps.push(EntityCapability.Player);
-            return caps; // Players don't usually have other item-like caps
+            return caps; 
         }
 
-        if (category === 'inlinenpc' || location === 'roomnpcs' || category?.startsWith('inline-npc') || category?.startsWith('inline-shop') || category?.startsWith('inline-inn') || category?.startsWith('inline-guild') || category?.startsWith('inline-mount')) {
+        if (catType === 'npc' || location === 'roomnpcs') {
             caps.push(EntityCapability.Npc);
             
-            // Sub-type NPC detection
-            if (/innkeeper|barman|butterbur|tender|lodging/i.test(lower)) caps.push(EntityCapability.Innkeeper);
-            if (/shopkeeper|dealer|keeper|merchant|weaponsmith|armourer|smith|trader|grocer|librarian|provisioner|alchemist|herbalist|tailor|blacksmith|vendor|cobbler|peddler/i.test(lower)) caps.push(EntityCapability.Shopkeeper);
-            if (/guildmaster|teacher|master|trainer|huor/i.test(lower)) caps.push(EntityCapability.Guildmaster);
-            if (/horse|pony|steed|donkey|mule|warg/i.test(lower)) caps.push(EntityCapability.Mount);
+            // Sub-type NPC detection via category ID
+            if (baseId === 'innkeeper') caps.push(EntityCapability.Innkeeper);
+            else if (baseId === 'shopkeeper') caps.push(EntityCapability.Shopkeeper);
+            else if (baseId === 'guildmaster') caps.push(EntityCapability.Guildmaster);
+            else if (baseId === 'mounts') caps.push(EntityCapability.Mount);
             
             return caps;
         }
 
-        // 2. Item Capability Detection
-        if (lower.includes('corpse')) caps.push(EntityCapability.Corpse);
+        // 3. Item Capability Detection
+        if (baseId === 'corpses' || lower.includes('corpse')) caps.push(EntityCapability.Corpse);
+        if (baseId === 'weapon') caps.push(EntityCapability.Weapon);
+        if (baseId === 'armour') caps.push(EntityCapability.Wearable);
+        if (baseId === 'shield') caps.push(EntityCapability.Shield);
+        if (baseId === 'containers') caps.push(EntityCapability.Container);
+        if (baseId === 'fluidcontainer') caps.push(EntityCapability.FluidContainer);
+        if (baseId === 'food') caps.push(EntityCapability.Food);
+        if (baseId === 'lightsource' || baseId === 'lantern') caps.push(EntityCapability.Light);
+        if (baseId === 'misc' && (lower.includes('scroll') || lower.includes('book'))) caps.push(EntityCapability.Readable);
 
-        // Weapon Detection
-        const isWeapon = /sword|blade|dagger|axe|mace|spear|staff|club|flail|hammer|polearm|scimitar|morning star|halberd|rapier|pike|lance|cleaver/i.test(lower);
-        if (isWeapon) {
-            caps.push(EntityCapability.Weapon);
-            if (/sword|dagger|scimitar|rapier|blade/i.test(lower)) caps.push(EntityCapability.Blade);
-            else if (/mace|club|flail|hammer|blunt/i.test(lower)) caps.push(EntityCapability.Blunt);
-            else if (/axe|halberd|cleaver/i.test(lower)) caps.push(EntityCapability.Axe);
-            else if (/spear|polearm|pike|lance/i.test(lower)) caps.push(EntityCapability.Spear);
-            else if (/staff/i.test(lower)) caps.push(EntityCapability.Staff);
-        }
-
-        if (lower.includes('shield') || lower.includes('buckler')) caps.push(EntityCapability.Shield);
-
-        // Containers
-        if (isItemContainer(lower)) {
-            caps.push(EntityCapability.Container);
-        }
-
-        if (/flask|bottle|cup|skin|flagon|goblet|vial|keg|barrel|waterskin|pitcher|jug|mug|stein/i.test(lower)) {
-            caps.push(EntityCapability.FluidContainer);
-            caps.push(EntityCapability.DrinkContainer);
-        }
-
-        if (/meat|bread|biscuit|lembas|mushroom|honey|wafer|cookie|egg|dumpling|bannock|cheese|pastry|flour|cake|pie|rations/i.test(lower)) {
-            caps.push(EntityCapability.Food);
-        }
-
-        if (/scroll|book|note|map|parchment|letter|journal|libram/i.test(lower)) {
-            caps.push(EntityCapability.Readable);
-        }
-
-        if (/torch|lantern|lamp|candle|light/i.test(lower)) {
-            caps.push(EntityCapability.Light);
-        }
-
-        // Wearable (if not a weapon and matches common gear)
-        const wearableKeywords = /boots|helmet|cloak|ring|belt|gloves|gauntlets|leggings|sleeves|tunic|surcoat|armor|armour|mail|cap|hat|bracers|greaves|mail|breastplate|cloak|surcoat|robe|tunic|trousers|breeches|shoes|sandals|scabbard|crown|circlet|coif|basinet|scarf|collar|hauberk|shirt|vest|jacket|dress|blouse|cape|mantle|vambraces|skirt|slippers|girdle|sash/i;
-        if (wearableKeywords.test(lower) && !caps.includes(EntityCapability.Weapon)) {
+        // Fallback or specific sub-types if not fully covered by categories
+        if (!caps.includes(EntityCapability.Weapon) && 
+            /boots|helmet|cloak|ring|belt|gloves|gauntlets|leggings|sleeves|tunic|bracers|hauberk/i.test(lower)) {
             caps.push(EntityCapability.Wearable);
         }
 
         return caps;
-    }, [extractNoun]);
+    }, []);
 
     const registerEntity = useCallback((id: string, name: string, location: EntityLocation, category?: string) => {
         const noun = extractNoun(name);

@@ -4,42 +4,49 @@
  */
 
 export const INLINE_HIERARCHY: Record<string, string[]> = {
-    'inline-corpses': ['inline-containers', 'inline-obj-room'],
-    'inline-containers': ['inline-obj-room'],
-    'inline-obj-room': [],
-    'inline-weapon': ['inline-object'],
-    'inline-fluidcontainer': ['inline-object'],
-    'inline-armour': ['inline-object'],
-    'inline-shield': ['inline-object'],
-    'inline-lantern': ['inline-object'],
-    'inline-lightsource': ['inline-object'],
-    'inline-food': ['inline-object'],
-    'inline-water': ['inline-object'],
-    'inline-default': ['inline-object'],
-    'inline-quiver': ['inline-containers', 'inline-obj-room'],
-    'inline-obj-worn': ['inline-object'],
-    'inline-obj-char': [],
-    'inline-obj-shop': ['inline-object'],
+    'object-corpse': ['object-container', 'object-room'],
+    'object-container': ['object-room'],
+    'object-room': [],
+    'object-weapon': ['object'],
+    'object-fluid': ['object'],
+    'object-armour': ['object'],
+    'object-shield': ['object'],
+    'object-food': ['object'],
+    'object-water': ['object'],
+    'object-treasure': ['object'],
+    'object-misc': ['object'],
+    'object-quiver': ['object-container', 'object-room'],
+    'object-worn': ['object'],
+    'object-inv': [],
+    'object-shop': ['object'],
     
     // NPC Hierarchy
-    'inlinenpc': ['inline-default'],
-    'inline-mounts': ['inlinenpc'],
-    'inline-shopkeeper': ['inlinenpc'],
-    'inline-shopkeeper-drop': ['inlinenpc'],
-    'inline-innkeeper': ['inlinenpc'],
-    'inline-guildmaster': ['inlinenpc']
+    'npc': ['object'],
+    'npc-mount': ['npc'],
+    'npc-shopkeeper': ['npc'],
+    'npc-shopkeeper-drop': ['npc'],
+    'npc-innkeeper': ['npc'],
+    'npc-guildmaster': ['npc']
 };
 
 export const getHierarchyChain = (setId: string, detectedCatId: string | null = null): string[] => {
     // Aliases for drawer list views
-    if (setId === 'inventorylist') setId = 'inline-obj-char';
-    if (setId === 'equipmentlist') setId = 'inline-obj-worn';
+    if (setId === 'inventorylist') setId = 'object-inv';
+    if (setId === 'equipmentlist') setId = 'object-worn';
 
-    const ACTIONABLE_OBJ_CATS = ['inline-containers', 'inline-quiver', 'inline-corpses', 'inline-fluidcontainer', 'inline-water', 'inline-food', 'inline-lightsource', 'inline-lantern', 'inline-treasure'];
+    const ACTIONABLE_OBJ_CATS = [
+        'object-container', 
+        'object-quiver', 
+        'object-corpse', 
+        'object-fluid', 
+        'object-water', 
+        'object-food', 
+        'object-treasure'
+    ];
     
     // --- Rule: Room objects should only be 'get' + actionable categories + base objects (Examine) --- 
-    if (setId === 'inline-obj-room') {
-        const chain = ['inline-obj-room', 'inline-object'];
+    if (setId === 'object-room' || setId === 'roomitems') {
+        const chain = ['object-room', 'object'];
         if (detectedCatId && ACTIONABLE_OBJ_CATS.includes(detectedCatId)) {
             chain.push(detectedCatId);
             const parents = INLINE_HIERARCHY[detectedCatId] || [];
@@ -49,28 +56,28 @@ export const getHierarchyChain = (setId: string, detectedCatId: string | null = 
     }
 
     // --- Rule: Inventory objects should be 'wear/drop' + sub-categories ---
-    if (setId === 'inline-obj-char') {
-        const chain = ['inline-obj-char'];
+    if (setId === 'object-inv' || setId === 'inv') {
+        const chain = ['object-inv'];
         if (detectedCatId) {
             chain.push(detectedCatId);
             const parents = INLINE_HIERARCHY[detectedCatId] || [];
             chain.push(...parents);
         }
-        chain.push('inline-object');
+        chain.push('object');
         // Filter out room-specific sets to avoid "Get" in inventory
-        return Array.from(new Set(chain)).filter(id => id !== 'inline-obj-room');
+        return Array.from(new Set(chain)).filter(id => id !== 'object-room');
     }
 
     // --- Rule: Worn objects should allow containers/actionable cats ---
-    if (setId === 'inline-obj-worn') {
+    if (setId === 'object-worn' || setId === 'worn') {
         const chain = [setId];
         if (detectedCatId && ACTIONABLE_OBJ_CATS.includes(detectedCatId)) {
             chain.push(detectedCatId);
             const parents = INLINE_HIERARCHY[detectedCatId] || [];
             chain.push(...parents);
         }
-        chain.push('inline-object');
-        return Array.from(new Set(chain)).filter(id => id !== 'inline-obj-room');
+        chain.push('object');
+        return Array.from(new Set(chain)).filter(id => id !== 'object-room');
     }
 
     // Default catch-all hierarchy logic

@@ -1,343 +1,255 @@
 /**
  * @file useMessageHighlighter.ts
- * @description Hook for highlighting MUME game messages with interactive elements and keywords.
+ * @description Hook that processes game message lines to add interactive highlights and buttons.
  */
 
-import { useCallback, RefObject, useRef } from 'react';
-import { CustomButton, InlineCategoryConfig, MessageType } from '../types';
-import { buildHighlighterCandidates, applyColorTaggedObjects } from '../utils/highlighterUtils';
-import { getGlowColorForCategory, getCategoryForName, getCategoryType } from '../utils/categorizationUtils';
-import { getMemberColor } from '../utils/groupUtils';
+import { useMemo, useCallback } from 'react';
+import { 
+    MessageType, 
+    Occupant, 
+    GroupMember, 
+    InlineCategoryConfig,
+} from '../types';
 import { isObjectSelected } from '../utils/selectionUtils';
-import { ARRIVE_REGEX, LEAVE_REGEX } from './useMessageLog';
+import { renderInlineSpan, esc } from '../utils/inlineSpanRenderer';
+import { isInCorpseContext } from '../utils/highlighterUtils';
+import { 
+    getCategoryForName, 
+    getCategoryType
+} from '../utils/categorizationUtils';
+import { getMemberColor } from '../utils/groupUtils';
+import { safeHighlight, applyColorTaggedObjects } from '../utils/highlighterUtils';
 import { useSpecialLineWrappers } from './useSpecialLineWrappers';
 
-// --- Logic Section: Message Processing & Highlighting ---
-
+/**
+ * Hook that processes game message lines to add interactive highlights and buttons.
+ */
 export const useMessageHighlighter = (
     target: string | null,
-    buttonsRef: RefObject<CustomButton[]>,
-    roomPlayers: import('../types').GmcpOccupant[],
-    roomNpcs: import('../types').GmcpOccupant[],
-    characterName: string | null,
-    roomItems: import('../types').GmcpOccupant[],
+    buttonsRef: any, // keywordHighlights
+    currentOccupants: Occupant[],
+    roomNpcs: Occupant[], // often merged with occupants or used separately
+    characterName: string,
+    roomItems: any[],
     inlineCategories: InlineCategoryConfig[] = [],
     isHighlighterEnabled: boolean = true,
     highlightVersion: number = 0,
-    discoveredItems: string[] = [],
-    keywordOverrides: Record<string, string> = {},
+    discoveredItems: any[] = [],
+    keywordOverrides: any = {},
     selectedObjectIds: Set<string> = new Set(),
     inCombat: boolean = false,
     spectateCharacterName: string | null = null,
-    groupMembers: import('../types').GroupMember[] = []
+    activeGroupMembers: GroupMember[] = []
 ) => {
-    const cacheRef = useRef<Map<string, { html: string, htmlRaw: string, deps: string }>>(new Map());
-    const regexCacheRef = useRef<Map<string, RegExp>>(new Map());
-    const { wrapSpecialLine } = useSpecialLineWrappers(selectedObjectIds);
+    // Cache for compiled RegExps to avoid re-compiling on every line
+    const regexCache = useMemo(() => new Map<string, RegExp>(), [highlightVersion]);
+    
+    // Get special line wrappers (menus, lists, movement, acquisition, etc)
+    const { wrapSpecialLine } = useSpecialLineWrappers(
+        selectedObjectIds, 
+        activeGroupMembers, 
+        inlineCategories, 
+        regexCache
+    );
 
-    // Clear cache when highlight version or toggle changes
-    const lastVersionRef = useRef(highlightVersion);
-    const lastEnabledRef = useRef(isHighlighterEnabled);
-    if (highlightVersion !== lastVersionRef.current || isHighlighterEnabled !== lastEnabledRef.current) {
-        cacheRef.current.clear();
-        regexCacheRef.current.clear();
-        lastVersionRef.current = highlightVersion;
-        lastEnabledRef.current = isHighlighterEnabled;
-    }
-
-    /**
-     * Safely applies a highlight pattern to an HTML string, avoiding tags.
-     */
-    const safeHighlight = (currentHtml: string, patternStr: string, isRegex: boolean, replacer: (match: string, matchObj: RegExpExecArray | null) => string) => {
-        if (!patternStr) return currentHtml;
-
-        const escaped = isRegex ? patternStr : patternStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const parts = currentHtml.split(/(<[^>]+>)/g);
-        let changed = false;
-        let highlightDepth = 0;
-
-        const regexKey = `${escaped}:${isRegex}`;
-        let regex = regexCacheRef.current.get(regexKey);
-        if (!regex) {
-            // For plain strings, enforce word boundaries to avoid partial matching (e.g. "Sting" in "Resting").
-            // Use lookahead/lookbehind instead of \b so Unicode names like Éorenel are matched correctly
-            // (\b treats accented letters as non-word chars and fails on them).
-            const pattern = isRegex ? escaped : `(?<![A-Za-z\\u00C0-\\u024F])${escaped}(?![A-Za-z\\u00C0-\\u024F])`;
-            regex = new RegExp(pattern, 'gi');
-            regexCacheRef.current.set(regexKey, regex);
-        }
-
-        for (let i = 0; i < parts.length; i++) {
-            const part = parts[i];
-            if (part.startsWith('<')) {
-                if (part === '</span>') {
-                    if (highlightDepth > 0) highlightDepth--;
-                } else if (!part.startsWith('</') && /class="[^"]*(?:inline-btn|keyword-highlight|comm-content)/.test(part)) {
-                    highlightDepth++;
-                }
-            } else if (highlightDepth === 0) {
-                const nodeText = parts[i];
-                const replaced = nodeText.replace(regex, (m, ...args) => {
-                    const groups = args.slice(0, -2);
-                    return replacer(m, groups as any);
-                });
-
-                if (replaced !== nodeText) {
-                    parts[i] = replaced;
-                    changed = true;
-                }
-            }
-        }
-
-        return changed ? parts.join('') : currentHtml;
-    };
+    // --- Logic Section: Highlighting Layers ---
 
     /**
-     * Generates a hash of dependencies to determine when cache should be invalidated.
+     * Applies static keyword highlights defined in buttonsRef (keywordHighlights).
      */
-    const generateDepsHash = useCallback(() => {
-        const rp = roomPlayers.map(p => typeof p === 'string' ? p : `${p.id || ''}${p.name}`).join('|');
-        const rn = roomNpcs.map(p => typeof p === 'string' ? p : `${p.id || ''}${p.name}`).join('|');
-        const ri = roomItems.map(p => typeof p === 'string' ? p : `${p.id || ''}${p.name}`).join('|');
-        const di = discoveredItems.join('|');
-        const ic = inlineCategories.map(c => `${c.id}:${c.keywords.join(',')}`).join('|');
-        const ko = Object.entries(keywordOverrides).map(([k, v]) => `${k}:${v}`).join('|');
-        const g = groupMembers.map(m => `${m.id || ''}${m.name}`).join('|');
-        const sel = Array.from(selectedObjectIds).join(',');
-        return `${target || ''}:${rp}:${rn}:${ri}:${di}:${ic}:${ko}:${isHighlighterEnabled}:${highlightVersion}:${sel}:${inCombat}:${spectateCharacterName || ''}:${g}`;
-    }, [target, roomPlayers, roomNpcs, roomItems, discoveredItems, inlineCategories, isHighlighterEnabled, highlightVersion, selectedObjectIds, keywordOverrides, inCombat, spectateCharacterName, groupMembers]);
-
-    /**
-     * Main entry point for processing a message's HTML and applying highlights.
-     */
-    const processMessageHtml = useCallback((originalHtml: string, mid: string, isRoomName: boolean, type?: MessageType, isCombatMessage: boolean = false, combatSide?: 'player' | 'opponent' | 'groupmate') => {
-        if (!isHighlighterEnabled) {
-            return originalHtml;
-        }
-
-        const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-        // --- 0. Rule: No highlighting for prompts in spectate mode ---
-        if (type === 'prompt' && spectateCharacterName) {
-            return originalHtml;
-        }
-
-        // --- 0.1. Rule: No highlighting for Room Names and Room Descriptions ---
-        if (isRoomName || type === 'room-description') {
-            return originalHtml;
-        }
-
-        // --- 1. Specialized Whole-Line Wrappers ---
-        const wrappedLine = wrapSpecialLine(originalHtml, mid, type);
-        if (wrappedLine) return wrappedLine;
-
-        // --- 1.1. Rule: Specialized Comm Sender Highlighting ---
-        // If the type is 'comm-sender', we treat the entire input as a player name
-        // and wrap it in the same interactive button markup used for PCs.
-        if (type === 'comm-sender') {
-            const name = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
-            const buttonId = `auto-${name}`;
-            const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'inlineplayer');
+    const applyStaticHighlights = useCallback((html: string, mid: string) => {
+        let result = html;
+        const keywords = buttonsRef.current || [];
+        
+        keywords.forEach((kh: any) => {
+            if (!kh.pattern || !kh.enabled) return;
             
-            return `<span class="inline-btn auto-occupant pc-highlighter${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(name)}" data-action="menu" data-menu-display="list" data-category="player">${originalHtml}</span>`;
-        }
+            result = safeHighlight(result, kh.pattern, !!kh.isRegex, (match) => {
+                const style = `color: ${kh.color}; font-weight: ${kh.bold ? 'bold' : 'normal'};`;
+                return `<span class="keyword-highlight" style="${style}">${match}</span>`;
+            }, regexCache);
+        });
+        return result;
+    }, [buttonsRef, regexCache]);
 
-        // --- 1.4. Rule: Account Character List Buttons ---
-        // Specifically for the 'list' output in the account menu or character selection.
-        if (type === 'account-character-list') {
-            const rawText = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
-            // If it's the indexed format "1) Name", we want the name (second word). 
-            // If it's tabular "Name race level", we want the name (first word).
-            const parts = rawText.split(/\s+/);
-            const characterName = parts[0].endsWith(')') ? parts[1] : parts[0];
+    /**
+     * Applies dynamic highlights based on room occupants (NPCs/Players) and categorized objects.
+     */
+    const applyDynamicHighlights = useCallback((html: string, mid: string) => {
+        let result = html;
+
+        // 1. NPC/Player Highlights (Room Occupants)
+        const allOccupants = [...currentOccupants];
+        // Merge roomNpcs if not already present
+        roomNpcs.forEach(npc => {
+            if (!allOccupants.find(o => o.name === npc.name)) {
+                allOccupants.push(npc);
+            }
+        });
+
+        allOccupants.forEach(occ => {
+            if (!occ.name) return;
             
-            return safeHighlight(originalHtml, characterName, false, (m) => {
-                return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="play ${esc(characterName)}" data-action="command" data-category="account" style="border-bottom: 1px solid var(--glow-color)">${m}</span>`;
-            });
-        }
+            result = safeHighlight(result, occ.name, false, (match) => {
+                const textOnly = html.replace(/<[^>]*>/g, '');
+                const isCorpse = isInCorpseContext(occ.name, textOnly);
+                
+                if (isCorpse) {
+                    return renderInlineSpan({
+                        id: 'auto-corpse',
+                        mid,
+                        cmd: 'object',
+                        kind: 'object',
+                        location: 'room',
+                        context: occ.name,
+                        category: 'object-corpse',
+                        selected: isObjectSelected(selectedObjectIds, 'auto-corpse', 'object'),
+                        extraClasses: ['auto-item'],
+                        innerHtml: match
+                    });
+                }
 
-        // --- 1.5. Rule: No general highlighted words in room names, EXCEPT the active target ---
-        if (isRoomName) {
-            if (target) {
-                return safeHighlight(originalHtml, target, false, (m) => {
-                    return `<span class="inline-btn auto-target active-target" draggable="true" data-mid="${mid}" data-cmd="target" data-context="${esc(target)}" data-action="menu" data-menu-display="list" data-category="target">${m}</span>`;
-                });
-            }
-            return originalHtml;
-        }
-
-        const depsHash = `${generateDepsHash()}:${type || ''}`;
-        const cached = cacheRef.current.get(mid);
-        if (cached && cached.htmlRaw === originalHtml && cached.deps === depsHash) {
-            return cached.html;
-        }
-
-        let prefixHtml = '';
-        let targetHtml = originalHtml;
-
-        // --- 2. Rule: In equipment lists, don't highlight the slot label ---
-        if (type === 'equipment-list') {
-            const eqSplitRegex = /^([^&]*&lt;[^&]+&gt;)(.*)/;
-            const match = originalHtml.match(eqSplitRegex);
-            if (match) {
-                prefixHtml = match[1];
-                targetHtml = match[2];
-            }
-        }
-
-        let newHtml = targetHtml;
-
-        // --- 0. Color-tagged object detection (runs first so highlightDepth protects these spans) ---
-        newHtml = applyColorTaggedObjects(newHtml, mid, inlineCategories, target, type, keywordOverrides, selectedObjectIds, roomPlayers, roomNpcs, groupMembers);
-
-        const textOnly = targetHtml
-            .replace(/<[^>]+>/g, '')
-            .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-            .replace(/&#x([0-9A-Fa-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
-            .replace(/&#([0-9]+);/g, (_, d) => String.fromCodePoint(parseInt(d, 10)))
-            .normalize('NFC');
-
-        // --- 0.5. Movement Highlighting (Arrive/Leave/Enter) ---
-        // Match Arrive/Leave patterns and wrap verb/direction in bright-white spans.
-        const arriveMatch = textOnly.match(ARRIVE_REGEX);
-        const leaveMatch = textOnly.match(LEAVE_REGEX);
-
-        if (arriveMatch || leaveMatch) {
-            const movementMatch = arriveMatch || leaveMatch!;
-            const subject = movementMatch[1];
-            const verb = movementMatch[2];
-            const direction = movementMatch[4];
-
-            if (subject) {
-                const subjectLower = subject.toLowerCase();
-                const isNpcSubject = /^(a|an|the|some)\s/i.test(subject);
-                const category = isNpcSubject ? 'inlinenpc' : 'inlineplayer';
-                const buttonId = isNpcSubject ? `auto-npc-${subject}` : `auto-${subject}`;
+                const isNpc = occ.type === 'npc';
+                const category = isNpc ? 'npc' : 'player';
+                const buttonId = isNpc ? `auto-npc-${occ.name}` : `auto-${occ.name}`;
                 const isSelected = isObjectSelected(selectedObjectIds, buttonId, category);
                 
-                const groupMemberIndex = groupMembers?.findIndex(gm => 
-                    gm.name?.toLowerCase() === subjectLower ||
-                    (isNpcSubject && subjectLower.includes(gm.name?.toLowerCase() || '---'))
+                // Group highlighting
+                const groupMemberIndex = activeGroupMembers.findIndex(gm => 
+                    gm.name?.toLowerCase() === occ.name?.toLowerCase()
                 );
-                const isGroupmate = groupMemberIndex !== undefined && groupMemberIndex !== -1;
-                const styleAttr = isGroupmate ? ` style="--glow-color: ${getMemberColor(groupMemberIndex).core}; color: var(--glow-color)"` : '';
-                const catType = isNpcSubject ? 'npc' : 'player';
+                const isGroupmate = groupMemberIndex !== -1;
+                const catType = isNpc ? 'npc' : 'player';
 
-                newHtml = safeHighlight(newHtml, subject, false, (m) => {
-                    return `<span class="inline-btn auto-occupant movement-subject ${isNpcSubject ? 'npc-highlighter' : 'pc-highlighter'}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${category}" data-context="${esc(subject)}" data-action="menu" data-menu-display="list" data-category="${catType}"${styleAttr}>${m}</span>`;
+                return renderInlineSpan({
+                    id: buttonId,
+                    mid,
+                    cmd: category,
+                    kind: catType,
+                    location: 'room',
+                    context: occ.name,
+                    category: category,
+                    selected: isSelected,
+                    draggable: true,
+                    glowColor: isGroupmate ? getMemberColor(groupMemberIndex).core : undefined,
+                    textColor: isGroupmate ? 'var(--glow-color)' : undefined,
+                    extraClasses: ['auto-occupant', isNpc ? 'npc-highlighter' : 'pc-highlighter'],
+                    innerHtml: match
                 });
-            }
+            }, regexCache);
+        });
 
-        }
-
-        // --- 0.6. Item Acquisition Highlighting ---
-        // Match "You now have a(n) <item>." and wrap the item in an interactive span.
-        // We do this BEFORE built-in candidates to ensure specific acquisition context is captured.
-        const acquisitionMatch = textOnly.match(/You now have (?:a|an)\s+(.*?)(?:\.|$)/i);
-        if (acquisitionMatch) {
-            const itemName = acquisitionMatch[1]?.trim();
-            if (itemName) {
-                const itemCategory = getCategoryForName(itemName, inlineCategories) || 'inline-default';
-                const buttonId = `auto-item-${itemName.toLowerCase().replace(/\s+/g, '-')}`;
-                const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'inline-obj-char');
-                const catType = getCategoryType(itemCategory, inlineCategories) || 'object';
-                
-                newHtml = safeHighlight(newHtml, itemName, false, (m) => {
-                    return `<span class="inline-btn auto-item${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="inline-obj-char" data-context="${esc(itemName)}" data-action="menu" data-menu-display="list" data-category="${catType}">${m}</span>`;
-                });
-            }
-        }
-
-
-        // --- 3.6. Specialized List Highlighting (WHO/WHERE) ---
-        if (type === 'who-list' || type === 'where-list') {
-            let cleanText = textOnly.trim();
-            let lastLength = 0;
-            while (cleanText.length !== lastLength) {
-                lastLength = cleanText.length;
-                cleanText = cleanText.replace(/^\[.*?\]\s*/, '');
-                cleanText = cleanText.replace(/^<.*?>\s*/, '');
-                cleanText = cleanText.replace(/^\(.*?\)\s*/, '');
-                cleanText = cleanText.replace(/^\*.*?\*\s*/, '');
-                cleanText = cleanText.replace(/^\*+\s*/, '');
-            }
-
-            const nameCandidate = cleanText.split(/\s+/)[0].replace(/[.,:;!]+$/, '');
-            const commonHeaders = ['Players', 'Player', 'Allies', 'Minions', 'Who', 'Where', 'Visible'];
-            if (nameCandidate && nameCandidate.length > 2 && /^[A-Z\u00C0-\u00DE]/.test(nameCandidate) && !commonHeaders.includes(nameCandidate)) {
-                // Search newHtml using the entity-encoded form (how ansi-to-html wrote it)
-                const htmlNameCandidate = nameCandidate.replace(/[^\x00-\x7F]/g, c => `&#x${c.codePointAt(0)!.toString(16).toUpperCase()};`);
-                let highlighted = false;
-                newHtml = safeHighlight(newHtml, htmlNameCandidate, false, (m) => {
-                    if (highlighted) return m;
-                    highlighted = true;
-                    const buttonId = `auto-${nameCandidate}`;
-                    const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'inlineplayer');
-                    return `<span class="inline-btn auto-occupant pc-highlighter${isSelected ? ' selected' : ''}" draggable="true" data-id="auto-${esc(nameCandidate)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(nameCandidate)}" data-action="menu" data-menu-display="list" data-category="player">${m}</span>`;
-                });
-            }
-        }
-
-        // --- 3.6. Combat Damage Highlighting ---
-        // (Section removed: combat message highlighting for 'hit, body, etc' is now disabled)
-
-        if (!isRoomName) {
-            // Build and sort candidates using utility
-            const candidates = buildHighlighterCandidates(
-                mid || 'unknown', target, buttonsRef, roomPlayers, roomNpcs, characterName, 
-                roomItems, discoveredItems, inlineCategories, type, textOnly, keywordOverrides,
-                selectedObjectIds, isCombatMessage, inCombat, combatSide, spectateCharacterName,
-                groupMembers
-            );
-
-            candidates
-                .sort((a, b) => {
-                    if (b.priority !== a.priority) return b.priority - a.priority;
-                    return b.length - a.length;
-                })
-                .forEach(c => {
-                    newHtml = safeHighlight(newHtml, c.pattern, !!c.isRegex, c.replacer);
-                });
-
-            // --- 4. Special Pass: Full-Line Spat Buttons ---
-            // These match against the textOnly content but wrap the entire HTML line.
-            // This is necessary for sentence-level triggers where parts of the sentence 
-            // (like the name) might already be wrapped in tags.
-            buttonsRef.current?.filter(b => b.trigger?.spit && b.trigger?.enabled && b.trigger.pattern).forEach(b => {
-                const pattern = b.trigger!.pattern!;
-                const isRegex = b.trigger!.isRegex;
-                const regex = new RegExp(isRegex ? pattern : pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-                
-                const match = regex.exec(textOnly);
-                if (match) {
-                    let finalLabel = b.label;
-                    let finalCommand = b.command;
-                    for (let i = 1; i < match.length; i++) {
-                        const val = match[i] || '';
-                        finalLabel = finalLabel.replace(new RegExp(`\\$${i}`, 'g'), val);
-                        finalCommand = finalCommand.replace(new RegExp(`\\$${i}`, 'g'), val);
-                    }
+        // 2. Object Category Keywords
+        inlineCategories.forEach(cat => {
+            if (cat.type !== 'object' || !cat.keywords) return;
+            
+            cat.keywords.forEach(keyword => {
+                result = safeHighlight(result, keyword, false, (match) => {
+                    const buttonId = `auto-obj-${cat.name}-${keyword.toLowerCase().replace(/\s+/g, '-')}`;
+                    const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'object');
                     
-                    const isSelected = isObjectSelected(selectedObjectIds, b.id, finalCommand);
-                    const glowColor = b.style.backgroundColor || 'var(--accent)';
-                    
-                    // Wrap the entire line HTML in the spat trigger
-                    newHtml = `<span class="inline-btn spat-row-trigger${isSelected ? ' selected' : ''}" data-id="${b.id}" data-mid="${mid}" data-cmd="${esc(finalCommand)}" data-context="${esc(textOnly)}" data-icon="${esc(b.icon || '')}" data-label="${esc(finalLabel)}" data-color="${b.style.backgroundColor}" data-action="${b.actionType || 'command'}" data-menu-display="${b.menuDisplay || 'list'}" data-spit="true" data-duration="${b.trigger?.duration || 20}" style="--glow-color: ${glowColor}">${newHtml}</span>`;
-                }
+                    return renderInlineSpan({
+                        id: buttonId,
+                        mid,
+                        cmd: 'object',
+                        kind: 'object',
+                        location: 'room',
+                        context: keyword,
+                        category: cat.id,
+                        selected: isSelected,
+                        draggable: true,
+                        extraClasses: ['auto-object'],
+                        innerHtml: match
+                    });
+                }, regexCache);
             });
-        }
+        });
 
-        const finalHtml = prefixHtml + newHtml;
-        cacheRef.current.set(mid, { html: finalHtml, htmlRaw: originalHtml, deps: depsHash });
+        return result;
+    }, [currentOccupants, roomNpcs, activeGroupMembers, inlineCategories, selectedObjectIds, regexCache]);
+
+    /**
+     * Applies highlights for room items and discovered items.
+     */
+    const applyItemHighlights = useCallback((html: string, mid: string) => {
+        let result = html;
+        const allItems = [...roomItems, ...discoveredItems];
+        const processedNames = new Set<string>();
+
+        allItems.forEach(item => {
+            const itemName = typeof item === 'string' ? item : item.name;
+            if (!itemName || processedNames.has(itemName)) return;
+            processedNames.add(itemName);
+
+            result = safeHighlight(result, itemName, false, (match) => {
+                const itemCategory = getCategoryForName(itemName, inlineCategories) || 'object';
+                const buttonId = `auto-item-${itemName.toLowerCase().replace(/\s+/g, '-')}`;
+                const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'object-room');
+                const catType = getCategoryType(itemCategory, inlineCategories) || 'object';
+
+                return renderInlineSpan({
+                    id: buttonId,
+                    mid,
+                    cmd: 'object',
+                    kind: catType,
+                    location: 'room',
+                    context: itemName,
+                    category: itemCategory,
+                    selected: isSelected,
+                    draggable: true,
+                    extraClasses: ['auto-item'],
+                    innerHtml: match
+                });
+            }, regexCache);
+        });
+
+        return result;
+    }, [roomItems, discoveredItems, inlineCategories, selectedObjectIds, regexCache]);
+
+    // --- Logic Section: Main Processor ---
+
+    /**
+     * Primary entry point for line processing.
+     */
+    const processMessageHtml = useCallback((html: string, mid: string, type?: MessageType): string => {
+        if (!isHighlighterEnabled) return html;
+
+        // 1. Check for whole-line special wrappers (Menus, Stats, Lists, Movement, etc.)
+        const wrappedLine = wrapSpecialLine(html, mid, type);
+        if (wrappedLine) return wrappedLine;
+
+        // 2. Otherwise apply inline highlights
+        let processed = html;
         
-        // Cache management
-        if (cacheRef.current.size > 1000) {
-            const firstKey = cacheRef.current.keys().next().value;
-            if (firstKey !== undefined) cacheRef.current.delete(firstKey);
-        }
+        // Don't highlight structural lines or simple prompts
+        if (type === 'prompt' || type === 'room-exits') return html;
 
-        return finalHtml;
-    }, [target, buttonsRef, roomPlayers, roomNpcs, characterName, roomItems, inlineCategories, generateDepsHash, highlightVersion, discoveredItems, isHighlighterEnabled, keywordOverrides, selectedObjectIds, inCombat, spectateCharacterName, groupMembers]);
+        // Apply highlights in layers
+        const textOnly = html.replace(/<[^>]*>/g, '');
+        
+        processed = applyColorTaggedObjects(
+            processed, 
+            mid, 
+            inlineCategories, 
+            target, 
+            type, 
+            keywordOverrides, 
+            selectedObjectIds, 
+            currentOccupants, 
+            roomNpcs, 
+            activeGroupMembers, 
+            textOnly
+        );
+        processed = applyStaticHighlights(processed, mid);
+        processed = applyDynamicHighlights(processed, mid);
+        processed = applyItemHighlights(processed, mid);
+
+        return processed;
+    }, [
+        isHighlighterEnabled, wrapSpecialLine, applyStaticHighlights, applyDynamicHighlights, 
+        applyItemHighlights, inlineCategories, target, keywordOverrides, 
+        selectedObjectIds, currentOccupants, roomNpcs, activeGroupMembers
+    ]);
 
     return { processMessageHtml };
 };

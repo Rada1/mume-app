@@ -210,6 +210,8 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                 data-action="menu"
                                 data-category={cat || undefined}
                                 data-cmd={cmdId}
+                                data-kind="object"
+                                data-location="worn"
                                 style={{
                                     display: 'inline',
                                     lineHeight: 'inherit',
@@ -265,6 +267,8 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                             data-action="menu"
                             data-category={cat || undefined}
                             data-cmd={cmdId}
+                            data-kind="object"
+                            data-location="inv"
                             style={{
                                 display: 'inline',
                                 lineHeight: 'inherit',

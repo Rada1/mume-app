@@ -154,6 +154,8 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         e.stopPropagation();
 
         const cmd = targetEl.getAttribute('data-cmd');
+        const kind = targetEl.getAttribute('data-kind');
+        const location = targetEl.getAttribute('data-location');
         const context = targetEl.getAttribute('data-context');
         const action = targetEl.getAttribute('data-action');
         const fromDrawerStr = targetEl.getAttribute('data-from-drawer');
@@ -240,6 +242,8 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 x,
                 y,
                 setId: cmd || 'selection',
+                kind: kind || undefined,
+                location: location || undefined,
                 category: category || undefined,
                 context: context || undefined,
                 entityId: entityId || undefined,

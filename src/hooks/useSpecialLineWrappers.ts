@@ -1,23 +1,18 @@
-/**
- * @file useSpecialLineWrappers.ts
- * @description Hook for applying whole-line interactive wrappers to specialized MUME message types.
- */
-
 import { useCallback } from 'react';
-import { MessageType } from '../types';
+import { MessageType, GroupMember, InlineCategoryConfig } from '../types';
 import { isObjectSelected } from '../utils/selectionUtils';
+import { renderInlineSpan, esc } from '../utils/inlineSpanRenderer';
+import { safeHighlight, ARRIVE_REGEX, LEAVE_REGEX } from '../utils/highlighterUtils';
+import { getMemberColor } from '../utils/groupUtils';
+import { getCategoryForName, getCategoryType } from '../utils/categorizationUtils';
 
-export const useSpecialLineWrappers = (selectedObjectIds: Set<string> = new Set()) => {
+export const useSpecialLineWrappers = (
+    selectedObjectIds: Set<string> = new Set(),
+    groupMembers: GroupMember[] = [],
+    inlineCategories: InlineCategoryConfig[] = [],
+    regexCache?: Map<string, RegExp>
+) => {
     
-    /**
-     * Escapes values for safe use inside HTML attributes.
-     */
-    const esc = useCallback((v: string) => 
-        v.replace(/&/g, '&amp;')
-         .replace(/"/g, '&quot;')
-         .replace(/</g, '&lt;')
-         .replace(/>/g, '&gt;'), []);
-
     /**
      * Checks if a line matches a special message type and returns a wrapped version if so.
      * Returns null if no special wrapping is applicable.
@@ -30,9 +25,20 @@ export const useSpecialLineWrappers = (selectedObjectIds: Set<string> = new Set(
             const numMatch = rawText.match(/\((\d+)\)/);
             const num = numMatch ? numMatch[1] : '';
             const isEdit = type === 'account-selection-edit' || rawText.includes('Edit');
-            const editAttr = isEdit ? 'data-account-stage="stat-editing"' : '';
             
-            return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="${esc(num)}" data-action="command" ${editAttr} data-category="account" style="color: inherit; font-weight: 800; cursor: pointer; display: inline-block; width: 100%">${originalHtml}</span>`;
+            return renderInlineSpan({
+                mid,
+                cmd: 'button',
+                kind: 'button',
+                location: 'account',
+                context: num,
+                action: 'command',
+                category: 'account',
+                style: `color: inherit; font-weight: 800; cursor: pointer; display: inline-block; width: 100%`,
+                dataAttrs: isEdit ? { 'account-stage': 'stat-editing' } : undefined,
+                extraClasses: ['auto-account-cmd'],
+                innerHtml: originalHtml
+            });
         }
 
         // --- 2. Account Stat Edit Buttons (+/-) ---
@@ -47,9 +53,31 @@ export const useSpecialLineWrappers = (selectedObjectIds: Set<string> = new Set(
                     <div class="stat-block">
                         <div class="stat-label">${stat}:</div>
                         <div class="stat-controls">
-                            <span class="inline-btn stat-btn" data-mid="${mid}" data-cmd="${esc(plusCmd)}" data-action="command" data-silent="true" data-category="account">+</span>
+                            ${renderInlineSpan({
+                                mid,
+                                cmd: 'button',
+                                kind: 'button',
+                                location: 'account',
+                                action: 'command',
+                                context: plusCmd,
+                                category: 'account',
+                                dataAttrs: { silent: 'true' },
+                                extraClasses: ['stat-btn'],
+                                innerHtml: '+'
+                            })}
                             <span class="stat-value">${valStr}</span>
-                            <span class="inline-btn stat-btn" data-mid="${mid}" data-cmd="${esc(minusCmd)}" data-action="command" data-silent="true" data-category="account">-</span>
+                            ${renderInlineSpan({
+                                mid,
+                                cmd: 'button',
+                                kind: 'button',
+                                location: 'account',
+                                action: 'command',
+                                context: minusCmd,
+                                category: 'account',
+                                dataAttrs: { silent: 'true' },
+                                extraClasses: ['stat-btn'],
+                                innerHtml: '-'
+                            })}
                         </div>
                     </div>
                 `.trim();
@@ -73,13 +101,179 @@ export const useSpecialLineWrappers = (selectedObjectIds: Set<string> = new Set(
                     const buttonId = `quest-${context.toLowerCase().replace(/\s+/g, '-')}`;
                     const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'quest');
                     
-                    return `<span class="inline-btn auto-quest${isSelected ? ' selected' : ''}" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="quest %n" data-context="${esc(context)}" data-action="command" data-from-drawer="true" data-category="quest">${originalHtml}</span>`;
+                    return renderInlineSpan({
+                        id: buttonId,
+                        mid,
+                        cmd: 'quest',
+                        kind: 'object',
+                        location: 'quest',
+                        context: context,
+                        action: 'command',
+                        category: 'quest',
+                        selected: isSelected,
+                        extraClasses: ['auto-quest'],
+                        dataAttrs: { 'from-drawer': 'true' },
+                        innerHtml: originalHtml
+                    });
                 }
             }
         }
 
+        // --- 4. Comm Sender Highlighting ---
+        if (type === 'comm-sender') {
+            const name = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
+            const buttonId = `auto-${name}`;
+            const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'player');
+            
+            return renderInlineSpan({
+                id: buttonId,
+                mid,
+                cmd: 'player',
+                kind: 'player',
+                location: 'room',
+                context: name,
+                category: 'player',
+                selected: isSelected,
+                draggable: true,
+                extraClasses: ['auto-occupant', 'pc-highlighter'],
+                innerHtml: originalHtml
+            });
+        }
+
+        // --- 5. Account Character List Buttons ---
+        if (type === 'account-character-list') {
+            const rawText = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
+            const parts = rawText.split(/\s+/);
+            const characterName = parts[0].endsWith(')') ? parts[1] : parts[0];
+            
+            return safeHighlight(originalHtml, characterName, false, (m) => {
+                return renderInlineSpan({
+                    mid,
+                    cmd: 'button',
+                    kind: 'button',
+                    location: 'account',
+                    context: `play ${characterName}`,
+                    action: 'command',
+                    category: 'account',
+                    extraClasses: ['auto-account-cmd'],
+                    style: 'border-bottom: 1px solid var(--glow-color)',
+                    innerHtml: m
+                });
+            }, regexCache);
+        }
+
+        // --- 6. WHO/WHERE List Highlighting ---
+        if (type === 'who-list' || type === 'where-list') {
+            const textOnly = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
+            let cleanText = textOnly.trim();
+            let lastLength = 0;
+            while (cleanText.length !== lastLength) {
+                lastLength = cleanText.length;
+                cleanText = cleanText.replace(/^\[.*?\]\s*/, '');
+                cleanText = cleanText.replace(/^<.*?>\s*/, '');
+                cleanText = cleanText.replace(/^\(.*?\)\s*/, '');
+                cleanText = cleanText.replace(/^\*.*?\*\s*/, '');
+                cleanText = cleanText.replace(/^\*+\s*/, '');
+            }
+
+            const nameCandidate = cleanText.split(/\s+/)[0].replace(/[.,:;!]+$/, '');
+            const commonHeaders = ['Players', 'Player', 'Allies', 'Minions', 'Who', 'Where', 'Visible'];
+            if (nameCandidate && nameCandidate.length > 2 && /^[A-Z\u00C0-\u00DE]/.test(nameCandidate) && !commonHeaders.includes(nameCandidate)) {
+                const htmlNameCandidate = nameCandidate.replace(/[^\x00-\x7F]/g, c => `&#x${c.codePointAt(0)!.toString(16).toUpperCase()};`);
+                let highlighted = false;
+                return safeHighlight(originalHtml, htmlNameCandidate, false, (m) => {
+                    if (highlighted) return m;
+                    highlighted = true;
+                    const buttonId = `auto-${nameCandidate}`;
+                    const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'player');
+                    return renderInlineSpan({
+                        id: buttonId,
+                        mid,
+                        cmd: 'player',
+                        kind: 'player',
+                        location: 'room',
+                        context: nameCandidate,
+                        category: 'player',
+                        selected: isSelected,
+                        draggable: true,
+                        extraClasses: ['auto-occupant', 'pc-highlighter'],
+                        innerHtml: m
+                    });
+                }, regexCache);
+            }
+        }
+
+        // --- 7. Movement Highlighting (Arrive/Leave) ---
+        const textOnly = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
+        const arriveMatch = textOnly.match(ARRIVE_REGEX);
+        const leaveMatch = textOnly.match(LEAVE_REGEX);
+
+        if (arriveMatch || leaveMatch) {
+            const movementMatch = arriveMatch || leaveMatch!;
+            const subject = movementMatch[1];
+            if (subject) {
+                const subjectLower = subject.toLowerCase();
+                const isNpcSubject = /^(a|an|the|some)\s/i.test(subject);
+                const kind = isNpcSubject ? 'npc' : 'player';
+                const buttonId = isNpcSubject ? `auto-npc-${subject}` : `auto-${subject}`;
+                const isSelected = isObjectSelected(selectedObjectIds, buttonId, kind);
+                
+                const groupMemberIndex = groupMembers?.findIndex(gm => 
+                    gm.name?.toLowerCase() === subjectLower ||
+                    (isNpcSubject && subjectLower.includes(gm.name?.toLowerCase() || '---'))
+                );
+                const isGroupmate = groupMemberIndex !== undefined && groupMemberIndex !== -1;
+
+                return safeHighlight(originalHtml, subject, false, (m) => {
+                    return renderInlineSpan({
+                        id: buttonId,
+                        mid,
+                        cmd: kind,
+                        kind: kind,
+                        location: 'room',
+                        context: subject,
+                        category: kind,
+                        selected: isSelected,
+                        draggable: true,
+                        glowColor: isGroupmate ? getMemberColor(groupMemberIndex).core : undefined,
+                        textColor: isGroupmate ? 'var(--glow-color)' : undefined,
+                        extraClasses: ['auto-occupant', 'movement-subject', isNpcSubject ? 'npc-highlighter' : 'pc-highlighter'],
+                        innerHtml: m
+                    });
+                }, regexCache);
+            }
+        }
+
+        // --- 8. Item Acquisition Highlighting ---
+        const acquisitionMatch = textOnly.match(/You now have (?:a|an)\s+(.*?)(?:\.|$)/i);
+        if (acquisitionMatch) {
+            const itemName = acquisitionMatch[1]?.trim();
+            if (itemName) {
+                const category = getCategoryForName(itemName, inlineCategories) || 'object';
+                const buttonId = `auto-item-${itemName.toLowerCase().replace(/\s+/g, '-')}`;
+                const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'object');
+                const kind = getCategoryType(category, inlineCategories) || 'object';
+                
+                return safeHighlight(originalHtml, itemName, false, (m) => {
+                    return renderInlineSpan({
+                        id: buttonId,
+                        mid,
+                        cmd: 'object',
+                        kind: kind,
+                        location: 'carried',
+                        context: itemName,
+                        category: category,
+                        selected: isSelected,
+                        draggable: true,
+                        extraClasses: ['auto-item'],
+                        innerHtml: m
+                    });
+                }, regexCache);
+            }
+        }
+
         return null;
-    }, [esc, selectedObjectIds]);
+    }, [selectedObjectIds, groupMembers, inlineCategories, regexCache]);
 
     return { wrapSpecialLine };
 };

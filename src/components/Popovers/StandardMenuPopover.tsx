@@ -2,7 +2,7 @@ import React from 'react';
 import { CustomButton, MessageType, PopoverState, InlineCategoryConfig, GameEntity, ParleyState, GmcpOccupant } from '../../types';
 import { isItemContainer, sanitizeGameTarget } from '../../utils/gameUtils';
 import { getEffectiveKeyword } from '../../utils/keywordUtils';
-import { DEFAULT_INLINE_CATEGORIES, getCategoryForName } from '../../utils/categorizationUtils';
+import { DEFAULT_INLINE_CATEGORIES, getCategoryForName, canonicalizeCategoryId } from '../../utils/categorizationUtils';
 import { getHierarchyChain } from '../../utils/buttonHierarchyUtils';
 import { isButtonValidForEntity } from '../../utils/actionUtils';
 import { CircleHelp } from 'lucide-react';
@@ -61,21 +61,26 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
     const [isChoosingCategory, setIsChoosingCategory] = React.useState(false);
     const [selectedCatId, setSelectedCatId] = React.useState<string | null>(null);
     const isSetManager = popoverState.setId === 'setmanager';
-    const NPC_SUBCATEGORIES = ['inline-mounts', 'inline-shopkeeper', 'inline-innkeeper', 'inline-guildmaster'];
+    const NPC_SUBCATEGORIES = ['npc-mount', 'npc-shopkeeper', 'npc-innkeeper', 'npc-guildmaster'];
     
     // Detect if this specific item name belongs to a category.
     // We prioritize specific tags (from inlineCategories) over generic location-based ones (like inline-obj-room).
     const dynamicCat = popoverState.context ? getCategoryForName(popoverState.context, inlineCategories) : null;
-    const genericBaseCats = ['inline-obj-room', 'inline-obj-char', 'inline-obj-worn', 'inlinenpc'];
-    const detectedCatId = (popoverState.category && !genericBaseCats.includes(popoverState.category)) 
-        ? popoverState.category 
-        : (dynamicCat || popoverState.category);
+    const genericBaseCats = ['object-room', 'object-inv', 'object-worn', 'npc'];
+    
+    // Ensure the category ID in state is canonicalized before comparison
+    const rawStateCat = popoverState.category;
+    const catIdFromState = rawStateCat ? canonicalizeCategoryId(rawStateCat) : null;
+
+    const detectedCatId = (catIdFromState && !genericBaseCats.includes(catIdFromState)) 
+        ? catIdFromState 
+        : (dynamicCat || catIdFromState);
     
     // Build actual hierarchy chain
     const fullSetChain = getHierarchyChain(popoverState.setId, detectedCatId);
 
     const isTacticalSet = ['warriorskilllist', 'rangerskilllist', 'clericspelllist', 'thiefskilllist', 'magespelllist', 'doors'].includes(popoverState.setId);
-    const isTargetable = !isTacticalSet && ['selection', 'inventorylist', 'equipmentlist', 'inlinenpc', 'inlineplayer', 'inline-corpses', ...NPC_SUBCATEGORIES, ...fullSetChain].includes(popoverState.setId);
+    const isTargetable = !isTacticalSet && ['selection', 'inventorylist', 'equipmentlist', 'npc', 'player', 'object-corpse', ...NPC_SUBCATEGORIES, ...fullSetChain].includes(popoverState.setId);
 
     const toggleFavorite = (e: React.MouseEvent, command: string) => {
         e.stopPropagation();
@@ -88,7 +93,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
 
     const renderButton = (button: CustomButton, depth: number = 0) => {
         const isFav = favorites.includes(button.command);
-        const isSubButton = depth > 0 || (NPC_SUBCATEGORIES.includes(popoverState.setId) && button.setId === 'inlinenpc');
+        const isSubButton = depth > 0 || (NPC_SUBCATEGORIES.includes(popoverState.setId) && button.setId === 'npc');
         
         return (
             <div
@@ -139,7 +144,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                     const entity = entities[id];
                                     noun = getEffectiveKeyword(entity.name || '', undefined, entity, keywordOverrides || {});
                                 } else if (!noun) {
-                                    noun = id.replace(/^(auto-item-|log-item-|inline-obj-|auto-npc-|auto-obj-|roomnpcs:|roomitems:|inventorylist:|equipmentlist:)/, '')
+                                    noun = id.replace(/^(auto-npc-|auto-item-|auto-obj-|roomnpcs:|roomitems:|inventorylist:|equipmentlist:|log-npc-|npc-|player-|object-)/, '')
                                              .replace(/-[a-f0-9]+$/, '').replace(/-/g, ' ');
                                 }
                                 
@@ -324,11 +329,11 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
         if (!isValid) return false;
 
         if (fullSetChain.includes(b.setId)) return favorites.includes(b.command);
-        if (NPC_SUBCATEGORIES.includes(popoverState.setId) && b.setId === 'inlinenpc') return favorites.includes(b.command);
+        if (NPC_SUBCATEGORIES.includes(popoverState.setId) && b.setId === 'npc') return favorites.includes(b.command);
         return false;
     });
 
-    const isInlineMenu = popoverState.setId.startsWith('inline') || popoverState.setId === 'inventorylist' || popoverState.setId === 'equipmentlist';
+    const isInlineMenu = popoverState.setId.startsWith('object') || popoverState.setId.startsWith('npc') || popoverState.setId === 'player' || popoverState.setId === 'inventorylist' || popoverState.setId === 'equipmentlist';
 
 
     return (
@@ -366,7 +371,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                         {popoverState.executeAndAssign ? 'select action to fire and remap button' : 'select action to fire'}
                     </span>
                 </div>
-                {!isSetManager && (popoverState.setId.startsWith('inline-') || ['inlinenpc', 'inlineplayer'].includes(popoverState.setId)) && (
+                {!isSetManager && (popoverState.setId.startsWith('object') || popoverState.setId.startsWith('npc') || popoverState.setId === 'player') && (
                     <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
                         {popoverState.context && (
                             <div 
@@ -427,7 +432,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                     padding: '6px', 
                                     fontSize: '0.7rem', 
                                     textAlign: 'center',
-                                    background: selectedCatId === cat.id ? 'var(--accent)' : (detectedCatId === `inline-${cat.id}` ? 'rgba(255,255,255,0.1)' : 'transparent'),
+                                    background: selectedCatId === cat.id ? 'var(--accent)' : (detectedCatId === cat.id ? 'rgba(255,255,255,0.1)' : 'transparent'),
                                     border: `1px solid ${cat.color || 'rgba(255,255,255,0.2)'}`,
                                     color: selectedCatId === cat.id ? '#000' : (cat.color || '#fff'),
                                     transition: 'all 0.1s ease'
@@ -466,7 +471,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                     }, 150);
                                 }}
                             >
-                                {cat.id.toUpperCase()}
+                                {cat.label?.toUpperCase() || cat.id.replace('object-', '').replace('npc-', '').toUpperCase()}
                             </div>
                         ))}
                     </div>
@@ -559,7 +564,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                 buttons.filter(b => b.setId === popoverState.setId && !favorites.includes(b.command)).map(b => renderButton(b))
                             )}
 
-                            {buttons.filter(b => fullSetChain.includes(b.setId)).length === 0 && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && popoverState.setId !== 'inline-shopkeeper' && <div className="popover-empty">No buttons in '{popoverState.setId}'</div>}
+                            {buttons.filter(b => fullSetChain.includes(b.setId)).length === 0 && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && popoverState.setId !== 'npc-shopkeeper' && <div className="popover-empty">No buttons in '{popoverState.setId}'</div>}
 
                             {openKeywordEdit && isInlineMenu && popoverState.context && (
                                 <div

@@ -79,10 +79,10 @@ export const useGmcpOccupants = ({
             const isPc = typeof p !== 'string' && typeof p !== 'number' && (p.pc || p.type === 'pc' || p.type === 'player');
             if (isPc) {
                 pcList.push(obj);
-                if (registerEntity) registerEntity(obj.id ? String(obj.id) : `roomplayers:${obj.name}`, obj.name, 'roomplayers', 'inlineplayer');
+                if (registerEntity) registerEntity(obj.id ? String(obj.id) : `roomplayers:${obj.name}`, obj.name, 'roomplayers', 'player');
             } else {
                 npcList.push(obj);
-                if (registerEntity) registerEntity(obj.id ? String(obj.id) : `roomnpcs:${obj.name}`, obj.name, 'roomnpcs', 'inlinenpc');
+                if (registerEntity) registerEntity(obj.id ? String(obj.id) : `roomnpcs:${obj.name}`, obj.name, 'roomnpcs', 'npc');
             }
         });
 
@@ -124,7 +124,7 @@ export const useGmcpOccupants = ({
             if (registerEntity && obj.name) {
                 const id = (obj as any).id ? String((obj as any).id) : `roomitems:${obj.name}`;
                 const specCat = getCategoryForName(obj.name, inlineCategories);
-                registerEntity(id, obj.name, 'roomitems', specCat || 'inline-obj-room');
+                registerEntity(id, obj.name, 'roomitems', specCat || 'object-room');
             }
             return obj;
         });
@@ -153,11 +153,11 @@ export const useGmcpOccupants = ({
 
         if (isPc) {
             setRoomNpcs(prev => prev.filter(filterFn));
-            if (registerEntity) registerEntity(idStr || `roomplayers:${obj.name}`, obj.name, 'roomplayers', 'inlineplayer');
+            if (registerEntity) registerEntity(idStr || `roomplayers:${obj.name}`, obj.name, 'roomplayers', 'player');
             setRoomPlayers(prev => updateList(prev, obj, idStr, nameStr));
         } else {
             setRoomPlayers(prev => prev.filter(filterFn));
-            if (registerEntity) registerEntity(idStr || `roomnpcs:${obj.name}`, obj.name, 'roomnpcs', 'inlinenpc');
+            if (registerEntity) registerEntity(idStr || `roomnpcs:${obj.name}`, obj.name, 'roomnpcs', 'npc');
             setRoomNpcs(prev => updateList(prev, obj, idStr, nameStr));
         }
     }, [setRoomPlayers, setRoomNpcs, characterName, registerEntity, isSpectateMode, lastRoomChangeTimeRef, mapperRef]);

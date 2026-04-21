@@ -10,6 +10,8 @@ interface AtmosphereAudioDeps {
     moveRowRef: React.RefObject<HTMLDivElement>;
     audioCtxRef: React.MutableRefObject<AudioContext | null>;
     isSoundEnabledRef: React.MutableRefObject<boolean>;
+    masterVolume: number;
+    musicVolume: number;
 }
 
 export const useAtmosphereAudio = ({
@@ -20,7 +22,9 @@ export const useAtmosphereAudio = ({
     manaRowRef,
     moveRowRef,
     audioCtxRef,
-    isSoundEnabledRef
+    isSoundEnabledRef,
+    masterVolume,
+    musicVolume
 }: AtmosphereAudioDeps) => {
 
     // --- Heartbeat Logic ---
@@ -58,7 +62,7 @@ export const useAtmosphereAudio = ({
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(42, ctx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(28, ctx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0.4 * intensity, ctx.currentTime);
+                gain.gain.setValueAtTime(0.4 * intensity * masterVolume * musicVolume, ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
                 osc.connect(gain);
                 gain.connect(ctx.destination);
@@ -74,7 +78,7 @@ export const useAtmosphereAudio = ({
                     osc2.type = 'sine';
                     osc2.frequency.setValueAtTime(35, ctx.currentTime);
                     osc2.frequency.exponentialRampToValueAtTime(22, ctx.currentTime + 0.1);
-                    gain2.gain.setValueAtTime(0.3 * intensity, ctx.currentTime);
+                    gain2.gain.setValueAtTime(0.3 * intensity * masterVolume * musicVolume, ctx.currentTime);
                     gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
                     osc2.connect(gain2);
                     gain2.connect(ctx.destination);
@@ -88,7 +92,7 @@ export const useAtmosphereAudio = ({
 
         playHeartbeat();
         return () => clearTimeout(timeoutId);
-    }, [hpRatio, hpRowRef, audioCtxRef, isSoundEnabledRef]);
+    }, [hpRatio, hpRowRef, audioCtxRef, isSoundEnabledRef, masterVolume, musicVolume]);
 
     // --- Breath Logic ---
     useEffect(() => {
@@ -151,7 +155,7 @@ export const useAtmosphereAudio = ({
 
                 const gain = ctx.createGain();
                 gain.gain.setValueAtTime(0, startTime);
-                gain.gain.linearRampToValueAtTime(0.15 * intensity, startTime + len * (isExhale ? 0.3 : 0.6));
+                gain.gain.linearRampToValueAtTime(0.15 * intensity * masterVolume * musicVolume, startTime + len * (isExhale ? 0.3 : 0.6));
                 gain.gain.exponentialRampToValueAtTime(0.001, startTime + len);
 
                 source.connect(highPass);
@@ -176,7 +180,7 @@ export const useAtmosphereAudio = ({
 
         playBreath();
         return () => clearTimeout(timeoutId);
-    }, [moveRatio, moveRowRef, audioCtxRef, isSoundEnabledRef]);
+    }, [moveRatio, moveRowRef, audioCtxRef, isSoundEnabledRef, masterVolume, musicVolume]);
 
     // --- Mana Pulse Logic ---
     useEffect(() => {

@@ -5,7 +5,8 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { UiMode, TeleportTarget } from '../types';
+import { UiMode, TeleportTarget, InlineCategoryConfig } from '../types';
+import { canonicalizeCategoryId } from '../utils/categorizationUtils';
 
 interface SettingsState {
     // Connection
@@ -45,9 +46,12 @@ interface SettingsState {
     autoSaveSessions: boolean;
     soundTriggers: import('../types').SoundTrigger[];
     teleportTargets: TeleportTarget[];
-    inlineCategories: string[];
+    inlineCategories: InlineCategoryConfig[];
     favorites: string[];
     zoneMusic: boolean;
+    masterVolume: number;
+    sfxVolume: number;
+    musicVolume: number;
 
     // Mapper Context Settings
     allowMapPersistence: boolean;
@@ -67,6 +71,9 @@ interface SettingsState {
     setIsHighlighterEnabled: (val: boolean) => void;
     setDisableSmoothScroll: (val: boolean) => void;
     setIsImmersionMode: (val: boolean) => void;
+    setObjectColor: (val: string) => void;
+    setPlayerColor: (val: string) => void;
+    setNpcColor: (val: string) => void;
     setIsTimestampEnabled: (val: boolean) => void;
     setShowRecordingIndicator: (val: boolean) => void;
     setShowDebugEchoes: (val: boolean) => void;
@@ -81,9 +88,12 @@ interface SettingsState {
     setAutoSaveSessions: (val: boolean) => void;
     setSoundTriggers: (val: import('../types').SoundTrigger[]) => void;
     setTeleportTargets: (val: TeleportTarget[]) => void;
-    setInlineCategories: (val: string[]) => void;
+    setInlineCategories: (val: InlineCategoryConfig[]) => void;
     setFavorites: (val: string[]) => void;
     setZoneMusic: (val: boolean) => void;
+    setMasterVolume: (val: number) => void;
+    setSfxVolume: (val: number) => void;
+    setMusicVolume: (val: number) => void;
     setAllowMapPersistence: (val: boolean) => void;
     setUnveilMap: (val: boolean) => void;
 }
@@ -128,6 +138,9 @@ export const useSettingsStore = create<SettingsState>()(
             inlineCategories: [],
             favorites: [],
             zoneMusic: true,
+            masterVolume: 1.0,
+            sfxVolume: 0.7,
+            musicVolume: 0.5,
 
             allowMapPersistence: true,
             unveilMap: false,
@@ -166,11 +179,32 @@ export const useSettingsStore = create<SettingsState>()(
             setInlineCategories: (inlineCategories) => set({ inlineCategories }),
             setFavorites: (favorites) => set({ favorites }),
             setZoneMusic: (zoneMusic) => set({ zoneMusic }),
+            setMasterVolume: (masterVolume) => set({ masterVolume }),
+            setSfxVolume: (sfxVolume) => set({ sfxVolume }),
+            setMusicVolume: (musicVolume) => set({ musicVolume }),
             setAllowMapPersistence: (allowMapPersistence) => set({ allowMapPersistence }),
             setUnveilMap: (unveilMap) => set({ unveilMap }),
         }),
         {
             name: 'mume-settings-storage',
+            version: 1,
+            migrate: (persistedState: any, version: number) => {
+                if (version === 0) {
+                    // Update category IDs to canonical format
+                    if (persistedState.inlineCategories && Array.isArray(persistedState.inlineCategories)) {
+                        persistedState.inlineCategories = persistedState.inlineCategories.map((cat: any) => {
+                            if (typeof cat === 'object' && cat.id) {
+                                return {
+                                    ...cat,
+                                    id: canonicalizeCategoryId(cat.id)
+                                };
+                            }
+                            return cat;
+                        });
+                    }
+                }
+                return persistedState;
+            }
         }
     )
 );

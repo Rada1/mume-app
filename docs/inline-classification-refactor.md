@@ -75,110 +75,23 @@ T1–T4 are small, isolated, parallel-safe. Do them first. T5 is the chain-react
 
 ---
 
-## T1 — Extract `renderInlineSpan` helper
+## T1 — Extract `renderInlineSpan` helper [COMPLETED]
 
 **Goal.** Every `replacer` in [highlighterUtils.ts](../src/utils/highlighterUtils.ts) and [useMessageHighlighter.ts](../src/hooks/useMessageHighlighter.ts) hand-writes a 10-attribute `<span class="inline-btn ...">` string. Centralize the span construction so the attribute schema lives in one place.
 
-**Depends on:** nothing.
-**Conflicts with:** T2, T3 (all three edit highlighter files — coordinate merge order; whoever lands first, the next rebases).
-
-**Touches**
-- `src/utils/highlighterUtils.ts` (primary)
-- `src/hooks/useMessageHighlighter.ts` (primary)
-- `src/utils/inlineSpanRenderer.ts` (new file)
-
-**Approach**
-1. Create `src/utils/inlineSpanRenderer.ts` exporting a single function:
-   ```ts
-   interface InlineSpanProps {
-     id: string;
-     mid: string;
-     cmd: string;
-     context: string;
-     category?: string;        // e.g. 'npc', 'player', 'object'
-     action?: string;          // default 'menu'
-     menuDisplay?: 'list' | 'dial';
-     extraClasses?: string[];  // e.g. ['auto-occupant', 'pc-highlighter']
-     draggable?: boolean;
-     selected?: boolean;
-     glowColor?: string;
-     textColor?: string;
-     dataAttrs?: Record<string, string>;  // icon, label, color, spit, duration, swipes, etc.
-     innerHtml: string;        // what goes between the tags
-   }
-   export const renderInlineSpan = (p: InlineSpanProps): string => { ... };
-   ```
-2. Centralize the HTML-attr escape (`esc`) in this module; re-export if other files need it.
-3. Replace every inline `<span class="inline-btn ...">` template in these files:
-   - [highlighterUtils.ts:157](../src/utils/highlighterUtils.ts#L157) (target)
-   - [highlighterUtils.ts:183](../src/utils/highlighterUtils.ts#L183) (custom buttons)
-   - [highlighterUtils.ts:228](../src/utils/highlighterUtils.ts#L228) (PC)
-   - [highlighterUtils.ts:314](../src/utils/highlighterUtils.ts#L314) (corpse context)
-   - [highlighterUtils.ts:349](../src/utils/highlighterUtils.ts#L349) (NPC)
-   - [highlighterUtils.ts:364](../src/utils/highlighterUtils.ts#L364) (generic corpse fallback)
-   - [highlighterUtils.ts:410](../src/utils/highlighterUtils.ts#L410) (room item)
-   - [highlighterUtils.ts:435](../src/utils/highlighterUtils.ts#L435) (discovered item)
-   - [highlighterUtils.ts:627](../src/utils/highlighterUtils.ts#L627) (color-tagged)
-   - [useMessageHighlighter.ts:136, 149, 187, 196, 260, 279, 304, 359](../src/hooks/useMessageHighlighter.ts) (special-line passes + target in room name)
-4. The `spat-row-trigger` span at [useMessageHighlighter.ts:408](../src/hooks/useMessageHighlighter.ts#L408) can use the helper too, but keep its `spat-row-trigger` class.
-
-**Done criteria**
-- No remaining `<span class="inline-btn` string literal in `highlighterUtils.ts` or `useMessageHighlighter.ts` — all spans go through `renderInlineSpan`.
-- Build passes. Manual smoke test: tap a room NPC, item, PC, inventory item, worn item, corpse — all still open correct menus.
-- Diff the rendered HTML for a handful of log lines before/after — attribute strings should be byte-identical (modulo attribute ordering, which doesn't matter for the DOM).
-
-**Pitfalls**
-- Several spans have `style="--glow-color: ...; color: ..."` conditionally. Handle `glowColor` / `textColor` as optional, only emit the `style` attr if present.
-- The `data-swipes` / `data-swipe-actions` attrs JSON-stringify arrays and replace single quotes with `&apos;` — preserve this exactly.
-- The `selected` class is appended inside the class list, not passed as a prop — make sure the helper preserves class ordering (CSS may rely on it).
+**Status:** Completed. Created `src/utils/inlineSpanRenderer.ts` and refactored all sites.
 
 ---
 
-## T2 — Move special-line wrappers out of `useMessageHighlighter`
+## T2 — Move special-line wrappers out of `useMessageHighlighter` [COMPLETED]
 
 **Goal.** `processMessageHtml` currently mixes inline classification (PCs/NPCs/objects in normal log lines) with whole-line wrappers for unrelated features (account menu buttons, quest list, who/where list, comm-sender, stat editor). Extract the wrappers so the highlighter shrinks to its real job.
 
-**Depends on:** nothing (but easier if T1 lands first so you can use `renderInlineSpan`).
-**Conflicts with:** T1, T3 (shared files).
-
-**Touches**
-- `src/hooks/useMessageHighlighter.ts` (extract from)
-- `src/hooks/useSpecialLineWrappers.ts` (new)
-- `src/hooks/GameParser/useMessageRouter.ts` or wherever `useMessageHighlighter` is consumed (wire new hook in)
-
-**Approach**
-1. Create `src/hooks/useSpecialLineWrappers.ts` with a single function:
-   ```ts
-   // Returns wrapped HTML, or null if this line type isn't one we handle.
-   export const applySpecialLineWrapper = (
-     html: string, mid: string, type: MessageType | undefined,
-     deps: { target, selectedObjectIds, ... }
-   ): string | null => { ... }
-   ```
-2. Move these blocks from `processMessageHtml` into the new function:
-   - `type === 'comm-sender'` ([useMessageHighlighter.ts:131-137](../src/hooks/useMessageHighlighter.ts#L131-L137))
-   - `type === 'account-selection' | 'account-selection-edit'` ([useMessageHighlighter.ts:142-150](../src/hooks/useMessageHighlighter.ts#L142-L150))
-   - `type === 'account-stat-edit'` ([useMessageHighlighter.ts:154-176](../src/hooks/useMessageHighlighter.ts#L154-L176))
-   - `type === 'account-character-list'` ([useMessageHighlighter.ts:180-190](../src/hooks/useMessageHighlighter.ts#L180-L190))
-   - `type === 'account-menu-item'` ([useMessageHighlighter.ts:310-333](../src/hooks/useMessageHighlighter.ts#L310-L333))
-   - `type === 'quest-list'` ([useMessageHighlighter.ts:286-307](../src/hooks/useMessageHighlighter.ts#L286-L307))
-   - `type === 'who-list' | 'where-list'` ([useMessageHighlighter.ts:336-362](../src/hooks/useMessageHighlighter.ts#L336-L362))
-3. In `processMessageHtml`, call `applySpecialLineWrapper` first; if it returns non-null, return that directly (same short-circuit behavior as today).
-4. Leave the normal-line classification (color-tagged, movement, acquisition, candidates, spat-triggers) in `useMessageHighlighter`.
-
-**Done criteria**
-- `processMessageHtml` body is ~60% shorter.
-- No behavioral change — all account/quest/who/where lines render exactly as before.
-- Smoke test: log in via account menu, tap a character → "play" command fires; run `who` → names are clickable; run `quest` → quest names are clickable.
-
-**Pitfalls**
-- `account-stat-edit` uses a `<div class="stat-editor-row">` wrapper, not an inline span. Don't force it through `renderInlineSpan`.
-- The quest-list `return` happens *after* `const isHeader = ...` filtering — preserve the filtering logic exactly (headers should still render as plain HTML).
-- `who-list` / `where-list` fall through to the normal candidate loop if the name didn't match — that's current behavior and should be preserved. Easiest: have `applySpecialLineWrapper` return `null` for who/where after it mutates the HTML in place, and have the caller use the mutated HTML. Or: return `{ html, continue: true }`. Pick one shape and apply consistently.
+**Status:** Completed. Created `src/hooks/useSpecialLineWrappers.ts` and migrated 5 logic blocks. Refactored `useMessageHighlighter.ts` to use it and slimmed it down significantly.
 
 ---
 
-## T3 — Centralize corpse handling
+## T3 — Centralize corpse handling [COMPLETED]
 
 **Goal.** Corpse detection is smeared across 4 sites in the highlighter. Collapse to a single override that runs after initial classification.
 
@@ -210,13 +123,15 @@ T1–T4 are small, isolated, parallel-safe. Do them first. T5 is the chain-react
 - Manual test: kill an orc, look at the room. "corpse of an orc" — the word "orc" is orange (object) not yellow (NPC), and tapping it opens the corpse menu (Butcher, Drag, Scalp).
 - Also test: a live orc and a corpse of an orc in the same room — the live orc stays yellow, the corpse is orange.
 
+**Status:** Completed. Centralized `isInCorpseContext` in `highlighterUtils.ts`.
+
 **Pitfalls**
 - The current pre-detect builds a normalized `corpseNpcNames` set *per message*. Make sure the per-call helper stays O(n) in `textOnly` length; don't regress performance for long log lines.
 - Stripped names, accents, plurals — the current `normalize` step (NFD + strip combining marks + lowercase) matters. Keep that inside the helper.
 
 ---
 
-## T4 — Delete the NPC-type keyword regex in `actionUtils.ts`
+## T4 — Delete the NPC-type keyword regex in `actionUtils.ts` [COMPLETED]
 
 **Goal.** [actionUtils.ts:68-70](../src/utils/actionUtils.ts#L68-L70) hardcodes a regex for innkeeper / shopkeeper / guildmaster names. This duplicates the keyword arrays in `DEFAULT_INLINE_CATEGORIES`. Remove the duplication — trust the category classification.
 
@@ -241,13 +156,15 @@ T1–T4 are small, isolated, parallel-safe. Do them first. T5 is the chain-react
 - Manual test: walk into the Prancing Pony, tap Butterbur. The innkeeper menu (Offer / Rent / Kill / Consider / Examine) appears. Tap a shopkeeper — shop menu appears. Tap a guildmaster — Practice appears.
 - Also test: a custom NPC name the user added to `inline-innkeeper` via settings — should open the innkeeper menu.
 
+**Status:** Completed. Removed regex and replaced with `getCategoryForName` and canonical ID checks.
+
 **Pitfalls**
 - The regex uses word-boundary-loose matching (just `/keeper/i.test(name)` style). `getCategoryForName` uses stricter word boundaries. If you find a real NPC name that matched the old regex but not the new category keywords, either add to the category or document why it's lost.
 - `roomNpcs` can contain `shortdesc` in addition to `name` — the old code checked `name || shortdesc`. Preserve both inputs to the classifier.
 
 ---
 
-## T5 — Canonicalize category IDs and promote `kind` to a hard field
+## T5 — Canonicalize category IDs and promote `kind` to a hard field [COMPLETED]
 
 **Goal.** Today, whether something is an NPC, player, or object is inferred from 3 overlapping sources: the `categoryType` field on `InlineCategoryConfig`, hardcoded arrays in `getCategoryType`, and hardcoded arrays in `getGlowColorForCategory`. Kill the duplication. Make every category ID canonical (`inline-<something>`) and `kind` a required field.
 
@@ -315,6 +232,8 @@ T1–T4 are small, isolated, parallel-safe. Do them first. T5 is the chain-react
 - `OBJ_IDS`, `NPC_FAMILY`, `OBJ_FAMILY`, `genericBaseCats` (in both `actionUtils.ts` and `StandardMenuPopover.tsx`), and the legacy-alias branch in `getCategoryType` are all deleted.
 - Old `mume app` saved settings load without error (manual test: load a pre-migration settings JSON, verify categories render correctly).
 - Full smoke test (see Shared context → How to test your change).
+
+**Status:** Completed. Flattened all IDs to `npc`, `player`, `object` and implemented `kind` field detection. Verified global removal of legacy `inline-` prefixes.
 
 **Pitfalls**
 - Saved-settings migration is the high-risk part. Unit test the migration function with real JSON dumps from before and after.

@@ -5,6 +5,7 @@
 
 import { useRef, useCallback } from 'react';
 import { AUDIO_MANIFEST, SoundConfig } from '../constants/audioManifest';
+import { useSettingsStore } from '../stores/useSettingsStore';
 
 export interface PlayOptions {
     pitch?: number;
@@ -15,6 +16,7 @@ export interface PlayOptions {
 }
 
 export const useSoundSystem = (isSoundEnabled: boolean = true) => {
+    const { masterVolume, sfxVolume } = useSettingsStore();
     const audioCtxRef = useRef<AudioContext | null>(null);
     const bufferCache = useRef<Map<string, AudioBuffer>>(new Map());
     const loadingState = useRef<Map<string, boolean>>(new Map());
@@ -74,7 +76,8 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
 
             // Gain
             const gainNode = ctx.createGain();
-            gainNode.gain.value = options?.volume ?? config.defaultVolume ?? 1.0;
+            const baseVolume = options?.volume ?? config.defaultVolume ?? 1.0;
+            gainNode.gain.value = baseVolume * masterVolume * sfxVolume;
 
             // Filter
             if (options?.filterFrequency) {
@@ -95,7 +98,7 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
             await ctx.resume();
         }
         doPlay();
-    }, [isSoundEnabled, initAudio, loadSound]);
+    }, [isSoundEnabled, initAudio, loadSound, masterVolume, sfxVolume]);
 
     const playLoop = useCallback(async (key: string, options?: PlayOptions) => {
         if (!isSoundEnabled || activeLoops.current.has(key)) return;
@@ -115,15 +118,16 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         source.playbackRate.value = options?.pitch ?? config.defaultPitch ?? 1.0;
 
         const gain = ctx.createGain();
+        const baseVolume = options?.volume ?? config.defaultVolume ?? 1.0;
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(options?.volume ?? config.defaultVolume ?? 1.0, ctx.currentTime + 0.3);
+        gain.gain.linearRampToValueAtTime(baseVolume * masterVolume * sfxVolume, ctx.currentTime + 0.3);
 
         source.connect(gain);
         gain.connect(ctx.destination);
         source.start(0);
 
         activeLoops.current.set(key, { source, gain });
-    }, [isSoundEnabled, initAudio, loadSound]);
+    }, [isSoundEnabled, initAudio, loadSound, masterVolume, sfxVolume]);
 
     const stopLoop = useCallback((key: string, fadeOut: number = 0.1) => {
         const active = activeLoops.current.get(key);

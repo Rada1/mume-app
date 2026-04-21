@@ -6,8 +6,7 @@ import { ansiConvert } from '../utils/ansi';
 // Regex constants
 // ---------------------------------------------------------------------------
 
-export const ARRIVE_REGEX = /^(.+?)\s+(has arrived from|arrives from|enters from)\s+(the\s+)?(.+?)\.?$/i;
-export const LEAVE_REGEX = /^(.+?)\s+(leaves|enters|flees|fled)\s+(the\s+)?(.+?)\.?$/i;
+import { ARRIVE_REGEX, LEAVE_REGEX } from '../utils/highlighterUtils';
 export const NPC_LINE_REGEX = /^((?:A|An|The|Some)?\s*[\w\s,-]+?'?s?)\s+(\w+s)\b\s*(.*)$/i;
 
 export const ROOM_EXIT_REGEX = /^(North|South|East|West|Up|Down|North|Southwest|Northeast|Southwest|Southeast)\s+-\s+/i;

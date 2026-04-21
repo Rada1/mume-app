@@ -90,6 +90,8 @@ export interface PopoverState {
     helpData?: string;
     accentColor?: string;
     direction?: string;
+    kind?: string;
+    location?: string;
     accountCharacters?: any[];
     accountState?: any;
     setAccountState?: any;
@@ -108,10 +110,12 @@ export interface ParleyState {
 }
 
 export interface InlineCategoryConfig {
-    id: string;
+    id: string;                  // canonical, always starts 'inline-'
+    kind: 'npc' | 'player' | 'object' | 'exit' | 'none';
+    parent?: string;             // canonical ID of parent
     keywords: string[];
-    color?: string;
-    categoryType?: 'npc' | 'player' | 'object' | 'account' | 'target' | 'quest' | 'none';
+    color?: string;              // optional; defaults to kind's color
+    categoryType?: 'npc' | 'player' | 'object' | 'account' | 'target' | 'quest' | 'none'; // legacy support
 }
 
 export interface ButtonSetSettings {

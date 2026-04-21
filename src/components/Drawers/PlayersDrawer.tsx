@@ -43,7 +43,9 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
         setPopoverState({
             x: e.clientX,
             y: e.clientY,
-            setId: 'inlineplayer',
+            setId: 'inline-player',
+            kind: 'player',
+            location: 'room',
             context: baseName,
             type: undefined,
             menuDisplay: 'list'

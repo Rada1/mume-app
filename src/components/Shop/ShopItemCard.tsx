@@ -35,6 +35,8 @@ const ShopItemCard: React.FC<ShopItemCardProps> = ({ item }) => {
             className="shop-item-card inline-btn recent-entry"
             data-id={`shop-item-${item.id}`}
             data-cmd="inline-shopitem"
+            data-kind="object"
+            data-location="shop"
             data-action="menu"
             data-context={item.id}
             data-menu-display="list"

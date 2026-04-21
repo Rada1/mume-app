@@ -155,6 +155,8 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         data-action="menu"
                         data-category={cat || undefined}
                         data-cmd="inline-obj-worn"
+                        data-kind="object"
+                        data-location="worn"
                         style={{
                             boxShadow: isSelected ? `inset 0 0 12px ${itemBrown}44` : 'none',
                             borderColor: isSelected ? itemBrown : 'transparent',

@@ -179,6 +179,8 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                         data-action="menu"
                         data-category={cat || undefined}
                         data-cmd={cmdId}
+                        data-kind="object"
+                        data-location="inv"
                         style={{
                             display: 'inline',
                             lineHeight: '1.5',

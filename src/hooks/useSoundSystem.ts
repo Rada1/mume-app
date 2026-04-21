@@ -1,6 +1,8 @@
 import { useRef, useCallback, useEffect } from 'react';
+import { useSettingsStore } from '../stores/useSettingsStore';
 
 export const useSoundSystem = (isSoundEnabled: boolean = true) => {
+    const { masterVolume, sfxVolume } = useSettingsStore();
     const audioCtxRef = useRef<AudioContext | null>(null);
     const clickSoundRef = useRef<AudioBuffer | null>(null);
     const hitImpactSoundRef = useRef<AudioBuffer | null>(null);
@@ -21,8 +23,8 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
     const killSoundRef = useRef<AudioBuffer | null>(null);
     const levelSoundRef = useRef<AudioBuffer | null>(null);
     const waterMoveSoundRef = useRef<AudioBuffer | null>(null);
-
-
+    const movementSoundRef = useRef<AudioBuffer | null>(null);
+    const doorSoundRef = useRef<AudioBuffer | null>(null);
 
     const initAudio = useCallback(() => {
         if (!audioCtxRef.current) {
@@ -80,7 +82,8 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
 
             // Volume control via GainNode
             const gainNode = ctx.createGain();
-            gainNode.gain.value = options?.volume ?? 1.0;
+            const baseVolume = options?.volume ?? 1.0;
+            gainNode.gain.value = baseVolume * masterVolume * sfxVolume;
 
             if (options?.filterFrequency) {
                 const filter = ctx.createBiquadFilter();
@@ -100,9 +103,8 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         } else {
             doPlay();
         }
-    }, [isSoundEnabled]);
+    }, [isSoundEnabled, masterVolume, sfxVolume]);
 
-    const movementSoundRef = useRef<AudioBuffer | null>(null);
     const loadMovementSound = useCallback(async () => {
         if (!audioCtxRef.current || movementSoundRef.current) return;
         const url = '/assets/Sounds/Sound effects/move.mp3';
@@ -114,8 +116,6 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
             movementSoundRef.current = audioBuffer;
         } catch (err) {
             console.error('Failed to load movement sound via WebAudio:', err);
-            // We could add a secondary fallback here if needed, 
-            // but usually the path fix is enough.
         }
     }, []);
 
@@ -161,10 +161,8 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         if (!buffer) return;
 
         if (isRiding) {
-            // Mimic horse gallop/splash: two beats
             const playbackRate = 2.0;
             playSound(buffer, { pitch: playbackRate, volume: 0.6, label: isWaterTerrain ? 'water-move-riding-1' : 'move-riding-1' });
-            
             setTimeout(() => {
                 playSound(buffer, { pitch: playbackRate, volume: 0.45, label: isWaterTerrain ? 'water-move-riding-2' : 'move-riding-2' });
             }, (buffer.duration / 2.0) * 1000);
@@ -177,12 +175,10 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         if (clickSoundRef.current) {
             playSound(clickSoundRef.current, { volume: 2.0 });
         } else {
-            // If not loaded yet, try to load it (it will be ready for next time)
             loadClickSound();
         }
     }, [loadClickSound, playSound]);
 
-    const doorSoundRef = useRef<AudioBuffer | null>(null);
     const loadDoorSound = useCallback(async () => {
         if (!audioCtxRef.current || doorSoundRef.current) return;
         try {
@@ -199,13 +195,8 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         if (doorSoundRef.current) {
             playSound(doorSoundRef.current, { pitch: isOpen ? 1.0 : 0.8, volume: 1.5 });
         } else {
-            // Load and then play if successful
-            if (!audioCtxRef.current) {
-                initAudio();
-            }
-            if (!audioCtxRef.current) {
-                return;
-            }
+            if (!audioCtxRef.current) initAudio();
+            if (!audioCtxRef.current) return;
             try {
                 const response = await fetch('/assets/Sounds/Sound effects/door1.wav');
                 const arrayBuffer = await response.arrayBuffer();
@@ -331,7 +322,6 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
             const arrayBuffer = await response.arrayBuffer();
             const audioBuffer = await audioCtxRef.current.decodeAudioData(arrayBuffer);
             smiteSoundRef.current = audioBuffer;
-            console.log('[Sound] Smite sound loaded successfully');
         } catch (err) {
             console.error('Failed to load smite sound:', err);
         } finally {
@@ -347,7 +337,6 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
                 label: 'smite'
             });
         } else {
-            console.warn('[Sound] Smite sound not ready, triggering load');
             loadSmiteSound();
         }
     }, [loadSmiteSound, playSound]);
@@ -366,7 +355,6 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
 
     const playPierceSound = useCallback((options?: { pitch?: number, volume?: number }) => {
         if (pierceSoundRef.current) {
-            // Apply a substantial 1.6x base pitch shift to all pierce variations
             const shiftedPitch = (options?.pitch ?? 1.0) * 1.6;
             playSound(pierceSoundRef.current, { 
                 pitch: shiftedPitch,
@@ -484,11 +472,9 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
     }, []);
 
     const stopCommMessageSound = useCallback(() => {
-
         if (!activeCommMessageRef.current || !audioCtxRef.current) return;
         const { source, gain } = activeCommMessageRef.current;
         const ctx = audioCtxRef.current;
-        
         try {
             gain.gain.setValueAtTime(gain.gain.value, ctx.currentTime);
             gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.05);
@@ -508,24 +494,18 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
             if (!commMessageSoundRef.current) loadCommMessageSound();
             return;
         }
-
-        // Stop previous if exists
         stopCommMessageSound();
-
         const ctx = audioCtxRef.current;
         const source = ctx.createBufferSource();
         source.buffer = commMessageSoundRef.current;
-        
         const gain = ctx.createGain();
-        gain.gain.value = options?.volume || 0.9;
-
+        const baseVolume = options?.volume || 0.9;
+        gain.gain.value = baseVolume * masterVolume * sfxVolume;
         source.connect(gain);
         gain.connect(ctx.destination);
         source.start(0);
-
         activeCommMessageRef.current = { source, gain };
-    }, [loadCommMessageSound, stopCommMessageSound, isSoundEnabled]);
-
+    }, [loadCommMessageSound, stopCommMessageSound, isSoundEnabled, masterVolume, sfxVolume]);
 
     const loadBuySellSound = useCallback(async () => {
         if (!audioCtxRef.current || buySellSoundRef.current) return;
@@ -584,52 +564,32 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
             });
             return;
         }
-        if (activeIncantationRef.current) {
-            console.log('[Sound] playIncantationSound: already playing, ignoring');
-            return;
-        }
-
-        console.log('[Sound] Starting incantations (looping)...');
-
+        if (activeIncantationRef.current) return;
         const ctx = audioCtxRef.current;
         const source = ctx.createBufferSource();
         source.buffer = incantationsSoundRef.current;
         source.loop = true;
-        // High-pitched: 1.5x base speed + small jitter
         source.playbackRate.value = 1.5 + (Math.random() * 0.1 - 0.05);
-
         const muffler = ctx.createBiquadFilter();
         muffler.type = 'lowpass';
-        muffler.frequency.value = 2200; // Muffled effect (cutting highs)
-
+        muffler.frequency.value = 2200;
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.7, ctx.currentTime + 0.3);
-
+        gain.gain.linearRampToValueAtTime(0.7 * masterVolume * sfxVolume, ctx.currentTime + 0.3);
         source.connect(muffler);
         muffler.connect(gain);
         gain.connect(ctx.destination);
         source.start(0);
-
         activeIncantationRef.current = { source, gain };
-    }, [loadSpellSounds, isSoundEnabled]);
+    }, [loadSpellSounds, isSoundEnabled, masterVolume, sfxVolume]);
 
     const stopIncantationSound = useCallback((playExplosion: boolean = false) => {
-        if (!activeIncantationRef.current) {
-            console.log('[Sound] stopIncantationSound: no active incantation to stop');
-            return;
-        }
-        if (!audioCtxRef.current) return;
-        
-        console.log(`[Sound] Stopping incantation: playExplosion=${playExplosion}`);
+        if (!activeIncantationRef.current || !audioCtxRef.current) return;
         const { source, gain } = activeIncantationRef.current;
         const ctx = audioCtxRef.current;
-
         gain.gain.setValueAtTime(gain.gain.value, ctx.currentTime);
         gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.1);
-
         if (playExplosion) playMagicExplosionSound();
-
         setTimeout(() => {
             try {
                 source.stop();
@@ -637,26 +597,8 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
                 gain.disconnect();
             } catch (e) { }
         }, 150);
-
         activeIncantationRef.current = null;
     }, [playMagicExplosionSound]);
-
-    const loadAllWeaponSounds = useCallback(() => {
-        console.log('[Sound] Pre-loading all game sounds...');
-        loadSlashSound();
-        loadCleaveSound();
-        loadSmiteSound();
-        loadPierceSound();
-        loadStabSound();
-        loadArrowHitSound();
-        loadHitImpactSound();
-        loadOofSound();
-        loadCommMessageSound();
-        loadBuySellSound();
-        loadSpellSounds();
-        loadKillSound();
-        loadLevelSound();
-    }, [loadSlashSound, loadCleaveSound, loadSmiteSound, loadPierceSound, loadStabSound, loadHitImpactSound, loadOofSound, loadCommMessageSound, loadBuySellSound, loadSpellSounds, loadKillSound, loadLevelSound]);
 
     const loadBashSound = useCallback(async () => {
         if (!audioCtxRef.current || bashSoundRef.current) return;
@@ -681,6 +623,23 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
             });
         }
     }, [playSound, loadBashSound]);
+
+    const loadAllWeaponSounds = useCallback(() => {
+        loadSlashSound();
+        loadCleaveSound();
+        loadSmiteSound();
+        loadPierceSound();
+        loadStabSound();
+        loadArrowHitSound();
+        loadHitImpactSound();
+        loadOofSound();
+        loadCommMessageSound();
+        loadBuySellSound();
+        loadSpellSounds();
+        loadKillSound();
+        loadLevelSound();
+        loadBashSound();
+    }, [loadSlashSound, loadCleaveSound, loadSmiteSound, loadPierceSound, loadStabSound, loadHitImpactSound, loadOofSound, loadCommMessageSound, loadBuySellSound, loadSpellSounds, loadKillSound, loadLevelSound, loadBashSound]);
 
     return {
         audioCtxRef,
@@ -720,7 +679,6 @@ export const useSoundSystem = (isSoundEnabled: boolean = true) => {
         loadAllWeaponSounds,
         playCommMessageSound,
         stopCommMessageSound,
-        loadCommMessageSound,
         playIncantationSound,
         stopIncantationSound,
         playMagicExplosionSound,
