@@ -70,7 +70,9 @@ export interface PopoverState {
     y: number;
     sourceHeight?: number;
     type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'give-target-select' | 'put-container-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target' | 'container' | 'shop-card' | 'session-log' | 'help-card' | 'character-select';
-    setId: string;
+    setId: string; // The legacy command or set ID. Can still hold standard menu set IDs.
+    kind?: string; // e.g. object, npc, player
+    location?: string; // e.g. room, carried, worn
     category?: string;
     context?: string;
     containerItems?: any[];
@@ -90,8 +92,6 @@ export interface PopoverState {
     helpData?: string;
     accentColor?: string;
     direction?: string;
-    kind?: string;
-    location?: string;
     accountCharacters?: any[];
     accountState?: any;
     setAccountState?: any;

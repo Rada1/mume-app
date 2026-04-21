@@ -25,9 +25,23 @@ interface UseMapGmcphandlersProps {
     deathRoomId?: string | null;
     setDeathRoomId?: (val: string | null) => void;
     baseMapExitsRef?: React.MutableRefObject<Record<string, any>>;
+    clientPredictionsRef?: React.MutableRefObject<Array<{ toId: string, toX: number, toY: number, toZ: number }>>;
+    characterName: string | null;
+    executeCommand?: (cmd: string, silent?: boolean) => void;
 }
 
 export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
+
+    const pushPendingMove = (dir: string) => {
+        props.pendingMovesRef.current.push({ dir, time: Date.now() });
+    };
+
+    const handleMoveConfirmed = (e?: any) => {
+        props.pendingMovesRef.current.shift();
+        if (props.preMoveRef) props.preMoveRef.current = null;
+        if (props.clientPredictionsRef) props.clientPredictionsRef.current = [];
+        props.triggerRender?.();
+    };
 
     const { handleRoomInfo } = useRoomInfoHandler({
         roomsRef: props.roomsRef,
@@ -65,5 +79,5 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
         lastDetectedTerrainRef: props.lastDetectedTerrainRef
     });
 
-    return { handleRoomInfo, handleUpdateExits, handleTerrain };
-};
+    return { handleRoomInfo, handleUpdateExits, handleTerrain, pushPendingMove, handleMoveConfirmed };
+    };

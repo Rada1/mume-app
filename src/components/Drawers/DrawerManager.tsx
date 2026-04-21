@@ -1,100 +1,39 @@
 /**
  * @file DrawerManager.tsx
- * @description Orchestrates the side drawers and desktop sidebar tabs.
+ * @description Orchestrates the side drawers (Inventory, Equipment, Stats, Map).
  */
 
 import React from 'react';
-import { Map as MapIcon, User, Shield, Users, BarChart2 } from 'lucide-react';
+import { useGame, useUI } from '../../context/GameContext';
+import { useMapper } from '../../context/useMapper';
 import { InventoryDrawer } from './InventoryDrawer';
 import { StatsDrawer } from './StatsDrawer';
 import { CharacterDrawer } from './CharacterDrawer';
 import { PlayersDrawer } from './PlayersDrawer';
-import { SessionLogDrawer } from './SessionLogDrawer';
 import { Mapper } from '../Mapper/Mapper';
-
-// --- Logic Section ---
-
-import { DrawerLine, CustomButton, SoundTrigger } from '../../types';
+import { User, Shield, BarChart2, Users, Map as MapIcon } from 'lucide-react';
 
 interface DrawerManagerProps {
-    ui: {
-        drawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'session-log';
-        isDrawerPeeking: boolean;
-        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map' | 'session-log';
-        setManagerOpen: boolean;
-        mapExpanded: boolean;
-        isMenuOpen: boolean;
-        isSetMenuOpen: boolean;
-        menuView: 'main' | 'availableSets';
-    };
-    setUI: React.Dispatch<React.SetStateAction<{
-        drawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'session-log';
-        isDrawerPeeking: boolean;
-        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map' | 'session-log';
-        setManagerOpen: boolean;
-        mapExpanded: boolean;
-        isMenuOpen: boolean;
-        isSetMenuOpen: boolean;
-        menuView: 'main' | 'availableSets';
-    }>>;
-    inventoryLines: DrawerLine[];
-    statsLines: DrawerLine[];
-    scoreLines: DrawerLine[];
-    eqLines: DrawerLine[];
-    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
-    handleButtonClick: (button: CustomButton, e: React.MouseEvent, context?: string) => void;
-
-    // Settings stuff passed down
+    inventoryLines: any[];
+    statsLines: any[];
+    scoreLines: any[];
+    eqLines: any[];
+    executeCommand: (cmd: string, silent?: boolean) => void;
+    handleButtonClick: (e: React.PointerEvent, btn: any) => void;
     loginName: string;
     setLoginName: (val: string) => void;
     loginPassword: string;
     setLoginPassword: (val: string) => void;
     bgImage: string;
     handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    soundTriggers: SoundTrigger[];
+    soundTriggers: any[];
     newSoundPattern: string;
     setNewSoundPattern: (val: string) => void;
     newSoundRegex: boolean;
     setNewSoundRegex: (val: boolean) => void;
     handleSoundUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    setSoundTriggers: React.Dispatch<React.SetStateAction<SoundTrigger[]>>;
+    setSoundTriggers: (val: any[]) => void;
 }
-
-import { useGame, useUI } from '../../context/GameContext';
-import { useMapper } from '../../context/useMapper';
-
-const MapperDockedGate: React.FC<{ 
-    mapperRef: React.RefObject<any>, 
-    characterName: string | null, 
-    isMobile: boolean,
-    onUndock?: () => void 
-}> = ({ mapperRef, characterName, isMobile, onUndock }) => {
-    const { isMapFloating, setIsMapFloating } = useMapper();
-    
-    if (isMapFloating) {
-        return (
-            <div style={{ padding: '40px', textAlign: 'center', opacity: 0.6 }}>
-                <div style={{ marginBottom: '15px' }}>The map is currently undocked.</div>
-                <button 
-                    onClick={() => setIsMapFloating(false)}
-                    style={{ background: 'var(--accent)', border: 'none', color: '#111', padding: '8px 16px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}
-                >
-                    Dock Map Here
-                </button>
-            </div>
-        );
-    }
-
-    return (
-        <Mapper
-            ref={mapperRef}
-            characterName={characterName || ''}
-            isMobile={isMobile}
-            isExpanded={true}
-            onUndock={onUndock}
-        />
-    );
-};
 
 export const DrawerManager: React.FC<DrawerManagerProps> = ({
     inventoryLines,
@@ -103,170 +42,131 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     eqLines,
     executeCommand,
     handleButtonClick,
-    loginName, setLoginName, loginPassword, setLoginPassword,
-    bgImage, handleFileUpload,
-    soundTriggers, newSoundPattern, setNewSoundPattern, newSoundRegex, setNewSoundRegex,
-    handleSoundUpload, setSoundTriggers
+    loginName,
+    setLoginName,
+    loginPassword,
+    setLoginPassword,
+    bgImage,
+    handleFileUpload,
+    soundTriggers,
+    newSoundPattern,
+    setNewSoundPattern,
+    newSoundRegex,
+    setNewSoundRegex,
+    handleSoundUpload,
+    setSoundTriggers
 }) => {
-    const {
-        triggerHaptic, characterName, viewport, mapperRef,
+    const { 
+        characterName, viewport, triggerHaptic, 
+        displayInventoryLines, displayEqLines, 
         pendingDrawerContainerRef, inlineCategories, entities, keywordOverrides,
         gameState
-    } = useGame() as any;
-    const { ui, setUI, isLibraryOpen, setIsLibraryOpen, handleTabClick, toggleMap } = useUI() as any;
+    } = useGame();
+    const { ui, setUI, handleTabClick } = useUI();
+    const mapperRef = React.useRef<any>(null);
 
-    // On desktop, push the log right/left so side drawers sit beside it instead of over it
-    React.useEffect(() => {
-        if (!viewport.isMobile) {
-            if (ui.mapExpanded) document.body.classList.add('map-drawer-open');
-            else document.body.classList.remove('map-drawer-open');
-
-            if (ui.drawer !== 'none') document.body.classList.add('utility-drawer-open');
-            else document.body.classList.remove('utility-drawer-open');
-        } else {
-            document.body.classList.remove('map-drawer-open');
-            document.body.classList.remove('utility-drawer-open');
-        }
-
-        return () => { 
-            document.body.classList.remove('map-drawer-open'); 
-            document.body.classList.remove('utility-drawer-open'); 
-        };
-    }, [ui.mapExpanded, ui.drawer, viewport.isMobile]);
-    const { isMapFloating, setIsMapFloating } = useMapper();
     const isMapDrawerOpen = ui.mapExpanded && !viewport.isMobile;
-    // On mobile portrait, drawers are rendered inside the gutter (MapperCluster), not here
     const isMobilePortrait = viewport.isMobile && !viewport.isLandscape;
-    // On mobile, drawers render inline inside the gutter — no overlay backdrop needed.
-    // Showing the backdrop on mobile blocks the entire UI because the onClick guard
-    // skips mobile, leaving the z-3000 pointer-events layer permanently intercepting touches.
     const showBackdrop = !viewport.isMobile && ui.drawer !== 'none';
-
-    const handleUndock = () => {
-        triggerHaptic(40);
-        setIsMapFloating(true);
-        setUI(prev => ({ ...prev, mapExpanded: false }));
-    };
-
 
     return (
         <>
-            {/* Vertical tabs removed — moved to map drawer bottom */}
-
-
-
             <div
                 className={`drawer-backdrop ${showBackdrop && ui.drawer !== 'character' && ui.drawer !== 'players' ? 'open' : ''}`}
                 style={{ background: 'rgba(0,0,0,0.2)' }}
                 onClick={() => {
-                    // Only allow backdrop closure on desktop
                     if (!viewport.isMobile) {
                         setUI(prev => ({ ...prev, drawer: 'none', peekingSource: 'none' }));
                     }
                 }}
             />
 
-            {/* Map Drawer (Side View - Desktop Only) */}
             {!viewport.isMobile && (
                 <div
                     className={`map-drawer-desktop ${ui.mapExpanded ? 'open' : ''}`}
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="drawer-content" style={{ flex: 1, padding: 0, position: 'relative', overflow: 'hidden' }}>
-                        <MapperDockedGate
-                            mapperRef={mapperRef}
-                            characterName={characterName}
+                        <Mapper
+                            ref={mapperRef}
+                            characterName={characterName || ''}
                             isMobile={viewport.isMobile}
-                            onUndock={handleUndock}
+                            isExpanded={true}
                         />
                     </div>
                 </div>
             )}
 
-            {/* Persistent Desktop Tab Sidebar removed — move to Menu or Commands for a cleaner terminal aesthetic */}
+            <StatsDrawer
+                isOpen={ui.drawer === 'stats'}
+                onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none' })); }}
+                statsLines={statsLines}
+                scoreLines={scoreLines}
+                executeCommand={executeCommand}
+            />
 
+            <CharacterDrawer
+                isOpen={ui.drawer === 'character'}
+                onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none' })); }}
+                executeCommand={executeCommand}
+            />
 
-            {/* On mobile portrait, drawers are rendered inside the gutter (MapperCluster) */}
-            {!isMobilePortrait && (
-                <>
-                    <StatsDrawer
-                        isOpen={ui.drawer === 'stats'}
-                        onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none' })); }}
-                        statsLines={statsLines}
-                        scoreLines={scoreLines}
-                        executeCommand={executeCommand}
-                        isLandscape={viewport.isLandscape}
-                    />
+            <PlayersDrawer
+                isOpen={ui.drawer === 'players'}
+                onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none' })); }}
+                executeCommand={executeCommand}
+            />
 
-                    <CharacterDrawer
-                        isOpen={ui.drawer === 'character'}
-                        onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none' })); }}
-                        executeCommand={executeCommand}
-                    />
-
-                    <PlayersDrawer
-                        isOpen={ui.drawer === 'players'}
-                        onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none', peekingSource: 'none' })); }}
-                        executeCommand={executeCommand}
-                    />
-
-
-                    <InventoryDrawer
-                        isOpen={ui.drawer === 'inventory' || ui.drawer === 'equipment'}
-                        isPeeking={ui.isDrawerPeeking && (ui.peekingDrawer === 'inventory' || ui.peekingDrawer === 'equipment')}
-                        onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none', peekingSource: 'none' })); }}
-                        inventoryLines={inventoryLines}
-                        eqLines={eqLines}
-                        handleButtonClick={handleButtonClick}
-                        triggerHaptic={triggerHaptic}
-                        executeCommand={executeCommand}
-                        pendingDrawerContainerRef={pendingDrawerContainerRef}
-                        inlineCategories={inlineCategories}
-                        entities={entities}
-                        keywordOverrides={keywordOverrides}
-                    />
-
-                    <SessionLogDrawer
-                        isOpen={ui.drawer === 'session-log'}
-                        onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none' })); }}
-                    />
-                </>
+            {(ui.drawer === 'inventory' || ui.drawer === 'equipment') && (
+                <InventoryDrawer
+                    isOpen={true}
+                    onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none' })); }}
+                    inventoryLines={displayInventoryLines}
+                    eqLines={displayEqLines}
+                    handleButtonClick={handleButtonClick}
+                    triggerHaptic={triggerHaptic}
+                    executeCommand={executeCommand}
+                    pendingDrawerContainerRef={pendingDrawerContainerRef}
+                    inlineCategories={inlineCategories}
+                    entities={entities}
+                    keywordOverrides={keywordOverrides}
+                />
             )}
 
-            {/* Desktop Drawer Tab Rail — right edge, always accessible so users can open drawers */}
-            {!viewport.isMobile && (gameState === 'playing' || gameState === 'account') && (
-                <div className="desktop-drawer-tabs">
+            {/* Desktop-only side tabs */}
+            {!viewport.isMobile && gameState !== 'disconnected' && (
+                <div className="desktop-side-tabs">
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'stats' ? 'active' : ''}`}
-                        onClick={() => { triggerHaptic(15); handleTabClick('stats'); }}
+                        onClick={(e) => { e.stopPropagation(); triggerHaptic(15); handleTabClick('stats'); }}
                     >
                         <BarChart2 className="tab-icon" />
                         <span className="tab-text">Stats</span>
                     </div>
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'character' ? 'active' : ''}`}
-                        onClick={() => { triggerHaptic(15); handleTabClick('character'); }}
+                        onClick={(e) => { e.stopPropagation(); triggerHaptic(15); handleTabClick('character'); }}
                     >
                         <User className="tab-icon" />
                         <span className="tab-text">Char</span>
                     </div>
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'players' ? 'active' : ''}`}
-                        onClick={() => { triggerHaptic(15); handleTabClick('players'); }}
+                        onClick={(e) => { e.stopPropagation(); triggerHaptic(15); handleTabClick('players'); }}
                     >
                         <Users className="tab-icon" />
                         <span className="tab-text">Players</span>
                     </div>
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'equipment' || ui.drawer === 'inventory' ? 'active' : ''}`}
-                        onClick={() => { triggerHaptic(15); handleTabClick('equipment'); }}
+                        onClick={(e) => { e.stopPropagation(); triggerHaptic(15); handleTabClick('equipment'); }}
                     >
                         <Shield className="tab-icon" />
                         <span className="tab-text">Gear</span>
                     </div>
                     <div
                         className={`desktop-edge-tab right ${ui.mapExpanded ? 'active' : ''}`}
-                        onClick={() => { triggerHaptic(15); toggleMap(); }}
+                        onClick={(e) => { e.stopPropagation(); triggerHaptic(15); setUI(prev => ({ ...prev, mapExpanded: !prev.mapExpanded })); }}
                     >
                         <MapIcon className="tab-icon" />
                         <span className="tab-text">Map</span>

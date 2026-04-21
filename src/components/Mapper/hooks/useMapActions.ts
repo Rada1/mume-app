@@ -15,6 +15,7 @@ interface UseMapActionsProps {
     preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>>;
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
     baseMapExitsRef: React.MutableRefObject<Record<string, any>>;
+    markersRef: React.MutableRefObject<Record<string, MapperMarker>>;
     addMessage?: (type: string, msg: string) => void;
     lastDetectedTerrainRef: React.MutableRefObject<string | null>;
     loadMasterMap: (force?: boolean) => void;
@@ -22,7 +23,7 @@ interface UseMapActionsProps {
 
 export const useMapActions = ({
     rooms, setRooms, roomsRef,
-    markers, setMarkers,
+    markers, setMarkers, markersRef,
     setExploredVnums, setExploredMarkers,
     setCurrentRoomId, currentRoomIdRef,
     preloadedCoordsRef,
@@ -32,6 +33,11 @@ export const useMapActions = ({
     lastDetectedTerrainRef,
     loadMasterMap
 }: UseMapActionsProps) => {
+
+    const handleResetAndSync = useCallback(() => {
+        loadMasterMap(true);
+        addMessage?.('system', '[Mapper] Reloading master map data...');
+    }, [loadMasterMap, addMessage]);
 
     const handleAddRoom = useCallback((wx: number, wy: number, z: number) => {
         const id = generateId();
@@ -159,6 +165,7 @@ export const useMapActions = ({
         handleDeleteRoom,
         handleClearMap,
         handleSyncLocation,
+        handleResetAndSync,
         loadImportedMapData
     };
 };

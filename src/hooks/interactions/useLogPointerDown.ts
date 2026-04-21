@@ -25,7 +25,7 @@ export const useLogPointerDown = (
 
     const handleLogPointerDown = useCallback((e: React.PointerEvent, startDrag: (e: React.PointerEvent, targetEl: HTMLElement, label: string, contextStr: string) => void) => {
         const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
-        const isShopItem = targetEl?.getAttribute('data-cmd') === 'inline-shopitem';
+        const isShopItem = targetEl?.getAttribute('data-cmd') === 'inline-shopitem' || (targetEl?.getAttribute('data-kind') === 'object' && targetEl?.getAttribute('data-location') === 'shop');
         const label = targetEl?.innerText.trim() || '';
 
         const isLong = joystick.isTargetModifierActive;

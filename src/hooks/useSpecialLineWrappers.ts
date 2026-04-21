@@ -27,6 +27,7 @@ export const useSpecialLineWrappers = (
             const isEdit = type === 'account-selection-edit' || rawText.includes('Edit');
             
             return renderInlineSpan({
+                id: `account-selection-${mid}-${num}`,
                 mid,
                 cmd: 'button',
                 kind: 'button',
@@ -34,7 +35,6 @@ export const useSpecialLineWrappers = (
                 context: num,
                 action: 'command',
                 category: 'account',
-                style: `color: inherit; font-weight: 800; cursor: pointer; display: inline-block; width: 100%`,
                 dataAttrs: isEdit ? { 'account-stage': 'stat-editing' } : undefined,
                 extraClasses: ['auto-account-cmd'],
                 innerHtml: originalHtml
@@ -49,35 +49,41 @@ export const useSpecialLineWrappers = (
                 const plusCmd = `${stat} ${val + 1}`;
                 const minusCmd = `${stat} ${val - 1}`;
                 
+                const plusBtn = renderInlineSpan({
+                    id: `account-stat-${mid}-${stat}-plus`,
+                    mid,
+                    cmd: 'button',
+                    kind: 'button',
+                    location: 'account',
+                    action: 'command',
+                    context: plusCmd,
+                    category: 'account',
+                    dataAttrs: { silent: 'true' },
+                    extraClasses: ['stat-btn'],
+                    innerHtml: '+'
+                });
+
+                const minusBtn = renderInlineSpan({
+                    id: `account-stat-${mid}-${stat}-minus`,
+                    mid,
+                    cmd: 'button',
+                    kind: 'button',
+                    location: 'account',
+                    action: 'command',
+                    context: minusCmd,
+                    category: 'account',
+                    dataAttrs: { silent: 'true' },
+                    extraClasses: ['stat-btn'],
+                    innerHtml: '-'
+                });
+
                 return `
                     <div class="stat-block">
                         <div class="stat-label">${stat}:</div>
                         <div class="stat-controls">
-                            ${renderInlineSpan({
-                                mid,
-                                cmd: 'button',
-                                kind: 'button',
-                                location: 'account',
-                                action: 'command',
-                                context: plusCmd,
-                                category: 'account',
-                                dataAttrs: { silent: 'true' },
-                                extraClasses: ['stat-btn'],
-                                innerHtml: '+'
-                            })}
+                            ${plusBtn}
                             <span class="stat-value">${valStr}</span>
-                            ${renderInlineSpan({
-                                mid,
-                                cmd: 'button',
-                                kind: 'button',
-                                location: 'account',
-                                action: 'command',
-                                context: minusCmd,
-                                category: 'account',
-                                dataAttrs: { silent: 'true' },
-                                extraClasses: ['stat-btn'],
-                                innerHtml: '-'
-                            })}
+                            ${minusBtn}
                         </div>
                     </div>
                 `.trim();
@@ -148,6 +154,7 @@ export const useSpecialLineWrappers = (
             
             return safeHighlight(originalHtml, characterName, false, (m) => {
                 return renderInlineSpan({
+                    id: `account-char-${mid}-${characterName}`,
                     mid,
                     cmd: 'button',
                     kind: 'button',
@@ -156,7 +163,6 @@ export const useSpecialLineWrappers = (
                     action: 'command',
                     category: 'account',
                     extraClasses: ['auto-account-cmd'],
-                    style: 'border-bottom: 1px solid var(--glow-color)',
                     innerHtml: m
                 });
             }, regexCache);

@@ -6,7 +6,7 @@
 import { useMemo, useCallback } from 'react';
 import { 
     MessageType, 
-    Occupant, 
+    GmcpOccupant, 
     GroupMember, 
     InlineCategoryConfig,
 } from '../types';
@@ -27,8 +27,8 @@ import { useSpecialLineWrappers } from './useSpecialLineWrappers';
 export const useMessageHighlighter = (
     target: string | null,
     buttonsRef: any, // keywordHighlights
-    currentOccupants: Occupant[],
-    roomNpcs: Occupant[], // often merged with occupants or used separately
+    currentOccupants: GmcpOccupant[],
+    roomNpcs: GmcpOccupant[], // often merged with occupants or used separately
     characterName: string,
     roomItems: any[],
     inlineCategories: InlineCategoryConfig[] = [],
@@ -141,11 +141,11 @@ export const useMessageHighlighter = (
 
         // 2. Object Category Keywords
         inlineCategories.forEach(cat => {
-            if (cat.type !== 'object' || !cat.keywords) return;
+            if (cat.kind !== 'object' || !cat.keywords) return;
             
             cat.keywords.forEach(keyword => {
                 result = safeHighlight(result, keyword, false, (match) => {
-                    const buttonId = `auto-obj-${cat.name}-${keyword.toLowerCase().replace(/\s+/g, '-')}`;
+                    const buttonId = `auto-obj-${cat.id}-${keyword.toLowerCase().replace(/\s+/g, '-')}`;
                     const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'object');
                     
                     return renderInlineSpan({

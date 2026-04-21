@@ -153,3 +153,20 @@ export function getGlowColorForCategory(category: string | null, customCategorie
 
     return null;
 }
+
+export const resolveKindAndLocation = (kind?: string | null, location?: string | null, cmd?: string | null): { kind: string, location: string } => {
+    if (kind && location) {
+        return { kind, location };
+    }
+    
+    // Fallbacks based on old `data-cmd`
+    if (cmd === 'inline-obj-room' || cmd === 'roomitems' || cmd === 'inline-corpses') return { kind: 'object', location: 'room' };
+    if (cmd === 'inline-obj-char' || cmd === 'inventorylist') return { kind: 'object', location: 'carried' };
+    if (cmd === 'inline-obj-worn' || cmd === 'equipmentlist') return { kind: 'object', location: 'worn' };
+    if (cmd === 'inline-obj-shop') return { kind: 'object', location: 'shop' };
+    if (cmd === 'inlinenpc' || cmd === 'roomnpcs') return { kind: 'npc', location: 'room' };
+    if (cmd === 'inlineplayer') return { kind: 'player', location: 'room' };
+
+    // Default catch-all
+    return { kind: 'object', location: 'room' };
+};

@@ -1,5 +1,5 @@
 import { CustomButton, InlineCategoryConfig, GameEntity, EntityCapability, GmcpOccupant } from '../types';
-import { getCategoryForName, canonicalizeCategoryId } from './categorizationUtils';
+import { getCategoryForName, canonicalizeCategoryId, resolveKindAndLocation } from './categorizationUtils';
 import { getHierarchyChain } from './buttonHierarchyUtils';
 
 export interface ActionFilterDeps {
@@ -15,22 +15,22 @@ export interface ActionFilterDeps {
 export function isButtonValidForEntity(
     button: CustomButton,
     entityId: string,
-    setId: string,
+    kind: string,
+    location: string,
     deps: ActionFilterDeps,
     categoryOverride?: string,
-    location?: string,
-    kind?: string
+    legacySetId?: string
 ): boolean {
     const { inlineCategories, roomNpcs, entities } = deps;
     const entity = entities[entityId];
-    
+
     // --- STEP 1: Determine Context & Category ---
     const context = entity?.noun || 
                    entityId.replace(/^(auto-npc-|auto-item-|auto-obj-|roomnpcs:|roomitems:|inventorylist:|equipmentlist:|log-npc-|npc-|player-|object-)/, '')
                            .replace(/-[a-f0-9]+$/, '').replace(/-/g, ' ');
 
     const dynamicCat = context ? getCategoryForName(context, inlineCategories) : null;
-    const genericBaseCats = ['object-room', 'object-inv', 'object-worn', 'npc'];
+    const genericBaseCats = ['object-room', 'object-inv', 'object-worn', 'npc', 'player'];
     
     // Canonicalize the override to ensure comparison works
     const catIdOverride = categoryOverride ? canonicalizeCategoryId(categoryOverride) : null;
@@ -39,18 +39,8 @@ export function isButtonValidForEntity(
         ? catIdOverride 
         : (dynamicCat || catIdOverride || null);
     
-    // Use the explicit location if provided, otherwise derive from legacy setId
-    let effectiveLocation = location;
-    if (!effectiveLocation) {
-        if (setId === 'object-inv' || setId === 'inventorylist' || setId === 'inv') effectiveLocation = 'inv';
-        else if (setId === 'object-worn' || setId === 'equipmentlist' || setId === 'eq') effectiveLocation = 'worn';
-        else if (setId === 'object-shop') effectiveLocation = 'shop';
-        else if (setId === 'object-room' || setId === 'roomitems' || setId === 'room') effectiveLocation = 'room';
-    }
-
-    // Build hierarchy chain. If we have a location, we use kind + location for the chain.
-    const baseId = (kind && effectiveLocation) ? `${kind}-${effectiveLocation}` : setId;
-    const fullSetChain = getHierarchyChain(baseId, detectedCatId);
+    // Build hierarchy chain using new axes
+    const fullSetChain = getHierarchyChain(kind, location, detectedCatId || undefined);
 
     // Debugging for service-related buttons
     const isServiceButton = button.setId === 'npc-innkeeper' || 
@@ -96,13 +86,13 @@ export function isButtonValidForEntity(
     }
 
     // --- STEP 2: Main Set Validation ---
-    if (!fullSetChain.includes(button.setId) && button.setId !== setId && button.setId !== kind) {
+    if (!fullSetChain.includes(button.setId) && button.setId !== legacySetId) {
         return false;
     }
 
     // --- STEP 3: MUME Specific Rules ---
     const isShopCmd = button.command.includes('mend') || button.command.includes('sell') || button.command.includes('value') || button.command === 'list' || button.command.startsWith('buy ');
-    const isPosessed = effectiveLocation === 'inv' || effectiveLocation === 'worn' || effectiveLocation === 'carried';
+    const isPosessed = location === 'inv' || location === 'worn' || location === 'carried' || location === 'object-inv' || location === 'object-worn';
 
     // Block 'Get' for items already in possession
     if (button.command.startsWith('get ') && !button.command.includes('all') && isPosessed) {
@@ -110,7 +100,7 @@ export function isButtonValidForEntity(
     }
 
     // Block shop actions for worn items
-    if (isShopCmd && effectiveLocation === 'worn') {
+    if (isShopCmd && (location === 'worn' || location === 'object-worn')) {
         return false;
     }
 
@@ -146,24 +136,21 @@ export function getCommonActions(
     baseSetId: string,
     deps: ActionFilterDeps,
     favorites: string[] = [],
-    location?: string,
-    kind?: string
+    providedLocation?: string,
+    providedKind?: string
 ): CustomButton[] {
     if (entries.length === 0) return [];
 
     // Map each entry (potentially setId:id:context) to its set of valid buttons
     const resolvedEntries = entries.map(entry => {
         const parts = entry.split(':');
-        // Legacy: parts[0] might be setId, parts[1] is entityId
-        // New: entries might already have kind/location if metadata is rich
         const id = parts.length > 2 ? parts[1] : (parts.length === 2 ? parts[1] : parts[0]);
         const entity = deps.entities[id];
         
-        // Derive location from entity if not explicitly provided
-        const effectiveLocation = location || entity?.location;
-        const effectiveKind = kind || (id.includes('npc') ? 'npc' : (id.includes('player') ? 'player' : 'object'));
+        // Derive location and kind
+        const axes = resolveKindAndLocation(providedKind || null, providedLocation || entity?.location, baseSetId);
         
-        return deps.buttons.filter(b => isButtonValidForEntity(b, id, baseSetId, deps, undefined, effectiveLocation, effectiveKind));
+        return deps.buttons.filter(b => isButtonValidForEntity(b, id, axes.kind, axes.location, deps, undefined, baseSetId));
     });
 
     // Find the intersection of button commands
@@ -177,9 +164,6 @@ export function getCommonActions(
     const uniqueActions = intersection.filter(b => {
         if (seenCommands.has(b.command)) return false;
         seenCommands.add(b.command);
-        if (b.id.includes('shop') || b.id.includes('innkeeper')) {
-            console.log(`[DEBUG] Final decision for ${b.id}: VALID`);
-        }
         return true;
     });
 

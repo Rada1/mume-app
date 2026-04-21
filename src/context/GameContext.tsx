@@ -520,6 +520,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         inlineCategories: s.inlineCategories, setInlineCategories: s.setInlineCategories,
         isHighlighterEnabled: s.isHighlighterEnabled, setIsHighlighterEnabled: s.setIsHighlighterEnabled,
         isBloomEnabled: s.isBloomEnabled, setIsBloomEnabled: s.setIsBloomEnabled,
+        playerColor: s.playerColor, setPlayerColor: s.setPlayerColor,
+        npcColor: s.npcColor, setNpcColor: s.setNpcColor,
         isTimestampEnabled: s.isTimestampEnabled, setIsTimestampEnabled: s.setIsTimestampEnabled,
         autoSaveSessions: s.autoSaveSessions, setAutoSaveSessions: s.setAutoSaveSessions,
         isNewbieMode: s.isNewbieMode, setIsNewbieMode: s.setIsNewbieMode

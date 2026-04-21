@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Upload, Trash2, Volume2, Plus, Music } from 'lucide-react';
+import { Upload, Trash2, Volume2, Plus, Music, Sliders } from 'lucide-react';
 import { SoundTrigger } from '../../types';
 import { useGame } from '../../context/GameContext';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 
 interface SoundSettingsProps {
     isSoundEnabled: boolean;
@@ -27,6 +28,11 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
     handleSoundUpload,
 }) => {
     const { zoneMusic, setZoneMusic } = useGame();
+    const { 
+        masterVolume, setMasterVolume, 
+        sfxVolume, setSfxVolume, 
+        musicVolume, setMusicVolume 
+    } = useSettingsStore();
     const [newZoneName, setNewZoneName] = useState('');
     const [newZoneUrl, setNewZoneUrl] = useState('');
 

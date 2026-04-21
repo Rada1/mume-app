@@ -2,7 +2,7 @@ import React from 'react';
 import { CustomButton, MessageType, PopoverState, InlineCategoryConfig, GameEntity, ParleyState, GmcpOccupant } from '../../types';
 import { isItemContainer, sanitizeGameTarget } from '../../utils/gameUtils';
 import { getEffectiveKeyword } from '../../utils/keywordUtils';
-import { DEFAULT_INLINE_CATEGORIES, getCategoryForName, canonicalizeCategoryId } from '../../utils/categorizationUtils';
+import { DEFAULT_INLINE_CATEGORIES, getCategoryForName, canonicalizeCategoryId, resolveKindAndLocation } from '../../utils/categorizationUtils';
 import { getHierarchyChain } from '../../utils/buttonHierarchyUtils';
 import { isButtonValidForEntity } from '../../utils/actionUtils';
 import { CircleHelp } from 'lucide-react';
@@ -76,8 +76,10 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
         ? catIdFromState 
         : (dynamicCat || catIdFromState);
     
+    const { kind, location } = resolveKindAndLocation(popoverState.kind, popoverState.location, popoverState.setId);
+
     // Build actual hierarchy chain
-    const fullSetChain = getHierarchyChain(popoverState.setId, detectedCatId);
+    const fullSetChain = getHierarchyChain(kind, location, detectedCatId);
 
     const isTacticalSet = ['warriorskilllist', 'rangerskilllist', 'clericspelllist', 'thiefskilllist', 'magespelllist', 'doors'].includes(popoverState.setId);
     const isTargetable = !isTacticalSet && ['selection', 'inventorylist', 'equipmentlist', 'npc', 'player', 'object-corpse', ...NPC_SUBCATEGORIES, ...fullSetChain].includes(popoverState.setId);
@@ -323,7 +325,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
         // Use the centralized validator
         const filterDeps = { buttons, inlineCategories, roomNpcs, entities };
         const isValid = popoverState.entityId 
-            ? isButtonValidForEntity(b, popoverState.entityId, popoverState.setId, filterDeps, popoverState.category)
+            ? isButtonValidForEntity(b, popoverState.entityId, kind, location, filterDeps, popoverState.category, popoverState.setId)
             : true;
 
         if (!isValid) return false;
@@ -471,7 +473,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                     }, 150);
                                 }}
                             >
-                                {cat.label?.toUpperCase() || cat.id.replace('object-', '').replace('npc-', '').toUpperCase()}
+                                {cat.id.replace('object-', '').replace('npc-', '').toUpperCase()}
                             </div>
                         ))}
                     </div>
@@ -543,7 +545,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                         if (seenCommands.has(b.command)) return false;
                                         
                                         const isValid = popoverState.entityId 
-                                            ? isButtonValidForEntity(b, popoverState.entityId, popoverState.setId, filterDeps, popoverState.category)
+                                            ? isButtonValidForEntity(b, popoverState.entityId, kind, location, filterDeps, popoverState.category, popoverState.setId)
                                             : true;
 
                                         if (isValid) {

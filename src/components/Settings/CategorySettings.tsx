@@ -38,6 +38,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ categories, setCate
 
         const newCat: InlineCategoryConfig = {
             id,
+            kind: 'object', // Default to object for custom categories
             keywords: [],
             color: 'rgba(100, 255, 100, 0.5)'
         };
