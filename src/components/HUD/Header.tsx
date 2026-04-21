@@ -5,6 +5,7 @@ import { EnvControls } from '../Layout/EnvControls';
 import { RecorderHUD } from '../Layout/HUD/RecorderHUD';
 import { LightingType, WeatherType } from '../../types';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
+import { useModeStore } from '../../stores/useModeStore';
 
 interface HeaderProps {
     isLandscape?: boolean;
@@ -35,6 +36,10 @@ const Header: React.FC<HeaderProps> = ({
         triggerHaptic
     } = useGame();
 
+    // Get mode state
+    const mode = useModeStore();
+    const isSpectating = mode.isSpectating;
+    const { spectateTarget, activeView, setActiveView } = mode;
     const { stats, setStats, target, setTarget } = useVitals();
     const { 
         ui, setUI, setIsSettingsOpen, setIsSetManagerOpen, setIsLibraryOpen, setPopoverState,
