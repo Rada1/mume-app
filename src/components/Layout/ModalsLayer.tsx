@@ -9,6 +9,8 @@ import { KeywordEditModal } from '../Modals/KeywordEditModal';
 import { LibraryModal } from '../Modals/LibraryModal';
 
 
+import { useSettingsStore } from '../../stores/useSettingsStore';
+
 interface ModalsLayerProps {
     isLoading: boolean;
     returnToManager: boolean;
@@ -133,6 +135,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setUI
     } = useUI();
 
+    const { objectColor, setObjectColor } = useSettingsStore();
+
     const popoverRef = React.useRef<HTMLDivElement>(null);
 
     // Global click-outside to close popovers
@@ -221,10 +225,18 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setIsNewbieMode={setIsNewbieMode}
                     showRecordingIndicator={showRecordingIndicator}
                     setShowRecordingIndicator={setShowRecordingIndicator}
+                    objectColor={objectColor}
+                    setObjectColor={setObjectColor}
                     fontFamily={fontFamily}
                     setFontFamily={setFontFamily}
                     showSpectatePromptInLog={showSpectatePromptInLog}
                     setShowSpectatePromptInLog={setShowSpectatePromptInLog}
+                    isEditMode={btn.isEditMode}
+                    setIsEditMode={btn.setIsEditMode}
+                    isGridEnabled={btn.isGridEnabled}
+                    setIsGridEnabled={btn.setIsGridEnabled}
+                    createButton={btn.createButton}
+                    setIsSetManagerOpen={setIsSetManagerOpen}
                 />
             )}
 

@@ -6,7 +6,8 @@
 import { useCallback, RefObject, useRef } from 'react';
 import { CustomButton, InlineCategoryConfig, MessageType } from '../types';
 import { buildHighlighterCandidates, applyColorTaggedObjects } from '../utils/highlighterUtils';
-import { getGlowColorForCategory, getCategoryForName } from '../utils/categorizationUtils';
+import { getGlowColorForCategory, getCategoryForName, getCategoryType } from '../utils/categorizationUtils';
+import { getMemberColor } from '../utils/groupUtils';
 import { isObjectSelected } from '../utils/selectionUtils';
 import { ARRIVE_REGEX, LEAVE_REGEX } from './useMessageLog';
 
@@ -129,11 +130,10 @@ export const useMessageHighlighter = (
         // and wrap it in the same interactive button markup used for PCs.
         if (type === 'comm-sender') {
             const name = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
-            const playerGlow = getGlowColorForCategory('inlineplayer');
             const buttonId = `auto-${name}`;
             const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'inlineplayer');
             
-            return `<span class="inline-btn auto-occupant pc-highlighter${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(name)}" data-action="menu" data-menu-display="list" style="--glow-color: ${playerGlow}; color: var(--glow-color); font-weight: 800">${originalHtml}</span>`;
+            return `<span class="inline-btn auto-occupant pc-highlighter${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(name)}" data-action="menu" data-menu-display="list" data-category="player">${originalHtml}</span>`;
         }
 
         // --- 1.2. Rule: Account Selection Buttons (Whole-Line Wrapper) ---
@@ -143,18 +143,16 @@ export const useMessageHighlighter = (
             const rawText = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
             const numMatch = rawText.match(/\((\d+)\)/);
             const num = numMatch ? numMatch[1] : '';
-            const accountGlow = '#facc15'; // MUME yellow
             const isEdit = type === 'account-selection-edit' || rawText.includes('Edit');
             const editAttr = isEdit ? 'data-account-stage="stat-editing"' : '';
             
-            return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="${esc(num)}" data-action="command" ${editAttr} style="--glow-color: ${accountGlow}; color: inherit; font-weight: 800; cursor: pointer; display: inline-block; width: 100%">${originalHtml}</span>`;
+            return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="${esc(num)}" data-action="command" ${editAttr} data-category="account" style="color: inherit; font-weight: 800; cursor: pointer; display: inline-block; width: 100%">${originalHtml}</span>`;
         }
 
         // --- 1.3. Rule: Account Stat Edit Buttons (+/-) ---
         // Redesign: Transmute the standard stat line into a collection of styled blocks.
         if (type === 'account-stat-edit') {
             const statRegex = /([a-z]{3}):\s*(?:<[^>]+>)*(\d+)(?:<[^>]+>)*/gi;
-            const accountGlow = '#facc15';
             
             const blocks = originalHtml.replace(statRegex, (m, stat, valStr) => {
                 const val = parseInt(valStr);
@@ -165,9 +163,9 @@ export const useMessageHighlighter = (
                     <div class="stat-block">
                         <div class="stat-label">${stat}:</div>
                         <div class="stat-controls">
-                            <span class="inline-btn stat-btn" data-mid="${mid}" data-cmd="${esc(plusCmd)}" data-action="command" data-silent="true" style="--glow-color: ${accountGlow}">+</span>
+                            <span class="inline-btn stat-btn" data-mid="${mid}" data-cmd="${esc(plusCmd)}" data-action="command" data-silent="true" data-category="account">+</span>
                             <span class="stat-value">${valStr}</span>
-                            <span class="inline-btn stat-btn" data-mid="${mid}" data-cmd="${esc(minusCmd)}" data-action="command" data-silent="true" style="--glow-color: ${accountGlow}">-</span>
+                            <span class="inline-btn stat-btn" data-mid="${mid}" data-cmd="${esc(minusCmd)}" data-action="command" data-silent="true" data-category="account">-</span>
                         </div>
                     </div>
                 `.trim();
@@ -185,19 +183,17 @@ export const useMessageHighlighter = (
             // If it's tabular "Name race level", we want the name (first word).
             const parts = rawText.split(/\s+/);
             const characterName = parts[0].endsWith(')') ? parts[1] : parts[0];
-            const accountGlow = '#facc15';
             
             return safeHighlight(originalHtml, characterName, false, (m) => {
-                return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="play ${esc(characterName)}" data-action="command" style="--glow-color: ${accountGlow}; color: var(--glow-color); font-weight: 800; border-bottom: 1px solid var(--glow-color)">${m}</span>`;
+                return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="play ${esc(characterName)}" data-action="command" data-category="account" style="border-bottom: 1px solid var(--glow-color)">${m}</span>`;
             });
         }
 
         // --- 1.1. Rule: No general highlighted words in room names, EXCEPT the active target ---
         if (isRoomName) {
             if (target) {
-                const glowColor = '#facc15'; // Target gold
                 return safeHighlight(originalHtml, target, false, (m) => {
-                    return `<span class="inline-btn auto-target active-target" draggable="true" data-mid="${mid}" data-cmd="target" data-context="${esc(target)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}">${m}</span>`;
+                    return `<span class="inline-btn auto-target active-target" draggable="true" data-mid="${mid}" data-cmd="target" data-context="${esc(target)}" data-action="menu" data-menu-display="list" data-category="target">${m}</span>`;
                 });
             }
             return originalHtml;
@@ -249,12 +245,19 @@ export const useMessageHighlighter = (
                 const subjectLower = subject.toLowerCase();
                 const isNpcSubject = /^(a|an|the|some)\s/i.test(subject);
                 const category = isNpcSubject ? 'inlinenpc' : 'inlineplayer';
-                const glowColor = getGlowColorForCategory(category, inlineCategories);
                 const buttonId = isNpcSubject ? `auto-npc-${subject}` : `auto-${subject}`;
                 const isSelected = isObjectSelected(selectedObjectIds, buttonId, category);
                 
+                const groupMemberIndex = groupMembers?.findIndex(gm => 
+                    gm.name?.toLowerCase() === subjectLower ||
+                    (isNpcSubject && subjectLower.includes(gm.name?.toLowerCase() || '---'))
+                );
+                const isGroupmate = groupMemberIndex !== undefined && groupMemberIndex !== -1;
+                const styleAttr = isGroupmate ? ` style="--glow-color: ${getMemberColor(groupMemberIndex).core}; color: var(--glow-color)"` : '';
+                const catType = isNpcSubject ? 'npc' : 'player';
+
                 newHtml = safeHighlight(newHtml, subject, false, (m) => {
-                    return `<span class="inline-btn auto-occupant movement-subject ${isNpcSubject ? 'npc-highlighter' : 'pc-highlighter'}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${category}" data-context="${esc(subject)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}; color: ${glowColor}; font-weight: 800">${m}</span>`;
+                    return `<span class="inline-btn auto-occupant movement-subject ${isNpcSubject ? 'npc-highlighter' : 'pc-highlighter'}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${category}" data-context="${esc(subject)}" data-action="menu" data-menu-display="list" data-category="${catType}"${styleAttr}>${m}</span>`;
                 });
             }
 
@@ -268,12 +271,12 @@ export const useMessageHighlighter = (
             const itemName = acquisitionMatch[1]?.trim();
             if (itemName) {
                 const itemCategory = getCategoryForName(itemName, inlineCategories) || 'inline-default';
-                const itemGlow = getGlowColorForCategory(itemCategory, inlineCategories);
                 const buttonId = `auto-item-${itemName.toLowerCase().replace(/\s+/g, '-')}`;
                 const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'inline-obj-char');
+                const catType = getCategoryType(itemCategory, inlineCategories) || 'object';
                 
                 newHtml = safeHighlight(newHtml, itemName, false, (m) => {
-                    return `<span class="inline-btn auto-item${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="inline-obj-char" data-context="${esc(itemName)}" data-action="menu" data-menu-display="list" style="--glow-color: ${itemGlow}; color: var(--glow-color); font-weight: 800">${m}</span>`;
+                    return `<span class="inline-btn auto-item${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="inline-obj-char" data-context="${esc(itemName)}" data-action="menu" data-menu-display="list" data-category="${catType}">${m}</span>`;
                 });
             }
         }
@@ -293,13 +296,12 @@ export const useMessageHighlighter = (
                 
                 if (!isHeader) {
                     // It's a quest name or area name (e.g., "Valinor")
-                    const questGlow = '#facc15'; // Quest yellow
                     // If it starts with *, strip it and take the name before any description dash/colon
                     const context = trimmed.startsWith('*') ? trimmed.substring(1).trim().split(/\s*[-:]\s*/)[0].trim() : trimmed;
                     const buttonId = `quest-${context.toLowerCase().replace(/\s+/g, '-')}`;
                     const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'quest');
                     
-                    return `<span class="inline-btn auto-quest${isSelected ? ' selected' : ''}" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="quest %n" data-context="${esc(context)}" data-action="command" data-from-drawer="true" style="--glow-color: ${questGlow}; color: var(--glow-color); font-weight: 800">${originalHtml}</span>`;
+                    return `<span class="inline-btn auto-quest${isSelected ? ' selected' : ''}" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="quest %n" data-context="${esc(context)}" data-action="command" data-from-drawer="true" data-category="quest">${originalHtml}</span>`;
                 }
             }
         }
@@ -308,24 +310,23 @@ export const useMessageHighlighter = (
         if (type === 'account-menu-item') {
             const menuKeywords = ['create', 'play', 'time', 'list', 'move', 'password', 'add', 'info', 'practice', 'link', 'lag', 'help', 'menu', 'quit', 'side', 'race', 'level', 'alphabetic', 'custom'];
             let tempHtml = originalHtml;
-            const accountGlow = '#facc15'; // MUME yellow
 
             menuKeywords.forEach(kw => {
                 tempHtml = safeHighlight(tempHtml, kw, false, (m) => {
                     const lower = m.toLowerCase();
                     if (lower === 'play') {
-                        return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-action="menu" data-cmd="play-character-select" style="--glow-color: ${accountGlow}; color: var(--glow-color); font-weight: 800; border-bottom: 1px solid var(--glow-color)">${m}</span>`;
+                        return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-action="menu" data-cmd="play-character-select" data-category="account" style="border-bottom: 1px solid var(--glow-color)">${m}</span>`;
                     }
-                    return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="${esc(lower)}" data-action="command" style="--glow-color: ${accountGlow}; color: var(--glow-color); font-weight: 800; border-bottom: 1px solid var(--glow-color)">${m}</span>`;
+                    return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="${esc(lower)}" data-action="command" data-category="account" style="border-bottom: 1px solid var(--glow-color)">${m}</span>`;
                 });
             });
 
             // Handle special keywords NEW and ? separately
             tempHtml = safeHighlight(tempHtml, 'NEW', false, (m) => {
-                return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="new" data-action="command" style="--glow-color: ${accountGlow}; color: var(--glow-color); font-weight: 800; border-bottom: 1px solid var(--glow-color)">${m}</span>`;
+                return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="new" data-action="command" data-category="account" style="border-bottom: 1px solid var(--glow-color)">${m}</span>`;
             });
             tempHtml = safeHighlight(tempHtml, '\\?', true, (m) => {
-                return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="?" data-action="command" style="--glow-color: ${accountGlow}; color: var(--glow-color); font-weight: 800; border-bottom: 1px solid var(--glow-color)">${m}</span>`;
+                return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="?" data-action="command" data-category="account" style="border-bottom: 1px solid var(--glow-color)">${m}</span>`;
             });
 
             return tempHtml;
@@ -350,13 +351,12 @@ export const useMessageHighlighter = (
                 // Search newHtml using the entity-encoded form (how ansi-to-html wrote it)
                 const htmlNameCandidate = nameCandidate.replace(/[^\x00-\x7F]/g, c => `&#x${c.codePointAt(0)!.toString(16).toUpperCase()};`);
                 let highlighted = false;
-                const playerGlow = getGlowColorForCategory('inlineplayer');
                 newHtml = safeHighlight(newHtml, htmlNameCandidate, false, (m) => {
                     if (highlighted) return m;
                     highlighted = true;
                     const buttonId = `auto-${nameCandidate}`;
                     const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'inlineplayer');
-                    return `<span class="inline-btn auto-occupant pc-highlighter${isSelected ? ' selected' : ''}" draggable="true" data-id="auto-${esc(nameCandidate)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(nameCandidate)}" data-action="menu" data-menu-display="list" style="--glow-color: ${playerGlow}; color: var(--glow-color); font-weight: 800">${m}</span>`;
+                    return `<span class="inline-btn auto-occupant pc-highlighter${isSelected ? ' selected' : ''}" draggable="true" data-id="auto-${esc(nameCandidate)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(nameCandidate)}" data-action="menu" data-menu-display="list" data-category="player">${m}</span>`;
                 });
             }
         }

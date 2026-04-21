@@ -135,8 +135,8 @@ export interface UIContextType {
     setIsSettingsOpen: (val: boolean) => void;
     isLibraryOpen: boolean;
     setIsLibraryOpen: (val: boolean) => void;
-    settingsTab: 'general' | 'sound' | 'actions' | 'help';
-    setSettingsTab: (val: 'general' | 'sound' | 'actions' | 'help') => void;
+    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'help';
+    setSettingsTab: (val: 'general' | 'sound' | 'actions' | 'buttons' | 'help') => void;
     setIsStatsOpen: (open: boolean) => void;
     setIsCharacterOpen: (open: boolean) => void;
     setIsEquipmentOpen: (open: boolean) => void;

@@ -8,7 +8,7 @@ interface MumeEditState {
     key: string;
 }
 
-export type DrawerType = 'none' | 'left' | 'right' | 'stats' | 'inv' | 'eq' | 'players' | 'map' | 'settings' | 'library' | 'actions' | 'help' | 'diagnostic';
+export type DrawerType = 'none' | 'stats' | 'character' | 'inventory' | 'equipment' | 'players' | 'session-log' | 'map' | 'settings' | 'library' | 'actions' | 'help' | 'diagnostic';
 
 interface UIState {
     // Legacy mapping compatibility
@@ -28,10 +28,15 @@ interface UIState {
     isSettingsOpen: boolean;
     isLibraryOpen: boolean;
     isButtonsOpen: boolean;
-    settingsTab: 'general' | 'sound' | 'actions' | 'help';
+    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'help';
     diagnosticLogs: string[];
     showReplayHud: boolean;
     characterTab: 'info' | 'practice' | 'quests';
+    
+    // Header Menu State
+    isMenuOpen: boolean;
+    isSetMenuOpen: boolean;
+    menuView: 'main' | 'availableSets';
     
     // Keyword Edit UI
     keywordEditState: { context: string; displayText: string } | null;
@@ -103,13 +108,16 @@ export const useUIStore = create<UIState>((set) => ({
     diagnosticLogs: [],
     showReplayHud: false,
     characterTab: 'info',
+    isMenuOpen: false,
+    isSetMenuOpen: false,
+    menuView: 'main',
     keywordEditState: null,
     keywordFailureBanner: null,
 
-    setIsCharacterOpen: (open) => set({ isCharacterOpen: open, drawer: open ? 'left' : 'none' }),
+    setIsCharacterOpen: (open) => set({ isCharacterOpen: open, drawer: open ? 'character' : 'none' }),
     setIsStatsOpen: (open) => set({ isStatsOpen: open, drawer: open ? 'stats' : 'none' }),
-    setIsInventoryOpen: (open) => set({ isInventoryOpen: open, drawer: open ? 'inv' : 'none' }),
-    setIsEquipmentOpen: (open) => set({ isEquipmentOpen: open, drawer: open ? 'eq' : 'none' }),
+    setIsInventoryOpen: (open) => set({ isInventoryOpen: open, drawer: open ? 'inventory' : 'none' }),
+    setIsEquipmentOpen: (open) => set({ isEquipmentOpen: open, drawer: open ? 'equipment' : 'none' }),
     setIsPlayersOpen: (open) => set({ isPlayersOpen: open, drawer: open ? 'players' : 'none' }),
     
     setDrawer: (drawer) => set({ drawer }),
@@ -124,7 +132,7 @@ export const useUIStore = create<UIState>((set) => ({
     setIsSettingsOpen: (open) => set({ isSettingsOpen: open }),
     setIsLibraryOpen: (open) => set({ isLibraryOpen: open }),
     setIsButtonsOpen: (open) => set({ isButtonsOpen: open }),
-    setSettingsTab: (tab) => set({ settingsTab: tab }),
+    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'buttons' | 'help') => set({ settingsTab: tab }),
     addDiagnosticLog: (msg) => set((state) => ({ 
         diagnosticLogs: [msg, ...state.diagnosticLogs].slice(0, 50) 
     })),
@@ -137,13 +145,13 @@ export const useUIStore = create<UIState>((set) => ({
         return { ...next };
     }),
 
-    openCharacter: () => set({ isCharacterOpen: true, drawer: 'left' }),
+    openCharacter: () => set({ isCharacterOpen: true, drawer: 'character' }),
     closeCharacter: () => set({ isCharacterOpen: false, drawer: 'none' }),
     openStats: () => set({ isStatsOpen: true, drawer: 'stats' }),
     closeStats: () => set({ isStatsOpen: false, drawer: 'none' }),
-    openInventory: () => set({ isInventoryOpen: true, drawer: 'inv' }),
+    openInventory: () => set({ isInventoryOpen: true, drawer: 'inventory' }),
     closeInventory: () => set({ isInventoryOpen: false, drawer: 'none' }),
-    openEquipment: () => set({ isEquipmentOpen: true, drawer: 'eq' }),
+    openEquipment: () => set({ isEquipmentOpen: true, drawer: 'equipment' }),
     closeEquipment: () => set({ isEquipmentOpen: false, drawer: 'none' }),
     openPlayers: () => set({ isPlayersOpen: true, drawer: 'players' }),
     closePlayers: () => set({ isPlayersOpen: false, drawer: 'none' }),

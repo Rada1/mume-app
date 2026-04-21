@@ -113,6 +113,10 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
 
   const attachToLive = useCallback((liveLog: SessionLog) => {
     console.log('[Replayer] Attaching to live log');
+    if (!liveLog || !liveLog.log) {
+        console.warn('[Replayer] Cannot attach to null/invalid log');
+        return;
+    }
     setLog(liveLog);
     logRef.current = liveLog;
     const durationValue = liveLog.log.length > 0 ? liveLog.log[liveLog.log.length - 1].t : 0;
@@ -358,7 +362,7 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
       }
   }, [play, seek]);
 
-  return {
+  return useMemo(() => ({
     log,
     loadLog,
     clearLog,
@@ -376,5 +380,9 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
     attachToLive,
     updateLiveDuration,
     state
-  };
+  }), [
+    log, loadLog, clearLog, play, pause, seek, setSpeed, setIsVisible,
+    setPrivacyMode, performSearch, startExport, exportAsText, stopExport,
+    setTrimRange, attachToLive, updateLiveDuration, state
+  ]);
 };

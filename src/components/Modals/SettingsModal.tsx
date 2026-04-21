@@ -5,6 +5,7 @@ import GeneralSettings from '../Settings/GeneralSettings';
 import DataManagement from '../Settings/DataManagement';
 import SoundSettings from '../Settings/SoundSettings';
 import ActionSettings from '../Settings/ActionSettings';
+import ButtonSettings from '../Settings/ButtonSettings';
 import HelpGuides from '../Settings/HelpGuides';
 import { SoundTrigger, UiMode } from '../../types';
 
@@ -44,6 +45,8 @@ interface SettingsModalProps {
     setIsImmersionMode: (val: boolean) => void;
     isHighlighterEnabled: boolean;
     setIsHighlighterEnabled: (val: boolean) => void;
+    objectColor: string;
+    setObjectColor: (val: string) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
     isSpectateMode: boolean;
@@ -54,14 +57,20 @@ interface SettingsModalProps {
     setFontFamily: (val: string) => void;
     isNewbieMode: boolean;
     setIsNewbieMode: (val: boolean) => void;
-    showLegacyButtons?: boolean;
-    setShowLegacyButtons?: (val: boolean) => void;
     showRecordingIndicator?: boolean;
     setShowRecordingIndicator?: (val: boolean) => void;
     autoSaveSessions?: boolean;
     setAutoSaveSessions?: (val: boolean) => void;
     showSpectatePromptInLog?: boolean;
     setShowSpectatePromptInLog?: (val: boolean) => void;
+    
+    // Button specific props
+    isEditMode: boolean;
+    setIsEditMode: (val: boolean) => void;
+    isGridEnabled: boolean;
+    setIsGridEnabled: (val: boolean) => void;
+    createButton: () => void;
+    setIsSetManagerOpen: (val: boolean) => void;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -100,6 +109,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setIsImmersionMode,
     isHighlighterEnabled,
     setIsHighlighterEnabled,
+    objectColor,
+    setObjectColor,
     isBloomEnabled,
     setIsBloomEnabled,
     isSpectateMode,    setIsSpectateMode,
@@ -114,7 +125,13 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     autoSaveSessions,
     setAutoSaveSessions,
     showSpectatePromptInLog,
-    setShowSpectatePromptInLog
+    setShowSpectatePromptInLog,
+    isEditMode,
+    setIsEditMode,
+    isGridEnabled,
+    setIsGridEnabled,
+    createButton,
+    setIsSetManagerOpen
 }) => {
     const {
         isMmapperMode, setIsMmapperMode,
@@ -145,6 +162,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                     </div>
                     <div className={`modal-tab ${settingsTab === 'actions' ? 'active' : ''}`} onClick={() => setSettingsTab('actions')}>
                         <Activity size={16} /> <span>Actions</span>
+                    </div>
+                    <div className={`modal-tab ${settingsTab === 'buttons' ? 'active' : ''}`} onClick={() => setSettingsTab('buttons')}>
+                        <Activity size={16} /> <span>Buttons</span>
                     </div>
                     <div className={`modal-tab ${settingsTab === 'help' ? 'active' : ''}`} onClick={() => setSettingsTab('help')}>
                         <HelpCircle size={16} /> <span>Help & Guides</span>
@@ -186,6 +206,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setShowRecordingIndicator={setShowRecordingIndicator}
                                 isHighlighterEnabled={isHighlighterEnabled}
                                 setIsHighlighterEnabled={setIsHighlighterEnabled}
+                                objectColor={objectColor}
+                                setObjectColor={setObjectColor}
                                 isBloomEnabled={isBloomEnabled}
                                 setIsBloomEnabled={setIsBloomEnabled}
                                 isSpectateMode={isSpectateMode}
@@ -228,6 +250,17 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                         <ActionSettings
                             actions={actions}
                             setActions={setActions}
+                        />
+                    )}
+
+                    {settingsTab === 'buttons' && (
+                        <ButtonSettings
+                            isEditMode={isEditMode}
+                            setIsEditMode={setIsEditMode}
+                            isGridEnabled={isGridEnabled}
+                            setIsGridEnabled={setIsGridEnabled}
+                            createButton={createButton}
+                            setIsSetManagerOpen={setIsSetManagerOpen}
                         />
                     )}
 

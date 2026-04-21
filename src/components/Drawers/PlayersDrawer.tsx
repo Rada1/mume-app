@@ -230,7 +230,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
             onClick={handleBackdropClick}
         >
             <div
-                className={`character-drawer-content log-card-drawer left-drawer ${isOpen ? 'open' : ''}`}
+                className={`players-drawer log-card-drawer left-drawer ${isOpen ? 'open' : ''}`}
                 onClick={onClickInternal}
                 onPointerDown={onPointerDownInternal}
                 onPointerUp={onPointerUpInternal}
@@ -274,7 +274,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                 <div className="drawer-body" style={{ pointerEvents: 'auto', flex: 1, marginRight: '0', overflowY: 'auto', position: 'relative', padding: 0 }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
                     {activeTab === 'group' ? (
                         <div style={{ padding: '8px 0 0 0' }}>
-                            {groupMembers.length > 0 ? (
+                            {(Array.isArray(groupMembers) && groupMembers.length > 0) ? (
                                 groupMembers.map((m, idx) => <MemberRow key={m.id} member={m} index={idx} />)
                             ) : (
                                 <div style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>

@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { Map as MapIcon, User, Shield, Users, BarChart2 } from 'lucide-react';
 import { InventoryDrawer } from './InventoryDrawer';
 import { StatsDrawer } from './StatsDrawer';
 import { CharacterDrawer } from './CharacterDrawer';
@@ -107,11 +108,12 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     soundTriggers, newSoundPattern, setNewSoundPattern, newSoundRegex, setNewSoundRegex,
     handleSoundUpload, setSoundTriggers
 }) => {
-    const { 
-        triggerHaptic, characterName, viewport, mapperRef, 
-        pendingDrawerContainerRef, inlineCategories, entities, keywordOverrides 
+    const {
+        triggerHaptic, characterName, viewport, mapperRef,
+        pendingDrawerContainerRef, inlineCategories, entities, keywordOverrides,
+        gameState
     } = useGame() as any;
-    const { ui, setUI, isLibraryOpen, setIsLibraryOpen } = useUI();
+    const { ui, setUI, isLibraryOpen, setIsLibraryOpen, handleTabClick, toggleMap } = useUI() as any;
 
     // On desktop, push the log right/left so side drawers sit beside it instead of over it
     React.useEffect(() => {
@@ -229,6 +231,47 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                         onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none' })); }}
                     />
                 </>
+            )}
+
+            {/* Desktop Drawer Tab Rail — right edge, always accessible so users can open drawers */}
+            {!viewport.isMobile && (gameState === 'playing' || gameState === 'account') && (
+                <div className="desktop-drawer-tabs">
+                    <div
+                        className={`desktop-edge-tab right ${ui.drawer === 'stats' ? 'active' : ''}`}
+                        onClick={() => { triggerHaptic(15); handleTabClick('stats'); }}
+                    >
+                        <BarChart2 className="tab-icon" />
+                        <span className="tab-text">Stats</span>
+                    </div>
+                    <div
+                        className={`desktop-edge-tab right ${ui.drawer === 'character' ? 'active' : ''}`}
+                        onClick={() => { triggerHaptic(15); handleTabClick('character'); }}
+                    >
+                        <User className="tab-icon" />
+                        <span className="tab-text">Char</span>
+                    </div>
+                    <div
+                        className={`desktop-edge-tab right ${ui.drawer === 'players' ? 'active' : ''}`}
+                        onClick={() => { triggerHaptic(15); handleTabClick('players'); }}
+                    >
+                        <Users className="tab-icon" />
+                        <span className="tab-text">Players</span>
+                    </div>
+                    <div
+                        className={`desktop-edge-tab right ${ui.drawer === 'equipment' || ui.drawer === 'inventory' ? 'active' : ''}`}
+                        onClick={() => { triggerHaptic(15); handleTabClick('equipment'); }}
+                    >
+                        <Shield className="tab-icon" />
+                        <span className="tab-text">Gear</span>
+                    </div>
+                    <div
+                        className={`desktop-edge-tab right ${ui.mapExpanded ? 'active' : ''}`}
+                        onClick={() => { triggerHaptic(15); toggleMap(); }}
+                    >
+                        <MapIcon className="tab-icon" />
+                        <span className="tab-text">Map</span>
+                    </div>
+                </div>
             )}
         </>
     );

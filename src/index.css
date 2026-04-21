@@ -15,8 +15,8 @@
     left: 0;
     right: 0;
     height: var(--mobile-gutter-height);
-    background: rgb(0, 0, 0);
-    z-index: 6000;
+    background: rgb(10, 13, 21);
+    z-index: 7000;
     touch-action: none;
     transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
     overflow: visible; 
@@ -43,7 +43,8 @@
 .modals-layer-wrapper .popover-menu,
 .modals-layer-wrapper .modal,
 .modals-layer-wrapper .floating-card-container,
-.modals-layer-wrapper .standard-menu-popover {
+.modals-layer-wrapper .standard-menu-popover,
+.modals-layer-wrapper .map-drawer-desktop {
     pointer-events: auto;
 }
 
@@ -98,6 +99,7 @@
 .hud-clusters-absolute-layer {
     display: block;
     pointer-events: none;
+    z-index: 6000;
 }
 
 /* Children should not capture events by default to allow log interaction beneath */
@@ -411,7 +413,7 @@
     padding: 0 20px;
     display: flex;
     align-items: center;
-    background: rgb(35, 35, 40);
+    background: var(--input-bg);
     border-radius: 24px; 
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
@@ -682,8 +684,8 @@
 /* Ensure the message log area is ALWAYS interactive regardless of HUD state */
 .app-container.is-mobile .message-log-container {
     pointer-events: auto !important;
-    z-index: 6500; /* Mirror content-layer level within its context, above gutter (6000) */
-    touch-action: manipulation !important; /* Disable double-tap-to-zoom to improve log targeting taps */
+    z-index: 5000; /* Below gutter (7000) but accessible when gutter has pointer-events: none */
+    touch-action: manipulation !important;
 }
 
 .app-container.is-mobile .message-log {
@@ -706,6 +708,7 @@
 .app-container .hud-clusters-absolute-layer,
 .app-container .custom-buttons-layer {
     pointer-events: none !important;
+    z-index: 6000;
 }
 
 

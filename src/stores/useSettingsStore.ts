@@ -22,6 +22,9 @@ interface SettingsState {
     uiMode: UiMode;
     isBloomEnabled: boolean;
     isHighlighterEnabled: boolean;
+    objectColor: string;
+    playerColor: string;
+    npcColor: string;
     
     // UI Behavior
     disable3dScroll: boolean;
@@ -41,13 +44,13 @@ interface SettingsState {
     isNoviceMode: boolean;
     isMmapperMode: boolean;
     autoSaveSessions: boolean;
+    soundTriggers: import('../types').SoundTrigger[];
     teleportTargets: TeleportTarget[];
     inlineCategories: string[];
     favorites: string[];
     zoneMusic: boolean;
 
     // Mapper Context Settings
-    isMapFloating: boolean;
     allowMapPersistence: boolean;
     unveilMap: boolean;
     
@@ -78,11 +81,11 @@ interface SettingsState {
     setIsNoviceMode: (val: boolean) => void;
     setIsMmapperMode: (val: boolean) => void;
     setAutoSaveSessions: (val: boolean) => void;
+    setSoundTriggers: (val: import('../types').SoundTrigger[]) => void;
     setTeleportTargets: (val: TeleportTarget[]) => void;
     setInlineCategories: (val: string[]) => void;
     setFavorites: (val: string[]) => void;
     setZoneMusic: (val: boolean) => void;
-    setIsMapFloating: (val: boolean) => void;
     setAllowMapPersistence: (val: boolean) => void;
     setUnveilMap: (val: boolean) => void;
 }
@@ -103,6 +106,9 @@ export const useSettingsStore = create<SettingsState>()(
             uiMode: 'auto',
             isBloomEnabled: true,
             isHighlighterEnabled: true,
+            objectColor: 'rgba(251, 146, 60, 0.95)',
+            playerColor: 'rgba(125, 211, 252, 0.9)',
+            npcColor: 'rgba(253, 224, 71, 0.95)',
             
             disable3dScroll: false,
             disableSmoothScroll: false,
@@ -120,12 +126,12 @@ export const useSettingsStore = create<SettingsState>()(
             isNoviceMode: true,
             isMmapperMode: false,
             autoSaveSessions: false,
+            soundTriggers: [],
             teleportTargets: [],
             inlineCategories: [],
             favorites: [],
             zoneMusic: true,
 
-            isMapFloating: false,
             allowMapPersistence: true,
             unveilMap: false,
 
@@ -141,8 +147,10 @@ export const useSettingsStore = create<SettingsState>()(
             setUiMode: (uiMode) => set({ uiMode }),
             setIsBloomEnabled: (isBloomEnabled) => set({ isBloomEnabled }),
             setIsHighlighterEnabled: (isHighlighterEnabled) => set({ isHighlighterEnabled }),
-            setDisable3dScroll: (disable3dScroll) => set({ disable3dScroll }),
-            setDisableSmoothScroll: (disableSmoothScroll) => set({ disableSmoothScroll }),
+            setObjectColor: (objectColor) => set({ objectColor }),
+            setPlayerColor: (playerColor) => set({ playerColor }),
+            setNpcColor: (npcColor) => set({ npcColor }),
+            setDisable3dScroll: (disable3dScroll) => set({ disable3dScroll }),            setDisableSmoothScroll: (disableSmoothScroll) => set({ disableSmoothScroll }),
             setIsImmersionMode: (isImmersionMode) => set({ isImmersionMode }),
             setIsTimestampEnabled: (isTimestampEnabled) => set({ isTimestampEnabled }),
             setShowRecordingIndicator: (showRecordingIndicator) => set({ showRecordingIndicator }),
@@ -156,11 +164,11 @@ export const useSettingsStore = create<SettingsState>()(
             setIsNoviceMode: (isNoviceMode) => set({ isNoviceMode }),
             setIsMmapperMode: (isMmapperMode) => set({ isMmapperMode }),
             setAutoSaveSessions: (autoSaveSessions) => set({ autoSaveSessions }),
+            setSoundTriggers: (soundTriggers) => set({ soundTriggers }),
             setTeleportTargets: (teleportTargets) => set({ teleportTargets }),
             setInlineCategories: (inlineCategories) => set({ inlineCategories }),
             setFavorites: (favorites) => set({ favorites }),
             setZoneMusic: (zoneMusic) => set({ zoneMusic }),
-            setIsMapFloating: (isMapFloating) => set({ isMapFloating }),
             setAllowMapPersistence: (allowMapPersistence) => set({ allowMapPersistence }),
             setUnveilMap: (unveilMap) => set({ unveilMap }),
         }),

@@ -27,6 +27,7 @@ import { useSpatButtons } from './hooks/useSpatButtons';
 import SwipeFeedbackOverlay from './components/Overlay/SwipeFeedbackOverlay';
 import { MultiSelectToolbar } from './components/Popovers/MultiSelectToolbar';
 import { AgentHUD } from './components/Utility/AgentHUD';
+import { useSettingsStore } from './stores/useSettingsStore';
 
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
@@ -114,6 +115,8 @@ const MudClient = () => {
         };
     }, [isMobile]);
 
+    const { objectColor } = useSettingsStore();
+
     // Sync popover state to body for CSS selector support across portals
     useEffect(() => {
         if (popoverState) {
@@ -127,6 +130,10 @@ const MudClient = () => {
     useEffect(() => {
         document.documentElement.style.setProperty('--accent', accentColor);
     }, [accentColor]);
+
+    useEffect(() => {
+        document.documentElement.style.setProperty('--color-obj', objectColor);
+    }, [objectColor]);
 
     useEffect(() => {
         if (btn.editingButtonId === null && returnToManager) {

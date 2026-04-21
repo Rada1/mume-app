@@ -279,7 +279,14 @@ const Header: React.FC<HeaderProps> = ({
                     />
                     <button
                         className={`menu-toggle-btn ${isMenuOpen ? 'active' : ''}`}
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        onClick={() => {
+                            const nextOpen = !ui.isMenuOpen;
+                            setUI(prev => ({ 
+                                ...prev, 
+                                isMenuOpen: nextOpen,
+                                menuView: nextOpen ? 'main' : prev.menuView
+                            }));
+                        }}
                         title="More Actions"
                         style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
                     >
@@ -297,24 +304,6 @@ const Header: React.FC<HeaderProps> = ({
                         >
                             {menuView === 'main' ? (
                                 <>
-                                    <div className="menu-group">
-                                        <label>Button Set</label>
-                                        <div
-                                            className="dropdown-item"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setMenuView('availableSets');
-                                            }}
-                                            style={{ border: '1px solid var(--border-color, rgba(255,255,255,0.05))', background: 'var(--bg-panel, rgba(255,255,255,0.02))' }}
-                                        >
-                                            <Layers size={14} />
-                                            <span style={{ flex: 1 }}>{activeSet}</span>
-                                            <ChevronDown size={14} opacity={0.5} style={{ transform: 'rotate(-90deg)' }} />
-                                        </div>
-                                    </div>
-
-                                    <div className="menu-divider" />
-
                                     <div
                                         className={`dropdown-item ${isEditMode ? 'active' : ''}`}
                                         onClick={(e) => {
@@ -323,8 +312,15 @@ const Header: React.FC<HeaderProps> = ({
                                             setIsMenuOpen(false);
                                         }}
                                     >
-                                        <span>{isEditMode ? 'Exit Design Mode' : 'Enter Design Mode'}</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
+                                                {isEditMode ? <Check size={16} color="var(--accent)" /> : <div style={{ width: '16px' }} />}
+                                            </div>
+                                            <span>{isEditMode ? 'Exit Design Mode' : 'Enter Design Mode'}</span>
+                                        </div>
                                     </div>
+
+                                    <div className="menu-divider" />
 
                                     <div
                                         className={`dropdown-item ${isRecording ? 'active' : ''}`}
@@ -338,10 +334,14 @@ const Header: React.FC<HeaderProps> = ({
                                             setIsMenuOpen(false);
                                         }}
                                     >
-                                        {isRecording ? <Save size={16} color="#ff4444" /> : <Circle size={16} color="#ff4444" />}
-                                        <span style={{ color: isRecording ? '#ff4444' : 'inherit' }}>
-                                            {isRecording ? 'Stop & Save Recording' : 'Start Session Recording'}
-                                        </span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
+                                                {isRecording ? <Save size={16} color="#ff4444" /> : <Circle size={16} color="#ff4444" />}
+                                            </div>
+                                            <span style={{ color: isRecording ? '#ff4444' : 'inherit' }}>
+                                                {isRecording ? 'Stop & Save Recording' : 'Start Session Recording'}
+                                            </span>
+                                        </div>
                                     </div>
 
                                     <div
@@ -352,9 +352,39 @@ const Header: React.FC<HeaderProps> = ({
                                             setIsMenuOpen(false);
                                         }}
                                     >
-                                        <FileText size={16} />
-                                        <span>Session Library</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
+                                                <FileText size={16} />
+                                            </div>
+                                            <span>Session Library</span>
+                                        </div>
                                     </div>
+
+                                    <div className="menu-divider" />
+
+                                    <div className="menu-group" style={{ padding: '4px 0' }}>
+                                        <label style={{ marginLeft: '10px' }}>Active Button Set</label>
+                                        <div
+                                            className="dropdown-item"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setMenuView('availableSets');
+                                            }}
+                                            style={{ 
+                                                border: '1px solid var(--border-color, rgba(255,255,255,0.1))', 
+                                                background: 'var(--bg-panel, rgba(255,255,255,0.03))',
+                                                margin: '4px 10px',
+                                                borderRadius: '4px',
+                                                padding: '8px 10px'
+                                            }}
+                                        >
+                                            <Layers size={14} style={{ opacity: 0.7 }} />
+                                            <span style={{ flex: 1, fontWeight: 500 }}>{activeSet}</span>
+                                            <ChevronDown size={14} opacity={0.5} style={{ transform: 'rotate(-90deg)' }} />
+                                        </div>
+                                    </div>
+
+                                    <div className="menu-divider" />
 
                                     <div
                                         className="dropdown-item"
@@ -364,8 +394,12 @@ const Header: React.FC<HeaderProps> = ({
                                             setIsMenuOpen(false);
                                         }}
                                     >
-                                        <FolderOpen size={16} />
-                                        <span>Open Replay (.mume-log)</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
+                                                <FolderOpen size={16} />
+                                            </div>
+                                            <span>Open Replay (.mume-log)</span>
+                                        </div>
                                     </div>
 
                                     {replayer.log && !replayer.state.isVisible && (
@@ -377,8 +411,12 @@ const Header: React.FC<HeaderProps> = ({
                                                 setIsMenuOpen(false);
                                             }}
                                         >
-                                            <Eye size={16} />
-                                            <span>Show Replay Controls</span>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
+                                                    <Eye size={16} />
+                                                </div>
+                                                <span>Show Replay Controls</span>
+                                            </div>
                                         </div>
                                     )}
 
@@ -391,8 +429,12 @@ const Header: React.FC<HeaderProps> = ({
                                                 setIsMenuOpen(false);
                                             }}
                                         >
-                                            <X size={16} color="#ff4444" />
-                                            <span style={{ color: '#ff4444' }}>Exit Replay Mode</span>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
+                                                    <X size={16} color="#ff4444" />
+                                                </div>
+                                                <span style={{ color: '#ff4444' }}>Exit Replay Mode</span>
+                                            </div>
                                         </div>
                                     )}
 
@@ -403,8 +445,12 @@ const Header: React.FC<HeaderProps> = ({
                                             setShowControls(effectiveShowControls ? false : true);
                                         }}
                                     >
-                                        {effectiveShowControls ? <Eye size={16} /> : <EyeOff size={16} />}
-                                        <span>{effectiveShowControls ? 'Hide HUD Controls' : 'Show HUD Controls'}</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
+                                                {effectiveShowControls ? <Eye size={16} /> : <EyeOff size={16} />}
+                                            </div>
+                                            <span>{effectiveShowControls ? 'Hide HUD Controls' : 'Show HUD Controls'}</span>
+                                        </div>
                                     </div>
 
                                     <div
@@ -414,8 +460,12 @@ const Header: React.FC<HeaderProps> = ({
                                             setUI(prev => ({ ...prev, showMapperToolbar: !prev.showMapperToolbar }));
                                         }}
                                     >
-                                        <MapIcon size={16} />
-                                        <span>{ui.showMapperToolbar ? 'Hide Map Settings' : 'Show Map Settings'}</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
+                                                <MapIcon size={16} />
+                                            </div>
+                                            <span>{ui.showMapperToolbar ? 'Hide Map Settings' : 'Show Map Settings'}</span>
+                                        </div>
                                     </div>
 
                                     {isEditMode && (
@@ -428,8 +478,12 @@ const Header: React.FC<HeaderProps> = ({
                                                     setIsMenuOpen(false);
                                                 }}
                                             >
-                                                <FolderOpen size={16} />
-                                                <span>Manage Button Sets</span>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                    <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
+                                                        <Settings size={16} />
+                                                    </div>
+                                                    <span>Manage Button Sets</span>
+                                                </div>
                                             </div>
                                             <div
                                                 className="dropdown-item"
@@ -439,8 +493,12 @@ const Header: React.FC<HeaderProps> = ({
                                                     setIsMenuOpen(false);
                                                 }}
                                             >
-                                                <RotateCcw size={16} />
-                                                <span>Reset Map Position</span>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                    <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
+                                                        <RotateCcw size={16} />
+                                                    </div>
+                                                    <span>Reset Map Position</span>
+                                                </div>
                                             </div>
                                         </>
                                     )}

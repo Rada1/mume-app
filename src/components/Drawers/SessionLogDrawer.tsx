@@ -34,7 +34,7 @@ export const SessionLogDrawer: React.FC<{ isOpen: boolean; onClose: () => void }
 
     // Decode session log into readable lines
     const logLines = useMemo(() => {
-        if (!replayer.log) return [];
+        if (!replayer.log || !replayer.log.log) return [];
 
         const lines: LogLine[] = [];
         let combinedRx = '';

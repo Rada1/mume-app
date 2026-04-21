@@ -6,7 +6,7 @@
 import { RefObject } from 'react';
 import { CustomButton, InlineCategoryConfig, MessageType } from '../types';
 import { pluralizeMumeSubject } from './gameUtils';
-import { getGlowColorForCategory, getCategoryForName } from './categorizationUtils';
+import { getGlowColorForCategory, getCategoryForName, getCategoryType } from './categorizationUtils';
 import { getEffectiveKeyword } from './keywordUtils';
 import { getMemberColor } from './groupUtils';
 import {
@@ -154,7 +154,7 @@ export const buildHighlighterCandidates = (
         candidates.push({
             pattern: target,
             priority: 1, // Lowest priority: only highlights if no other button matches this text
-            replacer: (m, _match) => `<span class="inline-btn auto-target active-target${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(m)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}; color: ${glowColor}">${m.replace(/,/g, '')}</span>`,
+            replacer: (m, _match) => `<span class="inline-btn auto-target active-target${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(m)}" data-action="menu" data-menu-display="list" data-category="target">${m.replace(/,/g, '')}</span>`,
             length: target.length
         });
     }
@@ -213,7 +213,7 @@ export const buildHighlighterCandidates = (
                 isRegex: true,
                 priority: 5,
                 replacer: (m, _match) => {
-                    const groupMemberIndex = groupMembers?.findIndex(gm => gm.name.toLowerCase() === name.toLowerCase());
+                    const groupMemberIndex = groupMembers?.findIndex(gm => gm.name?.toLowerCase() === name.toLowerCase());
                     const isGroupmate = groupMemberIndex !== undefined && groupMemberIndex !== -1;
                     
                     let baseColor = 'rgba(125, 211, 252, 1)'; // Default PC blue
@@ -224,7 +224,8 @@ export const buildHighlighterCandidates = (
                     const { glow, classExtra } = getTargetAwareStyles(m, name, baseColor, target);
                     const buttonId = `auto-${name}`;
                     const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'inlineplayer');
-                    return `<span class="inline-btn auto-occupant pc-highlighter${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(name)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}; font-weight: 800">${m.replace(/,/g, '')}</span>`;
+                    const styleAttr = isGroupmate ? ` style="--glow-color: ${glow}; color: ${glow}"` : '';
+                    return `<span class="inline-btn auto-occupant pc-highlighter${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(name)}" data-action="menu" data-menu-display="list" data-category="player"${styleAttr}>${m.replace(/,/g, '')}</span>`;
                 },
                 length: p.length
             });
@@ -301,83 +302,87 @@ export const buildHighlighterCandidates = (
         }
 
         patterns.forEach(p => {
-            if (isCorpseContext) {
-                // Corpse context: style as corpse/object instead of NPC
-                const context = getEffectiveKeyword(originalName, undefined, undefined, keywordOverrides);
-                candidates.push({
-                    pattern: toAccentAgnostic(p),
-                    isRegex: true,
-                    priority: 6,
-                    replacer: (m, _match) => {
-                        const isSelected = isObjectSelected(selectedObjectIds, 'auto-corpse', 'inline-corpses');
-                        return `<span class="inline-btn auto-item${isSelected ? ' selected' : ''}" draggable="true" data-id="auto-corpse" data-mid="${mid}" data-cmd="inline-corpses" data-context="${esc(context)}" data-action="menu" data-menu-display="list" style="--glow-color: ${corpseGlowColor}">${m.replace(/,/g, '')}</span>`;
-                    },
-                    length: p.length
-                });
-            } else {
-                const category = getCategoryForName(originalName, inlineCategories);
-                const command = 'inlinenpc';
-                const context = getEffectiveKeyword(originalName, undefined, undefined, keywordOverrides);
-
-                candidates.push({
-                    pattern: toAccentAgnostic(p),
-                    isRegex: true,
-                    priority: 6, // Slightly higher than items to favor NPC match in ambiguous cases
-                    replacer: (m, _match) => {
-                        // Default to NPC Yellow.
-                        let baseColor = getGlowColorForCategory(category || 'inlinenpc', inlineCategories) || 'rgba(253, 224, 71, 0.95)';
-                        
-                        // Check if this NPC is in the group (charmies)
-                        const groupMemberIndex = groupMembers?.findIndex(gm => 
-                            gm.name.toLowerCase() === originalName.toLowerCase() ||
-                            gm.name.toLowerCase() === stripped.toLowerCase()
-                        );
-                        
-                        if (groupMemberIndex !== undefined && groupMemberIndex !== -1) {
-                            baseColor = getMemberColor(groupMemberIndex).core;
-                        }
-
-                        const { glow, classExtra } = getTargetAwareStyles(m, originalName, baseColor, target);
-                        const buttonId = `auto-npc-${originalName}`;
-                        const isSelected = isObjectSelected(selectedObjectIds, buttonId, command);
-                        return `<span class="inline-btn auto-npc npc-highlighter${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(context)}" data-category="${esc(category || '')}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}">${m.replace(/,/g, '')}</span>`;
-                    },
-                    length: p.length
-                });
-            }
-        });
-    });
-
-    // 4.5. Corpses (generic fallback for corpses not matching any NPC)
-    ['corpse', 'corpses'].forEach(p => {
+        if (isCorpseContext) {
+        // Corpse context: style as corpse/object instead of NPC
+        const context = getEffectiveKeyword(originalName, undefined, undefined, keywordOverrides);
         candidates.push({
-            pattern: p,
-            priority: 5,
+            pattern: toAccentAgnostic(p),
+            isRegex: true,
+            priority: 6,
             replacer: (m, _match) => {
                 const isSelected = isObjectSelected(selectedObjectIds, 'auto-corpse', 'inline-corpses');
-                return `<span class="inline-btn auto-item${isSelected ? ' selected' : ''}" draggable="true" data-id="auto-corpse" data-mid="${mid}" data-cmd="inline-corpses" data-context="corpse" data-action="menu" data-menu-display="list" style="--glow-color: ${corpseGlowColor}">${m}</span>`;
+                return `<span class="inline-btn auto-item${isSelected ? ' selected' : ''}" draggable="true" data-id="auto-corpse" data-mid="${mid}" data-cmd="inline-corpses" data-context="${esc(context)}" data-action="menu" data-menu-display="list" data-category="object">${m.replace(/,/g, '')}</span>`;
             },
             length: p.length
         });
-    });
+        } else {
+        const category = getCategoryForName(originalName, inlineCategories);
+        const command = 'inlinenpc';
+        const context = getEffectiveKeyword(originalName, undefined, undefined, keywordOverrides);
 
-    // 5. Room Items
-    roomItems.forEach(item => {
+        candidates.push({
+            pattern: toAccentAgnostic(p),
+            isRegex: true,
+            priority: 6, // Slightly higher than items to favor NPC match in ambiguous cases
+            replacer: (m, _match) => {
+                // Default to NPC Yellow.
+                let baseColor = getGlowColorForCategory(category || 'inlinenpc', inlineCategories) || 'rgba(253, 224, 71, 0.95)';
+
+                // Check if this NPC is in the group (charmies)
+                const groupMemberIndex = groupMembers?.findIndex(gm => 
+                    gm.name?.toLowerCase() === originalName.toLowerCase() ||
+                    gm.name?.toLowerCase() === stripped.toLowerCase()
+                );
+
+                const isGroupmate = groupMemberIndex !== undefined && groupMemberIndex !== -1;
+                if (isGroupmate && groupMembers) {
+                    baseColor = getMemberColor(groupMemberIndex).core;
+                }
+
+                const { glow, classExtra } = getTargetAwareStyles(m, originalName, baseColor, target);
+                const buttonId = `auto-npc-${originalName}`;
+                const isSelected = isObjectSelected(selectedObjectIds, buttonId, command);
+
+                const styleAttr = isGroupmate ? ` style="--glow-color: ${glow}; color: ${glow}"` : '';
+                const cat = getCategoryType(category, inlineCategories) || 'npc';
+
+                return `<span class="inline-btn auto-npc npc-highlighter${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(context)}" data-category="${esc(cat)}" data-action="menu" data-menu-display="list"${styleAttr}>${m.replace(/,/g, '')}</span>`;
+            },
+            length: p.length
+        });
+        }
+        });
+        });
+
+        // 4.5. Corpses (generic fallback for corpses not matching any NPC)
+        ['corpse', 'corpses'].forEach(p => {
+        candidates.push({
+        pattern: p,
+        priority: 5,
+        replacer: (m, _match) => {
+        const isSelected = isObjectSelected(selectedObjectIds, 'auto-corpse', 'inline-corpses');
+        return `<span class="inline-btn auto-item${isSelected ? ' selected' : ''}" draggable="true" data-id="auto-corpse" data-mid="${mid}" data-cmd="inline-corpses" data-context="corpse" data-action="menu" data-menu-display="list" data-category="object">${m}</span>`;
+        },
+        length: p.length
+        });
+        });
+
+        // 5. Room Items
+        roomItems.forEach(item => {
         const itemName = typeof item === 'string' ? item : item.name;
         if (!itemName) return;
-        
+
         // Use our unified data-driven keyword extractor
         const noun = getEffectiveKeyword(itemName, undefined, undefined, keywordOverrides);
         if (!noun) return;
 
         let category = getCategoryForName(itemName, inlineCategories);
-        
+
         // Force objects to stay objects even if they contain NPC keywords (e.g. "corpse of an orc")
         if (category && category.includes('npc')) {
-            category = 'inline-obj-room';
+        category = 'inline-obj-room';
         }
-        
-        const glowColor = getGlowColorForCategory(category || 'inline-obj-room', inlineCategories);
+
         const command = 'inline-obj-room';
 
         const strippedItem = itemName.replace(/^(A|An|The|Some)\s+/i, '');
@@ -385,30 +390,32 @@ export const buildHighlighterCandidates = (
         const normalizedStrippedItem = normalize(strippedItem);
 
         const itemPatterns = new Set([
-            itemName,
-            strippedItem,
-            normalizedItem,
-            normalizedStrippedItem
+        itemName,
+        strippedItem,
+        normalizedItem,
+        normalizedStrippedItem
         ].filter(Boolean));
 
         itemPatterns.forEach(p => {
-            candidates.push({
-                pattern: toAccentAgnostic(p),
-                isRegex: true,
-                priority: 5,
-                replacer: (m, _match) => {
-                    const { glow, classExtra } = getTargetAwareStyles(m, itemName, glowColor, target);
-                    const buttonId = `auto-item-${noun}`;
-                    const isSelected = isObjectSelected(selectedObjectIds, buttonId, command);
-                    return `<span class="inline-btn auto-item${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(noun)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}">${m.replace(/,/g, '')}</span>`;
-                },
-                length: p.length
-            });
-        });
-    });
+        candidates.push({
+        pattern: toAccentAgnostic(p),
+        isRegex: true,
+        priority: 5,
+        replacer: (m, _match) => {
+            const buttonId = `auto-item-${noun}`;
+            const isSelected = isObjectSelected(selectedObjectIds, buttonId, command);
+            const cat = getCategoryType(category, inlineCategories) || 'object';
+            const { classExtra } = getTargetAwareStyles(m, itemName, '', target);
 
-    // 6. Discovered Items (from inventory/equipment/look in)
-    discoveredItems.forEach(itemName => {
+            return `<span class="inline-btn auto-item${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(noun)}" data-action="menu" data-menu-display="list" data-category="${esc(cat)}">${m.replace(/,/g, '')}</span>`;
+        },
+        length: p.length
+        });
+        });
+        });
+
+        // 6. Discovered Items (from inventory/equipment/look in)
+        discoveredItems.forEach(itemName => {
         const noun = getEffectiveKeyword(itemName, undefined, undefined, keywordOverrides);
         if (!noun) return;
 
@@ -417,18 +424,19 @@ export const buildHighlighterCandidates = (
         const command = 'inline-object';
 
         candidates.push({
-            pattern: itemName,
-            priority: 5,
-            replacer: (m, _match) => {
-                const { glow, classExtra } = getTargetAwareStyles(m, itemName, getGlowColorForCategory(category || command, inlineCategories), target);
-                const buttonId = `auto-item-${noun}`;
-                const isSelected = isObjectSelected(selectedObjectIds, buttonId, command);
-                return `<span class="inline-btn auto-item${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(noun)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}">${m.replace(/,/g, '')}</span>`;
-            },
-            length: itemName.length
-        });
-    });
+        pattern: itemName,
+        priority: 5,
+        replacer: (m, _match) => {
+        const buttonId = `auto-item-${noun}`;
+        const isSelected = isObjectSelected(selectedObjectIds, buttonId, command);
+        const cat = getCategoryType(category, inlineCategories) || 'object';
+        const { classExtra } = getTargetAwareStyles(m, itemName, '', target);
 
+        return `<span class="inline-btn auto-item${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(noun)}" data-action="menu" data-menu-display="list" data-category="${esc(cat)}">${m.replace(/,/g, '')}</span>`;
+        },
+        length: itemName.length
+        });
+        });
     // 7. Combat Verbs
     candidates.push({
         pattern: '\\*+[A-Z]+\\*+',
@@ -499,8 +507,7 @@ export const buildHighlighterCandidates = (
                 else if (stateWord === 'closed') cmd = `open ${keyword}`;
                 else if (stateWord === 'latched') cmd = `unlock ${keyword}`;
                 
-                const glowColor = '#facc15';
-                return `<span class="inline-btn state-toggle-btn" data-mid="${mid}" data-action="command" data-cmd="${esc(cmd)}" data-context="${esc(stateWord)}" style="--glow-color: ${glowColor}; color: ${glowColor}; font-weight: 800">${m}</span>`;
+                return `<span class="inline-btn state-toggle-btn" data-mid="${mid}" data-action="command" data-cmd="${esc(cmd)}" data-context="${esc(stateWord)}" data-category="target">${m}</span>`;
             },
             length: stateWord.length
         });
@@ -588,15 +595,19 @@ export const applyColorTaggedObjects = (
         const normalizedStripped = normalize(keywordBase);
         const isCorpseLineColor = lowerHtml.includes('corpse');
 
+        let isGroupmate = false;
+        let groupColor = '';
+
         if ((normalizedNpcSet.has(normalizedName) || normalizedNpcSet.has(normalizedStripped)) && !isCorpseLineColor) {
             finalCmd = 'inlinenpc';
         } else if (normalizedPcSet.has(normalizedName) || normalizedPcSet.has(normalizedStripped)) {
             finalCmd = 'inlineplayer';
             
             // Re-check for group status here to ensure color-tagged names also get the group color
-            const groupMemberIndex = groupMembers?.findIndex(gm => normalize(gm.name) === normalizedName || normalize(gm.name) === normalizedStripped);
+            const groupMemberIndex = groupMembers?.findIndex(gm => gm.name && (normalize(gm.name) === normalizedName || normalize(gm.name) === normalizedStripped));
             if (groupMemberIndex !== -1 && groupMemberIndex !== undefined) {
-                category = `group-${groupMemberIndex}`; // Temporary internal ID for color matching
+                isGroupmate = true;
+                groupColor = getMemberColor(groupMemberIndex).core;
             }
         }
         
@@ -605,18 +616,14 @@ export const applyColorTaggedObjects = (
             category = 'inline-obj-room'; // Force object styling
         }
         
-        let baseGlow = getGlowColorForCategory(category || finalCmd, inlineCategories);
-        
-        // Special case for our temporary group ID
-        if (category?.startsWith('group-')) {
-            const idx = parseInt(category.split('-')[1]);
-            baseGlow = getMemberColor(idx).core;
-        }
-        const { glow, classExtra } = getTargetAwareStyles(displayName, finalContext, baseGlow, target);
+        const catType = getCategoryType(category || finalCmd, inlineCategories) || 'object';
+        const { glow, classExtra } = getTargetAwareStyles(displayName, finalContext, groupColor || '', target);
         
         const buttonId = `auto-obj-${keyword}`;
         const isSelected = isObjectSelected(selectedObjectIds, buttonId, finalCmd);
         
-        return `<span class="inline-btn auto-obj color-tagged-obj${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${finalCmd}" data-context="${esc(finalContext)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}">${innerHtml.replace(/,/g, '')}</span>`;
+        const styleAttr = isGroupmate ? ` style="--glow-color: ${glow}; color: ${glow}"` : '';
+        
+        return `<span class="inline-btn auto-obj color-tagged-obj${classExtra}${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="${finalCmd}" data-context="${esc(finalContext)}" data-action="menu" data-menu-display="list" data-category="${esc(catType)}"${styleAttr}>${innerHtml.replace(/,/g, '')}</span>`;
     });
 };

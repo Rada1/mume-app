@@ -111,6 +111,7 @@ export interface InlineCategoryConfig {
     id: string;
     keywords: string[];
     color?: string;
+    categoryType?: 'npc' | 'player' | 'object' | 'account' | 'target' | 'quest' | 'none';
 }
 
 export interface ButtonSetSettings {

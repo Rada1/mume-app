@@ -242,23 +242,27 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const { scrollContainerRef, messagesEndRef, scrollToBottom, isLockedToBottomRef } = viewport;
 
     const { userSession, spectateSession, activeSession } = useBaseGame();
+    const [isInternalLocked, setIsInternalLocked] = useState(viewport.isLockedToBottomRef.current);
 
     // --- Live Attach Logic ---
+    const [isAttachedToLive, setIsAttachedToLive] = useState(false);
     useEffect(() => {
-        // If we are not locked to the bottom and not in a full replay, 
-        // we attach the replayer to the active session's buffer.
-        if (!isLockedToBottomRef.current && sessionMode === 'live') {
+        if (isInternalLocked) {
+            if (isAttachedToLive) {
+                setIsAttachedToLive(false);
+            }
+        } else if (sessionMode === 'live' && !isAttachedToLive) {
             const currentSession = activeSession === 'user' ? userSession : spectateSession;
-            // Get a snapshot of the current entries
             const logSnapshot = {
                 version: 1,
                 startTime: new Date().toISOString(),
-                entries: [...((currentSession.recorder as any).entries || [])],
+                log: [...((currentSession.recorder as any).entries || [])],
                 metadata: { client: 'MUME AI Studio', version: '1.0.0' }
             };
             replayer.attachToLive(logSnapshot);
+            setIsAttachedToLive(true);
         }
-    }, [isLockedToBottomRef.current, sessionMode, activeSession, userSession, spectateSession, replayer]);
+    }, [isInternalLocked, sessionMode, activeSession, isAttachedToLive, userSession, spectateSession]);
 
     // --- Replay Mode Mapping ---
     const replayMessages = useMemo(() => {
@@ -467,6 +471,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
         if (viewport.isLockedToBottomRef.current !== isNearBottom) {
             viewport.isLockedToBottomRef.current = isNearBottom;
+            setIsInternalLocked(isNearBottom);
         }
 
     }, [viewport, scrollContainerRef]);
@@ -490,6 +495,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             if (onWheelRef.current) onWheelRef.current(e as any);
             if (viewport.isLockedToBottomRef.current) {
                 viewport.isLockedToBottomRef.current = false;
+                setIsInternalLocked(false);
             }
         };
 
@@ -666,7 +672,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                 {activePromptContent}
 
                 {/* --- Timeline Scrubber --- */}
-                {!viewport.isLockedToBottomRef.current && sessionMode !== 'replay' && (
+                {!isInternalLocked && sessionMode !== 'replay' && (
                     <div className="timeline-scrubber-overlay">
                         <div className="scrubber-track-outer">
                             <input 

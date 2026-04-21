@@ -87,6 +87,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const v = vitals;
     const s = game;
 
+    // --- Zustand Selectors (Migration Path) ---
+    const ui = useUIStore();
+    const settingsStore = useSettingsStore();
+    const network = useNetworkStore();
+
     // Destructure some commonly used values for brevity in dependencies
     const roomPlayers = s.roomPlayers || [];
     const roomNpcs = s.roomNpcs || [];
@@ -102,7 +107,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const isFoggy = s.isFoggy || false;
     const actions = s.actions || [];
     const actionsRef = s.actionsRef;
-    const groupMembers = s.groupMembers || [];
+    const groupMembers = v.groupMembers || [];
     const inCombat = s.inCombat || false;
     const status = s.status || 'disconnected';
     const characterName = s.characterName || null;
@@ -113,8 +118,27 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const isImmersionMode = s.isImmersionMode ?? true;
     const isBloomEnabled = s.isBloomEnabled ?? true;
     const fontFamily = s.fontFamily || 'Inter';
-    const handleTabClick = s.handleTabClick;
-    const toggleMap = s.toggleMap;
+    const handleTabClick = useCallback((drawer: any) => {
+        const nextDrawer = ui.drawer === drawer ? 'none' : drawer;
+        ui.setDrawer(nextDrawer);
+        ui.setIsDrawerPeeking(false);
+        
+        // Mobile portrait: ensure map is NOT expanded when a drawer is open
+        if (nextDrawer !== 'none') {
+            ui.setMapExpanded(false);
+        }
+    }, [ui.drawer, ui.setDrawer, ui.setIsDrawerPeeking, ui.setMapExpanded]);
+
+    const toggleMap = useCallback(() => {
+        const nextExpanded = !ui.mapExpanded;
+        ui.setMapExpanded(nextExpanded);
+        
+        // Mobile portrait: ensure utility drawers are closed if expanding map
+        if (nextExpanded) {
+            ui.setDrawer('none');
+        }
+    }, [ui.mapExpanded, ui.setMapExpanded, ui.setDrawer]);
+
     const mode = useModeStore();
     const isSpectateMode = mode.isSpectating;
     const spectateTargetId = mode.spectateTarget;
@@ -130,12 +154,22 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const { stats, rumble, target, activePrompt } = v;
 
-    // --- Zustand Selectors (Migration Path) ---
-    const ui = useUIStore();
-    const settingsStore = useSettingsStore();
-    const network = useNetworkStore();
-    
-    // UI state mapping
+    const setIsSpectateMode = useCallback((val: boolean) => {
+        if (val) {
+            // Find a target to spectate
+            const leader = groupMembers.find(m => m.isLeader);
+            if (leader) {
+                mode.startSpectate(leader.name);
+            } else if (groupMembers.length > 0) {
+                mode.startSpectate(groupMembers[0].name);
+            } else {
+                mode.startSpectate('auto');
+            }
+        } else {
+            mode.stopSpectate();
+        }
+    }, [groupMembers, mode]);
+
     const {
         isSettingsOpen, setIsSettingsOpen, isLibraryOpen, setIsLibraryOpen,
         settingsTab, setSettingsTab, diagnosticLogs, addDiagnosticLog,
@@ -375,11 +409,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const playPierceSound = useCallback((...args: Parameters<typeof rawPlayPierceSound>) => !checkSuppression() && rawPlayPierceSound(...args), [rawPlayPierceSound]);
     const playStabSound = useCallback((...args: Parameters<typeof rawPlayStabSound>) => !checkSuppression() && rawPlayStabSound(...args), [rawPlayStabSound]);
     const playIncantationSound = useCallback((...args: Parameters<typeof rawPlayIncantationSound>) => !checkSuppression() && rawPlayIncantationSound(...args), [rawPlayIncantationSound]);
-    const stopIncantationSound = useCallback((...args: Parameters<typeof rawPlayStopIncantationSound>) => !checkSuppression() && rawPlayStopIncantationSound(...args), [rawPlayStopIncantationSound]);
+    const stopIncantationSound = useCallback((playExplosion: boolean = false) => rawPlayStopIncantationSound(checkSuppression() ? false : playExplosion), [rawPlayStopIncantationSound]);
     const playMagicExplosionSound = useCallback((...args: Parameters<typeof rawPlayMagicExplosionSound>) => !checkSuppression() && rawPlayMagicExplosionSound(...args), [rawPlayMagicExplosionSound]);
     const primeSpellSuccess = useCallback((...args: Parameters<typeof rawPrimeSpellSuccess>) => !checkSuppression() && rawPrimeSpellSuccess(...args), [rawPrimeSpellSuccess]);
     const playCommMessageSound = useCallback((...args: Parameters<typeof rawPlayCommMessageSound>) => !checkSuppression() && rawPlayCommMessageSound(...args), [rawPlayCommMessageSound]);
-    const stopCommMessageSound = useCallback((...args: Parameters<typeof rawStopCommMessageSound>) => !checkSuppression() && rawStopCommMessageSound(...args), [rawStopCommMessageSound]);
+    const stopCommMessageSound = useCallback(() => rawStopCommMessageSound(), [rawStopCommMessageSound]);
     const playBuySellSound = useCallback((...args: Parameters<typeof rawPlayBuySellSound>) => !checkSuppression() && rawPlayBuySellSound(...args), [rawPlayBuySellSound]);
     const playBashSound = useCallback((...args: Parameters<typeof rawPlayBashSound>) => !checkSuppression() && rawPlayBashSound(...args), [rawPlayBashSound]);
     const playArrowHitSound = useCallback((...args: Parameters<typeof rawPlayArrowHitSound>) => !checkSuppression() && rawPlayArrowHitSound(...args), [rawPlayArrowHitSound]);
@@ -502,8 +536,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     //                          (populated in replay / theater mode and as a fallback)
     // Deduplication by name is handled inside buildHighlighterCandidates.
     const activeGroupMembers = s.isSpectateMode
-        ? [...s.groupMembers, ...s.spectateGroupMembers]
-        : s.groupMembers;
+        ? [...v.groupMembers, ...s.spectateGroupMembers]
+        : v.groupMembers;
     const { processMessageHtml } = useMessageHighlighter(actualTarget, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems, s.inlineCategories, s.isHighlighterEnabled, highlightVersion, s.discoveredItems, keywordOverrides, s.selectedObjectIds, s.inCombat, s.spectateCharacterName, activeGroupMembers);
 
 
@@ -950,10 +984,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
 
     const replayer = useSessionReplayer(useCallback((type, payload, isPrivacyMode, isSilent = false) => {
+        // Sync context-level refs with the incoming callback arguments.
+        // isSilent is particularly important for suppresssing tactical audio during rehydration.
         isPrivacyModeActiveRef.current = isPrivacyMode;
         isSilentReplayRef.current = isSilent;
-        sessionModeRef.current = sessionMode;
-        replayerRef.current = replayer;
 
         if (isSilent) {
             if (type === 'gmcp') {
@@ -1019,6 +1053,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             addMessage('user', applyPrivacyScrubbing(payload, isPrivacyMode), false);
         }
     }, [gmcpHandlers, parser, addMessage, flushMessages, applyPrivacyScrubbing]));
+
+    // Ensure replayerRef is always pointing to the latest replayer instance
+    // so checkSuppression can read the current playback speed.
+    React.useEffect(() => {
+        replayerRef.current = replayer || null;
+    }, [replayer]);
 
     const theaterReplayer = useMemo(() => ({
         ...replayer,
@@ -1113,6 +1153,32 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isPasswordMode: s.isPasswordMode,
         sessionMode,
         replayer,
+        isSpectateMode,
+        setIsSpectateMode,
+        showSpectatePromptInLog: settingsStore.showSpectatePromptInLog,
+        setShowSpectatePromptInLog: settingsStore.setShowSpectatePromptInLog,
+        isImmersionMode: settingsStore.isImmersionMode,
+        setIsImmersionMode: settingsStore.setIsImmersionMode,
+        isBloomEnabled: settingsStore.isBloomEnabled,
+        setIsBloomEnabled: settingsStore.setIsBloomEnabled,
+        isHighlighterEnabled: settingsStore.isHighlighterEnabled,
+        setIsHighlighterEnabled: settingsStore.setIsHighlighterEnabled,
+        isTimestampEnabled: settingsStore.isTimestampEnabled,
+        setIsTimestampEnabled: settingsStore.setIsTimestampEnabled,
+        disable3dScroll: settingsStore.disable3dScroll,
+        setDisable3dScroll: settingsStore.setDisable3dScroll,
+        disableSmoothScroll: settingsStore.disableSmoothScroll,
+        setDisableSmoothScroll: settingsStore.setDisableSmoothScroll,
+        showRecordingIndicator: settingsStore.showRecordingIndicator,
+        setShowRecordingIndicator: settingsStore.setShowRecordingIndicator,
+        showLegacyButtons: settingsStore.showLegacyButtons,
+        setShowLegacyButtons: settingsStore.setShowLegacyButtons,
+        uiMode: settingsStore.uiMode,
+        setUiMode: settingsStore.setUiMode,
+        fontFamily: settingsStore.fontFamily,
+        setFontFamily: settingsStore.setFontFamily,
+        favorites: settingsStore.favorites,
+        setFavorites: settingsStore.setFavorites,
         accountState: s.accountState,
         setAccountState: s.setAccountState,
         accountStageRef: s.accountStageRef,
@@ -1128,7 +1194,20 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         keywordOverrides, openKeywordEdit, lastCommandContextRef, s.entities, s.applyOptimisticChange,
         s.selectedObjectIds, s.toggleObjectSelection, s.clearObjectSelection, playClickSound, s.isSoundEnabled,
         v.stats.conditions?.waiting, sanitizedRecordEntry, v.activePrompt, clearLog, s.gameState,
-        sessionMode, theaterReplayer, s.accountState, s.setAccountState, s.accountStageRef,
+        sessionMode, theaterReplayer, isSpectateMode, setIsSpectateMode, 
+        settingsStore.showSpectatePromptInLog, settingsStore.setShowSpectatePromptInLog,
+        settingsStore.isImmersionMode, settingsStore.setIsImmersionMode,
+        settingsStore.isBloomEnabled, settingsStore.setIsBloomEnabled,
+        settingsStore.isHighlighterEnabled, settingsStore.setIsHighlighterEnabled,
+        settingsStore.isTimestampEnabled, settingsStore.setIsTimestampEnabled,
+        settingsStore.disable3dScroll, settingsStore.setDisable3dScroll,
+        settingsStore.disableSmoothScroll, settingsStore.setDisableSmoothScroll,
+        settingsStore.showRecordingIndicator, settingsStore.setShowRecordingIndicator,
+        settingsStore.showLegacyButtons, settingsStore.setShowLegacyButtons,
+        settingsStore.uiMode, settingsStore.setUiMode,
+        settingsStore.fontFamily, settingsStore.setFontFamily,
+        settingsStore.favorites, settingsStore.setFavorites,
+        s.accountState, s.setAccountState, s.accountStageRef,
         clearLog
     ]);
 
@@ -1170,7 +1249,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         telnetConnect: telnet.connect,
         characterName: s.characterName,
         executeCommand,
-        groupMembers: s.groupMembers,
+        groupMembers: v.groupMembers,
         spatButtons,
         triggerSpitManual,
         gameState: s.gameState,
@@ -1237,16 +1316,16 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isSettingsOpen, setIsSettingsOpen,
         isLibraryOpen, setIsLibraryOpen,
         settingsTab, setSettingsTab,
-        setIsStatsOpen: s.setIsStatsOpen,
-        setIsCharacterOpen: s.setIsCharacterOpen,
-        setIsEquipmentOpen: s.setIsEquipmentOpen,
-        setIsInventoryOpen: s.setIsInventoryOpen,
-        setIsMapExpanded: s.setIsMapExpanded,
-        setIsSetManagerOpen: s.setIsSetManagerOpen,
-        setIsPlayersOpen: s.setIsPlayersOpen,
+        setIsStatsOpen: ui.setIsStatsOpen,
+        setIsCharacterOpen: ui.setIsCharacterOpen,
+        setIsEquipmentOpen: ui.setIsEquipmentOpen,
+        setIsInventoryOpen: ui.setIsInventoryOpen,
+        setIsMapExpanded: ui.setMapExpanded,
+        setIsSetManagerOpen: ui.setIsSettingsOpen, // SetManager is part of Settings in new UI
+        setIsPlayersOpen: ui.setIsPlayersOpen,
         characterName: s.characterName,
-        handleTabClick: s.handleTabClick,
-        toggleMap: s.toggleMap,
+        handleTabClick,
+        toggleMap,
         isRecording: recorder.isRecording,
         duration: recorder.duration,
         showRecordingIndicator: s.showRecordingIndicator,
@@ -1258,8 +1337,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         replayer: theaterReplayer
     }), [
         s.ui, s.popoverState, s.setPopoverState, isSettingsOpen, isLibraryOpen, settingsTab,
-        s.setIsCharacterOpen, s.setIsEquipmentOpen, s.setIsInventoryOpen, s.setIsMapExpanded, s.setIsSetManagerOpen, s.setUI, s.setIsPlayersOpen,
-        s.handleTabClick, s.toggleMap, s.showRecordingIndicator, s.setShowRecordingIndicator,
+        ui.setIsCharacterOpen, ui.setIsEquipmentOpen, ui.setIsInventoryOpen, ui.setMapExpanded, ui.setIsSettingsOpen, ui.setUI, ui.setIsPlayersOpen,
+        handleTabClick, toggleMap, s.showRecordingIndicator, s.setShowRecordingIndicator,
         recorder.isRecording, recorder.duration, recorder.startRecording, recorder.stopRecording, recorder.stopAndSave, recorder.saveLog,
         theaterReplayer
     ]);
@@ -1304,7 +1383,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             handleLogPointerDown, handleLogPointerUp,
             handleDragStart, handleDragEnd,
             quests: s.quests, setQuests: s.setQuests,
-            groupMembers: s.groupMembers, setGroupMembers: s.setGroupMembers,
+            groupMembers: v.groupMembers, setGroupMembers: v.setGroupMembers,
             mumeEditState: s.mumeEditState, setMumeEditState: s.setMumeEditState,
             handleSaveMumeEdit,
             mapperRef, ...settings, audioCtxRef,
@@ -1345,19 +1424,69 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             addToQueue: parser.addToQueue,
             rotateQueue: parser.rotateQueue,
             removeFromQueue: parser.removeFromQueue,
+            setIsSpectateMode,
+            handleTabClick,
+            toggleMap,
+            showSpectatePromptInLog: settingsStore.showSpectatePromptInLog,
+            setShowSpectatePromptInLog: settingsStore.setShowSpectatePromptInLog,
+            isImmersionMode: settingsStore.isImmersionMode,
+            setIsImmersionMode: settingsStore.setIsImmersionMode,
+            isBloomEnabled: settingsStore.isBloomEnabled,
+            setIsBloomEnabled: settingsStore.setIsBloomEnabled,
+            isHighlighterEnabled: settingsStore.isHighlighterEnabled,
+            setIsHighlighterEnabled: settingsStore.setIsHighlighterEnabled,
+            isTimestampEnabled: settingsStore.isTimestampEnabled,
+            setIsTimestampEnabled: settingsStore.setIsTimestampEnabled,
+            disable3dScroll: settingsStore.disable3dScroll,
+            setDisable3dScroll: settingsStore.setDisable3dScroll,
+            disableSmoothScroll: settingsStore.disableSmoothScroll,
+            setDisableSmoothScroll: settingsStore.setDisableSmoothScroll,
+            showRecordingIndicator: settingsStore.showRecordingIndicator,
+            setShowRecordingIndicator: settingsStore.setShowRecordingIndicator,
+            showLegacyButtons: settingsStore.showLegacyButtons,
+            setShowLegacyButtons: settingsStore.setShowLegacyButtons,
+            uiMode: settingsStore.uiMode,
+            setUiMode: settingsStore.setUiMode,
+            fontFamily: settingsStore.fontFamily,
+            setFontFamily: settingsStore.setFontFamily,
+            favorites: settingsStore.favorites,
+            setFavorites: settingsStore.setFavorites,
+            connectionUrl: settingsStore.connectionUrl,
+            setConnectionUrl: settingsStore.setConnectionUrl,
+            autoConnect: settingsStore.autoConnect,
+            setAutoConnect: settingsStore.setAutoConnect,
+            loginName: settingsStore.loginName,
+            setLoginName: settingsStore.setLoginName,
+            loginPassword: settingsStore.loginPassword || '',
+            setLoginPassword: settingsStore.setLoginPassword,
+            theme: settingsStore.theme,
+            setTheme: settingsStore.setTheme,
+            bgImage: settingsStore.bgImage || '',
+            setBgImage: settingsStore.setBgImage,
+            isNewbieMode: settingsStore.isNewbieMode,
+            setIsNewbieMode: settingsStore.setIsNewbieMode,
+            autoSaveSessions: settingsStore.autoSaveSessions,
+            setAutoSaveSessions: settingsStore.setAutoSaveSessions,
+            showDebugEchoes: settingsStore.showDebugEchoes,
+            setShowDebugEchoes: settingsStore.setShowDebugEchoes,
+            isMmapperMode: settingsStore.isMmapperMode,
+            setIsMmapperMode: settingsStore.setIsMmapperMode,
+            isSoundEnabled: settingsStore.isSoundEnabled,
+            setIsSoundEnabled: settingsStore.setIsSoundEnabled,
         };
     }, [
-        s, sessionMode, replayHUDState, isSpectateMode, spectateTarget, accentColor, teleportTargets,
+        s, sessionMode, replayHUDState, isSpectateMode, setIsSpectateMode, spectateTarget, accentColor, teleportTargets,
         playSound, triggerHaptic, playCommMessageSound, stopCommMessageSound,
         btn, joystick, editor, viewport, env, v,
         input, handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
+        handleLogPointerDown, handleLogPointerUp,
         handleDragStart, handleDragEnd,
         settings, audioCtxRef, telnet, parser, spatButtons, diagnosticLogs, addDiagnosticLog,
-        handleLogPointerDown, handleLogPointerUp,
         handleSaveMumeEdit, s.setQuests, addMessage, addSystemMessage,
         s.spectateCharacterName, s.setSpectateCharacterName, s.spectateQueue, s.lastSnoopStartTime,
         s.gameState, s.setGameState, prepareLoginAttempt, theaterReplayer,
-        parser.addToQueue, parser.rotateQueue, parser.removeFromQueue
+        parser.addToQueue, parser.rotateQueue, parser.removeFromQueue,
+        settingsStore
     ]);
 
     const logValue = useMemo(() => ({

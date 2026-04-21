@@ -91,7 +91,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     // Mobile DOCKED (Gutter) Mode
     // Section removed in account mode or landscape to prevent duplicate command bars
     const isReplaying = (useGame() as any).sessionMode === 'replay';
-    if (isMobile && !isMapFloating && (gameState === 'playing' || isReplaying) && !isLandscape) {
+    if (isMobile && !isMapFloating && (gameState !== 'disconnected' || isReplaying) && !isLandscape) {
         const isShown = ui.mapExpanded || (ui.peekingDrawer === 'map');
         
         return (
@@ -108,9 +108,9 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 <div
                     className="mobile-gutter-input-wrapper"
                     style={{
-                        padding: '6px 4px 0 4px',
+                        padding: '0',
                         flexShrink: 0,
-                        marginBottom: (isShown || ui.drawer !== 'none') ? '8px' : '0'
+                        marginBottom: (isShown || ui.drawer !== 'none') ? '4px' : '0'
                     }}
                 >
                     <InputArea
@@ -283,7 +283,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 )}
 
                 {/* Unified Tab Bar for both orientations - Now at the bottom */}
-                {!isKeyboardOpen && (gameState === 'playing' || gameState === 'account') && (
+                {!isKeyboardOpen && gameState !== 'disconnected' && (
                     <div className="portrait-tab-bar">
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'stats' ? 'active' : ''}`}

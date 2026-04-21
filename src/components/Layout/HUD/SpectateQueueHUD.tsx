@@ -17,7 +17,9 @@ export const SpectateQueueHUD: React.FC = () => {
     } = useGame();
 
     if (!isSpectateMode) return null;
-    if (spectateQueue.length === 0 && (!spectateCharacterName || spectateCharacterName === 'None')) return null;
+    
+    const queue = spectateQueue || [];
+    if (queue.length === 0 && (!spectateCharacterName || spectateCharacterName === 'None')) return null;
 
     const remainingMs = lastSnoopStartTime 
         ? Math.max(0, SNOOP_ROTATION_MS - (Date.now() - lastSnoopStartTime))
@@ -45,7 +47,7 @@ export const SpectateQueueHUD: React.FC = () => {
                 </div>
                 
                 <div className="hud-current-actions">
-                    {spectateQueue.length > 0 && (
+                    {queue.length > 0 && (
                         <button 
                             className="hud-action-btn next-btn"
                             onClick={(e) => {
@@ -73,13 +75,13 @@ export const SpectateQueueHUD: React.FC = () => {
                 </div>
             </div>
 
-            {spectateQueue.length > 0 && (
+            {queue.length > 0 && (
                 <div className="spectate-hud-list">
                     <div className="hud-list-header">
                         <List size={16} className="hud-icon" />
                         <span>NEXT IN QUEUE</span>
                     </div>
-                    {spectateQueue.map((name, i) => (
+                    {queue.map((name, i) => (
                         <div key={`${name}-${i}`} className="hud-list-item">
                             <span className="queue-name">{name}</span>
                             <button 

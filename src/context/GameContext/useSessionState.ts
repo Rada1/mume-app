@@ -80,7 +80,7 @@ export const useSessionState = (
     const setRoomExits = rStore.setExits;
     const setRoomZone = rStore.setRoomZone;
     const setCurrentTerrain = rStore.setTerrain;
-    const setLighting = useCallback((l: any) => (vStore as any).setLighting?.(l), [vStore]);
+    const setLighting = useCallback((l: any) => (vStore as any).setLighting?.(l), []);
     const setWeather = vStore.setWeather;
     const setIsFoggy = vStore.setIsFoggy;
     const setInCombat = vStore.setInCombat;
@@ -108,14 +108,14 @@ export const useSessionState = (
     const setTarget = useCallback((val: string | null) => {
         setTargetInternal(val);
         vStore.setTarget(val);
-    }, [vStore]);
+    }, []);
 
     const [activePrompt, setActivePromptInternal] = useState<import('../../types').ActivePrompt | null>(null);
     const setActivePrompt = useCallback((prompt: string | import('../../types').ActivePrompt | null) => {
         const p = typeof prompt === 'string' ? { text: prompt } : prompt;
         setActivePromptInternal(p);
         vStore.setActivePrompt(p);
-    }, [vStore]);
+    }, []);
 
     const [rumble, setRumble] = useState(false);
     const [deathRoomId, setDeathRoomId] = useState<string | null>(null);

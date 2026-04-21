@@ -9,11 +9,13 @@ import { useEntityRegistry } from '../../hooks/useEntityRegistry';
 import { useSessionState } from './useSessionState';
 import { useUIStore } from '../../stores/useUIStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { useModeStore } from '../../stores/useModeStore';
 
 export const useGameProviderState = () => {
     // Settings & UI Stores
     const settings = useSettingsStore();
     const uiStore = useUIStore();
+    const mode = useModeStore();
 
     const {
         isNewbieMode, isSoundEnabled, setIsSoundEnabled, theme, setTheme, autoConnect, setAutoConnect,
@@ -140,7 +142,11 @@ export const useGameProviderState = () => {
         accountState, setAccountState, accountStageRef,
         executeCommandRef,
         roomDescRef,
-        isAccountModeRef
+        isAccountModeRef,
+        spectateQueue: mode.spectateQueue,
+        setSpectateQueue: mode.setSpectateQueue,
+        lastSnoopStartTime: mode.lastSnoopStartTime,
+        setLastSnoopStartTime: mode.setLastSnoopStartTime
     } as any;
 
     return { vitals, game };

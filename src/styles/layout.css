@@ -44,7 +44,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    transform-style: preserve-3d;
+    transform-style: flat;
 }
 
 .content-layer {
@@ -68,6 +68,10 @@
     pointer-events: auto !important;
     z-index: 6500; /* Elevated above HUD backgrounds (6000) and room cards (5200) */
     position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .content-layer>* {
@@ -83,8 +87,9 @@
 
 /* Portrait: no extra padding needed — the tab bar sits below the 280px map gutter,
    not below the content layer, so it doesn't overlap the input area. */
-@media (max-width: 768px) and (orientation: portrait) {
+@media (max-width: 1024px) and (orientation: portrait) {
     .content-layer {
+        padding: 0 !important;
         padding-bottom: var(--mobile-gutter-height) !important;
         transition: none !important;
     }

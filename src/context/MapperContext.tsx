@@ -64,8 +64,7 @@ interface MapperContextType {
     exploredVnums: Set<string>;
     exploredMarkers: Set<string>;
     setExploredMarkers: React.Dispatch<React.SetStateAction<Set<string>>>;
-    isMapFloating: boolean;
-    setIsMapFloating: React.Dispatch<React.SetStateAction<boolean>>;
+    setExploredMarkers: React.Dispatch<React.SetStateAction<Set<string>>>;
 }
 
 export const MapperContext = createContext<MapperContextType | undefined>(undefined);
@@ -101,8 +100,6 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [infoRoomId, setInfoRoomId] = useState<string | null>(null);
 
     // Settings from Zustand
-    const isMapFloating = useSettingsStore(s => s.isMapFloating);
-    const setIsMapFloating = useSettingsStore(s => s.setIsMapFloating);
     const allowPersistence = useSettingsStore(s => s.allowMapPersistence);
     const setAllowPersistence = useSettingsStore(s => s.setAllowMapPersistence);
     const unveilMap = useSettingsStore(s => s.unveilMap);
@@ -400,48 +397,9 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }, [triggerRender]);
 
     // Global Event Listeners
-    const { setUI } = useUI();
     useEffect(() => {
         if (typeof window === 'undefined') return;
         
-        const onDragEnd = (e: any) => {
-            const { id, clientX, clientY, isIntentional } = e.detail;
-            if (id === 'mapper' && isIntentional) {
-                const isMob = window.innerWidth <= 768;
-                let shouldDock = false;
-                if (isMob) {
-                    if (clientY > window.innerHeight * 0.8) shouldDock = true;
-                } else {
-                    // Specific hit detection for the Map Tab on desktop
-                    const mapTab = document.getElementById('drawer-tab-map');
-                    if (mapTab) {
-                        const rect = mapTab.getBoundingClientRect();
-                        const buffer = 20;
-                        if (clientX >= rect.left - buffer && 
-                            clientX <= rect.right + buffer && 
-                            clientY >= rect.top - buffer && 
-                            clientY <= rect.bottom + buffer) {
-                            shouldDock = true;
-                        }
-                    }
-                }
-
-                if (shouldDock) {
-                    setIsMapFloating(false);
-                    setUI(prev => ({ ...prev, mapExpanded: true }));
-                }
-            }
-        };
-
-        const onDock = () => {
-            setIsMapFloating(false);
-            setUI(prev => ({ ...prev, mapExpanded: true }));
-        };
-        const onUndock = () => {
-            setIsMapFloating(true);
-            setUI(prev => ({ ...prev, mapExpanded: false }));
-        };
-
         // Stable handler refs so the event listener registrations never need to rerun
         const handlersRef = { handleRoomInfo, handleUpdateExits, handleTerrain, pushPendingMove, handleMoveConfirmed, handleMoveFailure, triggerRender };
         const stableHandlers = Object.freeze(handlersRef);
@@ -456,24 +414,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const onFail    = ()       => stableHandlers.handleMoveFailure();
         const onPre     = (e: any) => { preMoveRef.current = { dir: e.detail.dir, targetId: e.detail.targetId, time: Date.now() }; stableHandlers.triggerRender(); };
 
-        window.addEventListener('mume-mapper-undock', onUndock);
-        window.addEventListener('mume-mapper-dock', onDock);
-        window.addEventListener('mud-cluster-drag-end', onDragEnd);
-        window.addEventListener('mume-mapper-room-info', onInfo); window.addEventListener('mume-mapper-update-exits', onExits);
-        window.addEventListener('mume-mapper-terrain', onTerrain); window.addEventListener('mume-mapper-push-move', onPush);
-        window.addEventListener('mume-mapper-move-confirmed', onConfirm); window.addEventListener('mume-mapper-move-fail', onFail);
-        window.addEventListener('mume-mapper-push-pre-move', onPre);
-        return () => {
-            window.removeEventListener('mume-mapper-undock', onUndock);
-            window.removeEventListener('mume-mapper-dock', onDock);
-            window.removeEventListener('mud-cluster-drag-end', onDragEnd);
-            window.removeEventListener('mume-mapper-room-info', onInfo); window.removeEventListener('mume-mapper-update-exits', onExits);
-            window.removeEventListener('mume-mapper-terrain', onTerrain); window.removeEventListener('mume-mapper-push-move', onPush);
-            window.removeEventListener('mume-mapper-move-confirmed', onConfirm); window.removeEventListener('mume-mapper-move-fail', onFail);
-            window.removeEventListener('mume-mapper-push-pre-move', onPre);
-        };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [setIsMapFloating, setUI]);
+    }, [handleRoomInfo, handleUpdateExits, handleTerrain, pushPendingMove, handleMoveConfirmed, handleMoveFailure, triggerRender]);
 
     const value = useMemo(() => ({
         rooms, setRooms, markers, setMarkers, currentRoomId, setCurrentRoomId,
@@ -487,7 +428,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         selectedRoomIds, setSelectedRoomIds, selectedMarkerId, setSelectedMarkerId,
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
         markersRef, exploredRef, exploredVnums, exploredMarkers, setExploredMarkers, spatialIndexRef, firstExploredAtRef,
-        serverIdIndexRef, isMapFloating, setIsMapFloating
+        serverIdIndexRef
     }), [
         rooms, markers, currentRoomId, unveilMap, allowPersistence, handleResetAndSync,
         handleClearMap, handleSyncLocation, handleAddRoom, handleDeleteRoom,
@@ -495,8 +436,10 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         pushPendingMove, handleMoveConfirmed, handleMoveFailure, renderVersion,
         currentRoomIdRef, roomsRef, preloadedCoordsRef, baseMapExitsRef, preMoveRef,
         spatialIndexRef, firstExploredAtRef, serverIdIndexRef, triggerRender, setCurrentRoomId,
-        selectedRoomIds, selectedMarkerId, autoCenter, viewZ, infoRoomId,
-        markersRef, exploredRef, exploredVnums, exploredMarkers, isMapFloating
+        selectedRoomIds, setSelectedRoomIds, selectedMarkerId, setSelectedMarkerId,
+        autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
+        markersRef, exploredRef, exploredVnums, exploredMarkers, setExploredMarkers, spatialIndexRef, firstExploredAtRef,
+        serverIdIndexRef, triggerRender, renderVersion
     ]);
 
     return <MapperContext.Provider value={value}>{children}</MapperContext.Provider>;

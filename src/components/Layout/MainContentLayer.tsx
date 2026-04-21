@@ -227,7 +227,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
             {/* Render InputArea only on desktop, landscape mobile, or during account phase 
                 This prevents the duplicate command bar in portrait mobile play mode. */}
-            {(gameState === 'account' || (!isMobile && !(viewport as any).isForcePortrait) || isLandscape) && (
+            {((gameState === 'account' && (isLandscape || !isMobile)) || (!isMobile && !(viewport as any).isForcePortrait) || isLandscape) && (
                 <InputArea
                     input={input}
                     setInput={setInput}

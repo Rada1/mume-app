@@ -34,6 +34,12 @@ interface GeneralSettingsProps {
     setShowRecordingIndicator: (val: boolean) => void;
     isHighlighterEnabled: boolean;
     setIsHighlighterEnabled: (val: boolean) => void;
+    objectColor: string;
+    setObjectColor: (val: string) => void;
+    playerColor: string;
+    setPlayerColor: (val: string) => void;
+    npcColor: string;
+    setNpcColor: (val: string) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
     isSpectateMode: boolean;
@@ -82,6 +88,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setShowRecordingIndicator,
     isHighlighterEnabled,
     setIsHighlighterEnabled,
+    objectColor,
+    setObjectColor,
     isBloomEnabled,
     setIsBloomEnabled,
     isSpectateMode,
@@ -540,27 +548,48 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                     </button>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
-                    <div style={{ flex: '1 1 200px' }}>
-                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Object Highlighting</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Highlight weapons, armor, and interactable objects in text.</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                        <div style={{ flex: '1 1 200px' }}>
+                            <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Object Highlighting</label>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Highlight weapons, armor, and interactable objects in text.</div>
+                        </div>
+                        <div
+                            className={`setting-toggle ${isHighlighterEnabled ? 'active' : ''}`}
+                            onClick={(e) => { e.stopPropagation(); setIsHighlighterEnabled(!isHighlighterEnabled); }}
+                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isHighlighterEnabled ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                        >
+                            <div style={{
+                                width: '20px',
+                                height: '20px',
+                                background: '#fff',
+                                borderRadius: '50%',
+                                position: 'absolute',
+                                top: '2px',
+                                left: isHighlighterEnabled ? '22px' : '2px',
+                                transition: 'all 0.3s'
+                            }} />
+                        </div>
                     </div>
-                    <div
-                        className={`setting-toggle ${isHighlighterEnabled ? 'active' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); setIsHighlighterEnabled(!isHighlighterEnabled); }}
-                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isHighlighterEnabled ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
-                    >
-                        <div style={{
-                            width: '20px',
-                            height: '20px',
-                            background: '#fff',
-                            borderRadius: '50%',
-                            position: 'absolute',
-                            top: '2px',
-                            left: isHighlighterEnabled ? '22px' : '2px',
-                            transition: 'all 0.3s'
-                        }} />
-                    </div>
+                    {isHighlighterEnabled && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginLeft: '10px' }}>
+                            <label className="setting-label" style={{ margin: 0, fontSize: '0.8rem' }}>Color:</label>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <input 
+                                    type="color" 
+                                    value={objectColor.startsWith('rgba') ? '#fb923c' : objectColor} 
+                                    onChange={(e) => setObjectColor(e.target.value)}
+                                    style={{ width: '30px', height: '20px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }}
+                                />
+                                <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', fontFamily: 'var(--font-main)' }}>{objectColor}</span>
+                                <button 
+                                    className="btn-secondary" 
+                                    style={{ margin: 0, padding: '2px 8px', fontSize: '0.65rem', height: 'auto' }}
+                                    onClick={() => setObjectColor('rgba(251, 146, 60, 0.95)')}
+                                >Reset</button>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>

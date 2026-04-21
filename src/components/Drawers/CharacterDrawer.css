@@ -22,7 +22,7 @@
     left: 0;
     right: 0;
     height: 90vh;
-    background: rgb(35, 35, 40);
+    background: rgb(10, 13, 21);
     transform: translateY(-100%);
     transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
@@ -382,13 +382,12 @@
         right: 12px;
         width: auto;
         max-width: none;
-        height: 248px; 
+        height: 100%; 
         transform: translateY(0);
         opacity: 0;
         visibility: hidden;
         transition: none;
         border-radius: 18px;
-        background: rgb(0, 0, 0) !important;
         border: none;
         backdrop-filter: none;
         -webkit-backdrop-filter: none;

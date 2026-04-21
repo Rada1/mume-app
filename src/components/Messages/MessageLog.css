@@ -289,10 +289,10 @@
 }
 
 /* Force category color or inheritance in nested contexts */
-.message-content span .inline-btn,
-.message-content span .keyword-highlight,
-.message-content span b,
-.message-content span strong {
+.message-content .inline-btn,
+.message-content .keyword-highlight,
+.message-content b,
+.message-content strong {
     color: var(--glow-color, inherit);
 }
 
@@ -304,20 +304,37 @@
     pointer-events: auto !important;
 }
 
-.message-content .inline-btn {
-    color: var(--glow-color, inherit);
-    font-weight: bold !important;
+/* Category-based color mappings */
+.inline-btn[data-category="npc"] { --glow-color: var(--color-npc) !important; }
+.inline-btn[data-category="player"] { --glow-color: var(--color-player) !important; }
+.inline-btn[data-category="object"] { --glow-color: var(--color-obj) !important; }
+.inline-btn[data-category="account"] { --glow-color: var(--color-account) !important; }
+.inline-btn[data-category="target"] { --glow-color: var(--color-target) !important; }
+.inline-btn[data-category="quest"] { --glow-color: var(--color-quest) !important; }
+
+/* Force standard color application */
+.inline-btn {
+    color: var(--glow-color, inherit) !important;
 }
 
 /* Pin inline player buttons to the blue used in the who-list
    and the players drawer, bypassing the brightness filter. */
-.message-content .inline-btn.pc-highlighter {
-    color: var(--glow-color, rgb(125, 211, 252)) !important;
+.message-content .inline-btn.pc-highlighter,
+.message-content .inline-btn[data-category="player"] {
+    color: var(--glow-color, var(--color-player)) !important;
     filter: none !important;
 }
 
-.message-content .inline-btn.npc-highlighter {
-    color: var(--glow-color, #fde047) !important;
+.message-content .inline-btn.npc-highlighter,
+.message-content .inline-btn[data-category="npc"] {
+    color: var(--glow-color, var(--color-npc)) !important;
+    filter: none !important;
+}
+
+.message-content .inline-btn.auto-item,
+.message-content .inline-btn.auto-obj,
+.message-content .inline-btn[data-category="object"] {
+    color: var(--glow-color, var(--color-obj)) !important;
     filter: none !important;
 }
 
@@ -702,7 +719,7 @@
 }
 
 .user-command-bubble {
-    background: rgb(35, 35, 40);
+    background: rgb(10, 13, 21);
     border: none;
     border-radius: 20px 20px 6px 20px;
     padding: 3px 10px;
