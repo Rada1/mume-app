@@ -25,7 +25,7 @@ import { useShopHandler } from '../hooks/useShopHandler';
 import { useGameProviderState } from './GameContext/state';
 import { useKeywordOverrides } from '../hooks/useKeywordOverrides';
 import { useSessionManager } from '../hooks/useSessionManager';
-import { useGameAudio } from '../hooks/useGameAudio';
+import { useAmbientController, useAudioEffects } from '../hooks/useAudioSystem';
 import { useSessionRecorder } from '../hooks/useSessionRecorder';
 import { useSessionReplayer } from '../hooks/useSessionReplayer';
 import { useHelpHandler } from '../hooks/useHelpHandler';
@@ -324,69 +324,58 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         console.log(`[Flow/Debug] sessionMode=${sessionMode}, roomZone=${finalRoomZone}, terrain=${finalTerrain}, lighting=${finalLighting}, weather=${finalWeather}, isImmersionMode=${s.isImmersionMode}`);
     }
 
-    const audio = useGameAudio({
-        isSoundEnabled: s.isSoundEnabled,
-        roomZone: finalRoomZone,
-        zoneMusic: s.zoneMusic,
-        inCombat: finalInCombat,
-        lighting: typeof finalLighting === 'string' ? finalLighting : 'none',
-        gameTime: v.activePrompt?.time || s.gameTime,
-        currentTerrain: finalTerrain,
-        weather: finalWeather as any,
-        playerPosition: finalPosition,
-        waiting: finalWaiting,
-        manualCancelRef,
-        gameState: s.gameState,
-        isSpectateMode: false, // Picked effective values above
-    });
 
+    useAmbientController();
+    const audioEffects = useAudioEffects();
     const {
         audioCtxRef,
         initAudio,
-        playSound: rawPlaySound,
+        playSound,
         setPlaySound,
-        playRandomSound: rawPlayRandomSound,
-        playMovementSound: rawPlayMovementSound,
+        playRandomSound,
+        playMovementSound,
         loadMovementSound,
-        playDoorSound: rawPlayDoorSound,
+        playDoorSound,
         loadDoorSound,
         playClickSound,
         loadClickSound,
-        playHitImpactSound: rawPlayHitImpactSound,
+        playHitImpactSound,
         loadHitImpactSound,
-        playOofSound: rawPlayOofSound,
+        playOofSound,
         loadOofSound,
-        playSlashSound: rawPlaySlashSound,
+        playSlashSound,
         loadSlashSound,
-        playCleaveSound: rawPlayCleaveSound,
+        playCleaveSound,
         loadCleaveSound,
-        playSmiteSound: rawPlaySmiteSound,
+        playSmiteSound,
         loadSmiteSound,
-        playPierceSound: rawPlayPierceSound,
+        playPierceSound,
         loadPierceSound,
-        playStabSound: rawPlayStabSound,
+        playStabSound,
         loadStabSound,
-        loadAllWeaponSounds,
-        playIncantationSound: rawPlayIncantationSound,
-        stopIncantationSound: rawPlayStopIncantationSound,
-        playMagicExplosionSound: rawPlayMagicExplosionSound,
-        primeSpellSuccess: rawPrimeSpellSuccess,
-        loadSpellSounds,
-        playCommMessageSound: rawPlayCommMessageSound,
-        stopCommMessageSound: rawStopCommMessageSound,
-        playBuySellSound: rawPlayBuySellSound,
-        loadBuySellSound,
-        playBashSound: rawPlayBashSound,
-        loadBashSound,
-        playArrowHitSound: rawPlayArrowHitSound,
+        playArrowHitSound,
         loadArrowHitSound,
-        playKillSound: rawPlayKillSound,
+        playBuySellSound,
+        loadBuySellSound,
+        playBashSound,
+        loadBashSound,
+        playKillSound,
         loadKillSound,
-        playLevelSound: rawPlayLevelSound,
+        playLevelSound,
         loadLevelSound,
-        triggerHaptic: rawTriggerHaptic,
+        loadAllWeaponSounds,
+        playIncantationSound,
+        stopIncantationSound,
+        playMagicExplosionSound,
+        loadSpellSounds,
+        playCommMessageSound,
+        stopCommMessageSound,
+        loadCommMessageSound,
+        primeSpellSuccess,
+        triggerHaptic,
         setTriggerHaptic
-    } = audio;
+    } = audioEffects;
+
 
     // --- Tactical Audio Suppression Logic ---
     // We want tactical sounds to play during 1x Replay playback, but NOT during
@@ -397,29 +386,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return isReplaying && (isSilentReplayRef.current || speed > 1);
     };
 
-    const playSound = useCallback((...args: Parameters<typeof rawPlaySound>) => !checkSuppression() && rawPlaySound(...args), [rawPlaySound]);
-    const playRandomSound = useCallback((...args: Parameters<typeof rawPlayRandomSound>) => !checkSuppression() && rawPlayRandomSound(...args), [rawPlayRandomSound]);
-    const playMovementSound = useCallback((...args: Parameters<typeof rawPlayMovementSound>) => !checkSuppression() && rawPlayMovementSound(...args), [rawPlayMovementSound]);
-    const playDoorSound = useCallback((...args: Parameters<typeof rawPlayDoorSound>) => !checkSuppression() && rawPlayDoorSound(...args), [rawPlayDoorSound]);
-    const playHitImpactSound = useCallback((...args: Parameters<typeof rawPlayHitImpactSound>) => !checkSuppression() && rawPlayHitImpactSound(...args), [rawPlayHitImpactSound]);
-    const playOofSound = useCallback((...args: Parameters<typeof rawPlayOofSound>) => !checkSuppression() && rawPlayOofSound(...args), [rawPlayOofSound]);
-    const playSlashSound = useCallback((...args: Parameters<typeof rawPlaySlashSound>) => !checkSuppression() && rawPlaySlashSound(...args), [rawPlaySlashSound]);
-    const playCleaveSound = useCallback((...args: Parameters<typeof rawPlayCleaveSound>) => !checkSuppression() && rawPlayCleaveSound(...args), [rawPlayCleaveSound]);
-    const playSmiteSound = useCallback((...args: Parameters<typeof rawPlaySmiteSound>) => !checkSuppression() && rawPlaySmiteSound(...args), [rawPlaySmiteSound]);
-    const playPierceSound = useCallback((...args: Parameters<typeof rawPlayPierceSound>) => !checkSuppression() && rawPlayPierceSound(...args), [rawPlayPierceSound]);
-    const playStabSound = useCallback((...args: Parameters<typeof rawPlayStabSound>) => !checkSuppression() && rawPlayStabSound(...args), [rawPlayStabSound]);
-    const playIncantationSound = useCallback((...args: Parameters<typeof rawPlayIncantationSound>) => !checkSuppression() && rawPlayIncantationSound(...args), [rawPlayIncantationSound]);
-    const stopIncantationSound = useCallback((playExplosion: boolean = false) => rawPlayStopIncantationSound(checkSuppression() ? false : playExplosion), [rawPlayStopIncantationSound]);
-    const playMagicExplosionSound = useCallback((...args: Parameters<typeof rawPlayMagicExplosionSound>) => !checkSuppression() && rawPlayMagicExplosionSound(...args), [rawPlayMagicExplosionSound]);
-    const primeSpellSuccess = useCallback((...args: Parameters<typeof rawPrimeSpellSuccess>) => !checkSuppression() && rawPrimeSpellSuccess(...args), [rawPrimeSpellSuccess]);
-    const playCommMessageSound = useCallback((...args: Parameters<typeof rawPlayCommMessageSound>) => !checkSuppression() && rawPlayCommMessageSound(...args), [rawPlayCommMessageSound]);
-    const stopCommMessageSound = useCallback(() => rawStopCommMessageSound(), [rawStopCommMessageSound]);
-    const playBuySellSound = useCallback((...args: Parameters<typeof rawPlayBuySellSound>) => !checkSuppression() && rawPlayBuySellSound(...args), [rawPlayBuySellSound]);
-    const playBashSound = useCallback((...args: Parameters<typeof rawPlayBashSound>) => !checkSuppression() && rawPlayBashSound(...args), [rawPlayBashSound]);
-    const playArrowHitSound = useCallback((...args: Parameters<typeof rawPlayArrowHitSound>) => !checkSuppression() && rawPlayArrowHitSound(...args), [rawPlayArrowHitSound]);
-    const playKillSound = useCallback((...args: Parameters<typeof rawPlayKillSound>) => !checkSuppression() && rawPlayKillSound(...args), [rawPlayKillSound]);
-    const playLevelSound = useCallback((...args: Parameters<typeof rawPlayLevelSound>) => !checkSuppression() && rawPlayLevelSound(...args), [rawPlayLevelSound]);
-    const triggerHaptic = useCallback((...args: Parameters<typeof rawTriggerHaptic>) => !checkSuppression() && rawTriggerHaptic(...args), [rawTriggerHaptic]);
 
     React.useEffect(() => {
         if (initAudio) {

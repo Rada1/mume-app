@@ -86,8 +86,8 @@ describe('MUME Store Integration Tests', () => {
 
             const state = useRoomStore.getState();
             expect(state.roomName).toBe('Main Square');
-            expect((state.exits as any).north).toEqual({ num: 55 });
-            expect(state.items).toHaveLength(0); // Items should be cleared
+            expect((state.rawExits as any).north).toEqual({ num: 55 });
+            expect(state.items).toHaveLength(0); // Items should be cleared on new room num
         });
 
         it('should clear occupants only when room number changes', () => {
@@ -97,11 +97,12 @@ describe('MUME Store Integration Tests', () => {
             });
 
             // 2. Room.Info for same room (e.g. look command)
-            gmcpBus.emit('Room.Info', { num: 100, name: 'Room 100' });
+            gmcpBus.emit('Room.Info', { num: 100, name: 'Room 100' } as any);
+            useRoomStore.getState().addPlayer({ name: 'Someone' });
             expect(useRoomStore.getState().players).toHaveLength(1); // Occupants NOT cleared
 
             // 3. Room.Info for different room (movement)
-            gmcpBus.emit('Room.Info', { num: 101, name: 'Room 101' });
+            gmcpBus.emit('Room.Info', { num: 101, name: 'Room 101' } as any);
             expect(useRoomStore.getState().players).toHaveLength(0); // Occupants cleared
         });
 

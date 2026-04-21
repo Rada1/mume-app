@@ -1,42 +1,178 @@
-/**
- * @file audioManifest.ts
- * @description Centralized configuration for all game sound effects.
- */
+export interface AmbientConfig {
+    url: string;
+    volume: number;
+}
+
+export interface ZoneConfig {
+    url: string | string[];
+}
 
 export interface SoundConfig {
     path: string;
     defaultVolume?: number;
     defaultPitch?: number;
-    category?: 'combat' | 'ui' | 'environment' | 'magic';
 }
 
-export const AUDIO_MANIFEST: Record<string, SoundConfig> = {
-    // UI Sounds
-    click: { path: '/assets/Sounds/Sound effects/click.mp3', defaultVolume: 2.0, category: 'ui' },
-    buySell: { path: '/assets/Sounds/Sound effects/sellandbuy.mp3', defaultVolume: 1.5, category: 'ui' },
-    commBubble: { path: '/assets/Sounds/Sound effects/commbubble.mp3', defaultVolume: 0.9, category: 'ui' },
-
-    // Movement & Environment
-    move: { path: '/assets/Sounds/Sound effects/move.mp3', defaultVolume: 0.6, category: 'environment' },
-    waterMove: { path: '/assets/Sounds/Sound effects/watermove.mp3', defaultVolume: 0.6, category: 'environment' },
-    door: { path: '/assets/Sounds/Sound effects/door1.wav', defaultVolume: 1.5, category: 'environment' },
-
-    // Combat - Impacts
-    hitImpact: { path: '/assets/Sounds/Sound effects/hit-impact.mp3', defaultVolume: 0.7, category: 'combat' },
-    oof: { path: '/assets/Sounds/Sound effects/oof.mp3', defaultVolume: 0.9, category: 'combat' },
-    kill: { path: '/assets/Sounds/Sound effects/kill.wav', defaultVolume: 1.1, category: 'combat' },
-    level: { path: '/assets/Sounds/Sound effects/level.wav', defaultVolume: 1.3, category: 'combat' },
-
-    // Combat - Weapons
-    slash: { path: '/assets/Sounds/Sound effects/slash.mp3', defaultVolume: 0.75, category: 'combat' },
-    cleave: { path: '/assets/Sounds/Sound effects/cleave.mp3', defaultVolume: 0.75, category: 'combat' },
-    smite: { path: '/assets/Sounds/Sound effects/smite.mp3', defaultVolume: 0.75, category: 'combat' },
-    pierce: { path: '/assets/Sounds/Sound effects/pierce.mp3', defaultVolume: 0.75, defaultPitch: 1.6, category: 'combat' },
-    stab: { path: '/assets/Sounds/Sound effects/stab.mp3', defaultVolume: 0.75, category: 'combat' },
-    bash: { path: '/assets/Sounds/Sound effects/bash.mp3', defaultVolume: 0.75, category: 'combat' },
-    arrowHit: { path: '/assets/Sounds/Sound effects/arrowhit.mp3', defaultVolume: 0.75, category: 'combat' },
-
-    // Magic
-    incantations: { path: '/assets/Sounds/Sound effects/incantations.mp3', defaultVolume: 0.7, defaultPitch: 1.5, category: 'magic' },
-    magicExplosion: { path: '/assets/Sounds/Sound effects/magicexplosion.mp3', defaultVolume: 1.5, category: 'magic' },
+export const AUDIO_MANIFEST = {
+    ambient: {
+        terrains: {
+            'FOREST': { url: '/assets/Sounds/Terrain Sounds/forest.mp3', volume: 0.25 },
+            'FIELD': { url: '/assets/Sounds/Terrain Sounds/dayfield.wav', volume: 0.25 },
+            'HILLS': { url: '/assets/Sounds/Terrain Sounds/mountains.wav', volume: 0.25 },
+            'MOUNTAINS': { url: '/assets/Sounds/Terrain Sounds/mountains.wav', volume: 0.25 },
+            'MOUNTAIN': { url: '/assets/Sounds/Terrain Sounds/mountains.wav', volume: 0.25 },
+            'TUNNEL': { url: '/assets/Sounds/Terrain Sounds/cave_tunnel.mp3', volume: 0.25 },
+            'CAVE': { url: '/assets/Sounds/Terrain Sounds/cave_tunnel.mp3', volume: 0.25 },
+            'RAPIDS': { url: '/assets/Sounds/Terrain Sounds/rapids.wav', volume: 0.25 },
+            'UNDERWATER': { url: '/assets/Sounds/Terrain Sounds/underwater.mp3', volume: 0.25 },
+            'SHALLOWS': { url: '/assets/Sounds/Terrain Sounds/shallows.wav', volume: 0.8 },
+            'WATER': { url: '/assets/Sounds/Terrain Sounds/shallows.wav', volume: 0.8 },
+        } as Record<string, AmbientConfig>,
+        weather: {
+            'rain': { url: '/assets/Sounds/Sound effects/rain.mp3', volume: 0.25 },
+            'heavy-rain': { url: '/assets/Sounds/Sound effects/rain.mp3', volume: 0.25 },
+        } as Record<string, AmbientConfig>,
+        zones: {
+            'bree': { url: '/assets/Sounds/Zone Sounds/BreeSound.wav' },
+            'bree land': { url: '/assets/Sounds/Zone Sounds/BreeSound.wav' },
+            'the bree land': { url: '/assets/Sounds/Zone Sounds/BreeSound.wav' },
+            'old east road': { url: ['/assets/Sounds/Zone Sounds/oldeastroad.mp3', '/assets/Sounds/Zone Sounds/oldeastroad2.mp3'] },
+            'the old east road': { url: ['/assets/Sounds/Zone Sounds/oldeastroad.mp3', '/assets/Sounds/Zone Sounds/oldeastroad2.mp3'] },
+            'shire': { url: ['/assets/Sounds/Zone Sounds/Shire1.mp3', '/assets/Sounds/Zone Sounds/Shire2.mp3'] },
+            'the shire': { url: ['/assets/Sounds/Zone Sounds/Shire1.mp3', '/assets/Sounds/Zone Sounds/Shire2.mp3'] },
+            'blue mountains': { url: '/assets/Sounds/Zone Sounds/Blue Mountains.mp3' },
+            'the blue mountains': { url: '/assets/Sounds/Zone Sounds/Blue Mountains.mp3' },
+            'old forest': { url: '/assets/Sounds/Zone Sounds/Old Forest.mp3' },
+            'the old forest': { url: '/assets/Sounds/Zone Sounds/Old Forest.mp3' },
+            'rivendell': { url: ['/assets/Sounds/Zone Sounds/Rivendell1.mp3', '/assets/Sounds/Zone Sounds/Rivendell2.mp3', '/assets/Sounds/Zone Sounds/Rivendell3.mp3'] },
+            'grey havens': { url: '/assets/Sounds/Zone Sounds/Gray Havens1.mp3' },
+            'the grey havens': { url: '/assets/Sounds/Zone Sounds/Gray Havens1.mp3' },
+            'north anduin': { url: ['/assets/Sounds/Zone Sounds/northanduin.mp3', '/assets/Sounds/Zone Sounds/North Anduin.mp3'] },
+            'the northern anduin vale': { url: ['/assets/Sounds/Zone Sounds/northanduin.mp3', '/assets/Sounds/Zone Sounds/North Anduin.mp3'] },
+            'road to tharbad': { url: ['/assets/Sounds/Zone Sounds/roadtotharbad.mp3', '/assets/Sounds/Zone Sounds/Road to Tharbad.mp3'] },
+            'the road to tharbad': { url: ['/assets/Sounds/Zone Sounds/roadtotharbad.mp3', '/assets/Sounds/Zone Sounds/Road to Tharbad.mp3'] },
+            'road to fornost': { url: '/assets/Sounds/Zone Sounds/roadtofornost1.mp3' },
+            'the road to fornost': { url: '/assets/Sounds/Zone Sounds/roadtofornost1.mp3' },
+            'fornost': { url: '/assets/Sounds/Zone Sounds/Fornost.mp3' },
+            "deadmen's dike": { url: '/assets/Sounds/Zone Sounds/Fornost.mp3' },
+            'lhun valley': { url: '/assets/Sounds/Zone Sounds/Lhun Valley.mp3' },
+            'ancient broken road': { url: '/assets/Sounds/Zone Sounds/Ancient Broken Road.mp3' },
+            'the ancient broken road': { url: '/assets/Sounds/Zone Sounds/Ancient Broken Road.mp3' },
+            'barrow downs': { url: '/assets/Sounds/Zone Sounds/barrow downs2.mp3' },
+            'the barrow downs': { url: '/assets/Sounds/Zone Sounds/barrow downs2.mp3' },
+            'dunland': { url: '/assets/Sounds/Zone Sounds/Dunland.mp3' },
+            'emyn nu fuin': { url: '/assets/Sounds/Zone Sounds/Emyn.mp3' },
+            'eregion': { url: '/assets/Sounds/Zone Sounds/Eregion.mp3' },
+            'ettenmoors': { url: '/assets/Sounds/Zone Sounds/Ettenmoors.mp3' },
+            'the ettenmoors': { url: '/assets/Sounds/Zone Sounds/Ettenmoors.mp3' },
+            'gladden fields': { url: '/assets/Sounds/Zone Sounds/Gladden Fields.mp3' },
+            'the gladden fields': { url: '/assets/Sounds/Zone Sounds/Gladden Fields.mp3' },
+            'goblin town': { url: '/assets/Sounds/Zone Sounds/Goblin Town.mp3' },
+            'the goblin town': { url: '/assets/Sounds/Zone Sounds/Goblin Town.mp3' },
+            'lorien': { url: '/assets/Sounds/Zone Sounds/Lorien1.mp3' },
+            'the lorien surroundings': { url: '/assets/Sounds/Zone Sounds/Lorien1.mp3' },
+            'midgewaters': { url: '/assets/Sounds/Zone Sounds/MidgeWater.mp3' },
+            'the midgewaters': { url: '/assets/Sounds/Zone Sounds/MidgeWater.mp3' },
+            'moria': { url: '/assets/Sounds/Zone Sounds/Moria.mp3' },
+            'the moria': { url: '/assets/Sounds/Zone Sounds/Moria.mp3' },
+            'misty mountains': { url: ['/assets/Sounds/Zone Sounds/Misty Mountains.mp3', '/assets/Sounds/Zone Sounds/Misty Mountains 2.mp3'] },
+            'the misty mountains': { url: ['/assets/Sounds/Zone Sounds/Misty Mountains.mp3', '/assets/Sounds/Zone Sounds/Misty Mountains 2.mp3'] },
+            'ost in edhil': { url: '/assets/Sounds/Zone Sounds/Ost-in-edhil.mp3' },
+            'road to grey havens': { url: '/assets/Sounds/Zone Sounds/Road to Grey Havens.mp3' },
+            'the road to grey havens': { url: '/assets/Sounds/Zone Sounds/Road to Grey Havens.mp3' },
+            'rohan': { url: '/assets/Sounds/Zone Sounds/Rohan.mp3' },
+            'central anduin': { url: '/assets/Sounds/Zone Sounds/Central Anduin.mp3' },
+            'isengard': { url: '/assets/Sounds/Zone Sounds/Isengard.mp3' },
+            'southern mirkwood': { url: '/assets/Sounds/Zone Sounds/Southern Mirkwood.mp3' },
+            'old forest road': { url: '/assets/Sounds/Zone Sounds/The Old Forest Road.mp3' },
+            'tower hills': { url: '/assets/Sounds/Zone Sounds/Tower Hills.mp3' },
+            'redhorn': { url: '/assets/Sounds/Zone Sounds/Redhorn.mp3' },
+            'redhorn pass': { url: '/assets/Sounds/Zone Sounds/Redhorn.mp3' },
+            'tharbad': { url: '/assets/Sounds/Zone Sounds/Tharbad.mp3' },
+            'trollshaws': { url: '/assets/Sounds/Zone Sounds/Troll Shaws.mp3' },
+            'the trollshaws': { url: '/assets/Sounds/Zone Sounds/Troll Shaws.mp3' },
+            'troll warrens': { url: '/assets/Sounds/Zone Sounds/warrens.mp3' },
+            'the troll warrens': { url: '/assets/Sounds/Zone Sounds/warrens.mp3' },
+            'weathertop': { url: '/assets/Sounds/Zone Sounds/Weathertop.mp3' },
+            'the weathertop': { url: '/assets/Sounds/Zone Sounds/Weathertop.mp3' },
+            'valinor': { url: '/assets/Sounds/Zone Sounds/Valinor.mp3' },
+            'the valinor': { url: '/assets/Sounds/Zone Sounds/Valinor.mp3' },
+            'fangorn': { url: '/assets/Sounds/Zone Sounds/Fangorn Forest.mp3' },
+            'the fangorn': { url: '/assets/Sounds/Zone Sounds/Fangorn Forest.mp3' },
+            'account': { url: '/assets/Sounds/Zone Sounds/Lorien1.mp3' }
+        } as Record<string, ZoneConfig>,
+        special: {
+            drumLoop: { url: '/assets/Sounds/Sound effects/drumbeat.mp3' }
+        } as Record<string, ZoneConfig>
+    },
+    effects: {
+        'arrowhit': { path: '/assets/Sounds/Sound effects/arrowhit.mp3' },
+        'bash': { path: '/assets/Sounds/Sound effects/bash.mp3' },
+        'cleave': { path: '/assets/Sounds/Sound effects/cleave.mp3' },
+        'click': { path: '/assets/Sounds/Sound effects/click.mp3' },
+        'commbubble': { path: '/assets/Sounds/Sound effects/commbubble.mp3' },
+        'door1': { path: '/assets/Sounds/Sound effects/door1.wav' },
+        'hit-impact': { path: '/assets/Sounds/Sound effects/hit-impact.mp3' },
+        'incantations': { path: '/assets/Sounds/Sound effects/incantations.mp3' },
+        'kill': { path: '/assets/Sounds/Sound effects/kill.wav' },
+        'level': { path: '/assets/Sounds/Sound effects/level.wav' },
+        'magicexplosion': { path: '/assets/Sounds/Sound effects/magicexplosion.mp3' },
+        'move': { path: '/assets/Sounds/Sound effects/move.mp3' },
+        'oof': { path: '/assets/Sounds/Sound effects/oof.mp3' },
+        'pierce': { path: '/assets/Sounds/Sound effects/pierce.mp3' },
+        'sellandbuy': { path: '/assets/Sounds/Sound effects/sellandbuy.mp3' },
+        'slash': { path: '/assets/Sounds/Sound effects/slash.mp3' },
+        'smite': { path: '/assets/Sounds/Sound effects/smite.mp3' },
+        'stab': { path: '/assets/Sounds/Sound effects/stab.mp3' },
+        'watermove': { path: '/assets/Sounds/Sound effects/watermove.mp3' },
+    } as Record<string, SoundConfig>,
+    bpmMap: {
+        'Ancient Broken Road.mp3': 72,
+        'Blue Mountains.mp3': 64,
+        'BreeSound.wav': 96,
+        'Central Anduin.mp3': 60,
+        'Dunland.mp3': 112,
+        'Emyn.mp3': 104,
+        'Eregion.mp3': 76,
+        'Ettenmoors.mp3': 72,
+        'Fangorn Forest.mp3': 88,
+        'Fornost.mp3': 72,
+        'Gladden Fields.mp3': 64,
+        'Goblin Town.mp3': 100,
+        'Gray Havens1.mp3': 76,
+        'Isengard.mp3': 96,
+        'Lhun Valley.mp3': 96,
+        'Lorien1.mp3': 112,
+        'MidgeWater.mp3': 88,
+        'Misty Mountains.mp3': 96,
+        'Misty Mountains 2.mp3': 60,
+        'Moria.mp3': 92,
+        'North Anduin.mp3': 64,
+        'northanduin.mp3': 64,
+        'Old Forest.mp3': 88,
+        'oldeastroad.mp3': 64,
+        'oldeastroad2.mp3': 64,
+        'Ost-in-edhil.mp3': 112,
+        'Redhorn.mp3': 80,
+        'Rivendell1.mp3': 60,
+        'Rivendell2.mp3': 92,
+        'Rivendell3.mp3': 112,
+        'Road to Grey Havens.mp3': 92,
+        'Road to Tharbad.mp3': 88,
+        'roadtofornost1.mp3': 96,
+        'roadtotharbad.mp3': 64,
+        'Rohan.mp3': 80,
+        'Shire1.mp3': 64,
+        'Shire2.mp3': 62,
+        'Southern Mirkwood.mp3': 64,
+        'Tharbad.mp3': 88,
+        'The Old Forest Road.mp3': 64,
+        'Tower Hills.mp3': 80,
+        'Troll Shaws.mp3': 64,
+        'Valinor.mp3': 76,
+        'warrens.mp3': 94,
+        'Weathertop.mp3': 112,
+        'barrow downs2.mp3': 60,
+        'drumbeat.mp3': 112,
+    } as Record<string, number>
 };

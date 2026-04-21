@@ -65,7 +65,7 @@ describe('Extra Store and Selector Integration', () => {
         it('should proxy to spectate store when isSpectating is true', () => {
             // Setup spectate data
             useSpectateVitalsStore.setState({ hp: 50 });
-            useModeStore.setState({ isSpectating: true });
+            useModeStore.setState({ isSpectating: true, activeView: 'target' });
 
             // Use the non-hook getter for testing
             const activeVitalsStore = getActiveVitals();

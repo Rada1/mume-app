@@ -28,7 +28,7 @@ describe('Event Bus to Store Integration', () => {
             expect(useRoomStore.getState().roomName).toBe('Test Room');
 
             // 2. Initial players arrive
-            gmcpBus.emit('Room.Players', [
+            useRoomStore.getState().setPlayers([
                 { id: 1, name: 'Alice' },
                 { id: 2, name: 'Bob' }
             ]);
