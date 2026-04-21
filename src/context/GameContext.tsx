@@ -140,7 +140,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, [ui.mapExpanded, ui.setMapExpanded, ui.setDrawer]);
 
     const mode = useModeStore();
-    const isSpectateMode = mode.isSpectating;
+    const isSpectateMode = mode.isSpectating && mode.activeView === 'target';
     const spectateTargetId = mode.spectateTarget;
     const spectateTarget = useMemo(() => {
         if (!isSpectateMode || spectateTargetId == null) return null;

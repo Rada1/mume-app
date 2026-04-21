@@ -18,17 +18,19 @@ import { useSpectateCombatStore } from './spectate/useSpectateCombatStore';
  */
 export const useActiveVitals = (): VitalsStore => {
     const isSpectating = useModeStore(state => state.isSpectating);
+    const activeView = useModeStore(state => state.activeView);
     const mainStore = useVitalsStore();
     const spectateStore = useSpectateVitalsStore();
     
-    return (isSpectating ? spectateStore : mainStore) as VitalsStore;
+    return (isSpectating && activeView === 'target' ? spectateStore : mainStore) as VitalsStore;
 };
 
 /**
  * Returns the currently active Vitals state (imperative getter).
  */
 export const getActiveVitals = (): VitalsStore => {
-    const isSpectating = useModeStore.getState().isSpectating;
+    const mode = useModeStore.getState();
+    const isSpectating = mode.isSpectating && mode.activeView === 'target';
     return (isSpectating ? useSpectateVitalsStore.getState() : useVitalsStore.getState()) as VitalsStore;
 };
 
@@ -45,17 +47,19 @@ export const useActiveCharacter = () => {
  */
 export const useActiveRoom = (): RoomStore => {
     const isSpectating = useModeStore(state => state.isSpectating);
+    const activeView = useModeStore(state => state.activeView);
     const mainStore = useRoomStore();
     const spectateStore = useSpectateRoomStore();
     
-    return (isSpectating ? spectateStore : mainStore) as RoomStore;
+    return (isSpectating && activeView === 'target' ? spectateStore : mainStore) as RoomStore;
 };
 
 /**
  * Returns the currently active Room state (imperative getter).
  */
 export const getActiveRoom = (): RoomStore => {
-    const isSpectating = useModeStore.getState().isSpectating;
+    const mode = useModeStore.getState();
+    const isSpectating = mode.isSpectating && mode.activeView === 'target';
     return (isSpectating ? useSpectateRoomStore.getState() : useRoomStore.getState()) as RoomStore;
 };
 
@@ -64,17 +68,19 @@ export const getActiveRoom = (): RoomStore => {
  */
 export const useActiveCombat = (): CombatStore => {
     const isSpectating = useModeStore(state => state.isSpectating);
+    const activeView = useModeStore(state => state.activeView);
     const mainStore = useCombatStore();
     const spectateStore = useSpectateCombatStore();
     
-    return (isSpectating ? spectateStore : mainStore) as CombatStore;
+    return (isSpectating && activeView === 'target' ? spectateStore : mainStore) as CombatStore;
 };
 
 /**
  * Returns the currently active Combat state (imperative getter).
  */
 export const getActiveCombat = (): CombatStore => {
-    const isSpectating = useModeStore.getState().isSpectating;
+    const mode = useModeStore.getState();
+    const isSpectating = mode.isSpectating && mode.activeView === 'target';
     return (isSpectating ? useSpectateCombatStore.getState() : useCombatStore.getState()) as CombatStore;
 };
 

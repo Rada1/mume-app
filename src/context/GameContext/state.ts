@@ -56,7 +56,7 @@ export const useGameProviderState = () => {
     const userSession = useSessionState(characterName, isNewbieMode, gameState, roomDescRef, isAccountModeRef, false);
     const spectateSession = useSessionState(characterName, isNewbieMode, gameState, roomDescRef, isAccountModeRef, true);
 
-    const active = activeSession === 'user' ? userSession : spectateSession;
+    const active = mode.isSpectating && mode.activeView === 'target' ? spectateSession : userSession;
 
     // --- UI State ---
     const executeCommandRef = useRef<(cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void>(() => { });

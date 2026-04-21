@@ -23,4 +23,9 @@ config.agent.json
 *.sln
 *.sw?
 usersettings/
+playwright-report/
+test-results/
+.jules/
+*.rej
+*.orig
 

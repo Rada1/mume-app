@@ -10,6 +10,7 @@ import { getGlowColorForCategory, getCategoryForName, getCategoryType } from '..
 import { getMemberColor } from '../utils/groupUtils';
 import { isObjectSelected } from '../utils/selectionUtils';
 import { ARRIVE_REGEX, LEAVE_REGEX } from './useMessageLog';
+import { useSpecialLineWrappers } from './useSpecialLineWrappers';
 
 // --- Logic Section: Message Processing & Highlighting ---
 
@@ -32,6 +33,7 @@ export const useMessageHighlighter = (
 ) => {
     const cacheRef = useRef<Map<string, { html: string, htmlRaw: string, deps: string }>>(new Map());
     const regexCacheRef = useRef<Map<string, RegExp>>(new Map());
+    const { wrapSpecialLine } = useSpecialLineWrappers(selectedObjectIds);
 
     // Clear cache when highlight version or toggle changes
     const lastVersionRef = useRef(highlightVersion);
@@ -125,7 +127,11 @@ export const useMessageHighlighter = (
             return originalHtml;
         }
 
-        // --- 1. Rule: Specialized Comm Sender Highlighting ---
+        // --- 1. Specialized Whole-Line Wrappers ---
+        const wrappedLine = wrapSpecialLine(originalHtml, mid, type);
+        if (wrappedLine) return wrappedLine;
+
+        // --- 1.1. Rule: Specialized Comm Sender Highlighting ---
         // If the type is 'comm-sender', we treat the entire input as a player name
         // and wrap it in the same interactive button markup used for PCs.
         if (type === 'comm-sender') {
@@ -134,45 +140,6 @@ export const useMessageHighlighter = (
             const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'inlineplayer');
             
             return `<span class="inline-btn auto-occupant pc-highlighter${isSelected ? ' selected' : ''}" draggable="true" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(name)}" data-action="menu" data-menu-display="list" data-category="player">${originalHtml}</span>`;
-        }
-
-        // --- 1.2. Rule: Account Selection Buttons (Whole-Line Wrapper) ---
-        // We wrap the ENTIRE HTML for the line to avoid issues where ANSI color spans
-        // split the text into multiple nodes (e.g., green digits vs white choice text).
-        if (type === 'account-selection' || type === 'account-selection-edit') {
-            const rawText = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
-            const numMatch = rawText.match(/\((\d+)\)/);
-            const num = numMatch ? numMatch[1] : '';
-            const isEdit = type === 'account-selection-edit' || rawText.includes('Edit');
-            const editAttr = isEdit ? 'data-account-stage="stat-editing"' : '';
-            
-            return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="${esc(num)}" data-action="command" ${editAttr} data-category="account" style="color: inherit; font-weight: 800; cursor: pointer; display: inline-block; width: 100%">${originalHtml}</span>`;
-        }
-
-        // --- 1.3. Rule: Account Stat Edit Buttons (+/-) ---
-        // Redesign: Transmute the standard stat line into a collection of styled blocks.
-        if (type === 'account-stat-edit') {
-            const statRegex = /([a-z]{3}):\s*(?:<[^>]+>)*(\d+)(?:<[^>]+>)*/gi;
-            
-            const blocks = originalHtml.replace(statRegex, (m, stat, valStr) => {
-                const val = parseInt(valStr);
-                const plusCmd = `${stat} ${val + 1}`;
-                const minusCmd = `${stat} ${val - 1}`;
-                
-                return `
-                    <div class="stat-block">
-                        <div class="stat-label">${stat}:</div>
-                        <div class="stat-controls">
-                            <span class="inline-btn stat-btn" data-mid="${mid}" data-cmd="${esc(plusCmd)}" data-action="command" data-silent="true" data-category="account">+</span>
-                            <span class="stat-value">${valStr}</span>
-                            <span class="inline-btn stat-btn" data-mid="${mid}" data-cmd="${esc(minusCmd)}" data-action="command" data-silent="true" data-category="account">-</span>
-                        </div>
-                    </div>
-                `.trim();
-            });
-            
-            // Note: We wrap in a container that allows the blocks to wrap naturally.
-            return `<div class="stat-editor-row">${blocks}</div>`;
         }
 
         // --- 1.4. Rule: Account Character List Buttons ---
@@ -189,7 +156,7 @@ export const useMessageHighlighter = (
             });
         }
 
-        // --- 1.1. Rule: No general highlighted words in room names, EXCEPT the active target ---
+        // --- 1.5. Rule: No general highlighted words in room names, EXCEPT the active target ---
         if (isRoomName) {
             if (target) {
                 return safeHighlight(originalHtml, target, false, (m) => {
@@ -281,56 +248,6 @@ export const useMessageHighlighter = (
             }
         }
 
-
-        // --- 3.5. Quest List Highlighting ---
-        if (type === 'quest-list') {
-            const trimmed = textOnly.trim();
-            if (trimmed.length > 0) {
-                const lowerTrimmed = trimmed.toLowerCase();
-                // Exclude headers, informational lines, and separators
-                const isHeader = lowerTrimmed.includes('you have') || 
-                                 lowerTrimmed.includes('you are') || 
-                                 lowerTrimmed.includes('unfinished') || 
-                                 lowerTrimmed.startsWith('(*') ||
-                                 lowerTrimmed.includes('---');
-                
-                if (!isHeader) {
-                    // It's a quest name or area name (e.g., "Valinor")
-                    // If it starts with *, strip it and take the name before any description dash/colon
-                    const context = trimmed.startsWith('*') ? trimmed.substring(1).trim().split(/\s*[-:]\s*/)[0].trim() : trimmed;
-                    const buttonId = `quest-${context.toLowerCase().replace(/\s+/g, '-')}`;
-                    const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'quest');
-                    
-                    return `<span class="inline-btn auto-quest${isSelected ? ' selected' : ''}" data-id="${esc(buttonId)}" data-mid="${mid}" data-cmd="quest %n" data-context="${esc(context)}" data-action="command" data-from-drawer="true" data-category="quest">${originalHtml}</span>`;
-                }
-            }
-        }
-
-        // --- 3.5.1 Account Menu Item Highlighting ---
-        if (type === 'account-menu-item') {
-            const menuKeywords = ['create', 'play', 'time', 'list', 'move', 'password', 'add', 'info', 'practice', 'link', 'lag', 'help', 'menu', 'quit', 'side', 'race', 'level', 'alphabetic', 'custom'];
-            let tempHtml = originalHtml;
-
-            menuKeywords.forEach(kw => {
-                tempHtml = safeHighlight(tempHtml, kw, false, (m) => {
-                    const lower = m.toLowerCase();
-                    if (lower === 'play') {
-                        return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-action="menu" data-cmd="play-character-select" data-category="account" style="border-bottom: 1px solid var(--glow-color)">${m}</span>`;
-                    }
-                    return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="${esc(lower)}" data-action="command" data-category="account" style="border-bottom: 1px solid var(--glow-color)">${m}</span>`;
-                });
-            });
-
-            // Handle special keywords NEW and ? separately
-            tempHtml = safeHighlight(tempHtml, 'NEW', false, (m) => {
-                return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="new" data-action="command" data-category="account" style="border-bottom: 1px solid var(--glow-color)">${m}</span>`;
-            });
-            tempHtml = safeHighlight(tempHtml, '\\?', true, (m) => {
-                return `<span class="inline-btn auto-account-cmd" data-mid="${mid}" data-cmd="?" data-action="command" data-category="account" style="border-bottom: 1px solid var(--glow-color)">${m}</span>`;
-            });
-
-            return tempHtml;
-        }
 
         // --- 3.6. Specialized List Highlighting (WHO/WHERE) ---
         if (type === 'who-list' || type === 'where-list') {

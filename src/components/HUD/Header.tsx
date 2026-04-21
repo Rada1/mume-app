@@ -168,6 +168,42 @@ const Header: React.FC<HeaderProps> = ({
                 </div>
             )}
 
+            {/* View Switcher for Spectate Mode */}
+            {isSpectating && (
+                <div style={{
+                    display: 'flex', alignItems: 'center', gap: 4,
+                    padding: '2px', borderRadius: 6,
+                    background: 'var(--bg-panel, rgba(255,255,255,0.05))',
+                    border: '1px solid var(--border-color, rgba(255,255,255,0.1))',
+                    flexShrink: 0
+                }}>
+                    <button 
+                        onClick={() => setActiveView('self')}
+                        style={{
+                            background: activeView === 'self' ? 'var(--accent)' : 'transparent',
+                            color: activeView === 'self' ? '#fff' : 'var(--text-faded)',
+                            border: 'none', borderRadius: 4, padding: '4px 8px',
+                            fontSize: '11px', fontWeight: 'bold', cursor: 'pointer',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        ME
+                    </button>
+                    <button 
+                        onClick={() => setActiveView('target')}
+                        style={{
+                            background: activeView === 'target' ? 'var(--accent)' : 'transparent',
+                            color: activeView === 'target' ? '#fff' : 'var(--text-faded)',
+                            border: 'none', borderRadius: 4, padding: '4px 8px',
+                            fontSize: '11px', fontWeight: 'bold', cursor: 'pointer',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        {spectateTarget ? spectateTarget.toUpperCase() : 'TARGET'}
+                    </button>
+                </div>
+            )}
+
             {/* Right: Master Controls (Always Visible/Fixed) */}
             <div className="controls" style={{ flexShrink: 0, marginLeft: 'auto', display: 'flex', gap: 6, alignItems: 'center' }}>
                 {status === 'disconnected' && (

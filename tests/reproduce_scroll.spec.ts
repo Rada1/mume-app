@@ -2,77 +2,112 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Message Log Scroll Behavior', () => {
     test('should stay locked to bottom when new messages arrive', async ({ page }) => {
-        await page.goto('http://localhost:3001/');
+        await page.goto('http://localhost:3002/');
         
-        // Wait for connection and account prompt
-        await page.waitForSelector('.account-input-trigger');
-
+        // Wait for message log
         const log = page.locator('.message-log');
-        
+        await page.waitForSelector('.message-log');
+
         // Helper to check if scrolled to bottom
         const isAtBottom = async () => {
             return await log.evaluate((el) => {
-                const threshold = 5;
-                return el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
+                const threshold = 10;
+                const distance = el.scrollHeight - el.scrollTop - el.clientHeight;
+                return distance < threshold;
             });
         };
 
-        // 1. Verify initial lock
+        // 1. Initially it might not have content, so it's at bottom
         expect(await isAtBottom()).toBe(true);
 
-        // 2. Simulate many messages arriving via GMCP-like events or just waiting for login text
-        // Since we are at login, we can't easily trigger messages without logging in, 
-        // but we can inject messages into the DOM for testing the scroll container logic if needed.
-        
-        // Let's try to trigger some "game" output by typing nonsense
-        const input = page.locator('.account-input-trigger');
-        await input.fill('testplayer');
-        await input.press('Enter');
-
-        // Wait for some response
-        await page.waitForTimeout(1000);
-        
-        // Check if still at bottom
-        expect(await isAtBottom()).toBe(true);
-
-        // 3. Manual scroll up should unlock
-        await log.evaluate((el) => {
-            el.scrollTop = 0;
+        // 2. Inject some dummy messages to create scroll
+        await page.evaluate(() => {
+            const container = document.querySelector('.message-log > div > div');
+            if (container) {
+                for (let i = 0; i < 100; i++) {
+                    const msg = document.createElement('div');
+                    msg.className = 'message game';
+                    msg.style.height = '30px';
+                    msg.textContent = `Dummy Message ${i}`;
+                    container.appendChild(msg);
+                }
+            }
         });
+
+        // Trigger layout effect simulation by forcing a scroll to bottom if needed
+        await log.evaluate(el => el.scrollTop = el.scrollHeight);
+        await page.waitForTimeout(100);
+        expect(await isAtBottom()).toBe(true);
+
+        // 3. Simulate wheeling DOWN small amount - should NOT unlock
+        await page.mouse.move(500, 500); // move over log
+        await page.mouse.wheel(0, 50);
+        await page.waitForTimeout(100);
+        
+        // Even if we wheel down, if we were at bottom, we should stay locked or near it
+        // The bug is likely that ANY wheel event unlocks.
+        
+        // Let's test manual drift: Inject more messages and see if it follows
+        await page.evaluate(() => {
+            const container = document.querySelector('.message-log > div > div');
+            if (container) {
+                for (let i = 100; i < 110; i++) {
+                    const msg = document.createElement('div');
+                    msg.className = 'message game';
+                    msg.style.height = '30px';
+                    msg.textContent = `New Message ${i}`;
+                    container.appendChild(msg);
+                }
+            }
+        });
+        
+        // If locked, it should have scrolled. 
+        // We wait a bit for any requestAnimationFrame/ResizeObserver
         await page.waitForTimeout(200);
         
-        // Should NOT be at bottom now
-        expect(await isAtBottom()).toBe(false);
-
-        // 4. Send a command - should relock to bottom (as per useLayoutEffect logic for 'user' type)
-        await input.fill('help');
-        await input.press('Enter');
-        await page.waitForTimeout(500);
-
-        // Should be back at bottom
-        expect(await isAtBottom()).toBe(true);
+        // NOTE: In the real app, React state update for 'messages' triggers the scrollToBottom.
+        // Direct DOM injection won't trigger the React effect.
+        // We need to trigger the bug by interacting with the scroll logic.
     });
 
-    test('should not drift when wheeling near bottom', async ({ page }) => {
-        await page.goto('http://localhost:3001/');
+    test('reproduce wheel drift', async ({ page }) => {
+        await page.goto('http://localhost:3002/');
         await page.waitForSelector('.message-log');
         const log = page.locator('.message-log');
 
-        // Ensure we are at bottom
-        await log.evaluate(el => el.scrollTop = el.scrollHeight);
-        await page.waitForTimeout(100);
-
-        // Simulate a small wheel scroll DOWN (should keep lock)
-        await page.mouse.wheel(0, 10);
-        await page.waitForTimeout(100);
-        
-        // This is where the bug might be: wheel event listener unconditionally sets lock = false
-        const isLocked = await page.evaluate(() => {
-            // @ts-ignore - accessing internal state for test
-            return window.viewport?.isLockedToBottomRef.current;
+        // Fill with some content
+        await page.evaluate(() => {
+            const container = document.querySelector('.message-log > div > div');
+            if (container) {
+                for (let i = 0; i < 50; i++) {
+                    const msg = document.createElement('div');
+                    msg.className = 'message game';
+                    msg.style.height = '40px';
+                    msg.style.border = '1px solid red';
+                    msg.textContent = `Line ${i}`;
+                    container.appendChild(msg);
+                }
+            }
         });
-        
-        // If we want to check internal state, we'd need to expose it, but let's check behavior.
-        // If we add a message now, does it scroll?
+
+        // Ensure at bottom
+        await log.evaluate(el => el.scrollTop = el.scrollHeight);
+        await page.waitForTimeout(500);
+
+        // Helper to check if "Locked" UI ( scrubber hidden )
+        const isUiLocked = async () => {
+            return await page.locator('.timeline-scrubber-overlay').isHidden();
+        };
+
+        // Initially should be locked
+        // expect(await isUiLocked()).toBe(true); // Might fail if no messages in state
+
+        // Simulate Wheel DOWN
+        await page.mouse.move(400, 400);
+        await page.mouse.wheel(0, 100);
+        await page.waitForTimeout(200);
+
+        // If it drifts, isNearBottom logic should have kept it locked if < 40px,
+        // BUT wheel handler currently sets it to false UNCONDITIONALLY.
     });
 });

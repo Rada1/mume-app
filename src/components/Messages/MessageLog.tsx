@@ -457,21 +457,36 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const isUserScrollingRef = React.useRef(false);
     const userScrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+    const lastScrollTopRef = useRef(0);
+
     const handleScroll = useCallback(() => {
         const container = scrollContainerRef.current;
         if (!container) return;
 
-        if (viewport.isAutoScrollingRef.current) return;
+        if (viewport.isAutoScrollingRef.current) {
+            lastScrollTopRef.current = container.scrollTop;
+            return;
+        }
 
         isUserScrollingRef.current = true;
         if (userScrollTimerRef.current) clearTimeout(userScrollTimerRef.current);
         userScrollTimerRef.current = setTimeout(() => { isUserScrollingRef.current = false; }, 150);
 
-        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 40;
+        // Increased threshold to be more forgiving of sub-pixel drift or rapid growth
+        const threshold = 80; 
+        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
+        const isScrollingUp = container.scrollTop < lastScrollTopRef.current;
 
+        lastScrollTopRef.current = container.scrollTop;
+
+        // Only update lock state if we aren't currently auto-scrolling
         if (viewport.isLockedToBottomRef.current !== isNearBottom) {
-            viewport.isLockedToBottomRef.current = isNearBottom;
-            setIsInternalLocked(isNearBottom);
+            // If we are scrolling UP and move away from bottom, unlock.
+            // If we are scrolling DOWN and hit the threshold, relock.
+            if (isScrollingUp || isNearBottom) {
+                viewport.isLockedToBottomRef.current = isNearBottom;
+                setIsInternalLocked(isNearBottom);
+            }
         }
 
     }, [viewport, scrollContainerRef]);
@@ -493,7 +508,10 @@ const MessageLog: React.FC<MessageLogProps> = ({
             container.scrollTop += e.deltaY;
 
             if (onWheelRef.current) onWheelRef.current(e as any);
-            if (viewport.isLockedToBottomRef.current) {
+            
+            // Only unlock if we are explicitly wheeling UP. 
+            // Wheeling down should maintain the lock if near bottom.
+            if (e.deltaY < 0 && viewport.isLockedToBottomRef.current) {
                 viewport.isLockedToBottomRef.current = false;
                 setIsInternalLocked(false);
             }

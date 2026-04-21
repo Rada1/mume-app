@@ -8,6 +8,7 @@ interface ModeState {
     activeCharacter: string | null;
     spectateQueue: string[];
     lastSnoopStartTime: number | null;
+    activeView: 'self' | 'target';
 
     setMode: (mode: SessionMode) => void;
     startSpectate: (target: string) => void;
@@ -15,6 +16,7 @@ interface ModeState {
     setActiveCharacter: (name: string | null) => void;
     setSpectateQueue: (queue: string[] | ((prev: string[]) => string[])) => void;
     setLastSnoopStartTime: (time: number | null) => void;
+    setActiveView: (view: 'self' | 'target') => void;
 }
 
 export const useModeStore = create<ModeState>((set) => ({
@@ -24,15 +26,17 @@ export const useModeStore = create<ModeState>((set) => ({
     activeCharacter: null,
     spectateQueue: [],
     lastSnoopStartTime: null,
+    activeView: 'self',
 
     setMode: (mode) => set({ mode }),
-    startSpectate: (target) => set({ isSpectating: true, spectateTarget: target }),
-    stopSpectate: () => set({ isSpectating: false, spectateTarget: null, spectateQueue: [], lastSnoopStartTime: null }),
+    startSpectate: (target) => set({ isSpectating: true, spectateTarget: target, activeView: 'target' }),
+    stopSpectate: () => set({ isSpectating: false, spectateTarget: null, spectateQueue: [], lastSnoopStartTime: null, activeView: 'self' }),
     setActiveCharacter: (name) => set({ activeCharacter: name }),
     setSpectateQueue: (update) => set((state) => ({ 
         spectateQueue: typeof update === 'function' ? update(state.spectateQueue) : update 
     })),
     setLastSnoopStartTime: (time) => set({ lastSnoopStartTime: time }),
+    setActiveView: (view) => set({ activeView: view }),
 }));
 
 export const getMode = () => useModeStore.getState();
