@@ -1,4 +1,4 @@
-import { createButton } from '../../utils/buttonFactory';
+﻿import { createButton } from '../../utils/buttonFactory';
 
 /**
  * @file meta.ts
@@ -36,3 +36,12 @@ export const META_BUTTONS = [
     createButton({ id: 'innpc-look', label: 'Look', command: 'look %n', setId: 'unused-npc', color: '#0ea5e9' }),
     createButton({ id: 'innpc-steal', label: 'Steal', command: 'steal %n', setId: 'unused-npc', color: '#14b8a6' })
 ];
+
+
+
+
+
+
+
+
+

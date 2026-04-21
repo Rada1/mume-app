@@ -1,4 +1,4 @@
-import { createButton } from '../../../utils/buttonFactory';
+﻿import { createButton } from '../../../utils/buttonFactory';
 
 /**
  * @file items.ts
@@ -53,3 +53,12 @@ export const ITEM_BUTTONS = [
     createButton({ id: 'cat-obj-worn-remove', label: 'Remove', command: 'remove %n', setId: 'inline-obj-worn', color: '#94a3b8', width: 100 }),
     createButton({ id: 'cat-obj-worn-examine', label: 'Examine', command: 'examine %n', setId: 'inline-obj-worn', color: '#3b82f6', width: 100 })
 ];
+
+
+
+
+
+
+
+
+

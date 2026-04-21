@@ -1,14 +1,16 @@
-/**
- * @file index.ts
- * @description Re-exports for all skill buttons.
- */
-import { CustomButton } from '../../../types';
-import { THIEF_SKILLS } from './thief';
-import { WARRIOR_SKILLS } from './warrior';
-import { RANGER_SKILLS } from './ranger';
+import { RANGER_BUTTONS } from './ranger';
+import { THIEF_BUTTONS } from './thief';
+import { WARRIOR_BUTTONS } from './warrior';
 
-export const SKILL_BUTTONS: CustomButton[] = [
-    ...THIEF_SKILLS,
-    ...WARRIOR_SKILLS,
-    ...RANGER_SKILLS
+export { RANGER_BUTTONS, THIEF_BUTTONS, WARRIOR_BUTTONS };
+
+export const ALL_SKILLS = [
+    ...RANGER_BUTTONS,
+    ...THIEF_BUTTONS,
+    ...WARRIOR_BUTTONS
 ];
+
+// Compatibility aliases
+export const RANGER_SKILLS = RANGER_BUTTONS;
+export const THIEF_SKILLS = THIEF_BUTTONS;
+export const WARRIOR_SKILLS = WARRIOR_BUTTONS;

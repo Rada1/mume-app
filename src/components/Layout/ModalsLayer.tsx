@@ -86,6 +86,12 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setFavorites,
         isHighlighterEnabled,
         setIsHighlighterEnabled,
+        objectColor,
+        setObjectColor,
+        playerColor,
+        setPlayerColor,
+        npcColor,
+        setNpcColor,
         isBloomEnabled,
         setIsBloomEnabled,
         isSpectateMode,
@@ -132,8 +138,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         ui,
         setUI
     } = useUI();
-
-    const { objectColor, setObjectColor } = useSettingsStore();
 
     const popoverRef = React.useRef<HTMLDivElement>(null);
 
@@ -227,6 +231,10 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setFontFamily={setFontFamily}
                     showSpectatePromptInLog={showSpectatePromptInLog}
                     setShowSpectatePromptInLog={setShowSpectatePromptInLog}
+                    playerColor={playerColor}
+                    setPlayerColor={setPlayerColor}
+                    npcColor={npcColor}
+                    setNpcColor={setNpcColor}
                     isEditMode={btn.isEditMode}
                     setIsEditMode={btn.setIsEditMode}
                     isGridEnabled={btn.isGridEnabled}

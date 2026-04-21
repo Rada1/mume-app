@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file socials.ts
  * @description Social command buttons.
  */
@@ -63,3 +63,12 @@ export const SOCIAL_BUTTONS = [
     createSocialButton('yawn', 'Yawn', false),
     createSocialButton('yes', 'Yes', false)
 ];
+
+
+
+
+
+
+
+
+

@@ -4,66 +4,11 @@
  */
 
 import { SwipeDirection } from './game';
+import { EntityKind, EntityLocation } from './entities';
 
 export type UiMode = 'auto' | 'desktop' | 'portrait' | 'landscape';
-export type TriggerAction = 'show' | 'switch_set';
-export type ActionType = 'command' | 'nav' | 'menu' | 'assign' | 'select-assign' | 'teleport-manage' | 'select-recipient' | 'select-container' | 'preload';
-
-export interface CustomButton {
-    id: string;
-    label: string;
-    icon?: string;
-    command: string; 
-    setId?: string; 
-    actionType?: ActionType;
-    longActionType?: ActionType;
-    swipeActionTypes?: Partial<Record<SwipeDirection, ActionType>>;
-    longSwipeActionTypes?: Partial<Record<SwipeDirection, ActionType>>;
-    longCommand?: string;
-    display: 'floating' | 'inline';
-    style: {
-        x: number;
-        y: number;
-        w: number;
-        h: number;
-        backgroundColor: string;
-        borderColor?: string;
-        color?: string;
-        fontSize?: number;
-        borderRadius?: number;
-        transparent?: boolean;
-        iconScale?: number;
-        iconOpacity?: number;
-        borderWidth?: number;
-        curvedText?: boolean;
-        shape: 'rect' | 'pill' | 'circle';
-    };
-    trigger: {
-        enabled: boolean;
-        pattern: string;
-        isRegex: boolean;
-        autoHide: boolean;
-        duration: number;
-        spit?: boolean;
-        type?: TriggerAction;
-        targetSet?: string;
-        onKeyboard?: boolean;
-        closeKeyboard?: boolean;
-        offKeyboard?: boolean;
-    };
-    isVisible: boolean;
-    swipeCommands?: Partial<Record<SwipeDirection, string>>;
-    longSwipeCommands?: Partial<Record<SwipeDirection, string>>;
-    menuDisplay?: 'list' | 'dial';
-    requirement?: {
-        ability?: string;
-        minProficiency?: number;
-        characterClass?: string[];
-    };
-    hideIfUnknown?: boolean;
-    isDimmed?: boolean;
-    _skipJoystick?: boolean;
-}
+export type TriggerAction = 'spit' | 'hide' | 'show' | 'command';
+export type ActionType = 'command' | 'menu' | 'nav' | 'select-assign' | 'select-recipient' | 'select-container' | 'assign' | 'teleport-manage' | 'historical' | 'preload' | 'show';
 
 export interface PopoverState {
     x: number;
@@ -71,104 +16,110 @@ export interface PopoverState {
     sourceHeight?: number;
     type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'give-target-select' | 'put-container-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target' | 'container' | 'shop-card' | 'session-log' | 'help-card' | 'character-select';
     setId: string; // The legacy command or set ID. Can still hold standard menu set IDs.
-    kind?: string; // e.g. object, npc, player
-    location?: string; // e.g. room, carried, worn
+    kind?: EntityKind; 
+    location?: EntityLocation; 
     category?: string;
-    context?: string;
-    containerItems?: any[];
+    context?: string; // Optional context like "Orc" or "Iron Sword"
+    entityId?: string; // Unique registry ID
+    parentNoun?: string; // For things like "Orc corpse"
+    accentColor?: string;
+    executeAndAssign?: boolean;
     assignSourceId?: string;
     assignSwipeDir?: SwipeDirection;
-    executeAndAssign?: boolean;
+    direction?: string;
+    anchorId?: string;
     menuDisplay?: 'list' | 'dial';
+    containerItems?: any[];
+    // Gesture/Pointer support
     initialPointerX?: number;
     initialPointerY?: number;
+    // Special data for cards
+    shopItems?: any[];
+    helpData?: any;
     teleportId?: string;
     spellCommand?: string;
-    isContainer?: boolean;
-    parentNoun?: string;
-    entityId?: string;
-    shopItems?: any[];
-    practiceData?: any;
-    helpData?: string;
-    accentColor?: string;
-    direction?: string;
-    accountCharacters?: any[];
-    accountState?: any;
-    setAccountState?: any;
-}
-
-export interface TeleportTarget {
-    id: string;
-    label: string;
-    expiresAt: number;
-}
-
-export interface ParleyState {
-    active: boolean;
-    command: string;
-    target: string | null;
-}
-
-export interface InlineCategoryConfig {
-    id: string;                  // canonical, always starts 'inline-'
-    kind: 'npc' | 'player' | 'object' | 'exit' | 'none';
-    parent?: string;             // canonical ID of parent
-    keywords: string[];
-    color?: string;              // optional; defaults to kind's color
-    categoryType?: 'npc' | 'player' | 'object' | 'account' | 'target' | 'quest' | 'none'; // legacy support
 }
 
 export interface ButtonSetSettings {
+    activeSet: string;
+    isEditMode: boolean;
+    isGridEnabled: boolean;
+    gridSize: number;
+    editingButtonId: string | null;
+    selectedButtonIds: Set<string>;
     themeColor?: string;
 }
 
-export interface SavedSettings {
-    version: number;
-    connectionUrl: string;
-    bgImage: string;
-    buttons: CustomButton[];
-    soundTriggers: any[];
-    actions?: any[];
-    combatSet?: string;
-    defaultSet?: string;
-    loginName?: string;
-    loginPassword?: string;
-    isSoundEnabled?: boolean;
-    isNoviceMode?: boolean;
-    abilities?: Record<string, number>;
-    characterClass?: string;
-    setSettings?: Record<string, ButtonSetSettings>;
-    autoConnect?: boolean;
-    showDebugEchoes?: boolean;
-    uiMode?: UiMode;
-    disableSmoothScroll?: boolean;
-    isImmersionMode?: boolean;
-    showRecordingIndicator?: boolean;
-    showOrganicTerrain?: boolean;
-    inlineCategories?: InlineCategoryConfig[];
-    favorites?: string[];
-    isHighlighterEnabled?: boolean;
-    isBloomEnabled?: boolean;
-    isNewbieMode?: boolean;
-    isTimestampEnabled?: boolean;
-    autoSaveSessions?: boolean;
-}
-
-export interface SpatButton {
+export interface CustomButton {
     id: string;
-    btnId: string;
+    setId: string; // "nav", "combat", "misc", or category ID like "object-weapon"
     label: string;
-    icon?: string;
     command: string;
-    action: string;
-    startX: number;
-    startY: number;
-    targetX: number;
-    targetY: number;
-    color: string;
-    timestamp: number;
+    actionType?: ActionType;
+    icon?: string;
+    display?: 'standard' | 'floating' | 'hidden' | 'inline'; // Restore 'inline' for legacy compat
+    hideIfUnknown?: boolean;
+    isDimmed?: boolean;
+    _skipJoystick?: boolean; // Internal flag for gestures
+    
+    // Requirements for smart population
+    requirement?: {
+        ability?: string;
+        minProficiency?: number;
+        characterClass?: string[];
+    };
+    
+    style: {
+        backgroundColor?: string;
+        borderColor?: string;
+        color?: string;
+        icon?: string;
+        borderWidth?: number;
+        borderRadius?: number;
+        shape?: 'rect' | 'circle' | 'pill' | 'diamond';
+        iconScale?: number;
+        iconOpacity?: number;
+        fontSize?: number;
+        curvedText?: boolean;
+        x?: number; // Legacy position in style
+        y?: number;
+        w?: number;
+        h?: number;
+        transparent?: boolean;
+    };
+    position: {
+        x: number;
+        y: number;
+        w: number;
+        h: number;
+    };
+    isVisible: boolean;
+    
+    // Gesture support
     swipeCommands?: Partial<Record<SwipeDirection, string>>;
     swipeActionTypes?: Partial<Record<SwipeDirection, ActionType>>;
+    
+    // Long-press support
+    longCommand?: string;
+    longActionType?: ActionType;
+    longSwipeCommands?: Partial<Record<SwipeDirection, string>>;
+    longSwipeActionTypes?: Partial<Record<SwipeDirection, ActionType>>;
+
+    // Dynamic triggers
+    trigger?: {
+        enabled: boolean;
+        type?: 'match' | 'status' | 'switch_set' | 'show'; // Made optional to fix manifest errors
+        pattern?: string;
+        isRegex?: boolean;
+        onKeyboard?: boolean;
+        offKeyboard?: boolean;
+        autoHide?: boolean;
+        closeKeyboard?: boolean;
+        spit?: boolean;
+        targetSet?: string;
+        duration?: number;
+    };
+
     menuDisplay?: 'list' | 'dial';
     closeKeyboard?: boolean;
     offKeyboard?: boolean;

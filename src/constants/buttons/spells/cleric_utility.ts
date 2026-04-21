@@ -1,80 +1,82 @@
-/**
- * @file cleric_utility.ts
- * @description Cleric basic utility and protective spell buttons.
- */
 import { CustomButton } from '../../../types';
 
-export const CLERIC_UTILITY_SPELLS: CustomButton[] = [
+export const CLERIC_UTILITY_BUTTONS: CustomButton[] = [
     {
-        "id": "cleric-armour-0",
-        "label": "Armour",
-        "command": "cast 'Armour'",
+        "id": "cle-blind",
+        "label": "Blind",
+        "command": "cast 'blindness'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 5, "y": 10, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 0, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "cleric-cure-light-1",
-        "label": "Cure Light",
-        "command": "cast 'Cure Light'",
+        "id": "cle-poison",
+        "label": "Poison",
+        "command": "cast 'poison'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 21, "y": 10, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 85, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "cleric-create-water-2",
-        "label": "Create Water",
-        "command": "cast 'Create Water'",
+        "id": "cle-sleep",
+        "label": "Sleep",
+        "command": "cast 'sleep'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 37, "y": 10, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 170, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "cleric-detect-poison-3",
-        "label": "Detect Poison",
-        "command": "cast 'Detect Poison'",
+        "id": "cle-remove-poison",
+        "label": "Rem P",
+        "command": "cast 'remove poison'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 53, "y": 10, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 255, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "cleric-detect-evil-4",
-        "label": "Detect Evil",
-        "command": "cast 'Detect Evil'",
+        "id": "cle-create-food",
+        "label": "Food",
+        "command": "cast 'create food'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 69, "y": 10, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 0, "y": 105, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "cleric-create-food-5",
-        "label": "Create Food",
-        "command": "cast 'Create Food'",
+        "id": "cle-create-water",
+        "label": "Water",
+        "command": "cast 'create water'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 85, "y": 10, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 85, "y": 105, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     }
 ];

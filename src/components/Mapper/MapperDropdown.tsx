@@ -15,15 +15,13 @@ interface MapperDropdownProps {
     unveilMap: boolean;
     setUnveilMap: (unveil: boolean) => void;
     onResetSync: () => void;
-    isMapFloating: boolean;
-    onUndock: () => void;
     isMobile: boolean;
 }
 
 export const MapperDropdown: React.FC<MapperDropdownProps> = ({
     isOpen, setIsOpen, allowPersistence, setAllowPersistence, isDarkMode, setIsDarkMode,
     exportMap, importMap, importMMapper, clearMap, unveilMap, setUnveilMap, onResetSync,
-    isMapFloating, onUndock, isMobile
+    isMobile
 }) => {
     if (!isOpen) return null;
     
@@ -72,23 +70,6 @@ export const MapperDropdown: React.FC<MapperDropdownProps> = ({
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
                     Sync to MMapper
-                </button>
-
-                <button 
-                    style={{ padding: '10px 14px', backgroundColor: isMapFloating ? 'rgba(203, 166, 247, 0.12)' : 'transparent', border: 'none', color: '#cba6f7', fontSize: '14px', textAlign: 'left', cursor: 'pointer', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px' }} 
-                    onClick={() => { onUndock(); setIsOpen(false); }}
-                >
-                    {isMapFloating ? (
-                        <>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 12-3-3-3 3"></path><path d="M12 9v12"></path><path d="M20 4H4"></path></svg>
-                            Dock Map
-                        </>
-                    ) : (
-                        <>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 15-3 3-3-3"></path><path d="M12 18V6"></path><path d="M20 20H4"></path></svg>
-                            Undock Map
-                        </>
-                    )}
                 </button>
 
                 <div style={{ height: '1px', backgroundColor: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)', margin: '4px 8px' }} />

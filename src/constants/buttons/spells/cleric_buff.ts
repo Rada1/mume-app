@@ -1,80 +1,82 @@
-/**
- * @file cleric_buff.ts
- * @description Cleric enhancement and healing spell buttons.
- */
 import { CustomButton } from '../../../types';
 
-export const CLERIC_BUFF_SPELLS: CustomButton[] = [
+export const CLERIC_BUFF_BUTTONS: CustomButton[] = [
     {
-        "id": "cleric-strength-12",
-        "label": "Strength",
-        "command": "cast 'Strength'",
+        "id": "cle-armor",
+        "label": "Armor",
+        "command": "cast 'armor'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 5, "y": 26, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 0, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "cleric-sense-life-13",
-        "label": "Sense Life",
-        "command": "cast 'Sense Life'",
+        "id": "cle-bless",
+        "label": "Bless",
+        "command": "cast 'bless'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 21, "y": 26, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 85, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "cleric-heal-14",
+        "id": "cle-cure-light",
+        "label": "Cure L",
+        "command": "cast 'cure light'",
+        "setId": "clericspelllist",
+        "actionType": "command",
+        "display": "floating",
+        "hideIfUnknown": true,
+        "style": { "x": 170, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
+        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
+    },
+    {
+        "id": "cle-cure-serious",
+        "label": "Cure S",
+        "command": "cast 'cure serious'",
+        "setId": "clericspelllist",
+        "actionType": "command",
+        "display": "floating",
+        "hideIfUnknown": true,
+        "style": { "x": 255, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
+        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
+    },
+    {
+        "id": "cle-cure-critic",
+        "label": "Cure C",
+        "command": "cast 'cure critic'",
+        "setId": "clericspelllist",
+        "actionType": "command",
+        "display": "floating",
+        "hideIfUnknown": true,
+        "style": { "x": 0, "y": 105, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
+        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
+    },
+    {
+        "id": "cle-heal",
         "label": "Heal",
-        "command": "cast 'Heal'",
+        "command": "cast 'heal'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 37, "y": 26, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 85, "y": 105, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
-    },
-    {
-        "id": "cleric-cure-critical-15",
-        "label": "Cure Critical",
-        "command": "cast 'Cure Critical'",
-        "setId": "clericspelllist",
-        "actionType": "command",
-        "display": "floating",
-        "hideIfUnknown": true,
-        "style": { "x": 53, "y": 26, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
-        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
-    },
-    {
-        "id": "cleric-breath-of-briskness-16",
-        "label": "Breath of Briskness",
-        "command": "cast 'Breath of Briskness'",
-        "setId": "clericspelllist",
-        "actionType": "command",
-        "display": "floating",
-        "hideIfUnknown": true,
-        "style": { "x": 69, "y": 26, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
-        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
-    },
-    {
-        "id": "cleric-fear-17",
-        "label": "Fear",
-        "command": "cast 'Fear'",
-        "setId": "clericspelllist",
-        "actionType": "command",
-        "display": "floating",
-        "hideIfUnknown": true,
-        "style": { "x": 85, "y": 26, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
-        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     }
 ];

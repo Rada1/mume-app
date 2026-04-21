@@ -231,7 +231,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             setTarget(null); addMessage('system', 'Target cleared.');
         } else if (finalCmd === '__parley__') {
             const parleyTarget = context || target || '';
-            setParley({ active: true, command: parley.command || 'tell', target: parleyTarget });
+            setParley({ active: true, command: parley.command || 'tell', target: parleyTarget, message: '' });
 
             // Focus keyboard
             setTimeout(() => {

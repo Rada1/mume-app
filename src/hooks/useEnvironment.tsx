@@ -17,7 +17,6 @@ interface EnvironmentDeps {
     setSpellSpeed: (val: string) => void;
     alertness: string;
     setAlertness: (val: string) => void;
-    setDetectLighting: (fn: (symbol: string) => void) => void;
 }
 
 export function useEnvironment(deps: EnvironmentDeps) {
@@ -29,7 +28,6 @@ export function useEnvironment(deps: EnvironmentDeps) {
         mood, setMood,
         spellSpeed, setSpellSpeed,
         alertness, setAlertness,
-        setDetectLighting
     } = deps;
 
     const detectLightingImpl = useCallback((symbol: string | number) => {
@@ -82,11 +80,6 @@ export function useEnvironment(deps: EnvironmentDeps) {
             setLighting(type);
         }
     }, [setLighting]);
-
-    useEffect(() => {
-        // Fix: passing the function directly to correctly set the ref
-        setDetectLighting(detectLightingImpl);
-    }, [detectLightingImpl, setDetectLighting]);
 
     const getLightingIcon = () => {
         switch (lighting) {

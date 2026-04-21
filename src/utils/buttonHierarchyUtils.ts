@@ -43,11 +43,6 @@ export const getHierarchyChain = (kind: string, location: string, categoryId?: s
     const locationSetId = LOCATION_SETS[location];
     if (locationSetId) {
         result.push(locationSetId);
-        
-        // Backward compatibility shim: map location-room to object-room if kind is object
-        if (location === 'room' && kind === 'object') result.push('object-room');
-        if (location === 'carried' && kind === 'object') result.push('object-inv');
-        if (location === 'worn' && kind === 'object') result.push('object-worn');
     }
 
     // Add category-specific layer and its parents from INLINE_HIERARCHY

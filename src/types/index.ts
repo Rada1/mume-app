@@ -11,4 +11,5 @@ export * from './mechanics';
 export * from './account';
 export * from './session';
 
-// Re-export any missing legacy types if necessary, but aim for full modularization.
+// Note: EntityLocation is now uniquely defined in entities.ts to resolve 
+// export collisions with ui.ts which was carrying a legacy definition.

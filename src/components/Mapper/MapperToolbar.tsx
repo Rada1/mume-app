@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useGame } from '../../context/GameContext';
-import { MoreVertical, MoreHorizontal } from 'lucide-react';
 
 interface MapperToolbarProps {
     mode: 'edit' | 'play';
@@ -16,24 +15,15 @@ interface MapperToolbarProps {
     unveilMap?: boolean;
     setUnveilMap?: (unveil: boolean) => void;
     onResetSync?: () => void;
-    onUndock?: () => void;
     isDarkMode: boolean;
-    isMapFloating: boolean;
-    setIsMapFloating: (floating: boolean) => void;
 }
 
 export const MapperToolbar: React.FC<MapperToolbarProps> = ({
-    mode, setMode, autoCenter, setAutoCenter, setIsMinimized, isMobile, isExpanded, onCenterClick, onAddRoom, setIsDropdownOpen,
-    unveilMap, setUnveilMap, onResetSync, onUndock, isDarkMode, isMapFloating, setIsMapFloating
+    mode, setMode, autoCenter, setIsMinimized, isMobile, isExpanded, onCenterClick, setIsDropdownOpen,
 }) => {
-    const { viewport, triggerHaptic, ui } = useGame();
-    // Removed local isMenuOpen state, now using ui.showMapperToolbar
+    const { viewport, ui } = useGame();
 
-    // Removed isExpanded check to ensure the toolbar is always visible for troubleshooting
-    // if (isMobile && !isExpanded) return null;
-
-    // Use icon-only mode if floating or mobile tray is narrow
-    const showLabels = !isMapFloating && isExpanded;
+    const showLabels = isExpanded;
     const isPortrait = isMobile && !viewport.isLandscape;
 
     const toolbarContent = (
@@ -154,4 +144,3 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
         </div>
     );
 };
-

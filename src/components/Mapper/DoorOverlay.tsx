@@ -74,6 +74,7 @@ export const DoorOverlay: React.FC<DoorOverlayProps> = ({
                 // Mock a CustomButton for the door
                 const doorBtn: CustomButton = {
                     id: `door-${currentRoomId}-${d}`,
+                    setId: 'doors',
                     label: isClosed ? 'Door' : 'Open',
                     command: isClosed ? `open ${dirName}` : `close ${dirName}`,
                     actionType: 'command',
@@ -89,6 +90,7 @@ export const DoorOverlay: React.FC<DoorOverlayProps> = ({
                         fontSize: 0.5,
                         shape: 'circle'
                     },
+                    position: { x: 0, y: 0, w: 32, h: 32 },
                     isVisible: true,
                     swipeActionTypes: {
                         up: 'command',
@@ -106,6 +108,7 @@ export const DoorOverlay: React.FC<DoorOverlayProps> = ({
                     } as any, // Extending CustomButton type contextually
                     trigger: {
                         enabled: false,
+                        type: 'show',
                         pattern: '',
                         isRegex: false,
                         autoHide: false,

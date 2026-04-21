@@ -14,6 +14,8 @@ import { Mapper } from '../Mapper/Mapper';
 import { User, Shield, BarChart2, Users, Map as MapIcon } from 'lucide-react';
 
 interface DrawerManagerProps {
+    ui: any;
+    setUI: (val: any) => void;
     inventoryLines: any[];
     statsLines: any[];
     scoreLines: any[];
@@ -36,6 +38,8 @@ interface DrawerManagerProps {
 }
 
 export const DrawerManager: React.FC<DrawerManagerProps> = ({
+    ui,
+    setUI,
     inventoryLines,
     statsLines,
     scoreLines,
@@ -62,8 +66,27 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         pendingDrawerContainerRef, inlineCategories, entities, keywordOverrides,
         gameState
     } = useGame();
-    const { ui, setUI, handleTabClick } = useUI();
+    const { handleTabClick } = useUI();
     const mapperRef = React.useRef<any>(null);
+
+    // On desktop, push the log right/left so side drawers sit beside it instead of over it
+    React.useEffect(() => {
+        if (!viewport.isMobile) {
+            if (ui.mapExpanded) document.body.classList.add('map-drawer-open');
+            else document.body.classList.remove('map-drawer-open');
+
+            if (ui.drawer !== 'none') document.body.classList.add('utility-drawer-open');
+            else document.body.classList.remove('utility-drawer-open');
+        } else {
+            document.body.classList.remove('map-drawer-open');
+            document.body.classList.remove('utility-drawer-open');
+        }
+
+        return () => { 
+            document.body.classList.remove('map-drawer-open'); 
+            document.body.classList.remove('utility-drawer-open'); 
+        };
+    }, [ui.mapExpanded, ui.drawer, viewport.isMobile]);
 
     const isMapDrawerOpen = ui.mapExpanded && !viewport.isMobile;
     const isMobilePortrait = viewport.isMobile && !viewport.isLandscape;

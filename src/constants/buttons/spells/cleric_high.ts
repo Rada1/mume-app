@@ -1,80 +1,82 @@
-/**
- * @file cleric_high.ts
- * @description Cleric high-level and situational spell buttons.
- */
 import { CustomButton } from '../../../types';
 
-export const CLERIC_HIGH_SPELLS: CustomButton[] = [
+export const CLERIC_HIGH_BUTTONS: CustomButton[] = [
     {
-        "id": "cleric-transfer-18",
-        "label": "Transfer",
-        "command": "cast 'Transfer'",
-        "setId": "clericspelllist",
-        "actionType": "command",
-        "display": "floating",
-        "hideIfUnknown": true,
-        "style": { "x": 5, "y": 34, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
-        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
-    },
-    {
-        "id": "cleric-darkness-19",
-        "label": "Darkness",
-        "command": "cast 'Darkness'",
-        "setId": "clericspelllist",
-        "actionType": "command",
-        "display": "floating",
-        "hideIfUnknown": true,
-        "style": { "x": 21, "y": 34, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
-        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
-    },
-    {
-        "id": "cleric-sanctuary-20",
+        "id": "cle-sanctuary",
         "label": "Sanctuary",
-        "command": "cast 'Sanctuary'",
+        "command": "cast 'sanctuary'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 37, "y": 34, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 0, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "cleric-summon-21",
+        "id": "cle-recall",
+        "label": "Recall",
+        "command": "cast 'word of recall'",
+        "setId": "clericspelllist",
+        "actionType": "command",
+        "display": "floating",
+        "hideIfUnknown": true,
+        "style": { "x": 85, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
+        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
+    },
+    {
+        "id": "cle-summon",
         "label": "Summon",
-        "command": "cast 'Summon'",
+        "command": "cast 'summon'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 53, "y": 34, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 170, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "cleric-hammer-of-faith-22",
-        "label": "Hammer of Faith",
-        "command": "cast 'Hammer of Faith'",
+        "id": "cle-control-weather",
+        "label": "Weather",
+        "command": "cast 'control weather'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 69, "y": 34, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 255, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "cleric-dispel-evil-23",
-        "label": "Dispel Evil",
-        "command": "cast 'Dispel Evil'",
+        "id": "cle-earthquake",
+        "label": "Earthquake",
+        "command": "cast 'earthquake'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 85, "y": 34, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 0, "y": 105, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
+    },
+    {
+        "id": "cle-flamestrike",
+        "label": "Flame S",
+        "command": "cast 'flamestrike'",
+        "setId": "clericspelllist",
+        "actionType": "command",
+        "display": "floating",
+        "hideIfUnknown": true,
+        "style": { "x": 85, "y": 105, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
+        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     }
 ];

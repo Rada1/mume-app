@@ -1,4 +1,4 @@
-import { createButton } from '../../utils/buttonFactory';
+﻿import { createButton } from '../../utils/buttonFactory';
 
 /**
  * @file doors.ts
@@ -25,3 +25,12 @@ export const DOOR_BUTTONS = [
     createDoorButton('pick', 'Pick', 'pick exit %d'),
     createDoorButton('scout', 'Scout', 'scout %d')
 ];
+
+
+
+
+
+
+
+
+

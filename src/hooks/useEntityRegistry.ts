@@ -39,12 +39,13 @@ export const useEntityRegistry = () => {
         const baseId = detectedCat.startsWith('inline-') ? detectedCat.slice(7) : detectedCat;
 
         // 2. Base Type Assignment
-        if (catType === 'player' || location === 'roomplayers') {
+        const isRoomLocation = location === 'room' as any;
+        if (catType === 'player' || isRoomLocation) {
             caps.push(EntityCapability.Player);
             return caps; 
         }
 
-        if (catType === 'npc' || location === 'roomnpcs') {
+        if (catType === 'npc' || isRoomLocation) {
             caps.push(EntityCapability.Npc);
             
             // Sub-type NPC detection via category ID

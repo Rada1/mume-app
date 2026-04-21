@@ -1,4 +1,4 @@
-import { CustomButton } from '../../../types';
+﻿import { CustomButton } from '../../../types';
 import { WORLD_BUTTONS } from './world';
 import { ITEM_BUTTONS } from './items';
 import { NPC_BUTTONS } from './npcs';
@@ -40,3 +40,12 @@ export const CATEGORY_BUTTON_MAP: Record<string, string[]> = {
     'inline-obj-shop': ['cat-shopitem-buy', 'cat-shopitem-show'],
     'inline-exit': ['cat-exit-go', 'cat-exit-look']
 };
+
+
+
+
+
+
+
+
+

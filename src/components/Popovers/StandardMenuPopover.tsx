@@ -473,7 +473,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                     }, 150);
                                 }}
                             >
-                                {cat.id.replace('object-', '').replace('npc-', '').toUpperCase()}
+                                {cat.id.replace('object-', '').replace('npc-', '').replace('inline-', '').toUpperCase()}
                             </div>
                         ))}
                     </div>

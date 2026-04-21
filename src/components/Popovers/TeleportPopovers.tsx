@@ -13,7 +13,13 @@ export const TeleportSavePopover: React.FC<TeleportSaveProps> = ({ popoverState,
     const doSave = () => {
         const label = inputRef.current?.value.trim();
         if (label) {
-            const newTarget = { id: popoverState.teleportId, label, expiresAt: Date.now() + 86400000 };
+            const newTarget: TeleportTarget = { 
+                id: popoverState.teleportId!, 
+                name: label,
+                label, 
+                command: `teleport ${label}`,
+                expiresAt: Date.now() + 86400000 
+            };
             setTeleportTargets(prev => [...prev.filter(t => t.label !== label), newTarget]);
             addMessage('system', `Stored room '${label}' for 24h.`); setPopoverState(null);
         }

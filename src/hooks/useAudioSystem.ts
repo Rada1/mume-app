@@ -1,7 +1,8 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { audioManager } from '../services/audio/AudioManager';
 import { useSettingsStore } from '../stores/useSettingsStore';
 import { useActiveRoom, useActiveCombat, useActiveVitals } from '../stores/useActiveGameState';
+import { useHaptics } from './interactions/useHaptics';
 
 export const useAmbientController = () => {
     const isSoundEnabled = useSettingsStore(state => state.isSoundEnabled);
@@ -21,21 +22,17 @@ export const useAmbientController = () => {
     const inCombat = opponentId !== null;
 
     useEffect(() => {
-        audioManager.isSoundEnabled = isSoundEnabled;
-    }, [isSoundEnabled]);
-
-    useEffect(() => {
         if (!isSoundEnabled) return;
         const isDay = lighting === 'sun';
-        audioManager.setAmbient('terrain', terrain, undefined, undefined, isDay);
+        audioManager.setAmbient('terrain', { key: terrain, isDay });
     }, [terrain, lighting, isSoundEnabled]);
 
     useEffect(() => {
         if (!isSoundEnabled) return;
         if (weather === 'none' || weather === 'clear') {
-            audioManager.setAmbient('weather', null);
+            audioManager.setAmbient('weather', { key: null });
         } else {
-            audioManager.setAmbient('weather', weather);
+            audioManager.setAmbient('weather', { key: weather });
         }
     }, [weather, isSoundEnabled]);
 
@@ -51,7 +48,7 @@ export const useAmbientController = () => {
             .replace(/-/g, ' ')
             .replace(/\s+/g, ' ') : null;
 
-        audioManager.setAmbient('zone', normalizedZone, undefined, inCombat);
+        audioManager.setAmbient('zone', { key: normalizedZone, inCombat });
     }, [roomZone, inCombat, isSoundEnabled]);
 
     // Handle drum loop
@@ -59,10 +56,21 @@ export const useAmbientController = () => {
         if (!isSoundEnabled) return;
         audioManager.updateDrumLayer(inCombat, roomZone);
     }, [inCombat, roomZone, isSoundEnabled]);
+
+    // Simple listener for zone ended to trigger re-evaluation if needed
+    useEffect(() => {
+        const handleZoneEnded = (key: string) => {
+            console.log(`[useAmbientController] Zone audio ended: ${key}`);
+            // Logic to potentially pick a new random track could go here
+        };
+        audioManager.addZoneEndedListener(handleZoneEnded);
+        return () => audioManager.removeZoneEndedListener(handleZoneEnded);
+    }, []);
 };
 
 export const useAudioEffects = () => {
     const isSoundEnabled = useSettingsStore(state => state.isSoundEnabled);
+    const { triggerHaptic } = useHaptics();
 
     const playEffect = useCallback((name: string, options?: { pitch?: number, volume?: number, filterFrequency?: number }) => {
         if (isSoundEnabled) {
@@ -109,6 +117,17 @@ export const useAudioEffects = () => {
     const playIncantationSound = useCallback(() => audioManager.playIncantation(), []);
     const stopIncantationSound = useCallback((playExplosion: boolean = false) => audioManager.stopIncantation(playExplosion), []);
 
+    const playSound = useCallback((buffer: AudioBuffer, options?: { volume?: number }) => {
+        audioManager.playSound(buffer, options);
+    }, []);
+
+    const playRandomSound = useCallback((buffers: AudioBuffer[], options?: { volume?: number }) => {
+        if (buffers && buffers.length > 0) {
+            const randomIndex = Math.floor(Math.random() * buffers.length);
+            audioManager.playSound(buffers[randomIndex], options);
+        }
+    }, []);
+
     return {
         playEffect,
         playHitImpactSound,
@@ -130,41 +149,13 @@ export const useAudioEffects = () => {
         playMagicExplosionSound,
         playIncantationSound,
         stopIncantationSound,
-
-        // Aliases expected by old useGameAudio consumers
-        playSound: (buffer: any) => { /* no-op in new system if passed buffer directly */ },
-        setPlaySound: () => {}, // No-op, not needed
-        playRandomSound: () => {}, // No-op for now unless needed
-        triggerHaptic: (ms: number) => {
-            if (navigator && typeof navigator.vibrate === 'function') {
-                const dampenedDuration = Math.max(1, Math.floor(ms * 0.5));
-                navigator.vibrate(dampenedDuration);
-            }
-        },
-        setTriggerHaptic: () => {},
-        primeSpellSuccess: (success: boolean) => {},
-
-        loadAllWeaponSounds: () => {},
-        loadMovementSound: () => {},
-        loadDoorSound: () => {},
-        loadClickSound: () => {},
-        loadHitImpactSound: () => {},
-        loadOofSound: () => {},
-        loadSlashSound: () => {},
-        loadCleaveSound: () => {},
-        loadSmiteSound: () => {},
-        loadPierceSound: () => {},
-        loadStabSound: () => {},
-        loadBuySellSound: () => {},
-        loadBashSound: () => {},
-        loadArrowHitSound: () => {},
-        loadKillSound: () => {},
-        loadLevelSound: () => {},
-        loadCommMessageSound: () => {},
-        loadSpellSounds: () => {},
-        stopCommMessageSound: () => {},
+        playSound,
+        playRandomSound,
+        triggerHaptic,
 
         audioCtxRef: { current: audioManager.context },
         initAudio: () => audioManager.init()
     };
 };
+
+

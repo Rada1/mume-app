@@ -1,4 +1,4 @@
-import { createButton } from '../../../utils/buttonFactory';
+﻿import { createButton } from '../../../utils/buttonFactory';
 
 /**
  * @file world.ts
@@ -28,3 +28,12 @@ export const WORLD_BUTTONS = [
     createButton({ id: 'cat-exit-go', label: 'Go', command: '%n', setId: 'inline-exit', color: 'rgba(255, 255, 255, 0.25)' }),
     createButton({ id: 'cat-exit-look', label: 'Look', command: 'look %n', setId: 'inline-exit', color: '#3b82f6' })
 ];
+
+
+
+
+
+
+
+
+

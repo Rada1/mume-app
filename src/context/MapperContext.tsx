@@ -116,7 +116,6 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const hasLoadedRef = useRef(false);
     const loadMasterMap = useCallback(async (force = false) => {
         if (hasLoadedRef.current && !force) return;
-        hasLoadedRef.current = true;
         try {
             // 1. Load basic room coordinates (JSON)
             const res = await fetch('/mume_map_data.json?v=' + Date.now());
@@ -149,23 +148,17 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             }
             spatialIndexRef.current = index; nameIndexRef.current = nIndex; serverIdIndexRef.current = sIndex;
             if (showDebugEchoes) addMessage?.('system', `[Mapper] Ardagmcp Base Map Loaded: ${Object.keys(data).length} rooms.`);
+            hasLoadedRef.current = true;
         } catch (err) { console.warn("[Mapper] Could not load master map data:", err); }
     }, [addMessage, showDebugEchoes, preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef]);
 
     useEffect(() => { loadMasterMap(); }, [loadMasterMap]);
 
     // Actions
-    const { handleAddRoom, handleDeleteRoom, handleClearMap, handleSyncLocation } = useMapActions({
+    const { handleAddRoom, handleDeleteRoom, handleClearMap, handleSyncLocation, handleResetAndSync } = useMapActions({
         rooms, setRooms, roomsRef, markers, setMarkers, markersRef, setExploredVnums, setExploredMarkers, setCurrentRoomId, currentRoomIdRef,
         preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, addMessage, lastDetectedTerrainRef, loadMasterMap
     });
-
-    const handleResetAndSync = useCallback(() => {
-        if (window.confirm('Wipe local map data and synchronize with MMapper global coordinates?')) {
-            handleClearMap(true);
-            setTimeout(() => { executeCommand?.('look'); }, 100);
-        }
-    }, [handleClearMap, executeCommand]);
 
     const onRoomInfoProcessed = useCallback(() => {
         preMoveRef.current = null;
@@ -208,6 +201,10 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const onPush    = (e: any) => pushPendingMove(e.detail);
         const onConfirm = (e: any) => handleMoveConfirmed(e);
         const onFail    = ()       => handleMoveFailure();
+        const onPre     = (e: any) => { 
+            preMoveRef.current = { dir: e.detail.dir, targetId: e.detail.targetId, time: Date.now() }; 
+            triggerRender(); 
+        };
 
         window.addEventListener('mume-gmcp-room-info', onInfo);
         window.addEventListener('mume-gmcp-room-exits', onExits);
@@ -215,6 +212,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         window.addEventListener('mume-mapper-push-move', onPush);
         window.addEventListener('mume-mapper-move-confirmed', onConfirm);
         window.addEventListener('mume-mapper-move-failed', onFail);
+        window.addEventListener('mume-mapper-pre-move', onPre);
 
         return () => {
             window.removeEventListener('mume-gmcp-room-info', onInfo);
@@ -223,8 +221,9 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             window.removeEventListener('mume-mapper-push-move', onPush);
             window.removeEventListener('mume-mapper-move-confirmed', onConfirm);
             window.removeEventListener('mume-mapper-move-failed', onFail);
+            window.removeEventListener('mume-mapper-pre-move', onPre);
         };
-    }, [masterHandlers, pushPendingMove, handleMoveConfirmed, handleMoveFailure]);
+    }, [masterHandlers, pushPendingMove, handleMoveConfirmed, handleMoveFailure, triggerRender]);
 
     const value = useMemo(() => ({
         rooms, setRooms, markers, setMarkers, currentRoomId, setCurrentRoomId,

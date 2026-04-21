@@ -139,3 +139,46 @@ export interface ActivePrompt {
     text: string;
     time?: MumeTime;
 }
+
+export interface ParleyState {
+    active: boolean;
+    command: 'tell' | 'whisper' | 'ask' | 'say' | 'narrate' | 'shout' | 'yell' | 'sing' | 'none';
+    target: string | null;
+    message: string;
+}
+
+export interface TeleportTarget {
+    id: string;
+    name: string;
+    label?: string; // often used for display
+    command: string;
+    vnum?: number;
+    category?: string;
+    expiresAt?: number;
+}
+
+export interface SpatButton {
+    id: string;
+    btnId?: string; // Original button ID
+    mid?: string; // Message ID that triggered it
+    label: string;
+    command: string;
+    action?: string; // legacy action property
+    color: string;
+    timestamp: number;
+    duration: number;
+    expiresAt?: number;
+    sourceMid?: string;
+    icon?: string;
+    type?: 'enemy' | 'group' | 'info';
+    // Gesture/Trigger support for Spat
+    swipeCommands?: Partial<Record<SwipeDirection, string>>;
+    swipeActionTypes?: Partial<Record<SwipeDirection, any>>;
+    menuDisplay?: 'list' | 'dial';
+    closeKeyboard?: boolean;
+    offKeyboard?: boolean;
+    startX?: number;
+    startY?: number;
+    targetX?: number;
+    targetY?: number;
+}

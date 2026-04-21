@@ -92,7 +92,7 @@ export function isButtonValidForEntity(
 
     // --- STEP 3: MUME Specific Rules ---
     const isShopCmd = button.command.includes('mend') || button.command.includes('sell') || button.command.includes('value') || button.command === 'list' || button.command.startsWith('buy ');
-    const isPosessed = location === 'inv' || location === 'worn' || location === 'carried' || location === 'object-inv' || location === 'object-worn';
+    const isPosessed = location === 'carried' || location === 'worn';
 
     // Block 'Get' for items already in possession
     if (button.command.startsWith('get ') && !button.command.includes('all') && isPosessed) {
@@ -100,7 +100,7 @@ export function isButtonValidForEntity(
     }
 
     // Block shop actions for worn items
-    if (isShopCmd && (location === 'worn' || location === 'object-worn')) {
+    if (isShopCmd && location === 'worn') {
         return false;
     }
 

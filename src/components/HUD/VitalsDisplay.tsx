@@ -98,7 +98,7 @@ const VitalsDisplay: React.FC<VitalsDisplayProps> = ({
     const manaRowRef = useRef<HTMLDivElement>(null);
     const moveRowRef = useRef<HTMLDivElement>(null);
 
-    const { audioCtxRef, isSoundEnabledRef, triggerHaptic } = useGame();
+    const { isSoundEnabled, triggerHaptic } = useGame();
 
     useAtmosphereAudio({
         hpRatio,
@@ -107,10 +107,7 @@ const VitalsDisplay: React.FC<VitalsDisplayProps> = ({
         hpRowRef,
         manaRowRef,
         moveRowRef,
-        audioCtxRef,
-        isSoundEnabledRef: {
-            current: isSoundEnabledRef.current
-        } as any // Handle ref vs context
+        isSoundEnabled
     });
 
     const maxStatVal = Math.max(stats.maxHp, stats.maxMana, stats.maxMove, 1);

@@ -1,4 +1,4 @@
-import { createButton } from '../../../utils/buttonFactory';
+﻿import { createButton } from '../../../utils/buttonFactory';
 
 /**
  * @file npcs.ts
@@ -33,3 +33,12 @@ export const NPC_BUTTONS = [
     // --- DEFAULT NPC ---
     createButton({ id: 'cat-default-kill', label: 'Kill', command: 'kill %n', setId: 'inline-default', color: '#ef4444' })
 ];
+
+
+
+
+
+
+
+
+

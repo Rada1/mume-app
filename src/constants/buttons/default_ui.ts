@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file default_ui.ts
  * @description Default UI positions for core interface elements.
  */
@@ -9,3 +9,12 @@ export const DEFAULT_UI_POSITIONS = {
     stats: { x: undefined, y: undefined, scale: 1 },
     mapper: { x: undefined, y: 75, w: 320, h: 320, scale: 1 }
 };
+
+
+
+
+
+
+
+
+

@@ -4,7 +4,7 @@
  * Consumes the shared MapperContext to ensure synchronization across instances.
  */
 
-import React, { useRef, useMemo, useState, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
+import React, { useRef, useMemo, useState, useEffect, useCallback, forwardRef } from 'react';
 import { useGame, useLog, useVitals, useUI } from '../../context/GameContext';
 import { useMapper } from '../../context/useMapper';
 import { MapCanvas } from './MapCanvas';
@@ -13,7 +13,6 @@ import { MapperDropdown } from './MapperDropdown';
 import { MapperContextMenu } from './MapperContextMenu';
 import { RoomInfoCard } from './RoomInfoCard';
 import { useMapperInteractions } from './useMapperInteractions';
-import { useMapAnimation } from './useMapAnimation';
 import { useMapperController } from './useMapperController';
 import { useSmartWalk } from './hooks/useSmartWalk';
 import { useMapperExportImport } from './hooks/useMapperExportImport';
@@ -33,7 +32,6 @@ interface MapperProps {
     heldButton?: any;
     setHeldButton?: (val: any) => void;
     setCommandPreview?: (val: string | null) => void;
-    onUndock?: () => void;
 }
 
 export interface MapperHandle {
@@ -44,7 +42,7 @@ export interface MapperHandle {
 }
 
 export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
-    const { isMinimized: isMinimizedProp, setIsMinimized, characterName, isMobile: isMobileProp, isExpanded, heldButton, setHeldButton, setCommandPreview, onUndock: onUndockProp } = props;
+    const { isMinimized: isMinimizedProp, setIsMinimized, characterName, isMobile: isMobileProp, isExpanded, heldButton, setHeldButton, setCommandPreview } = props;
     const effectiveIsMinimized = isMinimizedProp ?? (isExpanded !== undefined ? !isExpanded : false);
     const [mode, setMode] = useState<'play' | 'edit'>('play');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -66,12 +64,12 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const lastRoomIdRef = useRef<string | null>(null);
 
     const {
-        triggerHaptic, executeCommand, theme, showLegacyButtons, btn, joystick,
+        triggerHaptic, executeCommand, theme, btn, joystick,
         setIsTrackpadModifierActive, lighting, roomPlayers, roomNpcs, roomItems, inlineCategories, isFoggy, isImmersionMode
     } = useGame();
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
     const { addMessage } = useLog();
-    const { setUI, setPopoverState } = useUI();
+    const { setPopoverState } = useUI();
     const isDarkMode = theme === 'dark';
 
     // Use shared state from MapperContext
@@ -84,11 +82,11 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         unveilMap, setUnveilMap, handleResetAndSync, handleSyncLocation, handleClearMap,
         selectedRoomIds, setSelectedRoomIds, selectedMarkerId, setSelectedMarkerId,
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
-        renderVersion, triggerRender, isMapFloating, setIsMapFloating
+        renderVersion, triggerRender
     } = context;
 
     const { handleCenterOnPlayer } = useMapperPlayerTracking(currentRoomId, rooms, autoCenter, setAutoCenter, cameraRef, canvasRef, playerPosRef, playerTrailRef, lastRoomIdRef, triggerRender, setViewZ, preloadedCoordsRef);
-    const { isWalking, walkTargetId, walkPath, startWalking, stopWalking } = useSmartWalk(currentRoomId, rooms, executeCommand, preloadedCoordsRef, addMessage);
+    const { walkTargetId, walkPath, startWalking, stopWalking } = useSmartWalk(currentRoomId, rooms, executeCommand, preloadedCoordsRef, addMessage);
     const { handleExportMap, handleImportMap, handleImportMMapper } = useMapperExportImport(rooms, setRooms, markers, setMarkers, characterName, addMessage, context);
 
     const controllerOptions = useMemo(() => ({
@@ -108,7 +106,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         if (canvasRef.current) {
             setCanvasRect(canvasRef.current.getBoundingClientRect());
         }
-    }, [effectiveIsMinimized, isMapFloating]);
+    }, [effectiveIsMinimized]);
 
     const { marquee } = useMapperInteractions({
         rooms, setRooms, markers, setMarkers,
@@ -117,7 +115,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         cameraRef, mode, currentRoomId,
         isDesignMode: props.isDesignMode || false,
         isMinimized: effectiveIsMinimized,
-        setAutoCenter, setContextMenu: (menu: any) => { /* mapper doesn't need its own state for context menu if we want to share across instances we could... but let's keep context menu instance-specific for now */ },
+        setAutoCenter, setContextMenu: (menu: any) => { },
         setInfoRoomId,
         triggerHaptic: triggerHaptic ?? (() => { }),
         canvasRef, cardRef, setIsDragging: setIsDraggingWithRef, handleAddRoom,
@@ -144,17 +142,6 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             [id]: { id, x: wx, y: wy, z, text: 'New Marker', dotSize: 5, fontSize: 12, createdAt: Date.now() }
         }));
     }, [setMarkers]);
-
-    const handleDockUndock = useCallback(() => {
-        triggerHaptic(40);
-        if (isMapFloating) {
-            setIsMapFloating(false);
-            setUI(prev => ({ ...prev, mapExpanded: true }));
-        } else {
-            setIsMapFloating(true);
-            setUI(prev => ({ ...prev, mapExpanded: false }));
-        }
-    }, [isMapFloating, setIsMapFloating, setUI, triggerHaptic]);
 
     return (
         <div className={`mapper-container lighting-state-${isImmersionMode ? (lighting || 'none') : 'none'} ${isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ 
@@ -243,10 +230,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 unveilMap={unveilMap}
                 setUnveilMap={setUnveilMap}
                 onResetSync={handleResetAndSync}
-                onUndock={handleDockUndock}
                 isDarkMode={isDarkMode}
-                isMapFloating={isMapFloating}
-                setIsMapFloating={setIsMapFloating}
             />
 
             <MapperDropdown
@@ -263,8 +247,6 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 unveilMap={unveilMap}
                 setUnveilMap={setUnveilMap}
                 onResetSync={handleResetAndSync}
-                isMapFloating={isMapFloating}
-                onUndock={handleDockUndock}
                 isMobile={isMobile}
             />
 

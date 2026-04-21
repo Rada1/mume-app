@@ -1,80 +1,82 @@
-/**
- * @file cleric_combat.ts
- * @description Cleric combat support and debuff spell buttons.
- */
 import { CustomButton } from '../../../types';
 
-export const CLERIC_COMBAT_SPELLS: CustomButton[] = [
+export const CLERIC_COMBAT_BUTTONS: CustomButton[] = [
     {
-        "id": "cleric-smother-6",
-        "label": "Smother",
-        "command": "cast 'Smother'",
+        "id": "cle-harm",
+        "label": "Heal/Harm",
+        "command": "cast 'harm'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 5, "y": 18, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 0, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "cleric-cure-blindness-7",
-        "label": "Cure Blindness",
-        "command": "cast 'Cure Blindness'",
+        "id": "cle-cause-light",
+        "label": "Cause L",
+        "command": "cast 'cause light'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 21, "y": 18, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 85, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "cleric-cure-serious-8",
-        "label": "Cure Serious",
-        "command": "cast 'Cure Serious'",
+        "id": "cle-cause-serious",
+        "label": "Cause S",
+        "command": "cast 'cause serious'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 37, "y": 18, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 170, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "cleric-remove-poison-9",
-        "label": "Remove Poison",
-        "command": "cast 'Remove Poison'",
+        "id": "cle-cause-critic",
+        "label": "Cause C",
+        "command": "cast 'cause critic'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 53, "y": 18, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 255, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "cleric-bless-10",
-        "label": "Bless",
-        "command": "cast 'Bless'",
+        "id": "cle-dispel-evil",
+        "label": "Dispel E",
+        "command": "cast 'dispel evil'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 69, "y": 18, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 0, "y": 105, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "cleric-blindness-11",
-        "label": "Blindness",
-        "command": "cast 'Blindness'",
+        "id": "cle-dispel-good",
+        "label": "Dispel G",
+        "command": "cast 'dispel good'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 85, "y": 18, "w": 120, "h": 40, "backgroundColor": "rgba(180, 160, 50, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 85, "y": 105, "w": 80, "h": 40, "backgroundColor": "rgba(251, 191, 36, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     }
 ];

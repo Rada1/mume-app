@@ -1,164 +1,173 @@
-/**
- * @file mage_utility.ts
- * @description Mage utility and protective spell buttons.
- */
 import { CustomButton } from '../../../types';
 
-export const MAGE_UTILITY_SPELLS: CustomButton[] = [
+export const MAGE_UTILITY_BUTTONS: CustomButton[] = [
     {
-        "id": "mage-charm-11",
+        "id": "mag-charm-11",
         "label": "Charm",
-        "command": "cast 'Charm'",
+        "command": "cast 'charm'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 85, "y": 18, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 0, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": false, "shape": "pill" },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-silence-12",
+        "id": "mag-silence-12",
         "label": "Silence",
-        "command": "cast 'Silence'",
+        "command": "cast 'silence'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 5, "y": 26, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 85, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": false, "shape": "pill" },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-sleep-13",
+        "id": "mag-sleep-13",
         "label": "Sleep",
-        "command": "cast 'Sleep'",
+        "command": "cast 'sleep'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 21, "y": 26, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 170, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": false, "shape": "pill" },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-ventriloquate-14",
-        "label": "Ventriloquate",
-        "command": "cast 'Ventriloquate'",
+        "id": "mag-ventriloquate-14",
+        "label": "Ventril",
+        "command": "cast 'ventriloquate'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 37, "y": 26, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 255, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": false, "shape": "pill" },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-call-familiar-15",
-        "label": "Call Familiar",
-        "command": "cast 'Call Familiar'",
+        "id": "mag-call-familiar-15",
+        "label": "Familiar",
+        "command": "cast 'call familiar'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 53, "y": 26, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 0, "y": 105, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": false, "shape": "pill" },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-block-door-16",
-        "label": "Block Door",
-        "command": "cast 'Block Door'",
+        "id": "mag-block-door-16",
+        "label": "Block",
+        "command": "cast 'block door'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 69, "y": 26, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 85, "y": 105, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": false, "shape": "pill" },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-control-weather-17",
-        "label": "Control Weather",
-        "command": "cast 'Control Weather'",
+        "id": "mag-control-weather-17",
+        "label": "Weather",
+        "command": "cast 'control weather'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 85, "y": 26, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 170, "y": 105, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": false, "shape": "pill" },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-create-light-18",
-        "label": "Create Light",
-        "command": "cast 'Create Light'",
+        "id": "mag-create-light-18",
+        "label": "Light",
+        "command": "cast 'create light'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 5, "y": 34, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 255, "y": 105, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": false, "shape": "pill" },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-enchant-19",
+        "id": "mag-enchant-19",
         "label": "Enchant",
-        "command": "cast 'Enchant'",
+        "command": "cast 'enchant'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 21, "y": 34, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 0, "y": 150, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": false, "shape": "pill" },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-night-vision-20",
-        "label": "Night Vision",
-        "command": "cast 'Night Vision'",
+        "id": "mag-night-vision-20",
+        "label": "Vision",
+        "command": "cast 'night vision'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 37, "y": 34, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 85, "y": 150, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": false, "shape": "pill" },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-store-21",
+        "id": "mag-store-21",
         "label": "Store",
-        "command": "cast 'Store'",
+        "command": "cast 'store'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 53, "y": 34, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 170, "y": 150, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": false, "shape": "pill" },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-armour-22",
+        "id": "mag-armour-22",
         "label": "Armour",
-        "command": "cast 'Armour'",
+        "command": "cast 'armour'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 69, "y": 34, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 255, "y": 150, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": false, "shape": "pill" },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-shield-23",
+        "id": "mag-shield-23",
         "label": "Shield",
-        "command": "cast 'Shield'",
+        "command": "cast 'shield'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 85, "y": 34, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 0, "y": 195, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": false, "shape": "pill" },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     }
 ];

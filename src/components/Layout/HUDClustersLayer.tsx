@@ -36,7 +36,6 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
     const { characterName, isMmapperMode, btn, joystick, mapperRef, triggerHaptic, executeCommand, handleButtonClick, viewport, showControls, showLegacyButtons, gameState, sessionMode } = useGame();
     const { target, stats, activePrompt } = useVitals();
     const { setPopoverState } = useUI();
-    const { isMapFloating } = useMapper();
     const { isMobile, isLandscape, logFontSize, resetLogFontSize, isKeyboardOpen } = viewport;
 
     const effectiveShowControls = showControls && (!isMobile || !isKeyboardOpen || btn.isEditMode);
@@ -59,7 +58,7 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
 
             <GridOverlay isEditMode={btn.isEditMode} isGridEnabled={btn.isGridEnabled} gridSize={btn.gridSize} />
 
-            {((isMobile || isMapFloating) && (gameState !== 'disconnected' || isReplaying)) && (
+            {(isMobile && (gameState !== 'disconnected' || isReplaying)) && (
                 <MapperCluster
                     uiPositions={btn.uiPositions}
                     isEditMode={btn.isEditMode}

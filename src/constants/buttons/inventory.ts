@@ -1,4 +1,4 @@
-import { createButton } from '../../utils/buttonFactory';
+﻿import { createButton } from '../../utils/buttonFactory';
 
 /**
  * @file inventory.ts
@@ -23,3 +23,12 @@ export const INVENTORY_BUTTONS = [
     }),
     createButton({ id: 'eq-remove', label: 'Remove', command: 'remove %n', setId: 'equipmentlist', color: '#ffaa44', shape: 'rect', width: 0, height: 0 })
 ];
+
+
+
+
+
+
+
+
+

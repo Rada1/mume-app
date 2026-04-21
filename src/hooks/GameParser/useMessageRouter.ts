@@ -189,7 +189,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
                     const newItem = { name: objName, short: objName, id: `roomitems:${objName}` };
                     // Ensure it is registered so clicking the tag works with accurate theme and buttons
                     const specCat = getCategoryForName(objName, deps.inlineCategories);
-                    registerEntity(`roomitems:${objName}`, objName, 'roomitems', specCat || 'inline-obj-room');
+                    registerEntity(`roomitems:${objName}`, objName, 'room', specCat || 'inline-obj-room');
                     
                     return [...prev, newItem];
                 });

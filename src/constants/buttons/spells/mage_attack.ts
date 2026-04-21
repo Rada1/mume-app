@@ -1,140 +1,147 @@
-/**
- * @file mage_attack.ts
- * @description Mage offensive spell buttons.
- */
 import { CustomButton } from '../../../types';
 
-export const MAGE_ATTACK_SPELLS: CustomButton[] = [
+export const MAGE_ATTACK_BUTTONS: CustomButton[] = [
     {
-        "id": "mage-burning-hands-0",
-        "label": "Burning Hands",
-        "command": "cast 'Burning Hands'",
+        "id": "mag-burning-hands",
+        "label": "Burning",
+        "command": "cast 'burning hands'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 5, "y": 10, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 0, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-call-lightning-1",
-        "label": "Call Lightning",
-        "command": "cast 'Call Lightning'",
+        "id": "mag-shocking-grasp",
+        "label": "Shocking",
+        "command": "cast 'shocking grasp'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 21, "y": 10, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 85, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-chill-touch-2",
-        "label": "Chill Touch",
-        "command": "cast 'Chill Touch'",
+        "id": "mag-chill-touch",
+        "label": "Chill",
+        "command": "cast 'chill touch'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 37, "y": 10, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 170, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-colour-spray-3",
-        "label": "Colour Spray",
-        "command": "cast 'Colour Spray'",
+        "id": "mag-colour-spray",
+        "label": "Colour",
+        "command": "cast 'colour spray'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 53, "y": 10, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 255, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-earthquake-4",
-        "label": "Earthquake",
-        "command": "cast 'Earthquake'",
-        "setId": "magespelllist",
-        "actionType": "command",
-        "display": "floating",
-        "hideIfUnknown": true,
-        "style": { "x": 69, "y": 10, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
-        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
-    },
-    {
-        "id": "mage-dispel-magic-5",
-        "label": "Dispel Magic",
-        "command": "cast 'Dispel Magic'",
-        "setId": "magespelllist",
-        "actionType": "command",
-        "display": "floating",
-        "hideIfUnknown": true,
-        "style": { "x": 85, "y": 10, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
-        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
-    },
-    {
-        "id": "mage-fireball-6",
+        "id": "mag-fireball",
         "label": "Fireball",
-        "command": "cast 'Fireball'",
+        "command": "cast 'fireball'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 5, "y": 18, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 0, "y": 105, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-lightning-bolt-7",
-        "label": "Lightning Bolt",
-        "command": "cast 'Lightning Bolt'",
+        "id": "mag-lightning-bolt",
+        "label": "Bolt",
+        "command": "cast 'lightning bolt'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 21, "y": 18, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 85, "y": 105, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-magic-blast-8",
-        "label": "Magic Blast",
-        "command": "cast 'Magic Blast'",
+        "id": "mag-cone-of-cold",
+        "label": "Cone",
+        "command": "cast 'cone of cold'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 37, "y": 18, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 170, "y": 105, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-magic-missile-9",
-        "label": "Magic Missile",
-        "command": "cast 'Magic Missile'",
+        "id": "mag-sunray",
+        "label": "Sunray",
+        "command": "cast 'sunray'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 53, "y": 18, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 255, "y": 105, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     },
     {
-        "id": "mage-shocking-grasp-10",
-        "label": "Shocking Grasp",
-        "command": "cast 'Shocking Grasp'",
+        "id": "mag-dispel-magic",
+        "label": "Dispel M",
+        "command": "cast 'dispel magic'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
         "hideIfUnknown": true,
-        "style": { "x": 69, "y": 18, "w": 120, "h": 40, "backgroundColor": "rgba(100, 50, 180, 0.6)", "shape": "pill", "transparent": false },
+        "style": { "x": 0, "y": 150, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
+    },
+    {
+        "id": "mag-earthquake",
+        "label": "Earthquake",
+        "command": "cast 'earthquake'",
+        "setId": "magespelllist",
+        "actionType": "command",
+        "display": "floating",
+        "hideIfUnknown": true,
+        "style": { "x": 85, "y": 150, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
+        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
+    },
+    {
+        "id": "mag-call-lightning",
+        "label": "Call L",
+        "command": "cast 'call lightning'",
+        "setId": "magespelllist",
+        "actionType": "command",
+        "display": "floating",
+        "hideIfUnknown": true,
+        "style": { "x": 170, "y": 150, "w": 80, "h": 40, "backgroundColor": "rgba(59, 130, 246, 0.5)", "transparent": true, "shape": "pill", "iconScale": 1.4 },
+        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
+        "isVisible": true,
+        "position": { "x": 0, "y": 0, "w": 0, "h": 0 }
     }
 ];

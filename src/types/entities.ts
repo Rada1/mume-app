@@ -3,7 +3,31 @@
  * @description NPC, Player, and Item registry definitions.
  */
 
-export type EntityLocation = 'room' | 'inv' | 'eq' | string;
+/** Entity location axis for action filtering and button classification. */
+export type EntityLocation = 
+    | 'room'      // Present in the current room
+    | 'carried'   // In inventory
+    | 'worn'      // Equipped
+    | 'shop'      // In a shop listing
+    | 'none';     // UI controls/meta-actions with no world location
+
+/** Entity kind axis. */
+export type EntityKind = 
+    | 'npc' 
+    | 'player' 
+    | 'object' 
+    | 'exit' 
+    | 'control'  // UI/meta-elements like account buttons or quests
+    | 'none';
+
+export interface InlineCategoryConfig {
+    id: string;                  // canonical, always starts 'inline-'
+    kind: EntityKind;
+    parent?: string;             // canonical ID of parent
+    keywords: string[];
+    color?: string;              // optional; defaults to kind's color
+    categoryType?: EntityKind | 'account' | 'target' | 'quest' | 'none'; // legacy support
+}
 
 export enum EntityCapability {
     Wearable = 'wearable',

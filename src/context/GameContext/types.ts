@@ -144,7 +144,9 @@ export interface UIContextType {
     setIsMapExpanded: (open: boolean) => void;
     setIsSetManagerOpen: (open: boolean) => void;
     setIsPlayersOpen: (open: boolean) => void;
-    handleTabClick: (drawer: 'stats' | 'character' | 'inventory' | 'players') => void;
+    handleTabClick: (drawer: 'stats' | 'character' | 'inventory' | 'players' | 'equipment') => void;
+    displayInventoryLines: DrawerLine[];
+    displayEqLines: DrawerLine[];
     toggleMap: () => void;
     characterName: string | null;
     isRecording: boolean;
@@ -468,7 +470,9 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     handleDragStart: (e: React.DragEvent) => void;
     handleDragEnd: (e: React.DragEvent) => void;
     mapperRef: RefObject<MapperRef>;
-    handleTabClick: (drawer: 'stats' | 'character' | 'inventory' | 'players') => void;
+    handleTabClick: (drawer: 'stats' | 'character' | 'inventory' | 'players' | 'equipment') => void;
+    displayInventoryLines: DrawerLine[];
+    displayEqLines: DrawerLine[];
     toggleMap: () => void;
 
     // Parser State
@@ -502,17 +506,7 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     playDoorSound: (isOpen: boolean) => void;
     playClickSound: () => void;
     playCommMessageSound: (options?: { volume?: number }) => void;
-    stopCommMessageSound: () => void;
-    primeSpellSuccess?: (success: boolean) => void;
     triggerHaptic: (ms: number) => void;
-
-
-
-
-    // Low-level callback registration
-    setDetectLighting: (fn: (text: string) => void) => void;
-    setPlaySound: (fn: (buffer: AudioBuffer) => void) => void;
-    setTriggerHaptic: (fn: (ms: number) => void) => void;
 
     // Major hook systems
     btn: ReturnType<typeof useButtons>;

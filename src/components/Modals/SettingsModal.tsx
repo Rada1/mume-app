@@ -45,6 +45,10 @@ interface SettingsModalProps {
     setIsHighlighterEnabled: (val: boolean) => void;
     objectColor: string;
     setObjectColor: (val: string) => void;
+    playerColor: string;
+    setPlayerColor: (val: string) => void;
+    npcColor: string;
+    setNpcColor: (val: string) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
     isSpectateMode: boolean;
@@ -69,65 +73,25 @@ interface SettingsModalProps {
     setIsGridEnabled: (val: boolean) => void;
     createButton: () => void;
     setIsSetManagerOpen: (val: boolean) => void;
+    showLegacyButtons: boolean;
+    setShowLegacyButtons: (val: boolean) => void;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
-    connectionUrl,
-    setConnectionUrl,
-    bgImage,
-    setBgImage,
-    handleFileUpload,
-    exportSettings,
-    importSettings,
-    isLoading,
-    newSoundPattern,
-    setNewSoundPattern,
-    newSoundRegex,
-    setNewSoundRegex,
-    handleSoundUpload,
-    soundTriggers,
-    setSoundTriggers,
-    resetButtons,
-    connect,
-    loginName,
-    setLoginName,
-    loginPassword,
-    setLoginPassword,
-    autoConnect,
-    setAutoConnect,
-    showDebugEchoes,
-    setShowDebugEchoes,
-    uiMode,
-    setUiMode,
-    disableSmoothScroll,
-    setDisableSmoothScroll,
-    isImmersionMode,
-    setIsImmersionMode,
-    isHighlighterEnabled,
-    setIsHighlighterEnabled,
-    objectColor,
-    setObjectColor,
-    isBloomEnabled,
-    setIsBloomEnabled,
-    isSpectateMode,    setIsSpectateMode,
-    isTimestampEnabled,
-    setIsTimestampEnabled,
-    fontFamily,
-    setFontFamily,
-    isNewbieMode,
-    setIsNewbieMode,
-    showRecordingIndicator,
-    setShowRecordingIndicator,
-    autoSaveSessions,
-    setAutoSaveSessions,
-    showSpectatePromptInLog,
-    setShowSpectatePromptInLog,
-    isEditMode,
-    setIsEditMode,
-    isGridEnabled,
-    setIsGridEnabled,
-    createButton,
-    setIsSetManagerOpen
+    connectionUrl, setConnectionUrl, bgImage, setBgImage, handleFileUpload,
+    exportSettings, importSettings, isLoading, newSoundPattern, setNewSoundPattern,
+    newSoundRegex, setNewSoundRegex, handleSoundUpload, soundTriggers, setSoundTriggers,
+    resetButtons, connect, loginName, setLoginName, loginPassword, setLoginPassword,
+    autoConnect, setAutoConnect, showDebugEchoes, setShowDebugEchoes, uiMode, setUiMode,
+    disableSmoothScroll, setDisableSmoothScroll, isImmersionMode, setIsImmersionMode,
+    isHighlighterEnabled, setIsHighlighterEnabled, objectColor, setObjectColor,
+    playerColor, setPlayerColor, npcColor, setNpcColor,
+    isBloomEnabled, setIsBloomEnabled, isSpectateMode, setIsSpectateMode,
+    isTimestampEnabled, setIsTimestampEnabled, fontFamily, setFontFamily,
+    isNewbieMode, setIsNewbieMode, showRecordingIndicator, setShowRecordingIndicator,
+    autoSaveSessions, setAutoSaveSessions, showSpectatePromptInLog, setShowSpectatePromptInLog,
+    isEditMode, setIsEditMode, isGridEnabled, setIsGridEnabled, createButton,
+    setIsSetManagerOpen, showLegacyButtons, setShowLegacyButtons
 }) => {
     const {
         isMmapperMode, setIsMmapperMode,
@@ -202,6 +166,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setIsHighlighterEnabled={setIsHighlighterEnabled}
                                 objectColor={objectColor}
                                 setObjectColor={setObjectColor}
+                                playerColor={playerColor}
+                                setPlayerColor={setPlayerColor}
+                                npcColor={npcColor}
+                                setNpcColor={setNpcColor}
                                 isBloomEnabled={isBloomEnabled}
                                 setIsBloomEnabled={setIsBloomEnabled}
                                 isSpectateMode={isSpectateMode}

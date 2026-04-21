@@ -235,7 +235,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onDragEnd,
     onWheel
 }) => {
-    const { inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, stopCommMessageSound, isTimestampEnabled, isNewbieMode, isSpectateMode, showSpectatePromptInLog, input, setInput, sessionMode, setSessionMode } = useBaseGame() as any;
+    const { inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, isTimestampEnabled, isNewbieMode, isSpectateMode, showSpectatePromptInLog, input, setInput, sessionMode, setSessionMode } = useBaseGame() as any;
     const { replayer } = useUI() as any;
     const { messages, processMessageHtml } = useLog();
     const { activePrompt, target, setTarget, opponentName, opponentHealthStatus } = useVitals();

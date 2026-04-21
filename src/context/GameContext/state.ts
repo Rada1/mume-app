@@ -35,7 +35,7 @@ export const useGameProviderState = () => {
     const [activeSession, setActiveSession] = useState<SessionSlot>('user');
     const [isPasswordMode, setIsPasswordMode] = useState(false);
     const [popoverState, setPopoverState] = useState<PopoverState | null>(null);
-    const [parley, setParley] = useState<ParleyState>({ active: false, command: 'tell', target: null });
+    const [parley, setParley] = useState<ParleyState>({ active: false, command: 'tell', target: null, message: '' });
     const [mumeEditState, setMumeEditState] = [uiStore.mumeEditState, uiStore.setMumeEditState] as const;
 
     const [draggedTarget, setDraggedTarget] = useState<{ name: string; type: string; x: number; y: number } | null>(null);
@@ -143,6 +143,8 @@ export const useGameProviderState = () => {
         executeCommandRef,
         roomDescRef,
         isAccountModeRef,
+        displayInventoryLines: active.game.inventoryLines,
+        displayEqLines: active.game.eqLines,
         spectateQueue: mode.spectateQueue,
         setSpectateQueue: mode.setSpectateQueue,
         lastSnoopStartTime: mode.lastSnoopStartTime,

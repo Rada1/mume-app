@@ -1,4 +1,5 @@
 import { AUDIO_MANIFEST, AmbientConfig } from '../../constants/audioManifest';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 
 export interface PlayOptions {
     pitch?: number;
@@ -6,6 +7,13 @@ export interface PlayOptions {
     reverse?: boolean;
     filterFrequency?: number;
     label?: string;
+}
+
+export interface AmbientOptions {
+    key: string | null;
+    dynamicUrls?: string[];
+    inCombat?: boolean;
+    isDay?: boolean;
 }
 
 interface ActiveAmbient {
@@ -18,22 +26,44 @@ interface ActiveAmbient {
     startTime: number;
 }
 
-class AudioManager {
+export class AudioManager {
     private static instance: AudioManager;
 
     private audioCtx: AudioContext | null = null;
     private bufferCache: Map<string, AudioBuffer> = new Map();
     private loadingState: Map<string, Promise<AudioBuffer | null>> = new Map();
 
-    private activeAmbients: Map<'terrain' | 'weather' | 'zone' | 'drum' | 'incantation', ActiveAmbient> = new Map();
+    private activeAmbients: Map<'terrain' | 'weather' | 'zone' | 'drum' | 'incantation' | 'heartbeat' | 'breath', ActiveAmbient> = new Map();
     private _isSoundEnabled: boolean = true;
     private silenceTimeout: NodeJS.Timeout | null = null;
+    private zoneEndedListeners: Set<(key: string) => void> = new Set();
+
+    // Atmosphere state
+    private atmosphereState = {
+        hpRatio: 1,
+        moveRatio: 1,
+        masterVolume: 1,
+        musicVolume: 1
+    };
 
     // Drum logic references
     private drumFadingSource: AudioBufferSourceNode | null = null;
     private incantationFadingSource: AudioBufferSourceNode | null = null;
 
-    private constructor() {}
+    private constructor() {
+        // Subscribe to settings store for sound enabled and volumes
+        useSettingsStore.subscribe((state) => {
+            this.isSoundEnabled = state.isSoundEnabled;
+            this.atmosphereState.masterVolume = state.masterVolume;
+            this.atmosphereState.musicVolume = state.musicVolume;
+        });
+
+        // Initialize volumes
+        const initialSettings = useSettingsStore.getState();
+        this._isSoundEnabled = initialSettings.isSoundEnabled;
+        this.atmosphereState.masterVolume = initialSettings.masterVolume;
+        this.atmosphereState.musicVolume = initialSettings.musicVolume;
+    }
 
     public static getInstance(): AudioManager {
         if (!AudioManager.instance) {
@@ -47,9 +77,11 @@ class AudioManager {
     }
 
     public set isSoundEnabled(enabled: boolean) {
+        if (this._isSoundEnabled === enabled) return;
         this._isSoundEnabled = enabled;
         if (!enabled) {
             this.stopAllAmbients();
+            this.stopAtmosphere();
         } else if (this.audioCtx?.state === 'suspended') {
             this.audioCtx.resume().catch(console.error);
         }
@@ -57,6 +89,14 @@ class AudioManager {
 
     public get isSoundEnabled(): boolean {
         return this._isSoundEnabled;
+    }
+
+    public addZoneEndedListener(listener: (key: string) => void) {
+        this.zoneEndedListeners.add(listener);
+    }
+
+    public removeZoneEndedListener(listener: (key: string) => void) {
+        this.zoneEndedListeners.delete(listener);
     }
 
     public init() {
@@ -93,6 +133,13 @@ class AudioManager {
 
         this.loadingState.set(url, loadPromise);
         return loadPromise;
+    }
+
+    private getEffectiveVolume(baseVolume: number, isMusic: boolean = false): number {
+        const settings = useSettingsStore.getState();
+        const master = settings.masterVolume;
+        const subVolume = isMusic ? settings.musicVolume : settings.sfxVolume;
+        return baseVolume * master * subVolume;
     }
 
     public async playEffect(key: string, options?: PlayOptions) {
@@ -133,7 +180,8 @@ class AudioManager {
         source.playbackRate.value = basePitch + jitter;
 
         const gainNode = ctx.createGain();
-        gainNode.gain.value = options?.volume ?? config.defaultVolume ?? 1.0;
+        const baseVol = options?.volume ?? config.defaultVolume ?? 1.0;
+        gainNode.gain.value = this.getEffectiveVolume(baseVol, false);
 
         if (options?.filterFrequency) {
             const filter = ctx.createBiquadFilter();
@@ -149,7 +197,8 @@ class AudioManager {
         source.start(0);
     }
 
-    public async setAmbient(type: 'terrain' | 'weather' | 'zone', key: string | null, dynamicUrls?: string[], inCombat: boolean = false, isDay: boolean = true) {
+    public async setAmbient(type: 'terrain' | 'weather' | 'zone', options: AmbientOptions) {
+        const { key, dynamicUrls, inCombat = false, isDay = true } = options;
         if (!this._isSoundEnabled && key !== null) return;
         this.init();
         if (!this.audioCtx) return;
@@ -233,7 +282,7 @@ class AudioManager {
                  const g = active.gain.gain;
                  g.cancelScheduledValues(this.audioCtx.currentTime);
                  g.setValueAtTime(g.value, this.audioCtx.currentTime);
-                 g.linearRampToValueAtTime(targetVolume, this.audioCtx.currentTime + 1.5);
+                 g.linearRampToValueAtTime(this.getEffectiveVolume(targetVolume, true), this.audioCtx.currentTime + 1.5);
             }
             return;
         }
@@ -249,7 +298,7 @@ class AudioManager {
         if (!this.audioCtx) return;
         const ctx = this.audioCtx;
 
-        const fadeTime = type === 'zone' ? 2.0 : 2.0;
+        const fadeTime = 2.0;
 
         const oldActive = this.activeAmbients.get(type);
         if (oldActive) {
@@ -279,13 +328,12 @@ class AudioManager {
 
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(targetVolume, ctx.currentTime + fadeTime);
+        gain.gain.linearRampToValueAtTime(this.getEffectiveVolume(targetVolume, true), ctx.currentTime + fadeTime);
 
         lastNode.connect(gain);
         gain.connect(ctx.destination);
 
         let startOffset = 0;
-        // Resume offset logic could be added here if needed, keeping it simple for now
 
         if (type === 'zone') {
             source.onended = () => {
@@ -296,7 +344,7 @@ class AudioManager {
                     if (this.silenceTimeout) clearTimeout(this.silenceTimeout);
                     const silenceMinutes = 1 + Math.random() * 3;
                     this.silenceTimeout = setTimeout(() => {
-                        window.dispatchEvent(new CustomEvent('mume-audio-zone-ended', { detail: { key } }));
+                        this.zoneEndedListeners.forEach(l => l(key));
                     }, silenceMinutes * 60 * 1000);
                 }
             };
@@ -368,7 +416,7 @@ class AudioManager {
 
             const dGain = ctx.createGain();
             dGain.gain.setValueAtTime(0, ctx.currentTime);
-            dGain.gain.linearRampToValueAtTime(0.03, ctx.currentTime + 1.5);
+            dGain.gain.linearRampToValueAtTime(this.getEffectiveVolume(0.03, true), ctx.currentTime + 1.5);
 
             const dFilter = ctx.createBiquadFilter();
             dFilter.type = 'lowpass';
@@ -415,7 +463,7 @@ class AudioManager {
 
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.7, ctx.currentTime + 0.3);
+        gain.gain.linearRampToValueAtTime(this.getEffectiveVolume(0.7, true), ctx.currentTime + 0.3);
 
         source.connect(filter);
         filter.connect(gain);
@@ -435,6 +483,170 @@ class AudioManager {
             this.activeAmbients.delete('incantation');
         }
     }
+
+    // Atmosphere (Heartbeat and Breath) logic
+    private atmosphereTimeouts: { heartbeat?: NodeJS.Timeout, breath?: NodeJS.Timeout } = {};
+
+    public updateAtmosphere(hpRatio: number, moveRatio: number) {
+        this.atmosphereState.hpRatio = hpRatio;
+        this.atmosphereState.moveRatio = moveRatio;
+
+        if (this._isSoundEnabled) {
+            this.scheduleHeartbeat();
+            this.scheduleBreath();
+        }
+    }
+
+    private stopAtmosphere() {
+        if (this.atmosphereTimeouts.heartbeat) clearTimeout(this.atmosphereTimeouts.heartbeat);
+        if (this.atmosphereTimeouts.breath) clearTimeout(this.atmosphereTimeouts.breath);
+        this.atmosphereTimeouts = {};
+    }
+
+    private scheduleHeartbeat() {
+        if (this.atmosphereTimeouts.heartbeat) return;
+        const FX_THRESHOLD = 0.35;
+
+        const playHeartbeat = () => {
+            if (!this._isSoundEnabled || !this.audioCtx || this.atmosphereState.hpRatio > FX_THRESHOLD) {
+                this.atmosphereTimeouts.heartbeat = setTimeout(playHeartbeat, 1000);
+                return;
+            }
+
+            const ctx = this.audioCtx;
+            const hpRatio = this.atmosphereState.hpRatio;
+            const duration = 0.5 + (2.5 * hpRatio);
+            const intensity = 0.3 + (0.7 * (1 - hpRatio));
+            const volume = this.getEffectiveVolume(0.4 * intensity, true);
+
+            // Lub
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(42, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(28, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(volume, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.25);
+
+            // Dub
+            const dubDelay = duration * 0.3 * 1000;
+            setTimeout(() => {
+                if (!this.audioCtx || !this._isSoundEnabled) return;
+                const ctx2 = this.audioCtx;
+                const osc2 = ctx2.createOscillator();
+                const gain2 = ctx2.createGain();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(35, ctx2.currentTime);
+                osc2.frequency.exponentialRampToValueAtTime(22, ctx2.currentTime + 0.1);
+                gain2.gain.setValueAtTime(volume * 0.75, ctx2.currentTime);
+                gain2.gain.exponentialRampToValueAtTime(0.001, ctx2.currentTime + 0.2);
+                osc2.connect(gain2);
+                gain2.connect(ctx2.destination);
+                osc2.start();
+                osc2.stop(ctx2.currentTime + 0.25);
+            }, dubDelay);
+
+            this.atmosphereTimeouts.heartbeat = setTimeout(playHeartbeat, duration * 1000);
+        };
+
+        playHeartbeat();
+    }
+
+    private scheduleBreath() {
+        if (this.atmosphereTimeouts.breath) return;
+        const FX_THRESHOLD = 0.35;
+
+        const playBreath = () => {
+            if (!this._isSoundEnabled || !this.audioCtx || this.atmosphereState.moveRatio > FX_THRESHOLD) {
+                this.atmosphereTimeouts.breath = setTimeout(playBreath, 2000);
+                return;
+            }
+
+            const ctx = this.audioCtx;
+            const moveRatio = this.atmosphereState.moveRatio;
+            const duration = 0.5 + (3.5 * moveRatio);
+            const intensity = 1 - moveRatio;
+
+            // Pink Noise Buffer Generation
+            const bufferSize = ctx.sampleRate * 2;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+            for (let i = 0; i < bufferSize; i++) {
+                const white = Math.random() * 2 - 1;
+                b0 = 0.99886 * b0 + white * 0.0555179;
+                b1 = 0.99332 * b1 + white * 0.0750759;
+                b2 = 0.96900 * b2 + white * 0.1538520;
+                b3 = 0.86650 * b3 + white * 0.3104856;
+                b4 = 0.55000 * b4 + white * 0.5329522;
+                b5 = -0.7616 * b5 - white * 0.0168980;
+                b6 = white * 0.115926;
+                data[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+                data[i] *= 0.11;
+            }
+
+            const playHalfBreath = (startTime: number, len: number, isExhale: boolean) => {
+                const source = ctx.createBufferSource();
+                source.buffer = buffer;
+                source.loop = true;
+
+                const lowPass = ctx.createBiquadFilter();
+                lowPass.type = 'lowpass';
+                const highPass = ctx.createBiquadFilter();
+                highPass.type = 'highpass';
+                highPass.frequency.value = 100;
+
+                if (isExhale) {
+                    lowPass.frequency.setValueAtTime(600, startTime);
+                    lowPass.frequency.exponentialRampToValueAtTime(400, startTime + len);
+                    lowPass.Q.value = 1;
+                } else {
+                    lowPass.frequency.setValueAtTime(400, startTime);
+                    lowPass.frequency.exponentialRampToValueAtTime(800, startTime + len);
+                    lowPass.Q.value = 2;
+                }
+
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0, startTime);
+                const vol = this.getEffectiveVolume(0.15 * intensity, true);
+                gain.gain.linearRampToValueAtTime(vol, startTime + len * (isExhale ? 0.3 : 0.6));
+                gain.gain.exponentialRampToValueAtTime(0.001, startTime + len);
+
+                source.connect(highPass);
+                highPass.connect(lowPass);
+                lowPass.connect(gain);
+                gain.connect(ctx.destination);
+
+                source.start(startTime);
+                source.stop(startTime + len + 0.1);
+            };
+
+            const breathCycle = duration;
+            const now = ctx.currentTime;
+            playHalfBreath(now, breathCycle * 0.4, false);
+            playHalfBreath(now + breathCycle * 0.45, breathCycle * 0.5, true);
+
+            this.atmosphereTimeouts.breath = setTimeout(playBreath, breathCycle * 1000);
+        };
+
+        playBreath();
+    }
+    public playSound(buffer: AudioBuffer, options?: PlayOptions) {
+        if (!this._isSoundEnabled || !this.audioCtx) return;
+        const ctx = this.audioCtx;
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        const gainNode = ctx.createGain();
+        gainNode.gain.value = this.getEffectiveVolume(options?.volume ?? 1.0, false);
+        source.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        source.start(0);
+    }
 }
 
 export const audioManager = AudioManager.getInstance();
+
