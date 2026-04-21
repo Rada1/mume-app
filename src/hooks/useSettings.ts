@@ -35,8 +35,6 @@ interface UseSettingsInput {
     setShowDebugEchoes?: (val: boolean) => void;
     uiMode?: any;
     setUiMode?: (val: any) => void;
-    disable3dScroll?: boolean;
-    setDisable3dScroll?: (val: boolean) => void;
     disableSmoothScroll?: boolean;
     setDisableSmoothScroll?: (val: boolean) => void;
     isImmersionMode?: boolean;

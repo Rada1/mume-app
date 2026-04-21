@@ -461,7 +461,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
     const joystick = useJoystick(triggerHaptic, s.roomExits);
     const editor = useButtonEditor(btn, containerRef);
-    const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.disable3dScroll, s.isImmersionMode, s.fontFamily, s.isTimestampEnabled);
+    const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.isImmersionMode, s.fontFamily, s.isTimestampEnabled);
 
     const practice = usePracticeHandler(s.setAbilities);
     const shop = useShopHandler();
@@ -479,7 +479,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         connectionUrl: s.connectionUrl, setConnectionUrl: s.setConnectionUrl,
         showDebugEchoes: s.showDebugEchoes, setShowDebugEchoes: s.setShowDebugEchoes,
         uiMode: s.uiMode, setUiMode: s.setUiMode,
-        disable3dScroll: s.disable3dScroll, setDisable3dScroll: s.setDisable3dScroll,
         disableSmoothScroll: s.disableSmoothScroll, setDisableSmoothScroll: s.setDisableSmoothScroll,
         isImmersionMode: s.isImmersionMode, setIsImmersionMode: s.setIsImmersionMode,
         showRecordingIndicator: s.showRecordingIndicator, setShowRecordingIndicator: s.setShowRecordingIndicator,

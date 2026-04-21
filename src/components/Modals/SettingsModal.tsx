@@ -36,8 +36,6 @@ interface SettingsModalProps {
     setShowDebugEchoes: (val: boolean) => void;
     uiMode: UiMode;
     setUiMode: (val: UiMode) => void;
-    disable3dScroll: boolean;
-    setDisable3dScroll: (val: boolean) => void;
     disableSmoothScroll: boolean;
     setDisableSmoothScroll: (val: boolean) => void;
     isImmersionMode: boolean;
@@ -92,8 +90,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setShowDebugEchoes,
     uiMode,
     setUiMode,
-    disable3dScroll,
-    setDisable3dScroll,
     disableSmoothScroll,
     setDisableSmoothScroll,
     isImmersionMode,
@@ -176,8 +172,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 handleFileUpload={handleFileUpload}
                                 uiMode={uiMode}
                                 setUiMode={setUiMode}
-                                disable3dScroll={disable3dScroll}
-                                setDisable3dScroll={setDisable3dScroll}
                                 disableSmoothScroll={disableSmoothScroll}
                                 setDisableSmoothScroll={setDisableSmoothScroll}
                                 isImmersionMode={isImmersionMode}

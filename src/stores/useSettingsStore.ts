@@ -24,7 +24,6 @@ interface SettingsState {
     isHighlighterEnabled: boolean;
     
     // UI Behavior
-    disable3dScroll: boolean;
     disableSmoothScroll: boolean;
     isImmersionMode: boolean;
     isTimestampEnabled: boolean;
@@ -63,7 +62,6 @@ interface SettingsState {
     setUiMode: (val: UiMode) => void;
     setIsBloomEnabled: (val: boolean) => void;
     setIsHighlighterEnabled: (val: boolean) => void;
-    setDisable3dScroll: (val: boolean) => void;
     setDisableSmoothScroll: (val: boolean) => void;
     setIsImmersionMode: (val: boolean) => void;
     setIsTimestampEnabled: (val: boolean) => void;
@@ -104,7 +102,6 @@ export const useSettingsStore = create<SettingsState>()(
             isBloomEnabled: true,
             isHighlighterEnabled: true,
             
-            disable3dScroll: false,
             disableSmoothScroll: false,
             isImmersionMode: true,
             isTimestampEnabled: false,
@@ -141,7 +138,6 @@ export const useSettingsStore = create<SettingsState>()(
             setUiMode: (uiMode) => set({ uiMode }),
             setIsBloomEnabled: (isBloomEnabled) => set({ isBloomEnabled }),
             setIsHighlighterEnabled: (isHighlighterEnabled) => set({ isHighlighterEnabled }),
-            setDisable3dScroll: (disable3dScroll) => set({ disable3dScroll }),
             setDisableSmoothScroll: (disableSmoothScroll) => set({ disableSmoothScroll }),
             setIsImmersionMode: (isImmersionMode) => set({ isImmersionMode }),
             setIsTimestampEnabled: (isTimestampEnabled) => set({ isTimestampEnabled }),

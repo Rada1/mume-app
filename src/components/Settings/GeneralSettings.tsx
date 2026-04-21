@@ -24,8 +24,6 @@ interface GeneralSettingsProps {
     setShowDebugEchoes: (val: boolean) => void;
     uiMode: import('../../types').UiMode;
     setUiMode: (val: import('../../types').UiMode) => void;
-    disable3dScroll: boolean;
-    setDisable3dScroll: (val: boolean) => void;
     disableSmoothScroll: boolean;
     setDisableSmoothScroll: (val: boolean) => void;
     isImmersionMode: boolean;
@@ -72,8 +70,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setShowDebugEchoes,
     uiMode,
     setUiMode,
-    disable3dScroll,
-    setDisable3dScroll,
     disableSmoothScroll,
     setDisableSmoothScroll,
     isImmersionMode,
