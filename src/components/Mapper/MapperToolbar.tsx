@@ -29,9 +29,6 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
     const { viewport, triggerHaptic, ui } = useGame();
     // Removed local isMenuOpen state, now using ui.showMapperToolbar
 
-    // Removed isExpanded check to ensure the toolbar is always visible for troubleshooting
-    // if (isMobile && !isExpanded) return null;
-
     // Use icon-only mode if floating or mobile tray is narrow
     const showLabels = !isMapFloating && isExpanded;
     const isPortrait = isMobile && !viewport.isLandscape;
