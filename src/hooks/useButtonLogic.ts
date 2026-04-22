@@ -139,6 +139,10 @@ export const useButtonLogic = (deps: {
                 const cols = 2;
                 const row = Math.floor(idx / cols);
                 const col = idx % cols;
+                const x = 10 + col * 40;
+                const y = 10 + row * 10;
+                const w = 120;
+                const h = 40;
                 allGenerated.push({
                     id: `dynamic-${setNameLower}-${name}`,
                     label: name.charAt(0).toUpperCase() + name.slice(1),
@@ -149,12 +153,13 @@ export const useButtonLogic = (deps: {
                     isVisible: true,
                     isDimmed: prof <= 0,
                     style: {
-                        x: 10 + col * 40, y: 10 + row * 10, w: 120, h: 40,
+                        x, y, w, h,
                         backgroundColor: prof > 0 ? 'rgba(74, 144, 226, 0.3)' : 'rgba(100, 116, 139, 0.1)',
                         color: prof > 0 ? '#fff' : 'rgba(255, 255, 255, 0.4)',
                         borderColor: prof > 0 ? 'rgba(74, 144, 226, 0.5)' : 'rgba(255, 255, 255, 0.1)',
                         shape: 'pill', transparent: false
                     },
+                    position: { x, y, w, h },
                     trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0, type: 'show' }
                 });
             });

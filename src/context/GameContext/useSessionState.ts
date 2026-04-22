@@ -43,35 +43,39 @@ export const useSessionState = (
 
     // Map store values to legacy names for compatibility
     const stats = useMemo(() => ({
-        hp: vStore.hp, maxHp: vStore.maxHp, 
-        mana: vStore.mana, maxMana: vStore.maxMana, 
-        move: vStore.move, maxMove: vStore.maxMove, 
-        wimpy: vStore.wimpy
-    }), [vStore.hp, vStore.maxHp, vStore.mana, vStore.maxMana, vStore.move, vStore.maxMove, vStore.wimpy]);
-    const playerHealthStatus = vStore.hpStatus;
-    const playerPosition = vStore.position;
-    const inCombat = vStore.inCombat;
-    const currentTerrain = vStore.currentTerrain;
-    const lighting = vStore.lighting;
-    const weather = vStore.weather;
-    const isFoggy = vStore.isFoggy;
-    const isRiding = (vStore as any).isRiding ?? false;
+        hp: vStore?.hp ?? 0, 
+        maxHp: vStore?.maxHp ?? 0, 
+        mana: vStore?.mana ?? 0, 
+        maxMana: vStore?.maxMana ?? 0, 
+        move: vStore?.move ?? 0, 
+        maxMove: vStore?.maxMove ?? 0, 
+        wimpy: vStore?.wimpy ?? 0
+    }), [vStore?.hp, vStore?.maxHp, vStore?.mana, vStore?.maxMana, vStore?.move, vStore?.maxMove, vStore?.wimpy]);
+
+    const playerHealthStatus = vStore?.hpStatus ?? 'healthy';
+    const playerPosition = vStore?.position ?? 'standing';
+    const inCombat = vStore?.inCombat ?? false;
+    const currentTerrain = vStore?.currentTerrain ?? 'inside';
+    const lighting = vStore?.lighting ?? 'normal';
+    const weather = vStore?.weather ?? 'calm';
+    const isFoggy = vStore?.isFoggy ?? false;
+    const isRiding = (vStore as any)?.isRiding ?? false;
     const setIsRiding = useCallback((_flags: any) => {}, []); // Shimming setter for now
 
-    const roomName = rStore.roomName;
-    const roomDesc = rStore.roomDesc;
-    const roomExits = Array.isArray(rStore.exits) ? rStore.exits : Object.keys(rStore.exits || {});
-    const roomZone = rStore.roomZone;
-    const roomPlayers = rStore.players;
-    const roomNpcs = rStore.npcs;
-    const roomItems = rStore.items;
+    const roomName = rStore?.roomName ?? '';
+    const roomDesc = rStore?.roomDesc ?? '';
+    const roomExits = Array.isArray(rStore?.exits) ? rStore.exits : Object.keys(rStore?.exits || {});
+    const roomZone = rStore?.roomZone ?? '';
+    const roomPlayers = rStore?.players ?? [];
+    const roomNpcs = rStore?.npcs ?? [];
+    const roomItems = rStore?.items ?? [];
 
-    const opponentName = cStore.opponentName;
-    const opponentId = cStore.opponentId === null ? null : String(cStore.opponentId);
-    const opponentHealthStatus = cStore.opponentHealthStatus;
-    const bufferName = cStore.bufferName;
-    const bufferHealthStatus = cStore.bufferHealthStatus;
-    const groupMembers = cStore.groupMembers;
+    const opponentName = cStore?.opponentName ?? null;
+    const opponentId = cStore?.opponentId === undefined || cStore?.opponentId === null ? null : String(cStore.opponentId);
+    const opponentHealthStatus = cStore?.opponentHealthStatus ?? null;
+    const bufferName = cStore?.bufferName ?? null;
+    const bufferHealthStatus = cStore?.bufferHealthStatus ?? null;
+    const groupMembers = cStore?.groupMembers ?? [];
 
     // Legacy setters mapped to store actions
     const setStats = (update: any) => vStore.applyCharVitals(typeof update === 'function' ? update(stats) : update);
@@ -265,7 +269,9 @@ export const useSessionState = (
             whoList, setWhoList,
             whereList, setWhereList,
             discoveredItems, setDiscoveredItems,
-            gameTime, setGameTime
+            gameTime, setGameTime,
+            roomNum: rStore?.roomNum ?? 0,
+            setRoomNum: (num: number) => rStore.setRoomInfo({ roomNum: num })
         },
         log: {
             ...log,

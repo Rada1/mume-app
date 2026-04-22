@@ -200,67 +200,14 @@
     pointer-events: auto !important;
 }
 
-/* Desktop edge tabs (Map, Stats, etc.) */
-.desktop-edge-tab {
-    position: fixed;
-    z-index: 5000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    padding: 12px 6px;
-    background: rgba(15, 23, 42, 0.4);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    user-select: none;
-}
 
-.desktop-edge-tab.left {
-    left: 0;
-    border-left: none;
-    border-radius: 0 12px 12px 0;
-    padding-left: 8px;
-}
-
-.desktop-edge-tab.right {
-    right: 0;
-    border-right: none;
-    border-radius: 12px 0 0 12px;
-    padding-right: 8px;
-}
-
-.desktop-edge-tab:hover {
-    background: rgba(30, 41, 59, 0.6);
-    color: var(--text-primary);
-    padding-inline: 12px;
-}
-
-.desktop-edge-tab.active {
-    background: var(--accent);
-    color: #000;
-    box-shadow: 0 0 20px var(--accent-glow);
-    border-color: var(--accent);
-}
 
 .desktop-edge-tab .tab-icon {
     width: 20px;
     height: 20px;
 }
 
-@media (max-width: 768px) {
-    .desktop-edge-tab {
-        display: none !important;
-    }
-}
+
 
 /* --- Multi-Select Drawer Styles --- */
 .drawer-checkbox {
@@ -344,5 +291,81 @@
 @keyframes slide-in-reset {
     from { transform: translateX(30px); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
+}
+
+/* --- View Switcher (Premium) --- */
+.view-switcher.premium-glass {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 2px;
+    gap: 2px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    margin-right: 8px;
+}
+
+.view-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border: none;
+    background: transparent;
+    color: var(--text-faded, rgba(255, 255, 255, 0.5));
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.view-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary, #fff);
+}
+
+.view-btn.active {
+    background: var(--accent, #8b5cf6);
+    color: #fff !important;
+    box-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+}
+
+.view-btn.active span {
+    color: #fff !important;
+}
+
+/* --- View Transition Animations --- */
+.message-log-container {
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.view-mode-target .message-log-container {
+    animation: view-swap-slide 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.view-mode-target .message-log-container::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(139, 92, 246, 0.03) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes view-swap-slide {
+    0% { opacity: 0; transform: translateY(10px) scale(0.98); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes theaterPulse {
+    0% { box-shadow: 0 0 8px rgba(255,180,0,0.25); border-color: rgba(255,180,0,0.5); }
+    50% { box-shadow: 0 0 15px rgba(255,180,0,0.5); border-color: rgba(255,180,0,0.8); }
+    100% { box-shadow: 0 0 8px rgba(255,180,0,0.25); border-color: rgba(255,180,0,0.5); }
 }
 

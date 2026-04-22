@@ -47,7 +47,7 @@ export interface Candidate {
     length: number;
 }
 
-const getTargetAwareStyles = (text: string, context: string, baseGlow: string, target: string | null) => {
+export const getTargetAwareStyles = (text: string, context: string, baseGlow: string, target: string | null) => {
     if (!target) return { glow: baseGlow, classExtra: '' };
     const lowerText = text.toLowerCase();
     const lowerContext = context.toLowerCase();

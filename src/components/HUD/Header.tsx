@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Crosshair, WifiOff, RefreshCw, Circle, Save, X, FileText, Map as MapIcon } from 'lucide-react';
+import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Crosshair, WifiOff, RefreshCw, Circle, Save, X, FileText, User, Map as MapIcon } from 'lucide-react';
 import { EnvControls } from '../Layout/EnvControls';
 import { RecorderHUD } from '../Layout/HUD/RecorderHUD';
 import { LightingType, WeatherType } from '../../types';
@@ -175,36 +175,28 @@ const Header: React.FC<HeaderProps> = ({
 
             {/* View Switcher for Spectate Mode */}
             {isSpectating && (
-                <div style={{
-                    display: 'flex', alignItems: 'center', gap: 4,
-                    padding: '2px', borderRadius: 6,
-                    background: 'var(--bg-panel, rgba(255,255,255,0.05))',
-                    border: '1px solid var(--border-color, rgba(255,255,255,0.1))',
-                    flexShrink: 0
-                }}>
+                <div className="view-switcher premium-glass">
                     <button 
-                        onClick={() => setActiveView('self')}
-                        style={{
-                            background: activeView === 'self' ? 'var(--accent)' : 'transparent',
-                            color: activeView === 'self' ? '#fff' : 'var(--text-faded)',
-                            border: 'none', borderRadius: 4, padding: '4px 8px',
-                            fontSize: '11px', fontWeight: 'bold', cursor: 'pointer',
-                            transition: 'all 0.2s'
+                        className={`view-btn ${activeView === 'self' ? 'active' : ''}`}
+                        onClick={() => {
+                            triggerHaptic(10);
+                            setActiveView('self');
                         }}
+                        title="Switch to My View"
                     >
-                        ME
+                        <User size={14} />
+                        <span>ME</span>
                     </button>
                     <button 
-                        onClick={() => setActiveView('target')}
-                        style={{
-                            background: activeView === 'target' ? 'var(--accent)' : 'transparent',
-                            color: activeView === 'target' ? '#fff' : 'var(--text-faded)',
-                            border: 'none', borderRadius: 4, padding: '4px 8px',
-                            fontSize: '11px', fontWeight: 'bold', cursor: 'pointer',
-                            transition: 'all 0.2s'
+                        className={`view-btn ${activeView === 'target' ? 'active' : ''}`}
+                        onClick={() => {
+                            triggerHaptic(10);
+                            setActiveView('target');
                         }}
+                        title={`Switch to ${spectateTarget}'s View`}
                     >
-                        {spectateTarget ? spectateTarget.toUpperCase() : 'TARGET'}
+                        <Eye size={14} />
+                        <span>{spectateTarget ? spectateTarget.toUpperCase() : 'TARGET'}</span>
                     </button>
                 </div>
             )}

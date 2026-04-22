@@ -16,10 +16,11 @@ import { renderInlineSpan, esc } from '../utils/inlineSpanRenderer';
 import { isInCorpseContext } from '../utils/highlighterUtils';
 import { 
     getCategoryForName, 
-    getCategoryType
+    getCategoryType,
+    getGlowColorForCategory
 } from '../utils/categorizationUtils';
 import { getMemberColor } from '../utils/groupUtils';
-import { safeHighlight, applyColorTaggedObjects } from '../utils/highlighterUtils';
+import { safeHighlight, applyColorTaggedObjects, getTargetAwareStyles } from '../utils/highlighterUtils';
 import { useSpecialLineWrappers } from './useSpecialLineWrappers';
 
 // Priority constants
@@ -146,16 +147,18 @@ export const useMessageHighlighter = (
 
         allOccupants.forEach(occ => {
             if (!occ.name) return;
-            const isNpc = occ.type === 'npc';
-            const category = isNpc ? 'npc' : 'player';
-            const buttonId = isNpc ? `auto-npc-${occ.name}` : `auto-${occ.name}`;
             
             candidates.push({
                 pattern: occ.name,
                 isRegex: false,
-                priority: isNpc ? PRIO_NPC : PRIO_PC,
+                priority: !!occ.id ? PRIO_NPC : PRIO_PC,
                 render: (match) => {
+                    const isNpc = !!occ.id;
+                    const category = isNpc ? (getCategoryForName(occ.name!, inlineCategories) || 'npc') : 'player';
+                    const baseColor = getGlowColorForCategory(category, inlineCategories);
+                    const { glow, classExtra } = getTargetAwareStyles(occ.name!, occ.name!, baseColor || '', target);
                     const isCorpse = isInCorpseContext(occ.name!, textOnly);
+                    
                     if (isCorpse) {
                         return renderInlineSpan({
                             id: 'auto-corpse',
@@ -171,23 +174,24 @@ export const useMessageHighlighter = (
                         });
                     }
 
-                    const isSelected = isObjectSelected(selectedObjectIds, buttonId, category);
+                    const isSelected = isObjectSelected(selectedObjectIds, `auto-${occ.name}`, category);
                     const groupMemberIndex = activeGroupMembers.findIndex(gm => gm.name?.toLowerCase() === occ.name?.toLowerCase());
                     const isGroupmate = groupMemberIndex !== -1;
 
                     return renderInlineSpan({
-                        id: buttonId,
+                        id: `auto-${occ.name}`,
                         mid,
-                        cmd: category,
+                        cmd: occ.name!,
                         kind: isNpc ? 'npc' : 'player',
                         location: 'room',
                         context: occ.name!,
                         category: category,
+                        glowColor: isGroupmate ? getMemberColor(groupMemberIndex).core : glow,
+                        textColor: (isGroupmate || glow) ? 'var(--glow-color)' : undefined,
+                        action: 'menu',
                         selected: isSelected,
                         draggable: true,
-                        glowColor: isGroupmate ? getMemberColor(groupMemberIndex).core : undefined,
-                        textColor: isGroupmate ? 'var(--glow-color)' : undefined,
-                        extraClasses: ['auto-occupant', isNpc ? 'npc-highlighter' : 'pc-highlighter'],
+                        extraClasses: ['auto-occupant', isNpc ? 'npc-highlighter' : 'pc-highlighter', classExtra],
                         innerHtml: match
                     });
                 }
@@ -212,8 +216,9 @@ export const useMessageHighlighter = (
                             location: 'room',
                             context: keyword,
                             category: cat.id,
+                            action: 'menu',
                             selected: isObjectSelected(selectedObjectIds, buttonId, 'object'),
-                            draggable: true,
+                            draggable: false,
                             extraClasses: ['auto-object'],
                             innerHtml: match
                         });
@@ -235,21 +240,27 @@ export const useMessageHighlighter = (
                 isRegex: false,
                 priority: PRIO_ITEM,
                 render: (match) => {
-                    const itemCategory = getCategoryForName(itemName, inlineCategories) || 'object';
+                    const category = getCategoryForName(itemName, inlineCategories) || 'object';
+                    const kind = getCategoryType(category, inlineCategories) || 'object';
+                    const baseColor = getGlowColorForCategory(category, inlineCategories);
+                    const { glow, classExtra } = getTargetAwareStyles(itemName, itemName, baseColor || '', target);
                     const buttonId = `auto-item-${itemName.toLowerCase().replace(/\s+/g, '-')}`;
-                    const catType = getCategoryType(itemCategory, inlineCategories) as EntityKind || 'object';
+                    const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'object-room');
 
                     return renderInlineSpan({
                         id: buttonId,
                         mid,
-                        cmd: 'object',
-                        kind: catType,
+                        cmd: itemName,
+                        kind: kind as EntityKind,
                         location: 'room',
                         context: itemName,
-                        category: itemCategory,
-                        selected: isObjectSelected(selectedObjectIds, buttonId, 'object-room'),
+                        category: category,
+                        glowColor: glow,
+                        textColor: glow ? 'var(--glow-color)' : undefined,
+                        action: 'menu',
+                        selected: isSelected,
                         draggable: true,
-                        extraClasses: ['auto-item'],
+                        extraClasses: ['auto-obj', classExtra],
                         innerHtml: match
                     });
                 }
@@ -275,4 +286,6 @@ export const useMessageHighlighter = (
     ]);
 
     return { processMessageHtml };
+};
+geHtml };
 };

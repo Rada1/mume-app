@@ -8,6 +8,7 @@ import { LineCluster } from './HUD/LineCluster';
 import PromptBox from '../HUD/PromptBox';
 import { ansiConvert } from '../../utils/ansi';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
+import { useModeStore } from '../../stores/useModeStore';
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -153,8 +154,10 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         }));
     };
 
+    const { activeView } = useModeStore();
+
     return (
-        <div className="content-layer">
+        <div className={`content-layer view-mode-${activeView}`}>
             <Header
                 isLandscape={isLandscape}
                 getLightingIcon={getLightingIcon}

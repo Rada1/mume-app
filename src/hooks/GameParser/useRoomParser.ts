@@ -126,6 +126,20 @@ export function useRoomParser(deps: RoomParserDeps) {
         return { isRoomName, isRoomDescription, isRoomWindow: afterRoomNameRef.current };
     }, [roomNameRef, roomDescRef, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, isDrawerCapture, isSilentCapture, isSpectateMode, spectateRoomName, spectateRoomDesc]);
 
-    return { detectRoom };
+    const parseRoomLine = useCallback((textOnly: string, cleanLine: string): 'game' | 'room-name' | 'room-description' | null => {
+        const lower = textOnly.toLowerCase();
+        const { isRoomName, isRoomDescription } = detectRoom(textOnly, lower, false);
+        
+        if (isRoomName) return 'room-name';
+        if (isRoomDescription) return 'room-description';
+        
+        if (textOnly.includes('It is pitch black...') || textOnly.includes('You cannot see a thing!')) {
+            return 'game';
+        }
+
+        return null;
+    }, [detectRoom]);
+
+    return { detectRoom, parseRoomLine };
 }
 

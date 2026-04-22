@@ -228,23 +228,25 @@ export class GmcpDecoder {
             return undefined;
         };
 
-        this.handlers.setStats((prev: GameStats) => {
-            const next = { ...prev };
-            const hp = getField(['hp', 'hits', 'health', 'h']); if (hp !== undefined) next.hp = Number(hp);
-            const maxhp = getField(['maxhp', 'maxhits', 'maxhealth', 'H']); if (maxhp !== undefined) next.maxHp = Number(maxhp);
-            const mana = getField(['mana', 'sp', 'spirit', 's', 'm']); if (mana !== undefined) next.mana = Number(mana);
-            const maxmana = getField(['maxmana', 'maxsp', 'maxspirit', 'S', 'M']); if (maxmana !== undefined) next.maxMana = Number(maxmana);
-            const move = getField(['move', 'mv', 'mp', 'moves', 'stamina', 'st', 'v']); if (move !== undefined) next.move = Number(move);
-            const maxmove = getField(['maxmove', 'maxmv', 'maxmp', 'maxmoves', 'maxstamina', 'maxst', 'V']); if (maxmove !== undefined) next.maxMove = Number(maxmove);
-            const wimpy = getField(['wimpy', 'W']); if (wimpy !== undefined) next.wimpy = Number(wimpy);
-            const moveStatus = getField(['move_status', 'stamina_status', 'st_status']); if (moveStatus !== undefined) next.staminaStatus = String(moveStatus);
-            
-            // Hunger / Thirst (MUME fields)
-            const hungry = getField(['hungry', 'hunger']); if (hungry !== undefined) next.conditions = { ...next.conditions, hungry: !!hungry };
-            const thirsty = getField(['thirsty', 'thirst']); if (thirsty !== undefined) next.conditions = { ...next.conditions, thirsty: !!thirsty };
-            
-            return next;
-        });
+        if (typeof this.handlers.setStats === 'function') {
+            this.handlers.setStats((prev: GameStats) => {
+                const next = { ...prev };
+                const hp = getField(['hp', 'hits', 'health', 'h']); if (hp !== undefined) next.hp = Number(hp);
+                const maxhp = getField(['maxhp', 'maxhits', 'maxhealth', 'H']); if (maxhp !== undefined) next.maxHp = Number(maxhp);
+                const mana = getField(['mana', 'sp', 'spirit', 's', 'm']); if (mana !== undefined) next.mana = Number(mana);
+                const maxmana = getField(['maxmana', 'maxsp', 'maxspirit', 'S', 'M']); if (maxmana !== undefined) next.maxMana = Number(maxmana);
+                const move = getField(['move', 'mv', 'mp', 'moves', 'stamina', 'st', 'v']); if (move !== undefined) next.move = Number(move);
+                const maxmove = getField(['maxmove', 'maxmv', 'maxmp', 'maxmoves', 'maxstamina', 'maxst', 'V']); if (maxmove !== undefined) next.maxMove = Number(maxmove);
+                const wimpy = getField(['wimpy', 'W']); if (wimpy !== undefined) next.wimpy = Number(wimpy);
+                const moveStatus = getField(['move_status', 'stamina_status', 'st_status']); if (moveStatus !== undefined) next.staminaStatus = String(moveStatus);
+                
+                // Hunger / Thirst (MUME fields)
+                const hungry = getField(['hungry', 'hunger']); if (hungry !== undefined) next.conditions = { ...next.conditions, hungry: !!hungry };
+                const thirsty = getField(['thirsty', 'thirst']); if (thirsty !== undefined) next.conditions = { ...next.conditions, thirsty: !!thirsty };
+                
+                return next;
+            });
+        }
 
         const pos = getField(['position', 'pos', 'p']);
         if (pos !== undefined) {
@@ -301,7 +303,7 @@ export class GmcpDecoder {
         }
 
         const weatherVal = getField(['weather', 'w']);
-        if (weatherVal !== undefined) {
+        if (weatherVal !== undefined && typeof this.handlers.setWeather === 'function') {
             const w = String(weatherVal);
             if (w === '~') this.handlers.setWeather('cloud');
             else if (w === "'" || w === '"') this.handlers.setWeather('rain');
@@ -309,10 +311,13 @@ export class GmcpDecoder {
             else if (w === ' ' || w === null || w === '') this.handlers.setWeather((prev: WeatherType) => ['cloud', 'rain', 'heavy-rain', 'snow'].includes(prev) ? 'none' : prev);
         }
 
-        const fogVal = getField(['fog', 'f']); if (fogVal !== undefined) this.handlers.setIsFoggy(fogVal === '-' || fogVal === '=');
+        const fogVal = getField(['fog', 'f']); 
+        if (fogVal !== undefined && typeof this.handlers.setIsFoggy === 'function') {
+            this.handlers.setIsFoggy(fogVal === '-' || fogVal === '=');
+        }
 
         const lightVal = getField(['light', 'l']);
-        if (lightVal !== undefined) {
+        if (lightVal !== undefined && typeof this.handlers.detectLighting === 'function') {
             this.handlers.detectLighting(String(lightVal));
         }
 

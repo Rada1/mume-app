@@ -97,7 +97,7 @@ export const useUIStore = create<UIState>((set) => ({
     
     drawer: 'none',
     isDrawerPeeking: false,
-    mapExpanded: false,
+    mapExpanded: typeof window !== 'undefined' ? window.innerWidth >= 1024 : true,
     popoverState: null,
     mumeEditState: defaultMumeEditState,
     isNewbieMode: true,

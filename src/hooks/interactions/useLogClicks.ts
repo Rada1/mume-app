@@ -28,7 +28,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         let selection = window.getSelection()?.toString().trim();
 
         if (!selection) {
-            const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
+            const targetEl = (e.target instanceof HTMLElement) ? e.target.closest('.inline-btn') as HTMLElement : (e.target as any)?.parentElement?.closest('.inline-btn') as HTMLElement;
             if (targetEl) {
                 selection = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
             } else {
@@ -95,7 +95,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         if (ui.mapExpanded && viewport.isMobile && viewport.isLandscape) return;
 
         const now = Date.now();
-        const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
+        const targetEl = (e.target instanceof HTMLElement) ? e.target.closest('.inline-btn') as HTMLElement : (e.target as any)?.parentElement?.closest('.inline-btn') as HTMLElement;
 
         const doubleTapThreshold = viewport.isMobile ? 400 : 300;
 
@@ -152,6 +152,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         }
 
         e.stopPropagation();
+        e.preventDefault();
 
         const cmd = targetEl.getAttribute('data-cmd');
         const kind = targetEl.getAttribute('data-kind');

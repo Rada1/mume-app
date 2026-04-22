@@ -427,7 +427,12 @@ const MessageLog: React.FC<MessageLogProps> = ({
         
         // Hide own prompts (handled by HUD PromptBox) but show snooped prompts
         // when the spectate-prompt toggle is on.
-        return messages.filter(m => m.type !== 'prompt' || (m.isSnoop && showSpectatePromptInLog));
+        const result = messages.filter(m => m.type !== 'prompt' || (m.isSnoop && showSpectatePromptInLog));
+        const userMsgs = result.filter(m => m.type === 'user');
+        if (userMsgs.length > 0) {
+            console.log(`[MessageLog] displayMessages update: total=${result.length}, userCommands=${userMsgs.length}`, userMsgs.map(m => m.textRaw));
+        }
+        return result;
     }, [messages, replayMessages, sessionMode, showSpectatePromptInLog, replayer.state.currentTime]);
 
     const lastUserMsgIndex = useMemo(() => {

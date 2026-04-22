@@ -40,6 +40,8 @@ export const useGameProviderState = () => {
 
     const [draggedTarget, setDraggedTarget] = useState<{ name: string; type: string; x: number; y: number } | null>(null);
     const [activeDragData, setActiveDragData] = useState<unknown>(null);
+    const [input, setInput] = useState("");
+    const [commandPreview, setCommandPreview] = useState<string | null>(null);
 
     const [accountState, setAccountState] = useState<import('../../types').AccountState>({
         stage: 'none', characters: [], selectedCharacter: null
@@ -94,6 +96,7 @@ export const useGameProviderState = () => {
         gameState, setGameState,
         activeSession, setActiveSession,
         userSession, spectateSession,
+        active,
 
         // Explicit Spectate Values
         spectateRoomName: spectateSession.game.roomName,
@@ -128,6 +131,9 @@ export const useGameProviderState = () => {
         setSpectateGroupMembers: spectateSession.vitals.setGroupMembers,
         setSpectateRoomDesc: spectateSession.game.setRoomDesc,
 
+        setStats: active.vitals.setStats,
+        isSpectateMode: mode.isSpectating,
+
         isPasswordMode, setIsPasswordMode,
         popoverState, setPopoverState,
         parley, setParley,
@@ -137,6 +143,8 @@ export const useGameProviderState = () => {
         clearObjectSelection: active.log.clearObjectSelection,
         draggedTarget, setDraggedTarget,
         activeDragData, setActiveDragData,
+        input, setInput,
+        commandPreview, setCommandPreview,
         diagnosticLogs: uiStore.diagnosticLogs,
         addDiagnosticLog: uiStore.addDiagnosticLog,
         accountState, setAccountState, accountStageRef,

@@ -158,7 +158,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 
             {/* Desktop-only side tabs */}
             {!viewport.isMobile && gameState !== 'disconnected' && (
-                <div className="desktop-side-tabs">
+                <div className="desktop-drawer-tabs">
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'stats' ? 'active' : ''}`}
                         onClick={(e) => { e.stopPropagation(); triggerHaptic(15); handleTabClick('stats'); }}

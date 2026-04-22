@@ -161,15 +161,20 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
 
         // 1. Detect Login Prompts
         const lowerLine = cleanLine.toLowerCase();
-        const isNamePrompt = lowerLine.includes('by what name do you wish to be known?');
-        const isPasswordPrompt = lowerLine.includes('account password:');
+        // Stricter matching for prompts: must end with the prompt string and not be in the middle of a sentence
+        const isNamePrompt = lowerLine.endsWith('by what name do you wish to be known?');
+        const isPasswordPrompt = lowerLine.endsWith('account password:');
 
         if (isNamePrompt || isPasswordPrompt) {
-            setGameState('account');
-            setAccountState((prev: any) => ({ ...prev, stage: 'login' }));
-            if (isPasswordPrompt) setIsPasswordMode(true);
-            else if (isNamePrompt) setIsPasswordMode(false);
-            return false;
+            // If we're already playing, only allow "By what name" to reset us (e.g. on disconnect)
+            // but ignore "account password:" as it's likely a chat message false positive.
+            if (isNamePrompt || gameStateRef.current !== 'playing') {
+                setGameState('account');
+                setAccountState((prev: any) => ({ ...prev, stage: 'login' }));
+                if (isPasswordPrompt) setIsPasswordMode(true);
+                else if (isNamePrompt) setIsPasswordMode(false);
+                return false;
+            }
         }
 
         // 2. Detect Character List Headers

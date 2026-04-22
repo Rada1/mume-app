@@ -5,6 +5,26 @@ import { GmcpDecoder } from '../utils/telnet/GmcpDecoder';
 import { ProtocolHandler } from '../utils/telnet/ProtocolHandler';
 import { gmcpBus } from '../events/gmcpBus';
 
+// --- Base64 Helpers for Telnet-over-WebSocket ---
+function uint8ArrayToBase64(bytes: Uint8Array): string {
+    let binary = '';
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+}
+
+function base64ToUint8Array(base64: string): Uint8Array {
+    const binary = atob(base64);
+    const len = binary.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes;
+}
+
 export interface TelnetHandlers {
     setStatus: (status: 'connected' | 'disconnected' | 'connecting') => void;
     setStats: React.Dispatch<React.SetStateAction<GameStats>>;
@@ -70,7 +90,15 @@ export function useTelnet(options: TelnetOptions) {
     }, [handlers, recordEntry]);
 
     const sendBytes = React.useCallback((bytes: number[]) => {
-        if (socketRef.current?.readyState === WebSocket.OPEN) socketRef.current.send(new Uint8Array(bytes));
+        const ws = socketRef.current;
+        if (ws?.readyState === WebSocket.OPEN) {
+            const uint8 = new Uint8Array(bytes);
+            if (ws.protocol === 'base64') {
+                ws.send(uint8ArrayToBase64(uint8));
+            } else {
+                ws.send(uint8);
+            }
+        }
     }, []);
 
     const sendGMCP = React.useCallback((pkg: string, data: any = null) => {
@@ -81,37 +109,37 @@ export function useTelnet(options: TelnetOptions) {
     }, [sendBytes]);
 
     const gmcpDecoder = React.useRef(new GmcpDecoder({
-        setStats: (val) => handlersRef.current.setStats(val),
-        setWeather: (val) => handlersRef.current.setWeather(val),
-        setIsFoggy: (val) => handlersRef.current.setIsFoggy(val),
-        setInCombat: (val, force) => handlersRef.current.setInCombat(val, force),
-        detectLighting: (val) => handlersRef.current.detectLighting(val),
-        onOpponentChange: (val) => { gmcpBus.emit('Char.Opponent', val); handlersRef.current.onOpponentChange?.(val); },
-        onBufferChange: (val) => { gmcpBus.emit('Char.Buffer', val); handlersRef.current.onBufferChange?.(val); },
-        onAddPlayer: (val) => { gmcpBus.emit('Room.AddPlayer', val); handlersRef.current.onAddPlayer?.(val); },
-        onRemovePlayer: (val) => { gmcpBus.emit('Room.RemovePlayer', val); handlersRef.current.onRemovePlayer?.(val); },
-        onRoomItems: (val) => { gmcpBus.emit('Room.Items', val); handlersRef.current.onRoomItems?.(val); },
-        onRoomInfo: (val) => { gmcpBus.emit('Room.Info', val); handlersRef.current.onRoomInfo?.(val); },
-        onRoomUpdateExits: (val) => { gmcpBus.emit('Room.UpdateExits', val); handlersRef.current.onRoomUpdateExits?.(val); },
-        onCharVitals: (val) => { gmcpBus.emit('Char.Vitals', val); handlersRef.current.onCharVitals?.(val); },
-        onRoomPlayers: (val) => { gmcpBus.emit('Room.Players', val); handlersRef.current.onRoomPlayers?.(val); },
-        onRoomNpcs: (val) => { gmcpBus.emit('Room.Npcs', val); handlersRef.current.onRoomNpcs?.(val); },
-        onAddNpc: (val) => { gmcpBus.emit('Room.AddNpc', val); handlersRef.current.onAddNpc?.(val); },
-        onRemoveNpc: (val) => { gmcpBus.emit('Room.RemoveNpc', val); handlersRef.current.onRemoveNpc?.(val); },
-        onCharNameChange: (val) => { gmcpBus.emit('Char.Name', val); handlersRef.current.onCharNameChange?.(val); },
-        onCharInfo: (val) => { gmcpBus.emit('Char.Info', val); handlersRef.current.onCharInfo?.(val); },
-        onPositionChange: (val) => { gmcpBus.emit('Char.Position', val); handlersRef.current.onPositionChange?.(val); },
-        onComm: (sender, chan, msg) => { gmcpBus.emit('Comm.Channel', { sender, chan, msg }); handlersRef.current.onComm?.(sender, chan, msg); },
-        onGroupAdd: (val) => { gmcpBus.emit('Group.Add', val); handlersRef.current.onGroupAdd?.(val); },
-        onGroupUpdate: (val) => { gmcpBus.emit('Group.Update', val); handlersRef.current.onGroupUpdate?.(val); },
-        onGroupRemove: (val) => { gmcpBus.emit('Group.Remove', val); handlersRef.current.onGroupRemove?.(val); },
-        onGroupSet: (val) => { gmcpBus.emit('Group.Set', val); handlersRef.current.onGroupSet?.(val); },
-        onMumeEdit: (val) => { gmcpBus.emit('Mume.Edit', val); handlersRef.current.onMumeEdit?.(val); },
-        onDisconnect: () => { gmcpBus.emit('Connection.Disconnect', undefined); handlersRef.current.onDisconnect?.(); },
-        onRoomCharsCombat: (val) => { gmcpBus.emit('Room.CharsCombat', val); handlersRef.current.onRoomCharsCombat?.(val); },
-        onCharRide: (val) => { gmcpBus.emit('Char.Ride', val); handlersRef.current.onCharRide?.(val); },
-        onCorePing: () => { gmcpBus.emit('Core.Ping', undefined); handlersRef.current.onCorePing?.(); },
-        onCoreGoodbye: () => { gmcpBus.emit('Core.Goodbye', undefined); handlersRef.current.onCoreGoodbye?.(); }
+        setStats: (val) => { if (typeof handlersRef.current.setStats === 'function') handlersRef.current.setStats(val); },
+        setWeather: (val) => { if (typeof handlersRef.current.setWeather === 'function') handlersRef.current.setWeather(val); },
+        setIsFoggy: (val) => { if (typeof handlersRef.current.setIsFoggy === 'function') handlersRef.current.setIsFoggy(val); },
+        setInCombat: (val, force) => { if (typeof handlersRef.current.setInCombat === 'function') handlersRef.current.setInCombat(val, force); },
+        detectLighting: (val) => { if (typeof handlersRef.current.detectLighting === 'function') handlersRef.current.detectLighting(val); },
+        onOpponentChange: (val) => { gmcpBus.emit('Char.Opponent', val); if (typeof handlersRef.current.onOpponentChange === 'function') handlersRef.current.onOpponentChange(val); },
+        onBufferChange: (val) => { gmcpBus.emit('Char.Buffer', val); if (typeof handlersRef.current.onBufferChange === 'function') handlersRef.current.onBufferChange(val); },
+        onAddPlayer: (val) => { gmcpBus.emit('Room.AddPlayer', val); if (typeof handlersRef.current.onAddPlayer === 'function') handlersRef.current.onAddPlayer(val); },
+        onRemovePlayer: (val) => { gmcpBus.emit('Room.RemovePlayer', val); if (typeof handlersRef.current.onRemovePlayer === 'function') handlersRef.current.onRemovePlayer(val); },
+        onRoomItems: (val) => { gmcpBus.emit('Room.Items', val); if (typeof handlersRef.current.onRoomItems === 'function') handlersRef.current.onRoomItems(val); },
+        onRoomInfo: (val) => { gmcpBus.emit('Room.Info', val); if (typeof handlersRef.current.onRoomInfo === 'function') handlersRef.current.onRoomInfo(val); },
+        onRoomUpdateExits: (val) => { gmcpBus.emit('Room.UpdateExits', val); if (typeof handlersRef.current.onRoomUpdateExits === 'function') handlersRef.current.onRoomUpdateExits(val); },
+        onCharVitals: (val) => { gmcpBus.emit('Char.Vitals', val); if (typeof handlersRef.current.onCharVitals === 'function') handlersRef.current.onCharVitals(val); },
+        onRoomPlayers: (val) => { gmcpBus.emit('Room.Players', val); if (typeof handlersRef.current.onRoomPlayers === 'function') handlersRef.current.onRoomPlayers(val); },
+        onRoomNpcs: (val) => { gmcpBus.emit('Room.Npcs', val); if (typeof handlersRef.current.onRoomNpcs === 'function') handlersRef.current.onRoomNpcs(val); },
+        onAddNpc: (val) => { gmcpBus.emit('Room.AddNpc', val); if (typeof handlersRef.current.onAddNpc === 'function') handlersRef.current.onAddNpc(val); },
+        onRemoveNpc: (val) => { gmcpBus.emit('Room.RemoveNpc', val); if (typeof handlersRef.current.onRemoveNpc === 'function') handlersRef.current.onRemoveNpc(val); },
+        onCharNameChange: (val) => { gmcpBus.emit('Char.Name', val); if (typeof handlersRef.current.onCharNameChange === 'function') handlersRef.current.onCharNameChange(val); },
+        onCharInfo: (val) => { gmcpBus.emit('Char.Info', val); if (typeof handlersRef.current.onCharInfo === 'function') handlersRef.current.onCharInfo(val); },
+        onPositionChange: (val) => { gmcpBus.emit('Char.Position', val); if (typeof handlersRef.current.onPositionChange === 'function') handlersRef.current.onPositionChange(val); },
+        onComm: (sender, chan, msg) => { gmcpBus.emit('Comm.Channel', { sender, chan, msg }); if (typeof handlersRef.current.onComm === 'function') handlersRef.current.onComm(sender, chan, msg); },
+        onGroupAdd: (val) => { gmcpBus.emit('Group.Add', val); if (typeof handlersRef.current.onGroupAdd === 'function') handlersRef.current.onGroupAdd(val); },
+        onGroupUpdate: (val) => { gmcpBus.emit('Group.Update', val); if (typeof handlersRef.current.onGroupUpdate === 'function') handlersRef.current.onGroupUpdate(val); },
+        onGroupRemove: (val) => { gmcpBus.emit('Group.Remove', val); if (typeof handlersRef.current.onGroupRemove === 'function') handlersRef.current.onGroupRemove(val); },
+        onGroupSet: (val) => { gmcpBus.emit('Group.Set', val); if (typeof handlersRef.current.onGroupSet === 'function') handlersRef.current.onGroupSet(val); },
+        onMumeEdit: (val) => { gmcpBus.emit('Mume.Edit', val); if (typeof handlersRef.current.onMumeEdit === 'function') handlersRef.current.onMumeEdit(val); },
+        onRoomCharsCombat: (val) => { gmcpBus.emit('Room.CharsCombat', val); if (typeof handlersRef.current.onRoomCharsCombat === 'function') handlersRef.current.onRoomCharsCombat(val); },
+        onCharRide: (val) => { gmcpBus.emit('Char.Ride', val); if (typeof handlersRef.current.onCharRide === 'function') handlersRef.current.onCharRide(val); },
+        onCorePing: () => { gmcpBus.emit('Core.Ping', undefined); if (typeof handlersRef.current.onCorePing === 'function') handlersRef.current.onCorePing(); },
+        onCoreGoodbye: () => { gmcpBus.emit('Core.Goodbye', undefined); if (typeof handlersRef.current.onCoreGoodbye === 'function') handlersRef.current.onCoreGoodbye(); },
+        onDisconnect: () => { gmcpBus.emit('Connection.Disconnect', undefined); if (typeof handlersRef.current.onDisconnect === 'function') handlersRef.current.onDisconnect(); }
     }));
     const protocolHandler = React.useRef<ProtocolHandler | null>(null);
 
@@ -245,8 +273,15 @@ export function useTelnet(options: TelnetOptions) {
             console.log(`[WebSocket] Initiating connection to ${connectionUrl} (Origin: ${window.location.origin})`);
             handlersRef.current.addMessage('system', msg1, undefined, undefined, undefined, { textOnly: msg1, lower: msg1.toLowerCase() });
             
-            // Try with no subprotocol first. If it fails once, some systems might prefer 'binary'.
-            const ws = new WebSocket(connectionUrl);
+            // Subprotocol support: MUME typically uses 'base64' if requested, or no subprotocol for raw binary.
+            // Some proxies or MUD gateways require 'base64' to pass through strict HTTP-only environments.
+            const isMume = connectionUrl.includes('mume.org');
+            const subprotocols = isMume ? ['base64', 'binary'] : [];
+            
+            const ws = new WebSocket(connectionUrl, subprotocols);
+            
+            // If the server selected 'base64', we must treat all incoming/outgoing data as base64 strings.
+            // If 'binary' (or no subprotocol), we use ArrayBuffer.
             ws.binaryType = "arraybuffer";
 
             // Set connection timeout
@@ -267,7 +302,7 @@ export function useTelnet(options: TelnetOptions) {
                     clearTimeout(connectionTimeoutRef.current);
                     connectionTimeoutRef.current = null;
                 }
-                console.log(`[WebSocket] Connected successfully to ${connectionUrl}`);
+                console.log(`[WebSocket] Connected successfully to ${connectionUrl} (Protocol: ${ws.protocol || 'raw'})`);
                 handlersRef.current.setStatus('connected');
                 const msg2 = 'Connected! Negotiating...';
                 handlersRef.current.addMessage('system', msg2, undefined, undefined, undefined, { textOnly: msg2, lower: msg2.toLowerCase() });
@@ -275,8 +310,15 @@ export function useTelnet(options: TelnetOptions) {
                 (ws as any)._pingInterval = interval;
             };
             ws.onmessage = (event) => { 
-                if (event.data instanceof ArrayBuffer) {
-                    const bytes = new Uint8Array(event.data);
+                let bytes: Uint8Array | null = null;
+
+                if (ws.protocol === 'base64' && typeof event.data === 'string') {
+                    bytes = base64ToUint8Array(event.data);
+                } else if (event.data instanceof ArrayBuffer) {
+                    bytes = new Uint8Array(event.data);
+                }
+
+                if (bytes) {
                     if (recordEntryRef.current) recordEntryRef.current('rx', Array.from(bytes));
                     protocolHandler.current?.handleRawData(bytes); 
                 }
@@ -335,9 +377,15 @@ export function useTelnet(options: TelnetOptions) {
     return {
         connect, disconnect: () => socketRef.current?.close(),
         sendCommand: (cmd: string) => { 
-            if (socketRef.current?.readyState === WebSocket.OPEN) {
+            const ws = socketRef.current;
+            if (ws?.readyState === WebSocket.OPEN) {
                 if (recordEntryRef.current) recordEntryRef.current('tx', cmd);
-                socketRef.current.send(new TextEncoder().encode(cmd + '\r\n')); 
+                const bytes = new TextEncoder().encode(cmd + '\r\n');
+                if (ws.protocol === 'base64') {
+                    ws.send(uint8ArrayToBase64(bytes));
+                } else {
+                    ws.send(bytes);
+                }
             }
         },
         sendGMCP

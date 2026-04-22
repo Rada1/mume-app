@@ -11,6 +11,8 @@ export interface CombatParserDeps {
     setOpponentHealthStatus: (val: CombatHealthStatus | null) => void;
     setOpponentName: (val: string | null) => void;
     setCharacterInfo: (val: CharacterInfo | ((prev: CharacterInfo) => CharacterInfo)) => void;
+    triggerHitFlash?: () => void;
+    triggerOppHitFlash?: () => void;
     triggerXpTicker?: () => void;
     groupMembers: GroupMember[];
     mapperRef?: React.RefObject<any>;
@@ -23,6 +25,17 @@ export interface CombatParserDeps {
     setSpectateOpponentStatus?: (val: CombatHealthStatus | null) => void;
     playKillSound?: (options?: { pitch?: number, volume?: number }) => void;
     playLevelSound?: (options?: { pitch?: number, volume?: number }) => void;
+    playHitImpactSound?: (modifier?: string) => void;
+    playOofSound?: () => void;
+    playSlashSound?: () => void;
+    playCleaveSound?: () => void;
+    playSmiteSound?: () => void;
+    playPierceSound?: () => void;
+    playStabSound?: () => void;
+    playArrowHitSound?: () => void;
+    setInCombat?: (inCombat: boolean, force?: boolean) => void;
+    characterName?: string | null;
+    addMessage?: (type: any, text: string) => void;
 }
 
 const COMBAT_VERBS_STR = ['hit', 'miss', 'wound', 'kill', 'maul', 'pierce', 'cleave', 'stab', 'slash', 'pound', 'crush', 'smite', 'strike', 'backstab', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shocked', 'stunned', 'blinded', 'silenced', 'hurt', 'die', 'fighting', 'recovered', 'shoot', 'shoots', 'blast', 'shatters', 'joins?', 'assists?'].join('|');
@@ -44,7 +57,8 @@ export function useCombatParser(deps: CombatParserDeps) {
         setSpectateOpponentName,
         setSpectateOpponentStatus,
         playKillSound,
-        playLevelSound
+        playLevelSound,
+        characterName
     } = deps;
 
     const checkCombatMatch = useCallback((lower: string, isSnoop: boolean = false) => {
@@ -78,7 +92,7 @@ export function useCombatParser(deps: CombatParserDeps) {
             const pcNames = (roomPlayers || []).map(p => (typeof p === 'string' ? p : p.name)).filter(Boolean) as string[];
             const extraNames = [];
             if (spectateCharacterName) extraNames.push(spectateCharacterName);
-            extraNames.push(...(groupMembers.map(m => m.name).filter(Boolean) as string[]));
+            extraNames.push(...((groupMembers || []).map(m => m.name).filter(Boolean) as string[]));
             
             const allAllies = Array.from(new Set([...pcNames, ...extraNames]));
             const gName = allAllies.find(name => {
@@ -168,5 +182,46 @@ export function useCombatParser(deps: CombatParserDeps) {
         return false;
     }, [setCharacterInfo, triggerXpTicker, playLevelSound]);
 
-    return { checkCombatMatch, handleCombatExit, handleXpTicker };
+    const parseCombatLine = useCallback((textOnly: string, cleanLine: string): any => {
+        const lower = textOnly.toLowerCase();
+
+        // 1. Detect Combat Exit/Death
+        if (handleCombatExit(lower)) return 'game';
+
+        // 2. Detect XP Ticker
+        if (handleXpTicker(lower)) return 'game';
+
+        // 3. Detect Combat Match
+        const match = checkCombatMatch(lower);
+        if (match.isMatch) {
+            // Play Sounds
+            if (match.isImpact) {
+                const { verb, modifier } = match;
+                if (match.side === 'opponent' && match.isPlayerTarget) {
+                    deps.playOofSound?.();
+                } else if (match.side === 'player' || match.side === 'groupmate') {
+                    if (verb === 'slash') deps.playSlashSound?.();
+                    else if (verb === 'cleave') deps.playCleaveSound?.();
+                    else if (verb === 'smite') deps.playSmiteSound?.();
+                    else if (verb === 'pierce') deps.playPierceSound?.();
+                    else if (verb === 'stab') deps.playStabSound?.();
+                    else if (verb === 'shoot') deps.playArrowHitSound?.();
+                    else deps.playHitImpactSound?.(modifier);
+                }
+            }
+
+            // Visual FX
+            if (match.isImpact && match.isPlayerTarget) {
+                deps.triggerHitFlash?.();
+            } else if (match.isImpact && (match.side === 'player' || match.side === 'groupmate')) {
+                deps.triggerOppHitFlash?.();
+            }
+
+            return 'combat';
+        }
+
+        return null;
+    }, [handleCombatExit, handleXpTicker, checkCombatMatch, deps]);
+
+    return { checkCombatMatch, handleCombatExit, handleXpTicker, parseCombatLine };
 }

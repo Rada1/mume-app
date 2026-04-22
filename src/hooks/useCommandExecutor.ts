@@ -47,6 +47,7 @@ export interface ExecutorDeps {
     setActions: (val: GameAction[] | ((prev: GameAction[]) => GameAction[])) => void;
     activePrompt: string;
     isPasswordMode: boolean;
+    recordEntry: (type: any, data: any, options?: { mask?: boolean }) => void;
 }
 
 export const useCommandExecutor = (deps: ExecutorDeps) => {
@@ -56,7 +57,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         setInventoryLines, setStatsLines, setScoreLines, setEqLines, setTarget, target,
         setPopoverState, status, setIsCharacterOpen, setIsEquipmentOpen, setIsInventoryOpen,
         setIsSettingsOpen, setSettingsTab,
-        actions, setActions, activePrompt
+        actions, setActions, activePrompt, recordEntry
     } = deps;
 
     // --- Initialize Registry ---
@@ -136,10 +137,19 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         if (!silent) {
             const promptPrefix = activePrompt || '';
             const logText = d.isPasswordMode ? '********' : finalCmd;
+            console.log('[useCommandExecutor] Sending to addMessage:', { 
+                type: 'user', 
+                text: `${promptPrefix}${logText}`, 
+                isPasswordMode: d.isPasswordMode,
+                hasAddMessage: !!addMessage
+            });
+            
             (addMessage as any)('user', `${promptPrefix}${logText}`, undefined, undefined, undefined, { 
                 textOnly: `${promptPrefix}${logText}`, 
                 lower: `${promptPrefix}${logText}`.toLowerCase() 
             });
+        } else {
+            console.log('[useCommandExecutor] Logging skipped because silent=true');
         }
 
         // --- 8. Mapper Movement Hooks ---

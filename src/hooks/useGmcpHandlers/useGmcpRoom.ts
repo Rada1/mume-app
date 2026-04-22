@@ -49,7 +49,14 @@ export const useGmcpRoom = ({
 }: UseGmcpRoomProps) => {
 
     const onRoomInfo = useCallback((data: GmcpRoomInfo) => {
-        if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-room-info', { detail: data }));
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('mume-gmcp-room-info', { detail: data }));
+            
+            const terrain = data.terrain || data.environment;
+            if (terrain) {
+                window.dispatchEvent(new CustomEvent('mume-gmcp-terrain', { detail: terrain }));
+            }
+        }
 
         const roomNum = data.num || data.id || data.vnum;
         const roomChanged = roomNum !== undefined && roomNum !== lastRoomNumRef.current;
@@ -99,7 +106,7 @@ export const useGmcpRoom = ({
     }, [mapperRef, setCurrentTerrain, setRoomName, setRoomDesc, setRoomExits, setRoomZone, setRoomPlayers, setRoomNpcs, setRoomItems, setDiscoveredItems, playMovementSound, isSpectateMode, detectLighting, isRidingRef, playerPositionRef, lastRoomChangeTimeRef, lastRoomNumRef, lastExitsRef, roomDescRef]);
 
     const onRoomUpdateExits = useCallback((data: GmcpUpdateExits) => {
-        if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-update-exits', { detail: data }));
+        if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-gmcp-room-exits', { detail: data }));
         if (data.exits) {
             console.log('[GMCP] Room.UpdateExits:', data.exits);
             // Door detection logic

@@ -13,6 +13,7 @@ import { useMapGmcphandlers } from '../components/Mapper/hooks/useMapGmcphandler
 import { DIRS } from '../components/Mapper/mapperUtils';
 import { MapperRoom, MapperMarker } from '../components/Mapper/mapperTypes';
 import { useSettingsStore } from '../stores/useSettingsStore';
+import { useModeStore } from '../stores/useModeStore';
 
 interface MapperContextType {
     rooms: Record<string, MapperRoom>;
@@ -253,6 +254,20 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         serverIdIndexRef
     ]);
 
+    // --- Sync with Active Session ---
+    // When the active view switches (Me -> Target), the mapper needs to snap to the
+    // room currently being seen by the active session.
+    const game = useGame();
+    const { activeView } = useModeStore();
+
+    useEffect(() => {
+        if (game.roomNum && game.roomNum !== 0) {
+            const vnum = serverIdIndexRef.current?.[String(game.roomNum)];
+            if (vnum) {
+                setCurrentRoomId(vnum);
+            }
+        }
+    }, [game.roomNum, activeView]);
     return <MapperContext.Provider value={value}>{children}</MapperContext.Provider>;
 };
 

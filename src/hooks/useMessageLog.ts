@@ -351,7 +351,7 @@ export function useMessageLog(
             }
         }
 
-        const html = ansiConvert.toHtml(processedText);
+        const html = (precalculated as any)?.html || ansiConvert.toHtml(processedText);
 
         const msg: Message = {
             id: mid || Math.random().toString(36).substring(7),

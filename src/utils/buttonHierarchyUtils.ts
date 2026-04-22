@@ -11,13 +11,17 @@ export const INLINE_HIERARCHY: Record<string, string[]> = {
     'object-armour': ['object'],
     'object-shield': ['object'],
     'object-food': ['object'],
+    'object-room': ['object'],
     'object-water': ['object'],
     'object-treasure': ['object'],
     'object-misc': ['object'],
     'object-quiver': ['object-container', 'location-room'],
     
-    // NPC Hierarchy
-    'npc': ['object'],
+    // Entity Kinds
+    'player': ['inlineplayer', 'object'],
+    'npc': ['inlinenpc', 'object'],
+    
+    // Specialized NPCs
     'npc-mount': ['npc'],
     'npc-shopkeeper': ['npc'],
     'npc-shopkeeper-drop': ['npc'],

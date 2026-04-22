@@ -59,6 +59,8 @@ const MudClient = () => {
         isNewbieMode,
         input,
         setInput,
+        commandPreview,
+        setCommandPreview,
         gameState
     } = useGame();
 
@@ -68,7 +70,6 @@ const MudClient = () => {
 
     const { isMobile, isKeyboardOpen, isLandscape, scrollContainerRef } = viewport;
 
-    const [commandPreview, setCommandPreview] = useState<string | null>(null);
     const [btnGlow, setBtnGlow] = useState({ up: false, down: false });
     const [managerSelectedSet, setManagerSelectedSet] = useState<string | null>(null);
     const [returnToManager, setReturnToManager] = useState(false);

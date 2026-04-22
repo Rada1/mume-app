@@ -28,10 +28,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     const { processTriggers } = useTriggerProcessor({ 
         isSoundEnabledRef: deps.isSoundEnabledRef, 
         soundTriggersRef: deps.soundTriggersRef, 
-        buttonsRef: deps.btn.buttonsRef, 
-        setButtons: deps.btn.setButtons, 
-        buttonTimers: deps.btn.buttonTimers, 
-        setActiveSet: deps.btn.setActiveSet, 
+        buttonsRef: deps.btn?.buttonsRef || { current: [] }, 
+        setButtons: deps.btn?.setButtons || (() => {}), 
+        buttonTimers: deps.btn?.buttonTimers || { current: {} }, 
+        setActiveSet: deps.btn?.setActiveSet || (() => {}), 
         actionsRef: deps.actionsRef, 
         executeCommandRef: deps.executeCommandRef,
         playEffect: deps.playEffect,
@@ -99,7 +99,12 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         setSpectateInCombat: deps.setSpectateInCombat, 
         setSpectateOpponentName: deps.setSpectateOpponentName, 
         setSpectateOpponentStatus: deps.setSpectateOpponentStatus,
-        addMessage: deps.addMessage
+        addMessage: deps.addMessage,
+        groupMembers: deps.groupMembers,
+        roomPlayers: deps.roomPlayers,
+        setCharacterInfo,
+        setOpponentHealthStatus,
+        setOpponentName
     });
 
     const room = useRoomParser({
@@ -112,7 +117,14 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         isSpectateMode: deps.isSpectateMode,
         setSpectateRoomName: deps.setSpectateRoomName, 
         setSpectateRoomDesc: deps.setSpectateRoomDesc, 
-        setSpectateRoomZone: deps.setSpectateRoomZone
+        setSpectateRoomZone: deps.setSpectateRoomZone,
+        captureStage: deps.captureStage,
+        isWaitingForStats: deps.isWaitingForStats,
+        isWaitingForEq: deps.isWaitingForEq,
+        isWaitingForInv: deps.isWaitingForInv,
+        isWaitingForInfo: deps.isWaitingForInfo,
+        isDrawerCapture: deps.isDrawerCapture,
+        isSilentCapture: deps.isSilentCapture
     });
 
     const comm = useCommParser({
@@ -138,11 +150,12 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     const atmosphere = useAtmosphereParser({
         setWeather: deps.setWeather, 
         setIsFoggy: deps.setIsFoggy, 
-        detectLighting: deps.detectLighting,
+        setLightningEnabled: (v) => {}, // Shim if needed
+        triggerHaptic: deps.triggerHaptic,
+        playDoorSound: deps.playDoorSound,
+        setPlayerPosition,
         isSpectateMode: deps.isSpectateMode, 
-        setSpectateWeather: deps.setSpectateWeather, 
-        setSpectateIsFoggy: deps.setSpectateIsFoggy, 
-        setSpectateLighting: deps.setSpectateLighting
+        setSpectatePosition: deps.setSpectatePosition
     });
 
     const prompt = usePromptParser({
@@ -206,8 +219,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         const lower = textOnly.toLowerCase();
 
         // --- 1. System/Trigger Processing ---
-        const skipLine = processTriggers(cleanLine);
-        if (skipLine) return;
+        processTriggers(cleanLine);
 
         // --- 2. Visibility and Routing ---
         const isImportant = cleanLine.includes('\x1b[1m') || cleanLine.includes('\x1b[33m');
@@ -221,11 +233,11 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         let msgType: MessageType = 'game';
         
         // Combat
-        const combatType = (combat as any).parseCombatLine(textOnly, cleanLine);
+        const combatType = combat.parseCombatLine(textOnly, cleanLine);
         if (combatType) msgType = combatType;
 
         // Room/Movement
-        const roomType = (room as any).parseRoomLine(textOnly, cleanLine);
+        const roomType = room.parseRoomLine(textOnly, cleanLine);
         if (roomType) msgType = roomType;
 
         // Stats/Account
@@ -233,18 +245,20 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if (stat.parseGlobalStatus(textOnly, lower)) msgType = 'info' as any;
 
         // Atmosphere
-        (atmosphere as any).parseAtmosphere(lower);
+        atmosphere.parseAtmosphere(lower);
 
         // Time
-        if ((time as any).parseTimeLine(lower)) msgType = 'info' as any;
+        if (time.parseTimeLine(lower)) msgType = 'info' as any;
 
         // Final Routing
         const finalType = router.routeMessage(msgType, textOnly, lower, cleanLine, textOnly, isEndPrompt) as MessageType;
 
         // --- 4. Highlighting and Display ---
         if (isVisible) {
-            const html = deps.processMessageHtml(cleanLine, Math.random().toString(36), false, finalType);
-            deps.addMessage(finalType, html);
+            const mid = Math.random().toString(36).substring(7);
+            const ansiHtml = deps.ansiConvert.toHtml(cleanLine);
+            const html = deps.processMessageHtml(ansiHtml, mid, false, finalType);
+            deps.addMessage(finalType, textOnly, undefined, mid, false, { textOnly, lower, html });
         }
 
         // Detect items for mapper discovery

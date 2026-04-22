@@ -24,7 +24,7 @@ export const useLogPointerDown = (
     } = deps;
 
     const handleLogPointerDown = useCallback((e: React.PointerEvent, startDrag: (e: React.PointerEvent, targetEl: HTMLElement, label: string, contextStr: string) => void) => {
-        const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
+        const targetEl = (e.target instanceof HTMLElement) ? e.target.closest('.inline-btn') as HTMLElement : (e.target as any)?.parentElement?.closest('.inline-btn') as HTMLElement;
         const isShopItem = targetEl?.getAttribute('data-cmd') === 'inline-shopitem' || (targetEl?.getAttribute('data-kind') === 'object' && targetEl?.getAttribute('data-location') === 'shop');
         const label = targetEl?.innerText.trim() || '';
 

@@ -103,35 +103,46 @@ export interface UseGameParserDeps {
     isSilentCapture: MutableRefObject<number>;
     isDrawerCapture: MutableRefObject<number>;
     captureOwnerDrawer: MutableRefObject<any>;
-    isWaitingForInv: MutableRefObject<boolean>;
-    isWaitingForEq: MutableRefObject<boolean>;
-    isWaitingForStats: MutableRefObject<boolean>;
-    isWaitingForInfo: MutableRefObject<boolean>;
-    activeGroupMembers: GroupMember[];
-    activePrompt: any;
+    setIsPasswordMode: (mode: boolean) => void;
+    setAccountState: Dispatch<SetStateAction<any>>;
+    setIsSpectateMode: (val: boolean) => void;
+    setGameTime: (time: MumeTime | null) => void;
+    setWeather: (weather: string) => void;
+    setIsFoggy: (foggy: boolean) => void;
+    
+    // Spectate Setters
+    setSpectateInCombat: (inCombat: boolean, force?: boolean) => void;
+    setSpectateOpponentName: (name: string | null) => void;
+    setSpectateOpponentStatus: (status: CombatHealthStatus | null) => void;
+    setSpectateHealthStatus: (status: CombatHealthStatus | null) => void;
+    setSpectateStats: (stats: any) => void;
+    setSpectatePosition: (pos: string) => void;
+    setSpectateWaiting: (waiting: boolean) => void;
+    setSpectateRoomName: (name: string | null) => void;
+    setSpectateRoomZone: (zone: string | null) => void;
+    setSpectateLighting: (lighting: string | null) => void;
+    setSpectateWeather: (weather: string | null) => void;
+    setSpectateIsFoggy: (foggy: boolean) => void;
+    setSpectateCharacterName: (name: string | null) => void;
+    setSpectateGroupMembers: (members: any) => void;
+    setSpectateRoomDesc: (desc: string | null) => void;
+    setSpectateTerrain: (terrain: string | null) => void;
+
+    // Drawer Setters
     setInventoryLines: (lines: DrawerLine[]) => void;
+    setEqLines: (lines: DrawerLine[]) => void;
     setStatsLines: (lines: DrawerLine[]) => void;
-    setInfoLines: (lines: DrawerLine[]) => void;
-    setScoreLines: (lines: DrawerLine[]) => void;
-    setQuestLines: (lines: DrawerLine[]) => void;
     setPracticeLines: (lines: DrawerLine[]) => void;
     setWhoLines: (lines: DrawerLine[]) => void;
     setWhereLines: (lines: DrawerLine[]) => void;
-    setEqLines: (lines: DrawerLine[]) => void;
-    setWhoList: (list: any[]) => void;
+    setScoreLines: (lines: DrawerLine[]) => void;
+    setInfoLines: (lines: DrawerLine[]) => void;
+    setQuestLines: (lines: DrawerLine[]) => void;
+    setWhoList: (list: string[]) => void;
     setWhereList: (list: any[]) => void;
-    executeCommandRef: MutableRefObject<any>;
-    detectLighting: (val: string) => void;
-    setWeather: (val: string) => void;
-    setIsFoggy: (val: boolean) => void;
-    setGameTime: (time: MumeTime | null) => void;
-    gameTime: MumeTime | null;
-    isSpectateMode: boolean;
-    spectateTarget: string | null;
-    spectateCharacterName: string | null;
+
+    // Others
     addDiagnosticLog: (msg: string) => void;
-    actionsRef: MutableRefObject<any>;
-    setIsPasswordMode: (val: boolean) => void;
     setAccountState: Dispatch<SetStateAction<AccountState>>;
     isNewbieMode: boolean;
 }

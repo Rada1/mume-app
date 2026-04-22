@@ -258,6 +258,8 @@ export interface SessionContextType {
         setLightningEnabled: (val: boolean) => void;
         discoveredItems: string[];
         setDiscoveredItems: Dispatch<SetStateAction<string[]>>;
+        roomNum: number;
+        setRoomNum: (num: number) => void;
     };
     log: LogData;
     recorder: ReturnType<typeof useSessionRecorder>;
@@ -269,6 +271,7 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     setActiveSession: (slot: SessionSlot) => void;
     userSession: SessionContextType;
     spectateSession: SessionContextType;
+    active: SessionContextType;
 
     // The "Effective" state (active session)
     stats: GameStats;
@@ -276,6 +279,8 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     inCombat: boolean;
     roomName: string | null;
     roomDesc: string | null;
+    commandPreview: string | null;
+    setCommandPreview: (val: string | null) => void;
     pendingMove: { dir: string; timestamp: number } | null;
     setPendingMove: (val: { dir: string; timestamp: number } | null) => void;
     popoverState: PopoverState | null;

@@ -63,6 +63,12 @@ export const createButton = (options: ButtonOptions): CustomButton => {
             backgroundColor: color,
             shape
         },
+        position: {
+            x,
+            y,
+            w: width,
+            h: height
+        },
         trigger
     };
 };

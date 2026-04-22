@@ -7,6 +7,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { UiMode, TeleportTarget, InlineCategoryConfig } from '../types';
 import { canonicalizeCategoryId } from '../utils/categorizationUtils';
+import { DEFAULT_URL } from '../constants';
 
 interface SettingsState {
     // Connection
@@ -102,7 +103,7 @@ export const useSettingsStore = create<SettingsState>()(
     persist(
         (set) => ({
             // Default Values
-            connectionUrl: 'ws://localhost:8081',
+            connectionUrl: DEFAULT_URL,
             autoConnect: true,
             loginName: '',
             loginPassword: '',

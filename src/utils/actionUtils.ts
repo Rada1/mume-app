@@ -26,7 +26,7 @@ export function isButtonValidForEntity(
 
     // --- STEP 1: Determine Context & Category ---
     const context = entity?.noun || 
-                   entityId.replace(/^(auto-npc-|auto-item-|auto-obj-|roomnpcs:|roomitems:|inventorylist:|equipmentlist:|log-npc-|npc-|player-|object-)/, '')
+                   entityId.replace(/^(auto-npc-|auto-item-|auto-obj-|auto-|roomnpcs:|roomitems:|inventorylist:|equipmentlist:|log-npc-|npc-|player-|object-)/, '')
                            .replace(/-[a-f0-9]+$/, '').replace(/-/g, ' ');
 
     const dynamicCat = context ? getCategoryForName(context, inlineCategories) : null;

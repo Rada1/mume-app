@@ -700,10 +700,10 @@
 }
 
 .user-command-bubble {
-    background: rgb(10, 13, 21);
-    border: none;
+    background: rgb(25, 30, 45); /* Brightened from (10, 13, 21) for visibility */
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px 20px 6px 20px;
-    padding: 3px 10px;
+    padding: 6px 14px; /* Increased padding slightly */
     width: fit-content;
     color: rgba(255, 255, 255, 0.95);
     font-weight: 500;
@@ -1033,6 +1033,21 @@
 /* Objects/Items and Beings (NPCs/Players) */
 .auto-obj, .auto-item, .npc-highlighter, .pc-highlighter, .auto-npc, .auto-occupant {
     text-decoration: none;
+}
+
+.movement-subject {
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+}
+
+.pc-highlighter {
+    --glow-color: #fff;
+}
+
+.npc-highlighter {
+    --glow-color: #4ade80;
 }
 
 .inline-btn {

@@ -192,6 +192,12 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
             props.setWhoList([]);
             props.setWhereList([]);
         },
-        onCharRide
+        onCharRide,
+        // State Setters (Mandatory for GmcpDecoder)
+        setStats: props.setStats,
+        setWeather: props.setWeather,
+        setIsFoggy: props.setIsFoggy,
+        setInCombat: props.setInCombat,
+        detectLighting: props.detectLighting
     };
 };

@@ -62,7 +62,11 @@ export class ProtocolHandler {
                     break;
                 case 'SUB_IAC':
                     if (byte === SE) {
-                        this.options.handleSubnegotiation(this.subBuffer);
+                        try {
+                            this.options.handleSubnegotiation(this.subBuffer);
+                        } catch (e) {
+                            console.error('[Telnet] Error handling subnegotiation:', e);
+                        }
                         this.state = 'DATA';
                     } else if (byte === IAC) {
                         this.subBuffer.push(255);

@@ -98,9 +98,14 @@ export const useButtons = (deps: {
 
     const createButton = useCallback((defaults?: Partial<CustomButton>) => {
         const id = Math.random().toString(36).substring(7);
+        const x = isGridEnabled ? Math.round(50 / gridSize) * gridSize : 50;
+        const y = isGridEnabled ? Math.round(50 / gridSize) * gridSize : 50;
+        const w = 120;
+        const h = 40;
         const newBtn: CustomButton = {
             id, label: 'New Button', command: 'look', setId: activeSet, actionType: 'command', display: 'floating', isVisible: true, hideIfUnknown: true,
-            style: { x: isGridEnabled ? Math.round(50 / gridSize) * gridSize : 50, y: isGridEnabled ? Math.round(50 / gridSize) * gridSize : 50, w: 120, h: 40, backgroundColor: 'rgba(255, 255, 255, 0.1)', transparent: true, shape: 'rect' },
+            style: { x, y, w, h, backgroundColor: 'rgba(255, 255, 255, 0.1)', transparent: true, shape: 'rect' },
+            position: { x, y, w, h },
             trigger: { enabled: false, pattern: '', isRegex: false, autoHide: true, duration: 0, type: 'show' },
             ...defaults
         };
