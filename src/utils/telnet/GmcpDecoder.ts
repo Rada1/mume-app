@@ -58,6 +58,8 @@ export class GmcpDecoder {
         } else if (pkgLower === 'room.npcs' || pkgLower === 'room.chars' || pkgLower === 'room.char' || pkgLower === 'room.chars.set' || pkgLower === 'room.chars.list' || pkgLower === 'room.chars.update' || pkgLower === 'mume.client.chars') {
             this.handleRoomNpcs(json);
             this.handleRoomCharsCombat(json);
+        } else if (pkgLower === 'mume.client.error') {
+            console.error('[GMCP] MUME Client Error:', json);
         } else if (pkgLower === 'room.addplayer' || pkgLower === 'room.chars.add' || pkgLower === 'room.char.add') {
             this.handleSimpleJson(json, handlers.onAddPlayer);
         } else if (pkgLower === 'room.addnpc' || pkgLower === 'room.addchar') {
@@ -66,7 +68,7 @@ export class GmcpDecoder {
             this.handleSimpleJson(json, handlers.onRemovePlayer);
         } else if (pkgLower === 'room.removenpc' || pkgLower === 'room.removechar' || pkgLower === 'room.chars.remove' || pkgLower === 'room.char.remove') {
             this.handleSimpleJson(json, handlers.onRemoveNpc);
-        } else if (pkgLower.startsWith('room.items') || pkgLower.startsWith('room.objects') || pkgLower === 'char.items' || pkgLower === 'char.inv' || pkgLower === 'room.items.list' || pkgLower === 'char.items.list' || pkgLower === 'room.items.set' || pkgLower === 'mume.client.inventory' || pkgLower === 'mume.client.equipment' || pkgLower === 'mume.client.roomitems') {
+        } else if (pkgLower.startsWith('room.items') || pkgLower.startsWith('room.objects') || pkgLower === 'char.items' || pkgLower === 'char.inv' || pkgLower === 'room.items.list' || pkgLower === 'char.items.list' || pkgLower === 'room.items.set' || pkgLower === 'mume.client.inventory' || pkgLower === 'mume.client.equipment' || pkgLower === 'mume.client.roomitems' || pkgLower === 'mume.client.items') {
             this.handleRoomItems(json);
         } else if (pkgLower === 'char.name') {
             this.handleCharName(json);

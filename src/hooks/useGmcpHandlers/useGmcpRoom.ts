@@ -100,14 +100,12 @@ export const useGmcpRoom = ({
             setRoomNpcs([]);
             lastRoomChangeTimeRef.current = Date.now();
             
-            // Force refresh of occupants and items on room change (disabled for MUME compatibility)
-            /*
+            // Force refresh of occupants and items on room change for MUME
             if (sendGMCP) {
-                console.log('[GMCP] Requesting Room.Chars/Items for new room:', roomNum);
-                sendGMCP('Room.Chars'); 
-                sendGMCP('Room.Items');
+                console.log('[GMCP] Requesting Mume.Client.Chars/Items for new room:', roomNum);
+                sendGMCP('Mume.Client.Chars'); 
+                sendGMCP('Mume.Client.Items');
             }
-            */
 
             if (playMovementSound) {
                 // Determine riding status: if spectating, we can check Room.Chars or fallback.

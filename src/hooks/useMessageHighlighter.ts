@@ -146,56 +146,85 @@ export const useMessageHighlighter = (
         });
 
         allOccupants.forEach(occ => {
-            if (!occ.name) return;
-            
-            candidates.push({
-                pattern: occ.name,
-                isRegex: false,
-                priority: !!occ.id ? PRIO_NPC : PRIO_PC,
-                render: (match) => {
-                    const isNpc = !!occ.id;
-                    const category = isNpc ? (getCategoryForName(occ.name!, inlineCategories) || 'npc') : 'player';
-                    const baseColor = getGlowColorForCategory(category, inlineCategories);
-                    const { glow, classExtra } = getTargetAwareStyles(occ.name!, occ.name!, baseColor || '', target);
-                    const isCorpse = isInCorpseContext(occ.name!, textOnly);
-                    
-                    if (isCorpse) {
+            const isNpc = !!occ.id;
+            const category = isNpc ? (getCategoryForName(occ.name!, inlineCategories) || 'npc') : 'player';
+            const baseColor = getGlowColorForCategory(category, inlineCategories);
+            const { glow, classExtra } = getTargetAwareStyles(occ.name!, occ.name!, baseColor || '', target);
+            const isCorpse = isInCorpseContext(occ.name!, textOnly);
+
+            // Add the primary name match
+            if (occ.name) {
+                candidates.push({
+                    pattern: occ.name,
+                    isRegex: false,
+                    priority: isNpc ? PRIO_NPC : PRIO_PC,
+                    render: (match) => {
+                        if (isCorpse) {
+                            return renderInlineSpan({
+                                id: 'auto-corpse',
+                                mid,
+                                cmd: 'object',
+                                kind: 'object',
+                                location: 'room',
+                                context: occ.name!,
+                                category: 'object-corpse',
+                                selected: isObjectSelected(selectedObjectIds, 'auto-corpse', 'object'),
+                                extraClasses: ['auto-item'],
+                                innerHtml: match
+                            });
+                        }
+
+                        const isSelected = isObjectSelected(selectedObjectIds, `auto-${occ.name}`, category);
+                        const groupMemberIndex = activeGroupMembers.findIndex(gm => gm.name?.toLowerCase() === occ.name?.toLowerCase());
+                        const isGroupmate = groupMemberIndex !== -1;
+
                         return renderInlineSpan({
-                            id: 'auto-corpse',
+                            id: isNpc ? (occ.id ? String(occ.id) : `roomnpcs:${occ.name}`) : `roomplayers:${occ.name}`,
                             mid,
-                            cmd: 'object',
-                            kind: 'object',
+                            cmd: occ.name!,
+                            kind: isNpc ? 'npc' : 'player',
                             location: 'room',
                             context: occ.name!,
-                            category: 'object-corpse',
-                            selected: isObjectSelected(selectedObjectIds, 'auto-corpse', 'object'),
-                            extraClasses: ['auto-item'],
+                            category: category,
+                            glowColor: isGroupmate ? getMemberColor(groupMemberIndex).core : glow,
+                            textColor: (isGroupmate || glow) ? 'var(--glow-color)' : undefined,
+                            action: 'menu',
+                            selected: isSelected,
+                            draggable: true,
+                            extraClasses: ['auto-occupant', isNpc ? 'npc-highlighter' : 'pc-highlighter', classExtra],
                             innerHtml: match
                         });
                     }
+                });
+            }
 
-                    const isSelected = isObjectSelected(selectedObjectIds, `auto-${occ.name}`, category);
-                    const groupMemberIndex = activeGroupMembers.findIndex(gm => gm.name?.toLowerCase() === occ.name?.toLowerCase());
-                    const isGroupmate = groupMemberIndex !== -1;
-
-                    return renderInlineSpan({
-                        id: `auto-${occ.name}`,
-                        mid,
-                        cmd: occ.name!,
-                        kind: isNpc ? 'npc' : 'player',
-                        location: 'room',
-                        context: occ.name!,
-                        category: category,
-                        glowColor: isGroupmate ? getMemberColor(groupMemberIndex).core : glow,
-                        textColor: (isGroupmate || glow) ? 'var(--glow-color)' : undefined,
-                        action: 'menu',
-                        selected: isSelected,
-                        draggable: true,
-                        extraClasses: ['auto-occupant', isNpc ? 'npc-highlighter' : 'pc-highlighter', classExtra],
-                        innerHtml: match
-                    });
-                }
-            });
+            // Add keyword match (crucial for MUME descriptive lines)
+            if (occ.keyword && occ.keyword !== occ.name) {
+                candidates.push({
+                    pattern: occ.keyword,
+                    isRegex: false,
+                    priority: (isNpc ? PRIO_NPC : PRIO_PC) - 1, // Slightly lower than full name
+                    render: (match) => {
+                        const isSelected = isObjectSelected(selectedObjectIds, `auto-${occ.name}`, category);
+                        return renderInlineSpan({
+                            id: isNpc ? (occ.id ? String(occ.id) : `roomnpcs:${occ.name}`) : `roomplayers:${occ.name}`,
+                            mid,
+                            cmd: occ.name || occ.keyword!,
+                            kind: isNpc ? 'npc' : 'player',
+                            location: 'room',
+                            context: occ.name || occ.keyword!,
+                            category: category,
+                            glowColor: glow,
+                            textColor: glow ? 'var(--glow-color)' : undefined,
+                            action: 'menu',
+                            selected: isSelected,
+                            draggable: true,
+                            extraClasses: ['auto-occupant', isNpc ? 'npc-highlighter' : 'pc-highlighter', 'keyword-match', classExtra],
+                            innerHtml: match
+                        });
+                    }
+                });
+            }
         });
 
         // 2d. Object Category Keywords
