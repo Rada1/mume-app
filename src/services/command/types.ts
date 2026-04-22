@@ -3,7 +3,7 @@
  * @description Type definitions for the Unified Command Registry and Middlewares.
  */
 
-import { MessageType, DrawerLine, GameAction, CaptureStage, TeleportTarget, Direction } from '../../types';
+import { MessageType, DrawerLine, GameAction, CaptureStage, TeleportTarget } from '../../types';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
 
 export interface CommandContext {
