@@ -141,6 +141,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, []));
 
     // 5. Networking
+    const telnetRef = useRef<any>(null);
+    const sendGMCPProxy = useCallback((pkg: string, data: any = null) => {
+        if (telnetRef.current) {
+            telnetRef.current.sendGMCP(pkg, data);
+        }
+    }, []);
+
     const gmcpHandlers = useGmcpHandlers({
         mapperRef: useRef<MapperRef>(null), roomDescRef: s.roomDescRef,
         setCurrentTerrain: s.isSpectateMode ? s.setSpectateTerrain : s.setCurrentTerrain,
@@ -162,7 +169,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         opponentId: s.isSpectateMode ? v.spectateOpponentId : v.opponentId, setOpponentId: s.isSpectateMode ? v.setOpponentId : v.setOpponentId,
         detectLighting: (light) => { if (s.isSpectateMode) s.setSpectateLighting(light as any); else env.detectLighting?.(light); },
         playMovementSound, playDoorSound, setWeather: s.setWeather, setIsFoggy: s.setIsFoggy, setStats: s.isSpectateMode ? s.setSpectateStats : s.setStats,
-        playerPositionRef: s.playerPositionRef, setIsRiding: s.setIsRiding, isRidingRef: s.isRidingRef, isSpectateMode: s.isSpectateMode, inlineCategories: s.inlineCategories
+        playerPositionRef: s.playerPositionRef, setIsRiding: s.setIsRiding, isRidingRef: s.isRidingRef, isSpectateMode: s.isSpectateMode, inlineCategories: s.inlineCategories,
+        sendGMCP: sendGMCPProxy
     });
 
     // 5. Telnet & Networking
@@ -189,6 +197,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             ...gmcpHandlers
         }
     });
+
+    useEffect(() => {
+        telnetRef.current = telnet;
+    }, [telnet]);
 
     // --- State Synchronization ---
     useEffect(() => {

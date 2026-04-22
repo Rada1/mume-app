@@ -61,6 +61,7 @@
     z-index: 5000; /* Base layer for main content */
     pointer-events: none;
     transition: padding-bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-sizing: border-box; /* Ensure padding doesn't cause overflow */
 }
 
 /* Ensure the log container is the primary interaction target within the content layer */
@@ -71,7 +72,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    min-height: 0; /* Critical for flex scrolling */
 }
 
 .content-layer>* {
@@ -92,14 +93,18 @@
         padding: 0 !important;
         padding-bottom: var(--mobile-gutter-height) !important;
         transition: none !important;
+        box-sizing: border-box !important;
     }
     
     .kb-open .content-layer {
-        padding-bottom: 70px !important;
+        padding-bottom: 70px !important; /* Matches gutter height in kb-open state */
     }
     
     .state-account .content-layer {
-        padding-bottom: 70px !important; /* Just enough for the floating prompt */
+        /* If keyboard is NOT open in account state, we still need full gutter padding 
+           unless the gutter itself shrinks. Since the gutter is var(--mobile-gutter-height),
+           we should match it here to avoid collision. */
+        padding-bottom: var(--mobile-gutter-height) !important;
     }
 
     .app-container:not(.state-account) .content-layer > .input-container {

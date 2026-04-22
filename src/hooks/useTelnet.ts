@@ -104,6 +104,7 @@ export function useTelnet(options: TelnetOptions) {
     const sendGMCP = React.useCallback((pkg: string, data: any = null) => {
         const json = data ? JSON.stringify(data) : '';
         const payload = pkg + (json ? ' ' + json : '');
+        console.log('[GMCP] Sending:', payload);
         const payloadBytes = Array.from(new TextEncoder().encode(payload));
         sendBytes([IAC, SB, TELNET_GMCP, ...payloadBytes, IAC, SE]);
     }, [sendBytes]);
@@ -148,6 +149,7 @@ export function useTelnet(options: TelnetOptions) {
         const cmd = buffer[0];
         if (cmd === TELNET_GMCP) {
             const raw = new TextDecoder().decode(new Uint8Array(buffer.slice(1)));
+            console.log('[GMCP RAW]', raw);
             let splitIdx = raw.search(/[\s\{\[]/);
             const pkg = splitIdx > -1 ? raw.substring(0, splitIdx).trim() : raw;
             const json = splitIdx > -1 ? raw.substring(splitIdx).trim() : '';

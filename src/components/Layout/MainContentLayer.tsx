@@ -221,12 +221,10 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                 {/* Mobile portrait LineCluster is rendered inside MapperCluster (near the map gutter) */}
             </div>
 
-            {gameState !== 'account' && (
-                <PromptBox
-                    processMessageHtml={processMessageHtml}
-                    onWimpyChange={!isSpectateMode ? handleWimpyChange : undefined}
-                />
-            )}
+            <PromptBox
+                processMessageHtml={processMessageHtml}
+                onWimpyChange={!isSpectateMode ? handleWimpyChange : undefined}
+            />
 
             {/* Render InputArea only on desktop, landscape mobile, or during account phase 
                 This prevents the duplicate command bar in portrait mobile play mode. */}

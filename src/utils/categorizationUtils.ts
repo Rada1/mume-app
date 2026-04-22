@@ -164,8 +164,8 @@ export const resolveKindAndLocation = (kind?: string | null, location?: string |
     if (cmd === 'inline-obj-char' || cmd === 'inventorylist') return { kind: 'object', location: 'carried' };
     if (cmd === 'inline-obj-worn' || cmd === 'equipmentlist') return { kind: 'object', location: 'worn' };
     if (cmd === 'inline-obj-shop') return { kind: 'object', location: 'shop' };
-    if (cmd === 'inlinenpc' || cmd === 'roomnpcs') return { kind: 'npc', location: 'room' };
-    if (cmd === 'inlineplayer') return { kind: 'player', location: 'room' };
+    if (cmd === 'inlinenpc' || cmd === 'roomnpcs' || cmd === 'inline-npc') return { kind: 'npc', location: 'room' };
+    if (cmd === 'inlineplayer' || cmd === 'inline-player') return { kind: 'player', location: 'room' };
 
     // Default catch-all
     return { kind: 'object', location: 'room' };

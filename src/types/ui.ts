@@ -10,6 +10,16 @@ export type UiMode = 'auto' | 'desktop' | 'portrait' | 'landscape';
 export type TriggerAction = 'spit' | 'hide' | 'show' | 'command';
 export type ActionType = 'command' | 'menu' | 'nav' | 'select-assign' | 'select-recipient' | 'select-container' | 'assign' | 'teleport-manage' | 'historical' | 'preload' | 'show';
 
+export interface UiPosition {
+    x?: number;
+    y?: number;
+    w?: number;
+    h?: number;
+    scale?: number;
+}
+
+export type UiPositions = Record<string, UiPosition>;
+
 export interface PopoverState {
     x: number;
     y: number;

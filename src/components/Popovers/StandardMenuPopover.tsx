@@ -82,7 +82,6 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
     const fullSetChain = getHierarchyChain(kind, location, detectedCatId);
 
     const isTacticalSet = ['warriorskilllist', 'rangerskilllist', 'clericspelllist', 'thiefskilllist', 'magespelllist', 'doors'].includes(popoverState.setId);
-    const isTargetable = !isTacticalSet && ['selection', 'inventorylist', 'equipmentlist', 'npc', 'player', 'object-corpse', ...NPC_SUBCATEGORIES, ...fullSetChain].includes(popoverState.setId);
 
     const toggleFavorite = (e: React.MouseEvent, command: string) => {
         e.stopPropagation();
@@ -335,7 +334,18 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
         return false;
     });
 
-    const isInlineMenu = popoverState.setId.startsWith('object') || popoverState.setId.startsWith('npc') || popoverState.setId === 'player' || popoverState.setId === 'inventorylist' || popoverState.setId === 'equipmentlist';
+    const isInlineMenu = ['object', 'npc', 'player'].includes(kind) || 
+                         ['inventorylist', 'equipmentlist', 'roomitems', 'roomnpcs', 'selection'].includes(popoverState.setId) ||
+                         popoverState.setId.startsWith('object') || 
+                         popoverState.setId.startsWith('npc');
+
+    const isTargetable = !isTacticalSet && (
+        ['selection', 'inventorylist', 'equipmentlist', 'npc', 'player', 'object-corpse'].includes(popoverState.setId) ||
+        ['player', 'npc'].includes(kind) ||
+        (kind === 'object' && location === 'room') ||
+        NPC_SUBCATEGORIES.includes(popoverState.setId) || 
+        fullSetChain.includes(popoverState.setId)
+    );
 
 
     return (
@@ -535,38 +545,52 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                 </>
                             )}
 
-                            {isInlineMenu ? (() => {
+                            {(() => {
                                 const seenCommands = new Set<string>();
                                 const filterDeps = { buttons, inlineCategories, roomNpcs, entities };
+                                
+                                const renderedContent = isInlineMenu ? (
+                                    [...fullSetChain].reverse().map((setId, chainIdx) => {
+                                        const setIdButtons = buttons.filter(b => {
+                                            if (b.setId !== setId || favorites.includes(b.command)) return false;
+                                            if (seenCommands.has(b.command)) return false;
+                                            
+                                            const isValid = popoverState.entityId 
+                                                ? isButtonValidForEntity(b, popoverState.entityId, kind, location, filterDeps, popoverState.category, popoverState.setId)
+                                                : true;
 
-                                return [...fullSetChain].reverse().map((setId, chainIdx) => {
-                                    const setIdButtons = buttons.filter(b => {
-                                        if (b.setId !== setId || favorites.includes(b.command)) return false;
-                                        if (seenCommands.has(b.command)) return false;
+                                            if (isValid) {
+                                                seenCommands.add(b.command);
+                                            }
+                                            return isValid;
+                                        });
+                                        if (setIdButtons.length === 0) return null;
+                                        const depth = chainIdx;
                                         
-                                        const isValid = popoverState.entityId 
-                                            ? isButtonValidForEntity(b, popoverState.entityId, kind, location, filterDeps, popoverState.category, popoverState.setId)
-                                            : true;
+                                        return (
+                                            <React.Fragment key={setId}>
+                                                {setIdButtons.map(b => renderButton(b, depth))}
+                                            </React.Fragment>
+                                        );
+                                    })
+                                ) : (
+                                    buttons.filter(b => b.setId === popoverState.setId && !favorites.includes(b.command)).map(b => {
+                                        seenCommands.add(b.command);
+                                        return renderButton(b);
+                                    })
+                                );
 
-                                        if (isValid) {
-                                            seenCommands.add(b.command);
-                                        }
-                                        return isValid;
-                                    });
-                                    if (setIdButtons.length === 0) return null;
-                                    const depth = chainIdx;
-                                    
-                                    return (
-                                        <React.Fragment key={setId}>
-                                            {setIdButtons.map(b => renderButton(b, depth))}
-                                        </React.Fragment>
-                                    );
-                                });
-                            })() : (
-                                buttons.filter(b => b.setId === popoverState.setId && !favorites.includes(b.command)).map(b => renderButton(b))
-                            )}
+                                const isEmpty = seenCommands.size === 0 && favoritedButtons.length === 0;
 
-                            {buttons.filter(b => fullSetChain.includes(b.setId)).length === 0 && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && popoverState.setId !== 'npc-shopkeeper' && <div className="popover-empty">No buttons in '{popoverState.setId}'</div>}
+                                return (
+                                    <>
+                                        {renderedContent}
+                                        {isEmpty && isInlineMenu && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && popoverState.setId !== 'npc-shopkeeper' && (
+                                            <div className="popover-empty">No buttons available for this {kind}</div>
+                                        )}
+                                    </>
+                                );
+                            })()}
 
                             {openKeywordEdit && isInlineMenu && popoverState.context && (
                                 <div

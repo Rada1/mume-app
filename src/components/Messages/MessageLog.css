@@ -39,14 +39,20 @@
 .message-log {
     flex: 1;
     padding: 0;
-    display: block;
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
     overflow-x: clip;
     color: var(--text-primary);
     word-wrap: break-word;
     overflow-wrap: break-word;
-    /* -webkit-overflow-scrolling: touch; — removed: conflicts with programmatic scrollTop changes during momentum, causing jitter */
     overscroll-behavior-y: contain;
+}
+
+/* Sticky-bottom trick for flex scroll containers */
+.message-log > div:first-child {
+    margin-top: auto !important;
+}
     /* scroll-padding-bottom: 20px; - Removed to fix manual scroll math conflicts */
     scrollbar-width: thin;
     scrollbar-color: var(--text-faded) transparent;

@@ -60,9 +60,13 @@ export const useGmcpOccupants = ({
 
     const handleRoomList = useCallback((data: any, isPlayersList: boolean) => {
         if (isSpectateMode) return;
-        let rawList = Array.isArray(data) ? data : (data.players || data.members || data.chars || data.char || data.npcs || []);
+        console.log(`[GMCP] Ingesting ${isPlayersList ? 'Players' : 'NPCs'} list:`, data);
+        let rawList = Array.isArray(data) ? data : (data.players || data.members || data.chars || data.char || data.npcs || data.list || []);
         if (rawList && !Array.isArray(rawList)) rawList = [rawList];
-        if (!Array.isArray(rawList)) return;
+        if (!Array.isArray(rawList)) {
+            console.warn(`[GMCP] Failed to parse ${isPlayersList ? 'Players' : 'NPCs'} list - rawList is not an array:`, rawList);
+            return;
+        }
 
         const pcList: GmcpOccupant[] = [];
         const npcList: GmcpOccupant[] = [];
@@ -85,6 +89,8 @@ export const useGmcpOccupants = ({
                 if (registerEntity) registerEntity(obj.id ? String(obj.id) : `roomnpcs:${obj.name}`, obj.name, 'room', 'npc');
             }
         });
+
+        console.log(`[GMCP] Resolved: ${pcList.length} PCs, ${npcList.length} NPCs`);
 
         if (isPlayersList) {
             setRoomPlayers(pcList);
@@ -109,15 +115,20 @@ export const useGmcpOccupants = ({
 
     const onRoomItems = useCallback((data: any) => {
         if (isSpectateMode) return;
+        console.log('[GMCP] Ingesting Items list:', data);
 
         // MUME distinguishing between room items and inventory items
         if ((data as any).location && (data as any).location !== 'room' && (data as any).location !== 'objects') {
+            console.log('[GMCP] Ignoring non-room items location:', (data as any).location);
             return;
         }
 
         let rawList = Array.isArray(data) ? data : ((data as any).items || (data as any).objects || (data as any).obj || (data as any).objs || []);
         if (rawList && !Array.isArray(rawList)) rawList = [rawList];
-        if (!Array.isArray(rawList)) return;
+        if (!Array.isArray(rawList)) {
+            console.warn('[GMCP] Failed to parse Items list - rawList is not an array:', rawList);
+            return;
+        }
 
         const items: GmcpOccupant[] = rawList.map(i => {
             const obj = typeof i === 'string' ? { name: i, keyword: i, short: i } : { ...i, name: i.name || i.short || i.shortdesc || i.keyword };
@@ -128,8 +139,9 @@ export const useGmcpOccupants = ({
             }
             return obj;
         });
+        console.log(`[GMCP] Resolved ${items.length} room items`);
         setRoomItems(items);
-    }, [setRoomItems, registerEntity, isSpectateMode]);
+    }, [setRoomItems, registerEntity, isSpectateMode, inlineCategories]);
 
     const handleAdd = useCallback((data: any, isPlayerDefault: boolean) => {
         if (isSpectateMode || !data) return;

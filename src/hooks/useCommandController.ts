@@ -103,7 +103,7 @@ export function useCommandController(deps: CommandControllerDeps) {
         const d = depsRef.current;
         const { viewport, waiting, manualCancelRef, isSoundEnabled, playClickSound, recordEntry, practice, shop, gameState } = d;
 
-        const effectiveSilent = silent || gameState === 'account';
+        const effectiveSilent = silent;
 
         // Manual cancel detection
         if (cmd === '' && waiting && manualCancelRef) {

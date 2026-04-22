@@ -4,10 +4,12 @@ import { useGame } from '../../../context/GameContext';
 import { MemberRow } from '../../Drawers/MemberRow';
 import './GroupDrawer.css';
 
+import { UiPositions } from '../../../types';
+
 interface GroupDrawerProps {
-    uiPositions: any;
+    uiPositions: UiPositions;
     isEditMode: boolean;
-    dragState: any;
+    dragState: { id: string; type: string; startX: number; startY: number } | null;
     handleDragStart: (e: React.PointerEvent, id: string, type: string) => void;
 }
 

@@ -34,7 +34,8 @@ export const useGameProviderState = () => {
     const [characterName, setCharacterName] = useState<string | null>(null);
     const [activeSession, setActiveSession] = useState<SessionSlot>('user');
     const [isPasswordMode, setIsPasswordMode] = useState(false);
-    const [popoverState, setPopoverState] = useState<PopoverState | null>(null);
+    const popoverState = uiStore.popoverState;
+    const setPopoverState = uiStore.setPopoverState;
     const [parley, setParley] = useState<ParleyState>({ active: false, command: 'tell', target: null, message: '' });
     const [mumeEditState, setMumeEditState] = [uiStore.mumeEditState, uiStore.setMumeEditState] as const;
 

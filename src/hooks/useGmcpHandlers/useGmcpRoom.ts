@@ -23,6 +23,7 @@ interface UseGmcpRoomProps {
     lastRoomChangeTimeRef: React.MutableRefObject<number>;
     lastRoomNumRef: React.MutableRefObject<number | string | null>;
     lastExitsRef: React.MutableRefObject<Record<string, any>>;
+    sendGMCP?: (pkg: string, data?: any) => void;
 }
 
 export const useGmcpRoom = ({
@@ -45,7 +46,8 @@ export const useGmcpRoom = ({
     playerPositionRef,
     lastRoomChangeTimeRef,
     lastRoomNumRef,
-    lastExitsRef
+    lastExitsRef,
+    sendGMCP
 }: UseGmcpRoomProps) => {
 
     const onRoomInfo = useCallback((data: GmcpRoomInfo) => {
@@ -97,13 +99,23 @@ export const useGmcpRoom = ({
             setRoomPlayers([]);
             setRoomNpcs([]);
             lastRoomChangeTimeRef.current = Date.now();
+            
+            // Force refresh of occupants and items on room change (disabled for MUME compatibility)
+            /*
+            if (sendGMCP) {
+                console.log('[GMCP] Requesting Room.Chars/Items for new room:', roomNum);
+                sendGMCP('Room.Chars'); 
+                sendGMCP('Room.Items');
+            }
+            */
+
             if (playMovementSound) {
                 // Determine riding status: if spectating, we can check Room.Chars or fallback.
                 const isRiding = isRidingRef?.current || playerPositionRef.current === 'riding' || playerPositionRef.current === 'mounted';
                 playMovementSound(isRiding);
             }
         }
-    }, [mapperRef, setCurrentTerrain, setRoomName, setRoomDesc, setRoomExits, setRoomZone, setRoomPlayers, setRoomNpcs, setRoomItems, setDiscoveredItems, playMovementSound, isSpectateMode, detectLighting, isRidingRef, playerPositionRef, lastRoomChangeTimeRef, lastRoomNumRef, lastExitsRef, roomDescRef]);
+    }, [mapperRef, setCurrentTerrain, setRoomName, setRoomDesc, setRoomExits, setRoomZone, setRoomPlayers, setRoomNpcs, setRoomItems, setDiscoveredItems, playMovementSound, isSpectateMode, detectLighting, isRidingRef, playerPositionRef, lastRoomChangeTimeRef, lastRoomNumRef, lastExitsRef, roomDescRef, sendGMCP]);
 
     const onRoomUpdateExits = useCallback((data: GmcpUpdateExits) => {
         if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-gmcp-room-exits', { detail: data }));

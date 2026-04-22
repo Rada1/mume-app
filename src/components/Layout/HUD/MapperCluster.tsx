@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Mapper } from '../../Mapper/Mapper';
 import { LineCluster } from './LineCluster';
 import { useGame, useUI, useVitals } from '../../../context/GameContext';
+import { GameContextType, UIContextType } from '../../../context/GameContext/types';
 import { useMapper } from '../../../context/useMapper';
 import { CloudFog, Map as MapIcon, User, Shield, Users, BarChart2, UtensilsCrossed, Droplets } from 'lucide-react';
 import InputArea from '../../Controls/InputArea';
@@ -10,16 +11,17 @@ import { CharacterDrawer } from '../../Drawers/CharacterDrawer';
 import { PlayersDrawer } from '../../Drawers/PlayersDrawer';
 import { InventoryDrawer } from '../../Drawers/InventoryDrawer';
 import CombatStatsPanel from '../../Combat/CombatStatsPanel';
+import { UiPositions, SwipeDirection } from '../../../types';
 
 interface MapperClusterProps {
-    uiPositions: any;
+    uiPositions: UiPositions;
     isEditMode: boolean;
     handleDragStart: (e: React.PointerEvent, id: string, type: string, force?: boolean) => void;
     characterName: string;
     isMmapperMode: boolean;
     isMobile: boolean;
     mapperRef: React.RefObject<any>;
-    dragState: any;
+    dragState: { id: string; type: string; startX: number; startY: number } | null;
     isLandscape?: boolean;
     wasDraggingRef: React.MutableRefObject<boolean>;
     heldButton: any;
@@ -28,7 +30,7 @@ interface MapperClusterProps {
     input: string;
     setInput: (val: string) => void;
     handleSend: (e?: React.FormEvent) => void;
-    handleInputSwipe: (dir: any) => void;
+    handleInputSwipe: (dir: SwipeDirection) => void;
 }
 
 export const MapperCluster: React.FC<MapperClusterProps> = ({
@@ -38,19 +40,22 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
 }) => {
     const {
         triggerHaptic, showControls, viewport, btn, handleButtonClick, executeCommand, joystick,
-        handleTabClick, toggleMap, spatButtons, setSpatButtons, parley, setParley, whoList,
-        statsLines, scoreLines, displayInventoryLines, displayEqLines,
+        spatButtons, setSpatButtons, parley, setParley, whoList,
+        statsLines, scoreLines,
         pendingDrawerContainerRef, inlineCategories, entities, keywordOverrides,
         env, isFoggy, gameState, currentTerrain
-    } = useGame() as any;
+    } = useGame() as GameContextType;
     const { target, activePrompt, stats } = useVitals();
-    const { ui, setUI, setPopoverState, isLibraryOpen, setIsLibraryOpen } = useUI();
+    const { 
+        ui, setUI, setPopoverState, isLibraryOpen, setIsLibraryOpen,
+        handleTabClick, toggleMap, displayInventoryLines, displayEqLines 
+    } = useUI() as UIContextType;
     const { getLightingIcon, getWeatherIcon, lighting, weather } = env;
     const isExpanded = ui.mapExpanded || ui.peekingDrawer === 'map';
     const { isKeyboardOpen } = viewport;
 
     // Mobile DOCKED (Gutter) Mode
-    const isReplaying = (useGame() as any).sessionMode === 'replay';
+    const isReplaying = (useGame() as GameContextType).sessionMode === 'replay';
     
     // On mobile portrait, we show the gutter. On desktop/landscape, Mapper is in DrawerManager
     if (!isMobile || isLandscape || (gameState === 'disconnected' && !isReplaying)) {

@@ -3,10 +3,12 @@ import XpTicker from '../../Combat/XpTicker';
 import CombatVitals from '../../Combat/CombatVitals';
 import { useGame } from '../../../context/GameContext';
 
+import { UiPositions } from '../../../types';
+
 interface StatsClusterProps {
-    uiPositions: any;
+    uiPositions: UiPositions;
     isEditMode: boolean;
-    dragState: any;
+    dragState: { id: string; type: string; startX: number; startY: number } | null;
     handleDragStart: (e: React.PointerEvent, id: string, type: string) => void;
     isLandscape: boolean;
     isMobile: boolean;

@@ -60,6 +60,7 @@ interface GmcpHandlersProps {
     setStats: (stats: any) => void;
     isSpectateMode?: boolean;
     inlineCategories: import('../../types').InlineCategoryConfig[];
+    sendGMCP?: (pkg: string, data?: any) => void;
 }
 
 export const useGmcpHandlers = (props: GmcpHandlersProps) => {

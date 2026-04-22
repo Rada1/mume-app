@@ -28,7 +28,7 @@ export function isGmcpRoomInfo(data: any): data is GmcpRoomInfo {
 }
 
 export function isGmcpRoomPlayers(data: any): data is GmcpRoomPlayers {
-    return data && (Array.isArray(data) || (typeof data === 'object' && ('players' in data || 'members' in data || 'chars' in data || 'char' in data || 'npcs' in data)));
+    return data && (Array.isArray(data) || (typeof data === 'object' && ('players' in data || 'members' in data || 'chars' in data || 'char' in data || 'npcs' in data || 'list' in data || Object.keys(data).length > 0)));
 }
 
 export function isGmcpRoomItems(data: any): data is GmcpRoomItems {
