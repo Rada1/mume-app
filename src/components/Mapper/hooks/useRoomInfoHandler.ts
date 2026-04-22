@@ -440,6 +440,10 @@ export const useRoomInfoHandler = ({
             const room = newRooms[targetId!];
             const updatedExits: Record<string, any> = {};
             let exitsChanged = false;
+            let updatedExitCount = 0;
+
+            let roomKeys: string[] | null = null;
+            let roomKeysLength = 0;
 
             for (const dir in data.exits) {
                 const gmcpExit = data.exits[dir];
@@ -450,27 +454,64 @@ export const useRoomInfoHandler = ({
 
                 let internalTarget = undefined;
                 if (gmcpDestId) {
-                    if (preloadedCoordsRef.current[String(gmcpDestId)]) internalTarget = `m_${gmcpDestId}`;
-                    else internalTarget = Object.keys(newRooms).find(key => String(newRooms[key].gmcpId) === String(gmcpDestId));
+                    const destStr = String(gmcpDestId);
+                    if (preloadedCoordsRef.current[destStr]) {
+                        internalTarget = `m_${gmcpDestId}`;
+                    } else {
+                        if (!roomKeys) {
+                            roomKeys = Object.keys(newRooms);
+                            roomKeysLength = roomKeys.length;
+                        }
+                        for (let k = 0; k < roomKeysLength; k++) {
+                            const key = roomKeys[k];
+                            // Using loose equality since gmcpId is number and destStr is string
+                            if (newRooms[key].gmcpId == (destStr as any)) {
+                                internalTarget = key;
+                                break;
+                            }
+                        }
+                    }
                 }
-                const exFlagsLow = (exFlags || []).map(f => f.toLowerCase());
-                const isClosed = exFlagsLow.includes('closed') || exFlagsLow.includes('locked');
-                const isDoor = isClosed || (typeof gmcpExit === 'object' && (gmcpExit as any).door) || !!exName || exFlagsLow.some(f => /door|gate|portcullis|secret/i.test(f));
+
+                let isClosed = false;
+                let isDoor = false;
+                if (exFlags && exFlags.length > 0) {
+                    for (let i = 0; i < exFlags.length; i++) {
+                        const f = exFlags[i].toLowerCase();
+                        if (f === 'closed' || f === 'locked') {
+                            isClosed = true;
+                            isDoor = true;
+                        } else if (f.includes('door') || f.includes('gate') || f.includes('portcullis') || f.includes('secret')) {
+                            isDoor = true;
+                        }
+                    }
+                }
+                if (isClosed || (typeof gmcpExit === 'object' && (gmcpExit as any).door) || !!exName) {
+                    isDoor = true;
+                }
 
                 updatedExits[dir] = { target: internalTarget || "", gmcpDestId, name: exName, flags: exFlags || [], closed: isClosed, hasDoor: !!isDoor };
+                updatedExitCount++;
 
-                const existingExit = room.exits && room.exits[dir];
-                if (!existingExit || existingExit.gmcpDestId !== gmcpDestId || existingExit.closed !== isClosed) {
-                    exitsChanged = true;
+                if (!exitsChanged) {
+                    const existingExit = room.exits && room.exits[dir];
+                    if (!existingExit || existingExit.gmcpDestId !== gmcpDestId || existingExit.closed !== isClosed) {
+                        exitsChanged = true;
+                    }
                 }
             }
 
             // Also check if any exits were removed
             if (!exitsChanged && room.exits) {
-                for (const dir in room.exits) {
-                    if (!(dir in updatedExits)) {
-                        exitsChanged = true;
-                        break;
+                const existingKeys = Object.keys(room.exits);
+                if (existingKeys.length !== updatedExitCount) {
+                    exitsChanged = true;
+                } else {
+                    for (let i = 0; i < existingKeys.length; i++) {
+                        if (!(existingKeys[i] in updatedExits)) {
+                            exitsChanged = true;
+                            break;
+                        }
                     }
                 }
             }
