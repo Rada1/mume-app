@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
       VitePWA({
         registerType: 'autoUpdate',
         injectRegister: 'auto',
-        includeAssets: ['icon-1.png', 'icon-192.png', 'icon-512.png', 'favicon.ico'],
+        includeAssets: ['icon-1.png', 'icon-512.png', 'favicon.ico'],
         manifest: {
           name: 'MUME - Multi-Users in Middle-earth',
           short_name: 'MUME',
@@ -34,12 +34,6 @@ export default defineConfig(({ mode }) => {
             {
               src: 'icon-1.png',
               sizes: '1024x1024',
-              type: 'image/png',
-              purpose: 'any maskable',
-            },
-            {
-              src: 'icon-192.png',
-              sizes: '192x192',
               type: 'image/png',
               purpose: 'any maskable',
             },

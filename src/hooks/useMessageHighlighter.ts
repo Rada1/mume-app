@@ -287,5 +287,3 @@ export const useMessageHighlighter = (
 
     return { processMessageHtml };
 };
-geHtml };
-};
