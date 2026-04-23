@@ -1,22 +1,21 @@
-import { PlayersView } from './Views/PlayersView';
 import React, { useState, useRef, useLayoutEffect } from 'react';
 import { X, Users, RefreshCw, Star } from 'lucide-react';
-import { useGame, useUI } from '../../context/GameContext';
-import { MemberRow } from './MemberRow';
-import { escapeHtml, sanitizeMumeHtml } from '../../utils/securityUtils';
+import { useGame, useUI } from '../../../context/GameContext';
+import { MemberRow } from '../../MemberRow';
+import { escapeHtml, sanitizeMumeHtml } from '../../../utils/securityUtils';
 import './CharacterDrawer.css';
 import './PlayersDrawer.css';
 
-interface PlayersDrawerProps {
+interface PlayersViewProps {
     isOpen: boolean;
     onClose: () => void;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
 }
 
-export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, executeCommand: propsExecuteCommand }) => {
+export const PlayersView: React.FC<PlayersViewProps> = ({ isOpen, onClose, executeCommand: propsExecuteCommand }) => {
     const [activeTab, setActiveTab] = useState<'group' | 'online' | 'nearby'>('online');
-    const { 
-        whoList, whoLines, whereList, whereLines, groupMembers, triggerHaptic, favorites, setFavorites, 
+    const {
+        whoList, whoLines, whereList, whereLines, groupMembers, triggerHaptic, favorites, setFavorites,
         executeCommand: contextExecuteCommand, selectedObjectIds,
         handleLogPointerDown, handleLogPointerUp, handleLogClick,
         clearObjectSelection
@@ -25,9 +24,6 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
 
     const executeCommand = contextExecuteCommand || propsExecuteCommand;
 
-    const handleBackdropClick = (e: React.MouseEvent) => {
-        if (e.target === e.currentTarget && window.innerWidth > 1024) onClose();
-    };
 
     const handleRefresh = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -109,7 +105,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                         <div className="where-room" style={{ paddingBottom: '4px', fontSize: 'calc(var(--dynamic-log-size, 16px) * 0.75)' }}>{subtitle}</div>
                     )}
                 </div>
-                <button 
+                <button
                     className={`star-btn ${isFavorite ? 'active' : ''}`}
                     onClick={(e) => toggleFavorite(e, baseName)}
                     title={isFavorite ? "Remove from favorites" : "Add to favorites"}
@@ -195,11 +191,11 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
         }
     }, [isOpen, activeTab, executeCommand]);
 
-    const DrawerLineItem = React.memo(({ 
-        line, 
-        fontSize 
-    }: { 
-        line: import('../../types').DrawerLine, 
+    const DrawerLineItem = React.memo(({
+        line,
+        fontSize
+    }: {
+        line: import('../../types').DrawerLine,
         fontSize: string
     }) => {
         const isHeader = !!line.isHeader;
@@ -207,7 +203,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
         const depth = line.depth || 0;
 
         return (
-            <div style={{ 
+            <div style={{
                 background: rowBg,
                 borderRadius: '4px',
                 margin: '0.5px 0',
@@ -219,16 +215,16 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                 color: '#ffffff',
                 minHeight: '16px',
                 lineHeight: '1.5',
-                whiteSpace: 'pre', 
+                whiteSpace: 'pre',
                 overflow: isHeader ? 'visible' : 'hidden',
                 textOverflow: 'ellipsis',
-                fontSize 
+                fontSize
             }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }} />
         );
     });
 
     return (
-        <div 
+        <div
             className={`character-drawer-overlay ${isOpen ? 'open' : ''}`}
             onClick={handleBackdropClick}
         >
@@ -265,8 +261,8 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                 style={{ touchAction: 'pan-y' }}
             >                <div className="drawer-header" style={{ pointerEvents: 'auto', display: 'flex', justifyContent: 'flex-end', padding: '6px 10px', background: 'transparent', gap: '8px' }}>
                     {window.innerWidth > 1024 && (
-                        <button 
-                            style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} 
+                        <button
+                            style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
                             onClick={(e) => { e.stopPropagation(); onClose(); }}
                         >
                             <X size={16} />
@@ -309,10 +305,10 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
 
                                 {whoLines?.length > 0 ? (
                                     whoLines.map(line => (
-                                        <DrawerLineItem 
-                                            key={line.id} 
-                                            line={line} 
-                                            fontSize={infoFontSize} 
+                                        <DrawerLineItem
+                                            key={line.id}
+                                            line={line}
+                                            fontSize={infoFontSize}
                                         />
                                     ))
                                 ) : (
@@ -345,10 +341,10 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
 
                                 {whereLines?.length > 0 ? (
                                     whereLines.map(line => (
-                                        <DrawerLineItem 
-                                            key={line.id} 
-                                            line={line} 
-                                            fontSize={infoFontSize} 
+                                        <DrawerLineItem
+                                            key={line.id}
+                                            line={line}
+                                            fontSize={infoFontSize}
                                         />
                                     ))
                                 ) : (
@@ -379,7 +375,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                     boxShadow: 'none',
                     padding: '0 10px'
                 }}>
-                    <div 
+                    <div
                         className={`drawer-tab ${activeTab === 'group' ? 'active' : ''}`}
                         onClick={(e) => { e.stopPropagation(); setActiveTab('group'); triggerHaptic(15); }}
                         style={{
@@ -407,7 +403,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                     >
                         Group
                     </div>
-                    <div 
+                    <div
                         className={`drawer-tab ${activeTab === 'online' ? 'active' : ''}`}
                         onClick={(e) => { e.stopPropagation(); setActiveTab('online'); executeCommand('who', true, true, true, true); triggerHaptic(15); }}
                         style={{
@@ -435,7 +431,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                     >
                         Online
                     </div>
-                    <div 
+                    <div
                         className={`drawer-tab ${activeTab === 'nearby' ? 'active' : ''}`}
                         onClick={(e) => { e.stopPropagation(); setActiveTab('nearby'); executeCommand('where', true, true, true, true); triggerHaptic(15); }}
                         style={{
@@ -466,7 +462,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                 </div>
 
                 {activeTab !== 'group' && (
-                    <button 
+                    <button
                         className="refresh-button floating-refresh"
                         title="Refresh"
                         onClick={(e) => {

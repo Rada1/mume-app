@@ -1,27 +1,26 @@
-import { CharacterView } from './Views/CharacterView';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { X, BookOpen, RefreshCw } from 'lucide-react';
-import { useGame, useVitals, useUI } from '../../context/GameContext';
-import { DrawerLine } from '../../types';
-import { isObjectSelected } from '../../utils/selectionUtils';
-import { getCategoryForName, COLOR_OBJ } from '../../utils/categorizationUtils';
+import { useGame, useVitals, useUI } from '../../../context/GameContext';
+import { DrawerLine } from '../../../types';
+import { isObjectSelected } from '../../../utils/selectionUtils';
+import { getCategoryForName, COLOR_OBJ } from '../../../utils/categorizationUtils';
 
-import { sanitizeMumeHtml } from '../../utils/securityUtils';
+import { sanitizeMumeHtml } from '../../../utils/securityUtils';
 import './CharacterDrawer.css';
 
-interface CharacterDrawerProps {
+interface CharacterViewProps {
     isOpen: boolean;
     onClose: () => void;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
 }
 
-export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
+export const CharacterView: React.FC<CharacterViewProps> = ({
     isOpen,
     onClose,
     executeCommand: propsExecuteCommand
 }) => {
     // Local activeTab state removed in favor of global ui.characterTab
-    const { 
+    const {
         practice,
         executeCommand: contextExecuteCommand,
         scoreLines,
@@ -39,12 +38,12 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
     const { ui, setUI, isLibraryOpen, setIsLibraryOpen } = useUI();
     const activeTab = ui.characterTab || 'info';
     const setActiveTab = (tab: 'info' | 'practice' | 'quests') => setUI((prev: any) => ({ ...prev, characterTab: tab }));
-    
+
     // Prioritize context executeCommand if available, fallback to props
     const executeCommand = contextExecuteCommand || propsExecuteCommand;
-    
+
     const practiceData = practice.practiceData;
-    
+
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [tempTitle, setTempTitle] = useState('');
 
@@ -79,9 +78,6 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
         setIsEditingTitle(false);
     };
 
-    const handleBackdropClick = (e: React.MouseEvent) => {
-        if (e.target === e.currentTarget && window.innerWidth > 1024) onClose();
-    };
 
     const handleRefresh = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -91,36 +87,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
 
     const swipePos = useRef<{ x: number, y: number } | null>(null);
 
-    const onPointerDownInternal = (e: React.PointerEvent) => {
-        const target = e.target as HTMLElement;
-        const container = e.currentTarget as HTMLElement;
-        if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT' || target.closest('.drawer-tab')) {
-            if (target.closest('.inline-btn')) handleLogPointerDown(e);
-            return;
-        }
-        swipePos.current = { x: e.clientX, y: e.clientY };
-        container.setPointerCapture(e.pointerId);
-    };
 
-    const onPointerUpInternal = (e: React.PointerEvent) => {
-        const target = e.target as HTMLElement;
-        const container = e.currentTarget as HTMLElement;
-        if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT' || target.closest('.drawer-tab')) {
-            if (target.closest('.inline-btn')) handleLogPointerUp(e);
-            return;
-        }
-        if (swipePos.current) {
-            const deltaX = e.clientX - swipePos.current.x;
-            const deltaY = e.clientY - swipePos.current.y;
-            const absX = Math.abs(deltaX);
-            const absY = Math.abs(deltaY);
-
-            if ((deltaY > 50 && absY > absX) || (deltaX > 40 && absX > absY)) {
-                if (window.innerWidth > 1024) onClose();
-            }
-        }
-        swipePos.current = null;
-    };
 
     const onClickInternal = (e: React.MouseEvent) => {
         const target = e.target as HTMLElement;
@@ -137,13 +104,13 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
         }
     };
 
-    const DrawerLineItem = React.memo(({ 
-        line, 
-        selectedObjectIds, 
+    const DrawerLineItem = React.memo(({
+        line,
+        selectedObjectIds,
         fontSize,
         centered = false
-    }: { 
-        line: DrawerLine, 
+    }: {
+        line: DrawerLine,
         selectedObjectIds: Set<string>,
         fontSize: string,
         centered?: boolean
@@ -220,9 +187,9 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
             const isAtGuildmaster = practice?.practiceData?.isAtGuildmaster;
 
             return (
-                <div 
-                    className="skill-item-authentic" 
-                    style={{ 
+                <div
+                    className="skill-item-authentic"
+                    style={{
                         background: bg,
                         position: 'relative',
                         display: 'flex',
@@ -232,16 +199,16 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                         paddingRight: isAtGuildmaster ? '60px' : '8px'
                     }}
                 >
-                    <div 
+                    <div
                         style={{ flex: 1, fontFamily: 'var(--font-main, monospace)', whiteSpace: 'pre' }}
-                        dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }} 
+                        dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }}
                     />
                     {isAtGuildmaster && (
-                        <button 
+                        <button
                             className="prac-button-inline"
-                            style={{ 
-                                position: 'absolute', 
-                                right: '8px', 
+                            style={{
+                                position: 'absolute',
+                                right: '8px',
                                 width: '18px',
                                 height: '18px',
                                 padding: 0,
@@ -269,12 +236,12 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
         const rowBg = isHeader ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.6)';
 
         return (
-            <div style={{ 
-                textAlign: centered ? 'center' : 'left', 
-                paddingLeft: centered ? '0' : `${depth * 8 + 8}px`, 
+            <div style={{
+                textAlign: centered ? 'center' : 'left',
+                paddingLeft: centered ? '0' : `${depth * 8 + 8}px`,
                 paddingRight: '8px',
                 lineHeight: '1.5',
-                whiteSpace: 'pre', 
+                whiteSpace: 'pre',
                 fontSize,
                 background: bg !== 'transparent' ? bg : rowBg,
                 margin: '0.5px 0',
@@ -290,30 +257,8 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
     });
 
     return (
-        <div 
-            className={`character-drawer-overlay ${isOpen ? 'open' : ''}`}
-            onClick={handleBackdropClick}
-        >
-            <div
-                className={`character-drawer-content log-card-drawer ${isOpen ? 'open' : ''}`}
-                onClick={onClickInternal}
-                onPointerDown={onPointerDownInternal}
-                onPointerUp={onPointerUpInternal}
-                onPointerCancel={onPointerUpInternal}
-                style={{ touchAction: 'pan-y' }}
-            >
-                <div className="drawer-header" style={{ pointerEvents: 'auto', display: 'flex', justifyContent: 'flex-end', padding: '6px 10px', background: 'transparent' }}>
-                    {window.innerWidth > 1024 && (
-                        <button 
-                            style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} 
-                            onClick={(e) => { e.stopPropagation(); onClose(); }}
-                        >
-                            <X size={16} />
-                        </button>
-                    )}
-                </div>
-
-                <div className="drawer-body" style={{ pointerEvents: 'auto', flex: 1, marginRight: '0', overflowY: 'auto', position: 'relative', padding: 0 }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+        <div className="character-view-container" onClick={onClickInternal} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <div className="drawer-body" style={{ pointerEvents: 'auto', flex: 1, marginRight: '0', overflowY: 'auto', position: 'relative', padding: 0 }}>
                     {activeTab === 'info' ? (
                         <div className="info-tab" style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
                             <div ref={infoContainerRef} style={{
@@ -335,10 +280,10 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
 
                                 {infoLines?.length > 0 ? (
                                     infoLines.map(line => (
-                                        <DrawerLineItem 
-                                            key={line.id} 
-                                            line={line} 
-                                            selectedObjectIds={selectedObjectIds} 
+                                        <DrawerLineItem
+                                            key={line.id}
+                                            line={line}
+                                            selectedObjectIds={selectedObjectIds}
                                             fontSize="inherit"
                                             centered={false}
                                         />
@@ -372,10 +317,10 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
 
                                 {practiceLines?.length > 0 ? (
                                     practiceLines.map(line => (
-                                        <DrawerLineItem 
-                                            key={line.id} 
-                                            line={line} 
-                                            selectedObjectIds={selectedObjectIds} 
+                                        <DrawerLineItem
+                                            key={line.id}
+                                            line={line}
+                                            selectedObjectIds={selectedObjectIds}
                                             fontSize="inherit"
                                             centered={false}
                                         />
@@ -439,7 +384,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                     boxShadow: 'none',
                     padding: '0 10px'
                 }}>
-                    <div 
+                    <div
                         className={`drawer-tab ${activeTab === 'info' ? 'active' : ''}`}
                         onClick={(e) => { e.stopPropagation(); setActiveTab('info'); triggerHaptic(15); }}
                         style={{
@@ -467,7 +412,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                     >
                         Info
                     </div>
-                    <div 
+                    <div
                         className={`drawer-tab ${activeTab === 'practice' ? 'active' : ''}`}
                         onClick={(e) => { e.stopPropagation(); setActiveTab('practice'); triggerHaptic(15); }}
                         style={{
@@ -495,7 +440,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                     >
                         Skills
                     </div>
-                    <div 
+                    <div
                         className={`drawer-tab ${activeTab === 'quests' ? 'active' : ''}`}
                         onClick={(e) => { e.stopPropagation(); setActiveTab('quests'); triggerHaptic(15); }}
                         style={{
@@ -523,15 +468,15 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                     >
                         Quests
                     </div>
-                <button 
+                <button
                     className="refresh-button floating-refresh"
                     title="Refresh"
                     onClick={(e) => {
                         triggerHaptic(15);
-                        if (activeTab === 'info') { 
+                        if (activeTab === 'info') {
                             executeCommand('info', true, true, true, true);
                             executeCommand('quest', true, true, true, true);
-                            practice.setSilentSyncPending(false); 
+                            practice.setSilentSyncPending(false);
                         } else if (activeTab === 'practice') {
                             practice.setIsUiRequested(true);
                             executeCommand('practice', true, true, true, true);
@@ -563,7 +508,6 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                     <RefreshCw size={16} />
                 </button>
                 </div>
-            </div>
         </div>
     );
 };
