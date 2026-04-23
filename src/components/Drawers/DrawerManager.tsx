@@ -12,29 +12,45 @@ import { CharacterDrawer } from './CharacterDrawer';
 import { PlayersDrawer } from './PlayersDrawer';
 import { Mapper } from '../Mapper/Mapper';
 import { User, Shield, BarChart2, Users, Map as MapIcon } from 'lucide-react';
+import { GutterShell } from './GutterShell';
+import { StatsView } from './Views/StatsView';
+import { CharacterView } from './Views/CharacterView';
+import { PlayersView } from './Views/PlayersView';
+import { InventoryView } from './Views/InventoryView';
+
+import { DrawerLine, ButtonData, GameEntity } from '../../types';
 
 interface DrawerManagerProps {
-    ui: any;
-    setUI: (val: any) => void;
-    inventoryLines: any[];
-    statsLines: any[];
-    scoreLines: any[];
-    eqLines: any[];
-    executeCommand: (cmd: string, silent?: boolean) => void;
-    handleButtonClick: (e: React.PointerEvent, btn: any) => void;
+    ui: {
+        drawer: string;
+        isDrawerPeeking: boolean;
+        peekingDrawer: string;
+        setManagerOpen: boolean;
+        mapExpanded: boolean;
+        isMenuOpen: boolean;
+        isSetMenuOpen: boolean;
+        menuView: string;
+    };
+    setUI: (val: Record<string, unknown> | ((prev: Record<string, unknown>) => Record<string, unknown>)) => void;
+    inventoryLines: DrawerLine[];
+    statsLines: DrawerLine[];
+    scoreLines: DrawerLine[];
+    eqLines: DrawerLine[];
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
+    handleButtonClick: (e: React.PointerEvent, btn: ButtonData) => void;
     loginName: string;
     setLoginName: (val: string) => void;
     loginPassword: string;
     setLoginPassword: (val: string) => void;
     bgImage: string;
     handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    soundTriggers: any[];
+    soundTriggers: Record<string, unknown>[];
     newSoundPattern: string;
     setNewSoundPattern: (val: string) => void;
     newSoundRegex: boolean;
     setNewSoundRegex: (val: boolean) => void;
     handleSoundUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    setSoundTriggers: (val: any[]) => void;
+    setSoundTriggers: (val: Record<string, unknown>[]) => void;
 }
 
 export const DrawerManager: React.FC<DrawerManagerProps> = ({
@@ -64,10 +80,13 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         characterName, viewport, triggerHaptic, 
         displayInventoryLines, displayEqLines, 
         pendingDrawerContainerRef, inlineCategories, entities, keywordOverrides,
-        gameState
+        gameState,
+        mood, setMood, spellSpeed, setSpellSpeed, alertness, setAlertness
     } = useGame();
     const { handleTabClick } = useUI();
-    const mapperRef = React.useRef<any>(null);
+    const mapperRef = React.useRef<HTMLDivElement>(null);
+    const [activeSlider, setActiveSlider] = React.useState<string | null>(null);
+    const [activeButtonRect, setActiveButtonRect] = React.useState<DOMRect | null>(null);
 
     // On desktop, push the log right/left so side drawers sit beside it instead of over it
     React.useEffect(() => {
@@ -91,6 +110,65 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     const isMapDrawerOpen = ui.mapExpanded && !viewport.isMobile;
     const isMobilePortrait = viewport.isMobile && !viewport.isLandscape;
     const showBackdrop = !viewport.isMobile && ui.drawer !== 'none';
+
+    // Mobile uses GutterShell with Views
+    if (isMobilePortrait) {
+        let viewContent = null;
+        switch (ui.drawer) {
+            case 'stats':
+                viewContent = <StatsView
+                    statsLines={statsLines}
+                    scoreLines={scoreLines}
+                    executeCommand={executeCommand}
+                    mood={mood} setMood={setMood}
+                    spellSpeed={spellSpeed} setSpellSpeed={setSpellSpeed}
+                    alertness={alertness} setAlertness={setAlertness}
+                    triggerHaptic={triggerHaptic}
+                    activeSlider={activeSlider} setActiveSlider={setActiveSlider}
+                    activeButtonRect={activeButtonRect} setActiveButtonRect={setActiveButtonRect}
+                />;
+                break;
+            case 'character':
+                viewContent = <CharacterView isOpen={true} onClose={() => setUI({ drawer: 'map' })} executeCommand={executeCommand} />;
+                break;
+            case 'players':
+                viewContent = <PlayersView isOpen={true} onClose={() => setUI({ drawer: 'map' })} executeCommand={executeCommand} />;
+                break;
+            case 'inventory':
+            case 'equipment':
+                viewContent = <InventoryView
+                    isOpen={true}
+                    onClose={() => setUI({ drawer: 'map' })}
+                    inventoryLines={displayInventoryLines}
+                    eqLines={displayEqLines}
+                    handleButtonClick={handleButtonClick}
+                    triggerHaptic={triggerHaptic}
+                    executeCommand={executeCommand}
+                    inlineCategories={inlineCategories}
+                    entities={entities}
+                    keywordOverrides={keywordOverrides}
+                />;
+                break;
+            case 'map':
+            default:
+                viewContent = <Mapper
+                    ref={mapperRef}
+                    characterName={characterName || ''}
+                    isMobile={viewport.isMobile}
+                    isExpanded={true}
+                />;
+                break;
+        }
+
+        return (
+            <div className="gutter-drawer-container" style={{ position: 'relative', width: '100%', height: '100%' }}>
+                <GutterShell activeTabId={ui.drawer}>
+                    {viewContent}
+                </GutterShell>
+            </div>
+        );
+    }
+
 
     return (
         <>
