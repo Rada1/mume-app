@@ -79,7 +79,6 @@ export interface UseGameParserDeps {
     
     accountState: AccountState;
     accountStageRef: MutableRefObject<AccountStage>;
-    processMessageHtml: (html: string, mid: string, isRoomName: boolean, type?: MessageType) => string;
     triggerHitFlash: () => void;
     triggerOppHitFlash: () => void;
     pendingDrawerContainerRef: MutableRefObject<any>;

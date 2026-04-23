@@ -45,12 +45,16 @@ export interface GameStats {
     staminaStatus?: string;
 }
 
+import { Token } from './tokens';
+
 export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt' | 'comm' | 'comm-continue' | 'comm-sender' | 'comm-text' | 'shop-item' | 'practice-skill' | 'practice-header' | 'practice-class-header' | 'practice-column-header' | 'who-list' | 'where-list' | 'room-description' | 'equipment-list' | 'inventory-list' | 'room-exits' | 'snoop-command' | 'account-prompt' | 'account-menu-item' | 'account-selection' | 'account-selection-edit' | 'account-stat-edit' | 'account-stat-points' | 'account-character-list' | 'quest-list';
 
 export interface Message {
     id: string;
     html: string; // Pre-converted ANSI html
     textRaw: string; // Raw text for logic checks
+    textOnly?: string; // Pure text without any ANSI or HTML formatting
+    tokens?: Token[]; // AST tokens for structured rendering
     type: MessageType;
     timestamp: number;
     isCombat?: boolean; // True if this line is combat-related

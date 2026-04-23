@@ -237,7 +237,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const openKeywordEdit = useCallback((context: string, displayText: string) => {
         ui.setKeywordEditState({ context, displayText });
     }, [ui]);
-    const { processMessageHtml } = useMessageHighlighter(v.target, btn.buttonsRef, s.roomPlayers, s.roomNpcs, s.characterName, s.roomItems, s.inlineCategories, s.isHighlighterEnabled, highlightVersion, s.discoveredItems, {}, s.selectedObjectIds, s.inCombat, s.spectateCharacterName, v.groupMembers);
 
     const deps: UseGameParserDeps = useMemo(() => ({
         // Basic Actions
@@ -305,7 +304,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isCharacterOpen: s.drawer === 'character',
         isStatsOpen: s.drawer === 'stats',
         isPlayersOpen: s.drawer === 'players',
-        processMessageHtml,
 
         // Session/Game Data
         gameState: s.gameState as any,
@@ -376,7 +374,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         ansiConvert,
         btn,
         quests: s.quests
-    }), [s, v, ui, addMessage, addSystemMessage, playHitImpactSound, playOofSound, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, triggerHaptic, playEffect, playKillSound, playLevelSound, processMessageHtml, practice, quests, shop, help, keywordOverrides, btn]);
+    }), [s, v, ui, addMessage, addSystemMessage, playHitImpactSound, playOofSound, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, shop, help, keywordOverrides, btn]);
 
     const parser = useGameParser(deps, s.userSession);
     const parserRef = useRef(parser);

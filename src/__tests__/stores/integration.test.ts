@@ -24,23 +24,23 @@ describe('Event Bus to Store Integration', () => {
     describe('Room Occupant Lifecycle', () => {
         it('processes Room.Info, setPlayers, AddPlayer, and RemovePlayer', () => {
             // 1. Enter room
-            gmcpBus.emit('Room.Info', { name: 'Test Room' });
+            gmcpBus.emit('Room.Info', { num: 1234, name: 'Test Room' } as any);
             expect(useRoomStore.getState().roomName).toBe('Test Room');
 
             // 2. Initial players arrive
             gmcpBus.emit('Room.Players', [
-                { id: 1, name: 'Alice' },
-                { id: 2, name: 'Bob' }
-            ]);
+                { id: "1", name: 'Alice' },
+                { id: "2", name: 'Bob' }
+            ] as any);
             expect(useRoomStore.getState().players).toHaveLength(2);
 
             // 3. New player enters
-            gmcpBus.emit('Room.AddPlayer', { id: 3, name: 'Charlie' });
+            gmcpBus.emit('Room.AddPlayer', { id: "3", name: 'Charlie' } as any);
             expect(useRoomStore.getState().players).toHaveLength(3);
             expect(useRoomStore.getState().players.find(p => p.name === 'Charlie')).toBeDefined();
 
             // 4. Player leaves
-            gmcpBus.emit('Room.RemovePlayer', { id: 1, name: 'Alice' });
+            gmcpBus.emit('Room.RemovePlayer', { id: "1", name: 'Alice' } as any);
             expect(useRoomStore.getState().players).toHaveLength(2);
             expect(useRoomStore.getState().players.find(p => p.name === 'Alice')).toBeUndefined();
         });

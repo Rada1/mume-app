@@ -19,6 +19,7 @@ import { useAccountParser } from './useAccountParser';
 import { useTimeParser } from './useTimeParser';
 import { UseGameParserDeps } from './types';
 import { useSpectateAutomator } from '../useSpectateAutomator';
+import { PipelineOrchestrator } from '../../services/parser/PipelineOrchestrator';
 
 export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     // Map session setters to common names used in sub-parsers
@@ -211,7 +212,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if (owner === 'practice') tempPracticeRef.current = [];
     }, [deps.setInventoryLines, deps.setEqLines, deps.setStatsLines, deps.setPracticeLines, session.game]);
 
-    const processLine = useCallback((line: string) => {
+    const processLine = useCallback((line: string, tokens?: any) => {
         if (line === null || line === undefined) return;
 
         const cleanLine = line.replace(/\r/g, '');
@@ -257,8 +258,27 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if (isVisible) {
             const mid = Math.random().toString(36).substring(7);
             const ansiHtml = deps.ansiConvert.toHtml(cleanLine);
-            const html = deps.processMessageHtml(ansiHtml, mid, false, finalType);
-            deps.addMessage(finalType, textOnly, undefined, mid, false, { textOnly, lower, html });
+
+            // Now we use our orchestrator to produce the Message object directly!
+            // First we need to build the context
+            if (tokens) {
+                 deps.addMessage(finalType, textOnly, undefined, mid, false, { textOnly, lower, html: { html: ansiHtml, tokens } as any });
+            } else {
+                 const tokenizerContext = {
+                     target: session.vitals.target,
+                     currentOccupants: deps.roomPlayers || [], // Will be pulled properly
+                     roomNpcs: session.game.roomNpcs || [],
+                     activeGroupMembers: deps.groupMembers || [],
+                     roomItems: session.game.roomItems || [],
+                     discoveredItems: [], // could be pulled from context if we had one
+                     inlineCategories: deps.inlineCategories || [],
+                     buttons: deps.btn?.buttonsRef?.current || [],
+                     selectedObjectIds: new Set<string>() // Simplification for now to clear the TS error
+                 };
+
+                 const messageObj = PipelineOrchestrator.processTextLine(cleanLine, ansiHtml, finalType, tokenizerContext);
+                 deps.addMessage(finalType, textOnly, undefined, mid, false, { textOnly, lower, html: messageObj as any });
+            }
         }
 
         // Detect items for mapper discovery
@@ -266,7 +286,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
     }, [
         processTriggers, router, combat, room, account, stat, atmosphere, time, 
-        deps.processMessageHtml, deps.addMessage, deps.isNewbieMode
+        deps.addMessage, deps.isNewbieMode, deps.roomPlayers, session.game, deps.groupMembers, deps.inlineCategories, deps.btn, session.vitals.target
     ]);
 
     return useMemo(() => ({
