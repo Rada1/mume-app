@@ -33,6 +33,7 @@ interface UIState {
     showReplayHud: boolean;
     characterTab: 'info' | 'practice' | 'quests';
     
+    setManagerOpen: boolean;
     // Header Menu State
     isMenuOpen: boolean;
     isSetMenuOpen: boolean;
@@ -41,6 +42,7 @@ interface UIState {
     // Keyword Edit UI
     keywordEditState: { context: string; displayText: string } | null;
     keywordFailureBanner: { context: string; displayText: string } | null;
+    selectedObjectIds: Set<string>;
 
     // Actions
     setIsCharacterOpen: (open: boolean) => void;
@@ -64,6 +66,9 @@ interface UIState {
     setShowReplayHud: (show: boolean) => void;
     setKeywordEditState: (state: { context: string; displayText: string } | null) => void;
     setKeywordFailureBanner: (state: { context: string; displayText: string } | null) => void;
+    setSelectedObjectIds: (ids: Set<string> | ((prev: Set<string>) => Set<string>)) => void;
+    toggleObjectSelection: (id: string, setId?: string) => void;
+    clearObjectSelection: () => void;
 
     // Generic Updater for legacy compatibility
     setUI: (update: Partial<UIState> | ((prev: UIState) => UIState)) => void;
@@ -108,11 +113,13 @@ export const useUIStore = create<UIState>((set) => ({
     diagnosticLogs: [],
     showReplayHud: false,
     characterTab: 'info',
+    setManagerOpen: false,
     isMenuOpen: false,
     isSetMenuOpen: false,
     menuView: 'main',
     keywordEditState: null,
     keywordFailureBanner: null,
+    selectedObjectIds: new Set<string>(),
 
     setIsCharacterOpen: (open) => set({ isCharacterOpen: open, drawer: open ? 'character' : 'none' }),
     setIsStatsOpen: (open) => set({ isStatsOpen: open, drawer: open ? 'stats' : 'none' }),
@@ -139,6 +146,16 @@ export const useUIStore = create<UIState>((set) => ({
     setShowReplayHud: (show) => set({ showReplayHud: show }),
     setKeywordEditState: (state) => set({ keywordEditState: state }),
     setKeywordFailureBanner: (state) => set({ keywordFailureBanner: state }),
+    setSelectedObjectIds: (updater) => set((state) => ({ 
+        selectedObjectIds: typeof updater === 'function' ? updater(state.selectedObjectIds) : updater 
+    })),
+    toggleObjectSelection: (id, setId) => set((state) => {
+        const next = setId ? new Set<string>(state.selectedObjectIds) : new Set<string>();
+        if (next.has(id)) next.delete(id);
+        else next.add(id);
+        return { selectedObjectIds: next };
+    }),
+    clearObjectSelection: () => set({ selectedObjectIds: new Set() }),
 
     setUI: (updater) => set((state) => {
         const next = typeof updater === 'function' ? updater(state) : updater;

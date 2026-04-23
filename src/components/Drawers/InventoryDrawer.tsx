@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { InventoryView } from './Views/InventoryView';
-import { GameEntity } from '../../types';
+import { GameEntity, InlineCategoryConfig, CustomButton } from '../../types';
 
 interface InventoryDrawerProps {
     isOpen: boolean;
@@ -8,12 +8,12 @@ interface InventoryDrawerProps {
     onClose: () => void;
     inventoryLines: any[];
     eqLines: any[];
-    handleButtonClick: (e: React.PointerEvent, btn: any) => void;
+    handleButtonClick: (button: CustomButton, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => void;
     triggerHaptic: (intensity: number) => void;
     isLandscape?: boolean;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
-    pendingDrawerContainerRef?: React.MutableRefObject<string | null>;
-    inlineCategories: { id: string; name: string; color: string; keywords: string[] }[];
+    pendingDrawerContainerRef?: React.MutableRefObject<{ containerId: string; cmd: 'inventorylist' | 'equipmentlist'; afterId: string } | null>;
+    inlineCategories: InlineCategoryConfig[];
     entities: Record<string, GameEntity>;
     keywordOverrides: Record<string, string>;
 }

@@ -47,6 +47,7 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 - **Spectate Automation (Rotation/Tells):** `useSpectateAutomator.ts`
 - **Session Control:** `useSessionManager.ts`, `useSessionRecorder.ts`, `useSessionReplayer.ts`
 - **Advanced Processing:** `useTriggerProcessor.ts`, `useKeywordOverrides.ts`, `useMessageHighlighter.ts`
+- **Tokenization & Highlighting:** `src/services/parser/Tokenizer.ts` (Keyword-focused entity extraction)
 - **Audio & Atmosphere:** `useAtmosphereAudio.ts`, `useSoundSystem.ts`, `useZoneMusic.ts`, `useWeatherSounds.ts`, `useTerrainSounds.ts`
 
 ## 🛠️ Common Tasks Cheat Sheet
@@ -63,6 +64,7 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 | **Update Button Logic** | `useButtons.ts`, `useButtonLogic.ts`, `ButtonUtils.ts` |
 | **Adjust Audio/Atmosphere** | `useAtmosphereAudio.ts`, `useSoundSystem.ts`, `useZoneMusic.ts` |
 | **Modify Drawers/UI Tabs** | `src/components/Drawers/`, `DrawerManager.tsx` |
+| **Fix Broad Highlighting** | `Tokenizer.ts`, `useEntityRegistry.ts` |
 | **Replay a Session** | `useSessionReplayer.ts`, `useSessionManager.ts` |
 
 ## 🚫 Avoid Scanning (Use .geminiignore)

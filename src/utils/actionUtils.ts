@@ -43,9 +43,9 @@ export function isButtonValidForEntity(
     const fullSetChain = getHierarchyChain(kind, location, detectedCatId || undefined);
 
     // Debugging for service-related buttons
-    const isServiceButton = button.setId === 'npc-innkeeper' || 
-                            button.setId === 'npc-shopkeeper' || 
-                            button.setId === 'npc-guildmaster';
+    const isServiceButton = button.setId === 'inline-innkeeper' || 
+                            button.setId === 'inline-shopkeeper' || 
+                            button.setId === 'inline-guildmaster';
 
     if (isServiceButton) {
         // If the hierarchy chain already includes the target set, we trust it absolutely
@@ -62,7 +62,7 @@ export function isButtonValidForEntity(
 
         // 2. Check roomNpcs (fallback for log-parsed or GMCP entities)
         if (!isMatch && roomNpcs) {
-            const searchNoun = context.toLowerCase();
+            const searchNoun = (context || '').toLowerCase();
             const matchingNpc = roomNpcs.find(npc => {
                 const name = (typeof npc === 'string' ? npc : npc.name || npc.shortdesc || '').toLowerCase();
                 const id = (typeof npc === 'string' ? '' : npc.id || '');
@@ -105,10 +105,10 @@ export function isButtonValidForEntity(
     }
 
     // Shop commands require a shopkeeper
-    if (isShopCmd && !fullSetChain.includes('npc-shopkeeper')) {
+    if (isShopCmd && !fullSetChain.includes('inline-shopkeeper')) {
         const hasShopkeeper = roomNpcs?.some(npc => {
             const npcName = (typeof npc === 'string' ? npc : npc.name || npc.shortdesc || '').toLowerCase();
-            return getCategoryForName(npcName, inlineCategories) === 'npc-shopkeeper';
+            return getCategoryForName(npcName, inlineCategories) === 'inline-shopkeeper';
         });
         if (!hasShopkeeper) return false;
     }
@@ -143,7 +143,7 @@ export function getCommonActions(
 
     // Map each entry (potentially setId:id:context) to its set of valid buttons
     const resolvedEntries = entries.map(entry => {
-        const parts = entry.split(':');
+        const parts = (entry || '').split(':');
         const id = parts.length > 2 ? parts[1] : (parts.length === 2 ? parts[1] : parts[0]);
         const entity = deps.entities[id];
         

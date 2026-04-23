@@ -51,8 +51,6 @@ interface SettingsModalProps {
     setNpcColor: (val: string) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
-    isSpectateMode: boolean;
-    setIsSpectateMode: (val: boolean) => void;
     isTimestampEnabled: boolean;
     setIsTimestampEnabled: (val: boolean) => void;
     fontFamily: string;
@@ -86,7 +84,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     disableSmoothScroll, setDisableSmoothScroll, isImmersionMode, setIsImmersionMode,
     isHighlighterEnabled, setIsHighlighterEnabled, objectColor, setObjectColor,
     playerColor, setPlayerColor, npcColor, setNpcColor,
-    isBloomEnabled, setIsBloomEnabled, isSpectateMode, setIsSpectateMode,
+    isBloomEnabled, setIsBloomEnabled,
     isTimestampEnabled, setIsTimestampEnabled, fontFamily, setFontFamily,
     isNewbieMode, setIsNewbieMode, showRecordingIndicator, setShowRecordingIndicator,
     autoSaveSessions, setAutoSaveSessions, showSpectatePromptInLog, setShowSpectatePromptInLog,
@@ -104,7 +102,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     const { setIsSettingsOpen, settingsTab, setSettingsTab } = useUI();
 
     return (
-        <div className="modal-overlay" onClick={() => setIsSettingsOpen(false)}>
+        <div 
+            className="modal-overlay" 
+            onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                    setIsSettingsOpen(false);
+                }
+            }}
+        >
             <div className={`modal ${settingsTab === 'help' ? 'large' : ''}`} onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
                     <div className="modal-title">Settings</div>
@@ -172,8 +177,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setNpcColor={setNpcColor}
                                 isBloomEnabled={isBloomEnabled}
                                 setIsBloomEnabled={setIsBloomEnabled}
-                                isSpectateMode={isSpectateMode}
-                                setIsSpectateMode={setIsSpectateMode}
                                 isTimestampEnabled={isTimestampEnabled}
                                 setIsTimestampEnabled={setIsTimestampEnabled}
                                 isNewbieMode={isNewbieMode}

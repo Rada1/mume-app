@@ -116,7 +116,7 @@ export const drawRoomOccupants = (
             const petalY = py + Math.sin(angle) * radius;
 
             const key = getOccupantKey(occ.id, occ.name);
-            const pos = { dx: petalX - px, dy: petalY - py, isPlayer: occ.color.includes('125, 211, 252') };
+            const pos = { dx: petalX - px, dy: petalY - py, isPlayer: (occ.color || '').includes('125, 211, 252') };
             lastPetalPositions.set(key, pos);
             lastPetalPositions.set('name:' + occ.name.toLowerCase(), pos);
 

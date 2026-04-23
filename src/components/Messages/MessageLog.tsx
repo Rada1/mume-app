@@ -2,6 +2,8 @@ import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react'
 import { Message, MessageType } from '../../types';
 import { ansiConvert } from '../../utils/ansi';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
+import { TokenRenderer } from './TokenRenderer';
+import { Tokenizer } from '../../services/parser/Tokenizer';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import ShopItemCard from '../Shop/ShopItemCard';
 import PracticeSkillCard from '../Practice/PracticeSkillCard';
@@ -9,6 +11,7 @@ import PracticeHeaderCard from '../Practice/PracticeHeaderCard';
 import PracticeClassHeaderCard from '../Practice/PracticeClassHeaderCard';
 import PracticeColumnHeaderCard from '../Practice/PracticeColumnHeaderCard';
 import { useBaseGame, useVitals, useLog, useUI } from '../../context/GameContext';
+import { useModeStore } from '../../stores/useModeStore';
 
 const formatTimestamp = (ts: number) => {
     const date = new Date(ts);
@@ -76,27 +79,6 @@ const MessageItem = React.memo(({
     const isRecent = Date.now() - msg.timestamp < 2000;
     const isOldBatchDim = latestBatchId !== undefined && (msg.batchId === undefined || msg.batchId < latestBatchId);
 
-    // Initialize the flash as ON immediately (first render already has the class), then
-    // clear it after the animation duration. This avoids two bugs:
-    // 1. A useEffect-based approach fires after the first paint, so the class misses the
-    //    first render and the CSS `recent-entry` rule (`animation: none !important`) can
-    //    still suppress it on the second render.
-    // 2. Storing `isHitImpact` as a permanent message flag caused the animation to
-    //    re-fire on the previous hit when `recent-entry` dropped off during a re-render.
-    const [showHitFlash, setShowHitFlash] = useState(() => !!msg.isHitImpact);
-    const [showHitterFlash, setShowHitterFlash] = useState(() => !!msg.isHitterImpact);
-    useEffect(() => {
-        if (msg.isHitImpact) {
-            const t = setTimeout(() => setShowHitFlash(false), 1200);
-            return () => clearTimeout(t);
-        }
-        if (msg.isHitterImpact) {
-            const t = setTimeout(() => setShowHitterFlash(false), 1200);
-            return () => clearTimeout(t);
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // intentionally empty — fire once on mount only
-
     const triggerParley = useCallback((e: React.MouseEvent) => {
         if (!setParley || !triggerHaptic || !playClickSound) return;
         e.stopPropagation();
@@ -133,7 +115,7 @@ const MessageItem = React.memo(({
 
     return (
         <div
-            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${isOutdatedRoom ? ' is-outdated-room' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${showHitFlash ? ' is-hit-impact' : ''}${showHitterFlash ? ' is-hitter-impact' : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
+            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${isOutdatedRoom ? ' is-outdated-room' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
         >
             {msg.type === 'user' || msg.type === 'snoop-command' ? (
                 <div 
@@ -240,7 +222,8 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onDragEnd,
     onWheel
 }) => {
-    const { inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, isTimestampEnabled, isNewbieMode, isSpectateMode, showSpectatePromptInLog, input, setInput, sessionMode, setSessionMode } = useBaseGame() as any;
+    const { inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, isTimestampEnabled, isNewbieMode, showSpectatePromptInLog, input, setInput, sessionMode, setSessionMode } = useBaseGame() as any;
+    const isSpectateMode = useModeStore(s => s.isSpectating);
     const { replayer } = useUI() as any;
     const { messages } = useLog();
     const { activePrompt, target, setTarget, opponentName, opponentHealthStatus } = useVitals();
@@ -287,6 +270,19 @@ const MessageLog: React.FC<MessageLogProps> = ({
             'chat': '#55ff55',
             'group': '#77ff77',
             'whisper': '#aaaaaa'
+        };
+
+        // Context for tokenizer
+        const tokenizerContext = {
+            target,
+            currentOccupants: [],
+            roomNpcs: [],
+            activeGroupMembers: [],
+            roomItems: [],
+            discoveredItems: [],
+            inlineCategories: [],
+            buttons: [],
+            selectedObjectIds: new Set<string>()
         };
 
         replayer.log.entries.forEach((entry: any, idx: number) => {
@@ -345,7 +341,8 @@ const MessageLog: React.FC<MessageLogProps> = ({
                         id: msgId,
                         type: (pendingComm ? 'comm' : 'system') as any,
                         textRaw: combinedRx,
-                        html: processMessageHtml(html, msgId, false, (pendingComm ? 'comm' : 'system') as any),
+                        html: html,
+                        tokens: Tokenizer.tokenize(combinedRx, tokenizerContext),
                         timestamp: lastTimestamp,
                         isCombat: false,
                         isComm: !!pendingComm,
@@ -372,6 +369,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                             type: 'user',
                             textRaw: text,
                             html: text,
+                            tokens: Tokenizer.tokenize(text, tokenizerContext),
                             timestamp: ts
                         });
                     }
@@ -382,6 +380,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                         type: 'system',
                         textRaw: text,
                         html: text,
+                        tokens: Tokenizer.tokenize(text, tokenizerContext),
                         timestamp: ts
                     });
                 }
@@ -396,7 +395,8 @@ const MessageLog: React.FC<MessageLogProps> = ({
                 id: msgId,
                 type: (pendingComm ? 'comm' : 'system') as any,
                 textRaw: combinedRx,
-                html: processMessageHtml(html, msgId, false, (pendingComm ? 'comm' : 'system') as any),
+                html: html,
+                tokens: Tokenizer.tokenize(combinedRx, tokenizerContext),
                 timestamp: lastTimestamp,
                 isComm: !!pendingComm,
                 commSender: pendingComm?.sender,
@@ -409,7 +409,8 @@ const MessageLog: React.FC<MessageLogProps> = ({
         }
         
         return results;
-    }, [sessionMode, replayer.log]);
+    }, [sessionMode, replayer.log, target]);
+
 
 
     const displayMessages = useMemo(() => {
@@ -434,9 +435,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
         // when the spectate-prompt toggle is on.
         const result = messages.filter(m => m.type !== 'prompt' || (m.isSnoop && showSpectatePromptInLog));
         const userMsgs = result.filter(m => m.type === 'user');
-        if (userMsgs.length > 0) {
-            console.log(`[MessageLog] displayMessages update: total=${result.length}, userCommands=${userMsgs.length}`, userMsgs.map(m => m.textRaw));
-        }
+        console.log(`[MessageLog] displayMessages update: total=${result.length}, messages=${messages.length}, userCommands=${userMsgs.length}`, userMsgs.map(m => m.textRaw));
         return result;
     }, [messages, replayMessages, sessionMode, showSpectatePromptInLog, replayer.state.currentTime]);
 

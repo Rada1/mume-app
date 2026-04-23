@@ -8,6 +8,7 @@ import type {
     GmcpRoomItems,
     GmcpOccupant,
     GmcpMumeEdit,
+    MessageType,
 } from '../types';
 
 export interface GmcpEventMap {
@@ -37,6 +38,9 @@ export interface GmcpEventMap {
     'Core.Ping': void;
     'Core.Goodbye': void;
     'Connection.Disconnect': void;
+    'Game.Text': { type: MessageType; text: string; tokens?: any; isReplay?: boolean };
+    'Session.Reset': void;
+    'Session.Start': { characterName: string };
 }
 
 export type GmcpEventName = keyof GmcpEventMap;

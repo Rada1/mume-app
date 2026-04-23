@@ -5,20 +5,20 @@
 
 import React from 'react';
 import { useGame } from '../../../context/GameContext';
+import { useModeStore } from '../../../stores/useModeStore';
 import { ChevronRight, List, Timer, User, X } from 'lucide-react';
 import './SpectateQueueHUD.css';
 
 const SNOOP_ROTATION_MS = 10 * 60 * 1000;
 
 export const SpectateQueueHUD: React.FC = () => {
-    const { 
-        spectateQueue, spectateCharacterName, lastSnoopStartTime, isSpectateMode, 
-        removeFromQueue, rotateQueue 
-    } = useGame();
+    const { removeFromQueue, rotateQueue } = useGame();
+    const { isSpectating, spectateTarget, spectateQueue, lastSnoopStartTime } = useModeStore();
 
-    if (!isSpectateMode) return null;
-    
+    if (!isSpectating) return null;
+
     const queue = spectateQueue || [];
+    const spectateCharacterName = spectateTarget;
     if (queue.length === 0 && (!spectateCharacterName || spectateCharacterName === 'None')) return null;
 
     const remainingMs = lastSnoopStartTime 

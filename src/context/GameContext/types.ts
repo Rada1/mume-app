@@ -67,16 +67,9 @@ export interface VitalsContextType {
     setSpectateHealthStatus: (val: CombatHealthStatus | null) => void;
     setSpectateOpponentStatus: (val: CombatHealthStatus | null) => void;
     setSpectateOpponentName: (val: string | null) => void;
-    setSpectateOpponentId: (val: string | null) => void;
-    spectateOpponentName: string | null;
-    spectateOpponentId: string | null;
     xpHistory: { old: number; new: number };
     xpEvent: number;
     triggerXpTicker: () => void;
-    hitFlashEvent: number;
-    oppHitFlashEvent: number;
-    triggerHitFlash: () => void;
-    triggerOppHitFlash: () => void;
     gameTime: import('../../types').MumeTime | null;
     setGameTime: Dispatch<SetStateAction<import('../../types').MumeTime | null>>;
     roomName: string | null;
@@ -102,30 +95,32 @@ export interface LogContextType extends LogData {
     handleLogPointerUp: (e: React.PointerEvent) => void;
 }
 
+export type DrawerType = 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'session-log' | 'help' | 'map' | 'settings' | 'library' | 'actions' | 'diagnostic';
+
 export interface UIContextType {
     ui: {
-        drawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'session-log';
+        drawer: DrawerType;
         isDrawerPeeking: boolean;
-        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map' | 'session-log';
+        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map' | 'session-log' | 'help';
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;
         isSetMenuOpen: boolean;
         menuView: 'main' | 'availableSets';
-        peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map';
+        peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map' | 'help';
         showMapperToolbar: boolean;
         characterTab: 'info' | 'practice' | 'quests';
     };
     setUI: Dispatch<SetStateAction<{
-        drawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'session-log';
+        drawer: DrawerType;
         isDrawerPeeking: boolean;
-        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map' | 'session-log';
+        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map' | 'session-log' | 'help';
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;
         isSetMenuOpen: boolean;
         menuView: 'main' | 'availableSets';
-        peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map';
+        peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map' | 'help';
         showMapperToolbar: boolean;
         characterTab: 'info' | 'practice' | 'quests';
     }>>;
@@ -286,15 +281,15 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     popoverState: PopoverState | null;
     setPopoverState: (val: PopoverState | null) => void;
     ui: {
-        drawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'session-log';
+        drawer: DrawerType;
         isDrawerPeeking: boolean;
-        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map' | 'session-log';
+        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map' | 'session-log' | 'help' | 'settings';
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;
         isSetMenuOpen: boolean;
         menuView: 'main' | 'availableSets';
-        peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map';
+        peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map' | 'help' | 'settings';
         showMapperToolbar: boolean;
         characterTab: 'info' | 'practice' | 'quests';
     };
@@ -345,8 +340,6 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     setShowControls: (val: boolean) => void;
     isPasswordMode: boolean;
     spectateCharacterName: string | null;
-    spectateTargetId: number | null;
-    setSpectateTargetId: (val: number | null) => void;
     showLegacyButtons: boolean;
     setShowLegacyButtons: (val: boolean) => void;
     showOrganicTerrain: boolean;

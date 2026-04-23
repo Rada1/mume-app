@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
 import { useGame, useUI } from '../../../context/GameContext';
-import { DrawerLine } from '../../../types';
+import { DrawerLine, CustomButton, InlineCategoryConfig, GameEntity } from '../../../types';
 import { getCategoryForName, COLOR_OBJ } from '../../../utils/categorizationUtils';
 
 import { isObjectSelected } from '../../../utils/selectionUtils';
@@ -19,11 +19,11 @@ interface InventoryViewProps {
     triggerHaptic: (ms: number) => void;
     inventoryLines: DrawerLine[];
     eqLines: DrawerLine[];
-    handleButtonClick: (button: any, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => void;
+    handleButtonClick: (button: CustomButton, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => void;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
-    pendingDrawerContainerRef: React.RefObject<{ containerId: string; cmd: 'inventorylist' | 'equipmentlist'; afterId: string } | null>;
-    inlineCategories?: import('../../types').InlineCategoryConfig[];
-    entities?: Record<string, import('../../types').GameEntity>;
+    pendingDrawerContainerRef?: React.MutableRefObject<{ containerId: string; cmd: 'inventorylist' | 'equipmentlist'; afterId: string } | null>;
+    inlineCategories?: InlineCategoryConfig[];
+    entities?: Record<string, GameEntity>;
     keywordOverrides?: Record<string, string>;
 }
 

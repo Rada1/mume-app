@@ -77,7 +77,14 @@ export const LibraryModal: React.FC<LibraryModalProps> = ({ isOpen, onClose }) =
     if (!isOpen) return null;
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
+        <div 
+            className="modal-overlay" 
+            onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                    onClose();
+                }
+            }}
+        >
             <div className="modal large" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                     <div className="modal-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

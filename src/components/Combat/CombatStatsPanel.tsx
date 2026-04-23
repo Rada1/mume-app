@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useVitals, useGame } from '../../context/GameContext';
+import { useModeStore } from '../../stores/useModeStore';
 import './CombatStatsPanel.css';
 
 const MOODS = [
@@ -32,7 +33,8 @@ const ALERTS = [
 
 const CombatStatsPanel: React.FC = () => {
     const { stats } = useVitals();
-    const { inCombat, mood, spellSpeed, alertness, executeCommand, isSpectateMode, viewport, btn } = useGame();
+    const { inCombat, mood, spellSpeed, alertness, executeCommand, viewport, btn } = useGame();
+    const isSpectateMode = useModeStore(s => s.isSpectating);
     const { isMobile } = viewport;
     
     // Menu States

@@ -279,6 +279,8 @@ const InputArea: React.FC<InputAreaProps> = ({
                         )}
                         <textarea
                             ref={inputRef}
+                            id="mud-input"
+                            name="mud-input"
                             className="input-field"
                             value={input}
                             rows={1}

@@ -38,7 +38,6 @@ interface UseGmcpOccupantsProps {
     setRoomNpcs: React.Dispatch<React.SetStateAction<GmcpOccupant[]>>;
     setRoomItems: React.Dispatch<React.SetStateAction<GmcpOccupant[]>>;
     characterName: string | null;
-    isSpectateMode?: boolean;
     registerEntity?: (id: string, name: string, location: import('../../types').EntityLocation, category?: string) => import('../../types').GameEntity;
     setIsRiding?: (val: boolean) => void;
     lastRoomChangeTimeRef: React.MutableRefObject<number>;
@@ -51,7 +50,6 @@ export const useGmcpOccupants = ({
     setRoomNpcs,
     setRoomItems,
     characterName,
-    isSpectateMode,
     registerEntity,
     setIsRiding,
     lastRoomChangeTimeRef,
@@ -59,7 +57,6 @@ export const useGmcpOccupants = ({
 }: UseGmcpOccupantsProps) => {
 
     const handleRoomList = useCallback((data: any, isPlayersList: boolean) => {
-        if (isSpectateMode) return;
         console.log(`[GMCP] Ingesting ${isPlayersList ? 'Players' : 'NPCs'} list:`, data);
         let rawList = Array.isArray(data) ? data : (data.players || data.members || data.chars || data.char || data.npcs || data.list || []);
         if (rawList && !Array.isArray(rawList)) rawList = [rawList];
@@ -80,7 +77,10 @@ export const useGmcpOccupants = ({
             const obj = parseOccupant(p, characterName);
             if (!obj) return;
 
-            const isPc = typeof p !== 'string' && typeof p !== 'number' && (p.pc || p.type === 'pc' || p.type === 'player');
+            const isExplicitPc = typeof p !== 'string' && typeof p !== 'number' && (p.pc || p.type === 'pc' || p.type === 'player');
+            const isExplicitNpc = typeof p !== 'string' && typeof p !== 'number' && (p.npc || p.type === 'npc');
+            const isPc = isExplicitPc || (isPlayersList && !isExplicitNpc);
+
             if (isPc) {
                 pcList.push(obj);
                 if (registerEntity) registerEntity(obj.id ? String(obj.id) : `roomplayers:${obj.name}`, obj.name, 'room', 'player');
@@ -105,16 +105,23 @@ export const useGmcpOccupants = ({
             }
         } else {
             setRoomNpcs(npcList);
-            setRoomPlayers(pcList);
+            if (pcList.length > 0) {
+                setRoomPlayers(prev => {
+                    let next = [...prev];
+                    pcList.forEach(p => {
+                        next = updateList(next, p, p.id !== undefined && p.id !== null ? String(p.id) : null, p.name || p.keyword || p.short || null);
+                    });
+                    return next;
+                });
+            }
         }
         mapperRef.current?.triggerRender?.();
-    }, [setRoomPlayers, setRoomNpcs, setIsRiding, characterName, registerEntity, mapperRef, isSpectateMode]);
+    }, [setRoomPlayers, setRoomNpcs, setIsRiding, characterName, registerEntity, mapperRef]);
 
     const onRoomPlayers = useCallback((data: any) => handleRoomList(data, true), [handleRoomList]);
     const onRoomNpcs = useCallback((data: any) => handleRoomList(data, false), [handleRoomList]);
 
     const onRoomItems = useCallback((data: any) => {
-        if (isSpectateMode) return;
         console.log('[GMCP] Ingesting Items list:', data);
 
         // MUME distinguishing between room items and inventory items
@@ -141,10 +148,10 @@ export const useGmcpOccupants = ({
         });
         console.log(`[GMCP] Resolved ${items.length} room items`);
         setRoomItems(items);
-    }, [setRoomItems, registerEntity, isSpectateMode, inlineCategories]);
+    }, [setRoomItems, registerEntity, inlineCategories]);
 
     const handleAdd = useCallback((data: any, isPlayerDefault: boolean) => {
-        if (isSpectateMode || !data) return;
+        if (!data) return;
         const obj = parseOccupant(data, characterName);
         if (!obj) return;
 
@@ -175,10 +182,10 @@ export const useGmcpOccupants = ({
 
             setRoomNpcs(prev => updateList(prev, obj, idStr, nameStr));
         }
-    }, [setRoomPlayers, setRoomNpcs, characterName, registerEntity, isSpectateMode, lastRoomChangeTimeRef, mapperRef]);
+    }, [setRoomPlayers, setRoomNpcs, characterName, registerEntity, lastRoomChangeTimeRef, mapperRef]);
 
     const handleRemove = useCallback((data: any, isPlayerDefault: boolean) => {
-        if (isSpectateMode || !data) return;
+        if (!data) return;
         const id = (data && typeof data === 'object') ? data.id : data;
         const name = (data && typeof data === 'object') ? (data.name || data.keyword || data.short) : data;
         const idStr = (id !== undefined && id !== null) ? String(id) : null;
@@ -193,7 +200,7 @@ export const useGmcpOccupants = ({
         setRoomPlayers(prev => prev.filter(filterFn));
         setRoomNpcs(prev => prev.filter(filterFn));
         mapperRef.current?.triggerRender?.();
-    }, [setRoomPlayers, setRoomNpcs, mapperRef, isSpectateMode]);
+    }, [setRoomPlayers, setRoomNpcs, mapperRef]);
 
     const onAddPlayer = useCallback((data: any) => handleAdd(data, true), [handleAdd]);
     const onAddNpc = useCallback((data: any) => handleAdd(data, false), [handleAdd]);

@@ -51,4 +51,8 @@ Use clear, visual separators for logical blocks within a file. This helps AI age
 To ensure reliable inline button menus and consistent visuals, the application uses a centralized **Entity Registry**.
 - **The Registry (`src/hooks/useEntityRegistry.ts`):** The Single Source of Truth. It scans entities (NPCs, Items, Players) once and assigns them **Capabilities** (e.g., `isVendor`, `isWeapon`, `isWearable`).
 - **Data-Driven Actions (`src/utils/actionUtils.ts`):** Decisions on which buttons to show are made by mapping Capabilities to Button Sets.
-- **Strict Logic:** Never use "String Soup" (checking names for keywords) in the UI or Parser. All identification logic must live in the Registry.
+## 8. Interactive Highlighting Standards
+To maintain UI precision and prevent "highlight sprawl," the text parsing pipeline follows strict rules for entity detection:
+- **Keyword-First:** Entities (NPCs, Players) must only be highlighted based on their specific `keyword` or derived `noun`. Never highlight full descriptive strings (e.g., "A tall man...").
+- **Word Boundaries:** All regex matches in the `Tokenizer` must use word boundaries (`\b`) to prevent partial word matches and overlapping interactive spans.
+- **Null Safety:** Rendering logic in the Mapper and Interaction utilities must implement defensive null checks (e.g., `(color || '')`) to remain robust against incomplete GMCP packets during rapid room transitions.

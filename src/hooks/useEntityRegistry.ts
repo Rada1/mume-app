@@ -40,7 +40,7 @@ export const useEntityRegistry = () => {
 
         // 2. Base Type Assignment
         const isRoomLocation = location === 'room' as any;
-        if (catType === 'player' || isRoomLocation) {
+        if (catType === 'player') {
             caps.push(EntityCapability.Player);
             return caps; 
         }

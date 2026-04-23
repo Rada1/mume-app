@@ -16,7 +16,7 @@ interface StatsViewProps {
     setAlertness: (val: string) => void;
     triggerHaptic: (intensity: number) => void;
     activeSlider: string | null;
-    setActiveSlider: (val: string | null) => void;
+    setActiveSlider: (val: any) => void;
     activeButtonRect: DOMRect | null;
     setActiveButtonRect: (val: DOMRect | null) => void;
 }

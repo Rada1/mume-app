@@ -11,6 +11,7 @@ interface ModeState {
     activeView: 'self' | 'target';
 
     setMode: (mode: SessionMode) => void;
+    setIsSpectating: (val: boolean) => void;
     startSpectate: (target: string) => void;
     stopSpectate: () => void;
     setActiveCharacter: (name: string | null) => void;
@@ -29,6 +30,7 @@ export const useModeStore = create<ModeState>((set) => ({
     activeView: 'self',
 
     setMode: (mode) => set({ mode }),
+    setIsSpectating: (val) => set({ isSpectating: val }),
     startSpectate: (target) => set({ isSpectating: true, spectateTarget: target, activeView: 'target' }),
     stopSpectate: () => set({ isSpectating: false, spectateTarget: null, spectateQueue: [], lastSnoopStartTime: null, activeView: 'self' }),
     setActiveCharacter: (name) => set({ activeCharacter: name }),

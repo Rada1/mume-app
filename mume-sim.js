@@ -6,7 +6,7 @@ import { WebSocketServer } from 'ws';
  * and GMCP data to facilitate local client testing while mume.org is down.
  */
 
-const PORT = 8080;
+const PORT = 8081;
 const wss = new WebSocketServer({ port: PORT });
 
 console.log(`\x1b[32m[MUME Sim]\x1b[0m Server running on \x1b[36mws://localhost:${PORT}\x1b[0m`);
@@ -31,14 +31,17 @@ wss.on('connection', (ws) => {
         '',
         '\x1b[33m*******************************************************************************\x1b[0m',
         '\x1b[33m*                                                                             *\x1b[0m',
-        '\x1b[33m*   \x1b[36mWelcome to the MUME Simulator (LOCAL TEST)\x1b[33m                                *\x1b[0m',
+        '\x1b[33m*   \x1b[33mWelcome to MUME! (LOCAL TEST)\x1b[33m                                         *\x1b[0m',
         '\x1b[33m*                                                                             *\x1b[0m',
         '\x1b[33m*******************************************************************************\x1b[0m',
         '',
-        'By what name do you wish to be known? '
+        '\x1b[33mBy what name do you wish to be known? \x1b[0m'
     ].join('\n');
 
-    ws.send(banner);
+    setTimeout(() => {
+        console.log('[Sim] Sending banner...');
+        ws.send(banner);
+    }, 500);
 
     ws.on('message', (data) => {
         const input = data.toString().trim();
@@ -47,7 +50,7 @@ wss.on('connection', (ws) => {
         if (stage === 'NAME') {
             characterName = input || 'Tester';
             stage = 'PASSWORD';
-            ws.send('\x1b[32mPassword: \x1b[0m');
+            ws.send('\x1b[32mAccount Password: \x1b[0m');
         } else if (stage === 'PASSWORD') {
             stage = 'PLAYING';
             ws.send('\n\x1b[36mWelcome back to Middle-earth!\x1b[0m\n');
@@ -63,10 +66,38 @@ wss.on('connection', (ws) => {
                 map: 'https://mume.org/download/mapper/arda-base.xml' 
             }));
             
-            ws.send('\x1b[32mThe Simulator Void\x1b[0m\nIt is cold and quiet here.\x1b[33m\nExits: North South East West\x1b[0m\n\n> ');
+            ws.send('\x1b[1;32mThe Simulator Void\x1b[0m\nIt is cold and quiet here.\x1b[33m\nExits: North South East West\x1b[0m\n\n> ');
         } else {
-            // Simple echo for gameplay testing
-            if (input.toLowerCase() === 'look') {
+            // Automated Testing Commands
+            if (input.toLowerCase() === 'who' || input.toLowerCase() === 'allies') {
+                ws.send('\x1b[32mPlayers\x1b[0m\n');
+                ws.send('\x1b[32m-------\x1b[0m\n');
+                ws.send('*[Mw] Ellessar (iMw)\n');
+                ws.send('*[ A] Rogon Rogoff (Idle) (iM)\n');
+                ws.send('<E> Hoplite the Hobbit Adventurer, Elf-friend\n');
+                ws.send('    Sirgrög the Man Soldier\n');
+                ws.send('28 players on.\n\n> ');
+            } else if (input.toLowerCase() === 'minions') {
+                ws.send('\x1b[32mMinions\x1b[0m\n');
+                ws.send('\x1b[32m-------\x1b[0m\n');
+                ws.send('Mozgus the Inhuman, the Butcher of Barad-dûr (Idle)\n');
+                ws.send('1 player on.\n\n> ');
+            } else if (input.toLowerCase() === 'test_highlights') {
+                // Send GMCP data first
+                ws.send(createGmcpBuffer('Room.Occupants', [
+                    { name: 'a green orc', id: 101, isNpc: true },
+                    { name: 'Ciltor', id: 102, isNpc: false }
+                ]));
+                ws.send(createGmcpBuffer('Room.Items', [
+                    { name: 'a heavy sword', id: 201 }
+                ]));
+                
+                // Send matching text
+                ws.send('\x1b[32mThe Simulator Void\x1b[0m\n');
+                ws.send('A green orc is standing here, glaring at you.\n');
+                ws.send('Ciltor is resting by the fire.\n');
+                ws.send('[ 5] a heavy sword is lying on the ground.\n\n> ');
+            } else if (input.toLowerCase() === 'look') {
                 ws.send('\x1b[32mThe Simulator Void\x1b[0m\nYou see a console output floating in the air.\n> ');
             } else {
                 ws.send(`Unknown command: ${input}\n> `);

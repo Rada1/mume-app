@@ -23,37 +23,14 @@ gmcpBus.on('Room.UpdateExits', (data) => {
     useRoomStore.getState().applyExitsUpdate(data);
 });
 
-gmcpBus.on('Room.Players', (data) => {
-    if (useModeStore.getState().isSpectating) return;
-    let rawList = Array.isArray(data) ? data : ((data as any).players || (data as any).members || (data as any).chars || (data as any).char || []);
-    if (rawList && !Array.isArray(rawList)) rawList = [rawList];
-    // No setPlayers in Slice, but we can use addPlayer or something?
-    // Actually the slice should have setPlayers if we want it.
-});
-
 gmcpBus.on('Room.Items', (data) => {
     if (useModeStore.getState().isSpectating) return;
-    useRoomStore.getState().applyItemsUpdate(data as any);
+    useRoomStore.getState().setItems(data as any);
 });
 
-gmcpBus.on('Room.AddPlayer', (data) => {
-    if (useModeStore.getState().isSpectating) return;
-    useRoomStore.getState().addPlayer(data);
-});
+// Occupant Add/Remove events are handled by useGmcpOccupants.ts in GameContext 
+// to allow for sophisticated classification, animation triggers, and entity registration.
 
-gmcpBus.on('Room.RemovePlayer', (data) => {
-    if (useModeStore.getState().isSpectating) return;
-    useRoomStore.getState().removePlayer(data);
-});
-
-gmcpBus.on('Room.AddNpc', (data) => {
-    if (useModeStore.getState().isSpectating) return;
-    useRoomStore.getState().addNpc(data);
-});
-
-gmcpBus.on('Room.RemoveNpc', (data) => {
-    if (useModeStore.getState().isSpectating) return;
-    useRoomStore.getState().removeNpc(data);
-});
+// NPC Add/Remove events are also handled by useGmcpOccupants.ts
 
 export const getRoom = () => useRoomStore.getState();

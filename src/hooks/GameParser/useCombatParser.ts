@@ -11,8 +11,6 @@ export interface CombatParserDeps {
     setOpponentHealthStatus: (val: CombatHealthStatus | null) => void;
     setOpponentName: (val: string | null) => void;
     setCharacterInfo: (val: CharacterInfo | ((prev: CharacterInfo) => CharacterInfo)) => void;
-    triggerHitFlash?: () => void;
-    triggerOppHitFlash?: () => void;
     triggerXpTicker?: () => void;
     groupMembers: GroupMember[];
     mapperRef?: React.RefObject<any>;
@@ -25,7 +23,7 @@ export interface CombatParserDeps {
     setSpectateOpponentStatus?: (val: CombatHealthStatus | null) => void;
     playKillSound?: (options?: { pitch?: number, volume?: number }) => void;
     playLevelSound?: (options?: { pitch?: number, volume?: number }) => void;
-    playHitImpactSound?: (modifier?: string) => void;
+    playHitImpactSound?: (options?: { pitch?: number, volume?: number } | string) => void;
     playOofSound?: () => void;
     playSlashSound?: () => void;
     playCleaveSound?: () => void;
@@ -36,6 +34,7 @@ export interface CombatParserDeps {
     setInCombat?: (inCombat: boolean, force?: boolean) => void;
     characterName?: string | null;
     addMessage?: (type: any, text: string) => void;
+    isSpectateMode?: boolean;
 }
 
 const COMBAT_VERBS_STR = ['hit', 'miss', 'wound', 'kill', 'maul', 'pierce', 'cleave', 'stab', 'slash', 'pound', 'crush', 'smite', 'strike', 'backstab', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shocked', 'stunned', 'blinded', 'silenced', 'hurt', 'die', 'fighting', 'recovered', 'shoot', 'shoots', 'blast', 'shatters', 'joins?', 'assists?'].join('|');
@@ -211,11 +210,7 @@ export function useCombatParser(deps: CombatParserDeps) {
             }
 
             // Visual FX
-            if (match.isImpact && match.isPlayerTarget) {
-                deps.triggerHitFlash?.();
-            } else if (match.isImpact && (match.side === 'player' || match.side === 'groupmate')) {
-                deps.triggerOppHitFlash?.();
-            }
+            // Removed hitflash triggers
 
             return 'combat';
         }

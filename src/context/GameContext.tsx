@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useRef, useCallback, useMemo, useEffect } from 'react';
 import {
-    PopoverState, CustomButton, TeleportTarget, GmcpOccupant, SessionMode, CombatHealthStatus
+    PopoverState, CustomButton, TeleportTarget, GmcpOccupant, SessionMode, CombatHealthStatus, MessageType, InlineCategoryConfig, GameEntity
 } from '../types';
 import { useMessageLog } from '../hooks/useMessageLog';
 import { useButtons } from '../hooks/useButtons';
@@ -8,7 +8,6 @@ import { useJoystick } from '../hooks/useJoystick';
 import { useButtonEditor } from '../hooks/useButtonEditor';
 import { useViewport } from '../hooks/useViewport';
 import { useEnvironment } from '../hooks/useEnvironment';
-import { useMessageHighlighter } from '../hooks/useMessageHighlighter';
 import { useTelnet } from '../hooks/useTelnet';
 import { ProtocolHandler } from '../utils/telnet/ProtocolHandler';
 import { GmcpDecoder } from '../utils/telnet/GmcpDecoder';
@@ -23,12 +22,12 @@ import { useHelpHandler } from '../hooks/useHelpHandler';
 import { useKeywordOverrides } from '../hooks/useKeywordOverrides';
 import { MapperRef } from '../components/Mapper/mapperTypes';
 
-import { GameContextType, VitalsContextType, LogContextType, UIContextType } from './GameContext/types';
+import { GameContextType, VitalsContextType, LogContextType, UIContextType, DrawerType } from './GameContext/types';
 import { useGmcpHandlers } from '../hooks/useGmcpHandlers/index';
 import { useGameProviderState } from './GameContext/state';
 import { useSessionManager } from '../hooks/useSessionManager';
 import { useAmbientController, useAudioEffects } from '../hooks/useAudioSystem';
-import { useSessionRecorder } from '../hooks/useSessionRecorder';
+import { useSessionRecorder, LogEntryType } from '../hooks/useSessionRecorder';
 import { useSessionReplayer } from '../hooks/useSessionReplayer';
 import { useSettings } from '../hooks/useSettings';
 import { useAgentObservability } from '../hooks/useAgentObservability';
@@ -85,6 +84,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const { vitals: v, game: s } = useGameProviderState();
     const ui = useUIStore();
     const settingsStore = useSettingsStore();
+    const mapperRef = useRef<MapperRef>(null);
     
     // 2. Audio System
     useAmbientController();
@@ -149,26 +149,26 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, []);
 
     const gmcpHandlers = useGmcpHandlers({
-        mapperRef: useRef<MapperRef>(null), roomDescRef: s.roomDescRef,
-        setCurrentTerrain: s.isSpectateMode ? s.setSpectateTerrain : s.setCurrentTerrain,
-        setRoomPlayers: s.isSpectateMode ? s.setSpectateGroupMembers : s.setRoomPlayers,
+        mapperRef: mapperRef, roomDescRef: s.roomDescRef,
+        setCurrentTerrain: s.setCurrentTerrain,
+        setRoomPlayers: s.setRoomPlayers,
         setRoomNpcs: s.setRoomNpcs, setRoomItems: s.setRoomItems, characterName: s.characterName,
         setAbilities: s.setAbilities, addMessage, setCharacterName: s.setCharacterName,
-        setPlayerPosition: s.isSpectateMode ? s.setSpectatePosition : s.setPlayerPosition,
-        setInCombat: s.isSpectateMode ? s.setSpectateInCombat : s.setInCombat,
-        setRoomName: s.isSpectateMode ? s.setSpectateRoomName : s.setRoomName,
-        setRoomDesc: s.isSpectateMode ? s.setSpectateRoomDesc : s.setRoomDesc,
-        setRoomZone: s.isSpectateMode ? s.setSpectateRoomZone : s.setRoomZone,
+        setPlayerPosition: s.setPlayerPosition,
+        setInCombat: s.setInCombat,
+        setRoomName: s.setRoomName,
+        setRoomDesc: s.setRoomDesc,
+        setRoomZone: s.setRoomZone,
         setRoomExits: s.setRoomExits, setDiscoveredItems: s.setDiscoveredItems,
-        setBufferName: v.setBufferName, setPlayerHealthStatus: s.isSpectateMode ? v.setSpectateHealthStatus : v.setPlayerHealthStatus,
-        setOpponentHealthStatus: s.isSpectateMode ? v.setSpectateOpponentStatus : v.setOpponentHealthStatus,
-        setBufferHealthStatus: v.setBufferHealthStatus, setOpponentName: s.isSpectateMode ? v.setSpectateOpponentName : v.setOpponentName,
-        setCharacterInfo: v.setCharacterInfo, characterInfo: v.characterInfo, opponentName: s.isSpectateMode ? v.spectateOpponentName : v.opponentName,
+        setBufferName: v.setBufferName, setPlayerHealthStatus: v.setPlayerHealthStatus,
+        setOpponentHealthStatus: v.setOpponentHealthStatus,
+        setBufferHealthStatus: v.setBufferHealthStatus, setOpponentName: v.setOpponentName,
+        setCharacterInfo: v.setCharacterInfo, characterInfo: v.characterInfo, opponentName: v.opponentName,
         bufferName: v.bufferName, roomPlayers: s.roomPlayers, roomNpcs: s.roomNpcs, setGroupMembers: v.setGroupMembers,
         setMumeEditState: s.setMumeEditState, setWhoList: s.setWhoList, setWhereList: s.setWhereList,
-        opponentId: s.isSpectateMode ? v.spectateOpponentId : v.opponentId, setOpponentId: s.isSpectateMode ? v.setOpponentId : v.setOpponentId,
-        detectLighting: (light) => { if (s.isSpectateMode) s.setSpectateLighting(light as any); else env.detectLighting?.(light); },
-        playMovementSound, playDoorSound, setWeather: s.setWeather, setIsFoggy: s.setIsFoggy, setStats: s.isSpectateMode ? s.setSpectateStats : s.setStats,
+        opponentId: v.opponentId, setOpponentId: v.setOpponentId,
+        detectLighting: env.detectLighting,
+        playMovementSound, playDoorSound, setWeather: s.setWeather, setIsFoggy: s.setIsFoggy, setStats: s.setStats,
         playerPositionRef: s.playerPositionRef, setIsRiding: s.setIsRiding, isRidingRef: s.isRidingRef, isSpectateMode: s.isSpectateMode, inlineCategories: s.inlineCategories,
         sendGMCP: sendGMCPProxy
     });
@@ -176,7 +176,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // 5. Telnet & Networking
     const telnet = useTelnet({
         connectionUrl: settingsStore.connectionUrl,
-        processLine: (line) => parserRef.current?.processLine(line),
+        processLine: (line, tokens) => {
+            console.log(`[Socket] Calling processLine for: "${line.substring(0, 30)}"`);
+            return parserRef.current?.processLine(line, tokens) ?? null;
+        },
         recordEntry: (type, data) => recorderRef.current?.recordEntry(type, data),
         setPrompt: v.setActivePrompt,
         onCharNameChange: gmcpHandlers.onCharNameChange,
@@ -188,7 +191,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setIsFoggy: s.setIsFoggy,
             setInCombat: s.setInCombat,
             addMessage,
-            detectLighting: (light) => { if (s.isSpectateMode) s.setSpectateLighting(light as any); else env.detectLighting?.(light); },
+            detectLighting: env.detectLighting,
             addDiagnosticLog: ui.addDiagnosticLog,
             onEchoChange: (visible: boolean) => {
                 console.log('[GameContext] onEchoChange:', visible);
@@ -242,7 +245,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // Basic Actions
         addMessage,
         addSystemMessage,
-        executeCommandRef: { current: null }, // Controller will fill this or we can pass actual ref if available
+        executeCommandRef: { current: null }, 
+        
+        // Mapper/World
+        mapperRef: mapperRef,
+        setDeathRoomId: (id: string | null) => {}, // Placeholder
 
         // Handlers
         practiceHandler: practice,
@@ -272,22 +279,21 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playDoorSound,
         playMovementSound,
         triggerHaptic,
-        triggerHitFlash: v.triggerHitFlash,
-        triggerOppHitFlash: v.triggerOppHitFlash,
         triggerXpTicker: v.triggerXpTicker,
 
         // State Refs
+        sessionMode: session.sessionMode,
         inCombatRef: { current: false },
-        roomDescRef: { current: null },
-        roomNameRef: { current: null },
+        roomDescRef: s.roomDescRef,
+        roomNameRef: { current: "" },
         pendingGmcpCommRef: { current: null },
         lastCommIdBySenderRef: { current: new Map() },
         lastCommMsgIdRef: { current: null },
         lastCommTimeRef: { current: 0 },
-        isWaitingForInv: { current: false },
-        isWaitingForEq: { current: false },
-        isWaitingForStats: { current: false },
-        isWaitingForInfo: { current: false },
+        isWaitingForInv: { current: false } as any,
+        isWaitingForEq: { current: false } as any,
+        isWaitingForStats: { current: false } as any,
+        isWaitingForInfo: { current: false } as any,
         isSoundEnabledRef: { current: true },
         soundTriggersRef: { current: [] },
         captureStage: { current: 'none' },
@@ -311,6 +317,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         characterName: s.characterName,
         spectateCharacterName: s.spectateCharacterName,
         groupMembers: v.groupMembers,
+        activeGroupMembers: v.groupMembers,
         isSpectateMode: s.isSpectateMode,
         spectateTarget: s.spectateTarget,
         spectateRoomName: s.spectateRoomName,
@@ -320,10 +327,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         accountState: s.accountState,
         inlineCategories: s.inlineCategories,
         roomPlayers: s.roomPlayers,
+        roomNpcs: s.roomNpcs,
+        roomItems: s.roomItems,
+        target: v.target,
         selectedObjectIds: s.selectedObjectIds,
 
         // Setters
-        setInCombat: s.setInCombat,
         setMood: s.setMood,
         setPlayerPosition: s.setPlayerPosition,
         setEntities: s.setEntities,
@@ -331,10 +340,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setQuests: s.setQuests,
         setIsPasswordMode: s.setIsPasswordMode,
         setAccountState: s.setAccountState,
-        setIsSpectateMode: s.setIsSpectateMode,
+        setIsSpectateMode: mode.setIsSpectating,
         setGameTime: s.setGameTime,
         setWeather: s.setWeather,
         setIsFoggy: s.setIsFoggy,
+        setLightningEnabled: s.setLightningEnabled,
         
         // Spectate Setters
         setSpectateInCombat: s.setSpectateInCombat,
@@ -369,16 +379,35 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         // Others
         addDiagnosticLog: ui.addDiagnosticLog,
-        registerEntity: s.registerEntity,
-        entities: s.entities,
+        registerEntity: s.registry.registerEntity,
+        entities: s.registry.entities,
         ansiConvert,
         btn,
-        quests: s.quests
-    }), [s, v, ui, addMessage, addSystemMessage, playHitImpactSound, playOofSound, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, shop, help, keywordOverrides, btn]);
+        quests: s.quests,
+        shop: shop
+    }), [s, v, ui, addMessage, addSystemMessage, playHitImpactSound, playOofSound, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, shop, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
+
 
     const parser = useGameParser(deps, s.userSession);
     const parserRef = useRef(parser);
     useEffect(() => { parserRef.current = parser; }, [parser]);
+
+    const sessionManager = useSessionManager({
+        status: s.status,
+        activePrompt: v.activePrompt?.text || '',
+        addSystemMessage,
+        telnetSendCommand: telnet.send,
+        telnetConnect: telnet.connect,
+        characterName: s.characterName,
+        executeCommand: (cmd, echo, fromMacro) => controller.executeCommand(cmd, echo, fromMacro),
+        groupMembers: v.groupMembers,
+        spatButtons,
+        triggerSpitManual,
+        gameState: s.gameState as any,
+        accountStage: s.accountState.stage as any,
+        isPasswordMode: s.isPasswordMode
+    });
+
     const controller = useCommandController({
         telnet, addMessage, initAudio, navIntervalRef: { current: null }, mapperRef: { current: null },
         teleportTargets: settingsStore.teleportTargets, help, isDrawerCapture: { current: 0 },
@@ -400,21 +429,21 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         activeDragData: s.activeDragData, practice, heldButton: v.heldButton,
         setHeldButton: v.setHeldButton, parley: s.parley, setParley: s.setParley,
         isTrackpadModifierActive: s.isTrackpadModifierActive, shop,
-        keywordOverrides, openKeywordEdit, lastCommandContextRef: { current: null },
+        keywordOverrides: keywordOverrides.overrides, openKeywordEdit, lastCommandContextRef: { current: null },
         entities: s.entities, applyOptimisticChange: s.applyOptimisticChange,
         selectedObjectIds: s.selectedObjectIds, toggleObjectSelection: s.toggleObjectSelection,
         clearObjectSelection: s.clearObjectSelection, playClickSound, isSoundEnabled: s.isSoundEnabled,
         waiting: false, recordEntry, gameState: s.gameState, isPasswordMode: s.isPasswordMode,
-        sessionMode, replayer, isSpectateMode: s.isSpectateMode, setIsSpectateMode: (v) => {},
-        showSpectatePromptInLog: settingsStore.showSpectatePromptInLog,
-        setShowSpectatePromptInLog: settingsStore.setShowSpectatePromptInLog,
+        sessionMode, replayer, isSpectateMode: s.isSpectateMode, setIsSpectateMode: mode.setIsSpectating,
+        showSpectatePromptInLog: settingsStore.showRecordingIndicator, // Placeholder
+        setShowSpectatePromptInLog: (v) => {}, // Placeholder
         isImmersionMode: settingsStore.isImmersionMode, setIsImmersionMode: settingsStore.setIsImmersionMode,
         isBloomEnabled: settingsStore.isBloomEnabled, setIsBloomEnabled: settingsStore.setIsBloomEnabled,
-        isHighlighterEnabled: settingsStore.isHighlighterEnabled, setIsHighlighterEnabled: settingsStore.setIsHighlighterEnabled,
+        isHighlighterEnabled: true, setIsHighlighterEnabled: (v) => {}, // Placeholder
         isTimestampEnabled: settingsStore.isTimestampEnabled, setIsTimestampEnabled: settingsStore.setIsTimestampEnabled,
         disableSmoothScroll: settingsStore.disableSmoothScroll, setDisableSmoothScroll: settingsStore.setDisableSmoothScroll,
         showRecordingIndicator: settingsStore.showRecordingIndicator, setShowRecordingIndicator: settingsStore.setShowRecordingIndicator,
-        showLegacyButtons: settingsStore.showLegacyButtons, setShowLegacyButtons: settingsStore.setShowLegacyButtons,
+        showLegacyButtons: false, setShowLegacyButtons: (v) => {}, // Placeholder
         uiMode: settingsStore.uiMode, setUiMode: settingsStore.setUiMode,
         fontFamily: settingsStore.fontFamily, setFontFamily: settingsStore.setFontFamily,
         favorites: settingsStore.favorites, setFavorites: settingsStore.setFavorites,
@@ -427,7 +456,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             drawer: ui.drawer,
             isDrawerPeeking: ui.isDrawerPeeking,
             peekingDrawer: ui.isDrawerPeeking ? (ui.drawer as any) : 'none',
-            setManagerOpen: ui.isSetMenuOpen,
+            setManagerOpen: ui.setManagerOpen,
             mapExpanded: ui.mapExpanded,
             isMenuOpen: ui.isMenuOpen,
             isSetMenuOpen: ui.isSetMenuOpen,
@@ -450,7 +479,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsEquipmentOpen: ui.setIsEquipmentOpen,
         setIsInventoryOpen: ui.setIsInventoryOpen,
         setIsMapExpanded: ui.setMapExpanded,
-        setIsSetManagerOpen: (open: boolean) => ui.setUI({ isSetMenuOpen: open }),
+        setIsSetManagerOpen: (open: boolean) => ui.setUI({ setManagerOpen: open }),
         setIsPlayersOpen: ui.setIsPlayersOpen,
         handleTabClick: (drawer: any) => ui.setDrawer(drawer),
         displayInventoryLines: s.inventoryLines,
@@ -528,11 +557,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         stopRecording,
         stopAndSave,
         saveLog,
+        mapperRef: mapperRef
     }), [
         s, v, telnet, parser, controller, btn, joystick, editor, replayer,
         viewport, env, audioCtxRef, initAudio, spatButtons, ui.diagnosticLogs,
         practice, help, shop, quests, keywordOverrides,
-        isRecording, duration, startRecording, stopRecording, stopAndSave, saveLog
+        isRecording, duration, startRecording, stopRecording, stopAndSave, saveLog, mapperRef
     ]);
 
     return (

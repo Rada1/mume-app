@@ -4,6 +4,7 @@
  */
 
 import React, { useCallback, useRef, useMemo } from 'react';
+import { gmcpBus } from '../../events/gmcpBus';
 import { DrawerLine, GameEntity, PopoverState, MessageType } from '../../types';
 import { useQuestsHandler } from '../useQuestsHandler';
 import { useEntityRegistry } from '../useEntityRegistry';
@@ -19,6 +20,7 @@ import { useAccountParser } from './useAccountParser';
 import { useTimeParser } from './useTimeParser';
 import { UseGameParserDeps } from './types';
 import { useSpectateAutomator } from '../useSpectateAutomator';
+import { useRoomStore } from '../../stores/useRoomStore';
 import { PipelineOrchestrator } from '../../services/parser/PipelineOrchestrator';
 
 export const useGameParser = (deps: UseGameParserDeps, session: any) => {
@@ -35,7 +37,6 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         setActiveSet: deps.btn?.setActiveSet || (() => {}), 
         actionsRef: deps.actionsRef, 
         executeCommandRef: deps.executeCommandRef,
-        playEffect: deps.playEffect,
         playSound: (deps.playSound || (() => {})) as any,
         playRandomSound: (deps.playRandomSound || (() => {})) as any
     });
@@ -51,6 +52,22 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     const tempScoreRef = useRef<DrawerLine[]>([]);
     const tempInfoRef = useRef<DrawerLine[]>([]);
     const tempPracticeRef = useRef<DrawerLine[]>([]);
+
+    const finalizeCapture = useCallback((owner: 'inv' | 'eq' | 'stat' | 'practice' | 'who' | 'where' | 'container' | 'none') => {
+        if (owner === 'inv') deps.setInventoryLines([...tempInvRef.current]);
+        else if (owner === 'eq') deps.setEqLines([...tempEqRef.current]);
+        else if (owner === 'stat') deps.setStatsLines([...tempStatsRef.current]);
+        else if (owner === 'practice') deps.setPracticeLines([...tempPracticeRef.current]);
+        else if (owner === 'who') session.game.setWhoLines([...session.game.tempWhoLines]);
+        else if (owner === 'where') session.game.setWhereLines([...session.game.tempWhereLines]);
+        
+        // Reset buffers
+        if (owner === 'inv') tempInvRef.current = [];
+        if (owner === 'eq') tempEqRef.current = [];
+        if (owner === 'stat') tempStatsRef.current = [];
+        if (owner === 'practice') tempPracticeRef.current = [];
+    }, [deps.setInventoryLines, deps.setEqLines, deps.setStatsLines, deps.setPracticeLines, session.game]);
+
 
     const router = useMessageRouter({
         captureStage: deps.captureStage, 
@@ -81,16 +98,14 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
     const combat = useCombatParser({ 
         inCombatRef: deps.inCombatRef, 
-        triggerHitFlash: deps.triggerHitFlash, 
-        triggerOppHitFlash: deps.triggerOppHitFlash, 
         playHitImpactSound: deps.playHitImpactSound,
         playOofSound: deps.playOofSound, 
         playSlashSound: deps.playSlashSound, 
-        playCleaveSound: deps.playCleaveSound, 
-        playSmiteSound: deps.playSmiteSound, 
-        playPierceSound: deps.playPierceSound,
-        playStabSound: deps.playStabSound, 
-        playArrowHitSound: deps.playArrowHitSound, 
+        playCleaveSound: deps.playSlashSound, // Fallback
+        playSmiteSound: deps.playSlashSound, // Fallback
+        playPierceSound: deps.playSlashSound, // Fallback
+        playStabSound: deps.playSlashSound, // Fallback
+        playArrowHitSound: deps.playSlashSound, // Fallback
         playKillSound: deps.playKillSound, 
         playLevelSound: deps.playLevelSound, 
         setInCombat,
@@ -109,16 +124,11 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     });
 
     const room = useRoomParser({
-        setRoomName, setRoomDesc, setRoomExits, setRoomZone, 
-        mapperRef: deps.mapperRef, 
         roomNameRef: deps.roomNameRef, 
-        roomDescRef: deps.roomDescRef,
+        roomDescRef: deps.roomDescRef as any,
         spectateRoomName: deps.spectateRoomName, 
         spectateRoomDesc: deps.spectateRoomDesc, 
         isSpectateMode: deps.isSpectateMode,
-        setSpectateRoomName: deps.setSpectateRoomName, 
-        setSpectateRoomDesc: deps.setSpectateRoomDesc, 
-        setSpectateRoomZone: deps.setSpectateRoomZone,
         captureStage: deps.captureStage,
         isWaitingForStats: deps.isWaitingForStats,
         isWaitingForEq: deps.isWaitingForEq,
@@ -132,11 +142,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         pendingGmcpCommRef: deps.pendingGmcpCommRef, 
         lastCommIdBySenderRef: deps.lastCommIdBySenderRef, 
         lastCommMsgIdRef: deps.lastCommMsgIdRef, 
-        lastCommTimeRef: deps.lastCommTimeRef,
-        characterName: session.game.characterName, 
-        playCommMessageSound: deps.playCommMessageSound, 
-        isSpectateMode: deps.isSpectateMode,
-        addMessage: deps.addMessage
+        lastCommTimeRef: deps.lastCommTimeRef
     });
 
     const stat = useStatParser({
@@ -151,7 +157,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     const atmosphere = useAtmosphereParser({
         setWeather: deps.setWeather, 
         setIsFoggy: deps.setIsFoggy, 
-        setLightningEnabled: (v) => {}, // Shim if needed
+        setLightningEnabled: deps.setLightningEnabled,
         triggerHaptic: deps.triggerHaptic,
         playDoorSound: deps.playDoorSound,
         setPlayerPosition,
@@ -161,16 +167,19 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
     const prompt = usePromptParser({
         setStats, 
-        setInCombat, 
-        setPlayerPosition, 
-        inCombatRef: deps.inCombatRef, 
-        triggerHaptic: deps.triggerHaptic,
+        setPlayerHealthStatus,
+        setOpponentHealthStatus,
+        setOpponentName,
+        setBufferHealthStatus,
+        setBufferName,
+        finalizeCapture,
         isSpectateMode: deps.isSpectateMode, 
         setSpectateStats: deps.setSpectateStats, 
-        setSpectatePosition: deps.setSpectatePosition, 
-        setSpectateInCombat: deps.setSpectateInCombat, 
-        setSpectateWaiting: deps.setSpectateWaiting,
-        setTarget: session.vitals.setTarget
+        setSpectateHealthStatus: deps.setSpectateHealthStatus, 
+        setSpectateOpponentName: deps.setSpectateOpponentName, 
+        setSpectateOpponentStatus: deps.setSpectateOpponentStatus,
+        setSpectateInCombat: deps.setSpectateInCombat,
+        captureStage: deps.captureStage
     });
 
     const account = useAccountParser({
@@ -181,7 +190,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         setIsPasswordMode: deps.setIsPasswordMode,
         accountState: deps.accountState, 
         executeCommandRef: deps.executeCommandRef,
-        sendCommand: (cmd: string) => deps.executeCommandRef.current?.(cmd)
+        sendCommand: session.game.sendCommand || ((cmd: string) => {}),
+        addMessage: deps.addMessage
     });
 
     const time = useTimeParser({
@@ -190,27 +200,17 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     });
 
     const automator = useSpectateAutomator({
-        activeGroupMembers: deps.activeGroupMembers,
-        isSpectateMode: deps.isSpectateMode,
-        spectateTarget: deps.spectateTarget,
+        spectateQueue: session.game.spectateQueue || [],
+        setSpectateQueue: session.game.setSpectateQueue || (() => {}),
+        lastSnoopStartTime: session.game.lastSnoopStartTime || null,
+        setLastSnoopStartTime: session.game.setLastSnoopStartTime || (() => {}),
+        spectateCharacterName: deps.spectateCharacterName,
+        setSpectateCharacterName: deps.setSpectateCharacterName,
         executeCommand: (cmd: string) => deps.executeCommandRef.current?.(cmd),
+        addSystemMessage: deps.addSystemMessage,
+        isSpectateMode: deps.isSpectateMode,
         setIsSpectateMode: deps.setIsSpectateMode
     });
-
-    const finalizeCapture = useCallback((owner: 'inv' | 'eq' | 'stat' | 'practice' | 'who' | 'where' | 'container' | 'none') => {
-        if (owner === 'inv') deps.setInventoryLines([...tempInvRef.current]);
-        else if (owner === 'eq') deps.setEqLines([...tempEqRef.current]);
-        else if (owner === 'stat') deps.setStatsLines([...tempStatsRef.current]);
-        else if (owner === 'practice') deps.setPracticeLines([...tempPracticeRef.current]);
-        else if (owner === 'who') session.game.setWhoLines([...session.game.tempWhoLines]);
-        else if (owner === 'where') session.game.setWhereLines([...session.game.tempWhereLines]);
-        
-        // Reset buffers
-        if (owner === 'inv') tempInvRef.current = [];
-        if (owner === 'eq') tempEqRef.current = [];
-        if (owner === 'stat') tempStatsRef.current = [];
-        if (owner === 'practice') tempPracticeRef.current = [];
-    }, [deps.setInventoryLines, deps.setEqLines, deps.setStatsLines, deps.setPracticeLines, session.game]);
 
     const processLine = useCallback((line: string, tokens?: any) => {
         if (line === null || line === undefined) return;
@@ -228,7 +228,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         const isRoomDescription = isRoom && textOnly.length > 5;
         const isEndPrompt = textOnly.includes('>') || textOnly.includes(':');
 
-        const isVisible = router.determineVisibility(lower, isImportant, isRoom, isRoomDescription, isEndPrompt, deps.isNewbieMode);
+        const isVisible = router.determineVisibility(lower, isImportant, isRoom, isRoomDescription, isEndPrompt, deps.isNewbieMode, cleanLine);
         
         // --- 3. Sub-Parser Dispatch ---
         let msgType: MessageType = 'game';
@@ -242,7 +242,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if (roomType) msgType = roomType;
 
         // Stats/Account
-        if (account.parseAccountLine(textOnly, true)) msgType = 'account-prompt';
+        if (account.parseAccountLine(textOnly, tokens?.isPrompt ?? false)) return;
         if (stat.parseGlobalStatus(textOnly, lower)) msgType = 'info' as any;
 
         // Atmosphere
@@ -252,41 +252,74 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if (time.parseTimeLine(lower)) msgType = 'info' as any;
 
         // Final Routing
+        const trimmedLine = textOnly.trim();
+        const lowerTrimmed = trimmedLine.toLowerCase();
+        const isWhoTrigger = lowerTrimmed === 'players' || lowerTrimmed.startsWith('who:') || lower.includes('players online on mume:') || lowerTrimmed === 'allies' || lowerTrimmed === 'minions';
+        const isWhereTrigger = lowerTrimmed.startsWith('who') && lower.includes('location');
+        
+        if (isWhoTrigger || isWhereTrigger) {
+            deps.captureStage.current = isWhoTrigger ? 'who' : 'where';
+            console.log(`[useGameParser] Explicit stage detected: ${deps.captureStage.current} from line: "${trimmedLine}"`);
+        }
+
         const finalType = router.routeMessage(msgType, textOnly, lower, cleanLine, textOnly, isEndPrompt) as MessageType;
+        console.log(`[useGameParser] Processed line: "${textOnly.substring(0, 20)}", stage=${deps.captureStage.current}, finalType=${finalType}`);
 
         // --- 4. Highlighting and Display ---
         if (isVisible) {
-            const mid = Math.random().toString(36).substring(7);
+            const mid = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
             const ansiHtml = deps.ansiConvert.toHtml(cleanLine);
+
+            const rStore = useRoomStore.getState();
+            const onlinePlayerNames = (rStore.whoList || []).map((entry: string) => 
+                entry.includes('|') ? entry.split('|')[1] : entry
+            );
+
+            // For who-list and where-list, we MUST ensure the current line's name is included
+            // in the highlighting candidates immediately, as the state update is asynchronous.
+            if (finalType === 'who-list' || finalType === 'where-list') {
+                const currentNameMatch = textOnly.match(/(?:[*<>|\s]|\[.*?\]|<.*?>)*([A-Z\u00C0-\u00DF][a-zA-Z\u00C0-\u00FF]+)/);
+                if (currentNameMatch && currentNameMatch[1].length > 1) {
+                    const name = currentNameMatch[1];
+                    const lowerName = name.toLowerCase();
+                    const exclusions = ['players', 'allies', 'minions', 'enemies', 'neutral', 'unknown'];
+                    if (!exclusions.includes(lowerName)) {
+                        if (!onlinePlayerNames.includes(name)) {
+                            onlinePlayerNames.push(name);
+                            console.log(`[useGameParser] Forced including ${name} in onlinePlayerNames for line tokenization`);
+                        }
+                    }
+                }
+            }
 
             // Now we use our orchestrator to produce the Message object directly!
             // First we need to build the context
-            if (tokens) {
-                 deps.addMessage(finalType, textOnly, undefined, mid, false, { textOnly, lower, html: { html: ansiHtml, tokens } as any });
-            } else {
-                 const tokenizerContext = {
-                     target: session.vitals.target,
-                     currentOccupants: deps.roomPlayers || [], // Will be pulled properly
-                     roomNpcs: session.game.roomNpcs || [],
-                     activeGroupMembers: deps.groupMembers || [],
-                     roomItems: session.game.roomItems || [],
-                     discoveredItems: [], // could be pulled from context if we had one
-                     inlineCategories: deps.inlineCategories || [],
-                     buttons: deps.btn?.buttonsRef?.current || [],
-                     selectedObjectIds: new Set<string>() // Simplification for now to clear the TS error
-                 };
+            const tokenizerContext = {
+                target: session.vitals.target,
+                currentOccupants: deps.roomPlayers || [],
+                roomNpcs: session.game.roomNpcs || [],
+                activeGroupMembers: deps.groupMembers || [],
+                roomItems: session.game.roomItems || [],
+                discoveredItems: [], 
+                inlineCategories: deps.inlineCategories || [],
+                buttons: deps.btn?.buttonsRef?.current || [],
+                selectedObjectIds: new Set<string>(),
+                onlinePlayers: onlinePlayerNames
+            };
 
-                 const messageObj = PipelineOrchestrator.processTextLine(cleanLine, ansiHtml, finalType, tokenizerContext);
-                 deps.addMessage(finalType, textOnly, undefined, mid, false, { textOnly, lower, html: messageObj as any });
-            }
+            const messageObj = PipelineOrchestrator.processTextLine(cleanLine, ansiHtml, finalType, tokenizerContext);
+            deps.addMessage(finalType, textOnly, undefined, mid, false, { textOnly, lower, html: messageObj as any });
         }
+
+        // Emit to bus for DVR recording
+        gmcpBus.emit('Game.Text', { type: finalType, text: textOnly });
 
         // Detect items for mapper discovery
         router.detectItemsInRoom(textOnly, cleanLine, !isVisible);
 
     }, [
         processTriggers, router, combat, room, account, stat, atmosphere, time, 
-        deps.addMessage, deps.isNewbieMode, deps.roomPlayers, session.game, deps.groupMembers, deps.inlineCategories, deps.btn, session.vitals.target
+        deps.addMessage, deps.isNewbieMode, deps.roomPlayers, session.game, deps.groupMembers, deps.inlineCategories, deps.btn, session.vitals.target, deps.captureStage, deps.ansiConvert
     ]);
 
     return useMemo(() => ({

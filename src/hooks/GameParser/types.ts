@@ -2,7 +2,8 @@ import {
     GameStats, DrawerLine, GameAction, PopoverState, CaptureStage, 
     CombatHealthStatus, QuestData, GameEntity, EntityLocation,
     MessageType, GroupMember, AccountState, AccountStage, MumeTime,
-    Direction, CustomButton, InlineCategoryConfig, GameState
+    Direction, CustomButton, InlineCategoryConfig, GameState,
+    ExecuteCommand
 } from '../../types';
 import { RefObject, MutableRefObject, Dispatch, SetStateAction } from 'react';
 
@@ -15,13 +16,24 @@ export interface UseGameParserDeps {
     isPlayersOpen: boolean;
     mapperRef: RefObject<any>;
     btn: any;
-    addMessage: (type: MessageType, html: string) => void;
+    addMessage: (
+        type: MessageType, 
+        text: string, 
+        extra?: any, 
+        mid?: string, 
+        isRoomName?: boolean, 
+        precalculated?: { textOnly: string, lower: string, html?: string, tokens?: any[] },
+        shopItem?: any,
+        practiceSkill?: any,
+        practiceHeader?: any,
+        isSystem?: boolean
+    ) => void;
     addSystemMessage: (msg: string) => void;
     pendingGmcpCommRef: MutableRefObject<any>;
     lastCommIdBySenderRef: MutableRefObject<Map<string, string>>;
     
     // Audio
-    playHitImpactSound: (options?: { pitch?: number, volume?: number }) => void;
+    playHitImpactSound: (options?: { pitch?: number, volume?: number } | string) => void;
     playOofSound: (options?: { pitch?: number, volume?: number }) => void;
     playSlashSound: (options?: { pitch?: number, volume?: number }) => void;
     playCleaveSound: (options?: { pitch?: number, volume?: number }) => void;
@@ -32,11 +44,9 @@ export interface UseGameParserDeps {
     playCommMessageSound: (options?: { volume?: number }) => void;
     playBuySellSound: (options?: { volume?: number }) => void;
     playBashSound: (options?: { pitch?: number, volume?: number }) => void;
-    loadBashSound: () => void;
-    playIncantationSound: () => void;
+    playIncantationSound: (options?: any) => void;
     stopIncantationSound: (playExplosion?: boolean) => void;
     playMagicExplosionSound: (options?: { volume?: number }) => void;
-    primeSpellSuccess: (success: boolean) => void;
     playEffect: (name: string, options?: any) => void;
     playDoorSound: (isOpen: boolean) => void;
     playMovementSound: (isRiding?: boolean, terrain?: string) => void;
@@ -48,45 +58,31 @@ export interface UseGameParserDeps {
 
     sessionMode: string;
     inCombatRef: MutableRefObject<boolean>;
-    triggerXpTicker: (xp: number) => void;
+    triggerXpTicker: (xp?: number) => void;
     groupMembers: GroupMember[];
+    activeGroupMembers: GroupMember[];
     setDeathRoomId: (id: string | null) => void;
-    setSpectateInCombat: (val: boolean) => void;
-    setSpectateOpponentName: (val: string | null) => void;
-    setSpectateOpponentStatus: (val: string | null) => void;
     setMood: (val: string) => void;
-    setSpectateHealthStatus: (val: string | null) => void;
-    setSpectateStats: (val: any) => void;
-    setSpectatePosition: (val: string) => void;
-    setSpectateWaiting: (val: boolean) => void;
-    setSpectateRoomName: (val: string) => void;
-    setSpectateRoomZone: (val: string) => void;
-    setSpectateLighting: (val: string) => void;
-    setSpectateWeather: (val: string) => void;
-    setSpectateIsFoggy: (val: boolean) => void;
-    setSpectateCharacterName: (val: string | null) => void;
-    setSpectateGroupMembers: (val: GroupMember[]) => void;
-    setSpectateRoomDesc: (val: string) => void;
-    setSpectateTerrain: (val: string) => void;
     
     keywordOverrides: Record<string, string>;
     registerEntity: (id: string, name: string, location: EntityLocation, category?: string) => GameEntity;
     setEntities: Dispatch<SetStateAction<Record<string, GameEntity>>>;
     
-    playerPosition: string;
+    playerPosition?: string;
     inlineCategories: InlineCategoryConfig[];
     roomPlayers: any[];
+    roomNpcs: any[];
+    roomItems: any[];
+    target: string | null;
     
     accountState: AccountState;
     accountStageRef: MutableRefObject<AccountStage>;
-    triggerHitFlash: () => void;
-    triggerOppHitFlash: () => void;
-    pendingDrawerContainerRef: MutableRefObject<any>;
+    pendingDrawerContainerRef?: MutableRefObject<any>;
     lastCommMsgIdRef: MutableRefObject<string | null>;
     lastCommTimeRef: MutableRefObject<number>;
     setDiscoveredItems: Dispatch<SetStateAction<any[]>>;
-    roomNameRef: MutableRefObject<string>;
-    roomDescRef: MutableRefObject<string>;
+    roomNameRef: MutableRefObject<string | null>;
+    roomDescRef: MutableRefObject<string | null>;
     spectateRoomName: string;
     spectateRoomDesc: string;
     setIsSpectateMode: (val: boolean) => void;
@@ -104,10 +100,10 @@ export interface UseGameParserDeps {
     captureOwnerDrawer: MutableRefObject<any>;
     setIsPasswordMode: (mode: boolean) => void;
     setAccountState: Dispatch<SetStateAction<any>>;
-    setIsSpectateMode: (val: boolean) => void;
     setGameTime: (time: MumeTime | null) => void;
     setWeather: (weather: string) => void;
     setIsFoggy: (foggy: boolean) => void;
+    setLightningEnabled: (val: boolean) => void;
     
     // Spectate Setters
     setSpectateInCombat: (inCombat: boolean, force?: boolean) => void;
@@ -142,6 +138,26 @@ export interface UseGameParserDeps {
 
     // Others
     addDiagnosticLog: (msg: string) => void;
-    setAccountState: Dispatch<SetStateAction<AccountState>>;
     isNewbieMode: boolean;
+    isSpectateMode: boolean;
+    spectateTarget: string | null;
+    executeCommandRef: MutableRefObject<ExecuteCommand | null>;
+    gameTime: MumeTime | null;
+
+    // Practice
+    practiceHandler?: any;
+    questsHandler?: any;
+    shopHandler?: any;
+    helpHandler?: any;
+
+    characterName: string | null;
+    spectateCharacterName: string | null;
+    activePrompt: any;
+    selectedObjectIds: string[];
+
+    actionsRef: RefObject<GameAction[]>;
+    isWaitingForInv: MutableRefObject<boolean>;
+    isWaitingForEq: MutableRefObject<boolean>;
+    isWaitingForStats: MutableRefObject<boolean>;
+    isWaitingForInfo: MutableRefObject<boolean>;
 }

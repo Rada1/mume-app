@@ -16,7 +16,18 @@ import { SystemCommandMiddleware } from '../services/command/middlewares/SystemC
 
 export interface ExecutorDeps {
     telnet: { sendCommand: (cmd: string) => void };
-    addMessage: (type: MessageType, text: string) => void;
+    addMessage: (
+        type: MessageType, 
+        text: string, 
+        extra?: any, 
+        mid?: string, 
+        isRoomName?: boolean, 
+        precalculated?: { textOnly: string, lower: string, html?: string, tokens?: any[] },
+        shopItem?: any,
+        practiceSkill?: any,
+        practiceHeader?: any,
+        isSystem?: boolean
+    ) => void;
     initAudio: () => void;
     navIntervalRef: React.MutableRefObject<NodeJS.Timeout | null>;
     mapperRef: React.RefObject<MapperRef>;
@@ -47,7 +58,7 @@ export interface ExecutorDeps {
     setActions: (val: GameAction[] | ((prev: GameAction[]) => GameAction[])) => void;
     activePrompt: string;
     isPasswordMode: boolean;
-    recordEntry: (type: any, data: any, options?: { mask?: boolean }) => void;
+    recordEntry?: (type: any, data: any, options?: { mask?: boolean }) => void;
 }
 
 export const useCommandExecutor = (deps: ExecutorDeps) => {

@@ -94,8 +94,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setNpcColor,
         isBloomEnabled,
         setIsBloomEnabled,
-        isSpectateMode,
-        setIsSpectateMode,
         showSpectatePromptInLog,
         setShowSpectatePromptInLog,
         isTimestampEnabled,
@@ -217,8 +215,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setIsHighlighterEnabled={setIsHighlighterEnabled}
                     isBloomEnabled={isBloomEnabled}
                     setIsBloomEnabled={setIsBloomEnabled}
-                    isSpectateMode={isSpectateMode}
-                    setIsSpectateMode={setIsSpectateMode}
                     isTimestampEnabled={isTimestampEnabled}
                     setIsTimestampEnabled={setIsTimestampEnabled}
                     isNewbieMode={isNewbieMode}

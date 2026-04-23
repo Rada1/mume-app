@@ -22,6 +22,7 @@ The MUME Client is an **AI-Native, Hook-Driven Mobile Client** for the MUME MUD.
 | **Fix UI/Layout** | `src/components/Layout/`, `src/styles/layout.css` |
 | **Edit Command Flow** | `src/hooks/useCommandController.ts`, `src/hooks/useCommandExecutor.ts` |
 | **Adjust Mapper** | `src/components/Mapper/`, `src/mapper/renderer.ts` |
+| **Fix Broad Highlighting** | `src/services/parser/Tokenizer.ts`, `src/hooks/useEntityRegistry.ts` |
 | **Spectate Rotation** | `src/hooks/useSpectateAutomator.ts`, `src/hooks/GameParser/useGameParser.ts` |
 
 ## 🛠️ Team Lead Skill (Orchestrator Only)

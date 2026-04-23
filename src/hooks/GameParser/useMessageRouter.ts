@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { useRoomStore } from '../../stores/useRoomStore';
 import { CaptureStage, InlineCategoryConfig, GmcpOccupant, EntityLocation, GameEntity } from '../../types';
 import { getCategoryForName } from '../../utils/categorizationUtils';
 
@@ -38,7 +39,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         playerPosition, inlineCategories
     } = deps;
 
-    const determineVisibility = useCallback((lower: string, isImportantMessage: boolean, isRoomContent: boolean, isRoomDescription: boolean, isEndPrompt: boolean, isNewbieMode: boolean, isRoomWindow?: boolean) => {
+    const determineVisibility = useCallback((lower: string, isImportantMessage: boolean, isRoomContent: boolean, isRoomDescription: boolean, isEndPrompt: boolean, isNewbieMode: boolean, cleanLine: string, isRoomWindow?: boolean) => {
         // --- Sleeping Suppression ---
         // If the player is sleeping, suppress weather and lighting updates
         if (playerPosition === 'sleeping') {
@@ -102,18 +103,21 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         }
 
         // 2. Normal visibility: not silent OR it's a special high-priority message
-        // If Newbie Mode is OFF, we are much more lenient about showing descriptions and room content
-        // to ensure the classic experience isn't "flickery".
+        // Bypassing silence for who/where lists to ensure they appear in the log when manually typed
+        const isWhoWhereList = (stage === 'who' || stage === 'where');
         const classicBypass = (!isNewbieMode && isRoomWindow);
-        return (isSilentCapture.current === 0) || isImportantMessage || isRoomContent || isRoomDescription || classicBypass;
+        const isVisibleResult = (isSilentCapture.current === 0) || isWhoWhereList || isImportantMessage || isRoomContent || isRoomDescription || classicBypass;
+        if (!isVisibleResult) console.log(`[MessageRouter] Filtered line: "${cleanLine.substring(0, 30)}..." (silent=${isSilentCapture.current}, important=${isImportantMessage})`);
+        return isVisibleResult;
     }, [captureStage, isSilentCapture, isDrawerCapture, isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen, isWaitingForInv, isWaitingForEq, isWaitingForStats, isWaitingForInfo, playerPosition]);
 
     const routeMessage = useCallback((msgType: string, textOnly: string, lower: string, cleanLine: string, attachedText: string, isMatch: boolean) => {
         let finalType = msgType;
         const stage = captureStage.current;
+        console.log(`[useMessageRouter] routeMessage: stage=${stage}, text="${textOnly.substring(0, 30)}"`);
 
         const trimmed = textOnly.trim();
-        if (stage === 'who' && trimmed !== 'who:' && trimmed.toLowerCase() !== 'allies' && trimmed.toLowerCase() !== 'minions' && !trimmed.startsWith('---')) finalType = 'who-list';
+        if (stage === 'who' && trimmed !== 'who:' && trimmed.toLowerCase() !== 'allies' && trimmed.toLowerCase() !== 'minions' && trimmed.toLowerCase() !== 'players' && !trimmed.startsWith('---')) finalType = 'who-list';
         else if (stage === 'where' && !trimmed.startsWith('Player') && !trimmed.startsWith('Who') && !trimmed.startsWith('---')) finalType = 'where-list';
         else if (stage === 'eq') finalType = 'equipment-list';
         else if (stage === 'inv') finalType = 'inventory-list';
@@ -124,16 +128,21 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         else if (lower.startsWith('you go ') || lower.includes(' leaves ') || lower.includes(' arrives from ') || lower.includes(' arrived from ') || lower.includes(' flees ') || lower.includes(' fled ') || lower.includes(' panics') || lower.includes(' attempts') || lower.includes('alas, you cannot go that way') || lower.includes('there is no exit')) finalType = 'move';
 
         if (finalType === 'who-list') {
-            const nameMatch = textOnly.match(/\s*((?:[<\[].*?[>\]]\s*)*)([A-Z\u00C0-\u00DE][a-zA-Z\u00C0-\u00FF]+)/);
-            if (nameMatch && nameMatch[2].length > 1 && nameMatch[2].toLowerCase() !== 'players') {
-                // IMPORTANT: Do NOT trim() here, as leading spaces are used for alignment
-                const htmlDisplay = ansiConvert.toHtml(cleanLine);
-                setWhoList(prev => [...prev, `${htmlDisplay}|${nameMatch[2]}`]);
+            const nameMatch = textOnly.match(/(?:[*<>|\s]|\[.*?\]|<.*?>)*([A-Z\u00C0-\u00DF][a-zA-Z\u00C0-\u00FF]+)/);
+            if (nameMatch && nameMatch[1].length > 1) {
+                const name = nameMatch[1];
+                const lowerName = name.toLowerCase();
+                const exclusions = ['players', 'allies', 'minions', 'enemies', 'neutral', 'unknown'];
+                if (!exclusions.includes(lowerName)) {
+                    // IMPORTANT: Do NOT trim() here, as leading spaces are used for alignment
+                    const htmlDisplay = ansiConvert.toHtml(cleanLine);
+                    setWhoList(prev => [...prev, `${htmlDisplay}|${name}`]);
+                }
             }
         } else if (finalType === 'where-list') {
             const parts = textOnly.trim().split(/\s{2,}/);
             const name = parts[0]?.trim().replace(/^-\s*/, '');
-            if (name && /^[A-Z\u00C0-\u00DE]/.test(name) && name.length > 1) setWhereList(prev => [...prev, { name, room: parts.slice(1).join(' ').replace(/^-\s*/, '').trim() || '' }]);
+            if (name && /^[A-Z\u00C0-\u00DF]/.test(name) && name.length > 1) setWhereList(prev => [...prev, { name, room: parts.slice(1).join(' ').replace(/^-\s*/, '').trim() || '' }]);
         } else if (stage === 'whois') setCharacterInfo((prev: any) => ({ ...prev, whois: (prev.whois || '') + textOnly + '\n' }));
 
         return finalType;

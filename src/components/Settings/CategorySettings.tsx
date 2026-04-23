@@ -101,9 +101,11 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ categories, setCate
                         </div>
 
                         <div style={{ marginBottom: '10px' }}>
-                            <label className="setting-label" style={{ fontSize: '0.8rem' }}>Keywords (comma separated)</label>
+                            <label htmlFor={`cat-keywords-${cat.id}`} className="setting-label" style={{ fontSize: '0.8rem' }}>Keywords (comma separated)</label>
                             <input
                                 type="text"
+                                id={`cat-keywords-${cat.id}`}
+                                name={`cat-keywords-${cat.id}`}
                                 className="setting-input"
                                 value={localValueMap[cat.id] ?? cat.keywords.join(', ')}
                                 onChange={(e) => handleInputKeywords(cat.id, e.target.value)}
@@ -120,16 +122,20 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ categories, setCate
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <div style={{ flex: 1 }}>
-                                <label className="setting-label" style={{ fontSize: '0.8rem' }}>Glow Color</label>
+                                <label htmlFor={`cat-color-${cat.id}`} className="setting-label" style={{ fontSize: '0.8rem' }}>Glow Color</label>
                                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                     <input
                                         type="color"
+                                        id={`cat-color-picker-${cat.id}`}
+                                        name={`cat-color-picker-${cat.id}`}
                                         value={cat.color?.startsWith('rgba') ? '#ffffff' : (cat.color || '#4ade80')}
                                         onChange={(e) => handleUpdateColor(cat.id, e.target.value)}
                                         style={{ width: '40px', height: '24px', padding: 0, border: 'none', background: 'none' }}
                                     />
                                     <input
                                         type="text"
+                                        id={`cat-color-${cat.id}`}
+                                        name={`cat-color-${cat.id}`}
                                         className="setting-input"
                                         value={cat.color || ''}
                                         onChange={(e) => handleUpdateColor(cat.id, e.target.value)}

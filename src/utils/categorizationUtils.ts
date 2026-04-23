@@ -12,29 +12,29 @@ export const COLOR_OBJ = 'rgba(251, 146, 60, 0.95)';   // Vibrant Orange (#fb923
 
 
 export const LEGACY_ID_MAP: Record<string, string> = {
-    'inlinenpc': 'npc',
-    'npc': 'npc',
-    'inline-npc': 'npc',
-    'inlineplayer': 'player',
-    'player': 'player',
-    'pc': 'player',
-    'inline-player': 'player',
-    'innkeeper': 'npc-innkeeper',
-    'shopkeeper': 'npc-shopkeeper',
-    'mounts': 'npc-mount',
-    'guildmaster': 'npc-guildmaster',
-    'weapon': 'object-weapon',
-    'armour': 'object-armour',
-    'shield': 'object-shield',
-    'containers': 'object-container',
-    'food': 'object-food',
-    'fluidcontainer': 'object-fluid',
-    'water': 'object-water',
-    'treasure': 'object-treasure',
-    'misc': 'object-misc',
-    'corpses': 'object-corpse',
-    'object-room': 'object-room',
-    'default': 'object'
+    'inlinenpc': 'inline-npc',
+    'npc': 'inline-npc',
+    'inline-npc': 'inline-npc',
+    'inlineplayer': 'inline-player',
+    'player': 'inline-player',
+    'pc': 'inline-player',
+    'inline-player': 'inline-player',
+    'innkeeper': 'inline-innkeeper',
+    'shopkeeper': 'inline-shopkeeper',
+    'mounts': 'inline-mounts',
+    'guildmaster': 'inline-guildmaster',
+    'weapon': 'inline-weapon',
+    'armour': 'inline-armour',
+    'shield': 'inline-shield',
+    'containers': 'inline-containers',
+    'food': 'inline-food',
+    'fluidcontainer': 'inline-fluidcontainer',
+    'water': 'inline-water',
+    'treasure': 'inline-treasure',
+    'misc': 'inline-misc',
+    'corpses': 'inline-corpses',
+    'object-room': 'inline-obj-room',
+    'default': 'inline-object'
 };
 
 export const canonicalizeCategoryId = (id: string): string => {
@@ -44,33 +44,33 @@ export const canonicalizeCategoryId = (id: string): string => {
 
 export const DEFAULT_INLINE_CATEGORIES: InlineCategoryConfig[] = [
     // --- PLAYERS ---
-    { id: 'player', kind: 'player', keywords: [] },
+    { id: 'inline-player', kind: 'player', keywords: [] },
 
     // --- OBJECTS ---
-    { id: 'object-corpse', kind: 'object', keywords: ['corpse'], color: COLOR_OBJ },
-    { id: 'object-weapon', kind: 'object', keywords: ['sword', 'blade', 'dagger', 'axe', 'mace', 'spear', 'staff', 'club', 'flail', 'scimitar', 'rapier', 'halberd', 'bow', 'sling', 'stick', 'knife', 'fist', 'blowpipe', 'wand', 'hammer', 'morning star', 'polearm', 'pike', 'lance', 'cleaver', 'ElfHewer', 'Durin', 'Trollsbane', 'Glamdring', 'Orcrist', 'Beater', 'Biter', 'Sting', 'Mithvegil', 'Bonecrusher', 'Angmacil', 'Alrehir'], color: COLOR_OBJ },
-    { id: 'object-armour', kind: 'object', keywords: ['mail', 'breastplate', 'greaves', 'gauntlets', 'helmet', 'boots', 'leggings', 'sleeves', 'bracers', 'cloak', 'surcoat', 'jerkin', 'robe', 'tunic', 'trousers', 'belt', 'pants', 'breeches', 'shoes', 'sandals', 'scabbard', 'Dragonhelm', 'morion', 'crown', 'circlet', 'coif', 'basinet', 'cap', 'hat', 'hood', 'scarf', 'collar', 'hauberk', 'shirt', 'vest', 'jacket', 'dress', 'blouse', 'cape', 'mantle', 'vambraces', 'gloves', 'skirt', 'slippers', 'girdle', 'sash', 'wrapping', 'Daedeltiri'], color: COLOR_OBJ },
-    { id: 'object-shield', kind: 'object', keywords: ['shield', 'buckler', 'targe'], color: COLOR_OBJ },
-    { id: 'object-container', kind: 'object', keywords: ['bag', 'pouch', 'sack', 'backpack', 'satchel', 'quiver', 'chest', 'box', 'case', 'wallet', 'crate', 'cabinet', 'bookshelf', 'jar'], color: COLOR_OBJ },
-    { id: 'object-food', kind: 'object', keywords: ['meat', 'bread', 'biscuit', 'lembas', 'mushroom', 'honey', 'wafer', 'cookie', 'eg', 'dumpling', 'bannock', 'cheese', 'pastry', 'flour', 'cake', 'pie'], color: COLOR_OBJ },
-    { id: 'object-fluid', kind: 'object', keywords: ['flask', 'bottle', 'cup', 'skin', 'flagon', 'goblet', 'vial', 'keg', 'barrel', 'waterskin', 'pitcher', 'jug', 'mug', 'stein', 'pot', 'bowl', 'bucket', 'pail', 'calabash', 'gourd'], color: COLOR_OBJ },
-    { id: 'object-water', kind: 'object', keywords: ['water', 'fountain', 'pond', 'stream', 'well', 'spring', 'lake', 'river', 'sea', 'ocean', 'puddle', 'basin'], color: COLOR_OBJ },
-    { id: 'object-treasure', kind: 'object', keywords: ['gem', 'diamond', 'ruby', 'sapphire', 'topaz', 'emerald', 'garnet', 'opal', 'agate', 'onyx', 'citrine', 'spinel', 'carnelian', 'gold', 'silver', 'nugget', 'pearl', 'heirloom', 'treasure', 'medal', 'coin'], color: COLOR_OBJ },
-    { id: 'object-misc', kind: 'object', keywords: ['map', 'scroll', 'parchment', 'key', 'relic', 'ring', 'amulet', 'necklace', 'charm', 'stone', 'orb', 'pendant', 'wristband', 'bracelet', 'circlet', 'crown', 'cloakpin', 'brooch', 'book', 'journal', 'libram', 'chronicle', 'paper', 'note', 'instrument', 'flute', 'harp', 'lute', 'drums', 'pipes', 'horn', 'rope', 'lockpicks', 'kit', 'sheath', 'harness', 'baldric', 'boat', 'skiff', 'canoe', 'raft', 'stick', 'fetish', 'die', 'top', 'pen', 'quill', 'lamp', 'lantern', 'light', 'street-lamp'], color: COLOR_OBJ },
-    { id: 'object-room', kind: 'object', keywords: [], color: COLOR_OBJ },
+    { id: 'inline-corpses', kind: 'object', keywords: ['corpse'], color: COLOR_OBJ },
+    { id: 'inline-weapon', kind: 'object', keywords: ['sword', 'blade', 'dagger', 'axe', 'mace', 'spear', 'staff', 'club', 'flail', 'scimitar', 'rapier', 'halberd', 'bow', 'sling', 'stick', 'knife', 'fist', 'blowpipe', 'wand', 'hammer', 'morning star', 'polearm', 'pike', 'lance', 'cleaver', 'ElfHewer', 'Durin', 'Trollsbane', 'Glamdring', 'Orcrist', 'Beater', 'Biter', 'Sting', 'Mithvegil', 'Bonecrusher', 'Angmacil', 'Alrehir'], color: COLOR_OBJ },
+    { id: 'inline-armour', kind: 'object', keywords: ['mail', 'breastplate', 'greaves', 'gauntlets', 'helmet', 'boots', 'leggings', 'sleeves', 'bracers', 'cloak', 'surcoat', 'jerkin', 'robe', 'tunic', 'trousers', 'belt', 'pants', 'breeches', 'shoes', 'sandals', 'scabbard', 'Dragonhelm', 'morion', 'crown', 'circlet', 'coif', 'basinet', 'cap', 'hat', 'hood', 'scarf', 'collar', 'hauberk', 'shirt', 'vest', 'jacket', 'dress', 'blouse', 'cape', 'mantle', 'vambraces', 'gloves', 'skirt', 'slippers', 'girdle', 'sash', 'wrapping', 'Daedeltiri'], color: COLOR_OBJ },
+    { id: 'inline-shield', kind: 'object', keywords: ['shield', 'buckler', 'targe'], color: COLOR_OBJ },
+    { id: 'inline-containers', kind: 'object', keywords: ['bag', 'pouch', 'sack', 'backpack', 'satchel', 'quiver', 'chest', 'box', 'case', 'wallet', 'crate', 'cabinet', 'bookshelf', 'jar'], color: COLOR_OBJ },
+    { id: 'inline-food', kind: 'object', keywords: ['meat', 'bread', 'biscuit', 'lembas', 'mushroom', 'honey', 'wafer', 'cookie', 'eg', 'dumpling', 'bannock', 'cheese', 'pastry', 'flour', 'cake', 'pie'], color: COLOR_OBJ },
+    { id: 'inline-fluidcontainer', kind: 'object', keywords: ['flask', 'bottle', 'cup', 'skin', 'flagon', 'goblet', 'vial', 'keg', 'barrel', 'waterskin', 'pitcher', 'jug', 'mug', 'stein', 'pot', 'bowl', 'bucket', 'pail', 'calabash', 'gourd'], color: COLOR_OBJ },
+    { id: 'inline-water', kind: 'object', keywords: ['water', 'fountain', 'pond', 'stream', 'well', 'spring', 'lake', 'river', 'sea', 'ocean', 'puddle', 'basin'], color: COLOR_OBJ },
+    { id: 'inline-treasure', kind: 'object', keywords: ['gem', 'diamond', 'ruby', 'sapphire', 'topaz', 'emerald', 'garnet', 'opal', 'agate', 'onyx', 'citrine', 'spinel', 'carnelian', 'gold', 'silver', 'nugget', 'pearl', 'heirloom', 'treasure', 'medal', 'coin'], color: COLOR_OBJ },
+    { id: 'inline-misc', kind: 'object', keywords: ['map', 'scroll', 'parchment', 'key', 'relic', 'ring', 'amulet', 'necklace', 'charm', 'stone', 'orb', 'pendant', 'wristband', 'bracelet', 'circlet', 'crown', 'cloakpin', 'brooch', 'book', 'journal', 'libram', 'chronicle', 'paper', 'note', 'instrument', 'flute', 'harp', 'lute', 'drums', 'pipes', 'horn', 'rope', 'lockpicks', 'kit', 'sheath', 'harness', 'baldric', 'boat', 'skiff', 'canoe', 'raft', 'stick', 'fetish', 'die', 'top', 'pen', 'quill', 'lamp', 'lantern', 'light', 'street-lamp'], color: COLOR_OBJ },
+    { id: 'inline-obj-room', kind: 'object', keywords: [], color: COLOR_OBJ },
 
     // --- NPCS ---
-    { id: 'npc-innkeeper', kind: 'npc', keywords: ['innkeeper', 'barman', 'tender', 'lodging'], color: COLOR_NPC },
-    { id: 'npc-shopkeeper', kind: 'npc', keywords: ['shopkeeper', 'dealer', 'keeper', 'merchant', 'weaponsmith', 'armourer', 'smith', 'trader', 'grocer', 'librarian', 'provisioner', 'alchemist', 'herbalist', 'tailor', 'blacksmith', 'vendor', 'cobbler', 'peddler'], color: COLOR_NPC },
-    { id: 'npc-mount', kind: 'npc', keywords: ['horse', 'pony', 'steed', 'donkey', 'mule', 'warg'], color: COLOR_NPC },
-    { id: 'npc-guildmaster', kind: 'npc', keywords: ['guildmaster', 'teacher', 'master', 'trainer', 'huor'], color: COLOR_NPC },
-    { id: 'npc', kind: 'npc', keywords: ['orc', 'troll', 'wolf', 'spider', 'goblin', 'warg', 'bandit', 'scout', 'warrior', 'guard', 'citizen', 'deer', 'bear', 'rabbit', 'snake', 'wraith', 'spirit', 'undead', 'zombie', 'skeleton', 'bird', 'eagle', 'hawk', 'owl', 'crow', 'raven', 'rat', 'bat', 'shaman', 'priest', 'cleric', 'mage', 'sorcerer', 'thief', 'assassin', 'mercenary', 'elite', 'veteran', 'captain', 'leader', 'king', 'queen', 'lord', 'lady', 'dúnadan', 'dunadan', 'soldier', 'officer', 'man', 'woman', 'girl', 'boy', 'scholar', 'insolent', 'rugged'], color: COLOR_NPC },
+    { id: 'inline-innkeeper', kind: 'npc', keywords: ['innkeeper', 'barman', 'tender', 'lodging'], color: COLOR_NPC },
+    { id: 'inline-shopkeeper', kind: 'npc', keywords: ['shopkeeper', 'dealer', 'keeper', 'merchant', 'weaponsmith', 'armourer', 'smith', 'trader', 'grocer', 'librarian', 'provisioner', 'alchemist', 'herbalist', 'tailor', 'blacksmith', 'vendor', 'cobbler', 'peddler'], color: COLOR_NPC },
+    { id: 'inline-mounts', kind: 'npc', keywords: ['horse', 'pony', 'steed', 'donkey', 'mule', 'warg'], color: COLOR_NPC },
+    { id: 'inline-guildmaster', kind: 'npc', keywords: ['guildmaster', 'teacher', 'master', 'trainer', 'huor'], color: COLOR_NPC },
+    { id: 'inline-npc', kind: 'npc', keywords: ['orc', 'troll', 'wolf', 'spider', 'goblin', 'warg', 'bandit', 'scout', 'warrior', 'guard', 'citizen', 'deer', 'bear', 'rabbit', 'snake', 'wraith', 'spirit', 'undead', 'zombie', 'skeleton', 'bird', 'eagle', 'hawk', 'owl', 'crow', 'raven', 'rat', 'bat', 'shaman', 'priest', 'cleric', 'mage', 'sorcerer', 'thief', 'assassin', 'mercenary', 'elite', 'veteran', 'captain', 'leader', 'king', 'queen', 'lord', 'lady', 'dúnadan', 'dunadan', 'soldier', 'officer', 'man', 'woman', 'girl', 'boy', 'scholar', 'insolent', 'rugged'], color: COLOR_NPC },
 
     // --- EXITS ---
     { id: 'exit', kind: 'exit', keywords: ['north', 'south', 'east', 'west', 'up', 'down'], color: 'rgba(255, 255, 255, 0.9)' },
     
     // --- FALLBACK ---
-    { id: 'object', kind: 'object', keywords: [], color: COLOR_OBJ }
+    { id: 'inline-object', kind: 'object', keywords: [], color: COLOR_OBJ }
 ];
 
 /**

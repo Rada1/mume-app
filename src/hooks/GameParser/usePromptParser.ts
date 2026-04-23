@@ -13,7 +13,7 @@ export interface PromptParserDeps {
     setOpponentName: (val: string | null) => void;
     setBufferHealthStatus: (val: CombatHealthStatus | null) => void;
     setBufferName: (val: string | null) => void;
-    finalizeCapture: (targetStage?: CaptureStage) => boolean;
+    finalizeCapture: (targetStage?: CaptureStage) => void;
     isSpectateMode?: boolean;
     setStats: (stats: GameStats | ((prev: GameStats) => GameStats)) => void;
     setSpectateStats: (stats: GameStats | ((prev: GameStats) => GameStats)) => void;

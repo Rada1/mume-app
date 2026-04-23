@@ -113,7 +113,7 @@ export function useMessageLog(
         extra?: any,           // Maps to combatOverride
         mid?: string,          // Maps to cmd
         isRoomName?: boolean,  // Maps to context
-        precalculated?: { textOnly: string, lower: string }, // Maps to htmlProps
+        precalculated?: { textOnly: string, lower: string, html?: string, tokens?: any[] }, // Maps to htmlProps
         shopItem?: any,        // Maps to sender
         practiceSkill?: any,   // Maps to channel
         practiceHeader?: any,  // Maps to id
@@ -351,11 +351,14 @@ export function useMessageLog(
             }
         }
 
-        const html = (precalculated as any)?.html || ansiConvert.toHtml(processedText);
+        const rawHtml = (precalculated as any)?.html;
+        const html = (typeof rawHtml === 'string' ? rawHtml : rawHtml?.html) || ansiConvert.toHtml(processedText);
+        const tokens = precalculated?.tokens || (typeof rawHtml === 'object' ? rawHtml?.tokens : undefined);
 
         const msg: Message = {
             id: mid || Math.random().toString(36).substring(7),
             html,
+            tokens,
             textRaw: processedText,
             type: finalType,
             timestamp: Date.now(),

@@ -47,7 +47,10 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
     }
 
     // Capture Flags
-    if (lowerCmd === 'inventory' || lowerCmd === 'inv' || lowerCmd === 'i') {
+    if (lowerCmd === 'who' || lowerCmd === 'where') {
+        // No drawer capture for these, we want them in the main log
+        if (captureStage) captureStage.current = lowerCmd === 'who' ? 'who' : 'where';
+    } else if (lowerCmd === 'inventory' || lowerCmd === 'inv' || lowerCmd === 'i') {
         if (isWaitingForInv) isWaitingForInv.current = true;
         if (captureStage) captureStage.current = 'none';
     } else if (lowerCmd === 'stat' || lowerCmd === 'st' || lowerCmd === 'status' || lowerCmd === 'score' || lowerCmd === 'sc' || lowerCmd === 'at' || lowerCmd.startsWith('info %m')) {

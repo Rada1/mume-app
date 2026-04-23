@@ -128,9 +128,7 @@
     padding-right: 0 !important;
 }
 
-.newbie-mode .message:not(.is-hit-impact):not(.is-hitter-impact),
-.newbie-mode .message:not(.is-hit-impact):not(.is-hitter-impact) .combat-bubble,
-.newbie-mode .message:not(.is-hit-impact):not(.is-hitter-impact) .message-content {
+.newbie-mode .message {
     animation: none !important;
     transition: none !important;
 }
@@ -303,6 +301,27 @@
 .inline-btn[data-category="account"] { --glow-color: var(--color-account) !important; }
 .inline-btn[data-category="target"] { --glow-color: var(--color-target) !important; }
 .inline-btn[data-category="quest"] { --glow-color: var(--color-quest) !important; }
+
+/* Dynamic Target Highlighting (Reactive) */
+.target-highlighter.is-target {
+    background: rgba(250, 204, 21, 0.25) !important;
+    border-bottom: 2px solid var(--color-target) !important;
+    border-radius: 3px;
+    padding: 0 2px;
+    margin: 0 -1px;
+    font-weight: bold !important;
+    text-shadow: 0 0 10px rgba(250, 204, 21, 0.6);
+    color: #fff !important;
+    box-shadow: 0 0 15px rgba(250, 204, 21, 0.2);
+    animation: target-pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+}
+
+@keyframes target-pulse {
+    0% { background: rgba(250, 204, 21, 0.2); box-shadow: 0 0 5px rgba(250, 204, 21, 0.1); }
+    50% { background: rgba(250, 204, 21, 0.4); box-shadow: 0 0 20px rgba(250, 204, 21, 0.4); }
+    100% { background: rgba(250, 204, 21, 0.2); box-shadow: 0 0 5px rgba(250, 204, 21, 0.1); }
+}
 
 /* Force standard color application */
 .inline-btn {
@@ -524,7 +543,7 @@
 }
 
 
-.message.recent-entry:not(.is-hit-impact) {
+.message.recent-entry {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
@@ -554,73 +573,6 @@
     }
 }
 
-@keyframes hit-flash-bg {
-    0% {
-        background: transparent;
-        box-shadow: none;
-    }
-    7% {
-        background: radial-gradient(ellipse 100% 40% at center, rgba(255, 0, 0, 0.45) 0%, transparent 95%);
-        box-shadow: 0 0 6px 0px rgba(255, 0, 0, 0.35);
-        filter: saturate(1.8) brightness(1.2);
-    }
-    100% {
-        background: transparent;
-        box-shadow: none;
-        filter: none;
-    }
-}
-
-@keyframes hitter-flash-bg {
-    0% {
-        background: transparent;
-        box-shadow: none;
-    }
-    7% {
-        background: radial-gradient(ellipse 100% 40% at center, rgba(0, 150, 255, 0.45) 0%, transparent 95%);
-        box-shadow: 0 0 6px 0px rgba(0, 150, 255, 0.35);
-        filter: saturate(1.8) brightness(1.2);
-    }
-    100% {
-        background: transparent;
-        box-shadow: none;
-        filter: none;
-    }
-}
-
-/* Targeted hit flash on the specific content container (bubble if exists, otherwise message-content) */
-.message.is-hit-impact .combat-bubble,
-.message.is-hit-impact :not(.combat-bubble) > .message-content {
-    animation: hit-flash-bg 1.2s ease-out forwards;
-    display: table !important;
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: 100%;
-    flex: 0 0 auto !important;
-    align-self: flex-start;
-    border: none !important;
-    outline: none !important;
-}
-
-.message.is-hitter-impact .combat-bubble,
-.message.is-hitter-impact :not(.combat-bubble) > .message-content {
-    animation: hitter-flash-bg 1.2s ease-out forwards;
-    display: table !important;
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: 100%;
-    flex: 0 0 auto !important;
-    align-self: flex-start;
-    border: none !important;
-    outline: none !important;
-}
-
-.message.combat-player.recent-entry:not(.is-hit-impact):not(.is-hitter-impact),
-.message.combat-opponent.recent-entry:not(.is-hit-impact):not(.is-hitter-impact),
-.message.combat-groupmate.recent-entry:not(.is-hit-impact):not(.is-hitter-impact) {
-    animation: none !important;
-    opacity: 1 !important;
-}
 
 .message.combat-opponent {
     text-align: left;

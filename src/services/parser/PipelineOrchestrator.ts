@@ -1,5 +1,6 @@
 import { Tokenizer, TokenizerContext } from './Tokenizer';
 import { MessageType, Message } from '../../types';
+import { gmcpBus } from '../../events/gmcpBus';
 
 // The Orchestrator handles processing the raw Telnet buffer chunks
 // resolving network racing conditions
@@ -32,10 +33,16 @@ export class PipelineOrchestrator {
         // Then we retrieve the freshest possible TokenizerContext from the stores
         const context = contextBuilder();
 
+
+
         // Finally we iterate over the text lines in this chunk and process them
         // using the single, synchronized context
         for (const textRaw of chunkLines) {
+
              const tokens = Tokenizer.tokenize(textRaw, context);
+             
+
+             
              processLineCallback(textRaw, tokens);
         }
     }

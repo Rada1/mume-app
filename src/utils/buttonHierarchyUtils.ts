@@ -18,15 +18,29 @@ export const INLINE_HIERARCHY: Record<string, string[]> = {
     'object-quiver': ['object-container', 'location-room'],
     
     // Entity Kinds
-    'player': ['inlineplayer', 'object'],
-    'npc': ['inlinenpc', 'object'],
+    'inline-player': ['player', 'object'],
+    'inline-npc': ['npc', 'object'],
+    'inlinenpc': ['inline-npc'], // Legacy compat
+    'inlineplayer': ['inline-player'], // Legacy compat
     
     // Specialized NPCs
-    'npc-mount': ['npc'],
-    'npc-shopkeeper': ['npc'],
-    'npc-shopkeeper-drop': ['npc'],
-    'npc-innkeeper': ['npc'],
-    'npc-guildmaster': ['npc']
+    'inline-mounts': ['npc'],
+    'inline-shopkeeper': ['npc'],
+    'inline-shopkeeper-drop': ['npc'],
+    'inline-innkeeper': ['npc'],
+    'inline-guildmaster': ['npc'],
+    
+    // Specialized Objects
+    'inline-weapon': ['object-weapon', 'object'],
+    'inline-armour': ['object-armour', 'object'],
+    'inline-shield': ['object-shield', 'object'],
+    'inline-container': ['object-container', 'object'],
+    'inline-food': ['object-food', 'object'],
+    'inline-fluidcontainer': ['object-fluid', 'object'],
+    'inline-water': ['object-water', 'object'],
+    'inline-treasure': ['object-treasure', 'object'],
+    'inline-corpses': ['object-corpse', 'object'],
+    'inline-object': ['object']
 };
 
 export const LOCATION_SETS: Record<string, string> = {

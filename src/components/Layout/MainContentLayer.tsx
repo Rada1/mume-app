@@ -3,12 +3,12 @@ import Header from '../HUD/Header';
 import MessageLog from '../Messages/MessageLog';
 import InputArea from '../Controls/InputArea';
 import { useGame, useUI, useVitals, useLog } from '../../context/GameContext';
+import { useModeStore } from '../../stores/useModeStore';
 import CombatStatsPanel from '../Combat/CombatStatsPanel';
 import { LineCluster } from './HUD/LineCluster';
 import PromptBox from '../HUD/PromptBox';
 import { ansiConvert } from '../../utils/ansi';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
-import { useModeStore } from '../../stores/useModeStore';
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -66,9 +66,9 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         showControls,
         isNewbieMode,
         gameState,
-        isSpectateMode,
         inCombat
     } = useGame() as any;
+    const isSpectateMode = useModeStore(s => s.isSpectating);
     const { processMessageHtml } = useLog();
 
     const prevInCombatRef = React.useRef(false);

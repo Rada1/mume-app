@@ -18,12 +18,14 @@ const ActionSettings: React.FC<ActionSettingsProps> = ({
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
                     <input
                         id="new-action-pattern"
+                        name="new-action-pattern"
                         className="setting-input"
                         placeholder="Trigger Pattern..."
                         style={{ flex: 1 }}
                     />
                     <input
                         id="new-action-command"
+                        name="new-action-command"
                         className="setting-input"
                         placeholder="Command string..."
                         style={{ flex: 1 }}
@@ -31,7 +33,7 @@ const ActionSettings: React.FC<ActionSettingsProps> = ({
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <input type="checkbox" id="new-action-regex" />
+                        <input type="checkbox" id="new-action-regex" name="new-action-regex" />
                         <label htmlFor="new-action-regex" style={{ color: 'var(--text-dim, #aaa)', fontSize: '0.9rem', cursor: 'pointer' }}>Regex?</label>
                     </div>
                     <button

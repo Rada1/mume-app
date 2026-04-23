@@ -17,8 +17,10 @@ import { StatsView } from './Views/StatsView';
 import { CharacterView } from './Views/CharacterView';
 import { PlayersView } from './Views/PlayersView';
 import { InventoryView } from './Views/InventoryView';
+import { MapperHandle } from '../Mapper/Mapper';
 
-import { DrawerLine, ButtonData, GameEntity } from '../../types';
+import { DrawerLine, CustomButton, GameEntity } from '../../types';
+
 
 interface DrawerManagerProps {
     ui: {
@@ -37,7 +39,7 @@ interface DrawerManagerProps {
     scoreLines: DrawerLine[];
     eqLines: DrawerLine[];
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
-    handleButtonClick: (e: React.PointerEvent, btn: ButtonData) => void;
+    handleButtonClick: (button: CustomButton, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => void;
     loginName: string;
     setLoginName: (val: string) => void;
     loginPassword: string;
@@ -84,7 +86,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         mood, setMood, spellSpeed, setSpellSpeed, alertness, setAlertness
     } = useGame();
     const { handleTabClick } = useUI();
-    const mapperRef = React.useRef<HTMLDivElement>(null);
+    const mapperRef = React.useRef<MapperHandle>(null);
     const [activeSlider, setActiveSlider] = React.useState<string | null>(null);
     const [activeButtonRect, setActiveButtonRect] = React.useState<DOMRect | null>(null);
 
@@ -144,6 +146,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                     handleButtonClick={handleButtonClick}
                     triggerHaptic={triggerHaptic}
                     executeCommand={executeCommand}
+                    pendingDrawerContainerRef={pendingDrawerContainerRef}
                     inlineCategories={inlineCategories}
                     entities={entities}
                     keywordOverrides={keywordOverrides}

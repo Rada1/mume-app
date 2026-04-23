@@ -1,10 +1,10 @@
 import React, { useState, useRef, useLayoutEffect } from 'react';
 import { X, Users, RefreshCw, Star } from 'lucide-react';
 import { useGame, useUI } from '../../../context/GameContext';
-import { MemberRow } from '../../MemberRow';
+import { MemberRow } from '../MemberRow';
 import { escapeHtml, sanitizeMumeHtml } from '../../../utils/securityUtils';
-import './CharacterDrawer.css';
-import './PlayersDrawer.css';
+import '../CharacterDrawer.css';
+import '../PlayersDrawer.css';
 
 interface PlayersViewProps {
     isOpen: boolean;
@@ -116,8 +116,6 @@ export const PlayersView: React.FC<PlayersViewProps> = ({ isOpen, onClose, execu
         );
     };
 
-    const swipePos = useRef<{ x: number, y: number } | null>(null);
-
     const infoContainerRef = useRef<HTMLDivElement>(null);
     const [infoFontSize, setInfoFontSize] = useState<string>('inherit');
 
@@ -135,38 +133,6 @@ export const PlayersView: React.FC<PlayersViewProps> = ({ isOpen, onClose, execu
         ro.observe(infoContainerRef.current);
         return () => ro.disconnect();
     }, [activeTab, isOpen]);
-
-    const onPointerDownInternal = (e: React.PointerEvent) => {
-        const target = e.target as HTMLElement;
-        const container = e.currentTarget as HTMLElement;
-        if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT' || target.closest('.group-member-row') || target.closest('.drawer-tab')) {
-            if (target.closest('.inline-btn')) handleLogPointerDown(e);
-            return;
-        }
-        swipePos.current = { x: e.clientX, y: e.clientY };
-        container.setPointerCapture(e.pointerId);
-    };
-
-    const onPointerUpInternal = (e: React.PointerEvent) => {
-        const target = e.target as HTMLElement;
-        const container = e.currentTarget as HTMLElement;
-        if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT' || target.closest('.group-member-row') || target.closest('.drawer-tab')) {
-            if (target.closest('.inline-btn')) handleLogPointerUp(e);
-            return;
-        }
-        if (swipePos.current) {
-            const deltaX = e.clientX - swipePos.current.x;
-            const deltaY = e.clientY - swipePos.current.y;
-            const absX = Math.abs(deltaX);
-            const absY = Math.abs(deltaY);
-
-            // Swipe down OR swipe left to close (since it's on the left edge)
-            if ((deltaY > 50 && absY > absX) || (deltaX < -40 && absX > absY)) {
-                if (window.innerWidth > 1024) onClose();
-            }
-        }
-        swipePos.current = null;
-    };
 
     const onClickInternal = (e: React.MouseEvent) => {
         const target = e.target as HTMLElement;
@@ -195,7 +161,7 @@ export const PlayersView: React.FC<PlayersViewProps> = ({ isOpen, onClose, execu
         line,
         fontSize
     }: {
-        line: import('../../types').DrawerLine,
+        line: import('../../../types').DrawerLine,
         fontSize: string
     }) => {
         const isHeader = !!line.isHeader;
@@ -224,276 +190,275 @@ export const PlayersView: React.FC<PlayersViewProps> = ({ isOpen, onClose, execu
     });
 
     return (
-        <div
-            className={`character-drawer-overlay ${isOpen ? 'open' : ''}`}
-            onClick={handleBackdropClick}
-        >
-            <div
-                className={`players-drawer log-card-drawer left-drawer ${isOpen ? 'open' : ''}`}
-                onClick={onClickInternal}
-                onPointerDown={onPointerDownInternal}
-                onPointerUp={onPointerUpInternal}
-                onPointerCancel={onPointerUpInternal}
-                onDragOver={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }}
-                onDrop={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const dataStr = e.dataTransfer.getData('application/json') || e.dataTransfer.getData('text/plain');
-                    if (!dataStr) return;
+        <div 
+            className="players-view-content" 
+            onClick={onClickInternal}
+            onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            }}
+            onDrop={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const dataStr = e.dataTransfer.getData('application/json') || e.dataTransfer.getData('text/plain');
+                if (!dataStr) return;
 
-                    let data;
-                    try { data = JSON.parse(dataStr); } catch (err) { return; }
+                let data;
+                try { data = JSON.parse(dataStr); } catch (err) { return; }
 
-                    if (data && data.type === 'inline-btn' && data.context) {
-                        const target = document.elementFromPoint(e.clientX, e.clientY);
-                        const playerEl = target?.closest('[data-player-name]');
-                        const playerName = playerEl?.getAttribute('data-player-name');
+                if (data && data.type === 'inline-btn' && data.context) {
+                    const target = document.elementFromPoint(e.clientX, e.clientY);
+                    const playerEl = target?.closest('[data-player-name]');
+                    const playerName = playerEl?.getAttribute('data-player-name');
 
-                        if (playerName) {
-                            triggerHaptic(60);
-                            executeCommand(`give ${data.context} ${playerName}`);
-                        }
+                    if (playerName) {
+                        triggerHaptic(60);
+                        executeCommand(`give ${data.context} ${playerName}`);
                     }
-                }}
-                style={{ touchAction: 'pan-y' }}
-            >                <div className="drawer-header" style={{ pointerEvents: 'auto', display: 'flex', justifyContent: 'flex-end', padding: '6px 10px', background: 'transparent', gap: '8px' }}>
-                    {window.innerWidth > 1024 && (
-                        <button
-                            style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-                            onClick={(e) => { e.stopPropagation(); onClose(); }}
-                        >
-                            <X size={16} />
-                        </button>
-                    )}
-                </div>
+                }
+            }}
+            style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                height: '100%',
+                width: '100%',
+                position: 'relative'
+            }}
+        >
+            <div className="drawer-header" style={{ pointerEvents: 'auto', display: 'flex', justifyContent: 'flex-end', padding: '6px 10px', background: 'transparent', gap: '8px' }}>
+                {window.innerWidth > 1024 && (
+                    <button
+                        style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                        onClick={(e) => { e.stopPropagation(); onClose(); }}
+                    >
+                        <X size={16} />
+                    </button>
+                )}
+            </div>
 
-                <div className="drawer-body" style={{ pointerEvents: 'auto', flex: 1, marginRight: '0', overflowY: 'auto', position: 'relative', padding: 0 }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-                    {activeTab === 'group' ? (
-                        <div style={{ padding: '8px 0 0 0' }}>
-                            {(Array.isArray(groupMembers) && groupMembers.length > 0) ? (
-                                groupMembers.map((m, idx) => <MemberRow key={m.id} member={m} index={idx} />)
+            <div className="drawer-body" style={{ pointerEvents: 'auto', flex: 1, marginRight: '0', overflowY: 'auto', position: 'relative', padding: 0 }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+                {activeTab === 'group' ? (
+                    <div style={{ padding: '8px 0 0 0' }}>
+                        {(Array.isArray(groupMembers) && groupMembers.length > 0) ? (
+                            groupMembers.map((m, idx) => <MemberRow key={m.id} member={m} index={idx} />)
+                        ) : (
+                            <div style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
+                                <Users size={32} style={{ marginBottom: '10px' }} />
+                                <p style={{ fontSize: '0.8rem' }}>Not in a group.</p>
+                            </div>
+                        )}
+                        <div style={{ height: '50px', flexShrink: 0 }} />
+                    </div>
+                ) : activeTab === 'online' ? (
+                    <div className="online-tab" style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                        <div ref={infoContainerRef} style={{
+                            fontFamily: 'var(--font-main, monospace)',
+                            fontSize: infoFontSize,
+                            visibility: infoFontSize === 'inherit' ? 'hidden' : 'visible',
+                            lineHeight: '1.5',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '0',
+                            background: 'transparent',
+                            border: 'none',
+                            borderRadius: '0',
+                            padding: '8px 12px',
+                            boxShadow: 'none',
+                            margin: '0',
+                            position: 'relative',
+                            minHeight: '120px'
+                        }}>
+
+                            {whoLines?.length > 0 ? (
+                                whoLines.map(line => (
+                                    <DrawerLineItem
+                                        key={line.id}
+                                        line={line}
+                                        fontSize={infoFontSize}
+                                    />
+                                ))
                             ) : (
-                                <div style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
-                                    <Users size={32} style={{ marginBottom: '10px' }} />
-                                    <p style={{ fontSize: '0.8rem' }}>Not in a group.</p>
+                                <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
+                                    <p style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontStyle: 'italic' }}>No player data captured.</p>
                                 </div>
                             )}
                             <div style={{ height: '50px', flexShrink: 0 }} />
                         </div>
-                    ) : activeTab === 'online' ? (
-                        <div className="online-tab" style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                            <div ref={infoContainerRef} style={{
-                                fontFamily: 'var(--font-main, monospace)',
-                                fontSize: infoFontSize,
-                                visibility: infoFontSize === 'inherit' ? 'hidden' : 'visible',
-                                lineHeight: '1.5',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '0',
-                                background: 'transparent',
-                                border: 'none',
-                                borderRadius: '0',
-                                padding: '8px 12px',
-                                boxShadow: 'none',
-                                margin: '0',
-                                position: 'relative',
-                                minHeight: '120px'
-                            }}>
+                    </div>
+                ) : (
+                    <div className="nearby-tab" style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                        <div ref={infoContainerRef} style={{
+                            fontFamily: 'var(--font-main, monospace)',
+                            fontSize: infoFontSize,
+                            visibility: infoFontSize === 'inherit' ? 'hidden' : 'visible',
+                            lineHeight: '1.5',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '0',
+                            background: 'transparent',
+                            border: 'none',
+                            borderRadius: '0',
+                            padding: '8px 12px',
+                            boxShadow: 'none',
+                            margin: '0',
+                            position: 'relative',
+                            minHeight: '120px'
+                        }}>
 
-                                {whoLines?.length > 0 ? (
-                                    whoLines.map(line => (
-                                        <DrawerLineItem
-                                            key={line.id}
-                                            line={line}
-                                            fontSize={infoFontSize}
-                                        />
-                                    ))
-                                ) : (
-                                    <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
-                                        <p style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontStyle: 'italic' }}>No player data captured.</p>
-                                    </div>
-                                )}
-                                <div style={{ height: '50px', flexShrink: 0 }} />
-                            </div>
+                            {whereLines?.length > 0 ? (
+                                whereLines.map(line => (
+                                    <DrawerLineItem
+                                        key={line.id}
+                                        line={line}
+                                        fontSize={infoFontSize}
+                                    />
+                                ))
+                            ) : (
+                                <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
+                                    <p style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontStyle: 'italic' }}>No player data captured.</p>
+                                </div>
+                            )}
+                            <div style={{ height: '50px', flexShrink: 0 }} />
                         </div>
-                    ) : (
-                        <div className="nearby-tab" style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                            <div ref={infoContainerRef} style={{
-                                fontFamily: 'var(--font-main, monospace)',
-                                fontSize: infoFontSize,
-                                visibility: infoFontSize === 'inherit' ? 'hidden' : 'visible',
-                                lineHeight: '1.5',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '0',
-                                background: 'transparent',
-                                border: 'none',
-                                borderRadius: '0',
-                                padding: '8px 12px',
-                                boxShadow: 'none',
-                                margin: '0',
-                                position: 'relative',
-                                minHeight: '120px'
-                            }}>
-
-                                {whereLines?.length > 0 ? (
-                                    whereLines.map(line => (
-                                        <DrawerLineItem
-                                            key={line.id}
-                                            line={line}
-                                            fontSize={infoFontSize}
-                                        />
-                                    ))
-                                ) : (
-                                    <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
-                                        <p style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontStyle: 'italic' }}>No player data captured.</p>
-                                    </div>
-                                )}
-                                <div style={{ height: '50px', flexShrink: 0 }} />
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                {/* Individual Floating Frosted Tabs */}
-                <div className="utility-nav-tabs" style={{
-                    position: 'absolute',
-                    bottom: '12px',
-                    left: '0',
-                    right: '0',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    gap: '10px',
-                    zIndex: 100,
-                    pointerEvents: 'none',
-                    justifyContent: 'center',
-                    background: 'transparent',
-                    border: 'none',
-                    boxShadow: 'none',
-                    padding: '0 10px'
-                }}>
-                    <div
-                        className={`drawer-tab ${activeTab === 'group' ? 'active' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); setActiveTab('group'); triggerHaptic(15); }}
-                        style={{
-                            padding: '6px 14px',
-                            minWidth: '55px',
-                            height: '24px',
-                            borderRadius: '16px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            pointerEvents: 'auto',
-                            background: activeTab === 'group' ? 'var(--accent)' : 'rgba(28, 28, 30, 0.4)',
-                            backdropFilter: activeTab === 'group' ? 'none' : 'blur(10px) saturate(160%)',
-                            WebkitBackdropFilter: activeTab === 'group' ? 'none' : 'blur(10px) saturate(160%)',
-                            color: activeTab === 'group' ? '#000' : 'rgba(255,255,255,0.4)',
-                            border: activeTab === 'group' ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
-                            boxShadow: activeTab === 'group' ? '0 0 15px var(--accent-glow)' : '0 4px 12px rgba(0,0,0,0.3)',
-                            transition: 'all 0.2s ease',
-                            fontSize: '9px',
-                            fontWeight: '900',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.8px'
-                        }}
-                    >
-                        Group
                     </div>
-                    <div
-                        className={`drawer-tab ${activeTab === 'online' ? 'active' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); setActiveTab('online'); executeCommand('who', true, true, true, true); triggerHaptic(15); }}
-                        style={{
-                            padding: '6px 14px',
-                            minWidth: '55px',
-                            height: '24px',
-                            borderRadius: '16px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            pointerEvents: 'auto',
-                            background: activeTab === 'online' ? 'var(--accent)' : 'rgba(28, 28, 30, 0.4)',
-                            backdropFilter: activeTab === 'online' ? 'none' : 'blur(10px) saturate(160%)',
-                            WebkitBackdropFilter: activeTab === 'online' ? 'none' : 'blur(10px) saturate(160%)',
-                            color: activeTab === 'online' ? '#000' : 'rgba(255,255,255,0.4)',
-                            border: activeTab === 'online' ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
-                            boxShadow: activeTab === 'online' ? '0 0 15px var(--accent-glow)' : '0 4px 12px rgba(0,0,0,0.3)',
-                            transition: 'all 0.2s ease',
-                            fontSize: '9px',
-                            fontWeight: '900',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.8px'
-                        }}
-                    >
-                        Online
-                    </div>
-                    <div
-                        className={`drawer-tab ${activeTab === 'nearby' ? 'active' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); setActiveTab('nearby'); executeCommand('where', true, true, true, true); triggerHaptic(15); }}
-                        style={{
-                            padding: '6px 14px',
-                            minWidth: '55px',
-                            height: '24px',
-                            borderRadius: '16px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            pointerEvents: 'auto',
-                            background: activeTab === 'nearby' ? 'var(--accent)' : 'rgba(28, 28, 30, 0.4)',
-                            backdropFilter: activeTab === 'nearby' ? 'none' : 'blur(10px) saturate(160%)',
-                            WebkitBackdropFilter: activeTab === 'nearby' ? 'none' : 'blur(10px) saturate(160%)',
-                            color: activeTab === 'nearby' ? '#000' : 'rgba(255,255,255,0.4)',
-                            border: activeTab === 'nearby' ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
-                            boxShadow: activeTab === 'nearby' ? '0 0 15px var(--accent-glow)' : '0 4px 12px rgba(0,0,0,0.3)',
-                            transition: 'all 0.2s ease',
-                            fontSize: '9px',
-                            fontWeight: '900',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.8px'
-                        }}
-                    >
-                        Nearby
-                    </div>
-                </div>
-
-                {activeTab !== 'group' && (
-                    <button
-                        className="refresh-button floating-refresh"
-                        title="Refresh"
-                        onClick={(e) => {
-                            triggerHaptic(15);
-                            handleRefresh(e);
-                        }}
-                        style={{
-                            position: 'absolute',
-                            bottom: '8px',
-                            right: '8px',
-                            zIndex: 110,
-                            background: 'rgba(40, 40, 45, 0.4)',
-                            backdropFilter: 'blur(10px) saturate(160%)',
-                            WebkitBackdropFilter: 'blur(10px) saturate(160%)',
-                            border: '1px solid rgba(255,255,255,0.1)',
-                            color: 'rgba(255,255,255,0.8)',
-                            width: '32px',
-                            height: '32px',
-                            borderRadius: '16px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
-                            pointerEvents: 'auto'
-                        }}
-                    >
-                        <RefreshCw size={16} />
-                    </button>
                 )}
             </div>
+
+            {/* Individual Floating Frosted Tabs */}
+            <div className="utility-nav-tabs" style={{
+                position: 'absolute',
+                bottom: '12px',
+                left: '0',
+                right: '0',
+                display: 'flex',
+                flexDirection: 'row',
+                gap: '10px',
+                zIndex: 100,
+                pointerEvents: 'none',
+                justifyContent: 'center',
+                background: 'transparent',
+                border: 'none',
+                boxShadow: 'none',
+                padding: '0 10px'
+            }}>
+                <div
+                    className={`drawer-tab ${activeTab === 'group' ? 'active' : ''}`}
+                    onClick={(e) => { e.stopPropagation(); setActiveTab('group'); triggerHaptic(15); }}
+                    style={{
+                        padding: '6px 14px',
+                        minWidth: '55px',
+                        height: '24px',
+                        borderRadius: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        pointerEvents: 'auto',
+                        background: activeTab === 'group' ? 'var(--accent)' : 'rgba(28, 28, 30, 0.4)',
+                        backdropFilter: activeTab === 'group' ? 'none' : 'blur(10px) saturate(160%)',
+                        WebkitBackdropFilter: activeTab === 'group' ? 'none' : 'blur(10px) saturate(160%)',
+                        color: activeTab === 'group' ? '#000' : 'rgba(255,255,255,0.4)',
+                        border: activeTab === 'group' ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
+                        boxShadow: activeTab === 'group' ? '0 0 15px var(--accent-glow)' : '0 4px 12px rgba(0,0,0,0.3)',
+                        transition: 'all 0.2s ease',
+                        fontSize: '9px',
+                        fontWeight: '900',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.8px'
+                    }}
+                >
+                    Group
+                </div>
+                <div
+                    className={`drawer-tab ${activeTab === 'online' ? 'active' : ''}`}
+                    onClick={(e) => { e.stopPropagation(); setActiveTab('online'); executeCommand('who', true, true, true, true); triggerHaptic(15); }}
+                    style={{
+                        padding: '6px 14px',
+                        minWidth: '55px',
+                        height: '24px',
+                        borderRadius: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        pointerEvents: 'auto',
+                        background: activeTab === 'online' ? 'var(--accent)' : 'rgba(28, 28, 30, 0.4)',
+                        backdropFilter: activeTab === 'online' ? 'none' : 'blur(10px) saturate(160%)',
+                        WebkitBackdropFilter: activeTab === 'online' ? 'none' : 'blur(10px) saturate(160%)',
+                        color: activeTab === 'online' ? '#000' : 'rgba(255,255,255,0.4)',
+                        border: activeTab === 'online' ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
+                        boxShadow: activeTab === 'online' ? '0 0 15px var(--accent-glow)' : '0 4px 12px rgba(0,0,0,0.3)',
+                        transition: 'all 0.2s ease',
+                        fontSize: '9px',
+                        fontWeight: '900',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.8px'
+                    }}
+                >
+                    Online
+                </div>
+                <div
+                    className={`drawer-tab ${activeTab === 'nearby' ? 'active' : ''}`}
+                    onClick={(e) => { e.stopPropagation(); setActiveTab('nearby'); executeCommand('where', true, true, true, true); triggerHaptic(15); }}
+                    style={{
+                        padding: '6px 14px',
+                        minWidth: '55px',
+                        height: '24px',
+                        borderRadius: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        pointerEvents: 'auto',
+                        background: activeTab === 'nearby' ? 'var(--accent)' : 'rgba(28, 28, 30, 0.4)',
+                        backdropFilter: activeTab === 'nearby' ? 'none' : 'blur(10px) saturate(160%)',
+                        WebkitBackdropFilter: activeTab === 'nearby' ? 'none' : 'blur(10px) saturate(160%)',
+                        color: activeTab === 'nearby' ? '#000' : 'rgba(255,255,255,0.4)',
+                        border: activeTab === 'nearby' ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
+                        boxShadow: activeTab === 'nearby' ? '0 0 15px var(--accent-glow)' : '0 4px 12px rgba(0,0,0,0.3)',
+                        transition: 'all 0.2s ease',
+                        fontSize: '9px',
+                        fontWeight: '900',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.8px'
+                    }}
+                >
+                    Nearby
+                </div>
+            </div>
+
+            {activeTab !== 'group' && (
+                <button
+                    className="refresh-button floating-refresh"
+                    title="Refresh"
+                    onClick={(e) => {
+                        triggerHaptic(15);
+                        handleRefresh(e);
+                    }}
+                    style={{
+                        position: 'absolute',
+                        bottom: '8px',
+                        right: '8px',
+                        zIndex: 110,
+                        background: 'rgba(40, 40, 45, 0.4)',
+                        backdropFilter: 'blur(10px) saturate(160%)',
+                        WebkitBackdropFilter: 'blur(10px) saturate(160%)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        color: 'rgba(255,255,255,0.8)',
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
+                        pointerEvents: 'auto'
+                    }}
+                >
+                    <RefreshCw size={16} />
+                </button>
+            )}
         </div>
     );
 };

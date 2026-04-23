@@ -1,144 +1,39 @@
 import { create } from 'zustand';
-import { CombatHealthStatus, GroupMember } from '../types';
 import { gmcpBus } from '../events/gmcpBus';
-import { findStatus } from '../utils/combatUtils';
 import { useModeStore } from './useModeStore';
+import { CombatState, initialCombatState, createCombatActions } from './slices/combatSlice';
 
-export interface CombatState {
-    opponentId: number | null;
-    opponentName: string | null;
-    opponentHealthStatus: CombatHealthStatus | null;
-    bufferName: string | null;
-    bufferHealthStatus: CombatHealthStatus | null;
-    groupMembers: GroupMember[];
-}
-
-export interface CombatActions {
-    setOpponent: (id: number | null, name: string | null, status: CombatHealthStatus | null) => void;
-    setOpponentId: (id: number | null) => void;
-    setOpponentName: (name: string | null) => void;
-    setOpponentStatus: (status: CombatHealthStatus | null) => void;
-    setBuffer: (name: string | null, status: CombatHealthStatus | null) => void;
-    setBufferName: (name: string | null) => void;
-    setBufferStatus: (status: CombatHealthStatus | null) => void;
-    setGroupMembers: (members: any) => void;
-    applyRoomCharsCombat: (data: any[]) => void;
-    applyGroupUpdate: (update: any) => void;
-    applyGroupRemove: (id: string | number) => void;
-    applyGroupAdd: (member: GroupMember) => void;
-    applyGroupSet: (members: GroupMember[]) => void;
-}
-
-export type CombatStore = CombatState & CombatActions;
+export type CombatStore = CombatState;
 
 export const useCombatStore = create<CombatStore>((set, get) => ({
-    opponentId: null,
-    opponentName: null,
-    opponentHealthStatus: null,
-    bufferName: null,
-    bufferHealthStatus: null,
-    groupMembers: [],
-
-    setOpponent: (id, name, status) => {
-        set({ opponentId: id, opponentName: name, opponentHealthStatus: status });
-    },
-    setOpponentId: (opponentId) => set({ opponentId }),
-    setOpponentName: (opponentName) => set({ opponentName }),
-    setOpponentStatus: (opponentHealthStatus) => set({ opponentHealthStatus }),
-
-    setBuffer: (name, status) => {
-        set({ bufferName: name, bufferHealthStatus: status });
-    },
-    setBufferName: (bufferName) => set({ bufferName }),
-    setBufferStatus: (bufferHealthStatus) => set({ bufferHealthStatus }),
-
-    setGroupMembers: (update) => set((state) => {
-        const next = typeof update === 'function' ? update(state.groupMembers) : update;
-        return { groupMembers: next };
-    }),
-
-    applyRoomCharsCombat: (data) => {
-        if (!Array.isArray(data)) return;
-
-        const { opponentId, opponentName, bufferName } = get();
-        let newOpponentHealth: CombatHealthStatus | null = null;
-        let newBufferHealth: CombatHealthStatus | null = null;
-
-        data.forEach(char => {
-            const status = findStatus(char.health || char.condition || char.hp_status || char.status);
-            if (!status) return;
-
-            // Prioritize ID match for opponent
-            if (opponentId && char.id === opponentId) {
-                newOpponentHealth = status;
-            } else if (opponentName && !opponentId) {
-                // Fallback to name match if no ID yet (only if no direct ID match exists)
-                const name = char.name || char.short || char.keyword;
-                if (name && (name.toLowerCase() === opponentName.toLowerCase())) {
-                    newOpponentHealth = status;
-                }
-            }
-
-            // Buffer match
-            if (bufferName) {
-                const name = char.name || char.short || char.keyword;
-                if (name && (name.toLowerCase() === bufferName.toLowerCase())) {
-                    newBufferHealth = status;
-                }
-            }
-        });
-
-        if (newOpponentHealth || newBufferHealth) {
-            set((state) => ({
-                opponentHealthStatus: newOpponentHealth || state.opponentHealthStatus,
-                bufferHealthStatus: newBufferHealth || state.bufferHealthStatus
-            }));
-        }
-    },
-
-    applyGroupUpdate: (update) => {
-        set((state) => ({
-            groupMembers: state.groupMembers.map(m => String(m.id) === String(update.id) ? { ...m, ...update } : m)
-        }));
-    },
-
-    applyGroupRemove: (id) => {
-        set((state) => ({
-            groupMembers: state.groupMembers.filter(m => String(m.id) !== String(id))
-        }));
-    },
-
-    applyGroupAdd: (member) => {
-        set((state) => ({
-            groupMembers: [...state.groupMembers, member]
-        }));
-    },
-
-    applyGroupSet: (members) => {
-        set({ groupMembers: members });
-    }
+    ...initialCombatState,
+    ...createCombatActions(set, get),
 }));
+
+// --- Event Subscriptions ---
 
 gmcpBus.on('Char.Opponent', (data: string | null) => {
     if (useModeStore.getState().isSpectating) return;
+    const store = useCombatStore.getState();
     if (typeof data === 'string') {
         const idNum = parseInt(data, 10);
         if (!isNaN(idNum) && idNum > 0) {
-             useCombatStore.getState().setOpponent(idNum, null, null);
+            store.setOpponent(idNum, null, null);
         } else {
-             useCombatStore.getState().setOpponent(null, data, null);
+            store.setOpponent(null, data, null);
         }
     } else if (data === null) {
-        useCombatStore.getState().setOpponent(null, null, null);
+        store.setOpponent(null, null, null);
     }
 });
 
 gmcpBus.on('Char.Buffer', (data: string | null) => {
     if (useModeStore.getState().isSpectating) return;
+    const store = useCombatStore.getState();
     if (typeof data === 'string') {
-        useCombatStore.getState().setBuffer(data, null);
+        store.setBuffer(data, null);
     } else if (data === null) {
-        useCombatStore.getState().setBuffer(null, null);
+        store.setBuffer(null, null);
     }
 });
 
@@ -159,10 +54,11 @@ gmcpBus.on('Group.Add', (data: any) => {
 
 gmcpBus.on('Group.Remove', (data: any) => {
     if (useModeStore.getState().isSpectating) return;
+    const store = useCombatStore.getState();
     if (data && data.id) {
-        useCombatStore.getState().applyGroupRemove(data.id);
+        store.applyGroupRemove(data.id);
     } else if (typeof data === 'string' || typeof data === 'number') {
-        useCombatStore.getState().applyGroupRemove(data);
+        store.applyGroupRemove(data);
     }
 });
 

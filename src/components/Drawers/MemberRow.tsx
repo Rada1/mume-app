@@ -1,6 +1,6 @@
 import React from 'react';
 import { GroupMember } from '../../types';
-import { useGame } from '../../context/GameContext';
+import { useModeStore } from '../../stores/useModeStore';
 import { getMemberColor } from '../../utils/groupUtils';
 
 interface MemberRowProps {
@@ -9,9 +9,10 @@ interface MemberRowProps {
 }
 
 export const MemberRow: React.FC<MemberRowProps> = ({ member, index }) => {
-    const { isSpectateMode, setIsSpectateMode, spectateTargetId, setSpectateTargetId } = useGame();
+    const { isSpectating, spectateTarget, startSpectate, stopSpectate } = useModeStore();
     const color = getMemberColor(index);
-    const isTarget = spectateTargetId != null && String(spectateTargetId) === String(member.id);
+    const memberName = member.name || member.label || '';
+    const isTarget = isSpectating && spectateTarget === memberName;
 
     // hp/mana/mp come as percentages (0-100) or strings "100%"
     const parsePercent = (val: any) => {
@@ -42,20 +43,10 @@ export const MemberRow: React.FC<MemberRowProps> = ({ member, index }) => {
 
     const handleClick = (e: React.MouseEvent) => {
         e.stopPropagation();
-        const newId = isTarget ? null : (member.id ?? null);
-        console.log('[Spectate] MemberRow click:', {
-            memberId: member.id, memberName: member.name,
-            wasTarget: isTarget, newTargetId: newId,
-            memberHp: member.hp, memberMapid: member.mapid
-        });
-        if (newId != null) {
-            // Selecting a member — ensure spectate mode is on
-            if (!isSpectateMode) setIsSpectateMode(true);
-            setSpectateTargetId(Number(newId));
+        if (isTarget) {
+            stopSpectate();
         } else {
-            // Deselecting — clear target and turn off spectate mode
-            setSpectateTargetId(null);
-            setIsSpectateMode(false);
+            startSpectate(memberName);
         }
     };
 

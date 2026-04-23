@@ -1,6 +1,7 @@
 import React from 'react';
 import { Wifi, WifiOff, Upload } from 'lucide-react';
 import { DEFAULT_BG } from '../../constants';
+import { useModeStore } from '../../stores/useModeStore';
 
 interface GeneralSettingsProps {
     connectionUrl: string;
@@ -40,8 +41,6 @@ interface GeneralSettingsProps {
     setNpcColor: (val: string) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
-    isSpectateMode: boolean;
-    setIsSpectateMode: (val: boolean) => void;
     isTimestampEnabled: boolean;
     setIsTimestampEnabled: (val: boolean) => void;
     isNewbieMode: boolean;
@@ -88,8 +87,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setObjectColor,
     isBloomEnabled,
     setIsBloomEnabled,
-    isSpectateMode,
-    setIsSpectateMode,
     isTimestampEnabled,
     setIsTimestampEnabled,
     isNewbieMode,
@@ -101,6 +98,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     showSpectatePromptInLog,
     setShowSpectatePromptInLog
 }) => {
+    const isSpectateMode = useModeStore(s => s.isSpectating);
+    const setIsSpectateMode = useModeStore(s => s.setIsSpectating);
     let protocol = 'wss:';
     let host = '';
     let port = '';
@@ -258,8 +257,10 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 </form>
 
                 <div className="setting-group" style={{ marginTop: '10px', marginBottom: 0 }}>
-                    <label className="setting-label">Full URL (Advanced)</label>
+                    <label htmlFor="connection-url-full" className="setting-label">Full URL (Advanced)</label>
                     <input
+                        id="connection-url-full"
+                        name="connection-url-full"
                         className="setting-input"
                         value={connectionUrl}
                         onChange={(e) => setConnectionUrl(e.target.value)}

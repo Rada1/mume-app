@@ -10,6 +10,7 @@ export interface TokenizerContext {
     inlineCategories: any[];
     buttons: any[];
     selectedObjectIds: Set<string>;
+    onlinePlayers?: string[];
 }
 
 export class Tokenizer {
@@ -168,10 +169,17 @@ export class Tokenizer {
             });
         }
 
-        // PCs / NPCs
+        // PCs / NPCs / Online Players
         const allOccupants = [...context.currentOccupants];
         context.roomNpcs.forEach(npc => {
             if (!allOccupants.find(o => o.name === npc.name)) allOccupants.push(npc);
+        });
+        
+        // Add Online Players (from who list) if not already in occupants
+        (context.onlinePlayers || []).forEach(name => {
+            if (!allOccupants.find(o => o.name && name && o.name.toLowerCase() === name.toLowerCase())) {
+                allOccupants.push({ name, location: 'online', isNpc: false });
+            }
         });
 
         allOccupants.forEach(occ => {
@@ -239,18 +247,35 @@ export class Tokenizer {
 
             // Split logic
             // Need to correctly handle boundaries
-            const regex = candidate.isRegex
-                ? new RegExp(candidate.pattern, 'gi')
-                : new RegExp(`\\b${candidate.pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+            // Use a custom boundary check because \b doesn't support accented characters in JS
+            const pattern = candidate.isRegex
+                ? candidate.pattern
+                : `(?:^|[^a-zA-Z\\u00C0-\\u00FF])${candidate.pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![a-zA-Z\\u00C0-\\u00FF])`;
+
+            const regex = new RegExp(pattern, 'gi');
 
             let lastIndex = 0;
             let match;
             while ((match = regex.exec(token.content)) !== null) {
-                if (match.index > lastIndex) {
-                    newTokens.push({ type: token.type, content: token.content.substring(lastIndex, match.index), ...((token as any).style ? { style: (token as any).style } : {}) } as any);
+                let matchContent = match[0];
+                let matchIndex = match.index;
+
+                // If we used a custom boundary (the first char), strip it from the token
+                if (!candidate.isRegex && matchContent.length > candidate.pattern.length) {
+                    const firstChar = matchContent[0];
+                    if (/[^a-zA-Z\u00C0-\u00FF]/.test(firstChar)) {
+                        matchContent = matchContent.substring(1);
+                        matchIndex += 1;
+                    }
                 }
-                newTokens.push(candidate.createToken(match[0]));
-                lastIndex = regex.lastIndex;
+
+                if (matchIndex > lastIndex) {
+                    newTokens.push({ type: token.type, content: token.content.substring(lastIndex, matchIndex), ...((token as any).style ? { style: (token as any).style } : {}) } as any);
+                }
+                newTokens.push(candidate.createToken(matchContent));
+                lastIndex = matchIndex + matchContent.length;
+                // Avoid infinite loops if match is empty
+                if (regex.lastIndex === match.index) regex.lastIndex++;
             }
 
             if (lastIndex < token.content.length) {

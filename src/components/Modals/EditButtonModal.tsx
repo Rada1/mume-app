@@ -38,7 +38,14 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
         ['main', 'gestures', 'style', 'triggers', 'requirements'];
 
     return (
-        <div className="modal-overlay" onClick={() => setEditingButtonId(null)}>
+        <div 
+            className="modal-overlay" 
+            onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                    setEditingButtonId(null);
+                }
+            }}
+        >
             <div className="modal" onClick={e => e.stopPropagation()} style={{ minHeight: '550px', display: 'flex', flexDirection: 'column', maxHeight: '85vh' }}>
                 <div className="modal-header">
                     <div className="modal-title">Edit Button</div>

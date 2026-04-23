@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { X, BookOpen, RefreshCw } from 'lucide-react';
 import { useGame, useVitals, useUI } from '../../../context/GameContext';
 import { DrawerLine } from '../../../types';
@@ -6,7 +6,7 @@ import { isObjectSelected } from '../../../utils/selectionUtils';
 import { getCategoryForName, COLOR_OBJ } from '../../../utils/categorizationUtils';
 
 import { sanitizeMumeHtml } from '../../../utils/securityUtils';
-import './CharacterDrawer.css';
+import '../CharacterDrawer.css';
 
 interface CharacterViewProps {
     isOpen: boolean;
@@ -81,13 +81,18 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 
     const handleRefresh = (e: React.MouseEvent) => {
         e.stopPropagation();
-        executeCommand('info', true);
-        executeCommand('quest', true);
+        triggerHaptic(15);
+        if (activeTab === 'info') {
+            executeCommand('info', true, true, true, true);
+            executeCommand('quest', true, true, true, true);
+            practice.setSilentSyncPending(false);
+        } else if (activeTab === 'practice') {
+            practice.setIsUiRequested(true);
+            executeCommand('practice', true, true, true, true);
+        } else {
+            executeCommand('quest', true, true, true, true);
+        }
     };
-
-    const swipePos = useRef<{ x: number, y: number } | null>(null);
-
-
 
     const onClickInternal = (e: React.MouseEvent) => {
         const target = e.target as HTMLElement;
@@ -98,8 +103,6 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
             if (selectedObjectIds.size > 0) {
                 clearObjectSelection();
                 triggerHaptic(20);
-            } else if (e.target === e.currentTarget) {
-                if (window.innerWidth > 1024) onClose();
             }
         }
     };
@@ -219,9 +222,9 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
                             }}
                             onClick={(e) => {
                                 e.stopPropagation();
-                                contextExecuteCommand(`practice ${skill.name}`, true, true, true, true);
+                                executeCommand(`practice ${skill.name}`, true, true, true, true);
                                 setTimeout(() => {
-                                    contextExecuteCommand('practice', true, true, true, true);
+                                    executeCommand('practice', true, true, true, true);
                                 }, 300);
                             }}
                         >
@@ -257,8 +260,29 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
     });
 
     return (
-        <div className="character-view-container" onClick={onClickInternal} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <div className="drawer-body" style={{ pointerEvents: 'auto', flex: 1, marginRight: '0', overflowY: 'auto', position: 'relative', padding: 0 }}>
+        <div 
+            className="character-view-content" 
+            onClick={onClickInternal} 
+            style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                height: '100%',
+                width: '100%',
+                position: 'relative'
+            }}
+        >
+            <div className="drawer-header" style={{ pointerEvents: 'auto', display: 'flex', justifyContent: 'flex-end', padding: '6px 10px', background: 'transparent' }}>
+                {window.innerWidth > 1024 && (
+                    <button
+                        style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                        onClick={(e) => { e.stopPropagation(); onClose(); }}
+                    >
+                        <X size={16} />
+                    </button>
+                )}
+            </div>
+
+            <div className="drawer-body" style={{ pointerEvents: 'auto', flex: 1, marginRight: '0', overflowY: 'auto', position: 'relative', padding: 0 }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
                     {activeTab === 'info' ? (
                         <div className="info-tab" style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
                             <div ref={infoContainerRef} style={{
@@ -472,17 +496,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
                     className="refresh-button floating-refresh"
                     title="Refresh"
                     onClick={(e) => {
-                        triggerHaptic(15);
-                        if (activeTab === 'info') {
-                            executeCommand('info', true, true, true, true);
-                            executeCommand('quest', true, true, true, true);
-                            practice.setSilentSyncPending(false);
-                        } else if (activeTab === 'practice') {
-                            practice.setIsUiRequested(true);
-                            executeCommand('practice', true, true, true, true);
-                        } else {
-                            executeCommand('quest', true, true, true, true);
-                        }
+                        handleRefresh(e);
                     }}
                     style={{
                         position: 'absolute',
@@ -507,7 +521,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
                 >
                     <RefreshCw size={16} />
                 </button>
-                </div>
+            </div>
         </div>
     );
 };

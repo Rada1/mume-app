@@ -65,7 +65,14 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
     const filteredButtons = buttons.filter(b => b.setId === selectedSet);
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
+        <div 
+            className="modal-overlay" 
+            onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                    onClose();
+                }
+            }}
+        >
             <div className="modal" style={{ maxWidth: '600px', width: '95%' }} onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
                     <div className="modal-title">Set Manager</div>

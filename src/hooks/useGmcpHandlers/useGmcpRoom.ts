@@ -90,14 +90,7 @@ export const useGmcpRoom = ({
             lastExitsRef.current = data.exits;
         }
 
-        // Always clear items on Room.Info to ensure 'look' resyncs objects correctly.
-        setRoomItems([]);
-        setDiscoveredItems([]);
-
         if (roomChanged) {
-            // Only clear occupants when physically moving rooms.
-            setRoomPlayers([]);
-            setRoomNpcs([]);
             lastRoomChangeTimeRef.current = Date.now();
             
             // Force refresh of occupants and items on room change (disabled for MUME compatibility)

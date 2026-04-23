@@ -33,6 +33,7 @@ export interface GmcpHandlers {
     onCorePing?: () => void;
     onCoreGoodbye?: () => void;
     onDisconnect?: () => void;
+    onExternalEdit?: (data: string) => void;
 }
 
 export class GmcpDecoder {

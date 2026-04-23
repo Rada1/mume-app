@@ -40,6 +40,7 @@ export const useSessionState = (
     const vStore = isSpectateSession ? vStoreSpectate : vStoreMain;
     const rStore = isSpectateSession ? rStoreSpectate : rStoreMain;
     const cStore = isSpectateSession ? cStoreSpectate : cStoreMain;
+    const ui = useUIStore();
 
     // Map store values to legacy names for compatibility
     const stats = useMemo(() => ({
@@ -69,6 +70,9 @@ export const useSessionState = (
     const roomPlayers = rStore?.players ?? [];
     const roomNpcs = rStore?.npcs ?? [];
     const roomItems = rStore?.items ?? [];
+    const { whoList, setWhoList, whereList, setWhereList } = rStore;
+
+    const { selectedObjectIds, toggleObjectSelection, clearObjectSelection } = ui;
 
     const opponentName = cStore?.opponentName ?? null;
     const opponentId = cStore?.opponentId === undefined || cStore?.opponentId === null ? null : String(cStore.opponentId);
@@ -127,10 +131,6 @@ export const useSessionState = (
     const [xpHistory, _setXpHistory] = useState({ old: 0, new: 0 });
     const [xpEvent, _setXpEvent] = useState(0);
     const triggerXpTicker = () => {};
-    const [hitFlashEvent, _setHitFlashEvent] = useState(0);
-    const [oppHitFlashEvent, _setOppHitFlashEvent] = useState(0);
-    const triggerHitFlash = () => {};
-    const triggerOppHitFlash = () => {};
 
     useEffect(() => { roomNameRef.current = roomName; }, [roomName]);
     useEffect(() => { roomDescRefInternal.current = roomDesc; }, [roomDesc]);
@@ -148,20 +148,6 @@ export const useSessionState = (
     const [currentName, setCurrentName] = useState<string | null>(characterName);
     const [teleportTargets, setTeleportTargets] = useState<import('../../types').TeleportTarget[]>([]);
     const [quests, setQuests] = useState<import('../../types').QuestData>({ activeQuests: [], lastUpdated: 0 });
-    const [selectedObjectIds, setSelectedObjectIds] = useState<Set<string>>(new Set());
-    const toggleObjectSelection = useCallback((id: string, setId?: string, _context?: string) => {
-        setSelectedObjectIds(prev => {
-            const next = setId ? new Set<string>(prev) : new Set<string>();
-            if (next.has(id)) next.delete(id);
-            else next.add(id);
-            return next;
-        });
-    }, []);
-
-    const clearObjectSelection = useCallback(() => {
-        setSelectedObjectIds(new Set());
-    }, []);
-
     const registry = useEntityRegistry();
 
     // --- Message Log ---
@@ -195,8 +181,6 @@ export const useSessionState = (
     const [practiceLines, setPracticeLines] = useState<DrawerLine[]>([]);
     const [whoLines, setWhoLines] = useState<DrawerLine[]>([]);
     const [whereLines, setWhereLines] = useState<DrawerLine[]>([]);
-    const [whoList, setWhoList] = useState<string[]>([]);
-    const [whereList, setWhereList] = useState<WhereEntry[]>([]);
     const [eqLines, setEqLines] = useState<DrawerLine[]>([]);
 
     const setActivePromptCompat = useCallback((prompt: string | import('../../types').ActivePrompt | null) => {
@@ -214,7 +198,7 @@ export const useSessionState = (
         bufferName, setBufferName, playerHealthStatus, setPlayerHealthStatus, opponentName, opponentId,
         setOpponentId, opponentHealthStatus, bufferHealthStatus, characterInfo: {} as any,
         setCharacterInfo: () => {}, groupMembers, setGroupMembers, xpHistory, xpEvent, triggerXpTicker,
-        hitFlashEvent, oppHitFlashEvent, triggerHitFlash, triggerOppHitFlash, gameTime, setGameTime,
+        gameTime, setGameTime,
         pendingMove: null, setPendingMove: () => {},
         setOpponentHealthStatus, setBufferHealthStatus, setOpponentName,
         setSpectateHealthStatus: () => {}, setSpectateOpponentStatus: () => {},
@@ -224,7 +208,7 @@ export const useSessionState = (
     } as VitalsContextType), [
         stats, target, activePrompt, rumble, deathRoomId, bufferName, playerHealthStatus,
         opponentName, opponentId, opponentHealthStatus, bufferHealthStatus, groupMembers,
-        xpHistory, xpEvent, hitFlashEvent, oppHitFlashEvent, gameTime
+        xpHistory, xpEvent, gameTime
     ]);
 
     return useMemo(() => ({
@@ -266,7 +250,7 @@ export const useSessionState = (
             roomNameRef, roomDescRef: roomDescRefInternal,
             lastCommMsgIdRef, lastCommTimeRef,
             lightningEnabled, setLightningEnabled,
-            whoList, setWhoList,
+            whoList: rStore.whoList, setWhoList,
             whereList, setWhereList,
             discoveredItems, setDiscoveredItems,
             gameTime, setGameTime,
@@ -275,9 +259,9 @@ export const useSessionState = (
         },
         log: {
             ...log,
-            selectedObjectIds,
-            toggleObjectSelection,
-            clearObjectSelection,
+            selectedObjectIds: ui.selectedObjectIds,
+            toggleObjectSelection: ui.toggleObjectSelection,
+            clearObjectSelection: ui.clearObjectSelection,
             processMessageHtml: (html: string) => html, // Placeholder, elevated in GameContext
             lastCommIdBySenderRef
         },
@@ -291,8 +275,8 @@ export const useSessionState = (
         infoLines, scoreLines, questLines, practiceLines, whoLines, whereLines,
         eqLines, abilities, characterClass, actions, mood, spellSpeed, alertness,
         level, currentName, setCurrentName, registry, teleportTargets, quests,
-        lightningEnabled, whoList, whereList, log, selectedObjectIds,
-        toggleObjectSelection, clearObjectSelection, recorder, discoveredItems,
+        lightningEnabled, rStore.whoList, setWhoList, whereList, setWhereList, log, ui.selectedObjectIds,
+        ui.toggleObjectSelection, ui.clearObjectSelection, recorder, discoveredItems,
         gameTime, setGameTime
     ]);
 };

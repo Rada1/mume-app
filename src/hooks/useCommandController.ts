@@ -89,6 +89,30 @@ export interface CommandControllerDeps {
     accountStageRef: React.MutableRefObject<import('../types').AccountStage>;
     gameState: import('../types').GameState;
     sessionMode: import('../types').SessionMode;
+    isSpectateMode: boolean;
+    setIsSpectateMode: (val: boolean) => void;
+    showSpectatePromptInLog: boolean;
+    setShowSpectatePromptInLog: (val: boolean) => void;
+    isHighlighterEnabled: boolean;
+    setIsHighlighterEnabled: (val: boolean) => void;
+    showLegacyButtons: boolean;
+    setShowLegacyButtons: (val: boolean) => void;
+    isImmersionMode: boolean;
+    setIsImmersionMode: (val: boolean) => void;
+    isBloomEnabled: boolean;
+    setIsBloomEnabled: (val: boolean) => void;
+    isTimestampEnabled: boolean;
+    setIsTimestampEnabled: (val: boolean) => void;
+    disableSmoothScroll: boolean;
+    setDisableSmoothScroll: (val: boolean) => void;
+    showRecordingIndicator: boolean;
+    setShowRecordingIndicator: (val: boolean) => void;
+    uiMode: import('../types').UiMode;
+    setUiMode: (val: import('../types').UiMode) => void;
+    fontFamily: string;
+    setFontFamily: (val: string) => void;
+    favorites: string[];
+    setFavorites: (val: string[]) => void;
 }
 
 

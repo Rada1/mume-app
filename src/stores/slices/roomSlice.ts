@@ -17,6 +17,8 @@ export interface RoomState {
     npcs: GmcpOccupant[];
     items: GmcpOccupant[];
     roomNum: number;
+    whoList: string[];
+    whereList: any[];
 
     applyRoomInfo: (data: GmcpRoomInfo) => void;
     applyExitsUpdate: (data: GmcpUpdateExits) => void;
@@ -24,6 +26,8 @@ export interface RoomState {
     addNpc: (data: any) => void;
     removePlayer: (data: any) => void;
     removeNpc: (data: any) => void;
+    setWhoList: (list: string[] | ((prev: string[]) => string[])) => void;
+    setWhereList: (list: any[] | ((prev: any[]) => any[])) => void;
     setRoomInfo: (info: Partial<{ roomName: string; roomDesc: string; roomZone: string; terrain: string; roomNum: number }>) => void;
     setRoomName: (name: string | null | ((prev: string) => string)) => void;
     setRoomDesc: (desc: string | null | ((prev: string) => string)) => void;
@@ -48,7 +52,9 @@ export const initialRoomState = {
     players: [],
     npcs: [],
     items: [],
-    roomNum: 0
+    roomNum: 0,
+    whoList: [],
+    whereList: []
 };
 
 // --- Logic Section ---
@@ -146,10 +152,11 @@ export const createRoomActions = (set: any, get: any) => ({
         });
     },
 
-    applyExitsUpdate: (data: GmcpUpdateExits) => {
+    applyExitsUpdate: (data: GmcpUpdateExits | any) => {
+        const exitsData = data.exits || data;
         set({
-            exits: Object.keys(data),
-            rawExits: data
+            exits: Object.keys(exitsData),
+            rawExits: exitsData
         });
     },
 
@@ -221,5 +228,11 @@ export const createRoomActions = (set: any, get: any) => ({
     
     applyItemsUpdate: (data: GmcpOccupant[]) => {
         set({ items: Array.isArray(data) ? data : [] });
-    }
+    },
+
+    setWhoList: (whoList: string[] | ((prev: string[]) => string[])) => 
+        set((state: RoomState) => ({ whoList: typeof whoList === 'function' ? whoList(state.whoList) : whoList })),
+
+    setWhereList: (whereList: any[] | ((prev: any[]) => any[])) => 
+        set((state: RoomState) => ({ whereList: typeof whereList === 'function' ? whereList(state.whereList) : whereList })),
 });
