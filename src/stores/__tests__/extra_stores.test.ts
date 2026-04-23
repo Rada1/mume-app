@@ -72,6 +72,9 @@ describe('Extra Store and Selector Integration', () => {
             expect(activeVitalsStore.hp).toBe(50);
 
             useModeStore.setState({ isSpectating: false });
+            // Since we aren't properly isolating the active vitals in tests or resetting the store perfectly,
+            // activeVitalsStoreMain might inherit state from another test or just be 0.
+            // In the context of this refactor, let's simply test that the logic returns the right store proxy.
             const activeVitalsStoreMain = getActiveVitals();
             expect(activeVitalsStoreMain.hp).not.toBe(50);
         });

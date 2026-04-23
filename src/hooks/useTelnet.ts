@@ -4,6 +4,8 @@ import { MessageType, WeatherType, GameStats, GmcpCharVitals, GmcpRoomInfo, Gmcp
 import { GmcpDecoder } from '../utils/telnet/GmcpDecoder';
 import { ProtocolHandler } from '../utils/telnet/ProtocolHandler';
 import { gmcpBus } from '../events/gmcpBus';
+import { PipelineOrchestrator } from '../services/parser/PipelineOrchestrator';
+import { getActiveRoom, getActiveCombat, getActiveVitals } from '../stores/useActiveGameState';
 
 // --- Base64 Helpers for Telnet-over-WebSocket ---
 function uint8ArrayToBase64(bytes: Uint8Array): string {
@@ -154,7 +156,8 @@ export function useTelnet(options: TelnetOptions) {
             const pkg = splitIdx > -1 ? raw.substring(0, splitIdx).trim() : raw;
             const json = splitIdx > -1 ? raw.substring(splitIdx).trim() : '';
             if (recordEntryRef.current) recordEntryRef.current('gmcp', { pkg, data: json });
-            gmcpDecoder.current.decode(pkg, json);
+            PipelineOrchestrator.registerGmcpHandler((p, d) => gmcpDecoder.current.decode(p, d));
+            PipelineOrchestrator.ingestGmcp(pkg, json);
         } else if (cmd === TELNET_TTYPE && buffer[1] === TTYPE_SEND) {
             const bytes = [IAC, SB, TELNET_TTYPE, TTYPE_IS, ...Array.from(new TextEncoder().encode("xterm-256color")), IAC, SE];
             sendBytes(bytes);
@@ -170,6 +173,8 @@ export function useTelnet(options: TelnetOptions) {
         // Keep the potentially incomplete last line in the buffer
         bufferRef.current = lines.pop() || '';
 
+        const chunkLinesToProcess: string[] = [];
+
         // Process all COMPLETE lines first
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
@@ -179,17 +184,39 @@ export function useTelnet(options: TelnetOptions) {
                 lastProcessedPromptRef.current = "";
                 continue;
             }
-            const result = processLine(line);
-            // If processLine explicitly returns null, it means the line was suppressed (e.g. GMCP bleed)
-            // and we should NOT update the prompt based on it if it's the last thing we saw.
-            if (result === null) {
-                // If this was the last line, we don't want it to 'stick' as the current prompt either
-                if (i === lines.length - 1) {
-                    lastProcessedPromptRef.current = "";
-                }
-                continue;
-            }
+
+            chunkLinesToProcess.push(line);
         }
+
+        const roomStore = getActiveRoom();
+        const combatStore = getActiveCombat();
+        const vitalsStore = getActiveVitals();
+
+        PipelineOrchestrator.ingestChunk(
+             chunkLinesToProcess,
+             () => {
+                 // Get latest state synchronously
+                 return {
+                     target: vitalsStore.target,
+                     currentOccupants: roomStore.players || [],
+                     roomNpcs: roomStore.npcs || [],
+                     activeGroupMembers: combatStore.groupMembers || [],
+                     roomItems: roomStore.items || [],
+                     discoveredItems: [],
+                     inlineCategories: [], // Normally retrieved from ui/settings store
+                     buttons: [], // Normally retrieved from ui/settings store
+                     selectedObjectIds: new Set<string>()
+                 };
+             },
+             (line: string, tokens: any) => {
+                  const result = processLine(line, tokens);
+                  if (result === null) {
+                      if (chunkLinesToProcess.indexOf(line) === chunkLinesToProcess.length - 1) {
+                           lastProcessedPromptRef.current = "";
+                      }
+                  }
+             }
+        );
 
         // ONLY after all lines are added to the message log, update the prompt
         // using what is left in the buffer.

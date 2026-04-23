@@ -43,7 +43,6 @@ interface MessageLogProps {
 
 const MessageItem = React.memo(({
     msg,
-    processMessageHtml,
     inCombat,
     scrollToBottom,
     executeCommand,
@@ -59,7 +58,6 @@ const MessageItem = React.memo(({
     viewport,
 }: {
     msg: Message,
-    processMessageHtml: (html: string, mid?: string, isRoomName?: boolean, type?: MessageType, isCombat?: boolean, side?: string) => string,
     executeCommand: (cmd: string, silent?: boolean) => void,
     inCombat: boolean,
     scrollToBottom?: (force?: boolean, immediate?: boolean, source?: string) => void;
@@ -74,7 +72,7 @@ const MessageItem = React.memo(({
     setInput?: (val: string) => void;
     viewport: any;
 }) => {
-    const content = useMemo(() => processMessageHtml(msg.html, msg.id, msg.isRoomName, msg.type, msg.isCombat, msg.combatSide), [msg.html, msg.id, msg.isRoomName, msg.type, msg.isCombat, msg.combatSide, processMessageHtml]);
+    const content = msg.html;
     const isRecent = Date.now() - msg.timestamp < 2000;
     const isOldBatchDim = latestBatchId !== undefined && (msg.batchId === undefined || msg.batchId < latestBatchId);
 
@@ -140,10 +138,11 @@ const MessageItem = React.memo(({
             {msg.type === 'user' || msg.type === 'snoop-command' ? (
                 <div 
                     className={msg.type === 'user' ? "user-command-bubble" : "snoop-command-bubble"}
-                    dangerouslySetInnerHTML={{ __html: ansiConvert.toHtml(msg.textRaw || '') }}
-                />
+                >
+                    <TokenRenderer tokens={msg.tokens} fallbackHtml={ansiConvert.toHtml(msg.textRaw || '')} />
+                </div>
             ) : msg.type === 'prompt' ? (
-                <span dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(msg.textRaw || ''), msg.id, false, 'prompt')) }} />
+                <span><TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.textRaw || ''))} /></span>
             ) : msg.type === 'shop-item' && msg.shopItem ? (
                 <div className="content-row">
                     <ShopItemCard item={msg.shopItem} executeCommand={executeCommand} />
@@ -159,7 +158,9 @@ const MessageItem = React.memo(({
                 <PracticeClassHeaderCard label={ansiConvert.toHtml(msg.textRaw || '')} />
             ) : msg.type === 'account-prompt' ? (
                 <div className="account-prompt-container">
-                    <div className="message-content" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(content) }} />
+                    <div className="message-content">
+                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
+                    </div>
                     <input 
                         className={`account-input-trigger ${input ? 'has-input' : ''}`}
                         type={msg.textRaw?.toLowerCase().includes('password') ? 'password' : 'text'}
@@ -200,9 +201,9 @@ const MessageItem = React.memo(({
                             onClick={triggerParley}
                         >
                             {timestampEl}
-                            <span className="comm-sender" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(msg.commSender || ''), msg.id + '-sender', false, 'comm-sender')) }} />
+                            <span className="comm-sender"><TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commSender || ''))} /></span>
                             <span className="comm-action" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(` ${msg.commAction}: `)) }} />
-                            <span className="comm-text" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(msg.commText || ''), msg.id + '-text', false, 'comm-text')) }} />
+                            <span className="comm-text"><TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} /></span>
                         </div>
                         <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
                     </div>
@@ -212,11 +213,15 @@ const MessageItem = React.memo(({
                     {timestampEl}
                     {msg.isCombat && inCombat ? (
                         <div className="combat-bubble">
-                            <div className="message-content" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(content) }} />
+                            <div className="message-content">
+                                <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
+                            </div>
                         </div>
                     ) : (
                         <>
-                            <div className="message-content" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(content) }} />
+                            <div className="message-content">
+                                <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
+                            </div>
                             <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
                         </>
                     )}
@@ -237,7 +242,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
 }) => {
     const { inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, isTimestampEnabled, isNewbieMode, isSpectateMode, showSpectatePromptInLog, input, setInput, sessionMode, setSessionMode } = useBaseGame() as any;
     const { replayer } = useUI() as any;
-    const { messages, processMessageHtml } = useLog();
+    const { messages } = useLog();
     const { activePrompt, target, setTarget, opponentName, opponentHealthStatus } = useVitals();
     const { scrollContainerRef, messagesEndRef, scrollToBottom, isLockedToBottomRef } = viewport;
 
@@ -624,13 +629,12 @@ const MessageLog: React.FC<MessageLogProps> = ({
         if (!activePrompt || isSpectateMode) return null;
         const promptText = typeof activePrompt === 'string' ? activePrompt : activePrompt.text;
         if (!promptText) return null;
-        const promptMid = `prompt-${promptText.length}-${promptText.replace(/\x1b\[[0-9;]*m/g, '').substring(0, 20)}`;
         return (
             <div className="message prompt msg-latest" style={{ transition: 'none' }}>
-                <div className="message-content" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(promptText), promptMid, false)) }} />
+                <div className="message-content" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(promptText)) }} />
             </div>
         );
-    }, [activePrompt, processMessageHtml, isSpectateMode]);
+    }, [activePrompt, isSpectateMode]);
 
     return (
         <div className="message-log-layout" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden' }}>
@@ -673,7 +677,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
                             >
                                 <MessageItem
                                     msg={msg as any}
-                                    processMessageHtml={processMessageHtml}
                                     inCombat={inCombat}
                                     scrollToBottom={scrollToBottom}
                                     executeCommand={executeCommand}
