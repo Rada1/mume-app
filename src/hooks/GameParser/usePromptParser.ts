@@ -17,10 +17,6 @@ export interface PromptParserDeps {
     isSpectateMode?: boolean;
     setStats: (stats: GameStats | ((prev: GameStats) => GameStats)) => void;
     setSpectateStats: (stats: GameStats | ((prev: GameStats) => GameStats)) => void;
-    setSpectateHealthStatus: (status: CombatHealthStatus | null) => void;
-    setSpectateOpponentName: (val: string | null) => void;
-    setSpectateOpponentStatus: (val: CombatHealthStatus | null) => void;
-    setSpectateInCombat: (val: boolean) => void;
 }
 
 const HEALTH_MAP: Record<string, CombatHealthStatus> = {
@@ -45,11 +41,7 @@ export function usePromptParser(deps: PromptParserDeps) {
         setBufferName,
         finalizeCapture,
         isSpectateMode,
-        setSpectateStats,
-        setSpectateHealthStatus,
-        setSpectateOpponentName,
-        setSpectateOpponentStatus,
-        setSpectateInCombat
+        setSpectateStats
     } = deps;
 
     const findStatus = (str: string): CombatHealthStatus | null => {
@@ -208,8 +200,7 @@ export function usePromptParser(deps: PromptParserDeps) {
     }, [
         captureStage, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName, 
         setBufferHealthStatus, setBufferName, finalizeCapture,
-        isSpectateMode, setSpectateStats, setSpectateHealthStatus, 
-        setSpectateOpponentName, setSpectateOpponentStatus, setSpectateInCombat
+        isSpectateMode, setSpectateStats
     ]);
 
     return { parsePrompt };

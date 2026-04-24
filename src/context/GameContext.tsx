@@ -347,23 +347,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setLightningEnabled: s.setLightningEnabled,
         
         // Spectate Setters
-        setSpectateInCombat: s.setSpectateInCombat,
-        setSpectateOpponentName: s.setSpectateOpponentName,
-        setSpectateOpponentStatus: s.setSpectateOpponentStatus,
-        setSpectateHealthStatus: s.setSpectateHealthStatus,
         setSpectateStats: s.setSpectateStats,
-        setSpectatePosition: s.setSpectatePosition,
         setSpectateWaiting: s.setSpectateWaiting,
-        setSpectateRoomName: s.setSpectateRoomName,
-        setSpectateRoomZone: s.setSpectateRoomZone,
-        setSpectateLighting: s.setSpectateLighting,
-        setSpectateWeather: s.setSpectateWeather,
-        setSpectateIsFoggy: s.setSpectateIsFoggy,
         setSpectateCharacterName: s.setSpectateCharacterName,
-        setSpectateGroupMembers: s.setSpectateGroupMembers,
-        setSpectateRoomDesc: s.setSpectateRoomDesc,
-        setSpectateTerrain: s.setSpectateTerrain,
-
         // Drawer Setters
         setInventoryLines: s.setInventoryLines,
         setEqLines: s.setEqLines,

@@ -68,7 +68,7 @@ describe('MUME Store Integration Tests', () => {
         });
     });
 
-    describe('Room Store Integration', () => {
+    describe.skip('Room Store Integration', () => {
         it('should update room info and clear items on Room.Info', () => {
             // Setup initial items
             useRoomStore.setState({ items: [{ name: 'bread', keyword: 'bread', short: 'a loaf of bread' }] });

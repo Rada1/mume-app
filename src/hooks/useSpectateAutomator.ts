@@ -5,6 +5,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ExecuteCommand } from '../types';
+import { useModeStore } from '../stores/useModeStore';
+
 
 interface SpectateAutomatorDeps {
     spectateQueue: string[];
@@ -16,7 +18,6 @@ interface SpectateAutomatorDeps {
     addSystemMessage: (text: string) => void;
     setSpectateCharacterName?: (name: string | null) => void;
     isSpectateMode: boolean;
-    setIsSpectateMode?: (val: boolean) => void;
     // Called whenever we rotate to a new snoop target. Responsible for wiping any
     // lingering per-target state (room occupants, spectate room name/desc, mapper's
     // current-room cursor) so GMCP for the new target starts from a clean slate.
@@ -113,8 +114,8 @@ export function useSpectateAutomator(deps: SpectateAutomatorDeps) {
         addSystemMessage(`Automator: ${name} added to spectate queue.`);
 
         // Auto-enable spectate mode if it's currently OFF
-        if (!isSpectateMode && deps.setIsSpectateMode) {
-            deps.setIsSpectateMode(true);
+        if (!isSpectateMode) {
+            useModeStore.getState().setIsSpectating(true);
         }
 
         setSpectateQueue(prev => {
@@ -149,7 +150,7 @@ export function useSpectateAutomator(deps: SpectateAutomatorDeps) {
                 return updated;
             }
         });
-    }, [spectateCharacterName, addSystemMessage, snoopPlayer, setSpectateQueue, isSpectateMode, deps.setIsSpectateMode, lastSnoopStartTime, executeCommand]);
+    }, [spectateCharacterName, addSystemMessage, snoopPlayer, setSpectateQueue, isSpectateMode, lastSnoopStartTime, executeCommand]);
 
     // Rotation Timer
     useEffect(() => {

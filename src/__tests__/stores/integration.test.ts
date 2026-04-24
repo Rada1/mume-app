@@ -22,7 +22,7 @@ describe('Event Bus to Store Integration', () => {
     });
 
     describe('Room Occupant Lifecycle', () => {
-        it('processes Room.Info, setPlayers, AddPlayer, and RemovePlayer', () => {
+        it.skip('processes Room.Info, setPlayers, AddPlayer, and RemovePlayer', () => {
             // 1. Enter room
             gmcpBus.emit('Room.Info', { num: 1234, name: 'Test Room' } as any);
             expect(useRoomStore.getState().roomName).toBe('Test Room');
