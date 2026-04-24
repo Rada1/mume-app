@@ -88,13 +88,9 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                     if (activePassPrompt) setIsPasswordMode(true);
                     else if (activePrompt) setIsPasswordMode(false);
                     
-                    if (addMessage) {
-                        console.log('[AccountParser] Emitting account-prompt message');
-                        addMessage('account-prompt', line);
-                        return true;
-                    } else {
-                        console.warn('[AccountParser] addMessage is missing, cannot emit account-prompt');
-                    }
+                    // Do not inject a specialized account-prompt message here.
+                    // Instead, let the original line fall through so it appears
+                    // exactly where the game sends it in the terminal stream.
                 }
             }
         }
@@ -129,10 +125,6 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         if (trimmedLine.includes('Please specify an ability') && trimmedLine.includes('(str, int, etc.)')) {
             accountStageRef.current = 'stat-editing';
             setAccountState(prev => ({ ...prev, stage: 'stat-editing' }));
-            if (addMessage) {
-                addMessage('account-menu-item', line);
-                return true;
-            }
         }
 
         // --- 0b. Detect Stat Summary Disclaimer ---
@@ -142,42 +134,25 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         }
 
         const isSelectionLine = /^\s*\(\d+\)/.test(trimmedLine);
-        if (isSelectionLine && addMessage) {
+        if (isSelectionLine) {
             const isEditSelection = trimmedLine.includes('Edit') && accountStageRef.current !== 'stat-editing';
-            addMessage(isEditSelection ? 'account-selection-edit' : 'account-selection', line);
-            return true;
+            // Just detect state
         }
 
         const isStatLine = /Str:\s*\d+.*Int:\s*\d+.*Wis:\s*\d+/i.test(trimmedLine);
-        if (isStatLine && addMessage) {
+        if (isStatLine) {
             if (accountStageRef.current === 'stat-editing') {
                 setMessages?.(prev => prev.filter(m => m.id !== 'account-stat-line'));
-                addMessage('account-stat-edit', line, undefined, 'account-stat-line');
-            } else {
-                addMessage('account-menu-item', line);
             }
-            return true;
         }
 
         const isPointsLine = /points left/i.test(trimmedLine);
-        if (isPointsLine && addMessage) {
+        if (isPointsLine) {
             if (accountStageRef.current !== 'stat-editing') {
                 accountStageRef.current = 'stat-editing';
                 setAccountState(prev => ({ ...prev, stage: 'stat-editing' }));
-                setMessages?.(prev => {
-                    const next = [...prev];
-                    for (let i = next.length - 1; i >= Math.max(0, next.length - 10); i--) {
-                        if (/Str:\s*\d+.*Int:\s*\d+.*Wis:\s*\d+/i.test(next[i].textRaw)) {
-                            next[i] = { ...next[i], type: 'account-stat-edit', id: 'account-stat-line' };
-                            break;
-                        }
-                    }
-                    return next;
-                });
             }
             setMessages?.(prev => prev.filter(m => m.id !== 'account-points-line'));
-            addMessage('account-stat-points', line, undefined, 'account-points-line');
-            return true;
         }
 
         // 2. Detect Character List Headers
@@ -200,9 +175,8 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             setAccountState(prev => ({ ...prev, characters: prev.characters.some(c => c.name === name) ? prev.characters : [...prev.characters, newChar] }));
             setGameState('account');
             
-            if (!shouldSuppress && addMessage) {
-                addMessage('account-character-list', line);
-                return true;
+            if (!shouldSuppress) {
+                // Let fall through
             }
             return shouldSuppress;
         }
@@ -230,9 +204,8 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 setAccountState(prev => ({ ...prev, characters: prev.characters.some(c => c.name === name) ? prev.characters : [...prev.characters, newChar] }));
                 setGameState('account');
                 
-                if (!shouldSuppress && addMessage) {
-                    addMessage('account-character-list', line);
-                    return true;
+                if (!shouldSuppress) {
+                    // Let fall through
                 }
                 return shouldSuppress;
             }
@@ -295,11 +268,6 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             accountStageRef.current = 'account-menu';
             setAccountState(prev => ({ ...prev, stage: 'account-menu' }));
             setIsPasswordMode(false);
-
-            if (addMessage) {
-                addMessage('account-menu-item', line);
-                return true;
-            }
             return false;
         }
 
@@ -312,10 +280,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         const isIntroLine = lowerClean.includes('type new to create') || lowerClean.includes('? for help');
         
         if (isMenuLine || isIntroLine || isSelectionLine) {
-            if (addMessage) {
-                addMessage('account-menu-item', line);
-                return true;
-            }
+            // Let fall through
         }
 
         return false;

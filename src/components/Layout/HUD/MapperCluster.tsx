@@ -226,15 +226,15 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                             />
                         )}
                         {ui.drawer === 'character' && (
-                            <CharacterView isOpen={true} onClose={() => setUI({ drawer: 'map' })} executeCommand={executeCommand} />
+                            <CharacterView isOpen={true} onClose={() => setUI(prev => ({ ...prev, drawer: 'map' }))} executeCommand={executeCommand} />
                         )}
                         {ui.drawer === 'players' && (
-                            <PlayersView isOpen={true} onClose={() => setUI({ drawer: 'map' })} executeCommand={executeCommand} />
+                            <PlayersView isOpen={true} onClose={() => setUI(prev => ({ ...prev, drawer: 'map' }))} executeCommand={executeCommand} />
                         )}
                         {(ui.drawer === 'inventory' || ui.drawer === 'equipment') && (
                             <InventoryView
                                 isOpen={true}
-                                onClose={() => setUI({ drawer: 'map' })}
+                                onClose={() => setUI(prev => ({ ...prev, drawer: 'map' }))}
                                 inventoryLines={displayInventoryLines}
                                 eqLines={displayEqLines}
                                 handleButtonClick={handleButtonClick}

@@ -18,28 +18,28 @@ export const INLINE_HIERARCHY: Record<string, string[]> = {
     'object-quiver': ['object-container', 'location-room'],
     
     // Entity Kinds
-    'inline-player': ['player', 'object'],
-    'inline-npc': ['npc', 'object'],
+    'inline-player': ['inlineplayer', 'player', 'object'],
+    'inline-npc': ['inlinenpc', 'npc', 'object'],
     'inlinenpc': ['inline-npc'], // Legacy compat
     'inlineplayer': ['inline-player'], // Legacy compat
     
     // Specialized NPCs
-    'inline-mounts': ['npc'],
-    'inline-shopkeeper': ['npc'],
-    'inline-shopkeeper-drop': ['npc'],
-    'inline-innkeeper': ['npc'],
-    'inline-guildmaster': ['npc'],
+    'inline-mounts': ['inline-npc', 'npc'],
+    'inline-shopkeeper': ['inline-npc', 'npc'],
+    'inline-shopkeeper-drop': ['inline-npc', 'npc'],
+    'inline-innkeeper': ['inline-npc', 'npc'],
+    'inline-guildmaster': ['inline-npc', 'npc'],
     
     // Specialized Objects
-    'inline-weapon': ['object-weapon', 'object'],
-    'inline-armour': ['object-armour', 'object'],
-    'inline-shield': ['object-shield', 'object'],
-    'inline-container': ['object-container', 'object'],
-    'inline-food': ['object-food', 'object'],
-    'inline-fluidcontainer': ['object-fluid', 'object'],
-    'inline-water': ['object-water', 'object'],
-    'inline-treasure': ['object-treasure', 'object'],
-    'inline-corpses': ['object-corpse', 'object'],
+    'inline-weapon': ['object-weapon', 'inline-object', 'object'],
+    'inline-armour': ['object-armour', 'inline-object', 'object'],
+    'inline-shield': ['object-shield', 'inline-object', 'object'],
+    'inline-containers': ['object-container', 'inline-object', 'object'],
+    'inline-food': ['object-food', 'inline-object', 'object'],
+    'inline-fluidcontainer': ['object-fluid', 'inline-object', 'object'],
+    'inline-water': ['object-water', 'inline-object', 'object'],
+    'inline-treasure': ['object-treasure', 'inline-object', 'object'],
+    'inline-corpses': ['object-corpse', 'inline-object', 'object'],
     'inline-object': ['object']
 };
 

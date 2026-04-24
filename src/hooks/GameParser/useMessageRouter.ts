@@ -128,11 +128,25 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         else if (lower.startsWith('you go ') || lower.includes(' leaves ') || lower.includes(' arrives from ') || lower.includes(' arrived from ') || lower.includes(' flees ') || lower.includes(' fled ') || lower.includes(' panics') || lower.includes(' attempts') || lower.includes('alas, you cannot go that way') || lower.includes('there is no exit')) finalType = 'move';
 
         if (finalType === 'who-list') {
-            const nameMatch = textOnly.match(/(?:[*<>|\s]|\[.*?\]|<.*?>)*([A-Z\u00C0-\u00DF][a-zA-Z\u00C0-\u00FF]+)/);
+            // MUME names are usually 3-15 chars.
+            // We use a stricter regex that anchors to the start of the line (after possible flags/spaces).
+            const nameMatch = textOnly.match(/^(?:\s*[*<>|\s]|\[.*?\]|<.*?>)*\s*([A-Z\u00C0-\u00DF][a-zA-Z\u00C0-\u00FF]{1,15})/);
+            
             if (nameMatch && nameMatch[1].length > 1) {
                 const name = nameMatch[1];
                 const lowerName = name.toLowerCase();
-                const exclusions = ['players', 'allies', 'minions', 'enemies', 'neutral', 'unknown'];
+                
+                // Exclude common header words and description words
+                const exclusions = [
+                    'players', 'allies', 'minions', 'enemies', 'neutral', 'unknown', 
+                    'total', 'online', 'matches', 'showing', 'who', 'where',
+                    'garden', 'ainur', 'little', 'the', 'room', 'exits',
+                    'north', 'south', 'east', 'west', 'up', 'down',
+                    'you', 'are', 'standing', 'resting', 'sleeping', 'sitting',
+                    'fighting', 'incapacitated', 'mortally', 'dead',
+                    'this', 'that', 'there', 'here', 'some', 'a', 'an'
+                ];
+
                 if (!exclusions.includes(lowerName)) {
                     // IMPORTANT: Do NOT trim() here, as leading spaces are used for alignment
                     const htmlDisplay = ansiConvert.toHtml(cleanLine);

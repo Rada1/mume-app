@@ -12,11 +12,11 @@ import { MAGE_UTILITY_BUTTONS } from './spells/mage_utility';
 import { MAGE_BUTTONS } from './spells/mage';
 import { TACTICAL_BUTTONS } from './tactical';
 import { COMMUNICATION_BUTTONS } from './communication';
-
-export const SOCIAL_BUTTONS: CustomButton[] = [];
-export const INVENTORY_BUTTONS: CustomButton[] = [];
-export const DOOR_BUTTONS: CustomButton[] = [];
-export const INLINE_CATEGORY_BUTTONS: CustomButton[] = [];
+import { INLINE_CATEGORY_BUTTONS } from './inline';
+import { INVENTORY_BUTTONS } from './inventory';
+import { SOCIAL_BUTTONS } from './socials';
+import { DOOR_BUTTONS } from './doors';
+import { META_BUTTONS } from './meta';
 
 export const ALL_BUTTONS: CustomButton[] = [
     ...TACTICAL_BUTTONS,
@@ -35,7 +35,8 @@ export const ALL_BUTTONS: CustomButton[] = [
     ...COMMUNICATION_BUTTONS,
     ...SOCIAL_BUTTONS,
     ...DOOR_BUTTONS,
-    ...INLINE_CATEGORY_BUTTONS
+    ...INLINE_CATEGORY_BUTTONS,
+    ...META_BUTTONS
 ];
 
 // Compatibility aliases

@@ -109,6 +109,24 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         alertness: s.alertness, setAlertness: s.setAlertness
     });
 
+    // --- State Refs ---
+    const inCombatRef = useRef(false);
+    const roomNameRef = useRef<string | null>(null);
+    const pendingGmcpCommRef = useRef<{ sender: string; chan: string; msg?: string } | null>(null);
+    const lastCommIdBySenderRef = useRef(new Map<string, string>());
+    const lastCommMsgIdRef = useRef<string | null>(null);
+    const lastCommTimeRef = useRef(0);
+    const isWaitingForInv = useRef(false);
+    const isWaitingForEq = useRef(false);
+    const isWaitingForStats = useRef(false);
+    const isWaitingForInfo = useRef(false);
+    const isSoundEnabledRef = useRef(true);
+    const soundTriggersRef = useRef<any[]>([]);
+    const captureStage = useRef<'none' | 'inv' | 'eq' | 'stat' | 'practice' | 'who' | 'where' | 'container'>('none');
+    const isSilentCapture = useRef(0);
+    const isDrawerCapture = useRef(0);
+    const captureOwnerDrawer = useRef<'none' | 'inv' | 'eq' | 'stat' | 'practice' | 'who' | 'where' | 'container'>('none');
+
     const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.isImmersionMode, s.fontFamily, s.isTimestampEnabled, s.isNewbieMode);
     const mode = useModeStore();
     const session = useSessionStore();
@@ -125,11 +143,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Stable message routing: ensure snoop lines always land in the spectate bucket 
     // regardless of which view is currently active. This prevents "leaking" snoop 
     // data into the main log or losing our own tells while viewing the target.
-    const routedAddMessage = React.useCallback((type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: any, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean) => {
+    const routedAddMessage = React.useCallback((type: MessageType, text: string, extra?: any, mid?: string, isRoomName?: boolean, precalculated?: any, shopItem?: any, practiceSkill?: any, practiceHeader?: any, isSystem?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, commSenderTokens?: any, commTextTokens?: any, providedCombatSide?: any, providedIsHitImpact?: boolean, providedIsHitterImpact?: boolean, providedIsSnoop?: boolean, providedIsSnoopInput?: boolean) => {
+        const args = [type, text, extra, mid, isRoomName, precalculated, shopItem, practiceSkill, practiceHeader, isSystem, replyTarget, replyCommand, commSender, commAction, commText, commColor, commSenderTokens, commTextTokens, providedCombatSide, providedIsHitImpact, providedIsHitterImpact, providedIsSnoop, providedIsSnoopInput] as const;
         if (type === 'snoop' || type === 'snoop-command' || type === 'snoop-vitals') {
-            s.spectateSession.log.addMessage(type, text, combatOverride, mid, isRoomName, precalculated, shopItem, practiceSkill, practiceHeader, skipBrevity);
+            (s.spectateSession.log.addMessage as any)(...args);
         } else {
-            s.userSession.log.addMessage(type, text, combatOverride, mid, isRoomName, precalculated, shopItem, practiceSkill, practiceHeader, skipBrevity);
+            (s.userSession.log.addMessage as any)(...args);
         }
     }, [s.userSession.log, s.spectateSession.log]);
 
@@ -166,7 +185,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         detectLighting: env.detectLighting,
         playMovementSound, playDoorSound, setWeather: s.setWeather, setIsFoggy: s.setIsFoggy, setStats: s.setStats,
         playerPositionRef: s.playerPositionRef, setIsRiding: s.setIsRiding, isRidingRef: s.isRidingRef, isSpectateMode: s.isSpectateMode, inlineCategories: s.inlineCategories,
-        sendGMCP: sendGMCPProxy
+        sendGMCP: sendGMCPProxy,
+        pendingGmcpCommRef
     });
 
     const replayer = useSessionReplayer(useCallback((type, payload, isPrivacyMode, isSilent = false) => {
@@ -280,6 +300,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // 6. Final Controller & Parser
     const { spatButtons, setSpatButtons, triggerSpitManual } = useSpatButtons(messages, useRef<HTMLDivElement>(null), triggerHaptic);
     const btn = useButtons({ abilities: s.abilities, characterClass: s.characterClass, characterName: s.characterName, target: v.target, inlineCategories: s.inlineCategories });
+    useEffect(() => {
+        btn.setAddMessage(addMessage);
+    }, [btn, addMessage]);
     const joystick = useJoystick(triggerHaptic, s.roomExits);
     const editor = useButtonEditor(btn);
     const help = useHelpHandler();
@@ -333,23 +356,23 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         // State Refs
         sessionMode: session.sessionMode,
-        inCombatRef: { current: false },
+        inCombatRef,
         roomDescRef: s.roomDescRef,
-        roomNameRef: { current: "" },
-        pendingGmcpCommRef: { current: null },
-        lastCommIdBySenderRef: { current: new Map() },
-        lastCommMsgIdRef: { current: null },
-        lastCommTimeRef: { current: 0 },
-        isWaitingForInv: { current: false } as any,
-        isWaitingForEq: { current: false } as any,
-        isWaitingForStats: { current: false } as any,
-        isWaitingForInfo: { current: false } as any,
-        isSoundEnabledRef: { current: true },
-        soundTriggersRef: { current: [] },
-        captureStage: { current: 'none' },
-        isSilentCapture: { current: 0 },
-        isDrawerCapture: { current: 0 },
-        captureOwnerDrawer: { current: 'none' },
+        roomNameRef,
+        pendingGmcpCommRef,
+        lastCommIdBySenderRef,
+        lastCommMsgIdRef,
+        lastCommTimeRef,
+        isWaitingForInv: isWaitingForInv as any,
+        isWaitingForEq: isWaitingForEq as any,
+        isWaitingForStats: isWaitingForStats as any,
+        isWaitingForInfo: isWaitingForInfo as any,
+        isSoundEnabledRef,
+        soundTriggersRef,
+        captureStage: captureStage as any,
+        isSilentCapture,
+        isDrawerCapture,
+        captureOwnerDrawer: captureOwnerDrawer as any,
         accountStageRef: s.accountStageRef,
         actionsRef: s.actionsRef,
 
@@ -420,7 +443,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         ansiConvert,
         btn,
         quests: s.quests,
-        shop: shop
+        shop: shop,
+        practice: practice,
+        help: help
     }), [s, v, ui, addMessage, addSystemMessage, playHitImpactSound, playOofSound, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, shop, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
 
 
@@ -546,6 +571,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         telnet,
         parser,
         ...controller,
+        addMessage,
         btn,
         joystick,
         editor,

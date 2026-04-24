@@ -52,13 +52,13 @@
     display: flex;
     flex-direction: column;
     flex: 1;
-    max-width: 850px;
-    margin: 0 auto;
     width: 100%;
+    max-width: 850px !important;
+    margin: 0 auto !important;
     padding: 10px;
     padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
     overflow: hidden;
-    z-index: 5000; /* Base layer for main content */
+    z-index: var(--z-content); /* Base layer for main content */
     pointer-events: none;
     transition: padding-bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     box-sizing: border-box; /* Ensure padding doesn't cause overflow */
@@ -67,7 +67,7 @@
 /* Ensure the log container is the primary interaction target within the content layer */
 .message-log-container {
     pointer-events: auto !important;
-    z-index: 6500; /* Elevated above HUD backgrounds (6000) and room cards (5200) */
+    z-index: var(--z-log); /* Elevated above HUD backgrounds and room cards */
     position: relative;
     flex: 1;
     display: flex;
@@ -127,7 +127,8 @@
 .force-portrait .content-layer,
 .force-landscape .content-layer {
     padding: 0 !important;
-    max-width: none !important;
+    max-width: 850px !important;
+    margin: 0 auto !important;
 }
 
 /* Desktop: map drawer pushes the log to make room */
@@ -167,14 +168,18 @@
 }
 
 .is-landscape .content-layer {
-    flex: 1 !important;
     height: 100% !important;
     min-width: 0 !important;
     position: relative !important;
     display: flex !important;
     flex-direction: column !important;
-    z-index: 5500;
-    padding: 0 8px !important; /* Symmetric padding for balanced layout */
+    z-index: var(--z-content);
+    padding: 0 8px 10px 8px !important; /* Preserve bottom padding for input area */
+    
+    /* Reverting stretch: restore centering */
+    max-width: 850px !important;
+    margin: 0 auto !important;
+    flex: 1 !important; /* Fill height */
 }
 
 .dragging,
@@ -188,7 +193,7 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    z-index: 7000; /* Interactive elements like joystick sit above the log (6500) */
+    z-index: var(--z-hud-interactive); /* Interactive elements like joystick sit above the log */
 }
 
 .hud-clusters-absolute-layer > * {

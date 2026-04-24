@@ -26,7 +26,20 @@ export interface UseGameParserDeps {
         shopItem?: any,
         practiceSkill?: any,
         practiceHeader?: any,
-        isSystem?: boolean
+        isSystem?: boolean,
+        replyTarget?: string,
+        replyCommand?: string,
+        commSender?: string,
+        commAction?: string,
+        commText?: string,
+        commColor?: string,
+        commSenderTokens?: import('../../types').Token[],
+        commTextTokens?: import('../../types').Token[],
+        providedCombatSide?: 'player' | 'opponent' | 'groupmate',
+        providedIsHitImpact?: boolean,
+        providedIsHitterImpact?: boolean,
+        providedIsSnoop?: boolean,
+        providedIsSnoopInput?: boolean
     ) => void;
     addSystemMessage: (msg: string) => void;
     pendingGmcpCommRef: MutableRefObject<any>;
@@ -131,11 +144,16 @@ export interface UseGameParserDeps {
     executeCommandRef: MutableRefObject<ExecuteCommand | null>;
     gameTime: MumeTime | null;
 
-    // Practice
+    // Practice / Help handlers (consumed by useDrawerParser)
+    practice?: any;
+    help?: any;
     practiceHandler?: any;
     questsHandler?: any;
     shopHandler?: any;
     helpHandler?: any;
+    setPopoverState?: (state: any) => void;
+    isMobile?: boolean;
+    finalizeCapture?: (owner?: 'inv' | 'eq' | 'stat' | 'practice' | 'who' | 'where' | 'container' | 'none') => void;
 
     characterName: string | null;
     spectateCharacterName: string | null;

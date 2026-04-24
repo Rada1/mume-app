@@ -81,6 +81,8 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
     // Build actual hierarchy chain
     const fullSetChain = getHierarchyChain(kind, location, detectedCatId);
 
+    console.log('[StandardMenuPopover] detectedCatId:', detectedCatId, 'fullSetChain:', fullSetChain, 'kind:', kind, 'location:', location);
+
     const isTacticalSet = ['warriorskilllist', 'rangerskilllist', 'clericspelllist', 'thiefskilllist', 'magespelllist', 'doors'].includes(popoverState.setId);
 
     const toggleFavorite = (e: React.MouseEvent, command: string) => {
@@ -383,7 +385,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                         {popoverState.executeAndAssign ? 'select action to fire and remap button' : 'select action to fire'}
                     </span>
                 </div>
-                {!isSetManager && (popoverState.setId.startsWith('object') || popoverState.setId.startsWith('npc') || popoverState.setId === 'player') && (
+                {!isSetManager && (kind === 'object' || kind === 'npc' || kind === 'player') && (
                     <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
                         {popoverState.context && (
                             <div 
@@ -564,6 +566,11 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                             }
                                             return isValid;
                                         });
+
+                                        if (setIdButtons.length > 0) {
+                                            console.log(`[StandardMenuPopover] Found ${setIdButtons.length} buttons for setId: ${setId}`);
+                                        }
+
                                         if (setIdButtons.length === 0) return null;
                                         const depth = chainIdx;
                                         

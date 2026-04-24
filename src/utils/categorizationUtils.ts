@@ -7,7 +7,7 @@ import { InlineCategoryConfig } from '../types';
 
 // palette definitions for consistency
 const COLOR_NPC = 'rgba(253, 224, 71, 0.95)';   // Bright Pastel Yellow (#fde047)
-const COLOR_PLAYER = 'rgba(125, 211, 252, 0.9)'; // Match who-list/pc-highlighter (#7dd3fc)
+const COLOR_PLAYER = '#89CFF0'; // Baby Blue
 export const COLOR_OBJ = 'rgba(251, 146, 60, 0.95)';   // Vibrant Orange (#fb923c)
 
 
@@ -79,7 +79,7 @@ export const DEFAULT_INLINE_CATEGORIES: InlineCategoryConfig[] = [
 export function getCategoryForName(name: string, customCategories?: InlineCategoryConfig[]): string | null {
     if (!name) return null;
     const lowerName = name.toLowerCase();
-    const categories = customCategories || DEFAULT_INLINE_CATEGORIES;
+    const categories = (customCategories && Array.isArray(customCategories)) ? customCategories : DEFAULT_INLINE_CATEGORIES;
 
     for (const cat of categories) {
         if ((cat.keywords || []).some(keyword => {
@@ -113,7 +113,7 @@ export function getCategoryForName(name: string, customCategories?: InlineCatego
 export function getCategoryType(category: string | null, customCategories?: InlineCategoryConfig[]): string | null {
     if (!category) return null;
     const canonicalId = canonicalizeCategoryId(category);
-    const categories = customCategories || DEFAULT_INLINE_CATEGORIES;
+    const categories = (customCategories && Array.isArray(customCategories)) ? customCategories : DEFAULT_INLINE_CATEGORIES;
     
     const config = categories.find(c => c.id === canonicalId);
     if (config?.kind) return config.kind;
@@ -135,7 +135,7 @@ export function getCategoryType(category: string | null, customCategories?: Inli
 export function getGlowColorForCategory(category: string | null, customCategories?: InlineCategoryConfig[]): string | null {
     if (!category) return null;
     const canonicalId = canonicalizeCategoryId(category);
-    const categories = customCategories || DEFAULT_INLINE_CATEGORIES;
+    const categories = (customCategories && Array.isArray(customCategories)) ? customCategories : DEFAULT_INLINE_CATEGORIES;
     
     const config = categories.find(c => c.id === canonicalId);
     if (config?.color) return config.color;

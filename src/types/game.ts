@@ -74,6 +74,8 @@ export interface Message {
     commAction?: string; // Structured action (says, tells, etc.)
     commText?: string; // Structured message text
     commColor?: string;
+    commSenderTokens?: Token[];
+    commTextTokens?: Token[];
     batchId?: number;
     isBatchEnd?: boolean;
     inRoomBatch?: boolean;

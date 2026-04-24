@@ -1,12 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Inconsolata:wght@200..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=IBM+Plex+Mono:ital,wght@0,100..700;1,100..700&family=Anonymous+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import url('https://fonts.cdnfonts.com/css/aniron');
-
-/* Core Styles */
 @import './styles/base.css';
 @import './styles/animations.css';
 @import './styles/environment.css';
 @import './styles/layout.css';
 @import './styles/ui.css';
+
+/* Core Styles */
+:root {
+    /* Z-Index Hierarchy */
+    --z-base: 0;
+    --z-content: 5000;
+    --z-room-header: 5200;
+    --z-hud-bg: 6000;
+    --z-log: 6500;
+    --z-hud-interactive: 7000;
+    --z-header: 8000;
+    --z-drawer-backdrop: 9000;
+    --z-drawer: 9200;
+    --z-drawer-tabs: 9500;
+    --z-popover-dial: 50000;
+    --z-modals-layer: 100000;
+}
 
 /* Mobile Bottom Gutter */
 .mobile-bottom-gutter {
@@ -16,7 +31,7 @@
     right: 0;
     height: var(--mobile-gutter-height);
     background: rgb(10, 13, 21);
-    z-index: 7000;
+    z-index: var(--z-hud-interactive);
     touch-action: none;
     transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
     overflow: visible; 
@@ -31,7 +46,7 @@
     position: fixed;
     inset: 0;
     pointer-events: none;
-    z-index: 100000; /* Ensure this is the highest layer in the app */
+    z-index: var(--z-modals-layer); /* Ensure this is the highest layer in the app */
 }
 
 .modals-layer-wrapper > * {
@@ -88,7 +103,7 @@
     .kb-open .mobile-bottom-gutter {
         height: 70px !important;
         border-radius: 0;
-        z-index: 9999;
+        z-index: var(--z-hud-interactive);
     }
 
     .kb-open .mobile-bottom-gutter .mobile-mapper-touch-surface {
@@ -99,7 +114,7 @@
 .hud-clusters-absolute-layer {
     display: block;
     pointer-events: none;
-    z-index: 6000;
+    z-index: var(--z-hud-bg);
 }
 
 /* Children should not capture events by default to allow log interaction beneath */
@@ -159,7 +174,7 @@
 }
 .sticky-room-header {
     position: relative;
-    z-index: 5200; /* Lowered from 6000 to clear HUD clusters and popovers */
+    z-index: var(--z-room-header); /* Lowered to clear HUD clusters and popovers */
     background: rgba(15, 17, 28, 0.7) !important;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);

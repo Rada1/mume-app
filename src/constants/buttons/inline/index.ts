@@ -1,4 +1,4 @@
-﻿import { CustomButton } from '../../../types';
+import { CustomButton } from '../../../types';
 import { WORLD_BUTTONS } from './world';
 import { ITEM_BUTTONS } from './items';
 import { NPC_BUTTONS } from './npcs';
@@ -25,7 +25,8 @@ export const CATEGORY_BUTTON_MAP: Record<string, string[]> = {
     'inline-innkeeper': ['cat-innkeeper-offer', 'cat-innkeeper-rent', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
     'inline-shopkeeper': ['cat-shopkeeper-shop', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
     'inline-shopkeeper-drop': ['cat-shopkeeper-sell-drag', 'cat-shopkeeper-mend-drag'],
-    'inlinenpc': ['innpc-group', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
+    'inline-npc': ['innpc-group', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
+    'inline-player': ['inlp-group', 'inlp-consider', 'inlp-soc', 'inlp-conv', 'inlp-whois', 'inlp-ex'],
     'inline-mounts': ['cat-mount-group', 'cat-mount-ride', 'cat-mount-lead', 'cat-mount-saddle', 'cat-mount-unsaddle', 'cat-mount-unsaddle-all', 'innpc-consider', 'innpc-kill', 'innpc-ex', 'cat-mount-abandon'],
     'inline-shopitem': ['cat-shopitem-buy', 'cat-shopitem-show'],
     'inline-guildmaster': ['cat-guildmaster-practice', 'innpc-consider', 'innpc-kill', 'innpc-ex'],

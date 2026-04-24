@@ -106,7 +106,9 @@ export const useButtons = (deps: {
             if (b.trigger?.type === 'switch_set' && b.trigger.targetSet) sets.add(b.trigger.targetSet);
         });
         // Add all configured inline categories so they show up in managers even if empty
-        inlineCategories.forEach(cat => sets.add(`inline-${cat.id}`));
+        if (Array.isArray(inlineCategories)) {
+            inlineCategories.forEach(cat => sets.add(`inline-${cat.id}`));
+        }
         return Array.from(sets);
     }, [rawButtons, inlineCategories]);
 

@@ -32,7 +32,7 @@ interface StageInitializerDeps {
     tempWhoRef: React.MutableRefObject<DrawerLine[]>;
     tempWhereRef: React.MutableRefObject<DrawerLine[]>;
     help: any;
-    finalizeCapture: () => void;
+    finalizeCapture: (owner?: 'inv' | 'eq' | 'stat' | 'practice' | 'who' | 'where' | 'container' | 'none') => void;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean) => void;
     isMobile: boolean;
 }

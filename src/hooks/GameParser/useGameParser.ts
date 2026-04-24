@@ -18,10 +18,14 @@ import { useAtmosphereParser } from './useAtmosphereParser';
 import { usePromptParser } from './usePromptParser';
 import { useAccountParser } from './useAccountParser';
 import { useTimeParser } from './useTimeParser';
+import { useLineProcessor } from './useLineProcessor';
+import { useStageInitializer } from './useStageInitializer';
+import { useStageManager } from './useStageManager';
 import { UseGameParserDeps } from './types';
 import { useSpectateAutomator } from '../useSpectateAutomator';
 import { useRoomStore } from '../../stores/useRoomStore';
 import { PipelineOrchestrator } from '../../services/parser/PipelineOrchestrator';
+import { Tokenizer } from '../../services/parser/Tokenizer';
 
 export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     // Map session setters to common names used in sub-parsers
@@ -43,30 +47,107 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
     const { setQuests } = deps;
     const { parseQuestLine, finalizeQuests } = useQuestsHandler(setQuests, deps.quests.activeQuests);
-    const { detectCapabilities, extractNoun } = useEntityRegistry();
+    const { detectCapabilities, registerEntity, extractNoun } = useEntityRegistry();
 
     // Shared Buffers/Refs
+    const tempEntitiesRef = useRef<Record<string, GameEntity>>({});
     const tempEqRef = useRef<DrawerLine[]>([]);
     const tempInvRef = useRef<DrawerLine[]>([]);
     const tempStatsRef = useRef<DrawerLine[]>([]);
     const tempScoreRef = useRef<DrawerLine[]>([]);
     const tempInfoRef = useRef<DrawerLine[]>([]);
     const tempPracticeRef = useRef<DrawerLine[]>([]);
+    const tempQuestRef = useRef<DrawerLine[]>([]);
+    const tempWhoRef = useRef<DrawerLine[]>([]);
+    const tempWhereRef = useRef<DrawerLine[]>([]);
 
-    const finalizeCapture = useCallback((owner: 'inv' | 'eq' | 'stat' | 'practice' | 'who' | 'where' | 'container' | 'none') => {
-        if (owner === 'inv') deps.setInventoryLines([...tempInvRef.current]);
-        else if (owner === 'eq') deps.setEqLines([...tempEqRef.current]);
-        else if (owner === 'stat') deps.setStatsLines([...tempStatsRef.current]);
-        else if (owner === 'practice') deps.setPracticeLines([...tempPracticeRef.current]);
-        else if (owner === 'who') session.game.setWhoLines([...session.game.tempWhoLines]);
-        else if (owner === 'where') session.game.setWhereLines([...session.game.tempWhereLines]);
-        
-        // Reset buffers
-        if (owner === 'inv') tempInvRef.current = [];
-        if (owner === 'eq') tempEqRef.current = [];
-        if (owner === 'stat') tempStatsRef.current = [];
-        if (owner === 'practice') tempPracticeRef.current = [];
-    }, [deps.setInventoryLines, deps.setEqLines, deps.setStatsLines, deps.setPracticeLines, session.game]);
+    const lineProcessor = useLineProcessor({
+        captureStage: deps.captureStage,
+        keywordOverrides: deps.keywordOverrides || {},
+        extractNoun,
+        detectCapabilities,
+        ansiConvert: deps.ansiConvert,
+        addDiagnosticLog: deps.addDiagnosticLog,
+        tempEntitiesRef,
+        inlineCategories: deps.inlineCategories || []
+    });
+
+    const { finalizeCapture } = useStageManager({
+        captureStage: deps.captureStage,
+        isDrawerCapture: deps.isDrawerCapture,
+        isSilentCapture: deps.isSilentCapture,
+        isWaitingForStats: deps.isWaitingForStats,
+        isWaitingForEq: deps.isWaitingForEq,
+        isWaitingForInv: deps.isWaitingForInv,
+        isWaitingForInfo: deps.isWaitingForInfo,
+        captureOwnerDrawer: deps.captureOwnerDrawer,
+        addDiagnosticLog: deps.addDiagnosticLog,
+        addMessage: deps.addMessage,
+        setPopoverState: (deps.setPopoverState || (() => {})) as any,
+        setEqLines: sessionSetEqLines,
+        setInventoryLines: sessionSetInventoryLines,
+        setStatsLines: sessionSetStatsLines,
+        setInfoLines,
+        setScoreLines: sessionSetScoreLines,
+        setQuestLines,
+        setPracticeLines: sessionSetPracticeLines,
+        setWhoLines,
+        setWhereLines,
+        setEntities: deps.setEntities,
+        registerEntity,
+        practice: deps.practice,
+        shop: deps.shop,
+        help: deps.help,
+        quests: deps.quests,
+        finalizeQuests,
+        tempEqRef,
+        tempInvRef,
+        tempStatsRef,
+        tempScoreRef,
+        tempInfoRef,
+        tempPracticeRef,
+        tempQuestRef,
+        tempWhoRef,
+        tempWhereRef,
+        tempEntitiesRef,
+        isMobile: deps.isMobile ?? false,
+    });
+
+    const { initializeStage } = useStageInitializer({
+        captureStage: deps.captureStage,
+        isSilentCapture: deps.isSilentCapture,
+        isDrawerCapture: deps.isDrawerCapture,
+        isWaitingForStats: deps.isWaitingForStats,
+        isWaitingForEq: deps.isWaitingForEq,
+        isWaitingForInv: deps.isWaitingForInv,
+        isWaitingForInfo: deps.isWaitingForInfo,
+        captureOwnerDrawer: deps.captureOwnerDrawer,
+        isInventoryOpen: deps.isInventoryOpen,
+        isEquipmentOpen: deps.isEquipmentOpen,
+        isCharacterOpen: deps.isCharacterOpen,
+        isStatsOpen: deps.isStatsOpen,
+        isPlayersOpen: deps.isPlayersOpen,
+        practice: deps.practice,
+        quests: deps.quests,
+        setCharacterInfo,
+        setWhoList: session.game.setWhoList,
+        setWhereList: session.game.setWhereList,
+        setPopoverState: deps.setPopoverState,
+        setScoreLines: session.game.setScoreLines,
+        setStatsLines: session.game.setStatsLines,
+        setInfoLines: session.game.setInfoLines,
+        tempStatsRef,
+        tempScoreRef,
+        tempInfoRef,
+        tempPracticeRef,
+        tempQuestRef,
+        tempWhoRef,
+        tempWhereRef,
+        help: deps.help,
+        finalizeCapture,
+        executeCommand: (cmd: string, s?: boolean, sys?: boolean) => deps.executeCommandRef.current?.(cmd, s, sys),
+        isMobile: deps.isMobile
+    });
 
 
     const router = useMessageRouter({
@@ -232,6 +313,11 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         const roomType = room.parseRoomLine(textOnly, cleanLine);
         if (roomType) msgType = roomType;
 
+        // Communication
+        const commResult = comm.parseComm(cleanLine, textOnly, lower);
+        if (commResult.isSuppressed) return;
+        if (commResult.msgType !== 'game') msgType = commResult.msgType;
+
         // Stats/Account
         if (account.parseAccountLine(textOnly, tokens?.isPrompt ?? false)) return;
         if (stat.parseGlobalStatus(textOnly, lower)) msgType = 'info' as any;
@@ -260,8 +346,20 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             console.log(`[useGameParser] Explicit stage detected: ${deps.captureStage.current} from line: "${trimmedLine}"`);
         }
 
+        const stage = deps.captureStage.current;
+        initializeStage(textOnly, lower, cleanLine, lower, textOnly);
+
         const finalType = router.routeMessage(msgType, textOnly, lower, cleanLine, textOnly, isEndPrompt) as MessageType;
-        console.log(`[useGameParser] Processed line: "${textOnly.substring(0, 20)}", stage=${deps.captureStage.current}, finalType=${finalType}`);
+        console.log(`[useGameParser] Processed line: "${textOnly.substring(0, 20)}", stage=${stage}, finalType=${finalType}`);
+
+        // --- 3.5 Capture Buffer Population ---
+        if (stage !== 'none') {
+            const lines = lineProcessor.createLines(cleanLine, textOnly, lower, finalType);
+            if (stage === 'inv') tempInvRef.current.push(...lines);
+            else if (stage === 'eq') tempEqRef.current.push(...lines);
+            else if (stage === 'stat') tempStatsRef.current.push(...lines);
+            else if (stage === 'practice') tempPracticeRef.current.push(...lines);
+        }
 
         // --- 4. Highlighting and Display ---
         if (isVisible) {
@@ -306,7 +404,29 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             };
 
             const messageObj = PipelineOrchestrator.processTextLine(cleanLine, ansiHtml, finalType, tokenizerContext);
-            deps.addMessage(finalType, textOnly, undefined, mid, false, { textOnly, lower, html: messageObj as any });
+            deps.addMessage(
+                finalType, 
+                textOnly, 
+                undefined, 
+                mid, 
+                false, 
+                { textOnly, lower, html: messageObj as any },
+                undefined, // shopItem
+                undefined, // practiceSkill
+                undefined, // practiceHeader
+                false,     // isSystem
+                commResult.replyTarget,
+                commResult.replyCommand,
+                commResult.commSender,
+                commResult.commAction,
+                commResult.commText,
+                commResult.commColor,
+                commResult.commSender ? Tokenizer.tokenize(commResult.commSender, tokenizerContext) : undefined,
+                commResult.commText ? Tokenizer.tokenize(commResult.commText, tokenizerContext) : undefined,
+                undefined, // providedCombatSide
+                undefined, // providedIsHitImpact
+                undefined  // providedIsHitterImpact
+            );
         }
 
         // Emit to bus for DVR recording

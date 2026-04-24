@@ -104,16 +104,9 @@ export const useGmcpOccupants = ({
                 });
             }
         } else {
+            // Room.Chars.Set is a full snapshot — always replace both lists
             setRoomNpcs(npcList);
-            if (pcList.length > 0) {
-                setRoomPlayers(prev => {
-                    let next = [...prev];
-                    pcList.forEach(p => {
-                        next = updateList(next, p, p.id !== undefined && p.id !== null ? String(p.id) : null, p.name || p.keyword || p.short || null);
-                    });
-                    return next;
-                });
-            }
+            setRoomPlayers(pcList);
         }
         mapperRef.current?.triggerRender?.();
     }, [setRoomPlayers, setRoomNpcs, setIsRiding, characterName, registerEntity, mapperRef]);

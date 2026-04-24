@@ -49,6 +49,7 @@ export interface DrawerLine {
     id: string;
     text: string;
     html: string;
+    tokens?: import('./tokens').Token[];
     isHeader?: boolean;
     isItem?: boolean;
     isContainer?: boolean;

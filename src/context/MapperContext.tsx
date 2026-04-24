@@ -74,6 +74,13 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const { addMessage } = useLog();
     const { deathRoomId, setDeathRoomId } = useVitals();
 
+    // Stability: capture unstable context values in refs to prevent infinite re-renders 
+    // of hooks that depend on them (like loadMasterMap).
+    const addMessageRef = useRef(addMessage);
+    const showDebugEchoesRef = useRef(showDebugEchoes);
+    useEffect(() => { addMessageRef.current = addMessage; }, [addMessage]);
+    useEffect(() => { showDebugEchoesRef.current = showDebugEchoes; }, [showDebugEchoes]);
+
     const isSpectateModeRef = useRef(isSpectateMode);
     useEffect(() => { isSpectateModeRef.current = isSpectateMode; }, [isSpectateMode]);
 
@@ -115,10 +122,18 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     // Master Map Loading
     const hasLoadedRef = useRef(false);
+    const hasStartedLoadingRef = useRef(false);
     const loadMasterMap = useCallback(async (force = false) => {
-        if (hasLoadedRef.current && !force) return;
+        if ((hasLoadedRef.current || hasStartedLoadingRef.current) && !force) return;
+        hasStartedLoadingRef.current = true;
+
         try {
+            if (showDebugEchoesRef.current) {
+                addMessageRef.current?.('system', 'Loading Master Map Data...');
+            }
+
             // 1. Load basic room coordinates (JSON)
+            // Use underscores exactly as they appear in the public/ directory.
             const res = await fetch('/mume_map_data.json?v=' + Date.now());
             if (!res.ok) throw new Error('No preloaded map data');
             const data = await res.json();
@@ -148,10 +163,15 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 }
             }
             spatialIndexRef.current = index; nameIndexRef.current = nIndex; serverIdIndexRef.current = sIndex;
-            if (showDebugEchoes) addMessage?.('system', `[Mapper] Ardagmcp Base Map Loaded: ${Object.keys(data).length} rooms.`);
+            if (showDebugEchoesRef.current) {
+                addMessageRef.current?.('system', `[Mapper] Ardagmcp Base Map Loaded: ${Object.keys(data).length} rooms.`);
+            }
             hasLoadedRef.current = true;
-        } catch (err) { console.warn("[Mapper] Could not load master map data:", err); }
-    }, [addMessage, showDebugEchoes, preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef]);
+        } catch (err) { 
+            console.warn("[Mapper] Could not load master map data:", err);
+            hasStartedLoadingRef.current = false; // Allow retry if failed
+        }
+    }, [preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef]);
 
     useEffect(() => { loadMasterMap(); }, [loadMasterMap]);
 

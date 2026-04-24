@@ -6,7 +6,7 @@
     border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
     margin-bottom: 10px;
     position: relative;
-    z-index: 8000; /* Elevated above log (6500) and HUD (7000) */
+    z-index: var(--z-header); /* Elevated above log and HUD */
     flex-shrink: 0;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -20,7 +20,7 @@
     top: 0;
     left: 0;
     right: 0;
-    z-index: 8001; 
+    z-index: var(--z-header); 
     pointer-events: none;
     margin-bottom: 0 !important;
     padding: env(safe-area-inset-top, 0px) 12px 6px 12px !important;

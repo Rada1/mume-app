@@ -1,4 +1,5 @@
 import { Token, EntityToken, TextToken, AnsiToken } from '../../types';
+import { getCategoryForName } from '../../utils/categorizationUtils';
 
 export interface TokenizerContext {
     target?: string | null;
@@ -170,27 +171,32 @@ export class Tokenizer {
         }
 
         // PCs / NPCs / Online Players
+        const playerNameSet = new Set(
+            context.currentOccupants.map(o => (o.name || '').toLowerCase()).filter(Boolean)
+        );
         const allOccupants = [...context.currentOccupants];
         context.roomNpcs.forEach(npc => {
             if (!allOccupants.find(o => o.name === npc.name)) allOccupants.push(npc);
         });
-        
+
         // Add Online Players (from who list) if not already in occupants
         (context.onlinePlayers || []).forEach(name => {
             if (!allOccupants.find(o => o.name && name && o.name.toLowerCase() === name.toLowerCase())) {
                 allOccupants.push({ name, location: 'online', isNpc: false });
+                playerNameSet.add(name.toLowerCase());
             }
         });
 
         allOccupants.forEach(occ => {
             if (!occ.name) return;
+            const dynamicCat = getCategoryForName(occ.name, context.inlineCategories);
             candidates.push({
                 pattern: occ.name,
                 isRegex: false,
                 priority: occ.id ? 5 : 10,
                 createToken: (match) => {
-                    const isNpc = !!occ.id;
-                    const cat = isNpc ? 'npc' : 'player';
+                    const isNpc = !playerNameSet.has(occ.name.toLowerCase());
+                    const cat = dynamicCat || (isNpc ? 'inline-npc' : 'inline-player');
                     return {
                         type: 'entity',
                         content: match,
@@ -213,6 +219,7 @@ export class Tokenizer {
         allItems.forEach(item => {
             const itemName = typeof item === 'string' ? item : item.name;
             if (!itemName) return;
+            const dynamicCat = getCategoryForName(itemName, context.inlineCategories);
             candidates.push({
                 pattern: itemName,
                 isRegex: false,
@@ -225,7 +232,7 @@ export class Tokenizer {
                         kind: 'object',
                         location: 'room',
                         context: itemName,
-                        category: 'object',
+                        category: dynamicCat || 'inline-object',
                         action: 'menu',
                         extraClasses: ['auto-obj']
                     }

@@ -164,7 +164,8 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
         const isSelected = isObjectSelected(selectedObjectIds, fullId, cmdId);
 
         const rowBg = line.isHeader ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.6)'; // Solid dark cutout look
-        const accentColor = 'rgba(180, 180, 180, 0.7)'; // Brighter silver accent
+        const brown = COLOR_OBJ;
+        const dim = 'var(--text-primary)';
 
         const rowStyle: React.CSSProperties = {
             background: rowBg,
@@ -181,12 +182,61 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
             color: line.isHeader ? '#ffffff' : 'inherit'
         };
 
+        const renderTokens = (tokens: import('../../../types').Token[], itemIsSelected: boolean) => {
+            return tokens.map((token, idx) => {
+                if (token.type === 'entity') {
+                    const isActuallyContainer = line.isContainer || (token as any).metadata?.category === 'inline-containers';
+                    return (
+                        <span
+                            key={idx}
+                            className={`inline-btn auto-item ${itemIsSelected ? 'selected-item' : ''} ${isActuallyContainer ? 'is-container' : ''}`}
+                            data-id={fullId}
+                            data-line-id={line.id}
+                            data-context={line.context || line.id}
+                            data-action="menu"
+                            data-category={(token as any).metadata?.category || undefined}
+                            data-cmd={cmdId}
+                            data-kind="object"
+                            data-location={mode === 'inventory' ? 'inv' : 'worn'}
+                            style={{
+                                display: 'inline',
+                                lineHeight: 'inherit',
+                                padding: '0 4px',
+                                margin: '0',
+                                background: itemIsSelected ? `rgba(180,100,50,0.15)` : 'transparent',
+                                border: 'none',
+                                borderRadius: '0',
+                                boxShadow: 'none',
+                                cursor: 'default',
+                                color: brown,
+                                whiteSpace: 'pre',
+                            }}
+                        >{token.content}</span>
+                    );
+                }
+                return (
+                    <span key={idx} style={{ color: token.type === 'text' ? dim : undefined }}>
+                        {token.content}
+                    </span>
+                );
+            });
+        };
+
+        if (line.tokens && line.tokens.length > 0) {
+            return (
+                <div style={rowStyle}>
+                    <div style={{ display: 'block', whiteSpace: 'pre', lineHeight: 'inherit', margin: '0', padding: '0', fontSize: eqFontSize }}>
+                        {line.prefix && <span style={{ color: dim }}>{line.prefix}</span>}
+                        {renderTokens(line.tokens, isSelected)}
+                    </div>
+                </div>
+            );
+        }
+
+        // --- LEGACY REGEX FALLBACK (for safety) ---
         if (mode === 'equipment') {
             const cat = getCategoryForName(line.text);
             const isActuallyContainer = line.isContainer || cat === 'inline-containers';
-            const dim = 'var(--text-primary)';
-            const brown = COLOR_OBJ;
-
 
             if (line.isItem) {
                 const itemText = line.text;
@@ -245,8 +295,6 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
 
         const cat = getCategoryForName(line.text);
         const isActuallyContainer = line.isContainer || cat === 'inline-containers';
-        const brown = 'rgba(180, 100, 50, 0.9)';
-        const dim = 'var(--text-primary)';
         if (line.isItem) {
             const articleMatch = line.text.match(/^(a |an |the |some )/i);
             const article = articleMatch ? articleMatch[1] : '';

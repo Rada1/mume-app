@@ -124,6 +124,8 @@ export function useMessageLog(
         commAction?: string,
         commText?: string,
         commColor?: string,
+        commSenderTokens?: import('../types').Token[],
+        commTextTokens?: import('../types').Token[],
         providedCombatSide?: 'player' | 'opponent' | 'groupmate',
         providedIsHitImpact?: boolean,
         providedIsHitterImpact?: boolean,
@@ -146,43 +148,10 @@ export function useMessageLog(
         const curRoom = roomContext.roomName;
         const curDesc = roomContext.roomDesc;
 
-        // --- SURGICAL SILENCE (Newbie Mode) ---
-        // If the description is already in the authoritative header, we strip it from the log.
-        // We use a robust normalization to handle line wraps or minor spacing differences.
-        // Use the ref (synchronous, always current) over state (may lag behind GMCP).
-        const descSource = roomDescRef?.current || curDesc;
-        if (isNewbieMode && descSource && currentTextOnly.length > 0) {
-            const normDesc = descSource.replace(/\s+/g, ' ').trim().toLowerCase();
-            const normLine = currentTextOnly.replace(/\s+/g, ' ').trim().toLowerCase();
+        // --- Removed Surgical Silence (Newbie Mode) ---
+        // We no longer strip descriptions or fragments from the log.
+        // This ensures a raw, consistent terminal experience as requested.
 
-            // Strip to alphanumeric for fuzzy matching (handles terminal wrapping, punctuation diffs)
-            const strippedDesc = normDesc.replace(/[^a-z0-9]/g, '');
-            const strippedLine = normLine.replace(/[^a-z0-9]/g, '');
-
-            if (normLine.startsWith(normDesc)) {
-                // Line starts with full description — either exact match or desc + extra text
-                if (normLine === normDesc) return;
-                const descEndIdx = currentTextOnly.indexOf(descSource.substring(Math.max(0, descSource.length - 10)));
-                if (descEndIdx !== -1) {
-                    const cutPoint = descEndIdx + (descSource.length - Math.max(0, descSource.length - 10));
-                    const remainingRaw = currentTextOnly.substring(cutPoint).trim();
-                    if (remainingRaw.length === 0) return;
-                    const remainingSuffix = remainingRaw.substring(0, 20);
-                    const rawIndex = currentText.indexOf(remainingSuffix);
-                    if (rawIndex !== -1) {
-                        currentText = currentText.substring(rawIndex);
-                        currentTextOnly = currentText.replace(/\x1b\[[0-9;]*m/g, '').trim();
-                        currentTextLower = currentTextOnly.toLowerCase();
-                    }
-                }
-            } else if (strippedLine.length >= 20 && strippedDesc.includes(strippedLine)) {
-                // Line is a substantial fragment of the description (e.g. a terminal-wrapped line).
-                // The >=20 threshold prevents false positives with short common phrases.
-                // No type check needed — this catches lines even when detectRoom missed them
-                // due to GMCP/text packet ordering.
-                return;
-            }
-        }
         // Only suppress the line if it exactly matches the authoritative GMCP room name.
         // We no longer use ANSI color heuristics — those caused too many false positives.
         const isActuallyRoomName = !isCombat && !isComm && type !== 'room-description' && type !== 'prompt' && (
@@ -217,10 +186,9 @@ export function useMessageLog(
             // Room name detected
         }
 
-        // RETURN EARLY: The description is already shown in the authoritative GMCP header.
-        if (type === 'room-description' && isNewbieMode) {
-            return;
-        }
+        // --- Removed Room Description Suppression ---
+        // Descriptions are now always rendered in the log for a raw experience.
+
 
         // Description logic
 
@@ -258,6 +226,7 @@ export function useMessageLog(
             const updatedMsg: Message = {
                 ...lastMsg,
                 commText: currentMsgText + (needsSpace ? ' ' : '') + (commText || ''),
+                commTextTokens: lastMsg.commTextTokens ? [...lastMsg.commTextTokens, ...(commTextTokens || [])] : commTextTokens,
                 timestamp: Date.now()
             };
 
@@ -273,10 +242,6 @@ export function useMessageLog(
             }
             return;
         }
-
-        // If this is NOT a communication continuation, and the last message WAS a comm, 
-        // we MUST ensure we don't accidentally carry over ghost comm properties from a previous logic branch.
-        // This prevents the 'duplicate message' bug where a new message inherits the last comm's text.
 
         // Room description lines are merged into the preceding room-name message
         // so they render as one unified DOM element with no subpixel gaps.
@@ -320,36 +285,12 @@ export function useMessageLog(
             return;
         }
 
-        const CHARACTER_AGENCY_VERBS = [
-            'says', 'tells', 'whispers', 'shouts', 'asks', 'exclaims', 'narrates', 'talks',
-            'say', 'tell', 'whisper', 'shout', 'ask', 'exclaim', 'narrate', 'talk',
-            'smiles', 'laughs', 'nods', 'points', 'grins', 'chuckles', 'stares',
-            'smile', 'laugh', 'nod', 'point', 'grin', 'chuckle', 'stare',
-            'hits', 'misses', 'stabs', 'cleaves', 'stings', 'lashes', 'scratches', 'bruises', 'dodges',
-            'hit', 'miss', 'stab', 'cleave', 'sting', 'lash', 'scratch', 'bruise', 'dodge',
-            'gets', 'takes', 'drops', 'puts', 'gives', 'opens', 'closes', 'locks', 'unlocks',
-            'get', 'take', 'drop', 'put', 'give', 'open', 'close', 'lock', 'unlock',
-            'arrives', 'leaves', 'enters', 'flees', 'fled', 'panics', 'attempts'
-        ];
+
+
 
         let processedText = currentText;
         const isEmpty = currentTextOnly.length === 0;
-        if (isNewbieMode && !isActuallyRoomName && type !== 'prompt' && !isEmpty) {
-            // Check for NPC/Player actions: Subject + Whitelisted Verb
-            const npcMatch = currentTextOnly.match(NPC_LINE_REGEX);
-            const isNPCActor = npcMatch && CHARACTER_AGENCY_VERBS.includes(npcMatch[2].toLowerCase());
 
-            // Check for User actions: "You" + Whitelisted Verb
-            const userMatch = currentTextOnly.match(/^You\s+(\w+)\b/i);
-            const isUserActor = userMatch && CHARACTER_AGENCY_VERBS.includes(userMatch[1].toLowerCase());
-
-            // Check for Comms (Tells, Says)
-            const isPlayerActor = isComm && !currentTextOnly.startsWith('[') && !currentTextOnly.startsWith('(') && !currentTextOnly.startsWith('*');
-
-            if (isNPCActor || isUserActor || isPlayerActor || isCombat) {
-                processedText = currentText;
-            }
-        }
 
         const rawHtml = (precalculated as any)?.html;
         const html = (typeof rawHtml === 'string' ? rawHtml : rawHtml?.html) || ansiConvert.toHtml(processedText);
@@ -400,6 +341,8 @@ export function useMessageLog(
             commAction,
             commText,
             commColor,
+            commSenderTokens,
+            commTextTokens,
             isHitImpact: providedIsHitImpact,
             isHitterImpact: providedIsHitterImpact,
             isSnoop: providedIsSnoop,

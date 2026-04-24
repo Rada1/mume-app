@@ -109,13 +109,9 @@ const MessageItem = React.memo(({
         <span className="message-timestamp">{formatTimestamp(msg.timestamp)}</span>
     ) : null;
 
-
-    const isOutdatedRoom = isNewbieMode && msg.isRoomName && currentRoomName && 
-        msg.textRaw?.replace(/\x1b\[[0-9;]*m/g, '').trim() !== currentRoomName;
-
     return (
         <div
-            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${isOutdatedRoom ? ' is-outdated-room' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
+            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
         >
             {msg.type === 'user' || msg.type === 'snoop-command' ? (
                 <div 
@@ -138,44 +134,9 @@ const MessageItem = React.memo(({
                 <PracticeColumnHeaderCard sessionsLeft={msg.practiceHeader?.sessionsLeft} />
             ) : msg.type === 'practice-class-header' ? (
                 <PracticeClassHeaderCard label={ansiConvert.toHtml(msg.textRaw || '')} />
-            ) : msg.type === 'account-prompt' ? (
-                <div className="account-prompt-container">
-                    <div className="message-content">
-                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
-                    </div>
-                    <input 
-                        className={`account-input-trigger ${input ? 'has-input' : ''}`}
-                        type={msg.textRaw?.toLowerCase().includes('password') ? 'password' : 'text'}
-                        value={input || ''}
-                        onChange={(e) => setInput?.(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                executeCommand(input || '');
-                                setInput?.('');
-                            }
-                        }}
-                        placeholder={msg.textRaw?.toLowerCase().includes('password') ? 'TYPE PASSWORD' : 'TYPE NAME'}
-                        autoFocus={viewport.isMobile}
-                        inputMode={msg.textRaw?.toLowerCase().includes('password') ? 'text' : 'email'} 
-                        autoCapitalize="none"
-                        autoCorrect="off"
-                        spellCheck="false"
-                    />
-
-                    {!msg.textRaw?.toLowerCase().includes('password') && (
-                        <button 
-                            className="account-new-char-btn"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                executeCommand('new');
-                            }}
-                        >
-                            New Player
-                        </button>
-                    )}
-                </div>
             ) : (msg.type === 'comm' || msg.isComm) && msg.commSender ? (
                 <div className="comm-bubble-wrapper">
+
                     <div className="comm-content-row">
                         <div
                             className="comm-bubble inline-btn"
@@ -183,9 +144,9 @@ const MessageItem = React.memo(({
                             onClick={triggerParley}
                         >
                             {timestampEl}
-                            <span className="comm-sender"><TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commSender || ''))} /></span>
+                            <span className="comm-sender"><TokenRenderer tokens={msg.commSenderTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commSender || ''))} /></span>
                             <span className="comm-action" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(` ${msg.commAction}: `)) }} />
-                            <span className="comm-text"><TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} /></span>
+                            <span className="comm-text"><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} /></span>
                         </div>
                         <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
                     </div>

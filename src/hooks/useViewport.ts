@@ -235,30 +235,40 @@ export function useViewport(
             if (width === 0 || height === 0) return;
 
             // --- DOM-based character width measurement ---
-            // Measure a real DOM span so the browser uses the actual loaded font
-            // (canvas measureText can fall back to system monospace before web fonts load).
             const span = document.createElement('span');
             span.style.cssText = 'position:absolute;visibility:hidden;white-space:pre;' +
                 `font-family:${fontFamily},monospace;font-size:100px;pointer-events:none;`;
-            span.innerText = 'W'.repeat(100); // Measure 100 chars to minimize sub-pixel rounding errors
+            span.innerText = 'W'.repeat(100); 
             document.body.appendChild(span);
             const charWidthRatio = span.getBoundingClientRect().width / (100 * 100);
             document.body.removeChild(span);
 
-            // font-size needed so that 80 chars fit within the usable text area
-            const timestampWidth = isTimestampEnabled ? 12 : 0; // "[HH:MM:SS] " is 11 chars + 1 space
-            const targetCols = 80 + timestampWidth;
+            // baseline cols needed for game content
+            const baseCols = 80;
+            const timestampWidth = isTimestampEnabled ? 12 : 0; 
+            const targetCols = baseCols + timestampWidth;
 
             // Calculate total horizontal padding
             let totalPadding = 18; // Standard .message padding: 6px left + 12px right
-            if (isNewbieMode) totalPadding += 20; // .message-log padding: 10px left + 10px right
-            if (isMobile && !isLandscape) totalPadding += 16; // Mobile portrait: 8px left + 8px right
-            
-            const usableWidth = Math.max(0, width - totalPadding - 2); // -2 for sub-pixel buffer
 
-            let calculatedFontSize = usableWidth / (targetCols * charWidthRatio);
+            if (isMobile && !isLandscape) {
+                // Mobile portrait .message-log padding: 8px left + 8px right (overrides newbie padding in CSS)
+                totalPadding += 16; 
+            } else if (isNewbieMode) {
+                // .message-log padding: 10px left + 10px right
+                totalPadding += 20; 
+            }
 
-            // Apply user zoom multiplier (1.0 = exact 80-col fit)
+            // Sub-pixel buffer: use a slightly larger buffer on mobile to prevent rounding-induced wrapping
+            const safetyBuffer = isMobile ? 4 : 2;
+            const usableWidth = Math.max(0, width - totalPadding - safetyBuffer); 
+
+            // Calculate font size for perfect 80-column fit
+            // We target slightly more than required columns (targetCols + 0.5) to ensure 
+            // that floor(usableWidth / charWidth) always hits the target count.
+            let calculatedFontSize = usableWidth / ((targetCols + 0.5) * charWidthRatio);
+
+            // Apply user zoom multiplier
             calculatedFontSize *= logFontSize;
 
             // Safety clamps: never go below 6px or above 48px
@@ -270,12 +280,14 @@ export function useViewport(
             const finalCharWidth = charWidthRatio * safeSize;
             const finalLineHeight = safeSize * 1.1;
 
+            // Use a 0.1 buffer to handle floating point precision
             const actualCols = Math.floor((usableWidth / finalCharWidth) + 0.1);
             const actualRows = Math.floor((height / finalLineHeight) + 0.1);
 
             setColumns(actualCols);
             setRows(actualRows);
-            console.log(`[Layout] charRatio=${charWidthRatio.toFixed(4)} → font=${safeSize.toFixed(1)}px → ${actualCols}x${actualRows}`);
+            console.log(`[Layout] mobile=${isMobile} width=${width} pad=${totalPadding} target=${targetCols} font=${safeSize.toFixed(1)}px → ${actualCols}x${actualRows} (ratio=${charWidthRatio.toFixed(3)})`);
+
         };
 
         const timer = setTimeout(updateLayout, 10);

@@ -124,13 +124,87 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
         const fullId = `${prefixId}:${line.entityId || line.id}:${line.context || line.id}`;
         const isSelected = isObjectSelected(selectedObjectIds, fullId, cmdId);
 
-        const cat = getCategoryForName(line.text);
-        const isActuallyContainer = line.isContainer || cat === 'inline-containers';
         const brown = COLOR_OBJ;
-
         const dim = 'var(--text-primary)';
 
+        const renderTokens = (tokens: import('../../../types').Token[], itemIsSelected: boolean) => {
+            return tokens.map((token, idx) => {
+                if (token.type === 'entity') {
+                    const cat = getCategoryForName(token.content);
+                    const isActuallyContainer = line.isContainer || cat === 'inline-containers';
+                    return (
+                        <span
+                            key={idx}
+                            className={`inline-btn auto-item ${itemIsSelected ? 'selected-item' : ''} ${isActuallyContainer ? 'is-container' : ''}`}
+                            data-id={fullId}
+                            data-line-id={line.id}
+                            data-context={line.context || line.id}
+                            data-action="menu"
+                            data-category={(token as any).metadata?.category || undefined}
+                            data-cmd={cmdId}
+                            data-kind="object"
+                            data-location="inv"
+                            style={{
+                                display: 'inline',
+                                lineHeight: '1.5',
+                                padding: '0 4px',
+                                margin: '0',
+                                background: itemIsSelected ? `rgba(180,100,50,0.15)` : 'transparent',
+                                border: 'none',
+                                borderRadius: '0',
+                                boxShadow: 'none',
+                                cursor: 'default',
+                                color: brown,
+                                whiteSpace: 'pre',
+                            }}
+                        >{token.content}</span>
+                    );
+                }
+                return (
+                    <span key={idx} style={{ color: token.type === 'text' ? dim : undefined }}>
+                        {token.content}
+                    </span>
+                );
+            });
+        };
+
+        const getClassColor = (skillClass?: string) => {
+            if (!skillClass) return 'transparent';
+            const cls = skillClass.toLowerCase();
+            if (cls === 'warrior') return 'rgba(239, 68, 68, 0.15)'; // Red
+            if (cls === 'none' || cls === 'ranger') return 'rgba(34, 197, 94, 0.15)'; // Green
+            if (cls === 'cleric') return 'rgba(234, 179, 8, 0.22)'; // Holy Yellow
+            if (cls === 'thief') return 'rgba(148, 163, 184, 0.15)'; // Silver/Grey
+            if (cls === 'mage') return 'rgba(59, 130, 246, 0.22)'; // Arcane Blue
+            return 'transparent';
+        };
+
+        const isAtGuildmaster = practice?.practiceData?.isAtGuildmaster;
+        const bg = isAtGuildmaster ? 'transparent' : getClassColor(line.practiceSkill?.skillClass);
+
+        if (line.tokens && line.tokens.length > 0) {
+            return (
+                <div style={{
+                    display: 'block',
+                    whiteSpace: 'pre-wrap',
+                    textAlign: centered ? 'center' : 'left',
+                    lineHeight: '1.5',
+                    margin: '0.5px 0',
+                    padding: '1px 8px',
+                    paddingLeft: centered ? '0' : `${depth * 8 + 8}px`,
+                    fontSize,
+                    background: bg !== 'transparent' ? bg : (line.isHeader ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.6)'),
+                    borderRadius: '4px'
+                }}>
+                    {line.prefix && <span style={{ color: dim }}>{line.prefix}</span>}
+                    {renderTokens(line.tokens, isSelected)}
+                </div>
+            );
+        }
+
         if (line.isItem) {
+            const cat = getCategoryForName(line.text);
+            const isActuallyContainer = line.isContainer || cat === 'inline-containers';
             const articleMatch = line.text.match(/^(a |an |the |some )/i);
             const article = articleMatch ? articleMatch[1] : '';
             const afterArticle = line.text.slice(article.length);
@@ -171,23 +245,10 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
             );
         }
 
-        const getClassColor = (skillClass?: string) => {
-            if (!skillClass) return 'transparent';
-            const cls = skillClass.toLowerCase();
-            if (cls === 'warrior') return 'rgba(239, 68, 68, 0.15)'; // Red
-            if (cls === 'none' || cls === 'ranger') return 'rgba(34, 197, 94, 0.15)'; // Green
-            if (cls === 'cleric') return 'rgba(234, 179, 8, 0.22)'; // Holy Yellow
-            if (cls === 'thief') return 'rgba(148, 163, 184, 0.15)'; // Silver/Grey
-            if (cls === 'mage') return 'rgba(59, 130, 246, 0.22)'; // Arcane Blue
-            return 'transparent';
-        };
 
-        const isAtGuildmaster = practice?.practiceData?.isAtGuildmaster;
-        const bg = isAtGuildmaster ? 'transparent' : getClassColor(line.practiceSkill?.skillClass);
 
         if (line.practiceSkill) {
             const skill = line.practiceSkill;
-            const isAtGuildmaster = practice?.practiceData?.isAtGuildmaster;
 
             return (
                 <div

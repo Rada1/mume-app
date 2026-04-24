@@ -61,6 +61,7 @@ interface GmcpHandlersProps {
     isSpectateMode?: boolean;
     inlineCategories: import('../../types').InlineCategoryConfig[];
     sendGMCP?: (pkg: string, data?: any) => void;
+    pendingGmcpCommRef?: React.MutableRefObject<{ sender: string; chan: string; msg?: string } | null>;
 }
 
 export const useGmcpHandlers = (props: GmcpHandlersProps) => {
@@ -131,11 +132,14 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
         props.setCharacterName(name);
     }, [props.characterName, props.setAbilities, props.addMessage, props.setCharacterName, props.isSpectateMode]);
 
-    const onComm = useCallback((_sender: string, _chan: string, _msg: string) => {
+    const onComm = useCallback((sender: string, chan: string, msg: string) => {
         // Comm messages arrive via plain text through processLine; the GMCP metadata
         // (sender, chan) is forwarded via pendingGmcpCommRef in GameContext before the
         // text line is processed, so no addMessage call is needed here.
-    }, []);
+        if (props.pendingGmcpCommRef) {
+            props.pendingGmcpCommRef.current = { sender, chan, msg };
+        }
+    }, [props.pendingGmcpCommRef]);
 
     const onCharRide = useCallback((data: any) => {
         console.log('[GMCP] Char.Ride:', data);

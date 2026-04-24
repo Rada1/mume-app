@@ -116,7 +116,7 @@ const MudClient = () => {
         };
     }, [isMobile]);
 
-    const { objectColor } = useSettingsStore();
+    const { objectColor, playerColor, npcColor } = useSettingsStore();
 
     // Sync popover state to body for CSS selector support across portals
     useEffect(() => {
@@ -135,6 +135,14 @@ const MudClient = () => {
     useEffect(() => {
         document.documentElement.style.setProperty('--color-obj', objectColor);
     }, [objectColor]);
+
+    useEffect(() => {
+        document.documentElement.style.setProperty('--color-player', playerColor);
+    }, [playerColor]);
+
+    useEffect(() => {
+        document.documentElement.style.setProperty('--color-npc', npcColor);
+    }, [npcColor]);
 
     useEffect(() => {
         if (btn.editingButtonId === null && returnToManager) {

@@ -39,8 +39,7 @@
 .message-log {
     flex: 1;
     padding: 0;
-    display: flex;
-    flex-direction: column;
+    display: block;
     overflow-y: auto;
     overflow-x: clip;
     color: var(--text-primary);
@@ -49,9 +48,7 @@
     overscroll-behavior-y: contain;
 }
 
-/* Sticky-bottom trick for flex scroll containers */
-.message-log > div:first-child {
-    margin-top: auto !important;
+/* Removed margin-top: auto to prevent conflicts with virtualizer and centering layout */
 }
     /* scroll-padding-bottom: 20px; - Removed to fix manual scroll math conflicts */
     scrollbar-width: thin;
@@ -110,10 +107,11 @@
 .message {
     line-height: 1.4;              /* Improved readability */
     max-width: 100%;
+    flex-shrink: 0;                /* Prevent squashing in flex containers */
     word-wrap: break-word;
     white-space: pre-wrap;
-    padding: 0px 12px 0px 6px;
-    margin: 0 0 -1px 0;            /* Collapse sub-pixel gaps universally */
+    padding: 0 12px;
+    margin: 0;                     /* Removed -1px to prevent overlap */
     min-height: 0;                 /* Dense terminal logic */
     background: transparent;       /* Standard game text is now high-contrast transparent */
     position: relative;
@@ -161,9 +159,8 @@
     background: transparent !important;
     border-left: none !important;
     border-radius: 0 !important;
-    padding: 1px 12px 1px 6px !important;
+    padding: 0 12px !important;
     margin: 0 !important;
-    box-shadow: none !important;
     line-height: 1.4 !important;
 }
 
@@ -171,7 +168,7 @@
     background: transparent !important;
     border-left: none !important;
     border-radius: 0 !important;
-    padding: 1px 12px 1px 6px !important;
+    padding: 0 12px !important;
     margin: 0 !important;
     box-shadow: none !important;
     line-height: 1.4 !important;
@@ -179,7 +176,7 @@
 
 .message.is-room-block:not(.is-room-name) {
     background: transparent !important;
-    padding: 1px 12px 1px 6px;
+    padding: 0 12px;
     margin: 0;
     border: none;
     border-radius: 0;
@@ -350,8 +347,7 @@
 }
 
 .pc-highlighter {
-    color: var(--glow-color, #7dd3fc);
-    /* Sky Blue 300 */
+    color: var(--glow-color, #89CFF0); /* Baby Blue */
 }
 
 .npc-highlighter {
@@ -724,82 +720,8 @@
     padding: 5px;
 }
 
-/* --- Section: Account / Login UI --- */
-.message.account-prompt {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    background: transparent !important;
-    box-shadow: none !important;
-    padding: 40px 0 !important;
-    margin: 10px 0;
-    border: none !important;
-    animation: none !important;
-    transform: none !important;
-}
+/* Legacy Account Prompt UI removed - now rendered as raw terminal text */
 
-.account-prompt-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    max-width: 500px;
-    gap: 15px;
-    padding: 20px;
-}
-
-.account-prompt-container .message-content {
-    text-align: center;
-    font-size: inherit !important;
-    line-height: inherit;
-    color: var(--text-primary);
-    font-family: var(--font-mono);
-    opacity: 1;
-    transform: none !important;
-    animation: none !important;
-}
-
-.account-input-trigger {
-    margin-top: 15px;
-    padding: 12px 24px;
-    min-width: 200px;
-    background: rgba(var(--accent-rgb), 0.03);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(var(--accent-rgb), 0.2);
-    border-radius: 8px;
-    color: var(--accent);
-    font-weight: 700;
-    font-size: 0.85rem;
-    font-family: var(--font-mono);
-    letter-spacing: 0.1em;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    outline: none;
-}
-
-.account-input-trigger::placeholder {
-    color: var(--accent);
-    opacity: 0.5;
-    font-size: 0.75rem;
-}
-
-.account-input-trigger:hover {
-    background: rgba(var(--accent-rgb), 0.08);
-    border-color: var(--accent);
-    transform: translateY(-2px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-}
-
-.account-input-trigger:active {
-    transform: scale(0.96) translateY(1px);
-    background: rgba(var(--accent-rgb), 0.12);
-}
 
 .account-input-trigger.has-input {
     background: rgba(var(--accent-rgb), 0.05);
@@ -1001,11 +923,11 @@
 }
 
 .pc-highlighter {
-    --glow-color: #fff;
+    --glow-color: #89CFF0; /* Baby Blue */
 }
 
 .npc-highlighter {
-    --glow-color: #4ade80;
+    --glow-color: var(--color-npc);
 }
 
 .inline-btn {
@@ -1116,7 +1038,6 @@ span.inline-btn {
 /* Landscape Specifics */
 .is-landscape .message-log-container {
     flex: 1 !important;
-    height: 0 !important;
     min-height: 0;
     display: flex !important;
 }

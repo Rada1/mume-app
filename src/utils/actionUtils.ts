@@ -55,9 +55,9 @@ export function isButtonValidForEntity(
         
         // 1. Check explicit capabilities (registered entities)
         if (entity?.capabilities) {
-            if (button.setId === 'npc-innkeeper' && entity.capabilities.includes(EntityCapability.Innkeeper)) isMatch = true;
-            if (button.setId === 'npc-shopkeeper' && entity.capabilities.includes(EntityCapability.Shopkeeper)) isMatch = true;
-            if (button.setId === 'npc-guildmaster' && entity.capabilities.includes(EntityCapability.Guildmaster)) isMatch = true;
+            if (button.setId === 'inline-innkeeper' && entity.capabilities.includes(EntityCapability.Innkeeper)) isMatch = true;
+            if (button.setId === 'inline-shopkeeper' && entity.capabilities.includes(EntityCapability.Shopkeeper)) isMatch = true;
+            if (button.setId === 'inline-guildmaster' && entity.capabilities.includes(EntityCapability.Guildmaster)) isMatch = true;
         }
 
         // 2. Check roomNpcs (fallback for log-parsed or GMCP entities)
@@ -73,9 +73,9 @@ export function isButtonValidForEntity(
             if (matchingNpc) {
                 const npcName = (typeof matchingNpc === 'string' ? matchingNpc : matchingNpc.name || matchingNpc.shortdesc || '').toLowerCase();
                 const npcCatId = getCategoryForName(npcName, inlineCategories);
-                if (button.setId === 'npc-innkeeper' && npcCatId === 'npc-innkeeper') isMatch = true;
-                if (button.setId === 'npc-shopkeeper' && npcCatId === 'npc-shopkeeper') isMatch = true;
-                if (button.setId === 'npc-guildmaster' && npcCatId === 'npc-guildmaster') isMatch = true;
+                if (button.setId === 'inline-innkeeper' && npcCatId === 'inline-innkeeper') isMatch = true;
+                if (button.setId === 'inline-shopkeeper' && npcCatId === 'inline-shopkeeper') isMatch = true;
+                if (button.setId === 'inline-guildmaster' && npcCatId === 'inline-guildmaster') isMatch = true;
             }
         }
 

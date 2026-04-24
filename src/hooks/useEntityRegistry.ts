@@ -12,7 +12,7 @@ import { getCategoryForName, getCategoryType } from '../utils/categorizationUtil
 
 // palette definitions for consistency (imported from categorizationUtils style)
 const COLOR_NPC = 'rgba(253, 224, 71, 0.95)';
-const COLOR_PLAYER = 'rgba(125, 211, 252, 0.9)';
+const COLOR_PLAYER = '#89CFF0'; // Baby Blue
 const COLOR_OBJ = 'rgba(251, 146, 60, 0.95)';
 
 export const useEntityRegistry = () => {

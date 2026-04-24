@@ -167,6 +167,65 @@ export const PlayersView: React.FC<PlayersViewProps> = ({ isOpen, onClose, execu
         const isHeader = !!line.isHeader;
         const rowBg = isHeader ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.6)';
         const depth = line.depth || 0;
+        const dim = 'var(--text-primary)';
+        const playerColor = 'rgba(125, 211, 252, 1)';
+
+        const renderTokens = (tokens: import('../../../types').Token[]) => {
+            return tokens.map((token, idx) => {
+                if (token.type === 'entity') {
+                    return (
+                        <span
+                            key={idx}
+                            className="inline-btn auto-item"
+                            data-id={`player:${token.content}`}
+                            data-context={token.content}
+                            data-action="menu"
+                            data-kind="player"
+                            data-location="room"
+                            style={{
+                                display: 'inline',
+                                lineHeight: 'inherit',
+                                padding: '0 4px',
+                                margin: '0',
+                                background: 'transparent',
+                                border: 'none',
+                                borderRadius: '0',
+                                boxShadow: 'none',
+                                cursor: 'default',
+                                color: playerColor,
+                                whiteSpace: 'pre',
+                            }}
+                        >{token.content}</span>
+                    );
+                }
+                return (
+                    <span key={idx} style={{ color: token.type === 'text' ? dim : undefined }}>
+                        {token.content}
+                    </span>
+                );
+            });
+        };
+
+        if (line.tokens && line.tokens.length > 0) {
+            return (
+                <div style={{
+                    background: rowBg,
+                    borderRadius: '4px',
+                    margin: '0.5px 0',
+                    padding: '1px 8px',
+                    paddingLeft: `${depth * 8 + 8}px`,
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    display: 'block',
+                    minHeight: '16px',
+                    lineHeight: '1.5',
+                    whiteSpace: 'pre',
+                    fontSize
+                }}>
+                    {renderTokens(line.tokens)}
+                </div>
+            );
+        }
 
         return (
             <div style={{
