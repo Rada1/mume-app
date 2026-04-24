@@ -94,11 +94,36 @@ export function useStatParser(deps: StatParserDeps) {
     }, [setMood, setStats, setCharacterInfo, inCombatRef, executeCommandRef]);
 
     const parseDetailedScore = useCallback((textOnly: string, lower: string) => {
-        // Redundant structured parsing removed per user request.
-        // The drawer now displays the raw captured lines, and structured data (Level, XP, Gold) 
-        // is handled more reliably via GMCP in useGmcpVitals.ts.
-        return true;
-    }, []);
+        // Matches both "87(98) hits, 46(130) mana and 120(140) moves."
+        // and "87/98 hits, 46/130 mana and 120(140) moves."
+        // The regex handles (max) or /max formats.
+        const verboseRegex = /(\d+)[\/\(](\d+)[\)]?\s+hits(?:,?\s+(\d+)[\/\(](\d+)[\)]?\s+mana)?,?\s+and\s+(\d+)[\/\(](\d+)[\)]?\s+moves/i;
+        const match = textOnly.match(verboseRegex);
+        
+        if (match) {
+            const hp = parseInt(match[1]);
+            const maxHp = parseInt(match[2]);
+            const hasMana = match[3] !== undefined;
+            const mana = hasMana ? parseInt(match[3]) : undefined;
+            const maxMana = hasMana ? parseInt(match[4]) : undefined;
+            const move = parseInt(match[5]);
+            const maxMove = parseInt(match[6]);
+
+            console.log(`[StatParser] Detailed Score Match: hp=${hp}/${maxHp}, mana=${mana}/${maxMana}, move=${move}/${maxMove}`);
+
+            setStats(prev => ({
+                ...prev,
+                hp,
+                maxHp,
+                mana: mana ?? 0,
+                maxMana: maxMana ?? 0,
+                move,
+                maxMove
+            }));
+            return true;
+        }
+        return false;
+    }, [setStats]);
 
 
     return { parseGlobalStatus, parseDetailedScore };

@@ -561,7 +561,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             const charCount = (msg.textRaw || msg.commText || '').length;
             const cols = viewport.columns || 80;
             const lineCount = Math.max(1, Math.ceil(charCount / cols));
-            let h = lineCount * (viewport.logFontSize * 16 * 1.1) + (isComm ? 48 : 4);
+            let h = lineCount * (viewport.logFontSizePx * 1.1) + (isComm ? 48 : 4);
             if (msg.type === 'user') h += 24;
             if (msg.isCombat) h += 10;
             return h;

@@ -5,7 +5,8 @@ export function useViewport(
     disableSmoothScroll: boolean = false,
     isImmersionMode: boolean = true,
     fontFamily: string = "'Space Mono', monospace",
-    isTimestampEnabled: boolean = false
+    isTimestampEnabled: boolean = false,
+    isNewbieMode: boolean = false
 ) {
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
@@ -169,6 +170,7 @@ export function useViewport(
     // 1.0 = exactly 80 columns; > 1.0 = zoomed in; < 1.0 = zoomed out.
     // We intentionally do NOT restore from localStorage so every session starts at 80 cols.
     const [logFontSize, setLogFontSize] = useState(1.0);
+    const [logFontSizePx, setLogFontSizePx] = useState(16);
 
     const touchDistRef = useRef<number | null>(null);
     const lastUpdateRef = useRef<number>(0);
@@ -238,20 +240,21 @@ export function useViewport(
             const span = document.createElement('span');
             span.style.cssText = 'position:absolute;visibility:hidden;white-space:pre;' +
                 `font-family:${fontFamily},monospace;font-size:100px;pointer-events:none;`;
-            span.textContent = 'MMMMMMMMMMMMMMMMMMMM'; // 20 chars at ref size 100px
+            span.innerText = 'W'.repeat(100); // Measure 100 chars to minimize sub-pixel rounding errors
             document.body.appendChild(span);
-            const spanWidth = span.getBoundingClientRect().width;
+            const charWidthRatio = span.getBoundingClientRect().width / (100 * 100);
             document.body.removeChild(span);
-            if (spanWidth === 0) return;
-
-            const REF_SIZE = 100;
-            const charWidthRatio = (spanWidth / 20) / REF_SIZE; // advance width per px of font-size
 
             // font-size needed so that 80 chars fit within the usable text area
             const timestampWidth = isTimestampEnabled ? 12 : 0; // "[HH:MM:SS] " is 11 chars + 1 space
             const targetCols = 80 + timestampWidth;
-            const messagePadding = 20; // Matching .message padding: 6px left + 12px right + buffer
-            const usableWidth = Math.max(0, width - messagePadding);
+
+            // Calculate total horizontal padding
+            let totalPadding = 18; // Standard .message padding: 6px left + 12px right
+            if (isNewbieMode) totalPadding += 20; // .message-log padding: 10px left + 10px right
+            if (isMobile && !isLandscape) totalPadding += 16; // Mobile portrait: 8px left + 8px right
+            
+            const usableWidth = Math.max(0, width - totalPadding - 2); // -2 for sub-pixel buffer
 
             let calculatedFontSize = usableWidth / (targetCols * charWidthRatio);
 
@@ -261,6 +264,7 @@ export function useViewport(
             // Safety clamps: never go below 6px or above 48px
             const safeSize = Math.min(48, Math.max(6, calculatedFontSize));
             document.documentElement.style.setProperty('--dynamic-log-size', `${safeSize}px`);
+            setLogFontSizePx(safeSize);
 
             // Derive final grid metrics for the game server
             const finalCharWidth = charWidthRatio * safeSize;
@@ -293,7 +297,7 @@ export function useViewport(
             clearTimeout(timer2);
             ro?.disconnect();
         };
-    }, [isMobile, isLandscape, logFontSize, windowWidth, isKeyboardOpen, fontFamily, isTimestampEnabled]);
+    }, [isMobile, isLandscape, logFontSize, windowWidth, isKeyboardOpen, fontFamily, isTimestampEnabled, isNewbieMode]);
 
     const updateHeight = useCallback(() => {
         const viewport = window.visualViewport;
@@ -425,6 +429,7 @@ export function useViewport(
         scrollToBottom,
         updateHeight,
         logFontSize,
+        logFontSizePx,
         resetLogFontSize: () => setLogFontSize(1.0)
-    }), [isMobile, isLandscape, isKeyboardOpen, columns, rows, scrollToBottom, updateHeight, logFontSize]);
+    }), [isMobile, isLandscape, isKeyboardOpen, columns, rows, scrollToBottom, updateHeight, logFontSize, logFontSizePx]);
 }

@@ -16,7 +16,7 @@ export const useVitalsStore = create<VitalsStore>((set, get) => ({
         set((state: any) => {
             const next = typeof statsUpdate === 'function' ? statsUpdate(state) : statsUpdate;
             if (typeof next !== 'object' || next === null) return state;
-            return { ...next };
+            return { ...state, ...next };
         });
     },
 }));

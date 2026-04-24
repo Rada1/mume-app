@@ -173,8 +173,9 @@ export function usePromptParser(deps: PromptParserDeps) {
 
         // --- Verbose Status Parsing (Spectate Mode / Snooped Stat) ---
         // Matches both "87/98 hits, 46/130 mana, and 100/106 moves."
+        // and "87(98) hits, 46(130) mana and 120(140) moves."
         // and "487/522 hits and 142/160 moves." (mana absent for non-caster classes)
-        const verboseRegex = /(\d+)\/(\d+)\s+hits(?:,?\s+(\d+)\/(\d+)\s+mana)?,?\s+and\s+(\d+)\/(\d+)\s+moves/i;
+        const verboseRegex = /(\d+)[\/\(](\d+)[\)]?\s+hits(?:,?\s+(\d+)[\/\(](\d+)[\)]?\s+mana)?,?\s+(?:and\s+)?(\d+)[\/\(](\d+)[\)]?\s+moves/i;
         const verboseMatch = textOnly.match(verboseRegex);
         if (verboseMatch) {
             const hp = parseInt(verboseMatch[1]);
@@ -187,16 +188,16 @@ export function usePromptParser(deps: PromptParserDeps) {
             if (isSpectateMode) {
                 setSpectateStats(prev => ({
                     ...prev,
-                    hp, maxHp,
-                    move, maxMove,
-                    ...(mana !== undefined ? { mana, maxMana } : {})
+                    hp, maxHp: maxHp,
+                    move, maxMove: maxMove,
+                    ...(mana !== undefined ? { mana, maxMana: maxMana } : {})
                 }));
             } else {
                 deps.setStats(prev => ({
                     ...prev,
-                    hp, maxHp,
-                    move, maxMove,
-                    ...(mana !== undefined ? { mana, maxMana } : {})
+                    hp, maxHp: maxHp,
+                    move, maxMove: maxMove,
+                    ...(mana !== undefined ? { mana, maxMana: maxMana } : {})
                 }));
             }
         }

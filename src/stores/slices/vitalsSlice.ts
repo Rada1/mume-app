@@ -39,6 +39,15 @@ export interface VitalsState {
     target: string | null;
     activePrompt: any;
     wimpy: number;
+    gmcpVitals: {
+        hp: number;
+        maxHp: number;
+        mana: number;
+        maxMana: number;
+        move: number;
+        maxMove: number;
+        hpStatus: CombatHealthStatus | null;
+    };
 
     applyCharVitals: (data: GmcpCharVitals) => void;
     applyCharInfo: (data: GmcpCharInfo) => void;
@@ -83,7 +92,16 @@ export const initialVitalsState = {
     },
     target: null,
     activePrompt: null,
-    wimpy: 0
+    wimpy: 0,
+    gmcpVitals: {
+        hp: 0,
+        maxHp: 0,
+        mana: 0,
+        maxMana: 0,
+        move: 0,
+        maxMove: 0,
+        hpStatus: null as CombatHealthStatus | null
+    }
 };
 
 // --- Logic Section ---
@@ -203,12 +221,25 @@ export const createVitalsActions = (set: any, get: any) => ({
                 updates.isFoggy = data.fog === 'on' || data.fog === 'thick' || data.fog === 'yes' || !!data.fog;
             }
 
-            return updates;
+            return { 
+                ...state, 
+                ...updates,
+                gmcpVitals: {
+                    hp: updates.hp ?? state.gmcpVitals.hp,
+                    maxHp: updates.maxHp ?? state.gmcpVitals.maxHp,
+                    mana: updates.mana ?? state.gmcpVitals.mana,
+                    maxMana: updates.maxMana ?? state.gmcpVitals.maxMana,
+                    move: updates.move ?? state.gmcpVitals.move,
+                    maxMove: updates.maxMove ?? state.gmcpVitals.maxMove,
+                    hpStatus: updates.hpStatus ?? state.gmcpVitals.hpStatus
+                }
+            };
         });
     },
 
     applyCharInfo: (data: GmcpCharInfo) => {
         set((state: VitalsState) => ({
+            ...state,
             characterInfo: {
                 ...state.characterInfo,
                 name: data.name ?? data.fullname ?? state.characterInfo.name,
@@ -236,36 +267,36 @@ export const createVitalsActions = (set: any, get: any) => ({
     },
 
     setHpStatus: (hpStatus: CombatHealthStatus | null | ((prev: CombatHealthStatus | null) => CombatHealthStatus | null)) => 
-        set((state: VitalsState) => ({ hpStatus: typeof hpStatus === 'function' ? hpStatus(state.hpStatus) : hpStatus })),
+        set((state: VitalsState) => ({ ...state, hpStatus: typeof hpStatus === 'function' ? hpStatus(state.hpStatus) : hpStatus })),
 
     setPosition: (pos: string | ((prev: string) => string)) => {
         set((state: VitalsState) => {
             const nextPos = typeof pos === 'function' ? pos(state.position) : pos;
             const isCurrentlyRiding = state.position === 'riding' || state.position === 'mounted';
             if (nextPos === 'standing' && isCurrentlyRiding) return state;
-            return { position: nextPos, inCombat: nextPos === 'fighting' };
+            return { ...state, position: nextPos, inCombat: nextPos === 'fighting' };
         });
     },
 
     setInCombat: (inCombat: boolean | ((prev: boolean) => boolean)) => 
-        set((state: VitalsState) => ({ inCombat: typeof inCombat === 'function' ? inCombat(state.inCombat) : inCombat })),
+        set((state: VitalsState) => ({ ...state, inCombat: typeof inCombat === 'function' ? inCombat(state.inCombat) : inCombat })),
 
     setLighting: (lighting: LightingType | ((prev: LightingType) => LightingType)) => 
-        set((state: VitalsState) => ({ lighting: typeof lighting === 'function' ? lighting(state.lighting) : lighting })),
+        set((state: VitalsState) => ({ ...state, lighting: typeof lighting === 'function' ? lighting(state.lighting) : lighting })),
 
     setWeather: (weather: WeatherType | ((prev: WeatherType) => WeatherType)) => 
-        set((state: VitalsState) => ({ weather: typeof weather === 'function' ? weather(state.weather) : weather })),
+        set((state: VitalsState) => ({ ...state, weather: typeof weather === 'function' ? weather(state.weather) : weather })),
 
     setIsFoggy: (isFoggy: boolean | ((prev: boolean) => boolean)) => 
-        set((state: VitalsState) => ({ isFoggy: typeof isFoggy === 'function' ? isFoggy(state.isFoggy) : isFoggy })),
+        set((state: VitalsState) => ({ ...state, isFoggy: typeof isFoggy === 'function' ? isFoggy(state.isFoggy) : isFoggy })),
 
     setCurrentTerrain: (terrain: string | ((prev: string) => string)) => 
-        set((state: VitalsState) => ({ currentTerrain: typeof terrain === 'function' ? terrain(state.currentTerrain) : terrain })),
+        set((state: VitalsState) => ({ ...state, currentTerrain: typeof terrain === 'function' ? terrain(state.currentTerrain) : terrain })),
 
     setTarget: (target: string | null | ((prev: string | null) => string | null)) => 
-        set((state: VitalsState) => ({ target: typeof target === 'function' ? target(state.target) : target })),
+        set((state: VitalsState) => ({ ...state, target: typeof target === 'function' ? target(state.target) : target })),
 
     setActivePrompt: (activePrompt: any) => {
-        set((state: VitalsState) => ({ activePrompt: typeof activePrompt === 'function' ? activePrompt(state.activePrompt) : activePrompt }));
+        set((state: VitalsState) => ({ ...state, activePrompt: typeof activePrompt === 'function' ? activePrompt(state.activePrompt) : activePrompt }));
     }
 });

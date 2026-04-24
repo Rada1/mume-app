@@ -244,6 +244,13 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         // Stats/Account
         if (account.parseAccountLine(textOnly, tokens?.isPrompt ?? false)) return;
         if (stat.parseGlobalStatus(textOnly, lower)) msgType = 'info' as any;
+        if (stat.parseDetailedScore(textOnly, lower)) msgType = 'info' as any;
+
+        // --- 4. Prompt Parsing ---
+        const promptInfo = prompt.parsePrompt(textOnly);
+        if (promptInfo.isMatch) {
+            msgType = 'prompt' as any;
+        }
 
         // Atmosphere
         atmosphere.parseAtmosphere(lower);

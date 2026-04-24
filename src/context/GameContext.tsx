@@ -109,7 +109,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         alertness: s.alertness, setAlertness: s.setAlertness
     });
 
-    const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.isImmersionMode, s.fontFamily, s.isTimestampEnabled);
+    const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.isImmersionMode, s.fontFamily, s.isTimestampEnabled, s.isNewbieMode);
     const mode = useModeStore();
     const session = useSessionStore();
     const { 

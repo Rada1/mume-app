@@ -233,8 +233,11 @@ const PromptBox: FC<PromptBoxProps> = ({
     
     // --- Active State Selectors ---
     const { 
-        hp, maxHp, mana, maxMana, move, maxMove, wimpy,
-        hpStatus: playerHealthStatus, position, inCombat
+        gmcpVitals: {
+            hp, maxHp, mana, maxMana, move, maxMove,
+            hpStatus: playerHealthStatus
+        },
+        wimpy, position, inCombat
     } = useActiveVitals();
     const isRiding = position === 'riding' || position === 'mounted';
     const playerPosition = position;
