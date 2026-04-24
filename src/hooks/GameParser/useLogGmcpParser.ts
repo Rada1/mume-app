@@ -8,23 +8,9 @@ import { gmcpBus } from '../../events/gmcpBus';
 import { GameStats, CombatHealthStatus } from '../../types';
 
 interface LogGmcpParserDeps {
-    setSpectateStats: (stats: GameStats | ((prev: GameStats) => GameStats)) => void;
-    setSpectateHealthStatus: (status: CombatHealthStatus | null) => void;
-    setSpectateOpponentName: (name: string | null) => void;
-    setSpectateOpponentStatus: (status: CombatHealthStatus | null) => void;
-    setSpectatePosition: (pos: string) => void;
     setSpectateWaiting: (val: boolean) => void;
-    setSpectateRoomName: (name: string | null) => void;
-    setSpectateRoomDesc: (desc: string | null) => void;
-    setSpectateTerrain: (terrain: string) => void;
-    setSpectateRoomZone: (zone: string | null) => void;
-    setSpectateLighting: (light: import('../../types').LightingType) => void;
-    setSpectateWeather: (w: import('../../types').WeatherType) => void;
-    setSpectateIsFoggy: (f: boolean) => void;
-    setSpectateInCombat: (val: boolean, force?: boolean) => void;
     setSpectateCharacterName: (name: string | null) => void;
     spectateCharacterName: string | null;
-    setSpectateGroupMembers: React.Dispatch<React.SetStateAction<import('../../types').GroupMember[]>>;
     setRoomPlayers: React.Dispatch<React.SetStateAction<any[]>>;
     setRoomNpcs: React.Dispatch<React.SetStateAction<any[]>>;
     setRoomItems: React.Dispatch<React.SetStateAction<any[]>>;
@@ -79,10 +65,8 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         if (!d) return false;
 
         const {
-            setSpectateStats, setSpectateHealthStatus, setSpectateWaiting, setSpectateInCombat,
-            setSpectateOpponentStatus, setSpectateOpponentName, setSpectateTerrain, setCurrentTerrain,
-            setSpectateLighting, detectLighting, setSpectateWeather, setSpectateIsFoggy,
-            setWeather, setIsFoggy, setSpectateGroupMembers, playDoorSound, setRoomItems,
+            setSpectateWaiting, setCurrentTerrain,
+            detectLighting, setWeather, setIsFoggy, playDoorSound, setRoomItems,
             setSpectateCharacterName, setRoomPlayers, setRoomNpcs, spectateCharacterName, characterName,
         } = d;
 

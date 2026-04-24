@@ -112,9 +112,6 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         characterName: session.game.characterName, 
         spectateCharacterName: deps.spectateCharacterName,
         isSpectateMode: deps.isSpectateMode, 
-        setSpectateInCombat: deps.setSpectateInCombat, 
-        setSpectateOpponentName: deps.setSpectateOpponentName, 
-        setSpectateOpponentStatus: deps.setSpectateOpponentStatus,
         addMessage: deps.addMessage,
         groupMembers: deps.groupMembers,
         roomPlayers: deps.roomPlayers,
@@ -161,8 +158,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         triggerHaptic: deps.triggerHaptic,
         playDoorSound: deps.playDoorSound,
         setPlayerPosition,
-        isSpectateMode: deps.isSpectateMode, 
-        setSpectatePosition: deps.setSpectatePosition
+        isSpectateMode: deps.isSpectateMode,
     });
 
     const prompt = usePromptParser({
@@ -175,10 +171,6 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         finalizeCapture,
         isSpectateMode: deps.isSpectateMode, 
         setSpectateStats: deps.setSpectateStats, 
-        setSpectateHealthStatus: deps.setSpectateHealthStatus, 
-        setSpectateOpponentName: deps.setSpectateOpponentName, 
-        setSpectateOpponentStatus: deps.setSpectateOpponentStatus,
-        setSpectateInCombat: deps.setSpectateInCombat,
         captureStage: deps.captureStage
     });
 
@@ -209,8 +201,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         executeCommand: (cmd: string) => deps.executeCommandRef.current?.(cmd),
         addSystemMessage: deps.addSystemMessage,
         isSpectateMode: deps.isSpectateMode,
-        setIsSpectateMode: deps.setIsSpectateMode
-    });
+            });
 
     const processLine = useCallback((line: string, tokens?: any) => {
         if (line === null || line === undefined) return;

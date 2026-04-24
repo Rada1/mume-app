@@ -113,25 +113,11 @@ export const useGameProviderState = () => {
 
         // Explicit Spectate Mapping
         setSpectateStats: spectateSession.vitals.setStats,
-        setSpectateHealthStatus: spectateSession.vitals.setPlayerHealthStatus,
-        setSpectateOpponentName: spectateSession.vitals.setOpponentName,
-        setSpectateOpponentStatus: spectateSession.vitals.setOpponentHealthStatus,
-        setSpectatePosition: spectateSession.game.setPlayerPosition,
         setSpectateWaiting: (waiting: boolean) => spectateSession.vitals.setStats(prev => ({
             ...prev,
             conditions: { ...prev.conditions, waiting }
         })),
-        setSpectateRoomName: spectateSession.game.setRoomName,
-        setSpectateTerrain: spectateSession.game.setCurrentTerrain,
-        setSpectateRoomZone: spectateSession.game.setRoomZone,
-        setSpectateLighting: spectateSession.game.setLighting,
-        setSpectateWeather: spectateSession.game.setWeather,
-        setSpectateIsFoggy: spectateSession.game.setIsFoggy,
-        setSpectateInCombat: spectateSession.game.setInCombat,
         setSpectateCharacterName: spectateSession.game.setCharacterName,
-        setSpectateGroupMembers: spectateSession.vitals.setGroupMembers,
-        setSpectateRoomDesc: spectateSession.game.setRoomDesc,
-
         setStats: active.vitals.setStats,
         isSpectateMode: mode.isSpectating,
 
