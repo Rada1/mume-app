@@ -163,15 +163,15 @@
     background: rgba(15, 17, 28, 0.7) !important;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    margin: 8px 8px 0 8px;
-    padding: 12px 10px;
-    border-radius: 12px;
+    margin: 6px 24px 0 24px;
+    padding: 8px 12px;
+    border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.18) !important;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 2px;
+    gap: 4px;
     container-type: inline-size;
     transition: border-color 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
 }
@@ -197,7 +197,7 @@
 }
 
 .room-name {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 800;
 }
 
@@ -205,12 +205,12 @@
     font-family: var(--font-main);
     /* Scale font so 80 monospace chars fit the container width (minus padding).
        Monospace char ≈ 0.6em wide → 80 chars = 48em → fontSize = availableWidth / 48 */
-    font-size: clamp(7.5px, calc((100cqw - 18px) / 48.5), 16px);
+    font-size: clamp(7.5px, calc((100cqw - 18px) / 48.5), 14px);
     font-style: italic;
     color: #e2e8f0;
     max-width: 80ch;
-    line-height: 1.35;
-    letter-spacing: -0.02em; /* Subtle squeeze to help 80 chars fit */
+    line-height: 1.4;
+    letter-spacing: -0.01em; 
     opacity: 0.95;
     white-space: pre-wrap;
     word-break: break-word;
@@ -321,16 +321,16 @@
 }
 
 .sticky-room-header .tactical-mini-map-container {
-    width: 140px !important;
-    height: 140px !important;
+    width: 110px !important;
+    height: 110px !important;
     flex: 0 0 auto !important;
     aspect-ratio: 1 / 1;
 }
 
 @media (max-width: 768px) {
     .sticky-room-header {
-        padding: 8px;
-        margin-top: calc(env(safe-area-inset-top, 0px) + 40px);
+        padding: 6px 10px;
+        margin: calc(env(safe-area-inset-top, 0px) + 40px) 16px 0 16px;
         gap: 2px;
     }
 

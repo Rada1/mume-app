@@ -61,7 +61,7 @@ export function usePromptParser(deps: PromptParserDeps) {
     };
 
     const parsePrompt = useCallback((textOnly: string) => {
-        const promptRegex = /^([^\r\n<>]{0,120}>)\s*/;
+        const promptRegex = /^(([^\r\n<>]*[>])\s*)/;
         const textPMatch = textOnly.match(promptRegex);
         
         if (!textPMatch) return { isMatch: false, promptPart: '', attachedText: '', isEndPrompt: false, isGameplayPrompt: false };
@@ -168,7 +168,7 @@ export function usePromptParser(deps: PromptParserDeps) {
         }
 
         const isEndPrompt = (!!textPMatch && !attachedText && !['practice', 'who', 'shop', 'where', 'quest', 'stat', 'info', 'whois', 'description'].includes(captureStage.current as any)) || 
-            (/^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>])\s*$/.test(textOnly)) ||
+            (/^((?:(?:\[.*?\]|[\w\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-\s]|\([^)]+\))\s*)*[>])\s*$/.test(textOnly)) ||
             (textOnly.includes('HP:') && textOnly.includes('MA:') && textOnly.includes('>'));
 
         // --- Verbose Status Parsing (Spectate Mode / Snooped Stat) ---

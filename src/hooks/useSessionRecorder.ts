@@ -3,7 +3,7 @@
  * @description Hook for recording MUME sessions as lightweight data logs.
  */
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { saveSessionToDb } from '../utils/storage/sessionDb';
 
 export type LogEntryType = 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys';
@@ -26,6 +26,7 @@ export interface SessionLog {
 }
 
 export const useSessionRecorder = () => {
+  const instanceIdRef = useRef(Math.random().toString(36).substring(7));
   const [isRecording, setIsRecording] = useState(false);
   const [duration, setDuration] = useState(0);
   const entriesRef = useRef<LogEntry[]>([]);
@@ -41,7 +42,7 @@ export const useSessionRecorder = () => {
 
   const startRecording = useCallback((characterName?: string) => {
     setIsRecording(true);
-    entriesRef.current = [];
+    entriesRef.current.length = 0; // Clear array without changing reference
     startTimeRef.current = Date.now();
     recordedCharacterRef.current = characterName || null;
     setDuration(0);
@@ -59,8 +60,6 @@ export const useSessionRecorder = () => {
   }, []);
 
   const recordEntry = useCallback((type: LogEntryType, data: any, options?: { mask?: boolean }) => {
-    if (!isRecording) return;
-
     let recordedData = data;
     if (options?.mask) {
       if (type === 'tx') {
@@ -75,7 +74,7 @@ export const useSessionRecorder = () => {
       typ: type,
       d: recordedData
     });
-  }, [isRecording]);
+  }, []);
 
   const stopRecording = useCallback((characterName?: string): SessionLog => {
     setIsRecording(false);
@@ -84,7 +83,7 @@ export const useSessionRecorder = () => {
     const log: SessionLog = {
       version: 1,
       startTime: new Date(startTimeRef.current).toISOString(),
-      log: entriesRef.current,
+      log: [...entriesRef.current],
       metadata: {
         character: characterName || recordedCharacterRef.current || undefined,
         client: 'MUME AI Studio',
@@ -134,14 +133,16 @@ export const useSessionRecorder = () => {
     return log;
   }, [stopRecording, saveLog, saveToLibrary]);
 
-  return {
+  return useMemo(() => ({
     isRecording,
     duration,
+    entries: entriesRef.current,
+    instanceIdRef,
     startRecording,
     stopRecording,
     stopAndSave,
     recordEntry,
     saveLog,
     saveToLibrary
-  };
+  }), [isRecording, duration, startRecording, stopRecording, stopAndSave, recordEntry, saveLog, saveToLibrary]);
 };

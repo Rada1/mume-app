@@ -234,6 +234,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
     // --- Live Attach Logic ---
     const [isAttachedToLive, setIsAttachedToLive] = useState(false);
+    
     useEffect(() => {
         if (isInternalLocked) {
             if (isAttachedToLive) {
@@ -241,10 +242,11 @@ const MessageLog: React.FC<MessageLogProps> = ({
             }
         } else if (sessionMode === 'live' && !isAttachedToLive) {
             const currentSession = activeSession === 'user' ? userSession : spectateSession;
+            const entries = (currentSession.recorder as any).entries || [];
             const logSnapshot = {
                 version: 1,
                 startTime: new Date().toISOString(),
-                log: [...((currentSession.recorder as any).entries || [])],
+                log: [...entries],
                 metadata: { client: 'MUME AI Studio', version: '1.0.0' }
             };
             replayer.attachToLive(logSnapshot);
@@ -285,7 +287,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             selectedObjectIds: new Set<string>()
         };
 
-        replayer.log.entries.forEach((entry: any, idx: number) => {
+        replayer.log.log.forEach((entry: any, idx: number) => {
             // LogEntry uses compact field names: typ, d, t
             const typ = entry.typ ?? entry.type;
             const data = entry.d ?? entry.data;
@@ -431,9 +433,9 @@ const MessageLog: React.FC<MessageLogProps> = ({
             return replayMessages.slice(0, low);
         }
         
-        // Hide own prompts (handled by HUD PromptBox) but show snooped prompts
-        // when the spectate-prompt toggle is on.
-        const result = messages.filter(m => m.type !== 'prompt' || (m.isSnoop && showSpectatePromptInLog));
+        // Show all regular prompts in the log history as requested by user.
+        // Snoop prompts still respect the toggle to avoid clutter during dual-play.
+        const result = messages.filter(m => m.type !== 'prompt' || !m.isSnoop || showSpectatePromptInLog);
         const userMsgs = result.filter(m => m.type === 'user');
         console.log(`[MessageLog] displayMessages update: total=${result.length}, messages=${messages.length}, userCommands=${userMsgs.length}`, userMsgs.map(m => m.textRaw));
         return result;

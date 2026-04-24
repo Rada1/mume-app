@@ -6,10 +6,11 @@ import { GameContextType, UIContextType } from '../../../context/GameContext/typ
 import { useMapper } from '../../../context/useMapper';
 import { CloudFog, Map as MapIcon, User, Shield, Users, BarChart2, UtensilsCrossed, Droplets } from 'lucide-react';
 import InputArea from '../../Controls/InputArea';
-import { StatsDrawer } from '../../Drawers/StatsDrawer';
-import { CharacterDrawer } from '../../Drawers/CharacterDrawer';
-import { PlayersDrawer } from '../../Drawers/PlayersDrawer';
-import { InventoryDrawer } from '../../Drawers/InventoryDrawer';
+import { GutterShell } from '../../Drawers/GutterShell';
+import { StatsView } from '../../Drawers/Views/StatsView';
+import { CharacterView } from '../../Drawers/Views/CharacterView';
+import { PlayersView } from '../../Drawers/Views/PlayersView';
+import { InventoryView } from '../../Drawers/Views/InventoryView';
 import CombatStatsPanel from '../../Combat/CombatStatsPanel';
 import { UiPositions, SwipeDirection } from '../../../types';
 
@@ -43,7 +44,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         spatButtons, setSpatButtons, parley, setParley, whoList,
         statsLines, scoreLines,
         pendingDrawerContainerRef, inlineCategories, entities, keywordOverrides,
-        env, isFoggy, gameState, currentTerrain
+        env, isFoggy, gameState, currentTerrain,
+        mood, setMood, spellSpeed, setSpellSpeed, alertness, setAlertness
     } = useGame() as GameContextType;
     const { target, activePrompt, stats } = useVitals();
     const { 
@@ -53,6 +55,9 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     const { getLightingIcon, getWeatherIcon, lighting, weather } = env;
     const isExpanded = ui.mapExpanded || ui.peekingDrawer === 'map';
     const { isKeyboardOpen } = viewport;
+
+    const [activeSlider, setActiveSlider] = React.useState<string | null>(null);
+    const [activeButtonRect, setActiveButtonRect] = React.useState<DOMRect | null>(null);
 
     // Mobile DOCKED (Gutter) Mode
     const isReplaying = (useGame() as GameContextType).sessionMode === 'replay';
@@ -206,44 +211,42 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
             {/* Drawer Area - shown when a utility drawer tab is active */}
             {!isShown && ui.drawer !== 'none' && (
                 <div className="gutter-drawer-container gutter-panel-card">
-                    {ui.drawer === 'stats' && (
-                        <StatsDrawer
-                            isOpen={true}
-                            onClose={() => {}}
-                            statsLines={statsLines}
-                            scoreLines={scoreLines}
-                            executeCommand={executeCommand}
-                        />
-                    )}
-                    {ui.drawer === 'character' && (
-                        <CharacterDrawer
-                            isOpen={true}
-                            onClose={() => {}}
-                            executeCommand={executeCommand}
-                        />
-                    )}
-                    {ui.drawer === 'players' && (
-                        <PlayersDrawer
-                            isOpen={true}
-                            onClose={() => {}}
-                            executeCommand={executeCommand}
-                        />
-                    )}
-                    {(ui.drawer === 'inventory' || ui.drawer === 'equipment') && (
-                        <InventoryDrawer
-                            isOpen={true}
-                            onClose={() => {}}
-                            inventoryLines={displayInventoryLines}
-                            eqLines={displayEqLines}
-                            handleButtonClick={handleButtonClick}
-                            triggerHaptic={triggerHaptic}
-                            executeCommand={executeCommand}
-                            pendingDrawerContainerRef={pendingDrawerContainerRef}
-                            inlineCategories={inlineCategories}
-                            entities={entities}
-                            keywordOverrides={keywordOverrides}
-                        />
-                    )}
+                    <GutterShell activeTabId={ui.drawer}>
+                        {ui.drawer === 'stats' && (
+                            <StatsView
+                                statsLines={statsLines}
+                                scoreLines={scoreLines}
+                                executeCommand={executeCommand}
+                                mood={mood} setMood={setMood}
+                                spellSpeed={spellSpeed} setSpellSpeed={setSpellSpeed}
+                                alertness={alertness} setAlertness={setAlertness}
+                                triggerHaptic={triggerHaptic}
+                                activeSlider={activeSlider} setActiveSlider={setActiveSlider}
+                                activeButtonRect={activeButtonRect} setActiveButtonRect={setActiveButtonRect}
+                            />
+                        )}
+                        {ui.drawer === 'character' && (
+                            <CharacterView isOpen={true} onClose={() => setUI({ drawer: 'map' })} executeCommand={executeCommand} />
+                        )}
+                        {ui.drawer === 'players' && (
+                            <PlayersView isOpen={true} onClose={() => setUI({ drawer: 'map' })} executeCommand={executeCommand} />
+                        )}
+                        {(ui.drawer === 'inventory' || ui.drawer === 'equipment') && (
+                            <InventoryView
+                                isOpen={true}
+                                onClose={() => setUI({ drawer: 'map' })}
+                                inventoryLines={displayInventoryLines}
+                                eqLines={displayEqLines}
+                                handleButtonClick={handleButtonClick}
+                                triggerHaptic={triggerHaptic}
+                                executeCommand={executeCommand}
+                                pendingDrawerContainerRef={pendingDrawerContainerRef}
+                                inlineCategories={inlineCategories}
+                                entities={entities}
+                                keywordOverrides={keywordOverrides}
+                            />
+                        )}
+                    </GutterShell>
                 </div>
             )}
 

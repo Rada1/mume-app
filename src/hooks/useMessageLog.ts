@@ -355,6 +355,25 @@ export function useMessageLog(
         const html = (typeof rawHtml === 'string' ? rawHtml : rawHtml?.html) || ansiConvert.toHtml(processedText);
         const tokens = precalculated?.tokens || (typeof rawHtml === 'object' ? rawHtml?.tokens : undefined);
 
+        // Record the message for replay
+        if (recordEntry) {
+            recordEntry('rx', {
+                type: finalType,
+                text: processedText,
+                html,
+                tokens,
+                mid,
+                isCombat,
+                isComm,
+                isNarrate,
+                isRoomName: isActuallyRoomName,
+                commSender,
+                commAction,
+                commText,
+                commColor
+            });
+        }
+
         const msg: Message = {
             id: mid || Math.random().toString(36).substring(7),
             html,

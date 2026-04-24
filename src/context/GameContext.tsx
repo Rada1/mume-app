@@ -135,10 +135,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const { messages, setMessages, addSystemMessage, flushMessages, clearLog } = activeLog;
     const addMessage = routedAddMessage; // Use the router for the parser
-    
-    const replayer = useSessionReplayer(useCallback((type, payload, isPrivacyMode, isSilent = false) => {
-        // ... replayer implementation details ...
-    }, []));
 
     // 5. Networking
     const telnetRef = useRef<any>(null);
@@ -173,6 +169,65 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         sendGMCP: sendGMCPProxy
     });
 
+    const replayer = useSessionReplayer(useCallback((type, payload, isPrivacyMode, isSilent = false) => {
+        if (isSilent) return;
+
+        if (type === 'rx') {
+            // Replayed text messages
+            if (typeof payload === 'object' && payload.text) {
+                // If it's a pre-processed message from useMessageLog.ts
+                routedAddMessage(
+                    payload.type,
+                    payload.text,
+                    payload.extra,
+                    payload.mid,
+                    payload.isRoomName,
+                    payload.precalculated,
+                    payload.shopItem,
+                    payload.practiceSkill,
+                    payload.practiceHeader,
+                    false, // isSystem
+                    payload.replyTarget,
+                    payload.replyCommand,
+                    payload.commSender,
+                    payload.commAction,
+                    payload.commText,
+                    payload.commColor,
+                    payload.providedCombatSide,
+                    payload.providedIsHitImpact,
+                    payload.providedIsHitterImpact,
+                    payload.providedIsSnoop,
+                    payload.providedIsSnoopInput
+                );
+            } else {
+                // Raw text (older logs)
+                const text = typeof payload === 'string' ? payload : new TextDecoder().decode(new Uint8Array(payload));
+                parserRef.current?.processLine(text);
+            }
+        } else if (type === 'gmcp') {
+            const { pkg, data } = payload;
+            const json = typeof data === 'string' ? data : JSON.stringify(data);
+            
+            // Route through GMCP handlers
+            if (pkg.startsWith('Char.Vitals')) {
+                gmcpHandlers.onCharVitals(JSON.parse(json));
+            } else if (pkg.startsWith('Room.Info')) {
+                gmcpHandlers.onRoomInfo(JSON.parse(json));
+            } else if (pkg.startsWith('Group')) {
+                gmcpHandlers.onGroupSet(JSON.parse(json));
+            } else if (pkg.startsWith('Room.Players')) {
+                gmcpHandlers.onRoomPlayers(JSON.parse(json));
+            } else if (pkg.startsWith('Room.Npcs')) {
+                gmcpHandlers.onRoomNpcs(JSON.parse(json));
+            } else if (pkg.startsWith('Room.Items')) {
+                gmcpHandlers.onRoomItems(JSON.parse(json));
+            }
+        } else if (type === 'tx') {
+            const cmd = typeof payload === 'string' ? payload : String(payload);
+            routedAddMessage('user', cmd);
+        }
+    }, [gmcpHandlers, routedAddMessage]));
+
     // 5. Telnet & Networking
     const telnet = useTelnet({
         connectionUrl: settingsStore.connectionUrl,
@@ -180,7 +235,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             console.log(`[Socket] Calling processLine for: "${line.substring(0, 30)}"`);
             return parserRef.current?.processLine(line, tokens) ?? null;
         },
-        recordEntry: (type, data) => recorderRef.current?.recordEntry(type, data),
+        recordEntry: (type, data) => s.userSession.recorder.recordEntry(type, data),
         setPrompt: v.setActivePrompt,
         onCharNameChange: gmcpHandlers.onCharNameChange,
         onPositionChange: gmcpHandlers.onPositionChange,
@@ -221,11 +276,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             console.log('[GameContext] isPasswordMode is now FALSE (Input visible)');
         }
     }, [s.isPasswordMode]);
-
-    const recorder = useSessionRecorder();
-    const recorderRef = useRef(recorder);
-    useEffect(() => { recorderRef.current = recorder; }, [recorder]);
-    const { isRecording, duration, startRecording, stopRecording, stopAndSave, saveLog, recordEntry } = recorder;
 
     // 6. Final Controller & Parser
     const { spatButtons, setSpatButtons, triggerSpitManual } = useSpatButtons(messages, useRef<HTMLDivElement>(null), triggerHaptic);
@@ -433,7 +483,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         entities: s.entities, applyOptimisticChange: s.applyOptimisticChange,
         selectedObjectIds: s.selectedObjectIds, toggleObjectSelection: s.toggleObjectSelection,
         clearObjectSelection: s.clearObjectSelection, playClickSound, isSoundEnabled: s.isSoundEnabled,
-        waiting: false, recordEntry, gameState: s.gameState, isPasswordMode: s.isPasswordMode,
+        waiting: false, recordEntry: s.userSession.recorder.recordEntry, gameState: s.gameState, isPasswordMode: s.isPasswordMode,
         sessionMode, replayer, isSpectateMode: s.isSpectateMode, setIsSpectateMode: mode.setIsSpectating,
         showSpectatePromptInLog: settingsStore.showRecordingIndicator, // Placeholder
         setShowSpectatePromptInLog: (v) => {}, // Placeholder
@@ -486,16 +536,16 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         displayEqLines: s.eqLines,
         toggleMap: () => ui.setMapExpanded(!ui.mapExpanded),
         characterName: s.characterName,
-        isRecording,
-        duration,
+        isRecording: s.userSession.recorder.isRecording,
+        duration: s.userSession.recorder.duration,
         showRecordingIndicator: settingsStore.showRecordingIndicator,
         setShowRecordingIndicator: settingsStore.setShowRecordingIndicator,
-        startRecording,
-        stopRecording,
-        stopAndSave,
-        saveLog,
+        startRecording: s.userSession.recorder.startRecording,
+        stopRecording: s.userSession.recorder.stopRecording,
+        stopAndSave: s.userSession.recorder.stopAndSave,
+        saveLog: s.userSession.recorder.saveLog,
         replayer
-    }), [ui, s.inventoryLines, s.eqLines, s.characterName, isRecording, duration, settingsStore.showRecordingIndicator, settingsStore.setShowRecordingIndicator, startRecording, stopRecording, stopAndSave, saveLog, replayer]);
+    }), [ui, s.inventoryLines, s.eqLines, s.characterName, s.userSession.recorder, settingsStore.showRecordingIndicator, settingsStore.setShowRecordingIndicator, replayer]);
 
     const logValue: LogContextType = useMemo(() => ({
         ...activeLog,
@@ -551,18 +601,20 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         importSettings: () => {},
         handleSoundUpload: () => {},
         handleMmapperModeChange: () => {},
-        isRecording,
-        duration,
-        startRecording,
-        stopRecording,
-        stopAndSave,
-        saveLog,
-        mapperRef: mapperRef
+        isRecording: s.userSession.recorder.isRecording,
+        duration: s.userSession.recorder.duration,
+        startRecording: s.userSession.recorder.startRecording,
+        stopRecording: s.userSession.recorder.stopRecording,
+        stopAndSave: s.userSession.recorder.stopAndSave,
+        saveLog: s.userSession.recorder.saveLog,
+        mapperRef: mapperRef,
+        sessionMode,
+        setSessionMode
     }), [
         s, v, telnet, parser, controller, btn, joystick, editor, replayer,
         viewport, env, audioCtxRef, initAudio, spatButtons, ui.diagnosticLogs,
         practice, help, shop, quests, keywordOverrides,
-        isRecording, duration, startRecording, stopRecording, stopAndSave, saveLog, mapperRef
+        s.userSession.recorder, mapperRef, sessionMode, setSessionMode
     ]);
 
     return (

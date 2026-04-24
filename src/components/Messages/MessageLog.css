@@ -108,7 +108,7 @@
 }
 
 .message {
-    line-height: 1.1;              /* Precise terminal logic */
+    line-height: 1.4;              /* Improved readability */
     max-width: 100%;
     word-wrap: break-word;
     white-space: pre-wrap;
@@ -164,7 +164,7 @@
     padding: 1px 12px 1px 6px !important;
     margin: 0 !important;
     box-shadow: none !important;
-    line-height: 1.5 !important;
+    line-height: 1.4 !important;
 }
 
 .message.prompt {
@@ -174,7 +174,7 @@
     padding: 1px 12px 1px 6px !important;
     margin: 0 !important;
     box-shadow: none !important;
-    line-height: 1.5 !important;
+    line-height: 1.4 !important;
 }
 
 .message.is-room-block:not(.is-room-name) {
@@ -226,7 +226,7 @@
     /* Strictly fit 80 chars across (Space Mono width is 0.6*height) */
     /* Font size = (WidthPerChar) / 0.6 = (100cqw - 22px) / 48 */
     font-size: calc((100cqw - 22px) / 48); 
-    line-height: 1.1;
+    line-height: 1.4;
     text-align: left;
     width: 100%;
     font-family: 'Space Mono', monospace;

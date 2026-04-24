@@ -113,63 +113,9 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     const isMobilePortrait = viewport.isMobile && !viewport.isLandscape;
     const showBackdrop = !viewport.isMobile && ui.drawer !== 'none';
 
-    // Mobile uses GutterShell with Views
+    // Mobile uses GutterShell with Views (now handled by MapperCluster)
     if (isMobilePortrait) {
-        let viewContent = null;
-        switch (ui.drawer) {
-            case 'stats':
-                viewContent = <StatsView
-                    statsLines={statsLines}
-                    scoreLines={scoreLines}
-                    executeCommand={executeCommand}
-                    mood={mood} setMood={setMood}
-                    spellSpeed={spellSpeed} setSpellSpeed={setSpellSpeed}
-                    alertness={alertness} setAlertness={setAlertness}
-                    triggerHaptic={triggerHaptic}
-                    activeSlider={activeSlider} setActiveSlider={setActiveSlider}
-                    activeButtonRect={activeButtonRect} setActiveButtonRect={setActiveButtonRect}
-                />;
-                break;
-            case 'character':
-                viewContent = <CharacterView isOpen={true} onClose={() => setUI({ drawer: 'map' })} executeCommand={executeCommand} />;
-                break;
-            case 'players':
-                viewContent = <PlayersView isOpen={true} onClose={() => setUI({ drawer: 'map' })} executeCommand={executeCommand} />;
-                break;
-            case 'inventory':
-            case 'equipment':
-                viewContent = <InventoryView
-                    isOpen={true}
-                    onClose={() => setUI({ drawer: 'map' })}
-                    inventoryLines={displayInventoryLines}
-                    eqLines={displayEqLines}
-                    handleButtonClick={handleButtonClick}
-                    triggerHaptic={triggerHaptic}
-                    executeCommand={executeCommand}
-                    pendingDrawerContainerRef={pendingDrawerContainerRef}
-                    inlineCategories={inlineCategories}
-                    entities={entities}
-                    keywordOverrides={keywordOverrides}
-                />;
-                break;
-            case 'map':
-            default:
-                viewContent = <Mapper
-                    ref={mapperRef}
-                    characterName={characterName || ''}
-                    isMobile={viewport.isMobile}
-                    isExpanded={true}
-                />;
-                break;
-        }
-
-        return (
-            <div className="gutter-drawer-container" style={{ position: 'relative', width: '100%', height: '100%' }}>
-                <GutterShell activeTabId={ui.drawer}>
-                    {viewContent}
-                </GutterShell>
-            </div>
-        );
+        return null;
     }
 
 

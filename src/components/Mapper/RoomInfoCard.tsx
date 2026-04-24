@@ -155,22 +155,27 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
         <div
             ref={cardRef}
             style={{
-                position: 'absolute', top: '48px', bottom: '16px', left: '8px', right: '16px',
-                zIndex: 100, backgroundColor: isDarkMode ? 'rgba(24, 24, 27, 0.4)' : 'rgba(245, 245, 247, 0.6)', padding: '16px', borderRadius: '12px',
-                boxShadow: '0 4px 24px rgba(0,0,0,0.8)', border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+                position: 'absolute', 
+                top: '80px', bottom: '48px', left: '48px', right: '48px',
+                zIndex: 100, 
+                backgroundColor: isDarkMode ? 'rgba(24, 24, 27, 0.4)' : 'rgba(245, 245, 247, 0.6)', 
+                padding: '8px 12px', 
+                borderRadius: '12px',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.8)', 
+                border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
                 backdropFilter: 'blur(25px)', WebkitBackdropFilter: 'blur(25px)',
-                display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '14px',
+                display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px',
                 overflowY: 'auto', pointerEvents: 'auto', color: isDarkMode ? '#e4e4e7' : '#1d1d1f', touchAction: 'pan-y'
             }}
         >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ margin: 0, color: '#ffcc00', fontSize: '20px', fontWeight: 'bold' }}>Room Info</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                <h3 style={{ margin: 0, color: '#ffcc00', fontSize: '18px', fontWeight: 'bold' }}>Room Info</h3>
                 <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#71717a', cursor: 'pointer' }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#a1a1aa' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#a1a1aa' }}>
                 <span>Client ID: <span style={{ color: '#e4e4e7', fontWeight: '500' }}>{roomId}</span></span>
                 <span>GMCP ID: <span style={{ color: '#60a5fa' }}>{room.gmcpId || 'N/A'}</span></span>
             </div>
