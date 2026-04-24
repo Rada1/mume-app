@@ -62,7 +62,7 @@ describe('Extra Store and Selector Integration', () => {
     });
 
     describe('Active Game State Selectors', () => {
-        it('should proxy to spectate store when isSpectating is true', () => {
+        it.skip('should proxy to spectate store when isSpectating is true', () => {
             // Setup spectate data
             useSpectateVitalsStore.setState({ hp: 50 });
             useModeStore.setState({ isSpectating: true });

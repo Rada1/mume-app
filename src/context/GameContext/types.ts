@@ -64,9 +64,6 @@ export interface VitalsContextType {
     setOpponentHealthStatus: (val: CombatHealthStatus | null) => void;
     setBufferHealthStatus: (val: CombatHealthStatus | null) => void;
     setOpponentName: (val: string | null) => void;
-    setSpectateHealthStatus: (val: CombatHealthStatus | null) => void;
-    setSpectateOpponentStatus: (val: CombatHealthStatus | null) => void;
-    setSpectateOpponentName: (val: string | null) => void;
     xpHistory: { old: number; new: number };
     xpEvent: number;
     triggerXpTicker: () => void;
@@ -356,7 +353,6 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     zoneMusic: import('../../types').ZoneMusicMapping[];
     setZoneMusic: Dispatch<SetStateAction<import('../../types').ZoneMusicMapping[]>>;
     spectateQueue: string[];
-    setSpectateQueue: Dispatch<SetStateAction<string[]>>;
     lastSnoopStartTime: number | null;
     setLastSnoopStartTime: Dispatch<SetStateAction<number | null>>;
     addToQueue: (name: string) => void;
@@ -384,7 +380,6 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     groupMembers: GroupMember[];
     setGroupMembers: Dispatch<SetStateAction<GroupMember[]>>;
     spectateGroupMembers: GroupMember[];
-    setSpectateGroupMembers: Dispatch<SetStateAction<GroupMember[]>>;
     mumeEditState: { isOpen: boolean; title: string; text: string; key: string };
     setMumeEditState: Dispatch<SetStateAction<{ isOpen: boolean; title: string; text: string; key: string }>>;
     handleSaveMumeEdit: (text: string) => void;
