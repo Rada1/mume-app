@@ -32,6 +32,7 @@ import { useSessionReplayer } from '../hooks/useSessionReplayer';
 import { useSettings } from '../hooks/useSettings';
 import { useAgentObservability } from '../hooks/useAgentObservability';
 import { ansiConvert } from '../utils/ansi';
+import { Tokenizer } from '../services/parser/Tokenizer';
 
 // --- Store Imports ---
 import { useUIStore } from '../stores/useUIStore';
@@ -442,6 +443,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setSpectateRoomName: s.setSpectateRoomName,
         setSpectateRoomDesc: s.setSpectateRoomDesc,
         setSpectateRoomZone: s.setSpectateRoomZone,
+        setSpectateActivePrompt: s.setSpectateActivePrompt,
         // Drawer Setters
         setInventoryLines: s.setInventoryLines,
         setEqLines: s.setEqLines,
@@ -515,8 +517,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         clearObjectSelection: s.clearObjectSelection, playClickSound, isSoundEnabled: s.isSoundEnabled,
         waiting: false, recordEntry: s.userSession.recorder.recordEntry, gameState: s.gameState, isPasswordMode: s.isPasswordMode,
         sessionMode, replayer, isSpectateMode: s.isSpectateMode, setIsSpectateMode: mode.setIsSpectating,
-        showSpectatePromptInLog: settingsStore.showRecordingIndicator, // Placeholder
-        setShowSpectatePromptInLog: (v) => {}, // Placeholder
+        showSpectatePromptInLog: settingsStore.showSpectatePromptInLog,
+        setShowSpectatePromptInLog: settingsStore.setShowSpectatePromptInLog,
         isImmersionMode: settingsStore.isImmersionMode, setIsImmersionMode: settingsStore.setIsImmersionMode,
         isBloomEnabled: settingsStore.isBloomEnabled, setIsBloomEnabled: settingsStore.setIsBloomEnabled,
         isHighlighterEnabled: true, setIsHighlighterEnabled: (v) => {}, // Placeholder
@@ -574,11 +576,19 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         },
         displayInventoryLines: s.inventoryLines,
         displayEqLines: s.eqLines,
+        statsLines: s.statsLines,
+        scoreLines: s.scoreLines,
+        infoLines: s.infoLines,
+        practiceLines: s.practiceLines,
+        questLines: s.questLines,
+        whoLines: s.whoLines,
+        whereLines: s.whereLines,
         toggleMap: () => {
-            const nextState = !ui.mapExpanded;
-            ui.setMapExpanded(nextState);
-            if (nextState) {
+            if (ui.drawer !== 'none') {
                 ui.setDrawer('none');
+                ui.setMapExpanded(true);
+            } else {
+                ui.setMapExpanded(!ui.mapExpanded);
             }
         },
         characterName: s.characterName,
@@ -591,14 +601,32 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         stopAndSave: s.userSession.recorder.stopAndSave,
         saveLog: s.userSession.recorder.saveLog,
         replayer
-    }), [ui, s.inventoryLines, s.eqLines, s.characterName, s.userSession.recorder, settingsStore.showRecordingIndicator, settingsStore.setShowRecordingIndicator, replayer]);
+    }), [ui, s.inventoryLines, s.eqLines, s.statsLines, s.scoreLines, s.infoLines, s.practiceLines, s.questLines, s.whoLines, s.whereLines, s.characterName, s.userSession.recorder, settingsStore.showRecordingIndicator, settingsStore.setShowRecordingIndicator, replayer]);
 
     const logValue: LogContextType = useMemo(() => ({
         ...activeLog,
         refreshLogHighlights,
         handleLogPointerDown: controller.handleLogPointerDown,
-        handleLogPointerUp: controller.handleLogPointerUp
-    }), [activeLog, refreshLogHighlights, controller.handleLogPointerDown, controller.handleLogPointerUp]);
+        handleLogPointerUp: controller.handleLogPointerUp,
+        processMessageTokens: (rawText: string) => {
+            const ctx = {
+                target: v.target,
+                currentOccupants: [...s.roomPlayers, ...s.roomNpcs],
+                roomPlayers: s.roomPlayers,
+                roomNpcs: s.roomNpcs,
+                activeGroupMembers: v.groupMembers,
+                roomItems: s.roomItems,
+                inventoryItems: s.inventoryLines,
+                equipmentItems: s.eqLines,
+                discoveredItems: s.discoveredItems,
+                inlineCategories: s.inlineCategories,
+                buttons: btn.buttons,
+                selectedObjectIds: s.selectedObjectIds,
+                onlinePlayers: s.userSession.game.whoList.map(w => w.name)
+            };
+            return Tokenizer.tokenize(rawText, ctx as any);
+        }
+    }), [activeLog, refreshLogHighlights, controller.handleLogPointerDown, controller.handleLogPointerUp, v.target, s.roomPlayers, s.roomNpcs, v.groupMembers, s.roomItems, s.inventoryLines, s.eqLines, s.discoveredItems, s.inlineCategories, btn.buttons, s.selectedObjectIds, s.userSession.game.whoList]);
 
     const value: GameContextType = useMemo(() => ({
         ...s,

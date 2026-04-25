@@ -27,10 +27,10 @@ export function useStatParser(deps: StatParserDeps) {
 
     const parseGlobalStatus = useCallback((content: string, contentLower: string) => {
         if (contentLower.startsWith('your ob ') || contentLower.startsWith('your mood ') || contentLower.startsWith('your armor ') || contentLower.startsWith('your armour ') || /\b(ob|db|pb|mood|armor|armour|arm)\b/i.test(contentLower)) {
-            const obMatch = content.match(/Ob\s*(?::|is)?\s*(\d+)%/i);
-            const dbMatch = content.match(/Db\s*(?::|is)?\s*(\d+)%/i);
-            const pbMatch = content.match(/Pb\s*(?::|is)?\s*(\d+)%/i);
-            const armorMatch = content.match(/(?:Armo?ur|Armor|Arm)\s*(?::|is)?\s*(\d+)%/i);
+            const obMatch = content.match(/Ob\s*(?::|is)?\s*(\d+)(?:%)?/i);
+            const dbMatch = content.match(/Db\s*(?::|is)?\s*(\d+)(?:%)?/i);
+            const pbMatch = content.match(/Pb\s*(?::|is)?\s*(\d+)(?:%)?/i);
+            const armorMatch = content.match(/(?:Armo?ur|Armor|Arm)\s*(?::|is)?\s*(\d+)(?:%)?/i);
             const moodMatch = content.match(/your mood is (?:now )?(\w+)/i);
             const moodCompactMatch = content.match(/\bMood\s*:\s*(\w+)/i);
             const wimpyMatch = content.match(/Wimpy(?:\s*set\s*to|:)?\s*(\d+)/i);

@@ -103,6 +103,7 @@ export const useGmcpOccupants = ({
             if (!obj) return;
 
             const isPc = inferIsPlayer(p, obj.name || obj.keyword || obj.short || null, isPlayersList);
+            obj.category = isPc ? 'player' : 'npc';
 
             if (isPc) {
                 pcList.push(obj);
@@ -169,7 +170,7 @@ export const useGmcpOccupants = ({
             if (registerEntity && obj.name) {
                 const id = (obj as any).id ? String((obj as any).id) : `roomitems:${obj.name}`;
                 const specCat = getCategoryForName(obj.name, inlineCategories);
-                registerEntity(id, obj.name, 'room', specCat || 'object-room');
+                registerEntity(id, obj.name, 'room', specCat || 'obj-room');
             }
             return obj;
         });
@@ -194,6 +195,7 @@ export const useGmcpOccupants = ({
         }
 
         const isPc = inferIsPlayer(data, obj.name || obj.keyword || obj.short || null, isPlayerDefault);
+        obj.category = isPc ? 'player' : 'npc';
 
         const idStr = (obj.id !== undefined && obj.id !== null) ? String(obj.id) : null;
         const nameStr = obj.name || obj.keyword || obj.short || null;

@@ -99,6 +99,12 @@ export const useGmcpRoom = ({
         if (roomChanged) {
             lastRoomChangeTimeRef.current = Date.now();
             
+            // Clear occupants and items for the new room so that text processing
+            // doesn't use stale data from the previous room.
+            setRoomPlayers([]);
+            setRoomNpcs([]);
+            setRoomItems([]);
+            
             if (playMovementSound) {
                 // Determine riding status: if spectating, we can check Room.Chars or fallback.
                 const isRiding = isRidingRef?.current || playerPositionRef.current === 'riding' || playerPositionRef.current === 'mounted';

@@ -148,7 +148,7 @@ export function useLineProcessor(deps: LineProcessorDeps) {
                     parentId: parentItemNoun,
                     capabilities: caps,
                     shortDesc: currentItemText,
-                    category: getCategoryForName(currentItemText, inlineCategories) || undefined
+                    category: getCategoryForName(currentItemText, inlineCategories) || (captureStage.current === 'eq' ? 'obj-worn' : (captureStage.current === 'inv' ? 'obj-char' : undefined))
                 };
                 tempEntitiesRef.current[stableId] = entity;
             }

@@ -131,6 +131,7 @@ export const useGameProviderState = (audioTriggers?: {
         setSpectateRoomName: spectateSession.game.setRoomName,
         setSpectateRoomDesc: spectateSession.game.setRoomDesc,
         setSpectateRoomZone: spectateSession.game.setRoomZone,
+        setSpectateActivePrompt: spectateSession.vitals.setActivePrompt,
         setStats: active.vitals.setStats,
         isSpectateMode: mode.isSpectating,
 

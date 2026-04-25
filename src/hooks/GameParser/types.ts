@@ -132,6 +132,7 @@ export interface UseGameParserDeps {
     setSpectateRoomName: (name: string | null) => void;
     setSpectateRoomDesc: (desc: string | null) => void;
     setSpectateRoomZone: (zone: string | null) => void;
+    setSpectateActivePrompt?: (prompt: string | null) => void;
 
     // Drawer Setters
     setInventoryLines: (lines: DrawerLine[]) => void;

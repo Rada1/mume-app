@@ -34,6 +34,9 @@ export const LEGACY_ID_MAP: Record<string, string> = {
     'misc': 'inline-misc',
     'corpses': 'inline-corpses',
     'object-room': 'inline-obj-room',
+    'obj-room': 'inline-obj-room',
+    'obj-char': 'inline-obj-char',
+    'obj-worn': 'inline-obj-worn',
     'default': 'inline-object'
 };
 
@@ -160,9 +163,9 @@ export const resolveKindAndLocation = (kind?: string | null, location?: string |
     }
     
     // Fallbacks based on old `data-cmd`
-    if (cmd === 'inline-obj-room' || cmd === 'roomitems' || cmd === 'inline-corpses') return { kind: 'object', location: 'room' };
-    if (cmd === 'inline-obj-char' || cmd === 'inventorylist') return { kind: 'object', location: 'carried' };
-    if (cmd === 'inline-obj-worn' || cmd === 'equipmentlist') return { kind: 'object', location: 'worn' };
+    if (cmd === 'inline-obj-room' || cmd === 'obj-room' || cmd === 'roomitems' || cmd === 'inline-corpses') return { kind: 'object', location: 'room' };
+    if (cmd === 'inline-obj-char' || cmd === 'obj-char' || cmd === 'inventorylist') return { kind: 'object', location: 'carried' };
+    if (cmd === 'inline-obj-worn' || cmd === 'obj-worn' || cmd === 'equipmentlist') return { kind: 'object', location: 'worn' };
     if (cmd === 'inline-obj-shop') return { kind: 'object', location: 'shop' };
     if (cmd === 'inlinenpc' || cmd === 'roomnpcs' || cmd === 'inline-npc') return { kind: 'npc', location: 'room' };
     if (cmd === 'inlineplayer' || cmd === 'inline-player') return { kind: 'player', location: 'room' };

@@ -4,9 +4,12 @@ import { getCategoryForName } from '../../utils/categorizationUtils';
 export interface TokenizerContext {
     target?: string | null;
     currentOccupants: any[];
+    roomPlayers?: any[];
     roomNpcs: any[];
     activeGroupMembers: any[];
     roomItems: any[];
+    inventoryItems?: any[];
+    equipmentItems?: any[];
     discoveredItems: any[];
     inlineCategories: any[];
     buttons: any[];
@@ -27,6 +30,86 @@ export class Tokenizer {
         for (const c of candidates) {
             tokens = Tokenizer.applyCandidate(tokens, c);
         }
+
+        // 3. Post-process to "latch onto" MUME color hints (Cyan = Objects, Magenta = Players)
+        tokens = tokens.map(token => {
+            if (token.type !== 'ansi' || !token.style?.color) return token;
+            
+            const color = token.style.color;
+            const content = token.content.trim();
+            const lowerContent = content.toLowerCase();
+            
+            // Ignore very short strings that might be part of prompts or symbols
+            if (content.length < 3) return token;
+
+            // Cyan promotion (Items)
+            if (color === 'var(--ansi-cyan)' || color === 'var(--ansi-bright-cyan)' || color === 'mume-obj') {
+                // Try to find the location from context if possible
+                let location = 'room';
+                let category = 'obj-room';
+                
+                const inEq = context.equipmentItems?.some(i => (typeof i === 'string' ? i : i.name).toLowerCase().includes(lowerContent));
+                const inInv = context.inventoryItems?.some(i => (typeof i === 'string' ? i : i.name).toLowerCase().includes(lowerContent));
+                
+                if (inEq) {
+                    location = 'worn';
+                    category = 'obj-worn';
+                } else if (inInv) {
+                    location = 'carried';
+                    category = 'obj-char';
+                }
+
+                return {
+                    type: 'entity',
+                    content: token.content,
+                    entityId: `auto-color-obj-${lowerContent.replace(/\s+/g, '-')}`,
+                    metadata: {
+                        kind: 'object',
+                        location,
+                        context: content,
+                        category,
+                        action: 'menu',
+                        extraClasses: ['color-latched', 'auto-item']
+                    }
+                } as EntityToken;
+            }
+
+            // Magenta promotion (Players)
+            if (color === 'var(--ansi-magenta)' || color === 'var(--ansi-bright-magenta)' || color === 'mume-pc') {
+                return {
+                    type: 'entity',
+                    content: token.content,
+                    entityId: `auto-color-pc-${lowerContent.replace(/\s+/g, '-')}`,
+                    metadata: {
+                        kind: 'player',
+                        location: 'room',
+                        context: content,
+                        category: 'inline-player',
+                        action: 'menu',
+                        extraClasses: ['color-latched', 'pc-highlighter']
+                    }
+                } as EntityToken;
+            }
+
+            // Yellow promotion (NPCs)
+            if (color === 'var(--ansi-yellow)' || color === 'var(--ansi-bright-yellow)' || color === 'mume-npc') {
+                return {
+                    type: 'entity',
+                    content: token.content,
+                    entityId: `auto-color-npc-${lowerContent.replace(/\s+/g, '-')}`,
+                    metadata: {
+                        kind: 'npc',
+                        location: 'room',
+                        context: content,
+                        category: 'inline-npc',
+                        action: 'menu',
+                        extraClasses: ['color-latched', 'npc-highlighter']
+                    }
+                } as EntityToken;
+            }
+
+            return token;
+        });
 
         return tokens;
     }
@@ -74,24 +157,28 @@ export class Tokenizer {
                     isBold = false;
                 } else if (code === 1) {
                     isBold = true;
+                } else if (code === 22) {
+                    isBold = false;
                 } else if (code >= 30 && code <= 37) {
                     const colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
                     currentColor = `var(--ansi-${colors[code - 30]})`;
                 } else if (code === 38 && codes[i+1] === '5' && codes[i+2]) {
-                    // 256 colors
                     const colorIndex = parseInt(codes[i+2], 10);
-                    // Extremely simplified map just to show structure;
-                    // a real implementation should import ANSI_PALETTE from utils/ansi.ts
-                    // Assuming we have access to it or we can hardcode some mappings for now.
+                    // Use standard 16 mappings for low indices
                     if (colorIndex >= 0 && colorIndex <= 7) {
                         const colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
                         currentColor = `var(--ansi-${colors[colorIndex]})`;
                     } else if (colorIndex >= 8 && colorIndex <= 15) {
                         const colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
                         currentColor = `var(--ansi-bright-${colors[colorIndex-8]})`;
+                    } else if (colorIndex === 159) {
+                        // Special MUME Object Color (&355)
+                        currentColor = 'mume-obj';
+                    } else if (colorIndex === 201 || colorIndex === 207) {
+                        // Special MUME Player Colors (&505, etc)
+                        currentColor = 'mume-pc';
                     } else {
-                        // Very rough fallback
-                         currentColor = '#ccc';
+                        currentColor = `rgb-idx-${colorIndex}`;
                     }
                     i += 2;
                 } else if (code >= 90 && code <= 97) {
@@ -172,71 +259,130 @@ export class Tokenizer {
 
         // PCs / NPCs / Online Players
         const playerNameSet = new Set(
-            context.currentOccupants.map(o => (o.name || '').toLowerCase()).filter(Boolean)
+            (Array.isArray(context.roomPlayers) ? context.roomPlayers : [])
+                .map(o => String(o.name || '').toLowerCase())
+                .filter(Boolean)
         );
-        const allOccupants = [...context.currentOccupants];
-        context.roomNpcs.forEach(npc => {
-            if (!allOccupants.find(o => o.name === npc.name)) allOccupants.push(npc);
-        });
+        const allOccupants = [...(Array.isArray(context.currentOccupants) ? context.currentOccupants : [])];
+        if (Array.isArray(context.roomNpcs)) {
+            context.roomNpcs.forEach(npc => {
+                if (!allOccupants.find(o => o.name === npc.name)) allOccupants.push(npc);
+            });
+        }
+        if (Array.isArray(context.roomPlayers)) {
+            context.roomPlayers.forEach(pc => {
+                if (!allOccupants.find(o => o.name === pc.name)) allOccupants.push(pc);
+            });
+        }
 
         // Add Online Players (from who list) if not already in occupants
-        (context.onlinePlayers || []).forEach(name => {
-            if (!allOccupants.find(o => o.name && name && o.name.toLowerCase() === name.toLowerCase())) {
-                allOccupants.push({ name, location: 'online', isNpc: false });
-                playerNameSet.add(name.toLowerCase());
-            }
-        });
+        if (Array.isArray(context.onlinePlayers)) {
+            context.onlinePlayers.forEach(name => {
+                const nameStr = String(name || '');
+                if (!allOccupants.find(o => o.name && nameStr && String(o.name).toLowerCase() === nameStr.toLowerCase())) {
+                    allOccupants.push({ name: nameStr, location: 'online', isNpc: false });
+                    playerNameSet.add(nameStr.toLowerCase());
+                }
+            });
+        }
 
         allOccupants.forEach(occ => {
-            if (!occ.name) return;
-            const dynamicCat = getCategoryForName(occ.name, context.inlineCategories);
-            candidates.push({
-                pattern: occ.name,
-                isRegex: false,
-                priority: occ.id ? 5 : 10,
-                createToken: (match) => {
-                    const isNpc = !playerNameSet.has(occ.name.toLowerCase());
-                    const cat = dynamicCat || (isNpc ? 'inline-npc' : 'inline-player');
-                    return {
-                        type: 'entity',
-                        content: match,
-                        entityId: `auto-${occ.name}`,
-                        metadata: {
-                            kind: isNpc ? 'npc' : 'player',
-                            location: 'room',
-                            context: occ.name!,
-                            category: cat,
-                            action: 'menu',
-                            extraClasses: ['auto-occupant', isNpc ? 'npc-highlighter' : 'pc-highlighter']
-                        }
-                    } as EntityToken;
+            const occNameStr = String(occ.name || '');
+            const isNpc = occ.isNpc !== false && !playerNameSet.has(occNameStr.toLowerCase());
+            const patterns = new Set<string>();
+            if (occ.name) patterns.add(String(occ.name));
+            if (occ.short) patterns.add(String(occ.short));
+            if (occ.keyword) String(occ.keyword).split(/\s+/).forEach((k: string) => { if (k.length > 2) patterns.add(k); });
+            if (occ.id && !String(occ.id).includes('-')) patterns.add(String(occ.id)); // Simple IDs only
+
+            patterns.forEach(pattern => {
+                const patStr = String(pattern);
+                if (!patStr || patStr.length < 3) return;
+
+                // Only search for dynamic categories if it's NOT a player, 
+                // or if the player category itself is customized.
+                let dynamicCat = getCategoryForName(patStr, Array.isArray(context.inlineCategories) ? context.inlineCategories : []);
+                
+                if (!isNpc && dynamicCat && dynamicCat === 'inline-npc') {
+                    dynamicCat = null;
                 }
+
+                candidates.push({
+                    pattern: patStr,
+                    isRegex: false,
+                    priority: (occNameStr === patStr) ? (occ.id ? 15 : 20) : (occ.id ? 5 : 10),
+                    createToken: (match) => {
+                        const cat = dynamicCat || (isNpc ? 'inline-npc' : 'inline-player');
+                        return {
+                            type: 'entity',
+                            content: match,
+                            entityId: occ.id ? String(occ.id) : `auto-${occNameStr || patStr}`,
+                            metadata: {
+                                kind: isNpc ? 'npc' : 'player',
+                                location: 'room',
+                                context: occNameStr || patStr,
+                                category: cat,
+                                action: 'menu',
+                                extraClasses: ['auto-occupant', isNpc ? 'npc-highlighter' : 'pc-highlighter']
+                            }
+                        } as EntityToken;
+                    }
+                });
             });
         });
 
-        // Items
-        const allItems = [...context.roomItems, ...context.discoveredItems];
+        // Add Inventory/Equipment Items
+        const allItems = [
+            ...(Array.isArray(context.roomItems) ? context.roomItems : []),
+            ...(Array.isArray(context.inventoryItems) ? context.inventoryItems : []),
+            ...(Array.isArray(context.equipmentItems) ? context.equipmentItems : [])
+        ];
+
         allItems.forEach(item => {
-            const itemName = typeof item === 'string' ? item : item.name;
-            if (!itemName) return;
-            const dynamicCat = getCategoryForName(itemName, context.inlineCategories);
-            candidates.push({
-                pattern: itemName,
-                isRegex: false,
-                priority: 2,
-                createToken: (match) => ({
-                    type: 'entity',
-                    content: match,
-                    entityId: `auto-item-${itemName.toLowerCase().replace(/\s+/g, '-')}`,
-                    metadata: {
-                        kind: 'object',
-                        location: 'room',
-                        context: itemName,
-                        category: dynamicCat || 'inline-object',
-                        action: 'menu',
-                        extraClasses: ['auto-obj']
+            const name = typeof item === 'string' ? item : item.name;
+            if (!name) return;
+            const nameStr = String(name);
+
+            const patterns = new Set<string>();
+            patterns.add(nameStr);
+            if (item.short) patterns.add(String(item.short));
+            if (item.keyword) String(item.keyword).split(/\s+/).forEach((k: string) => { if (k.length > 2) patterns.add(k); });
+
+            const location = item.location || 'room';
+
+            patterns.forEach(pattern => {
+                const patStr = String(pattern);
+                if (!patStr || patStr.length < 3) return;
+
+                const dynamicCat = getCategoryForName(patStr, Array.isArray(context.inlineCategories) ? context.inlineCategories : []);
+
+                candidates.push({
+                    pattern: patStr,
+                    isRegex: false,
+                    priority: (nameStr === patStr) ? 5 : 2,
+                    createToken: (match) => {
+                        let cat = dynamicCat;
+                        if (!cat) {
+                            if (location === 'worn') cat = 'obj-worn';
+                            else if (location === 'carried') cat = 'obj-char';
+                            else cat = 'obj-room';
+                        }
+
+                        return {
+                            type: 'entity',
+                            content: match,
+                            entityId: item.id ? String(item.id) : `item-${nameStr || patStr}`,
+                            metadata: {
+                                kind: 'object',
+                                location: location,
+                                context: nameStr || patStr,
+                                category: cat,
+                                action: 'menu',
+                                extraClasses: ['auto-item']
+                            }
+                        } as EntityToken;
                     }
-                } as EntityToken)
+                });
             });
         });
 
@@ -255,9 +401,10 @@ export class Tokenizer {
             // Split logic
             // Need to correctly handle boundaries
             // Use a custom boundary check because \b doesn't support accented characters in JS
+            const candPatternStr = String(candidate.pattern);
             const pattern = candidate.isRegex
-                ? candidate.pattern
-                : `(?:^|[^a-zA-Z\\u00C0-\\u00FF])${candidate.pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![a-zA-Z\\u00C0-\\u00FF])`;
+                ? candPatternStr
+                : `(?:^|[^a-zA-Z\\u00C0-\\u00FF])${candPatternStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![a-zA-Z\\u00C0-\\u00FF])`;
 
             const regex = new RegExp(pattern, 'gi');
 

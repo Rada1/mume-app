@@ -80,6 +80,7 @@ export interface LogData {
     addSystemMessage: (text: string) => void;
     isCombatLine: (text: string) => boolean;
     processMessageHtml: (html: string, mid?: string, isRoomName?: boolean, type?: MessageType) => string;
+    processMessageTokens?: (textRaw: string) => import('../../types').Token[];
     selectedObjectIds: Set<string>;
     toggleObjectSelection: (id: string, setId?: string, context?: string) => void;
     clearObjectSelection: () => void;
@@ -139,6 +140,13 @@ export interface UIContextType {
     handleTabClick: (drawer: 'stats' | 'character' | 'inventory' | 'players' | 'equipment') => void;
     displayInventoryLines: DrawerLine[];
     displayEqLines: DrawerLine[];
+    statsLines: DrawerLine[];
+    scoreLines: DrawerLine[];
+    infoLines: DrawerLine[];
+    practiceLines: DrawerLine[];
+    questLines: DrawerLine[];
+    whoLines: DrawerLine[];
+    whereLines: DrawerLine[];
     toggleMap: () => void;
     characterName: string | null;
     isRecording: boolean;

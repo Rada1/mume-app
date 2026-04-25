@@ -30,7 +30,7 @@ export function isButtonValidForEntity(
                            .replace(/-[a-f0-9]+$/, '').replace(/-/g, ' ');
 
     const dynamicCat = context ? getCategoryForName(context, inlineCategories) : null;
-    const genericBaseCats = ['object-room', 'object-inv', 'object-worn', 'npc', 'player'];
+    const genericBaseCats = ['object-room', 'object-inv', 'object-worn', 'obj-room', 'obj-char', 'obj-worn', 'npc', 'player', 'inline-npc', 'inline-player', 'inline-obj-room', 'inline-obj-char', 'inline-obj-worn'];
     
     // Canonicalize the override to ensure comparison works
     const catIdOverride = categoryOverride ? canonicalizeCategoryId(categoryOverride) : null;

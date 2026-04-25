@@ -9,6 +9,7 @@ import { LineCluster } from './HUD/LineCluster';
 import PromptBox from '../HUD/PromptBox';
 import { ansiConvert } from '../../utils/ansi';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
+import { TokenRenderer } from '../Messages/TokenRenderer';
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -69,7 +70,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         inCombat
     } = useGame() as any;
     const isSpectateMode = useModeStore(s => s.isSpectating);
-    const { processMessageHtml } = useLog();
+    const { processMessageHtml, processMessageTokens } = useLog();
 
     const prevInCombatRef = React.useRef(false);
     React.useEffect(() => {
@@ -170,9 +171,13 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     {isNewbieMode && roomName && (
                         <div className={`sticky-room-header terrain-${String(currentTerrain || 'field').toLowerCase()}`} key="newbie-room-header">
                             <div className="room-info-text">
-                                <div className="message-content room-name" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(`\x1b[1;32m${roomName}\x1b[0m`), 'roomname', true, 'room-name' as any)) }} />
+                                <div className="message-content room-name">
+                                    {processMessageTokens ? <TokenRenderer tokens={processMessageTokens(`\x1b[1;32m${roomName}\x1b[0m`)} /> : <span dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(`\x1b[1;32m${roomName}\x1b[0m`), 'roomname', true, 'room-name' as any)) }} />}
+                                </div>
                                 {roomDesc && (
-                                    <div className="message-content room-desc" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(`\x1b[0m${roomDesc}`), 'roomdesc', false, 'room-desc' as any)) }} />
+                                    <div className="message-content room-desc">
+                                        {processMessageTokens ? <TokenRenderer tokens={processMessageTokens(`\x1b[0m${roomDesc}`)} /> : <span dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(`\x1b[0m${roomDesc}`), 'roomdesc', false, 'room-desc' as any)) }} />}
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -223,6 +228,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
             <PromptBox
                 processMessageHtml={processMessageHtml}
+                processMessageTokens={processMessageTokens}
                 onWimpyChange={!isSpectateMode ? handleWimpyChange : undefined}
             />
 

@@ -12,6 +12,7 @@ import PracticeClassHeaderCard from '../Practice/PracticeClassHeaderCard';
 import PracticeColumnHeaderCard from '../Practice/PracticeColumnHeaderCard';
 import { useBaseGame, useVitals, useLog, useUI } from '../../context/GameContext';
 import { useModeStore } from '../../stores/useModeStore';
+import { useSpectateVitalsStore } from '../../stores/spectate/useSpectateVitalsStore';
 
 const formatTimestamp = (ts: number) => {
     const date = new Date(ts);
@@ -200,6 +201,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const { replayer } = useUI() as any;
     const { messages } = useLog();
     const { activePrompt, target, setTarget, opponentName, opponentHealthStatus } = useVitals();
+    const spectatePrompt = useSpectateVitalsStore(state => state.activePrompt);
     const { scrollContainerRef, messagesEndRef, scrollToBottom, isLockedToBottomRef } = viewport;
 
     const { userSession, spectateSession, activeSession } = useBaseGame();
@@ -600,15 +602,16 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
 
     const activePromptContent = useMemo(() => {
-        if (!activePrompt || isSpectateMode) return null;
-        const promptText = typeof activePrompt === 'string' ? activePrompt : activePrompt.text;
+        const prompt = isSpectateMode ? spectatePrompt : activePrompt;
+        if (!prompt) return null;
+        const promptText = typeof prompt === 'string' ? prompt : prompt.text;
         if (!promptText) return null;
         return (
             <div className="message prompt msg-latest" style={{ transition: 'none' }}>
                 <div className="message-content" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(promptText)) }} />
             </div>
         );
-    }, [activePrompt, isSpectateMode]);
+    }, [activePrompt, spectatePrompt, isSpectateMode]);
 
     return (
         <div className="message-log-layout" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden' }}>

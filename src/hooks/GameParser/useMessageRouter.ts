@@ -218,6 +218,8 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
                 });
             }
         });
+
+        return objects;
     }, [captureStage, extractNoun, setDiscoveredItems, setRoomItems, registerEntity]);
 
     return { determineVisibility, routeMessage, detectItemsInRoom };

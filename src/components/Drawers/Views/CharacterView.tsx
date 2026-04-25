@@ -23,10 +23,6 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
     const {
         practice,
         executeCommand: contextExecuteCommand,
-        scoreLines,
-        infoLines,
-        questLines,
-        practiceLines,
         selectedObjectIds,
         handleLogPointerDown,
         handleLogPointerUp,
@@ -35,7 +31,10 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
         triggerHaptic
     } = useGame();
     const { characterInfo } = useVitals();
-    const { ui, setUI, isLibraryOpen, setIsLibraryOpen } = useUI();
+    const { 
+        ui, setUI, isLibraryOpen, setIsLibraryOpen,
+        scoreLines, infoLines, questLines, practiceLines 
+    } = useUI();
     const activeTab = ui.characterTab || 'info';
     const setActiveTab = (tab: 'info' | 'practice' | 'quests') => setUI((prev: any) => ({ ...prev, characterTab: tab }));
 

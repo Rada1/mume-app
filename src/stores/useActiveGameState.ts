@@ -17,8 +17,8 @@ import { useReplayCombatStore } from './replay/useReplayCombatStore';
  */
 
 /**
- * Returns the currently active Vitals store.
- * NOTE: Using this hook subscribes the component to ALL vitals changes.
+ * Returns the currently active Vitals store state.
+ * NOTE: Using this hook subscribes the component to ALL vitals changes in that store.
  * Prefer targeted hooks like useActiveTarget() or useActivePrompt().
  */
 export const useActiveVitals = (): VitalsStore => {
@@ -26,13 +26,13 @@ export const useActiveVitals = (): VitalsStore => {
     const isSpectating = useModeStore(state => state.isSpectating);
     const activeView = useModeStore(state => state.activeView);
     
-    // We must call all hooks to satisfy Rules of Hooks
+    // Always call all hooks to satisfy Rules of Hooks
     const mainStore = useVitalsStore();
     const spectateStore = useSpectateVitalsStore();
     const replayStore = useReplayVitalsStore();
 
-    if (mode === 'replay' || mode === 'scrubbing') return replayStore as VitalsStore;
-    return (isSpectating && activeView === 'target' ? spectateStore : mainStore) as VitalsStore;
+    if (mode === 'replay' || mode === 'scrubbing') return replayStore;
+    return (isSpectating && activeView === 'target' ? spectateStore : mainStore);
 };
 
 /**
@@ -40,15 +40,13 @@ export const useActiveVitals = (): VitalsStore => {
  */
 export const getActiveVitals = (): VitalsStore => {
     const modeState = useModeStore.getState();
-    if (modeState.mode === 'replay' || modeState.mode === 'scrubbing') return useReplayVitalsStore.getState() as VitalsStore;
+    if (modeState.mode === 'replay' || modeState.mode === 'scrubbing') return useReplayVitalsStore.getState();
     const isSpectating = modeState.isSpectating && modeState.activeView === 'target';
-    return (isSpectating ? useSpectateVitalsStore.getState() : useVitalsStore.getState()) as VitalsStore;
+    return (isSpectating ? useSpectateVitalsStore.getState() : useVitalsStore.getState());
 };
 
 /**
  * Returns the active character name.
- * In live/spectate mode, returns the name from useModeStore.
- * In replay mode, returns the name captured in the replay vitals store.
  */
 export const useActiveCharacter = () => {
     const mode = useModeStore(state => state.mode);
@@ -71,7 +69,7 @@ export const getActiveCharacter = () => {
 };
 
 /**
- * Returns the currently active Room store.
+ * Returns the currently active Room store state.
  */
 export const useActiveRoom = (): RoomStore => {
     const mode = useModeStore(state => state.mode);
@@ -82,8 +80,8 @@ export const useActiveRoom = (): RoomStore => {
     const spectateStore = useSpectateRoomStore();
     const replayStore = useReplayRoomStore();
 
-    if (mode === 'replay' || mode === 'scrubbing') return replayStore as RoomStore;
-    return (isSpectating && activeView === 'target' ? spectateStore : mainStore) as RoomStore;
+    if (mode === 'replay' || mode === 'scrubbing') return replayStore;
+    return (isSpectating && activeView === 'target' ? spectateStore : mainStore);
 };
 
 /**
@@ -91,13 +89,13 @@ export const useActiveRoom = (): RoomStore => {
  */
 export const getActiveRoom = (): RoomStore => {
     const modeState = useModeStore.getState();
-    if (modeState.mode === 'replay' || modeState.mode === 'scrubbing') return useReplayRoomStore.getState() as RoomStore;
+    if (modeState.mode === 'replay' || modeState.mode === 'scrubbing') return useReplayRoomStore.getState();
     const isSpectating = modeState.isSpectating && modeState.activeView === 'target';
-    return (isSpectating ? useSpectateRoomStore.getState() : useRoomStore.getState()) as RoomStore;
+    return (isSpectating ? useSpectateRoomStore.getState() : useRoomStore.getState());
 };
 
 /**
- * Returns the currently active Combat store.
+ * Returns the currently active Combat store state.
  */
 export const useActiveCombat = (): CombatStore => {
     const mode = useModeStore(state => state.mode);
@@ -108,8 +106,8 @@ export const useActiveCombat = (): CombatStore => {
     const spectateStore = useSpectateCombatStore();
     const replayStore = useReplayCombatStore();
 
-    if (mode === 'replay' || mode === 'scrubbing') return replayStore as CombatStore;
-    return (isSpectating && activeView === 'target' ? spectateStore : mainStore) as CombatStore;
+    if (mode === 'replay' || mode === 'scrubbing') return replayStore;
+    return (isSpectating && activeView === 'target' ? spectateStore : mainStore);
 };
 
 /**
@@ -117,9 +115,9 @@ export const useActiveCombat = (): CombatStore => {
  */
 export const getActiveCombat = (): CombatStore => {
     const modeState = useModeStore.getState();
-    if (modeState.mode === 'replay' || modeState.mode === 'scrubbing') return useReplayCombatStore.getState() as CombatStore;
+    if (modeState.mode === 'replay' || modeState.mode === 'scrubbing') return useReplayCombatStore.getState();
     const isSpectating = modeState.isSpectating && modeState.activeView === 'target';
-    return (isSpectating ? useSpectateCombatStore.getState() : useCombatStore.getState()) as CombatStore;
+    return (isSpectating ? useSpectateCombatStore.getState() : useCombatStore.getState());
 };
 
 /**
@@ -150,4 +148,76 @@ export const useActivePrompt = () => {
 
     if (mode === 'replay' || mode === 'scrubbing') return replayPrompt;
     return isSpectating ? spectatePrompt : mainPrompt;
+};
+
+/**
+ * Returns the active room name.
+ */
+export const useActiveRoomName = () => {
+    const mode = useModeStore(state => state.mode);
+    const isSpectating = useModeStore(state => state.isSpectating && state.activeView === 'target');
+    
+    const mainName = useRoomStore(state => state.roomName);
+    const spectateName = useSpectateRoomStore(state => state.roomName);
+    const replayName = useReplayRoomStore(state => state.roomName);
+
+    if (mode === 'replay' || mode === 'scrubbing') return replayName;
+    return isSpectating ? spectateName : mainName;
+};
+
+/**
+ * Returns the active room description.
+ */
+export const useActiveRoomDesc = () => {
+    const mode = useModeStore(state => state.mode);
+    const isSpectating = useModeStore(state => state.isSpectating && state.activeView === 'target');
+    
+    const mainDesc = useRoomStore(state => state.roomDesc);
+    const spectateDesc = useSpectateRoomStore(state => state.roomDesc);
+    const replayDesc = useReplayRoomStore(state => state.roomDesc);
+
+    if (mode === 'replay' || mode === 'scrubbing') return replayDesc;
+    return isSpectating ? spectateDesc : mainDesc;
+};
+
+/**
+ * Returns the active room occupants (players and NPCs).
+ */
+export const useActiveOccupants = () => {
+    const mode = useModeStore(state => state.mode);
+    const isSpectating = useModeStore(state => state.isSpectating && state.activeView === 'target');
+    
+    const mainPlayers = useRoomStore(state => state.players);
+    const mainNpcs = useRoomStore(state => state.npcs);
+    
+    const spectatePlayers = useSpectateRoomStore(state => state.players);
+    const spectateNpcs = useSpectateRoomStore(state => state.npcs);
+
+    const replayPlayers = useReplayRoomStore(state => state.players);
+    const replayNpcs = useReplayRoomStore(state => state.npcs);
+
+    if (mode === 'replay' || mode === 'scrubbing') return { players: replayPlayers, npcs: replayNpcs };
+    if (isSpectating) return { players: spectatePlayers, npcs: spectateNpcs };
+    return { players: mainPlayers, npcs: mainNpcs };
+};
+
+/**
+ * Returns the active combat opponent info.
+ */
+export const useActiveOpponent = () => {
+    const mode = useModeStore(state => state.mode);
+    const isSpectating = useModeStore(state => state.isSpectating && state.activeView === 'target');
+    
+    const mainName = useCombatStore(state => state.opponentName);
+    const mainStatus = useCombatStore(state => state.opponentHealthStatus);
+
+    const spectateName = useSpectateCombatStore(state => state.opponentName);
+    const spectateStatus = useSpectateCombatStore(state => state.opponentHealthStatus);
+
+    const replayName = useReplayCombatStore(state => state.opponentName);
+    const replayStatus = useReplayCombatStore(state => state.opponentHealthStatus);
+
+    if (mode === 'replay' || mode === 'scrubbing') return { name: replayName, status: replayStatus };
+    if (isSpectating) return { name: spectateName, status: spectateStatus };
+    return { name: mainName, status: mainStatus };
 };

@@ -66,7 +66,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
     // Detect if this specific item name belongs to a category.
     // We prioritize specific tags (from inlineCategories) over generic location-based ones (like inline-obj-room).
     const dynamicCat = popoverState.context ? getCategoryForName(popoverState.context, inlineCategories) : null;
-    const genericBaseCats = ['object-room', 'object-inv', 'object-worn', 'npc'];
+    const genericBaseCats = ['object-room', 'object-inv', 'object-worn', 'obj-room', 'obj-char', 'obj-worn', 'npc', 'player', 'inline-npc', 'inline-player', 'inline-obj-room', 'inline-obj-char', 'inline-obj-worn'];
     
     // Ensure the category ID in state is canonicalized before comparison
     const rawStateCat = popoverState.category;

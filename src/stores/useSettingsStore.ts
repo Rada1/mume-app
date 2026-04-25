@@ -125,7 +125,7 @@ export const useSettingsStore = create<SettingsState>()(
             showRecordingIndicator: true,
             showDebugEchoes: false,
             showLegacyButtons: false,
-            showSpectatePromptInLog: false,
+            showSpectatePromptInLog: true,
             showControls: true,
             showOrganicTerrain: true,
             

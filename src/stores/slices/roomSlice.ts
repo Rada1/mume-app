@@ -220,12 +220,12 @@ export const createRoomActions = (set: any, get: any) => ({
     setTerrain: (terrain: string | ((prev: string) => string)) => 
         set((state: RoomState) => ({ terrain: typeof terrain === 'function' ? terrain(state.terrain) : terrain })),
 
-    setPlayers: (players: GmcpOccupant[] | ((prev: GmcpOccupant[]) => GmcpOccupant[])) => 
-        set((state: RoomState) => ({ players: typeof players === 'function' ? players(state.players) : players })),
-    setNpcs: (npcs: GmcpOccupant[] | ((prev: GmcpOccupant[]) => GmcpOccupant[])) => 
-        set((state: RoomState) => ({ npcs: typeof npcs === 'function' ? npcs(state.npcs) : npcs })),
-    setItems: (items: GmcpOccupant[] | ((prev: GmcpOccupant[]) => GmcpOccupant[])) => 
-        set((state: RoomState) => ({ items: typeof items === 'function' ? items(state.items) : items })),
+    setPlayers: (players: GmcpOccupant[] | ((prev: GmcpOccupant[]) => GmcpOccupant[])) =>
+        set((state: RoomState) => ({ players: typeof players === 'function' ? players(state.players) : (Array.isArray(players) ? players : state.players) })),
+    setNpcs: (npcs: GmcpOccupant[] | ((prev: GmcpOccupant[]) => GmcpOccupant[])) =>
+        set((state: RoomState) => ({ npcs: typeof npcs === 'function' ? npcs(state.npcs) : (Array.isArray(npcs) ? npcs : state.npcs) })),
+    setItems: (items: GmcpOccupant[] | ((prev: GmcpOccupant[]) => GmcpOccupant[])) =>
+        set((state: RoomState) => ({ items: typeof items === 'function' ? items(state.items) : (Array.isArray(items) ? items : state.items) })),
     
     applyItemsUpdate: (data: GmcpOccupant[]) => {
         set({ items: Array.isArray(data) ? data : [] });

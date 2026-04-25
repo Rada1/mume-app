@@ -379,6 +379,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         const promptInfo = prompt.parsePrompt(textOnly, isSnoop);
         if (promptInfo.isMatch) {
             msgType = 'prompt' as any;
+            if (isSnoop && deps.setSpectateActivePrompt) {
+                deps.setSpectateActivePrompt(lineToParse);
+            }
         }
 
         // Atmosphere
@@ -440,6 +443,15 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 }
             }
 
+            // Detect items for mapper discovery and immediate tokenization
+            const detectedItems = router.detectItemsInRoom(textOnly, lineToParse, !isVisible) || [];
+            const localRoomItems = [...(deps.roomItems || [])];
+            detectedItems.forEach(name => {
+                if (!localRoomItems.some(i => (typeof i === 'string' ? i : i.name) === name)) {
+                    localRoomItems.push({ name, keyword: name, short: name });
+                }
+            });
+
             // Now we use our orchestrator to produce the Message object directly!
             // First we need to build the context
             const tokenizerContext = {
@@ -447,7 +459,15 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 currentOccupants: deps.roomPlayers || [],
                 roomNpcs: deps.roomNpcs || [],
                 activeGroupMembers: deps.groupMembers || [],
-                roomItems: deps.roomItems || [],
+                roomItems: localRoomItems,
+                inventoryItems: [
+                    ...Object.values(deps.entities || {}).filter((e: any) => e.location === 'inv' || e.location === 'carried' || e.location === 'obj-char'),
+                    ...Object.values(tempEntitiesRef.current).filter((e: any) => e.location === 'inv' || e.location === 'carried' || e.location === 'obj-char')
+                ],
+                equipmentItems: [
+                    ...Object.values(deps.entities || {}).filter((e: any) => e.location === 'eq' || e.location === 'worn' || e.location === 'obj-worn'),
+                    ...Object.values(tempEntitiesRef.current).filter((e: any) => e.location === 'eq' || e.location === 'worn' || e.location === 'obj-worn')
+                ],
                 discoveredItems: [], 
                 inlineCategories: deps.inlineCategories || [],
                 buttons: deps.btn?.buttonsRef?.current || [],
@@ -484,9 +504,6 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
         // Emit to bus for DVR recording
         gmcpBus.emit('Game.Text', { type: finalType, text: textOnly });
-
-        // Detect items for mapper discovery
-        router.detectItemsInRoom(textOnly, lineToParse, !isVisible);
 
     }, [
         processTriggers, router, combat, room, account, stat, atmosphere, time, parseLogGmcp,

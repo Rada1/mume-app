@@ -15,12 +15,12 @@ interface PlayersViewProps {
 export const PlayersView: React.FC<PlayersViewProps> = ({ isOpen, onClose, executeCommand: propsExecuteCommand }) => {
     const [activeTab, setActiveTab] = useState<'group' | 'online' | 'nearby'>('online');
     const {
-        whoList, whoLines, whereList, whereLines, groupMembers, triggerHaptic, favorites, setFavorites,
+        whoList, whereList, groupMembers, triggerHaptic, favorites, setFavorites,
         executeCommand: contextExecuteCommand, selectedObjectIds,
         handleLogPointerDown, handleLogPointerUp, handleLogClick,
         clearObjectSelection
     } = useGame();
-    const { setPopoverState } = useUI();
+    const { setPopoverState, whoLines, whereLines } = useUI();
 
     const executeCommand = contextExecuteCommand || propsExecuteCommand;
 

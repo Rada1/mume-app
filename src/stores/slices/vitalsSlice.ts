@@ -29,6 +29,7 @@ export interface VitalsState {
     move: number;
     maxMove: number;
     hpStatus: CombatHealthStatus | null;
+    manaStatus: string | null;
     moveStatus: string | null;
     position: string;
     inCombat: boolean;
@@ -48,6 +49,7 @@ export interface VitalsState {
         move: number;
         maxMove: number;
         hpStatus: CombatHealthStatus | null;
+        manaStatus: string | null;
         moveStatus: string | null;
     };
 
@@ -74,6 +76,7 @@ export const initialVitalsState = {
     move: 0,
     maxMove: 0,
     hpStatus: null,
+    manaStatus: null,
     moveStatus: null,
     position: 'standing',
     inCombat: false,
@@ -104,6 +107,7 @@ export const initialVitalsState = {
         move: 0,
         maxMove: 0,
         hpStatus: null as CombatHealthStatus | null,
+        manaStatus: null as string | null,
         moveStatus: null as string | null
     }
 };
@@ -137,11 +141,21 @@ export const createVitalsActions = (set: any, get: any) => ({
             const updates: Partial<VitalsState> = {};
 
             if (data.hp !== undefined) updates.hp = data.hp;
+            if (data.hits !== undefined) updates.hp = data.hits;
+            if (data.health !== undefined) updates.hp = data.health;
+            if (data.h !== undefined) updates.hp = data.h;
             if (data.maxhp !== undefined) updates.maxHp = data.maxhp;
+            if (data.maxhits !== undefined) updates.maxHp = data.maxhits;
+            if (data.maxhealth !== undefined) updates.maxHp = data.maxhealth;
+            if (data.H !== undefined) updates.maxHp = data.H;
             if (data.mana !== undefined) updates.mana = data.mana;
+            if (data.m !== undefined) updates.mana = data.m;
             if (data.maxmana !== undefined) updates.maxMana = data.maxmana;
+            if (data.M !== undefined) updates.maxMana = data.M;
             if (data.sp !== undefined) updates.mana = data.sp;
+            if (data.s !== undefined) updates.mana = data.s;
             if (data.maxsp !== undefined) updates.maxMana = data.maxsp;
+            if (data.S !== undefined) updates.maxMana = data.S;
             if (data.move !== undefined) updates.move = data.move;
             if (data.maxmove !== undefined) updates.maxMove = data.maxmove;
             if (data.mp !== undefined) updates.move = data.mp;
@@ -150,6 +164,8 @@ export const createVitalsActions = (set: any, get: any) => ({
             if (data.maxmoves !== undefined) updates.maxMove = data.maxmoves;
             if (data.mv !== undefined) updates.move = data.mv;
             if (data.maxmv !== undefined) updates.maxMove = data.maxmv;
+            if (data.v !== undefined) updates.move = data.v;
+            if (data.V !== undefined) updates.maxMove = data.V;
             if (data.stamina !== undefined) updates.move = data.stamina;
             if (data.maxstamina !== undefined) updates.maxMove = data.maxstamina;
 
@@ -211,6 +227,10 @@ export const createVitalsActions = (set: any, get: any) => ({
                 updates.hpStatus = findStatus(data.hp_status);
             }
 
+            if (data['mana-string'] !== undefined || data['sp-string'] !== undefined) {
+                updates.manaStatus = data['mana-string'] ?? data['sp-string'] ?? null;
+            }
+
             if (data.move_status !== undefined || data.stamina_status !== undefined || data['mp-string'] !== undefined) {
                 updates.moveStatus = data.move_status ?? data.stamina_status ?? data['mp-string'] ?? null;
             }
@@ -242,6 +262,7 @@ export const createVitalsActions = (set: any, get: any) => ({
                     move: updates.move ?? state.gmcpVitals.move,
                     maxMove: updates.maxMove ?? state.gmcpVitals.maxMove,
                     hpStatus: updates.hpStatus ?? state.gmcpVitals.hpStatus,
+                    manaStatus: updates.manaStatus ?? state.gmcpVitals.manaStatus,
                     moveStatus: updates.moveStatus ?? state.gmcpVitals.moveStatus
                 }
             };

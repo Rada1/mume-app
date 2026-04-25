@@ -231,7 +231,7 @@ export const useSessionState = (
     } as VitalsContextType), [
         stats, target, activePrompt, rumble, deathRoomId, bufferName, playerHealthStatus,
         opponentName, opponentId, opponentHealthStatus, bufferHealthStatus, groupMembers,
-        xpHistory, xpEvent, gameTime
+        xpHistory, xpEvent, gameTime, roomName, characterName
     ]);
 
     return useMemo(() => ({
@@ -286,6 +286,7 @@ export const useSessionState = (
             toggleObjectSelection: ui.toggleObjectSelection,
             clearObjectSelection: ui.clearObjectSelection,
             processMessageHtml: (html: string) => html, // Placeholder, elevated in GameContext
+            processMessageTokens: () => [], // Placeholder, elevated in GameContext
             lastCommIdBySenderRef
         },
         recorder
@@ -300,6 +301,6 @@ export const useSessionState = (
         level, currentName, setCurrentName, registry, teleportTargets, quests,
         lightningEnabled, rStore.whoList, setWhoList, whereList, setWhereList, log, ui.selectedObjectIds,
         ui.toggleObjectSelection, ui.clearObjectSelection, recorder, discoveredItems,
-        gameTime, setGameTime
+        gameTime, setGameTime, rStore.roomNum
     ]);
 };

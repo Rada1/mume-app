@@ -11,12 +11,13 @@ import { useGame } from '../../context/GameContext';
 import XpTicker from '../Combat/XpTicker';
 import { CombatSliderPopout } from '../Drawers/StatsDrawer/CombatSliderPopout';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
-import { useVitalsStore } from '../../stores/useVitalsStore';
-import { useCombatStore } from '../../stores/useCombatStore';
+import { useActiveVitals, useActiveCombat, useActiveCharacter } from '../../stores/useActiveGameState';
 import { useModeStore } from '../../stores/useModeStore';
+import { TokenRenderer } from '../Messages/TokenRenderer';
 
 interface PromptBoxProps {
     processMessageHtml?: (html: string, mid: string, isRoomName: boolean, type?: string, isCombat?: boolean, side?: string) => string;
+    processMessageTokens?: (textRaw: string) => import('../../types').Token[];
     onWimpyChange?: (val: number) => void;
 }
 
@@ -239,29 +240,33 @@ const PoseIcon: React.FC<{ pose: string; size?: number }> = ({ pose, size = 14 }
 
 const PromptBox: FC<PromptBoxProps> = ({
     processMessageHtml,
+    processMessageTokens,
     onWimpyChange
 }) => {
     const { triggerHaptic, executeCommand, setPlayerPosition, inlineCategories, isNewbieMode, viewport } = useGame();
     
-    // --- Player State Selectors ---
-    const hp = useVitalsStore((state) => state.gmcpVitals.hp);
-    const maxHp = useVitalsStore((state) => state.gmcpVitals.maxHp);
-    const mana = useVitalsStore((state) => state.gmcpVitals.mana);
-    const maxMana = useVitalsStore((state) => state.gmcpVitals.maxMana);
-    const move = useVitalsStore((state) => state.gmcpVitals.move);
-    const maxMove = useVitalsStore((state) => state.gmcpVitals.maxMove);
-    const playerHealthStatus = useVitalsStore((state) => state.gmcpVitals.hpStatus);
-    const moveStatus = useVitalsStore((state) => state.gmcpVitals.moveStatus);
-    const wimpy = useVitalsStore((state) => state.wimpy);
-    const position = useVitalsStore((state) => state.position);
-    const inCombat = useVitalsStore((state) => state.inCombat);
+    // --- Active View State Selectors ---
+    const activeVitals = useActiveVitals();
+    const hp = activeVitals.gmcpVitals.hp;
+    const maxHp = activeVitals.gmcpVitals.maxHp;
+    const mana = activeVitals.gmcpVitals.mana;
+    const maxMana = activeVitals.gmcpVitals.maxMana;
+    const move = activeVitals.gmcpVitals.move;
+    const maxMove = activeVitals.gmcpVitals.maxMove;
+    const playerHealthStatus = activeVitals.gmcpVitals.hpStatus;
+    const manaStatus = activeVitals.gmcpVitals.manaStatus;
+    const moveStatus = activeVitals.gmcpVitals.moveStatus;
+    const wimpy = activeVitals.wimpy;
+    const position = activeVitals.position;
+    const inCombat = activeVitals.inCombat;
 
     const isRiding = position === 'riding' || position === 'mounted';
     const playerPosition = position;
 
-    const opponentName = useCombatStore((state) => state.opponentName);
-    const opponentHealthStatus = useCombatStore((state) => state.opponentHealthStatus);
-    const characterName = useModeStore(state => state.activeCharacter);
+    const activeCombat = useActiveCombat();
+    const opponentName = activeCombat.opponentName;
+    const opponentHealthStatus = activeCombat.opponentHealthStatus;
+    const characterName = useActiveCharacter();
     const isSpectateMode = useModeStore(state => state.isSpectating);
 
     const [activeSlider, setActiveSlider] = useState<'pos' | null>(null);
@@ -362,7 +367,7 @@ const PromptBox: FC<PromptBoxProps> = ({
         setActiveSlider(activeSlider === 'pos' ? null : 'pos');
     }, [activeSlider, triggerHaptic]);
 
-    const manaStatusFromGmcp = maxMana <= 0 && mana > 0 ? 'Full' : null;
+    const manaStatusFromGmcp = normalizeTierStatus(manaStatus, MANA_TIERS) ?? (maxMana <= 0 && mana > 0 ? 'Full' : null);
     const moveStatusFromGmcp = normalizeTierStatus(moveStatus, MOVE_TIERS) ?? (maxMove <= 0 && move > 0 ? 'Unwearied' : null);
 
     const manaPercent = maxMana > 0
@@ -382,6 +387,11 @@ const PromptBox: FC<PromptBoxProps> = ({
     };
 
     const renderStyledName = (name: string, isOpponent = false) => {
+        if (processMessageTokens) {
+            const clean = name.replace(/^[\[\]<>]+/, '').trim();
+            const tokens = processMessageTokens(clean);
+            return <TokenRenderer tokens={tokens} />;
+        }
         if (!processMessageHtml) return name;
         // Strip any remaining prompt crud like brackets
         const clean = name.replace(/^[\[\]<>]+/, '').trim();

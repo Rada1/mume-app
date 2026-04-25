@@ -6,12 +6,26 @@
 export interface GmcpCharVitals {
     hp?: number;
     maxhp?: number;
+    hits?: number;
+    maxhits?: number;
+    health?: number;
+    maxhealth?: number;
+    h?: number;
+    H?: number;
     mana?: number;
     maxmana?: number;
+    m?: number;
+    M?: number;
+    'mana-string'?: string;
     sp?: number;
     maxsp?: number;
+    s?: number;
+    S?: number;
+    'sp-string'?: string;
     move?: number;
     maxmove?: number;
+    v?: number;
+    V?: number;
     mp?: number;
     maxmp?: number;
     moves?: number;
