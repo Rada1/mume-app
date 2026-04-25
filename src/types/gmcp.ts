@@ -12,10 +12,13 @@ export interface GmcpCharVitals {
     maxsp?: number;
     move?: number;
     maxmove?: number;
+    mp?: number;
+    maxmp?: number;
     moves?: number;
     maxmoves?: number;
     mv?: number;
     maxmv?: number;
+    'mp-string'?: string;
     stamina?: number;
     maxstamina?: number;
     position?: string;

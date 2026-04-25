@@ -11,7 +11,11 @@ import { useUIStore } from '../../stores/useUIStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useModeStore } from '../../stores/useModeStore';
 
-export const useGameProviderState = () => {
+export const useGameProviderState = (audioTriggers?: {
+    playCommMessageSound: () => void;
+    playCombatHitSound: () => void;
+    playLevelUpSound: () => void;
+}) => {
     // Settings & UI Stores
     const settings = useSettingsStore();
     const uiStore = useUIStore();
@@ -56,8 +60,8 @@ export const useGameProviderState = () => {
     React.useEffect(() => { isAccountModeRef.current = gameState === 'account'; }, [gameState]);
 
     // --- Session Slots ---
-    const userSession = useSessionState(characterName, isNewbieMode, gameState, roomDescRef, isAccountModeRef, false);
-    const spectateSession = useSessionState(characterName, isNewbieMode, gameState, roomDescRef, isAccountModeRef, true);
+    const userSession = useSessionState(characterName, isNewbieMode, gameState, roomDescRef, isAccountModeRef, false, audioTriggers);
+    const spectateSession = useSessionState(characterName, isNewbieMode, gameState, roomDescRef, isAccountModeRef, true, audioTriggers);
 
     const active = mode.isSpectating && mode.activeView === 'target' ? spectateSession : userSession;
 
@@ -102,6 +106,7 @@ export const useGameProviderState = () => {
         // Explicit Spectate Values
         spectateRoomName: spectateSession.game.roomName,
         spectateRoomDesc: spectateSession.game.roomDesc,
+        spectateRoomNum: spectateSession.game.roomNum,
         spectateInCombat: spectateSession.game.inCombat,
         spectateRoomZone: spectateSession.game.roomZone,
         spectateTerrain: spectateSession.game.currentTerrain,
@@ -118,6 +123,14 @@ export const useGameProviderState = () => {
             conditions: { ...prev.conditions, waiting }
         })),
         setSpectateCharacterName: spectateSession.game.setCharacterName,
+        setSpectatePosition: spectateSession.game.setPlayerPosition,
+        setSpectateInCombat: spectateSession.game.setInCombat,
+        setSpectateOpponentName: spectateSession.vitals.setOpponentName,
+        setSpectateOpponentStatus: spectateSession.vitals.setOpponentHealthStatus,
+        setSpectateRoomNum: spectateSession.game.setRoomNum,
+        setSpectateRoomName: spectateSession.game.setRoomName,
+        setSpectateRoomDesc: spectateSession.game.setRoomDesc,
+        setSpectateRoomZone: spectateSession.game.setRoomZone,
         setStats: active.vitals.setStats,
         isSpectateMode: mode.isSpectating,
 

@@ -46,10 +46,6 @@
     word-wrap: break-word;
     overflow-wrap: break-word;
     overscroll-behavior-y: contain;
-}
-
-/* Removed margin-top: auto to prevent conflicts with virtualizer and centering layout */
-}
     /* scroll-padding-bottom: 20px; - Removed to fix manual scroll math conflicts */
     scrollbar-width: thin;
     scrollbar-color: var(--text-faded) transparent;
@@ -110,7 +106,7 @@
     flex-shrink: 0;                /* Prevent squashing in flex containers */
     word-wrap: break-word;
     white-space: pre-wrap;
-    padding: 0 12px;
+    padding: 0 6px;
     margin: 0;                     /* Removed -1px to prevent overlap */
     min-height: 0;                 /* Dense terminal logic */
     background: transparent;       /* Standard game text is now high-contrast transparent */
@@ -159,7 +155,7 @@
     background: transparent !important;
     border-left: none !important;
     border-radius: 0 !important;
-    padding: 0 12px !important;
+    padding: 0 6px !important;
     margin: 0 !important;
     line-height: 1.4 !important;
 }
@@ -168,7 +164,7 @@
     background: transparent !important;
     border-left: none !important;
     border-radius: 0 !important;
-    padding: 0 12px !important;
+    padding: 0 6px !important;
     margin: 0 !important;
     box-shadow: none !important;
     line-height: 1.4 !important;
@@ -176,7 +172,7 @@
 
 .message.is-room-block:not(.is-room-name) {
     background: transparent !important;
-    padding: 0 12px;
+    padding: 0 6px;
     margin: 0;
     border: none;
     border-radius: 0;
@@ -220,9 +216,9 @@
     display: block;
     margin-top: 4px;
     white-space: pre-wrap;
-    /* Strictly fit 80 chars across (Space Mono width is 0.6*height) */
-    /* Font size = (WidthPerChar) / 0.6 = (100cqw - 22px) / 48 */
-    font-size: calc((100cqw - 22px) / 48); 
+    /* Strictly fit 80 chars across (Space Mono width is 0.58*height) */
+    /* Font size = (WidthPerChar) / 0.58 = (100cqw - 12px) / (80 * 0.58) = (100cqw - 12px) / 46.4 */
+    font-size: var(--dynamic-log-size); 
     line-height: 1.4;
     text-align: left;
     width: 100%;
@@ -880,7 +876,7 @@
     border: none;
     color: var(--text-primary);
     font-family: var(--font-main);
-    font-size: 1.1rem;
+    font-size: var(--dynamic-log-size, 16px);
     outline: none;
     padding: 0;
     margin: 0;
@@ -1548,4 +1544,14 @@ span.inline-btn {
     background: #4a90e2;
     border-color: #4a90e2;
     transform: translateY(-1px);
+}
+
+.room-description-merged {
+    font-weight: 400;
+    font-style: italic;
+    font-size: var(--dynamic-log-size, 16px);
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 4px;
+    display: block;
+    width: 100%;
 }

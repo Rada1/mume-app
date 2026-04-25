@@ -55,7 +55,7 @@ export const HelpCard: React.FC<HelpCardProps> = ({
             <div className="floating-group-card help-card" ref={popoverRef} onClick={(e) => e.stopPropagation()} style={{
                 width: isMobile ? '100%' : '100%',
                 left: isMobile ? 0 : 'auto',
-                maxWidth: isMobile ? '100%' : '850px',
+                maxWidth: isMobile ? '100%' : '800px',
                 margin: 0,
                 height: 'auto',
                 maxHeight: isMobile ? '65vh' : '80vh',

@@ -111,6 +111,17 @@
     margin: -8px 0; /* Offset padding to maintain layout */
     cursor: pointer;
     touch-action: none;
+    transition: filter 0.2s ease;
+}
+
+.condition-badge.pulse-combat {
+    animation: bar-pulse 2s infinite ease-in-out;
+}
+
+@keyframes bar-pulse {
+    0% { filter: brightness(1) saturate(1); }
+    50% { filter: brightness(1.4) saturate(1.2); }
+    100% { filter: brightness(1) saturate(1); }
 }
 
 .status-bracket-wrapper {

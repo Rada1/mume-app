@@ -1,7 +1,7 @@
 import { RenderContext, getSeed } from './rendererUtils';
 import { GRID_SIZE, DIRS } from '../mapperUtils';
 import { getMemberColor } from '../../../utils/groupUtils';
-import { getGlowColorForCategory, getCategoryForName, COLOR_OBJ } from '../../../utils/categorizationUtils';
+import { COLOR_NPC, COLOR_PLAYER, COLOR_OBJ } from '../../../utils/categorizationUtils';
 import { occupantAnims, OCCUPANT_ANIM_DURATION, getOccupantKey } from '../occupantAnimStore';
 
 
@@ -22,7 +22,7 @@ export const drawRoomOccupants = (
     playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>,
     characterName: string | null = null
 ) => {
-    const { ctx, currentZ, now, roomPlayers, roomNpcs, roomItems, groupMembers, camera, inlineCategories, opponentId, opponentName, triggerRender, centerOverride } = rCtx;
+    const { ctx, currentZ, now, roomPlayers, roomNpcs, roomItems, groupMembers, camera, playerColor, npcColor, objectColor, opponentId, opponentName, triggerRender, centerOverride } = rCtx;
     
     // Prioritize centerOverride (for MiniMap/specific highlights) over the global playerPosRef
     const anchor = centerOverride || playerPosRef.current;
@@ -55,7 +55,7 @@ export const drawRoomOccupants = (
         if (gIdx !== -1) {
             groupOccupants.push({ name, color: getMemberColor(gIdx).core, id: typeof p === 'string' ? undefined : p.id });
         } else {
-            otherOccupants.push({ name, color: 'rgba(125, 211, 252, 1)', id: typeof p === 'string' ? undefined : p.id });
+            otherOccupants.push({ name, color: playerColor || 'rgba(125, 211, 252, 1)', id: typeof p === 'string' ? undefined : p.id });
         }
     });
 
@@ -67,9 +67,7 @@ export const drawRoomOccupants = (
         if (gIdx !== -1) {
             groupOccupants.push({ name, color: getMemberColor(gIdx).core, id: typeof n === 'string' ? undefined : n.id });
         } else {
-            const category = getCategoryForName(name, inlineCategories || []);
-            const color = getGlowColorForCategory(category || 'inlinenpc', inlineCategories || []);
-            otherOccupants.push({ name, color, id: typeof n === 'string' ? undefined : n.id });
+            otherOccupants.push({ name, color: npcColor || COLOR_NPC, id: typeof n === 'string' ? undefined : n.id });
         }
     });
 
@@ -173,9 +171,9 @@ export const drawRoomOccupants = (
 
         roomItems.forEach(item => {
             ctx.save();
-            ctx.fillStyle = COLOR_OBJ;
+            ctx.fillStyle = objectColor || COLOR_OBJ;
             ctx.shadowBlur = 4 + pulse * 2;
-            ctx.shadowColor = COLOR_OBJ;
+            ctx.shadowColor = objectColor || COLOR_OBJ;
             ctx.fillRect(startX, itemY, itemSize, itemSize);
             ctx.restore();
             startX += itemSize + itemGap;
@@ -199,7 +197,7 @@ export const drawRoomOccupants = (
         }
         
         const isActuallyPlayer = anim.isPlayer || (lastPetalPositions.get(key)?.isPlayer) || (anim.name ? lastPetalPositions.get('name:' + anim.name.toLowerCase())?.isPlayer : false);
-        const color = isActuallyPlayer ? 'rgba(125, 211, 252, 1)' : getGlowColorForCategory(getCategoryForName(anim.name, inlineCategories || []) || 'inlinenpc', inlineCategories || []);
+        const color = isActuallyPlayer ? (playerColor || COLOR_PLAYER) : (npcColor || COLOR_NPC);
 
         const startX = px + anim.startOffset.dx;
         const startY = py + anim.startOffset.dy;

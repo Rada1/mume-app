@@ -38,30 +38,28 @@
 }
 
 .app-content-shaker {
-    width: 100%;
     flex: 1;
-    min-height: 0;
-    position: relative;
     display: flex;
     flex-direction: column;
-    transform-style: flat;
+    min-height: 0; /* CRITICAL: prevent flex item from growing beyond parent */
 }
 
 .content-layer {
-    position: relative;
+    flex: 1;
     display: flex;
     flex-direction: column;
-    flex: 1;
+    min-height: 0; /* CRITICAL: force flex item to obey parent height */
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
     width: 100%;
-    max-width: 850px !important;
-    margin: 0 auto !important;
+    z-index: 5000;
+    overflow: visible; /* Show tactical buttons on the right */
     padding: 10px;
     padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-    overflow: hidden;
-    z-index: var(--z-content); /* Base layer for main content */
+    box-sizing: border-box;
     pointer-events: none;
     transition: padding-bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    box-sizing: border-box; /* Ensure padding doesn't cause overflow */
 }
 
 /* Ensure the log container is the primary interaction target within the content layer */
@@ -73,6 +71,30 @@
     display: flex;
     flex-direction: column;
     min-height: 0; /* Critical for flex scrolling */
+    overflow: hidden; /* Default to hidden to ensure log bottom respects boundaries */
+    
+    /* Desktop narrow log constraint */
+    max-width: 80ch;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Allow buttons to spill out on desktop if needed, but not on mobile portrait */
+@media (min-width: 1025px) {
+    .message-log-container {
+        overflow: visible;
+    }
+}
+
+
+.message-log-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    position: relative;
+    background: transparent;
+    overflow: visible;
 }
 
 .content-layer>* {
@@ -114,7 +136,7 @@
 
 /* Force Desktop Overrides */
 .force-desktop .content-layer {
-    max-width: 850px !important;
+    max-width: 800px !important;
     padding: 10px !important;
     padding-bottom: 10px !important;
 }
@@ -127,7 +149,7 @@
 .force-portrait .content-layer,
 .force-landscape .content-layer {
     padding: 0 !important;
-    max-width: 850px !important;
+    max-width: 800px !important;
     margin: 0 auto !important;
 }
 
@@ -158,7 +180,7 @@
 .is-landscape .app-content-shaker {
     display: flex !important;
     flex-direction: row-reverse !important;
-    height: 100vh !important;
+    height: 100dvh !important;
     width: 100vw !important;
     overflow: visible !important;
     position: relative;
@@ -177,7 +199,7 @@
     padding: 0 8px 10px 8px !important; /* Preserve bottom padding for input area */
     
     /* Reverting stretch: restore centering */
-    max-width: 850px !important;
+    max-width: 800px !important;
     margin: 0 auto !important;
     flex: 1 !important; /* Fill height */
 }

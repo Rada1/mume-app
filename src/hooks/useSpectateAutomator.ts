@@ -58,6 +58,10 @@ export function useSpectateAutomator(deps: SpectateAutomatorDeps) {
         executeCommand(`/snoop -prompt -gmcp ${name}`, true, true);
         executeCommand(`tell ${name} You are now being spectated`, true, true);
         setLastSnoopStartTime(Date.now());
+        
+        // Use useModeStore's startSpectate to ensure all state is synced
+        useModeStore.getState().startSpectate(name);
+        
         // Set name immediately so HUD updates before GMCP arrives
         if (deps.setSpectateCharacterName) {
             deps.setSpectateCharacterName(name);
@@ -90,6 +94,7 @@ export function useSpectateAutomator(deps: SpectateAutomatorDeps) {
             }
             
             // If we are stopping and queue is empty, also clear current name + state
+            useModeStore.getState().stopSpectate();
             if (deps.setSpectateCharacterName) deps.setSpectateCharacterName(null);
             if (deps.resetSpectateContext) deps.resetSpectateContext();
             return prev;

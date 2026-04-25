@@ -18,6 +18,7 @@ import { useAtmosphereParser } from './useAtmosphereParser';
 import { usePromptParser } from './usePromptParser';
 import { useAccountParser } from './useAccountParser';
 import { useTimeParser } from './useTimeParser';
+import { useLogGmcpParser } from './useLogGmcpParser';
 import { useLineProcessor } from './useLineProcessor';
 import { useStageInitializer } from './useStageInitializer';
 import { useStageManager } from './useStageManager';
@@ -70,6 +71,32 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         addDiagnosticLog: deps.addDiagnosticLog,
         tempEntitiesRef,
         inlineCategories: deps.inlineCategories || []
+    });
+
+    const { parseLogGmcp, resetSpectateContext } = useLogGmcpParser({
+        isSpectateMode: deps.isSpectateMode,
+        sessionMode: deps.sessionMode,
+        addMessage: deps.addMessage,
+        setSpectateStats: deps.setSpectateStats,
+        setSpectateWaiting: deps.setSpectateWaiting,
+        setSpectateCharacterName: deps.setSpectateCharacterName,
+        spectateCharacterName: deps.spectateCharacterName,
+        characterName: session.game.characterName,
+        mapperRef: deps.mapperRef,
+        setRoomName: deps.setSpectateRoomName,
+        setRoomDesc: deps.setSpectateRoomDesc,
+        setRoomZone: deps.setSpectateRoomZone,
+        setRoomNum: deps.setSpectateRoomNum, // Correctly route snooped room updates to spectate state
+        setCurrentTerrain,
+        setRoomExits,
+        setRoomPlayers,
+        setRoomNpcs,
+        setRoomItems: sessionSetRoomItems,
+        detectLighting: deps.detectLighting,
+        setWeather: deps.setWeather,
+        setIsFoggy: deps.setIsFoggy,
+        playMovementSound: deps.playMovementSound,
+        playDoorSound: deps.playDoorSound
     });
 
     const { finalizeCapture } = useStageManager({
@@ -198,7 +225,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         roomPlayers: deps.roomPlayers,
         setCharacterInfo,
         setOpponentHealthStatus,
-        setOpponentName
+        setOpponentName,
+        setSpectateInCombat: deps.setSpectateInCombat,
+        setSpectateOpponentName: deps.setSpectateOpponentName,
+        setSpectateOpponentStatus: deps.setSpectateOpponentStatus
     });
 
     const room = useRoomParser({
@@ -240,6 +270,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         playDoorSound: deps.playDoorSound,
         setPlayerPosition,
         isSpectateMode: deps.isSpectateMode,
+        setSpectatePosition: deps.setSpectatePosition,
     });
 
     const prompt = usePromptParser({
@@ -252,7 +283,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         finalizeCapture,
         isSpectateMode: deps.isSpectateMode, 
         setSpectateStats: deps.setSpectateStats, 
-        captureStage: deps.captureStage
+        captureStage: deps.captureStage,
+        setSpectateOpponentName: deps.setSpectateOpponentName,
+        setSpectateOpponentStatus: deps.setSpectateOpponentStatus
     });
 
     const account = useAccountParser({
@@ -282,39 +315,58 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         executeCommand: (cmd: string) => deps.executeCommandRef.current?.(cmd),
         addSystemMessage: deps.addSystemMessage,
         isSpectateMode: deps.isSpectateMode,
-            });
+        resetSpectateContext
+    });
 
     const processLine = useCallback((line: string, tokens?: any) => {
         if (line === null || line === undefined) return;
 
         const cleanLine = line.replace(/\r/g, '');
-        const textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '').replace(/<[^>]*>/g, '');
+        
+        // --- Snoop Prefix Detection ---
+        // MUME snoops prefix lines with &<letter> (e.g. &E). We detect this, 
+        // strip it for cleaner parsing, and set the isSnoop flag.
+        // This regex ensures we don't accidentally consume the ANSI codes or 
+        // leading spaces that belong to the actual game line (like room names).
+        let isSnoop = false;
+        let lineToParse = cleanLine;
+        const snoopRegex = /^((?:\x1b\[[0-9;]*m|\s)*)&[a-zA-Z]( ?)/;
+        const snoopMatch = cleanLine.match(snoopRegex);
+        if (snoopMatch) {
+            isSnoop = true;
+            lineToParse = cleanLine.replace(snoopRegex, '$1');
+        }
+
+        // Process Log GMCP (which handles &E Core.Ping etc.)
+        if (parseLogGmcp(cleanLine, isSnoop)) return;
+
+        const textOnly = lineToParse.replace(/\x1b\[[0-9;]*m/g, '').replace(/<[^>]*>/g, '');
         const lower = textOnly.toLowerCase();
 
         // --- 1. System/Trigger Processing ---
-        processTriggers(cleanLine);
+        processTriggers(lineToParse);
 
         // --- 2. Visibility and Routing ---
-        const isImportant = cleanLine.includes('\x1b[1m') || cleanLine.includes('\x1b[33m');
-        const isRoom = cleanLine.includes('\x1b[32m') && textOnly.startsWith('  ');
+        const isImportant = lineToParse.includes('\x1b[1m') || lineToParse.includes('\x1b[33m');
+        const isRoom = lineToParse.includes('\x1b[32m') && textOnly.startsWith('  ');
         const isRoomDescription = isRoom && textOnly.length > 5;
         const isEndPrompt = textOnly.includes('>') || textOnly.includes(':');
 
-        const isVisible = router.determineVisibility(lower, isImportant, isRoom, isRoomDescription, isEndPrompt, deps.isNewbieMode, cleanLine);
+        const isVisible = router.determineVisibility(lower, isImportant, isRoom, isRoomDescription, isEndPrompt, deps.isNewbieMode, lineToParse);
         
         // --- 3. Sub-Parser Dispatch ---
         let msgType: MessageType = 'game';
         
         // Combat
-        const combatType = combat.parseCombatLine(textOnly, cleanLine);
+        const combatType = combat.parseCombatLine(textOnly, lineToParse, isSnoop);
         if (combatType) msgType = combatType;
 
         // Room/Movement
-        const roomType = room.parseRoomLine(textOnly, cleanLine);
+        const roomType = room.parseRoomLine(textOnly, lineToParse, isSnoop);
         if (roomType) msgType = roomType;
 
         // Communication
-        const commResult = comm.parseComm(cleanLine, textOnly, lower);
+        const commResult = comm.parseComm(lineToParse, textOnly, lower);
         if (commResult.isSuppressed) return;
         if (commResult.msgType !== 'game') msgType = commResult.msgType;
 
@@ -324,13 +376,13 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if (stat.parseDetailedScore(textOnly, lower)) msgType = 'info' as any;
 
         // --- 4. Prompt Parsing ---
-        const promptInfo = prompt.parsePrompt(textOnly);
+        const promptInfo = prompt.parsePrompt(textOnly, isSnoop);
         if (promptInfo.isMatch) {
             msgType = 'prompt' as any;
         }
 
         // Atmosphere
-        atmosphere.parseAtmosphere(lower);
+        atmosphere.parseAtmosphere(lower, isSnoop);
 
         // Time
         if (time.parseTimeLine(lower)) msgType = 'info' as any;
@@ -347,14 +399,14 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         const stage = deps.captureStage.current;
-        initializeStage(textOnly, lower, cleanLine, lower, textOnly);
+        initializeStage(textOnly, lower, lineToParse, lower, textOnly);
 
-        const finalType = router.routeMessage(msgType, textOnly, lower, cleanLine, textOnly, isEndPrompt) as MessageType;
-        console.log(`[useGameParser] Processed line: "${textOnly.substring(0, 20)}", stage=${stage}, finalType=${finalType}`);
+        const finalType = router.routeMessage(msgType, textOnly, lower, lineToParse, textOnly, isEndPrompt) as MessageType;
+        console.log(`[useGameParser] Processed line: "${textOnly.substring(0, 20)}", stage=${stage}, finalType=${finalType}, isSnoop=${isSnoop}`);
 
         // --- 3.5 Capture Buffer Population ---
         if (stage !== 'none') {
-            const lines = lineProcessor.createLines(cleanLine, textOnly, lower, finalType);
+            const lines = lineProcessor.createLines(lineToParse, textOnly, lower, finalType);
             if (stage === 'inv') tempInvRef.current.push(...lines);
             else if (stage === 'eq') tempEqRef.current.push(...lines);
             else if (stage === 'stat') tempStatsRef.current.push(...lines);
@@ -364,7 +416,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         // --- 4. Highlighting and Display ---
         if (isVisible) {
             const mid = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-            const ansiHtml = deps.ansiConvert.toHtml(cleanLine);
+            const ansiHtml = deps.ansiConvert.toHtml(lineToParse);
 
             const rStore = useRoomStore.getState();
             const onlinePlayerNames = (rStore.whoList || []).map((entry: string) => 
@@ -393,9 +445,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             const tokenizerContext = {
                 target: session.vitals.target,
                 currentOccupants: deps.roomPlayers || [],
-                roomNpcs: session.game.roomNpcs || [],
+                roomNpcs: deps.roomNpcs || [],
                 activeGroupMembers: deps.groupMembers || [],
-                roomItems: session.game.roomItems || [],
+                roomItems: deps.roomItems || [],
                 discoveredItems: [], 
                 inlineCategories: deps.inlineCategories || [],
                 buttons: deps.btn?.buttonsRef?.current || [],
@@ -403,7 +455,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 onlinePlayers: onlinePlayerNames
             };
 
-            const messageObj = PipelineOrchestrator.processTextLine(cleanLine, ansiHtml, finalType, tokenizerContext);
+            const messageObj = PipelineOrchestrator.processTextLine(lineToParse, ansiHtml, finalType, tokenizerContext);
             deps.addMessage(
                 finalType, 
                 textOnly, 
@@ -425,7 +477,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 commResult.commText ? Tokenizer.tokenize(commResult.commText, tokenizerContext) : undefined,
                 undefined, // providedCombatSide
                 undefined, // providedIsHitImpact
-                undefined  // providedIsHitterImpact
+                undefined, // providedIsHitterImpact
+                isSnoop    // providedIsSnoop
             );
         }
 
@@ -433,10 +486,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         gmcpBus.emit('Game.Text', { type: finalType, text: textOnly });
 
         // Detect items for mapper discovery
-        router.detectItemsInRoom(textOnly, cleanLine, !isVisible);
+        router.detectItemsInRoom(textOnly, lineToParse, !isVisible);
 
     }, [
-        processTriggers, router, combat, room, account, stat, atmosphere, time, 
+        processTriggers, router, combat, room, account, stat, atmosphere, time, parseLogGmcp,
         deps.addMessage, deps.isNewbieMode, deps.roomPlayers, session.game, deps.groupMembers, deps.inlineCategories, deps.btn, session.vitals.target, deps.captureStage, deps.ansiConvert
     ]);
 

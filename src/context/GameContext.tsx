@@ -81,13 +81,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [highlightVersion, setHighlightVersion] = useState(0);
     const refreshLogHighlights = useCallback(() => setHighlightVersion(v => v + 1), []);
     
-    const { vitals: v, game: s } = useGameProviderState();
-    const ui = useUIStore();
-    const settingsStore = useSettingsStore();
-    const mapperRef = useRef<MapperRef>(null);
-    
-    // 2. Audio System
+    // 1. Audio System
     useAmbientController();
+    const audioEffects = useAudioEffects();
     const {
         audioCtxRef, initAudio, playMovementSound, playDoorSound, playClickSound,
         playHitImpactSound, playOofSound, playSlashSound, playCleaveSound,
@@ -96,7 +92,18 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playIncantationSound, stopIncantationSound, playMagicExplosionSound,
         playCommMessageSound, triggerHaptic, playEffect,
         playSound, playRandomSound
-    } = useAudioEffects();
+    } = audioEffects;
+
+    // 2. Global State
+    const { vitals: v, game: s } = useGameProviderState({
+        playCommMessageSound,
+        playCombatHitSound: playHitImpactSound,
+        playLevelUpSound: playLevelSound
+    });
+
+    const ui = useUIStore();
+    const settingsStore = useSettingsStore();
+    const mapperRef = useRef<MapperRef>(null);
 
     // 3. Logic Hooks
     const env = useEnvironment({
@@ -145,7 +152,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // data into the main log or losing our own tells while viewing the target.
     const routedAddMessage = React.useCallback((type: MessageType, text: string, extra?: any, mid?: string, isRoomName?: boolean, precalculated?: any, shopItem?: any, practiceSkill?: any, practiceHeader?: any, isSystem?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, commSenderTokens?: any, commTextTokens?: any, providedCombatSide?: any, providedIsHitImpact?: boolean, providedIsHitterImpact?: boolean, providedIsSnoop?: boolean, providedIsSnoopInput?: boolean) => {
         const args = [type, text, extra, mid, isRoomName, precalculated, shopItem, practiceSkill, practiceHeader, isSystem, replyTarget, replyCommand, commSender, commAction, commText, commColor, commSenderTokens, commTextTokens, providedCombatSide, providedIsHitImpact, providedIsHitterImpact, providedIsSnoop, providedIsSnoopInput] as const;
-        if (type === 'snoop' || type === 'snoop-command' || type === 'snoop-vitals') {
+        if (type === 'snoop' || type === 'snoop-command' || type === 'snoop-vitals' || providedIsSnoop) {
             (s.spectateSession.log.addMessage as any)(...args);
         } else {
             (s.userSession.log.addMessage as any)(...args);
@@ -164,27 +171,29 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, []);
 
     const gmcpHandlers = useGmcpHandlers({
-        mapperRef: mapperRef, roomDescRef: s.roomDescRef,
-        setCurrentTerrain: s.setCurrentTerrain,
-        setRoomPlayers: s.setRoomPlayers,
-        setRoomNpcs: s.setRoomNpcs, setRoomItems: s.setRoomItems, characterName: s.characterName,
-        setAbilities: s.setAbilities, addMessage, setCharacterName: s.setCharacterName,
-        setPlayerPosition: s.setPlayerPosition,
-        setInCombat: s.setInCombat,
-        setRoomName: s.setRoomName,
-        setRoomDesc: s.setRoomDesc,
-        setRoomZone: s.setRoomZone,
-        setRoomExits: s.setRoomExits, setDiscoveredItems: s.setDiscoveredItems,
-        setBufferName: v.setBufferName, setPlayerHealthStatus: v.setPlayerHealthStatus,
-        setOpponentHealthStatus: v.setOpponentHealthStatus,
-        setBufferHealthStatus: v.setBufferHealthStatus, setOpponentName: v.setOpponentName,
-        setCharacterInfo: v.setCharacterInfo, characterInfo: v.characterInfo, opponentName: v.opponentName,
-        bufferName: v.bufferName, roomPlayers: s.roomPlayers, roomNpcs: s.roomNpcs, setGroupMembers: v.setGroupMembers,
-        setMumeEditState: s.setMumeEditState, setWhoList: s.setWhoList, setWhereList: s.setWhereList,
-        opponentId: v.opponentId, setOpponentId: v.setOpponentId,
+        mapperRef: mapperRef, roomDescRef: s.userSession.game.roomDescRef,
+        setCurrentTerrain: s.userSession.game.setCurrentTerrain,
+        setRoomPlayers: s.userSession.game.setRoomPlayers,
+        setRoomNpcs: s.userSession.game.setRoomNpcs, setRoomItems: s.userSession.game.setRoomItems, characterName: s.userSession.game.characterName,
+        setAbilities: s.userSession.game.setAbilities, addMessage, setCharacterName: s.userSession.game.setCharacterName,
+        setPlayerPosition: s.userSession.game.setPlayerPosition,
+        setInCombat: s.userSession.game.setInCombat,
+        setRoomName: s.userSession.game.setRoomName,
+        setRoomDesc: s.userSession.game.setRoomDesc,
+        setRoomZone: s.userSession.game.setRoomZone,
+        setRoomExits: s.userSession.game.setRoomExits, setDiscoveredItems: s.userSession.game.setDiscoveredItems,
+        setBufferName: s.userSession.vitals.setBufferName, setPlayerHealthStatus: s.userSession.vitals.setPlayerHealthStatus,
+        setOpponentHealthStatus: s.userSession.vitals.setOpponentHealthStatus,
+        setBufferHealthStatus: s.userSession.vitals.setBufferHealthStatus, setOpponentName: s.userSession.vitals.setOpponentName,
+        setCharacterInfo: s.userSession.vitals.setCharacterInfo, characterInfo: s.userSession.vitals.characterInfo, opponentName: s.userSession.vitals.opponentName,
+        bufferName: s.userSession.vitals.bufferName, roomPlayers: s.userSession.game.roomPlayers, roomNpcs: s.userSession.game.roomNpcs, setGroupMembers: s.userSession.vitals.setGroupMembers,
+        setMumeEditState: s.setMumeEditState, setWhoList: s.userSession.game.setWhoList, setWhereList: s.userSession.game.setWhereList,
+        opponentId: s.userSession.vitals.opponentId, setOpponentId: s.userSession.vitals.setOpponentId,
         detectLighting: env.detectLighting,
-        playMovementSound, playDoorSound, setWeather: s.setWeather, setIsFoggy: s.setIsFoggy, setStats: s.setStats,
-        playerPositionRef: s.playerPositionRef, setIsRiding: s.setIsRiding, isRidingRef: s.isRidingRef, isSpectateMode: s.isSpectateMode, inlineCategories: s.inlineCategories,
+        playMovementSound, playDoorSound, setWeather: s.userSession.game.setWeather, setIsFoggy: s.userSession.game.setIsFoggy, 
+        setStats: s.userSession.vitals.setStats, // ALWAYS update user session with real GMCP
+        playerPositionRef: s.userSession.game.playerPositionRef, setIsRiding: s.userSession.game.setIsRiding, isRidingRef: s.userSession.game.isRidingRef, isSpectateMode: s.isSpectateMode, inlineCategories: s.inlineCategories,
+        registerEntity: s.registry.registerEntity,
         sendGMCP: sendGMCPProxy,
         pendingGmcpCommRef
     });
@@ -415,6 +424,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setAccountState: s.setAccountState,
         setIsSpectateMode: mode.setIsSpectating,
         setGameTime: s.setGameTime,
+        setRoomNum: s.userSession.game.setRoomNum,
+        setUserRoomNum: s.userSession.game.setRoomNum,
         setWeather: s.setWeather,
         setIsFoggy: s.setIsFoggy,
         setLightningEnabled: s.setLightningEnabled,
@@ -423,6 +434,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setSpectateStats: s.setSpectateStats,
         setSpectateWaiting: s.setSpectateWaiting,
         setSpectateCharacterName: s.setSpectateCharacterName,
+        setSpectatePosition: s.setSpectatePosition,
+        setSpectateInCombat: s.setSpectateInCombat,
+        setSpectateOpponentName: s.setSpectateOpponentName,
+        setSpectateOpponentStatus: s.setSpectateOpponentStatus,
+        setSpectateRoomNum: s.spectateSession.game.setRoomNum,
+        setSpectateRoomName: s.setSpectateRoomName,
+        setSpectateRoomDesc: s.setSpectateRoomDesc,
+        setSpectateRoomZone: s.setSpectateRoomZone,
         // Drawer Setters
         setInventoryLines: s.setInventoryLines,
         setEqLines: s.setEqLines,
@@ -542,10 +561,26 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsMapExpanded: ui.setMapExpanded,
         setIsSetManagerOpen: (open: boolean) => ui.setUI({ setManagerOpen: open }),
         setIsPlayersOpen: ui.setIsPlayersOpen,
-        handleTabClick: (drawer: any) => ui.setDrawer(drawer),
+        handleTabClick: (drawer: any) => {
+            ui.setDrawer(drawer);
+            if (drawer !== 'none') {
+                ui.setMapExpanded(false);
+                // Trigger fresh data capture for the drawer
+                if (drawer === 'inventory') controller.executeCommand('inv', true, true, false, false, { fromUi: true });
+                else if (drawer === 'equipment') controller.executeCommand('eq', true, true, false, false, { fromUi: true });
+                else if (drawer === 'stats' || drawer === 'character') controller.executeCommand('stat', true, true, false, false, { fromUi: true });
+                else if (drawer === 'players') controller.executeCommand('who', true, true, false, false, { fromUi: true });
+            }
+        },
         displayInventoryLines: s.inventoryLines,
         displayEqLines: s.eqLines,
-        toggleMap: () => ui.setMapExpanded(!ui.mapExpanded),
+        toggleMap: () => {
+            const nextState = !ui.mapExpanded;
+            ui.setMapExpanded(nextState);
+            if (nextState) {
+                ui.setDrawer('none');
+            }
+        },
         characterName: s.characterName,
         isRecording: s.userSession.recorder.isRecording,
         duration: s.userSession.recorder.duration,

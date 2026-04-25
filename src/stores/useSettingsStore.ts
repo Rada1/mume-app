@@ -5,7 +5,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { UiMode, TeleportTarget, InlineCategoryConfig } from '../types';
+import { UiMode, TeleportTarget, InlineCategoryConfig, ZoneMusicMapping } from '../types';
 import { canonicalizeCategoryId } from '../utils/categorizationUtils';
 import { DEFAULT_URL } from '../constants';
 
@@ -49,7 +49,7 @@ interface SettingsState {
     teleportTargets: TeleportTarget[];
     inlineCategories: InlineCategoryConfig[];
     favorites: string[];
-    zoneMusic: boolean;
+    zoneMusic: ZoneMusicMapping[];
     masterVolume: number;
     sfxVolume: number;
     musicVolume: number;
@@ -91,7 +91,7 @@ interface SettingsState {
     setTeleportTargets: (val: TeleportTarget[]) => void;
     setInlineCategories: (val: InlineCategoryConfig[]) => void;
     setFavorites: (val: string[]) => void;
-    setZoneMusic: (val: boolean) => void;
+    setZoneMusic: (val: ZoneMusicMapping[]) => void;
     setMasterVolume: (val: number) => void;
     setSfxVolume: (val: number) => void;
     setMusicVolume: (val: number) => void;
@@ -138,7 +138,7 @@ export const useSettingsStore = create<SettingsState>()(
             teleportTargets: [],
             inlineCategories: [],
             favorites: [],
-            zoneMusic: true,
+            zoneMusic: [],
             masterVolume: 1.0,
             sfxVolume: 0.7,
             musicVolume: 0.5,
@@ -188,9 +188,9 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 1,
+            version: 2,
             migrate: (persistedState: any, version: number) => {
-                if (version === 0) {
+                if (version < 1) {
                     // Update category IDs to canonical format
                     if (persistedState.inlineCategories && Array.isArray(persistedState.inlineCategories)) {
                         persistedState.inlineCategories = persistedState.inlineCategories.map((cat: any) => {
@@ -204,6 +204,14 @@ export const useSettingsStore = create<SettingsState>()(
                         });
                     }
                 }
+                
+                if (version < 2) {
+                    // Convert zoneMusic from boolean to array
+                    if (typeof persistedState.zoneMusic === 'boolean') {
+                        persistedState.zoneMusic = [];
+                    }
+                }
+                
                 return persistedState;
             }
         }

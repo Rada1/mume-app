@@ -249,7 +249,7 @@ export function useViewport(
             const targetCols = baseCols + timestampWidth;
 
             // Calculate total horizontal padding
-            let totalPadding = 18; // Standard .message padding: 6px left + 12px right
+            let totalPadding = 12; // Standard .message padding: 6px left + 6px right
 
             if (isMobile && !isLandscape) {
                 // Mobile portrait .message-log padding: 8px left + 8px right (overrides newbie padding in CSS)
@@ -260,19 +260,23 @@ export function useViewport(
             }
 
             // Sub-pixel buffer: use a slightly larger buffer on mobile to prevent rounding-induced wrapping
-            const safetyBuffer = isMobile ? 4 : 2;
+            const safetyBuffer = 0; 
             const usableWidth = Math.max(0, width - totalPadding - safetyBuffer); 
 
             // Calculate font size for perfect 80-column fit
-            // We target slightly more than required columns (targetCols + 0.5) to ensure 
-            // that floor(usableWidth / charWidth) always hits the target count.
-            let calculatedFontSize = usableWidth / ((targetCols + 0.5) * charWidthRatio);
+            // We target the exact targetCols to maximize width coverage.
+            // Using 0.58 as a precision multiplier for Space Mono / Roboto Mono
+            const charWidthMultiplier = 0.58;
+            let calculatedFontSize = usableWidth / (targetCols * charWidthMultiplier);
 
             // Apply user zoom multiplier
             calculatedFontSize *= logFontSize;
 
-            // Safety clamps: never go below 6px or above 48px
-            const safeSize = Math.min(48, Math.max(6, calculatedFontSize));
+            // Safety clamps: 
+            // On mobile portrait, we allow it to go down to 6px to satisfy the "fit 80" requirement.
+            // On desktop/landscape, we prefer readability (min 13.5px) even if it causes some wrapping on narrow windows.
+            const minSize = (isMobile && !isLandscape) ? 6 : 13.5;
+            const safeSize = Math.min(48, Math.max(minSize, calculatedFontSize));
             document.documentElement.style.setProperty('--dynamic-log-size', `${safeSize}px`);
             setLogFontSizePx(safeSize);
 

@@ -233,7 +233,7 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
         }}>
             <div className="floating-group-card" ref={popoverRef} onClick={(e) => e.stopPropagation()} style={{
                 width: isMobile ? 'calc(100% - 32px)' : '92%',
-                maxWidth: '850px',
+                maxWidth: '800px',
                 height: 'auto',
                 maxHeight: isMobile ? '75vh' : '85vh',
                 background: 'rgba(15, 15, 20, 0.65)',

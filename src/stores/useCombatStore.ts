@@ -12,48 +12,50 @@ export const useCombatStore = create<CombatStore>((set, get) => ({
 
 // --- Event Subscriptions ---
 
-gmcpBus.on('Char.Opponent', (data: string | null) => {
-    if (useModeStore.getState().isSpectating) return;
+gmcpBus.on('Char.Opponent', (data: any) => {
+    if (data?.isSnooped) return;
     const store = useCombatStore.getState();
-    if (typeof data === 'string') {
-        const idNum = parseInt(data, 10);
+    const value = data?.isSnooped !== undefined ? data.data : data;
+    if (typeof value === 'string') {
+        const idNum = parseInt(value, 10);
         if (!isNaN(idNum) && idNum > 0) {
             store.setOpponent(idNum, null, null);
         } else {
-            store.setOpponent(null, data, null);
+            store.setOpponent(null, value, null);
         }
-    } else if (data === null) {
+    } else if (value === null) {
         store.setOpponent(null, null, null);
     }
 });
 
-gmcpBus.on('Char.Buffer', (data: string | null) => {
-    if (useModeStore.getState().isSpectating) return;
+gmcpBus.on('Char.Buffer', (data: any) => {
+    if (data?.isSnooped) return;
     const store = useCombatStore.getState();
-    if (typeof data === 'string') {
-        store.setBuffer(data, null);
-    } else if (data === null) {
+    const value = data?.isSnooped !== undefined ? data.data : data;
+    if (typeof value === 'string') {
+        store.setBuffer(value, null);
+    } else if (value === null) {
         store.setBuffer(null, null);
     }
 });
 
-gmcpBus.on('Room.CharsCombat', (data: any[]) => {
-    if (useModeStore.getState().isSpectating) return;
+gmcpBus.on('Room.CharsCombat', (data: any) => {
+    if (data.isSnooped) return;
     useCombatStore.getState().applyRoomCharsCombat(data);
 });
 
-gmcpBus.on('Group.Set', (data: any[]) => {
-    if (useModeStore.getState().isSpectating) return;
+gmcpBus.on('Group.Set', (data: any) => {
+    if (data.isSnooped) return;
     useCombatStore.getState().applyGroupSet(data);
 });
 
 gmcpBus.on('Group.Add', (data: any) => {
-    if (useModeStore.getState().isSpectating) return;
+    if (data.isSnooped) return;
     useCombatStore.getState().applyGroupAdd(data);
 });
 
 gmcpBus.on('Group.Remove', (data: any) => {
-    if (useModeStore.getState().isSpectating) return;
+    if (data.isSnooped) return;
     const store = useCombatStore.getState();
     if (data && data.id) {
         store.applyGroupRemove(data.id);
@@ -63,7 +65,7 @@ gmcpBus.on('Group.Remove', (data: any) => {
 });
 
 gmcpBus.on('Group.Update', (data: any) => {
-    if (useModeStore.getState().isSpectating) return;
+    if (data.isSnooped) return;
     useCombatStore.getState().applyGroupUpdate(data);
 });
 

@@ -72,7 +72,7 @@ export function useCombatParser(deps: CombatParserDeps) {
         
         if (!isMatch) return { isMatch: false };
 
-        const impactVerbs = ['hit', 'pierce', 'slash', 'smite', 'crush', 'pound', 'stab', 'cleave', 'wound', 'maul', 'strike', 'backstab', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shoot', 'shock', 'blast', 'struck', 'burn', 'chill', 'acid', 'poison'];
+        const impactVerbs = ['hit', 'pierce', 'slash', 'smite', 'crush', 'pound', 'stab', 'cleave', 'maul', 'strike', 'backstab', 'kick', 'bash', 'shatter', 'bite', 'sting', 'shoot', 'shock', 'blast', 'struck', 'burn', 'chill', 'acid', 'poison'];
         
         // Use regex with word boundaries for more robust matching regardless of punctuation
         const impactRegex = new RegExp(`\\b(${impactVerbs.join('|')})(?:es|s)?\\b`, 'i');
@@ -168,36 +168,36 @@ export function useCombatParser(deps: CombatParserDeps) {
         const xpTextMatch = lower.match(/you receive (\d+) experience/i);
         if (xpTextMatch) {
             const delta = parseInt(xpTextMatch[1], 10);
-            if (delta > 0) setCharacterInfo(prev => ({ ...prev, xp: prev.xp + delta }));
+            if (delta > 0 && !isSnoop) setCharacterInfo(prev => ({ ...prev, xp: prev.xp + delta }));
             triggerXpTicker?.();
             return true;
         } else if (/you receive your share of experience/i.test(lower)) {
             triggerXpTicker?.();
             return true;
         } else if (/you gain a level!/i.test(lower)) {
-            playLevelSound?.();
+            if (!isSnoop) playLevelSound?.();
             return true;
         }
         return false;
     }, [setCharacterInfo, triggerXpTicker, playLevelSound]);
 
-    const parseCombatLine = useCallback((textOnly: string, cleanLine: string): any => {
+    const parseCombatLine = useCallback((textOnly: string, cleanLine: string, isSnoop: boolean = false): any => {
         const lower = textOnly.toLowerCase();
 
         // 1. Detect Combat Exit/Death
-        if (handleCombatExit(lower)) return 'game';
+        if (handleCombatExit(lower, isSnoop)) return 'game';
 
         // 2. Detect XP Ticker
-        if (handleXpTicker(lower)) return 'game';
+        if (handleXpTicker(lower, isSnoop)) return 'game';
 
         // 3. Detect Combat Match
-        const match = checkCombatMatch(lower);
+        const match = checkCombatMatch(lower, isSnoop);
         if (match.isMatch) {
             // Play Sounds
             if (match.isImpact) {
                 const { verb, modifier } = match;
                 if (match.side === 'opponent' && match.isPlayerTarget) {
-                    deps.playOofSound?.();
+                    if (!isSnoop) deps.playOofSound?.();
                 } else if (match.side === 'player' || match.side === 'groupmate') {
                     if (verb === 'slash') deps.playSlashSound?.();
                     else if (verb === 'cleave') deps.playCleaveSound?.();

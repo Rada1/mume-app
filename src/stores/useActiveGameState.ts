@@ -18,14 +18,21 @@ import { useReplayCombatStore } from './replay/useReplayCombatStore';
 
 /**
  * Returns the currently active Vitals store.
+ * NOTE: Using this hook subscribes the component to ALL vitals changes.
+ * Prefer targeted hooks like useActiveTarget() or useActivePrompt().
  */
 export const useActiveVitals = (): VitalsStore => {
     const mode = useModeStore(state => state.mode);
     const isSpectating = useModeStore(state => state.isSpectating);
     const activeView = useModeStore(state => state.activeView);
     
-    if (mode === 'replay' || mode === 'scrubbing') return useReplayVitalsStore() as VitalsStore;
-    return (isSpectating && activeView === 'target' ? useSpectateVitalsStore() : useVitalsStore()) as VitalsStore;
+    // We must call all hooks to satisfy Rules of Hooks
+    const mainStore = useVitalsStore();
+    const spectateStore = useSpectateVitalsStore();
+    const replayStore = useReplayVitalsStore();
+
+    if (mode === 'replay' || mode === 'scrubbing') return replayStore as VitalsStore;
+    return (isSpectating && activeView === 'target' ? spectateStore : mainStore) as VitalsStore;
 };
 
 /**
@@ -71,8 +78,12 @@ export const useActiveRoom = (): RoomStore => {
     const isSpectating = useModeStore(state => state.isSpectating);
     const activeView = useModeStore(state => state.activeView);
     
-    if (mode === 'replay' || mode === 'scrubbing') return useReplayRoomStore() as RoomStore;
-    return (isSpectating && activeView === 'target' ? useSpectateRoomStore() : useRoomStore()) as RoomStore;
+    const mainStore = useRoomStore();
+    const spectateStore = useSpectateRoomStore();
+    const replayStore = useReplayRoomStore();
+
+    if (mode === 'replay' || mode === 'scrubbing') return replayStore as RoomStore;
+    return (isSpectating && activeView === 'target' ? spectateStore : mainStore) as RoomStore;
 };
 
 /**
@@ -93,8 +104,12 @@ export const useActiveCombat = (): CombatStore => {
     const isSpectating = useModeStore(state => state.isSpectating);
     const activeView = useModeStore(state => state.activeView);
     
-    if (mode === 'replay' || mode === 'scrubbing') return useReplayCombatStore() as CombatStore;
-    return (isSpectating && activeView === 'target' ? useSpectateCombatStore() : useCombatStore()) as CombatStore;
+    const mainStore = useCombatStore();
+    const spectateStore = useSpectateCombatStore();
+    const replayStore = useReplayCombatStore();
+
+    if (mode === 'replay' || mode === 'scrubbing') return replayStore as CombatStore;
+    return (isSpectating && activeView === 'target' ? spectateStore : mainStore) as CombatStore;
 };
 
 /**
@@ -111,14 +126,28 @@ export const getActiveCombat = (): CombatStore => {
  * Returns the active target name.
  */
 export const useActiveTarget = () => {
-    const vitals = useActiveVitals();
-    return (vitals as any).target;
+    const mode = useModeStore(state => state.mode);
+    const isSpectating = useModeStore(state => state.isSpectating && state.activeView === 'target');
+    
+    const mainTarget = useVitalsStore(state => state.target);
+    const spectateTarget = useSpectateVitalsStore(state => state.target);
+    const replayTarget = useReplayVitalsStore(state => state.target);
+
+    if (mode === 'replay' || mode === 'scrubbing') return replayTarget;
+    return isSpectating ? spectateTarget : mainTarget;
 };
 
 /**
  * Returns the active prompt.
  */
 export const useActivePrompt = () => {
-    const vitals = useActiveVitals();
-    return (vitals as any).activePrompt;
+    const mode = useModeStore(state => state.mode);
+    const isSpectating = useModeStore(state => state.isSpectating && state.activeView === 'target');
+    
+    const mainPrompt = useVitalsStore(state => state.activePrompt);
+    const spectatePrompt = useSpectateVitalsStore(state => state.activePrompt);
+    const replayPrompt = useReplayVitalsStore(state => state.activePrompt);
+
+    if (mode === 'replay' || mode === 'scrubbing') return replayPrompt;
+    return isSpectating ? spectatePrompt : mainPrompt;
 };

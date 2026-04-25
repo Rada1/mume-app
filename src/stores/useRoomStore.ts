@@ -14,23 +14,48 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
 // --- Event Subscriptions ---
 
 gmcpBus.on('Room.Info', (data) => {
-    if (useModeStore.getState().isSpectating) return;
+    if (data.isSnooped) return;
     useRoomStore.getState().applyRoomInfo(data);
 });
 
 gmcpBus.on('Room.UpdateExits', (data) => {
-    if (useModeStore.getState().isSpectating) return;
+    if (data.isSnooped) return;
     useRoomStore.getState().applyExitsUpdate(data);
 });
 
 gmcpBus.on('Room.Items', (data) => {
-    if (useModeStore.getState().isSpectating) return;
+    if (data.isSnooped) return;
     useRoomStore.getState().setItems(data as any);
 });
 
-// Occupant Add/Remove events are handled by useGmcpOccupants.ts in GameContext 
-// to allow for sophisticated classification, animation triggers, and entity registration.
+gmcpBus.on('Room.AddPlayer', (data) => {
+    if (data.isSnooped) return;
+    useRoomStore.getState().addPlayer(data);
+});
 
-// NPC Add/Remove events are also handled by useGmcpOccupants.ts
+gmcpBus.on('Room.RemovePlayer', (data) => {
+    if (data.isSnooped) return;
+    useRoomStore.getState().removePlayer(data);
+});
+
+gmcpBus.on('Room.Players', (data) => {
+    if (data.isSnooped) return;
+    useRoomStore.getState().setPlayers(data as any);
+});
+
+gmcpBus.on('Room.Npcs', (data) => {
+    if (data.isSnooped) return;
+    useRoomStore.getState().setNpcs(data as any);
+});
+
+gmcpBus.on('Room.AddNpc', (data) => {
+    if (data.isSnooped) return;
+    useRoomStore.getState().addNpc(data);
+});
+
+gmcpBus.on('Room.RemoveNpc', (data) => {
+    if (data.isSnooped) return;
+    useRoomStore.getState().removeNpc(data);
+});
 
 export const getRoom = () => useRoomStore.getState();

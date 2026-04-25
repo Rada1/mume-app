@@ -162,7 +162,7 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         }
 
         // 6. Stats / Score / Spell Speed / Affects
-        else if (isWaitingForStats.current && /\b(stat|score|st|sc|at|ob|db|pb|armor|armour|arm|mood|str|int|wis|dex|con|wil|exp|level|hits|mana|moves|spell|speed|vision|gold|qp|tnl)\b/i.test(lower)) {
+        else if (isWaitingForStats.current && (/\b(stat|score|st|sc|at|ob|db|pb|armor|armour|arm|mood|str|int|wis|dex|con|wil|exp|level|hits|mana|moves|spell|speed|vision|gold|qp|tnl)\b/i.test(lower) || /character information for/i.test(lower))) {
             const isScoreCommand = /\d+\/\d+ hits, \d+\/\d+ mana, and \d+\/\d+ moves/i.test(lower);
             const targetStage = isScoreCommand ? 'score' : 'stat';
             

@@ -24,13 +24,14 @@ interface RoomInfoProps {
     deathRoomId?: string | null;
     setDeathRoomId?: (val: string | null) => void;
     baseMapExitsRef?: React.MutableRefObject<Record<string, any>>;
+    activeView: string;
 }
 
 export const useRoomInfoHandler = ({
     roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef,
     nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef,
     firstExploredAtRef, triggerRender, onRoomInfoProcessed, addMessage, showDebugEchoes, preMoveRef,
-    deathRoomId, setDeathRoomId, baseMapExitsRef
+    deathRoomId, setDeathRoomId, baseMapExitsRef, activeView
 }: RoomInfoProps) => {
 
     const handleRoomInfo = useCallback((data: GmcpRoomInfo) => {
@@ -41,6 +42,7 @@ export const useRoomInfoHandler = ({
         let ghostData: any = null;
         let matchedInternalId: string | null = null;
         let discoverySource: string | null = null;
+        const isSpectateUpdate = data.spectating === true;
 
         if (gmcpId === undefined || gmcpId === null) return;
 
@@ -50,8 +52,10 @@ export const useRoomInfoHandler = ({
         const currentActiveRoom = activeRoomId ? roomsRef.current[activeRoomId] : null;
 
         const now = Date.now();
-        while (pendingMovesRef.current.length > 0 && now - pendingMovesRef.current[0].time > 5000) {
-            pendingMovesRef.current.shift();
+        if (!isSpectateUpdate) {
+            while (pendingMovesRef.current.length > 0 && now - pendingMovesRef.current[0].time > 5000) {
+                pendingMovesRef.current.shift();
+            }
         }
         
         // If we arrived via GMCP, we clear any dead-reckoning 'ghost' resolutions 
@@ -67,8 +71,8 @@ export const useRoomInfoHandler = ({
         
         // If ID didn't change, it's usually a refresh (look) UNLESS we are in a VNUM 0 area 
         // where multiple rooms might share the same "0" ID.
-        const hasPendingMove = pendingMovesRef.current.length > 0;
-        const isLikelyMove = idChanged || (hasPendingMove && isVnumZero);
+        const hasPendingMove = !isSpectateUpdate && pendingMovesRef.current.length > 0;
+        const isLikelyMove = !isSpectateUpdate && (idChanged || (hasPendingMove && isVnumZero));
 
         if (isLikelyMove) {
             // Early queue peek: what direction are we trying to move?
@@ -242,7 +246,16 @@ export const useRoomInfoHandler = ({
                 }
             }
         }
-        // If !isLikelyMove, this is a REFRESH (look, etc) - do NOT consume pending moves.
+        
+        // For spectate updates, we always jump directly to the matched internal ID if found
+        if (isSpectateUpdate && !isVnumZero) {
+            const gmcpIdStr = String(gmcpId);
+            const fastServerMatch = serverIdIndexRef.current[gmcpIdStr];
+            if (fastServerMatch) {
+                matchedInternalId = fastServerMatch;
+                ghostData = preloadedCoordsRef.current[matchedInternalId];
+            }
+        }
 
         // Calculate predicted coordinates first to allow usage in exit/neighbor validation
         let predX = currentActiveRoom ? Math.round(currentActiveRoom.x) : 0;
@@ -261,7 +274,7 @@ export const useRoomInfoHandler = ({
         }
 
         // Prioritize finding a room that's an existing exit from our current location
-        if (currentActiveRoom && dirUsed && currentActiveRoom.exits[dirUsed]) {
+        if (!isSpectateUpdate && currentActiveRoom && dirUsed && currentActiveRoom.exits[dirUsed]) {
             const ex = currentActiveRoom.exits[dirUsed];
             if (ex.target) {
                 const existingTarget = roomsRef.current[ex.target];
@@ -321,7 +334,7 @@ export const useRoomInfoHandler = ({
         if (!targetId) targetId = generateId();
 
         // --- Move Echo Logic (Always triggered if move was intended) ---
-        if (showDebugEchoes && (dirUsed || discoverySource || isLikelyMove)) {
+        if (!isSpectateUpdate && showDebugEchoes && (dirUsed || discoverySource || isLikelyMove)) {
             const gmcpDisplay = isVnumZero ? 'DARK/0' : gmcpId;
             const debugMsg = `[Mapper] Move: ${dirUsed || 'Snap'} -> Pred: ${predX},${predY},${predZ} | GMCP: ${gmcpDisplay}${discoverySource ? ` (By ${discoverySource})` : ''} | Target: ${targetId.includes('ghost') || targetId.includes('-') ? 'NEW' : 'MATCHED'}`;
             addMessage?.('system', debugMsg);
@@ -372,7 +385,7 @@ export const useRoomInfoHandler = ({
             };
             newRooms[targetId!] = newRoom;
 
-            if (currentActiveRoom && dirUsed && activeRoomId !== targetId) {
+            if (!isSpectateUpdate && currentActiveRoom && dirUsed && activeRoomId !== targetId) {
                 newRooms[currentActiveRoom.id] = {
                     ...currentActiveRoom,
                     exits: { ...currentActiveRoom.exits, [dirUsed]: { ...currentActiveRoom.exits[dirUsed], target: targetId!, gmcpDestId: Number(gmcpId) || 0, closed: false } }
@@ -403,7 +416,7 @@ export const useRoomInfoHandler = ({
                 arraysDiffer(existingRoom.loadFlags || [], newLoadFlags) ||
                 arraysDiffer(existingRoom.roomQuestFlags || [], newRoomQuestFlags) ||
                 (ghostData && (existingRoom.x !== ghostData[0] || existingRoom.y !== ghostData[1])) ||
-                (currentActiveRoom && dirUsed && activeRoomId !== targetId) ||
+                (!isSpectateUpdate && currentActiveRoom && dirUsed && activeRoomId !== targetId) ||
                 (data.light !== undefined && existingRoom.light !== data.light) ||
                 (data.sundeath !== undefined && existingRoom.sundeath !== data.sundeath)
             );
@@ -428,7 +441,7 @@ export const useRoomInfoHandler = ({
                     const [nx, ny, nz] = ghostData;
                     newRooms[targetId!] = { ...newRooms[targetId!], x: nx, y: ny, z: nz };
                 }
-                if (currentActiveRoom && dirUsed && activeRoomId !== targetId) {
+                if (!isSpectateUpdate && currentActiveRoom && dirUsed && activeRoomId !== targetId) {
                     newRooms[currentActiveRoom.id] = { ...currentActiveRoom, exits: { ...currentActiveRoom.exits, [dirUsed]: { ...currentActiveRoom.exits[dirUsed], target: targetId!, gmcpDestId: Number(gmcpId) || 0, closed: false } } };
                     const d = DIRS[dirUsed];
                     if (d && d.opp) newRooms[targetId!] = { ...newRooms[targetId!], exits: { ...newRooms[targetId!].exits, [d.opp]: { ...newRooms[targetId!].exits[d.opp], target: currentActiveRoom.id, closed: false } } };
@@ -491,19 +504,23 @@ export const useRoomInfoHandler = ({
         }
 
         // Update the current room ID state if it changed
-        const roomChanged = targetId !== activeRoomId;
+        const isUpdateForActiveView = (isSpectateUpdate && activeView === 'target') || (!isSpectateUpdate && activeView === 'self');
+        const roomChanged = isUpdateForActiveView && targetId !== activeRoomId;
+        
         if (roomChanged) {
             setCurrentRoomId(targetId);
         }
 
         // Clear deathRoomId if we just entered the room where we died
-        if (targetId && deathRoomId && targetId === deathRoomId && setDeathRoomId) {
+        if (!isSpectateUpdate && targetId && deathRoomId && targetId === deathRoomId && setDeathRoomId) {
             setDeathRoomId(null);
             if (showDebugEchoes) addMessage?.('system', `[Mapper] Death room highlight cleared.`);
         }
 
         // Update the current room reference immediately for canvas consumption
-        currentRoomIdRef.current = targetId;
+        if (isUpdateForActiveView) {
+            currentRoomIdRef.current = targetId;
+        }
         
         // Always trigger a render update for the map canvas if anything changed
         if (topologyChanged || roomChanged) {
@@ -511,11 +528,13 @@ export const useRoomInfoHandler = ({
         }
 
         // Clear the pre-move that was set by handleMoveConfirmed
-        onRoomInfoProcessed?.();
+        if (!isSpectateUpdate) {
+            onRoomInfoProcessed?.();
+        }
 
         // Look-ahead: if there are still pending moves after this confirmation, immediately
         // predict the next room so the map never goes blank between rapid GMCP packets.
-        if (preMoveRef && isLikelyMove && pendingMovesRef.current.length > 0 && targetId) {
+        if (!isSpectateUpdate && preMoveRef && isLikelyMove && pendingMovesRef.current.length > 0 && targetId) {
             const nextDir = pendingMovesRef.current[0].dir;
             const arrivedRoom = newRooms[targetId];
             if (arrivedRoom) {
@@ -545,7 +564,7 @@ export const useRoomInfoHandler = ({
                 }
             }
         }
-    }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, firstExploredAtRef, triggerRender, onRoomInfoProcessed, addMessage, showDebugEchoes, preMoveRef]);
+    }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, firstExploredAtRef, triggerRender, onRoomInfoProcessed, addMessage, showDebugEchoes, preMoveRef, activeView]);
 
     return { handleRoomInfo };
 };

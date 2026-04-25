@@ -49,6 +49,9 @@ interface MapCanvasProps {
     roomNpcs?: import('../../types').GmcpOccupant[];
     roomItems?: import('../../types').GmcpOccupant[];
     inlineCategories?: import('../../types').InlineCategoryConfig[];
+    playerColor?: string;
+    npcColor?: string;
+    objectColor?: string;
     opponentName?: string | null;
     opponentId?: string | null;
     deathRoomId?: string | null;
@@ -67,8 +70,8 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
-        roomPlayers, roomNpcs, roomItems, inlineCategories, opponentName, opponentId,
-        deathRoomId
+        roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, objectColor,
+        opponentName, opponentId, deathRoomId
     } = props;
 
     const { drawMap } = useMapperRenderer({
@@ -78,8 +81,8 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
-        roomPlayers, roomNpcs, roomItems, inlineCategories, opponentName, opponentId,
-        deathRoomId
+        roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, objectColor,
+        opponentName, opponentId, deathRoomId
     });
 
     useMapAnimation({

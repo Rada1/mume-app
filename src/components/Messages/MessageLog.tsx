@@ -109,6 +109,12 @@ const MessageItem = React.memo(({
         <span className="message-timestamp">{formatTimestamp(msg.timestamp)}</span>
     ) : null;
 
+    const extractRoomDescription = (html: string) => {
+        const startIdx = html.indexOf('<div class="room-desc-line">');
+        if (startIdx === -1) return '';
+        return html.substring(startIdx);
+    };
+
     return (
         <div
             className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
@@ -163,7 +169,13 @@ const MessageItem = React.memo(({
                     ) : (
                         <>
                             <div className="message-content">
-                                <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
+                                <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} />
+                                {msg.isRoomName && msg.tokens && msg.html?.includes('room-desc-line') && (
+                                    <div 
+                                        className="room-description-merged" 
+                                        dangerouslySetInnerHTML={{ __html: extractRoomDescription(msg.html) }} 
+                                    />
+                                )}
                             </div>
                             <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
                         </>

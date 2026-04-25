@@ -189,8 +189,8 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
                 </div>
 
                 <div className="trigger-list" style={{ maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {zoneMusic.length === 0 && <div style={{ color: 'var(--text-dim, #64748b)', fontStyle: 'italic', padding: '10px', textAlign: 'center' }}>No zone music defined.</div>}
-                    {zoneMusic.map((m, idx) => {
+                    {(!Array.isArray(zoneMusic) || zoneMusic.length === 0) && <div style={{ color: 'var(--text-dim, #64748b)', fontStyle: 'italic', padding: '10px', textAlign: 'center' }}>No zone music defined.</div>}
+                    {Array.isArray(zoneMusic) && zoneMusic.map((m, idx) => {
                         const urls = Array.isArray(m.url) ? m.url : [m.url];
                         return (
                             <div key={`${m.zone}-${idx}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-panel, rgba(255,255,255,0.05))', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-color, rgba(255,255,255,0.1))' }}>

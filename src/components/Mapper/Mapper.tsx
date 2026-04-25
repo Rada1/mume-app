@@ -6,6 +6,7 @@
 
 import React, { useRef, useMemo, useState, useEffect, useCallback, forwardRef } from 'react';
 import { useGame, useLog, useVitals, useUI } from '../../context/GameContext';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useMapper } from '../../context/useMapper';
 import { MapCanvas } from './MapCanvas';
 import { MapperToolbar } from './MapperToolbar';
@@ -70,6 +71,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
     const { addMessage } = useLog();
     const { setPopoverState } = useUI();
+    const { playerColor, npcColor, objectColor } = useSettingsStore();
     const isDarkMode = theme === 'dark';
 
     // Use shared state from MapperContext
@@ -199,6 +201,9 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 roomNpcs={roomNpcs}
                 roomItems={roomItems}
                 inlineCategories={inlineCategories}
+                playerColor={playerColor}
+                npcColor={npcColor}
+                objectColor={objectColor}
                 opponentName={opponentName}
                 opponentId={opponentId}
                 deathRoomId={deathRoomId}

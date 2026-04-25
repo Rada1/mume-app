@@ -17,6 +17,8 @@ interface LogGmcpParserDeps {
     setRoomName: (name: string | null) => void;
     setRoomDesc: (desc: string | null) => void;
     setRoomZone: (zone: string | null) => void;
+    setRoomNum: (num: number | null) => void;
+    setUserRoomNum?: (num: number | null) => void;
     setCurrentTerrain: (terrain: string) => void;
     setRoomExits: (exits: string[]) => void;
     characterName: string | null;
@@ -43,6 +45,36 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
     const spectatePositionRef = useRef<string>('standing');
     const spectateTargetIdRef = useRef<number | null>(null);
 
+    // Local mapper cache for zone resolution
+    const preloadedCoordsRef = useRef<Record<string, any>>({});
+    const serverIdIndexRef = useRef<Record<string, string>>({});
+
+    useEffect(() => {
+        fetch('/mume_map_data.json?v=' + Date.now())
+            .then(res => res.json())
+            .then(data => {
+                preloadedCoordsRef.current = data;
+                
+                // Build server-to-vnum index similar to MapperContext.tsx
+                const sIndex: Record<string, string> = {};
+                for (const vnum in data) {
+                    const rData = data[vnum];
+                    const rServerId = rData[6];
+                    
+                    // Maps vnum to itself as a baseline
+                    sIndex[String(vnum)] = vnum;
+                    
+                    // Maps server ID to vnum for GMCP lookup
+                    if (rServerId && String(rServerId) !== String(vnum)) {
+                        sIndex[String(rServerId)] = vnum;
+                    }
+                }
+                serverIdIndexRef.current = sIndex;
+                console.log('[LogGmcpParser] Local mapper data and server-to-vnum index loaded');
+            })
+            .catch(err => console.error('[LogGmcpParser] Failed to load mapper data:', err));
+    }, []);
+
     useEffect(() => { isSpectateModeRef.current = deps.isSpectateMode; }, [deps.isSpectateMode]);
     useEffect(() => { sessionModeRef.current = deps.sessionMode; }, [deps.sessionMode]);
 
@@ -60,27 +92,23 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         return null;
     };
 
-    const parseLogGmcp = useCallback((line: string) => {
+    const parseLogGmcp = useCallback((line: string, isSnoopedParam: boolean = false) => {
         const d = latestDeps.current;
         if (!d) return false;
 
         const {
-            setSpectateWaiting, setCurrentTerrain,
+            setSpectateWaiting,
             detectLighting, setWeather, setIsFoggy, playDoorSound, setRoomItems,
             setSpectateCharacterName, setRoomPlayers, setRoomNpcs, spectateCharacterName, characterName,
+            setRoomNum, setUserRoomNum
         } = d;
 
         const inSpectate = isSpectateModeRef.current;
-        // Strip ANSI escape codes first — cleanLine from processLine still contains them
         const stripped = line.replace(/\x1b\[[0-9;]*m/g, '');
         
-        // Detect if the line has explicit GMCP marking or snoop prefixes
-        const isSnooped = /^\s*&[a-zA-Z]\s+/.test(stripped);
+        const isSnooped = isSnoopedParam;
         const isExplicitGmcp = /GMCP\s+/i.test(stripped);
         
-        // Robust GMCP regex handles optional GMCP prefix and ampersand prefixes
-        // Sometimes snooped logs leak naked namespaces like "Core.Ping"
-        // In session replays, non-printable "replacement characters" (diamonds) often appear at the start.
         const gmcpRegex = /^[\s\uFFFD\x00-\x1F\x7F-\xFF]*(?:&[a-zA-Z]\s+)*(?:GMCP\s+)?([A-Za-z]+\.[A-Za-z]+[A-Za-z\.]*)(?:\s*(.+))?$/i;
         const match = stripped.match(gmcpRegex);
         
@@ -89,25 +117,15 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         const namespace = match[1];
         const jsonStr = match[2];
 
-        // --- Selective Suppression Logic ---
-        // If we are NOT in spectate mode, we only suppress if it is EXPLICITLY marked as GMCP,
-        // UNLESS we are in replay mode (Theater Mode). In replays, ANY GMCP leak should be hidden.
-        // This prevents suppressing "Core.Hello" (no payload) which is common in documentation/help text.
         const isReplay = sessionModeRef.current === 'replay';
         if (!inSpectate && !isExplicitGmcp && !isReplay) return false;
 
-        // If it looks like a known GMCP namespace but has no payload, it's a signal to suppress
-        // (but only if we've passed the mode check above)
         if (!jsonStr) return true;
 
         try {
-            // Clean common issues like literal newlines/carriages that might leak from snoops
-            // JSON.parse strictly forbids literal control characters in strings.
-            const cleanedJson = jsonStr.trim()
-                .replace(/\n/g, '\\n')
-                .replace(/\r/g, '\\r');
-            
+            const cleanedJson = jsonStr.trim().replace(/\n/g, '\\n').replace(/\r/g, '\\r');
             const data = JSON.parse(cleanedJson);
+            data.isSnooped = isSnooped; // Add the flag for stores
             console.log('[LogGmcpParser] Parsed:', namespace, data);
 
             switch (namespace) {
@@ -116,30 +134,26 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
 
                     if (data.position) {
                         const posLower = data.position.toLowerCase();
-                        setSpectateWaiting(posLower === 'waiting' || posLower.includes('waiting'));
+                        if (isSnooped) {
+                            setSpectateWaiting(posLower === 'waiting' || posLower.includes('waiting'));
+                        }
                     }
 
-                    // Strict clearing signal: if opponent is null/empty, we ARE NOT fighting
                     if (data.opponent === null || data.opponent === "") {
-                        gmcpBus.emit('Char.Opponent', null);
-                    }
-
-                    if (data.opponent !== undefined) {
-                        gmcpBus.emit('Char.Opponent', data.opponent || null);
+                        gmcpBus.emit('Char.Opponent', { data: null, isSnooped });
+                    } else if (data.opponent !== undefined) {
+                        gmcpBus.emit('Char.Opponent', { data: data.opponent, isSnooped });
                     }
                     
-                    // If we have opponent HP in the vitals packet, route it via Char.Buffer or 
-                    // Room.CharsCombat so the combat store can see it.
                     if (data['opponent-hp'] || data['opponent-hits']) {
                         const status = data['opponent-hp'] || data['opponent-hits'];
-                        gmcpBus.emit('Room.CharsCombat', [{
+                        gmcpBus.emit('Room.CharsCombat', Object.assign([{
                             name: data.opponent,
                             health: status
-                        }]);
+                        }], { isSnooped }));
                     }
 
-                    // --- Environmental sync for main session if we are NOT spectating ---
-                    if (!inSpectate) {
+                    if (!isSnooped) {
                         if (data.light !== undefined && data.light !== null && detectLighting) {
                             detectLighting(data.light);
                         }
@@ -150,42 +164,34 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                     }
                     break;
 
-                // Snooped Group GMCP — track the spectated player's groupmates so they
-                // are always available as highlighted inline PC buttons in the log,
-                // even when Room.Chars data hasn't arrived yet or is stale.
                 case 'Group.Set': {
                     const members: import('../../types').GroupMember[] = Array.isArray(data) ? data : [];
-                    // Identify the snooped target (they are "you" in their own group list)
-                    const target = members.find((m: any) => m.type === 'you');
-                    if (target) {
-                        spectateTargetIdRef.current = Number(target.id);
-                        console.log(`[LogGmcpParser] Group.Set: identified spectate target ID: ${spectateTargetIdRef.current}`);
+                    if (isSnooped) {
+                        const target = members.find((m: any) => m.type === 'you');
+                        if (target) {
+                            spectateTargetIdRef.current = Number(target.id);
+                        }
                     }
-                    gmcpBus.emit('Group.Set', members);
+                    gmcpBus.emit('Group.Set', Object.assign(members, { isSnooped }));
                     break;
                 }
                 case 'Group.Add': {
-                    if (data.type === 'you' && data.id) {
+                    if (isSnooped && data.type === 'you' && data.id) {
                         spectateTargetIdRef.current = Number(data.id);
-                        console.log(`[LogGmcpParser] Group.Add: identified spectate target ID: ${spectateTargetIdRef.current}`);
                     }
                     gmcpBus.emit('Group.Add', data);
                     break;
                 }
                 case 'Group.Update': {
-                    if (data.id === undefined) break;
-                    const id = Number(data.id);
-                    const isTarget = id === spectateTargetIdRef.current;
-                    
                     gmcpBus.emit('Group.Update', data);
 
-                    // Use Group.Update for reliable 'waiting' (casting) state synchronization in spectate mode
-                    if (data.waiting !== undefined) {
+                    if (isSnooped && data.waiting !== undefined) {
+                        if (data.id === undefined) break;
+                        const id = Number(data.id);
+                        const isTarget = id === spectateTargetIdRef.current;
                         if (isTarget) {
                             setSpectateWaiting(!!data.waiting);
                         } else if (!spectateTargetIdRef.current) {
-                            // Fallback: If we haven't identified a target ID yet, and we get a waiting=true
-                            // while spectating, assume this ID belongs to our target for now.
                             spectateTargetIdRef.current = id;
                             setSpectateWaiting(!!data.waiting);
                         }
@@ -198,22 +204,62 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                 }
 
                 case 'Room.Info': {
+                    const incomingId = data.num ?? (data as any).vnum ?? (data as any).id ?? null;
+                    
+                    if (isSnooped && incomingId !== null) {
+                        // Populate missing zone from local mapper cache to fix spectate ambient music
+                        let zone = data.zone || data.area || (data as any).roomZone;
+                        
+                        // Resolve vnum from server ID index
+                        const vnum = serverIdIndexRef.current[String(incomingId)];
+                        const localCoords = vnum ? preloadedCoordsRef.current[vnum] : null;
+
+                        if (!zone && localCoords && Array.isArray(localCoords) && localCoords[9]) {
+                            zone = localCoords[9];
+                            data.zone = zone;
+                        }
+
+                        // Fallback to MapperRef if local cache missed
+                        if (!zone && d.mapperRef?.current?.serverIdIndexRef?.current) {
+                            const refVnum = d.mapperRef.current.serverIdIndexRef.current[String(incomingId)];
+                            const refCoords = refVnum ? d.mapperRef.current.preloadedCoordsRef.current[refVnum] : null;
+                            if (refCoords && Array.isArray(refCoords) && refCoords[9]) {
+                                zone = refCoords[9];
+                                data.zone = zone;
+                            }
+                        }
+
+                        if (zone) {
+                            d.setRoomZone?.(zone);
+                        }
+                    }
+
                     gmcpBus.emit('Room.Info', data);
 
-                    // Track the last spectated gmcp room id. When it changes (new room or a fresh
-                    // target after a snoop switch), clear occupants — Room.Chars.Add/Update is
-                    // accumulative, so without this, stale NPCs/players from the previous room
-                    // (or from the previous snoop target) pollute the tracker.
-                    const incomingId = data.num ?? (data as any).vnum ?? (data as any).id ?? null;
-                    if (incomingId !== null && incomingId !== lastSpectateRoomIdRef.current) {
-                        lastSpectateRoomIdRef.current = incomingId;
-                        
-                        // Pass riding status to ensure correct sound effect (horse vs footsteps)
-                        const isRiding = spectatePositionRef.current === 'riding' || spectatePositionRef.current?.includes('riding');
-                        d.playMovementSound?.(isRiding);
+                    if (isSnooped) {
+                        // gmcpBus.emit('Room.Info') above already updates useSpectateRoomStore via its listener.
+                        // Do NOT call setRoomName/setRoomDesc here — those
+                        // setters point to the user session and would corrupt it with target data.
+                        if (incomingId !== null) {
+                            setRoomNum(incomingId); // setSpectateRoomNum
+                        }
+                        if (incomingId !== null && incomingId !== lastSpectateRoomIdRef.current) {
+                            lastSpectateRoomIdRef.current = incomingId;
+                            const isRiding = spectatePositionRef.current === 'riding' || spectatePositionRef.current?.includes('riding');
+                            d.playMovementSound?.(isRiding);
+                        }
+                    } else if (setUserRoomNum) {
+                        if (incomingId !== null) setUserRoomNum(incomingId);
                     }
-                    if (d.mapperRef?.current?.handleRoomInfo) {
-                        d.mapperRef.current.handleRoomInfo({ ...data, spectating: true });
+                    
+                    // Send to MapperContext
+                    if (typeof window !== 'undefined') {
+                        window.dispatchEvent(new CustomEvent('mume-gmcp-room-info', { detail: { ...data, spectating: isSnooped } }));
+                        
+                        const terrain = data.terrain || data.environment;
+                        if (terrain) {
+                            window.dispatchEvent(new CustomEvent('mume-gmcp-terrain', { detail: terrain }));
+                        }
                     }
                     break;
                 }
@@ -221,36 +267,36 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                 case 'Room.UpdateExits':
                     gmcpBus.emit('Room.UpdateExits', data);
 
-                    if (data.exits) {
-                        // Door detection logic for spectate mode
+                    if (isSnooped && data.exits) {
+                        // setRoomExits removed — targets user session; spectate store already
+                        // updated via gmcpBus.emit('Room.UpdateExits') above.
                         if (playDoorSound) {
                             const oldExits = lastSpectateExitsRef.current || {};
                             const newExits = data.exits || {};
-
                             const getVisibleCount = (ex: Record<string, any>) =>
                                 Object.values(ex).filter(v => v !== false && (typeof v !== 'object' || !v.flags?.includes('closed'))).length;
-
                             const oldVisibleCount = getVisibleCount(oldExits);
                             const newVisibleCount = getVisibleCount(newExits);
-
-                            // Only trigger sound if we have a baseline (oldVisibleCount > 0) 
-                            // to avoid "clunking" on first entry to a snooped room.
-                            if (newVisibleCount > oldVisibleCount && oldVisibleCount > 0) {
-                                playDoorSound(true);
-                            } else if (newVisibleCount < oldVisibleCount && oldVisibleCount > 0) {
-                                playDoorSound(false);
-                            }
+                            if (newVisibleCount > oldVisibleCount && oldVisibleCount > 0) playDoorSound(true);
+                            else if (newVisibleCount < oldVisibleCount && oldVisibleCount > 0) playDoorSound(false);
                         }
-                        
                         lastSpectateExitsRef.current = data.exits;
                     }
-                    if (d.mapperRef?.current?.handleUpdateExits) {
-                        d.mapperRef.current.handleUpdateExits({ ...data, spectating: true });
+                    
+                    // Send to MapperContext
+                    if (typeof window !== 'undefined') {
+                        window.dispatchEvent(new CustomEvent('mume-gmcp-room-exits', { detail: { ...data, spectating: isSnooped } }));
                     }
                     break;
 
                 case 'Room.Items.Set':
-                case 'Room.Items.List': {
+                case 'Room.Items.List':
+                case 'Room.Items':
+                case 'Char.Items':
+                case 'Char.Inv':
+                case 'Mume.Client.RoomItems':
+                case 'Mume.Client.Inventory':
+                case 'Mume.Client.Equipment': {
                     const rawList = Array.isArray(data) ? data : (data.items || data.objects || data.obj || data.objs || []);
                     const list = Array.isArray(rawList) ? rawList : [rawList];
                     const items = list
@@ -258,7 +304,7 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                             ? { name: i, keyword: i, short: i }
                             : { ...i, name: i.name || i.short || i.shortdesc || i.keyword })
                         .filter((i: any) => i.name);
-                    gmcpBus.emit('Room.Items', items);
+                    gmcpBus.emit('Room.Items', Object.assign(items, { isSnooped }));
                     break;
                 }
 
@@ -267,61 +313,76 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                         ? { name: data, keyword: data, short: data }
                         : { ...data, name: data.name || data.short || data.shortdesc || data.keyword };
                     if (obj.name) {
-                        // Synthesize a full list update for now as the store only handles Room.Items list
-                        // In a real MUME client we'd have Room.Items.Add in the bus.
-                        gmcpBus.emit('Room.Items', [obj]); 
+                        gmcpBus.emit('Room.Items', Object.assign([obj], { isSnooped })); 
                     }
                     break;
                 }
 
-                case 'Room.Items.Remove': {
-                    // Items remove is complex without a full list; for snoops, Room.Items.Set usually follows.
+                case 'Room.Items.Remove': break;
+
+                case 'Char.Name': {
+                    const name = typeof data === 'string' ? data : (data.name || null);
+                    gmcpBus.emit('Char.Name', { data: name, isSnooped });
+                    if (isSnooped && name) {
+                        setSpectateCharacterName(name);
+                    }
                     break;
                 }
 
-                case 'Char.Name':
                 case 'Char.Info':
+                case 'Char.Status':
+                case 'Char.StatusVars':
                     gmcpBus.emit('Char.Info', data);
+                    if (isSnooped && data.name) setSpectateCharacterName(data.name);
                     break;
 
                 case 'Room.Chars.Add':
+                case 'Room.Char.Add':
+                case 'Room.AddPlayer':
+                case 'Room.AddNpc':
+                case 'Room.AddChar':
                 case 'Room.Chars.Update':
-                case 'Room.Chars.Set': {
+                case 'Room.Chars.Set':
+                case 'Room.Chars.List':
+                case 'Room.Npcs':
+                case 'Room.Players':
+                case 'Room.Chars':
+                case 'Room.Char':
+                case 'Mume.Client.Chars': {
                     const rawChars = Array.isArray(data) ? data : (data.chars || data.players || data.npcs || [data]);
                     const chars = rawChars.map((c: any) => {
+                        if (typeof c === 'string') {
+                            return { name: c, short: c, keyword: c, pc: namespace.toLowerCase().includes('player') };
+                        }
                         const hadExplicitType = c.pc !== undefined || c.type !== undefined;
                         if (c.name && hadExplicitType) return c;
                         if (!c.desc && !c.name) return c;
-
                         const source = c.name || c.desc;
                         const words = source.trim().split(/[ \t,]/).filter(Boolean);
                         if (words.length === 0) return c;
-
                         const firstWord = words[0];
                         const startsWithArticle = /^(a|an|the|some)$/i.test(firstWord);
-
                         let extractedName = c.name || firstWord;
-                        if (!c.name && startsWithArticle && words.length > 1) {
-                            extractedName = words[1];
-                        }
-
+                        if (!c.name && startsWithArticle && words.length > 1) extractedName = words[1];
                         const sanitized = extractedName.replace(/[.,:;!]$/, '');
                         if (sanitized.length <= 1) return c;
-
                         const startsUpperCase = /^[A-Z\u00C0-\u00DE]/.test(sanitized);
                         const nameWords = sanitized.split(/\s+/).filter(Boolean);
                         const secondWord = nameWords[1] ?? '';
                         const looksLikePlayerName = nameWords.length === 1 || secondWord.toLowerCase() === 'the';
                         const inferredPc = !hadExplicitType ? (!startsWithArticle && startsUpperCase && looksLikePlayerName) : undefined;
+                        
+                        let finalPc = c.pc ?? inferredPc;
+                        if (namespace.toLowerCase().includes('player')) finalPc = true;
+                        if (namespace.toLowerCase().includes('npc')) finalPc = false;
 
-                        return {
-                            ...c,
-                            name: sanitized,
-                            ...(inferredPc !== undefined ? { pc: inferredPc } : {})
-                        };
+                        return { ...c, name: sanitized, ...(finalPc !== undefined ? { pc: finalPc } : {}) };
                     });
 
-                    if (namespace === 'Room.Chars.Set') {
+                    const nsLower = namespace.toLowerCase();
+                    const isFullSet = nsLower === 'room.chars.set' || nsLower === 'room.chars.list' || nsLower === 'room.chars' || nsLower === 'room.npcs' || nsLower === 'room.players' || nsLower === 'mume.client.chars';
+
+                    if (isFullSet) {
                         const pcs: any[] = [];
                         const npcs: any[] = [];
                         chars.forEach((c: any) => {
@@ -329,47 +390,49 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                             if (c.pc || c.type === 'pc' || c.type === 'player') pcs.push(c);
                             else npcs.push(c);
                         });
-                        gmcpBus.emit('Room.Players', pcs);
-                        gmcpBus.emit('Room.Npcs', npcs);
+                        gmcpBus.emit('Room.Players', Object.assign(pcs, { isSnooped }));
+                        gmcpBus.emit('Room.Npcs', Object.assign(npcs, { isSnooped }));
                     } else {
                         chars.forEach((c: any) => {
                             if (!c.name) return;
                             const isPc = c.pc || c.type === 'pc' || c.type === 'player';
                             
-                            // Sync position/combat for target
-                            const targetToSync = inSpectate ? spectateCharacterName : characterName;
+                            const targetToSync = isSnooped ? spectateCharacterName : characterName;
                             if (c.name === targetToSync && c.position !== undefined) {
-                                gmcpBus.emit('Char.Position', c.position);
+                                gmcpBus.emit('Char.Position', { ...c, isSnooped });
                                 const posLower = c.position.toLowerCase();
-                                setSpectateWaiting(posLower === 'waiting' || posLower.includes('waiting'));
+                                if (isSnooped) setSpectateWaiting(posLower === 'waiting' || posLower.includes('waiting'));
                             }
 
-                            if (isPc) {
-                                gmcpBus.emit('Room.AddPlayer', c);
-                            } else {
-                                gmcpBus.emit('Room.AddNpc', c);
-                            }
+                            if (isPc) gmcpBus.emit('Room.AddPlayer', { ...c, isSnooped });
+                            else gmcpBus.emit('Room.AddNpc', { ...c, isSnooped });
                         });
                     }
                     break;
                 }
 
-                case 'Room.Chars.Combat': {
-                    gmcpBus.emit('Room.CharsCombat', data);
+                case 'room.chars.combat': {
+                    gmcpBus.emit('Room.CharsCombat', Object.assign(data, { isSnooped }));
                     break;
                 }
-                case 'Room.Chars.Remove': {
-                    const id = typeof data === 'object' ? data.id : data;
-                    gmcpBus.emit('Room.RemovePlayer', id);
-                    gmcpBus.emit('Room.RemoveNpc', id);
+                case 'room.chars.remove':
+                case 'room.char.remove':
+                case 'room.removeplayer':
+                case 'room.removenpc':
+                case 'room.removechar': {
+                    const id = typeof data === 'object' ? (data.id || data.name || data.short) : data;
+                    if (id) {
+                        gmcpBus.emit('Room.RemovePlayer', { id, isSnooped });
+                        gmcpBus.emit('Room.RemoveNpc', { id, isSnooped });
+                    }
                     break;
                 }
+                default:
+                    return isExplicitGmcp;
             }
             return true;
         } catch (e) {
-            console.warn('[LogGmcpParser] Failed to parse JSON:', jsonStr, 'Error:', e);
-            // Even if JSON fails, if it's a GMCP line, we suppress it from the log
-            return true;
+            return isExplicitGmcp;
         }
     }, []);
 

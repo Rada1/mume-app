@@ -28,6 +28,7 @@ interface UseMapGmcphandlersProps {
     clientPredictionsRef?: React.MutableRefObject<Array<{ toId: string, toX: number, toY: number, toZ: number }>>;
     characterName: string | null;
     executeCommand?: (cmd: string, silent?: boolean) => void;
+    activeView: string;
 }
 
 export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
@@ -64,7 +65,8 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
         showDebugEchoes: props.showDebugEchoes,
         preMoveRef: props.preMoveRef,
         deathRoomId: props.deathRoomId,
-        setDeathRoomId: props.setDeathRoomId
+        setDeathRoomId: props.setDeathRoomId,
+        activeView: props.activeView
     });
 
     const { handleUpdateExits } = useUpdateExitsHandler({

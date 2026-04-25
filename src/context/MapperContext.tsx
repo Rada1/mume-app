@@ -95,9 +95,18 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         markers, setMarkers, markersRef,
         exploredVnums, setExploredVnums, exploredRef,
         exploredMarkers, setExploredMarkers,
-        currentRoomId, setCurrentRoomId, currentRoomIdRef,
+        currentRoomId: dataCurrentRoomId, 
+        setCurrentRoomId: dataSetCurrentRoomId, 
+        currentRoomIdRef,
         spatialIndexRef, nameIndexRef, serverIdIndexRef, preloadedCoordsRef, baseMapExitsRef
     } = useMapData();
+
+    // High-performance state/ref sync for character position
+    const [currentRoomId, setCurrentRoomIdState] = useState<string | null>(null);
+    const setCurrentRoomId = useCallback((id: string | null) => {
+        setCurrentRoomIdState(id);
+        currentRoomIdRef.current = id;
+    }, [currentRoomIdRef]);
 
     // Unified UI State
     const [selectedRoomIds, setSelectedRoomIds] = useState<Set<string>>(new Set());
@@ -189,12 +198,15 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }
     }, [triggerRender]);
 
+    const { activeView } = useModeStore();
+
     const masterHandlers = useMapGmcphandlers({
         roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef,
         discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, addMessage,
         showDebugEchoes, nameIndexRef, serverIdIndexRef, firstExploredAtRef, triggerRender,
         onRoomInfoProcessed, preMoveRef, deathRoomId, setDeathRoomId,
-        clientPredictionsRef, baseMapExitsRef, characterName: characterName || null, executeCommand
+        clientPredictionsRef, baseMapExitsRef, characterName: characterName || null, executeCommand,
+        activeView
     });
 
     const pushPendingMove = useCallback((dir: string) => {
@@ -277,17 +289,17 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // --- Sync with Active Session ---
     // When the active view switches (Me -> Target), the mapper needs to snap to the
     // room currently being seen by the active session.
-    const game = useGame();
-    const { activeView } = useModeStore();
+    const { roomNum, spectateRoomNum } = useGame();
 
     useEffect(() => {
-        if (game.roomNum && game.roomNum !== 0) {
-            const vnum = serverIdIndexRef.current?.[String(game.roomNum)];
+        const activeRoomNum = activeView === 'target' ? spectateRoomNum : roomNum;
+        if (activeRoomNum && activeRoomNum !== 0) {
+            const vnum = serverIdIndexRef.current?.[String(activeRoomNum)];
             if (vnum) {
-                setCurrentRoomId(vnum);
+                setCurrentRoomId(`m_${vnum}`); // This now updates both state and ref
             }
         }
-    }, [game.roomNum, activeView]);
+    }, [roomNum, spectateRoomNum, activeView, setCurrentRoomId]);
     return <MapperContext.Provider value={value}>{children}</MapperContext.Provider>;
 };
 

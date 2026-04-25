@@ -5,6 +5,7 @@
 
 import { CommandMiddleware } from '../types';
 import { extractNoun } from '../../../utils/gameUtils';
+import { useModeStore } from '../../../stores/useModeStore';
 
 export const SystemCommandMiddleware: CommandMiddleware = (cmd, context) => {
     const { 
@@ -21,6 +22,24 @@ export const SystemCommandMiddleware: CommandMiddleware = (cmd, context) => {
             const nounTarget = extractNoun(rawTarget.trim());
             setTarget(nounTarget);
             return null; // Handled
+        }
+    }
+
+    // Snoop Handling (Client sync)
+    if (lowerCmd.startsWith('/snoop')) {
+        const parts = lowerCmd.split(/\s+/);
+        if (parts.length > 1) {
+            // Check for options like -prompt -gmcp
+            const target = parts.find(p => !p.startsWith('-') && p !== '/snoop');
+            if (target) {
+                useModeStore.getState().startSpectate(target);
+            } else if (parts.length === 1 || (parts.length === 2 && parts[1] === '/snoop')) {
+                // Just /snoop might mean stop
+                useModeStore.getState().stopSpectate();
+            }
+        } else {
+            // Bare /snoop usually stops or shows status
+            // We'll let it fall through to server, but we might want to stop if it clears snoop
         }
     }
 

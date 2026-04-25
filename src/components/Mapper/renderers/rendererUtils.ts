@@ -23,6 +23,9 @@ export interface RenderContext {
     roomItems?: import('../../../types').GmcpOccupant[];
     centerOverride?: { x: number, y: number, z: number };
     inlineCategories?: import('../../../types').InlineCategoryConfig[];
+    playerColor?: string;
+    npcColor?: string;
+    objectColor?: string;
     opponentName?: string | null;
     opponentId?: string | null;
     preloaded: Record<string, any>;

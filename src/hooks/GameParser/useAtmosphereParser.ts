@@ -12,13 +12,14 @@ export interface AtmosphereParserDeps {
     triggerHaptic?: (ms: number) => void;
     playDoorSound?: (isOpen: boolean) => void;
     setPlayerPosition: (pos: string) => void;
+    setSpectatePosition?: (pos: string) => void;
     isSpectateMode?: boolean;
 }
 
 export function useAtmosphereParser(deps: AtmosphereParserDeps) {
     const {
         setWeather, setIsFoggy, setLightningEnabled, triggerHaptic,
-        playDoorSound, setPlayerPosition, isSpectateMode
+        playDoorSound, setPlayerPosition, setSpectatePosition, isSpectateMode
     } = deps;
 
     const parseAtmosphere = useCallback((lower: string, isSnoop: boolean = false) => {
@@ -55,7 +56,7 @@ export function useAtmosphereParser(deps: AtmosphereParserDeps) {
         }
 
         // --- Posture / Position ---
-        const posSetter = setPlayerPosition; // setSpectatePosition is obsolete
+        const posSetter = (isSnoop && setSpectatePosition) ? setSpectatePosition : setPlayerPosition;
         
         if (lower.includes('you sit down') || lower.includes('is now sitting')) {
             posSetter('sitting');
@@ -66,7 +67,7 @@ export function useAtmosphereParser(deps: AtmosphereParserDeps) {
         } else if (lower.includes('you go to sleep') || lower.includes('is now sleeping')) {
             posSetter('sleeping');
         }
-    }, [setWeather, setIsFoggy, setLightningEnabled, triggerHaptic, playDoorSound, setPlayerPosition, isSpectateMode]);
+    }, [setWeather, setIsFoggy, setLightningEnabled, triggerHaptic, playDoorSound, setPlayerPosition, setSpectatePosition, isSpectateMode]);
 
     return { parseAtmosphere };
 }

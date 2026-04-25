@@ -114,6 +114,8 @@ export interface UseGameParserDeps {
     setIsPasswordMode: (mode: boolean) => void;
     setAccountState: Dispatch<SetStateAction<any>>;
     setGameTime: (time: MumeTime | null) => void;
+    setRoomNum: (num: number | null) => void;
+    setUserRoomNum: (num: number | null) => void;
     setWeather: (weather: string) => void;
     setIsFoggy: (foggy: boolean) => void;
     setLightningEnabled: (val: boolean) => void;
@@ -122,6 +124,14 @@ export interface UseGameParserDeps {
     setSpectateStats: (stats: any) => void;
     setSpectateWaiting: (waiting: boolean) => void;
     setSpectateCharacterName: (name: string | null) => void;
+    setSpectatePosition: (pos: string) => void;
+    setSpectateInCombat: (val: boolean, force?: boolean) => void;
+    setSpectateOpponentName: (name: string | null) => void;
+    setSpectateOpponentStatus: (status: CombatHealthStatus | null) => void;
+    setSpectateRoomNum: (num: number | null) => void;
+    setSpectateRoomName: (name: string | null) => void;
+    setSpectateRoomDesc: (desc: string | null) => void;
+    setSpectateRoomZone: (zone: string | null) => void;
 
     // Drawer Setters
     setInventoryLines: (lines: DrawerLine[]) => void;

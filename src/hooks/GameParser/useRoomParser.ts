@@ -48,8 +48,9 @@ export function useRoomParser(deps: RoomParserDeps) {
         return norm;
     };
 
-    const detectRoom = useCallback((textOnly: string, lower: string, isPromptMatch: boolean): { isRoomName: boolean; isRoomDescription: boolean; isRoomWindow: boolean } => {
-        const currentRoomRefValue = (isSpectateMode && spectateRoomName !== undefined) ? spectateRoomName : roomNameRef.current;
+    const detectRoom = useCallback((textOnly: string, lower: string, isPromptMatch: boolean, isSnoop: boolean = false): { isRoomName: boolean; isRoomDescription: boolean; isRoomWindow: boolean } => {
+        // Match against spectate state IF it's a snoop line, or match against normal state if it's a regular line.
+        const currentRoomRefValue = (isSnoop && spectateRoomName !== undefined) ? spectateRoomName : roomNameRef.current;
         let isRoomMatched = currentRoomRefValue && (
             textOnly === currentRoomRefValue || lower === currentRoomRefValue.toLowerCase() ||
             textOnly === currentRoomRefValue + '.' || lower === currentRoomRefValue.toLowerCase() + '.' ||
@@ -61,7 +62,7 @@ export function useRoomParser(deps: RoomParserDeps) {
         // Allow room name markers even during background captures to ensure descriptions are detected.
         if (isRoomName) {
             const isSameRoom = currentRoomRefValue && (textOnly === currentRoomRefValue || lower === currentRoomRefValue.toLowerCase());
-            if (!isSameRoom && captureStage.current === 'none') {
+            if (!isSameRoom && captureStage.current === 'none' && !isSnoop) {
                 if (typeof window !== 'undefined') {
                     window.dispatchEvent(new CustomEvent('mume-mapper-move-confirmed', { detail: { isDark: false } }));
                 }
@@ -69,7 +70,7 @@ export function useRoomParser(deps: RoomParserDeps) {
             afterRoomNameRef.current = true;
             descLineCountRef.current = 0; // Reset counter for the new room
         } else if (textOnly.includes('It is pitch black...') || textOnly.includes('You cannot see a thing!')) {
-            if (typeof window !== 'undefined') {
+            if (typeof window !== 'undefined' && !isSnoop) {
                 window.dispatchEvent(new CustomEvent('mume-mapper-move-confirmed', { detail: { isDark: true } }));
             }
             afterRoomNameRef.current = false;
@@ -82,7 +83,7 @@ export function useRoomParser(deps: RoomParserDeps) {
         // Only terminate when we see "Exits:" or exceed a safety line limit.
         let isRoomDescription = false;
         
-        const currentRoomDescValue = (isSpectateMode && spectateRoomDesc !== undefined) ? spectateRoomDesc : roomDescRef?.current;
+        const currentRoomDescValue = (isSnoop && spectateRoomDesc !== undefined) ? spectateRoomDesc : roomDescRef?.current;
         
         if (!isRoomName && afterRoomNameRef.current && currentRoomDescValue) {
             const trimmed = textOnly.trim();
@@ -126,9 +127,9 @@ export function useRoomParser(deps: RoomParserDeps) {
         return { isRoomName, isRoomDescription, isRoomWindow: afterRoomNameRef.current };
     }, [roomNameRef, roomDescRef, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, isDrawerCapture, isSilentCapture, isSpectateMode, spectateRoomName, spectateRoomDesc]);
 
-    const parseRoomLine = useCallback((textOnly: string, cleanLine: string): 'game' | 'room-name' | 'room-description' | null => {
+    const parseRoomLine = useCallback((textOnly: string, cleanLine: string, isSnoop: boolean = false): 'game' | 'room-name' | 'room-description' | null => {
         const lower = textOnly.toLowerCase();
-        const { isRoomName, isRoomDescription } = detectRoom(textOnly, lower, false);
+        const { isRoomName, isRoomDescription } = detectRoom(textOnly, lower, false, isSnoop);
         
         if (isRoomName) return 'room-name';
         if (isRoomDescription) return 'room-description';

@@ -6,8 +6,8 @@
 import { InlineCategoryConfig } from '../types';
 
 // palette definitions for consistency
-const COLOR_NPC = 'rgba(253, 224, 71, 0.95)';   // Bright Pastel Yellow (#fde047)
-const COLOR_PLAYER = '#89CFF0'; // Baby Blue
+export const COLOR_NPC = 'rgba(253, 224, 71, 0.95)';
+export const COLOR_PLAYER = '#89CFF0';
 export const COLOR_OBJ = 'rgba(251, 146, 60, 0.95)';   // Vibrant Orange (#fb923c)
 
 

@@ -29,6 +29,7 @@ export interface VitalsState {
     move: number;
     maxMove: number;
     hpStatus: CombatHealthStatus | null;
+    moveStatus: string | null;
     position: string;
     inCombat: boolean;
     currentTerrain: string;
@@ -47,12 +48,13 @@ export interface VitalsState {
         move: number;
         maxMove: number;
         hpStatus: CombatHealthStatus | null;
+        moveStatus: string | null;
     };
 
     applyCharVitals: (data: GmcpCharVitals) => void;
     applyCharInfo: (data: GmcpCharInfo) => void;
     setVitals: (vitals: Partial<VitalsState>) => void;
-    setStats: (stats: Partial<{ hp: number; maxHp: number; mana: number; maxMana: number; move: number; maxMove: number }>) => void;
+    setStats: (stats: Partial<{ hp: number; maxHp: number; mana: number; maxMana: number; move: number; maxMove: number }> | ((prev: VitalsState) => Partial<VitalsState>)) => void;
     setHpStatus: (status: CombatHealthStatus | null | ((prev: CombatHealthStatus | null) => CombatHealthStatus | null)) => void;
     setPosition: (pos: string | ((prev: string) => string)) => void;
     setInCombat: (val: boolean | ((prev: boolean) => boolean)) => void;
@@ -72,6 +74,7 @@ export const initialVitalsState = {
     move: 0,
     maxMove: 0,
     hpStatus: null,
+    moveStatus: null,
     position: 'standing',
     inCombat: false,
     currentTerrain: '',
@@ -100,7 +103,8 @@ export const initialVitalsState = {
         maxMana: 0,
         move: 0,
         maxMove: 0,
-        hpStatus: null as CombatHealthStatus | null
+        hpStatus: null as CombatHealthStatus | null,
+        moveStatus: null as string | null
     }
 };
 
@@ -140,6 +144,8 @@ export const createVitalsActions = (set: any, get: any) => ({
             if (data.maxsp !== undefined) updates.maxMana = data.maxsp;
             if (data.move !== undefined) updates.move = data.move;
             if (data.maxmove !== undefined) updates.maxMove = data.maxmove;
+            if (data.mp !== undefined) updates.move = data.mp;
+            if (data.maxmp !== undefined) updates.maxMove = data.maxmp;
             if (data.moves !== undefined) updates.move = data.moves;
             if (data.maxmoves !== undefined) updates.maxMove = data.maxmoves;
             if (data.mv !== undefined) updates.move = data.mv;
@@ -205,6 +211,10 @@ export const createVitalsActions = (set: any, get: any) => ({
                 updates.hpStatus = findStatus(data.hp_status);
             }
 
+            if (data.move_status !== undefined || data.stamina_status !== undefined || data['mp-string'] !== undefined) {
+                updates.moveStatus = data.move_status ?? data.stamina_status ?? data['mp-string'] ?? null;
+            }
+
             if (data.weather !== undefined) {
                 if (data.weather === null || data.weather === 'clear') {
                     updates.weather = 'clear';
@@ -231,7 +241,8 @@ export const createVitalsActions = (set: any, get: any) => ({
                     maxMana: updates.maxMana ?? state.gmcpVitals.maxMana,
                     move: updates.move ?? state.gmcpVitals.move,
                     maxMove: updates.maxMove ?? state.gmcpVitals.maxMove,
-                    hpStatus: updates.hpStatus ?? state.gmcpVitals.hpStatus
+                    hpStatus: updates.hpStatus ?? state.gmcpVitals.hpStatus,
+                    moveStatus: updates.moveStatus ?? state.gmcpVitals.moveStatus
                 }
             };
         });
@@ -262,8 +273,11 @@ export const createVitalsActions = (set: any, get: any) => ({
         set((state: VitalsState) => ({ ...state, ...vitals }));
     },
 
-    setStats: (stats: Partial<{ hp: number; maxHp: number; mana: number; maxMana: number; move: number; maxMove: number }>) => {
-        set((state: VitalsState) => ({ ...state, ...stats }));
+    setStats: (stats: Partial<{ hp: number; maxHp: number; mana: number; maxMana: number; move: number; maxMove: number }> | ((prev: VitalsState) => Partial<VitalsState>)) => {
+        set((state: VitalsState) => {
+            const next = typeof stats === 'function' ? stats(state) : stats;
+            return { ...state, ...next };
+        });
     },
 
     setHpStatus: (hpStatus: CombatHealthStatus | null | ((prev: CombatHealthStatus | null) => CombatHealthStatus | null)) => 

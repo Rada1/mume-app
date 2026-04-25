@@ -17,6 +17,8 @@ export interface PromptParserDeps {
     isSpectateMode?: boolean;
     setStats: (stats: GameStats | ((prev: GameStats) => GameStats)) => void;
     setSpectateStats: (stats: GameStats | ((prev: GameStats) => GameStats)) => void;
+    setSpectateOpponentName?: (val: string | null) => void;
+    setSpectateOpponentStatus?: (val: CombatHealthStatus | null) => void;
 }
 
 const HEALTH_MAP: Record<string, CombatHealthStatus> = {
@@ -52,7 +54,7 @@ export function usePromptParser(deps: PromptParserDeps) {
         return null;
     };
 
-    const parsePrompt = useCallback((textOnly: string) => {
+    const parsePrompt = useCallback((textOnly: string, isSnoop: boolean = false) => {
         const promptRegex = /^(([^\r\n<>]*[>])\s*)/;
         const textPMatch = textOnly.match(promptRegex);
         
@@ -71,11 +73,14 @@ export function usePromptParser(deps: PromptParserDeps) {
         if (playerMatch) {
             const status = findStatus(playerMatch[1]);
             // In spectate mode, the user's own prompt should NOT update the spectated target's status.
-            // All spectator stats must rely solely on Char.Vitals log-parsed GMCP.
-            if (!isSpectateMode) {
+            // All spectator stats must rely solely on Char.Vitals log-parsed GMCP or snooped prompts.
+            if (isSnoop) {
+                // We don't have a direct setter for spectate health status from prompt yet,
+                // but we could add it if needed. For now, verbose prompts handle actual numbers.
+            } else if (!isSpectateMode) {
                 setPlayerHealthStatus(status ?? 'Healthy');
             }
-        } else if (!isSpectateMode) {
+        } else if (!isSpectateMode && !isSnoop) {
             setPlayerHealthStatus('Healthy');
         }
 
@@ -108,7 +113,7 @@ export function usePromptParser(deps: PromptParserDeps) {
             }
             
             // Strip common prompt symbols that might be captured as part of the name
-            name = name.replace(/^[\]\)\s\!\*\:\+\#\?\=\[><\.]+/, '').replace(/[\[\(\s\!\*\:\+\#\?\=\]><\.]+$/, '').trim();
+            name = name.replace(/^[\]\)\s\!\*\:\+\#\?\=\[><\.]+/, '').replace(/[\[\(\s\!\*\:\+\#\?\=\]\]><\.]+$/, '').trim();
             
             if (name.startsWith('*') && name.endsWith('*')) {
                 name = name.substring(1, name.length-1);
@@ -144,9 +149,15 @@ export function usePromptParser(deps: PromptParserDeps) {
         });
 
         if (oppName && oppStatus) {
-            setOpponentName(oppName);
-            setOpponentHealthStatus(oppStatus);
-        } else if (!isSpectateMode) {
+            if (isSnoop) {
+                // If it's a snooped prompt, we update spectate opponent
+                if (deps.setSpectateOpponentName) deps.setSpectateOpponentName(oppName);
+                if (deps.setSpectateOpponentStatus) deps.setSpectateOpponentStatus(oppStatus);
+            } else {
+                setOpponentName(oppName);
+                setOpponentHealthStatus(oppStatus);
+            }
+        } else if (!isSpectateMode && !isSnoop) {
             setOpponentHealthStatus(null);
             setOpponentName(null);
         }
@@ -154,7 +165,7 @@ export function usePromptParser(deps: PromptParserDeps) {
         if (buffName && buffStatus) {
             setBufferName(buffName);
             setBufferHealthStatus(buffStatus);
-        } else if (!promptPart.includes('Buff:')) {
+        } else if (!promptPart.includes('Buff:') && !isSnoop) {
             setBufferName(null);
             setBufferHealthStatus(null);
         }
@@ -177,14 +188,14 @@ export function usePromptParser(deps: PromptParserDeps) {
             const maxMana = hasMana ? parseInt(verboseMatch[4]) : undefined;
             const move = parseInt(verboseMatch[5]);
             const maxMove = parseInt(verboseMatch[6]);
-            if (isSpectateMode) {
+            if (isSnoop) {
                 setSpectateStats(prev => ({
                     ...prev,
                     hp, maxHp: maxHp,
                     move, maxMove: maxMove,
                     ...(mana !== undefined ? { mana, maxMana: maxMana } : {})
                 }));
-            } else {
+            } else if (!isSpectateMode) {
                 deps.setStats(prev => ({
                     ...prev,
                     hp, maxHp: maxHp,
@@ -200,7 +211,7 @@ export function usePromptParser(deps: PromptParserDeps) {
     }, [
         captureStage, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName, 
         setBufferHealthStatus, setBufferName, finalizeCapture,
-        isSpectateMode, setSpectateStats
+        isSpectateMode, setSpectateStats, deps
     ]);
 
     return { parsePrompt };

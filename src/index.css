@@ -211,16 +211,16 @@
     gap: 2px;
 }
 
-.room-name {
-    font-size: 1rem;
+.sticky-room-header .room-name {
+    font-size: var(--dynamic-log-size, 16px);
     font-weight: 800;
 }
 
-.room-desc {
+.sticky-room-header .room-desc {
     font-family: var(--font-main);
     /* Scale font so 80 monospace chars fit the container width (minus padding).
        Monospace char ≈ 0.6em wide → 80 chars = 48em → fontSize = availableWidth / 48 */
-    font-size: clamp(7.5px, calc((100cqw - 18px) / 48.5), 14px);
+    font-size: var(--dynamic-log-size, 13px);
     font-style: italic;
     color: #e2e8f0;
     max-width: 80ch;
@@ -349,14 +349,14 @@
         gap: 2px;
     }
 
-    .room-name {
+    .sticky-room-header .room-name {
         font-size: 0.85rem !important;
         letter-spacing: 0.3px;
         margin-bottom: 2px;
     }
 
-    .room-desc {
-        font-size: clamp(7px, calc((100cqw - 16px) / 48), 14px) !important;
+    .sticky-room-header .room-desc {
+        font-size: clamp(7px, calc((100cqw - 20px) / 48), 14px) !important;
         line-height: 1.25;
         letter-spacing: normal;
     }

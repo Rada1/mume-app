@@ -133,14 +133,15 @@ const upsertOccupant = (list: GmcpOccupant[], entity: GmcpOccupant): GmcpOccupan
 export const createRoomActions = (set: any, get: any) => ({
     applyRoomInfo: (data: GmcpRoomInfo) => {
         set((state: RoomState) => {
-            const isNewPhysicalRoom = data.num !== undefined && data.num !== state.roomNum;
+            const incomingId = data.num ?? data.vnum ?? data.id;
+            const isNewPhysicalRoom = incomingId !== undefined && incomingId !== null && String(incomingId) !== String(state.roomNum);
             
             return {
                 roomName: data.name || state.roomName,
-                roomDesc: data.details || state.roomDesc,
+                roomDesc: data.desc || state.roomDesc,
                 roomZone: data.zone || state.roomZone,
                 terrain: data.terrain || state.terrain,
-                roomNum: data.num !== undefined ? data.num : state.roomNum,
+                roomNum: incomingId !== undefined && incomingId !== null ? Number(incomingId) : state.roomNum,
                 // SMARTER: Only clear occupants if it's a physical room change
                 players: isNewPhysicalRoom ? [] : state.players,
                 npcs: isNewPhysicalRoom ? [] : state.npcs,

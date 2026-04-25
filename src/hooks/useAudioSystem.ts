@@ -3,9 +3,14 @@ import { audioManager } from '../services/audio/AudioManager';
 import { useSettingsStore } from '../stores/useSettingsStore';
 import { useActiveRoom, useActiveCombat, useActiveVitals } from '../stores/useActiveGameState';
 import { useHaptics } from './interactions/useHaptics';
+import { useModeStore } from '../stores/useModeStore';
 
 export const useAmbientController = () => {
     const isSoundEnabled = useSettingsStore(state => state.isSoundEnabled);
+    const zoneMusic = useSettingsStore(state => state.zoneMusic);
+    const mode = useModeStore(state => state.mode);
+    const isSpectating = useModeStore(state => state.isSpectating);
+    const activeView = useModeStore(state => state.activeView);
 
     // We use the active stores so spectate mode automatically gets correct audio
     const activeRoom = useActiveRoom();
@@ -18,14 +23,13 @@ export const useAmbientController = () => {
     const weather = activeVitals.weather;
     const lighting = activeVitals.lighting;
 
-    const opponentId = activeCombat.opponentId;
-    const inCombat = opponentId !== null;
+    const inCombat = activeVitals.inCombat || activeCombat.opponentId !== null || activeCombat.opponentName !== null;
 
     useEffect(() => {
         if (!isSoundEnabled) return;
         const isDay = lighting === 'sun';
         audioManager.setAmbient('terrain', { key: terrain, isDay });
-    }, [terrain, lighting, isSoundEnabled]);
+    }, [terrain, lighting, isSoundEnabled, mode, isSpectating, activeView]);
 
     useEffect(() => {
         if (!isSoundEnabled) return;
@@ -34,7 +38,7 @@ export const useAmbientController = () => {
         } else {
             audioManager.setAmbient('weather', { key: weather });
         }
-    }, [weather, isSoundEnabled]);
+    }, [weather, isSoundEnabled, mode, isSpectating, activeView]);
 
     useEffect(() => {
         if (!isSoundEnabled) return;
@@ -48,14 +52,19 @@ export const useAmbientController = () => {
             .replace(/-/g, ' ')
             .replace(/\s+/g, ' ') : null;
 
-        audioManager.setAmbient('zone', { key: normalizedZone, inCombat });
-    }, [roomZone, inCombat, isSoundEnabled]);
+        const mapping = (normalizedZone && Array.isArray(zoneMusic)) ? zoneMusic.find(m => 
+            m.zone.toLowerCase().trim().replace(/^the\s+/i, '') === normalizedZone
+        ) : null;
+        const dynamicUrls = mapping ? (Array.isArray(mapping.url) ? mapping.url : [mapping.url]) : undefined;
+
+        audioManager.setAmbient('zone', { key: normalizedZone, inCombat, dynamicUrls });
+    }, [roomZone, inCombat, isSoundEnabled, zoneMusic, mode, isSpectating, activeView]);
 
     // Handle drum loop
     useEffect(() => {
         if (!isSoundEnabled) return;
         audioManager.updateDrumLayer(inCombat, roomZone);
-    }, [inCombat, roomZone, isSoundEnabled]);
+    }, [inCombat, roomZone, isSoundEnabled, mode, isSpectating, activeView]);
 
     // Simple listener for zone ended to trigger re-evaluation if needed
     useEffect(() => {
@@ -157,5 +166,3 @@ export const useAudioEffects = () => {
         initAudio: () => audioManager.init()
     };
 };
-
-

@@ -71,13 +71,19 @@ export const useGmcpRoom = ({
         if (roomDescRef) (roomDescRef as { current: string }).current = data.desc || '';
 
         let zone = data.zone || data.area;
-        if (!zone && roomNum !== undefined && mapperRef.current?.preloadedCoordsRef?.current) {
-            const staticData = mapperRef.current.preloadedCoordsRef.current[String(roomNum)];
+        if (!zone && roomNum !== undefined && mapperRef.current?.serverIdIndexRef?.current) {
+            const vnum = mapperRef.current.serverIdIndexRef.current[String(roomNum)];
+            const staticData = vnum ? mapperRef.current.preloadedCoordsRef.current[vnum] : null;
             if (staticData && staticData[9]) {
                 zone = staticData[9];
             }
         }
         if (zone) setRoomZone(zone);
+
+        // --- Store Sync ---
+        import('../../events/gmcpBus').then(({ gmcpBus }) => {
+            gmcpBus.emit('Room.Info', { ...data, zone, isSnooped: false });
+        });
 
         // Drive lighting from GMCP Room Info
         const light = data.light ?? data.l;
@@ -93,15 +99,6 @@ export const useGmcpRoom = ({
         if (roomChanged) {
             lastRoomChangeTimeRef.current = Date.now();
             
-            // Force refresh of occupants and items on room change (disabled for MUME compatibility)
-            /*
-            if (sendGMCP) {
-                console.log('[GMCP] Requesting Room.Chars/Items for new room:', roomNum);
-                sendGMCP('Room.Chars'); 
-                sendGMCP('Room.Items');
-            }
-            */
-
             if (playMovementSound) {
                 // Determine riding status: if spectating, we can check Room.Chars or fallback.
                 const isRiding = isRidingRef?.current || playerPositionRef.current === 'riding' || playerPositionRef.current === 'mounted';
@@ -112,6 +109,12 @@ export const useGmcpRoom = ({
 
     const onRoomUpdateExits = useCallback((data: GmcpUpdateExits) => {
         if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-gmcp-room-exits', { detail: data }));
+        
+        // --- Store Sync ---
+        import('../../events/gmcpBus').then(({ gmcpBus }) => {
+            gmcpBus.emit('Room.UpdateExits', { ...data, isSnooped: false });
+        });
+
         if (data.exits) {
             console.log('[GMCP] Room.UpdateExits:', data.exits);
             // Door detection logic

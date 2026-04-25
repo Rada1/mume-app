@@ -31,7 +31,8 @@ export function useMessageLog(
     roomDescRef?: React.RefObject<string | null>,
     pendingMove?: { dir: string; timestamp: number } | null,
     setPendingMove?: (val: { dir: string; timestamp: number } | null) => void,
-    isAccountModeRef?: React.RefObject<boolean>
+    isAccountModeRef?: React.RefObject<boolean>,
+    playCommMessageSound?: () => void
 ) {
     const [messages, setMessages] = useState<Message[]>([]);
     const lastMessageRef = useRef<Message | null>(null);
@@ -215,6 +216,10 @@ export function useMessageLog(
         const targetMid = mid;
         const canContinue = type === 'comm-continue' && lastMsg && (lastMsg.type === 'comm' || lastMsg.isComm) &&
             (!commSender || lastMsg.commSender === commSender);
+
+        if (isComm && playCommMessageSound && !canContinue) {
+            playCommMessageSound();
+        }
 
         if (canContinue) {
             const currentMsgText = lastMsg.commText || '';
@@ -400,7 +405,7 @@ export function useMessageLog(
                 flushTimeoutRef.current = setTimeout(flushMessages, 50);
             }
         }
-    }, [inCombatRef, setMessages, flushMessages, roomContext, isAccountModeRef]);
+    }, [inCombatRef, setMessages, flushMessages, roomContext, isAccountModeRef, playCommMessageSound]);
 
     const clearLog = useCallback(() => {
         messageBufferRef.current = [];

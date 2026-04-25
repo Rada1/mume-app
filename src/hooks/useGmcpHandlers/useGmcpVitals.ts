@@ -98,6 +98,11 @@ export const useGmcpVitals = ({
             const oppName = getCharNameFromId(oppId);
             setOpponentName(oppName);
             if (!oppName && !oppId) setOpponentHealthStatus(null);
+            
+            // --- Store Sync ---
+            import('../../events/gmcpBus').then(({ gmcpBus }) => {
+                gmcpBus.emit('Char.Opponent', { name: oppName, id: oppId, isSnooped: false });
+            });
         }
 
         if (data.weather !== undefined) {
@@ -113,7 +118,12 @@ export const useGmcpVitals = ({
         }
 
         console.log('[GMCP] CharVitals:', data);
-    }, [setCurrentTerrain, setCurrentWeather, setIsFoggy, setPlayerHealthStatus, setOpponentId, setOpponentName, setOpponentHealthStatus, setBufferName, setBufferHealthStatus, setPlayerPosition, findStatus, getCharNameFromId, isSpectateMode, detectLighting, playerPositionRef]);
+
+        // --- Store Sync ---
+        import('../../events/gmcpBus').then(({ gmcpBus }) => {
+            gmcpBus.emit('Char.Vitals', { ...data, isSnooped: false });
+        });
+    }, [setCurrentTerrain, setCurrentWeather, setIsFoggy, setPlayerHealthStatus, setOpponentId, setOpponentName, setOpponentHealthStatus, setBufferName, setBufferHealthStatus, setPlayerPosition, findStatus, getCharNameFromId, isSpectateMode, detectLighting, playerPositionRef, setInCombat]);
 
     const onCharInfo = useCallback((data: GmcpCharInfo) => {
         console.log('[GMCP] CharInfo:', data);
@@ -132,6 +142,11 @@ export const useGmcpVitals = ({
             description: data.description ?? prev.description,
             whois: data.whois ?? prev.whois
         }));
+
+        // --- Store Sync ---
+        import('../../events/gmcpBus').then(({ gmcpBus }) => {
+            gmcpBus.emit('Char.Info', { ...data, isSnooped: false });
+        });
     }, [setCharacterInfo]);
 
     const onRoomCharsCombat = useCallback((data: any[]) => {
@@ -159,6 +174,11 @@ export const useGmcpVitals = ({
                     setBufferHealthStatus(status);
                  }
             }
+        });
+
+        // --- Store Sync ---
+        import('../../events/gmcpBus').then(({ gmcpBus }) => {
+            gmcpBus.emit('Room.Chars.Combat', Object.assign(data, { isSnooped: false }));
         });
     }, [findStatus, opponentName, opponentId, bufferName, setOpponentHealthStatus, setBufferHealthStatus]);
 

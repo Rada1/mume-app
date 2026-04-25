@@ -19,13 +19,19 @@ export const getSpectateVitals = () => useSpectateVitalsStore.getState();
 // --- Event Subscriptions ---
 
 gmcpBus.on('Char.Vitals', (data) => {
-    // GATE: Only update if IS spectating
-    if (!useModeStore.getState().isSpectating) return;
+    if (!data.isSnooped) return;
     useSpectateVitalsStore.getState().applyCharVitals(data);
 });
 
+gmcpBus.on('Char.Name', (data) => {
+    if (!data.isSnooped) return;
+    const name = data.data || null;
+    if (name) {
+        useSpectateVitalsStore.getState().setCharacterName(name);
+    }
+});
+
 gmcpBus.on('Char.Info', (data) => {
-    // GATE: Only update if IS spectating
-    if (!useModeStore.getState().isSpectating) return;
+    if (!data.isSnooped) return;
     useSpectateVitalsStore.getState().applyCharInfo(data);
 });

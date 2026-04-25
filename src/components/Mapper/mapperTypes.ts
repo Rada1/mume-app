@@ -89,4 +89,5 @@ export interface GmcpRoomInfo {
     exits?: Record<string, GmcpExitInfo | number | false>;
     details?: string[];
     room_quest_flags?: string[];
+    spectating?: boolean;
 }

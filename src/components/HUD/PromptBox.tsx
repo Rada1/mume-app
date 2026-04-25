@@ -11,13 +11,21 @@ import { useGame } from '../../context/GameContext';
 import XpTicker from '../Combat/XpTicker';
 import { CombatSliderPopout } from '../Drawers/StatsDrawer/CombatSliderPopout';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
-import { useActiveVitals, useActiveCombat, useActiveCharacter } from '../../stores/useActiveGameState';
+import { useVitalsStore } from '../../stores/useVitalsStore';
+import { useCombatStore } from '../../stores/useCombatStore';
 import { useModeStore } from '../../stores/useModeStore';
 
 interface PromptBoxProps {
     processMessageHtml?: (html: string, mid: string, isRoomName: boolean, type?: string, isCombat?: boolean, side?: string) => string;
     onWimpyChange?: (val: number) => void;
 }
+
+const HEALTH_TIERS = ['Healthy', 'Fine', 'Hurt', 'Wounded', 'Bad', 'Awful', 'Dying'] as const;
+const MANA_TIERS = ['Full', 'Burning', 'Hot', 'Warm', 'Cold', 'Icy', 'Frozen'] as const;
+const MOVE_TIERS = ['Unwearied', 'Steadfast', 'Rested', 'Tired', 'Slow', 'Weak', 'Fainting', 'Exhausted'] as const;
+const HEALTH_SEGMENTS = HEALTH_TIERS.length - 1;
+const MANA_SEGMENTS = MANA_TIERS.length - 1;
+const MOVE_SEGMENTS = MOVE_TIERS.length - 1;
 
 const HEALTH_MAP: Record<string, { percent: number; color: string }> = {
     'Healthy': { percent: 100, color: '#22c55e' },
@@ -34,22 +42,42 @@ const HEALTH_MAP: Record<string, { percent: number; color: string }> = {
 const getManaPercent = (current: number, max: number): number => max > 0 ? (current / max) * 100 : 0;
 const getMovePercent = (current: number, max: number): number => max > 0 ? (current / max) * 100 : 0;
 
-const getManaStatus = (current: number, max: number): string => {
-    const p = getManaPercent(current, max);
-    if (p > 90) return 'Full';
-    if (p > 70) return 'High';
-    if (p > 40) return 'Half';
-    if (p > 15) return 'Low';
-    return 'Empty';
+const getTierStatus = (percent: number, tiers: readonly string[]): string => {
+    if (tiers.length === 0) return '';
+    const clamped = Math.max(0, Math.min(100, percent));
+    if (clamped >= 100) return tiers[0];
+    const bucketSize = 100 / tiers.length;
+    const index = Math.min(tiers.length - 1, Math.floor((100 - clamped) / bucketSize));
+    return tiers[index];
 };
 
-const getMoveStatus = (current: number, max: number): string => {
-    const p = getMovePercent(current, max);
-    if (p > 90) return 'unwearied';
-    if (p > 70) return 'Strong';
-    if (p > 40) return 'Tired';
-    if (p > 15) return 'Exhausted';
-    return 'Fainting';
+const normalizeTierStatus = (status: string | null | undefined, tiers: readonly string[]): string | null => {
+    if (!status) return null;
+    const normalized = status.trim().toLowerCase();
+    return tiers.find((tier) => tier.toLowerCase() === normalized) ?? null;
+};
+
+const getTierPercent = (status: string | null | undefined, tiers: readonly string[]): number | null => {
+    const normalized = normalizeTierStatus(status, tiers);
+    if (!normalized) return null;
+    const index = tiers.findIndex((tier) => tier === normalized);
+    if (index < 0) return null;
+    if (tiers.length === 1) return 100;
+    return 100 - (index * (100 / (tiers.length - 1)));
+};
+
+const getFilledSegments = (status: string | null | undefined, tiers?: readonly string[], fallbackPercent?: number): number | null => {
+    if (tiers && tiers.length > 0) {
+        const normalized = normalizeTierStatus(status, tiers);
+        if (normalized) {
+            const index = tiers.findIndex((tier) => tier === normalized);
+            if (index >= 0) return Math.max(0, (tiers.length - 1) - index);
+        }
+    }
+
+    if (fallbackPercent === undefined || !tiers || tiers.length === 0) return null;
+    const visibleSegments = Math.max(0, tiers.length - 1);
+    return Math.max(0, Math.min(visibleSegments, Math.round((Math.max(0, Math.min(100, fallbackPercent)) / 100) * visibleSegments)));
 };
 
 const ConditionBadge: React.FC<{ 
@@ -60,62 +88,46 @@ const ConditionBadge: React.FC<{
     altStatus?: string;
     showAlt?: boolean;
     mirrored?: boolean;
+    isFighting?: boolean;
     onPointerDown?: (e: React.PointerEvent) => void;
     wimpyRatio?: number;
     isDragging?: boolean;
     dragVal?: number | null;
-}> = ({ status, percent, colorClass, onClick, altStatus, showAlt, mirrored, onPointerDown, wimpyRatio, isDragging, dragVal }) => {
+    segments?: number;
+    tiers?: readonly string[];
+}> = ({ status, percent, colorClass, onClick, altStatus, showAlt, mirrored, isFighting, onPointerDown, wimpyRatio, isDragging, dragVal, segments = 5, tiers }) => {
     // --- Logic for Resource Loss "Magnitude" Bar ---
     const [lossMagnitude, setLossMagnitude] = useState(0);
-    const prevPercentRef = useRef(percent);
+    const filledSegments = getFilledSegments(status, tiers, percent) ?? 0;
+    const prevSegmentsRef = useRef(filledSegments);
 
     useEffect(() => {
-        const prev = prevPercentRef.current;
-        prevPercentRef.current = percent;
+        const prev = prevSegmentsRef.current;
+        prevSegmentsRef.current = filledSegments;
 
-        if (percent < prev) {
-            // Health lost - show only the magnitude of this specific hit
-            const delta = prev - percent;
+        if (filledSegments < prev) {
+            const delta = prev - filledSegments;
             setLossMagnitude(delta);
             
             const timer = setTimeout(() => {
                 setLossMagnitude(0);
             }, 500);
             return () => clearTimeout(timer);
-        } else if (percent > prev) {
-            // Health gained - reset loss indicator
+        } else if (filledSegments > prev) {
             setLossMagnitude(0);
         }
-    }, [percent]);
-
-    const segments = 5;
+    }, [filledSegments, percent]);
 
     return (
-        <div className={`condition-badge ${colorClass}`} onClick={onClick} onPointerDown={onPointerDown}>
+        <div className={`condition-badge ${colorClass} ${isFighting ? 'pulse-combat' : ''}`} onClick={onClick} onPointerDown={onPointerDown}>
             <div className={`status-bar-segment ${mirrored ? 'is-mirrored' : ''}`}>
                 <div className="status-bar-segments-grid">
                     {[...Array(segments)].map((_, i) => {
                         const segmentIndex = mirrored ? (segments - 1 - i) : i;
-                        const start = (segmentIndex / segments) * 100;
-                        const end = ((segmentIndex + 1) / segments) * 100;
-                        
-                        // Fill logic
-                        let fill = 0;
-                        if (percent >= end) fill = 100;
-                        else if (percent > start) fill = ((percent - start) / (end - start)) * 100;
-
-                        // Ghost logic
-                        let ghostFill = 0;
-                        if (lossMagnitude > 0) {
-                            const ghostStart = percent;
-                            const ghostEnd = percent + lossMagnitude;
-                            if (ghostEnd >= end) {
-                                ghostFill = Math.max(0, 100 - fill); 
-                            } else if (ghostEnd > start) {
-                                const segmentLocalGhostEnd = ((ghostEnd - start) / (end - start)) * 100;
-                                ghostFill = Math.max(0, segmentLocalGhostEnd - fill);
-                            }
-                        }
+                        const isFilled = segmentIndex < filledSegments;
+                        const fill = isFilled ? 100 : 0;
+                        const previousSegments = Math.min(segments, filledSegments + lossMagnitude);
+                        const ghostFill = !isFilled && segmentIndex < previousSegments ? 100 : 0;
 
                         return (
                             <div key={i} className="bar-segment-block">
@@ -231,18 +243,25 @@ const PromptBox: FC<PromptBoxProps> = ({
 }) => {
     const { triggerHaptic, executeCommand, setPlayerPosition, inlineCategories, isNewbieMode, viewport } = useGame();
     
-    // --- Active State Selectors ---
-    const { 
-        gmcpVitals: {
-            hp, maxHp, mana, maxMana, move, maxMove,
-            hpStatus: playerHealthStatus
-        },
-        wimpy, position, inCombat
-    } = useActiveVitals();
+    // --- Player State Selectors ---
+    const hp = useVitalsStore((state) => state.gmcpVitals.hp);
+    const maxHp = useVitalsStore((state) => state.gmcpVitals.maxHp);
+    const mana = useVitalsStore((state) => state.gmcpVitals.mana);
+    const maxMana = useVitalsStore((state) => state.gmcpVitals.maxMana);
+    const move = useVitalsStore((state) => state.gmcpVitals.move);
+    const maxMove = useVitalsStore((state) => state.gmcpVitals.maxMove);
+    const playerHealthStatus = useVitalsStore((state) => state.gmcpVitals.hpStatus);
+    const moveStatus = useVitalsStore((state) => state.gmcpVitals.moveStatus);
+    const wimpy = useVitalsStore((state) => state.wimpy);
+    const position = useVitalsStore((state) => state.position);
+    const inCombat = useVitalsStore((state) => state.inCombat);
+
     const isRiding = position === 'riding' || position === 'mounted';
     const playerPosition = position;
-    const { opponentName, opponentHealthStatus } = useActiveCombat();
-    const characterName = useActiveCharacter();
+
+    const opponentName = useCombatStore((state) => state.opponentName);
+    const opponentHealthStatus = useCombatStore((state) => state.opponentHealthStatus);
+    const characterName = useModeStore(state => state.activeCharacter);
     const isSpectateMode = useModeStore(state => state.isSpectating);
 
     const [activeSlider, setActiveSlider] = useState<'pos' | null>(null);
@@ -343,8 +362,18 @@ const PromptBox: FC<PromptBoxProps> = ({
         setActiveSlider(activeSlider === 'pos' ? null : 'pos');
     }, [activeSlider, triggerHaptic]);
 
-    const mpStatus = getManaStatus(mana, maxMana);
-    const stStatus = getMoveStatus(move, maxMove);
+    const manaStatusFromGmcp = maxMana <= 0 && mana > 0 ? 'Full' : null;
+    const moveStatusFromGmcp = normalizeTierStatus(moveStatus, MOVE_TIERS) ?? (maxMove <= 0 && move > 0 ? 'Unwearied' : null);
+
+    const manaPercent = maxMana > 0
+        ? getManaPercent(mana, maxMana)
+        : (getTierPercent(manaStatusFromGmcp, MANA_TIERS) ?? 0);
+    const movePercent = moveStatusFromGmcp
+        ? (getTierPercent(moveStatusFromGmcp, MOVE_TIERS) ?? 0)
+        : (maxMove > 0 ? getMovePercent(move, maxMove) : 0);
+
+    const mpStatus = manaStatusFromGmcp ?? getTierStatus(manaPercent, MANA_TIERS);
+    const stStatus = moveStatusFromGmcp ?? getTierStatus(movePercent, MOVE_TIERS);
 
     const getPositionIcon = () => {
         if (inCombat) return <Swords size={14} className="combat-divider-icon" />;
@@ -387,9 +416,12 @@ const PromptBox: FC<PromptBoxProps> = ({
                                     status={playerHealthStatus || 'Healthy'}
                                     percent={maxHp > 0 ? (hp / maxHp) * 100 : (HEALTH_MAP[playerHealthStatus || 'Healthy']?.percent || 0)}
                                     colorClass="hp"
+                                    segments={HEALTH_SEGMENTS}
+                                    tiers={HEALTH_TIERS}
                                     onClick={triggerNumbers}
                                     showAlt={showNumbers || isDragging}
                                     altStatus={isDragging ? `` : `${hp}/${maxHp}`}
+                                    isFighting={inCombat}
                                     onPointerDown={handleHpPointerDown}
                                     wimpyRatio={wimpyRatio}
                                     isDragging={isDragging}
@@ -399,20 +431,26 @@ const PromptBox: FC<PromptBoxProps> = ({
                             <Zap size={11} className="vitals-icon mana-icon" strokeWidth={3} />
                             <ConditionBadge 
                                 status={mpStatus} 
-                                percent={getManaPercent(mana, maxMana)}
+                                percent={manaPercent}
                                 colorClass="mana" 
+                                segments={MANA_SEGMENTS}
+                                tiers={MANA_TIERS}
                                 onClick={triggerNumbers}
                                 showAlt={showNumbers}
                                 altStatus={`${mana}/${maxMana}`}
+                                isFighting={inCombat}
                             />
                             <Footprints size={11} className="vitals-icon move-icon" strokeWidth={3} />
                             <ConditionBadge 
                                 status={stStatus} 
-                                percent={getMovePercent(move, maxMove)}
+                                percent={movePercent}
                                 colorClass="move" 
+                                segments={MOVE_SEGMENTS}
+                                tiers={MOVE_TIERS}
                                 onClick={triggerNumbers}
                                 showAlt={showNumbers}
                                 altStatus={`${move}/${maxMove}`}
+                                isFighting={inCombat}
                             />
                         </div>
                     </div>
@@ -439,7 +477,10 @@ const PromptBox: FC<PromptBoxProps> = ({
                                     status="Unknown" 
                                     percent={100} 
                                     colorClass="move placeholder" 
+                                    segments={MOVE_SEGMENTS}
+                                    tiers={MOVE_TIERS}
                                     mirrored
+                                    isFighting={inCombat}
                                 />
                                 <Footprints size={11} className="vitals-icon move-icon placeholder" strokeWidth={3} />
 
@@ -447,7 +488,10 @@ const PromptBox: FC<PromptBoxProps> = ({
                                     status="Unknown" 
                                     percent={100} 
                                     colorClass="mana placeholder" 
+                                    segments={MANA_SEGMENTS}
+                                    tiers={MANA_TIERS}
                                     mirrored
+                                    isFighting={inCombat}
                                 />
                                 <Zap size={11} className="vitals-icon mana-icon placeholder" strokeWidth={3} />
 
@@ -455,7 +499,10 @@ const PromptBox: FC<PromptBoxProps> = ({
                                     status={opponentHealthStatus || 'Fighting'}
                                     percent={HEALTH_MAP[opponentHealthStatus || 'Healthy']?.percent || 50}
                                     colorClass="opponent" 
+                                    segments={HEALTH_SEGMENTS}
+                                    tiers={HEALTH_TIERS}
                                     mirrored
+                                    isFighting={inCombat}
                                 />
                                 <Heart size={11} className="vitals-icon hp-icon is-mirrored" strokeWidth={3} />
                             </div>

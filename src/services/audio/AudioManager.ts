@@ -396,7 +396,10 @@ export class AudioManager {
     public async updateDrumLayer(inCombat: boolean, activeZoneUrl: string | null) {
         if (!this._isSoundEnabled || !this.audioCtx) return;
 
-        if (inCombat && activeZoneUrl) {
+        const zoneActive = this.activeAmbients.get('zone');
+        const effectiveUrl = (activeZoneUrl && activeZoneUrl.includes('/')) ? activeZoneUrl : zoneActive?.url;
+
+        if (inCombat && effectiveUrl) {
             const activeDrum = this.activeAmbients.get('drum');
             if (activeDrum) return; // Already playing
 
@@ -404,7 +407,7 @@ export class AudioManager {
             const buffer = await this.loadBuffer(drumUrl);
             if (!buffer) return;
 
-            const musicFilename = activeZoneUrl.split('/').pop() || '';
+            const musicFilename = effectiveUrl.split('/').pop() || '';
             const musicBpm = AUDIO_MANIFEST.bpmMap[musicFilename] || 100;
             const drumBpm = AUDIO_MANIFEST.bpmMap['drumbeat.mp3'] || 100;
 

@@ -26,7 +26,12 @@ export const useSessionState = (
     gameState: string,
     roomDescRef: React.RefObject<string | null>,
     isAccountModeRef: React.RefObject<boolean>,
-    isSpectateSession: boolean = false
+    isSpectateSession: boolean = false,
+    audioTriggers?: {
+        playCommMessageSound: () => void;
+        playCombatHitSound: () => void;
+        playLevelUpSound: () => void;
+    }
 ): SessionContextType => {
     // --- Store Selection ---
     // --- Store Selection (Unconditional hook calls to respect Rules of Hooks) ---
@@ -82,7 +87,24 @@ export const useSessionState = (
     const groupMembers = cStore?.groupMembers ?? [];
 
     // Legacy setters mapped to store actions
-    const setStats = (update: any) => vStore.applyCharVitals(typeof update === 'function' ? update(stats) : update);
+    const getCurrentStats = useCallback(() => {
+        const currentStore = isSpectateSession ? useSpectateVitalsStore.getState() : useVitalsStore.getState();
+        return {
+            hp: currentStore.hp ?? 0,
+            maxHp: currentStore.maxHp ?? 0,
+            mana: currentStore.mana ?? 0,
+            maxMana: currentStore.maxMana ?? 0,
+            move: currentStore.move ?? 0,
+            maxMove: currentStore.maxMove ?? 0,
+            wimpy: currentStore.wimpy ?? 0,
+            conditions: (currentStore as any).conditions ?? {}
+        };
+    }, [isSpectateSession]);
+
+    const setStats = useCallback((update: any) => {
+        const next = typeof update === 'function' ? update(getCurrentStats()) : update;
+        (vStore as any).setStats(next);
+    }, [getCurrentStats, vStore]);
     const setRoomName = rStore.setRoomName;
     const setRoomDesc = rStore.setRoomDesc;
     const setRoomExits = rStore.setExits;
@@ -169,7 +191,8 @@ export const useSessionState = (
         roomDescRef,
         pendingMove,
         setPendingMove,
-        isAccountModeRef
+        isAccountModeRef,
+        audioTriggers?.playCommMessageSound
     );
 
     // --- Parser State ---

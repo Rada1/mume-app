@@ -67,7 +67,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         return null;
     }
 
-    const isShown = ui.mapExpanded || (ui.peekingDrawer === 'map');
+    const isShown = (ui.mapExpanded || ui.peekingDrawer === 'map') && ui.drawer === 'none';
     
     return (
         <div
@@ -282,7 +282,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         <span className="tab-text">Gear</span>
                     </div>
                     <div
-                        className={`desktop-edge-tab right ${ui.drawer === 'none' && !isShown ? 'active' : ''}`}
+                        className={`desktop-edge-tab right ${isShown ? 'active' : ''}`}
                         onClick={() => { triggerHaptic(15); toggleMap(); }}
                     >
                         <MapIcon className="tab-icon" />

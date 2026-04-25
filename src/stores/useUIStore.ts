@@ -127,7 +127,14 @@ export const useUIStore = create<UIState>((set) => ({
     setIsEquipmentOpen: (open) => set({ isEquipmentOpen: open, drawer: open ? 'equipment' : 'none' }),
     setIsPlayersOpen: (open) => set({ isPlayersOpen: open, drawer: open ? 'players' : 'none' }),
     
-    setDrawer: (drawer) => set({ drawer }),
+    setDrawer: (drawer) => set({ 
+        drawer,
+        isCharacterOpen: drawer === 'character',
+        isStatsOpen: drawer === 'stats',
+        isInventoryOpen: drawer === 'inventory',
+        isEquipmentOpen: drawer === 'equipment',
+        isPlayersOpen: drawer === 'players'
+    }),
     setIsDrawerPeeking: (peeking) => set({ isDrawerPeeking: peeking }),
     setMapExpanded: (expanded) => set({ mapExpanded: expanded }),
 
@@ -159,7 +166,14 @@ export const useUIStore = create<UIState>((set) => ({
 
     setUI: (updater) => set((state) => {
         const next = typeof updater === 'function' ? updater(state) : updater;
-        return { ...next };
+        return { 
+            ...next,
+            isCharacterOpen: next.drawer === 'character',
+            isStatsOpen: next.drawer === 'stats',
+            isInventoryOpen: next.drawer === 'inventory',
+            isEquipmentOpen: next.drawer === 'equipment',
+            isPlayersOpen: next.drawer === 'players'
+        };
     }),
 
     openCharacter: () => set({ isCharacterOpen: true, drawer: 'character' }),
