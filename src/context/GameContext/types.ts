@@ -202,6 +202,7 @@ export interface SessionContextType {
         isRiding: boolean;
         setIsRiding: Dispatch<SetStateAction<boolean>>;
         roomPlayers: import('../../types').GmcpOccupant[];
+        roomChars?: Record<number, import('../../types').GmcpOccupant>;
         setRoomPlayers: Dispatch<SetStateAction<import('../../types').GmcpOccupant[]>>;
         roomNpcs: import('../../types').GmcpOccupant[];
         setRoomNpcs: Dispatch<SetStateAction<import('../../types').GmcpOccupant[]>>;

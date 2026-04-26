@@ -9,16 +9,14 @@ export interface GmcpHandlers {
     detectLighting: (light: string) => void;
     onOpponentChange?: (opponent: string | null) => void;
     onBufferChange?: (buffer: string | null) => void;
-    onAddPlayer?: (data: string | GmcpOccupant) => void;
-    onRemovePlayer?: (data: string | GmcpOccupant) => void;
+    onAddChar?: (data: any) => void;
+    onUpdateChar?: (data: any) => void;
+    onRemoveChar?: (data: any) => void;
+    onRoomChars?: (data: any) => void;
     onRoomItems?: (data: GmcpRoomItems) => void;
     onRoomInfo?: (data: GmcpRoomInfo) => void;
     onRoomUpdateExits?: (data: GmcpUpdateExits) => void;
     onCharVitals?: (data: GmcpCharVitals) => void;
-    onRoomPlayers?: (data: GmcpRoomPlayers) => void;
-    onRoomNpcs?: (data: GmcpRoomNpcs) => void;
-    onAddNpc?: (data: string | GmcpOccupant) => void;
-    onRemoveNpc?: (data: string | GmcpOccupant) => void;
     onCharNameChange?: (name: string | null) => void;
     onCharInfo?: (data: GmcpCharInfo) => void;
     onPositionChange?: (position: string) => void;
@@ -54,19 +52,15 @@ export class GmcpDecoder {
             this.handleRoomInfo(json);
         } else if (pkgLower === 'room.updateexits' || pkgLower === 'mume.client.exits') {
             this.handleUpdateExits(json);
-        } else if (pkgLower === 'room.players') {
-            this.handleRoomPlayers(json);
-        } else if (pkgLower === 'room.npcs' || pkgLower === 'room.chars' || pkgLower === 'room.char' || pkgLower === 'room.chars.set' || pkgLower === 'room.chars.list' || pkgLower === 'room.chars.update' || pkgLower === 'mume.client.chars') {
-            this.handleRoomNpcs(json);
+        } else if (pkgLower === 'room.chars.set' || pkgLower === 'room.chars.list' || pkgLower === 'room.chars' || pkgLower === 'room.players' || pkgLower === 'room.npcs' || pkgLower === 'mume.client.chars') {
+            this.handleSimpleJson(json, handlers.onRoomChars);
             this.handleRoomCharsCombat(json);
-        } else if (pkgLower === 'room.addplayer' || pkgLower === 'room.chars.add' || pkgLower === 'room.char.add') {
-            this.handleSimpleJson(json, handlers.onAddPlayer);
-        } else if (pkgLower === 'room.addnpc' || pkgLower === 'room.addchar') {
-            this.handleSimpleJson(json, handlers.onAddNpc);
-        } else if (pkgLower === 'room.removeplayer') {
-            this.handleSimpleJson(json, handlers.onRemovePlayer);
-        } else if (pkgLower === 'room.removenpc' || pkgLower === 'room.removechar' || pkgLower === 'room.chars.remove' || pkgLower === 'room.char.remove') {
-            this.handleSimpleJson(json, handlers.onRemoveNpc);
+        } else if (pkgLower === 'room.chars.add' || pkgLower === 'room.char.add' || pkgLower === 'room.addplayer' || pkgLower === 'room.addnpc' || pkgLower === 'room.addchar') {
+            this.handleSimpleJson(json, handlers.onAddChar);
+        } else if (pkgLower === 'room.chars.update' || pkgLower === 'room.char.update') {
+            this.handleSimpleJson(json, handlers.onUpdateChar);
+        } else if (pkgLower === 'room.chars.remove' || pkgLower === 'room.char.remove' || pkgLower === 'room.removeplayer' || pkgLower === 'room.removenpc' || pkgLower === 'room.removechar') {
+            this.handleSimpleJson(json, handlers.onRemoveChar);
         } else if (pkgLower.startsWith('room.items') || pkgLower.startsWith('room.objects') || pkgLower === 'char.items' || pkgLower === 'char.inv' || pkgLower === 'room.items.list' || pkgLower === 'char.items.list' || pkgLower === 'room.items.set' || pkgLower === 'mume.client.inventory' || pkgLower === 'mume.client.equipment' || pkgLower === 'mume.client.roomitems') {
             this.handleRoomItems(json);
         } else if (pkgLower === 'char.name') {
@@ -366,22 +360,7 @@ export class GmcpDecoder {
         } catch (e) { console.error('[GMCP] Parse error in Room.UpdateExits:', e, json); }
     }
 
-    private handleRoomPlayers(json: string) {
-        try {
-            const data = JSON.parse(json);
-            console.log('[GMCP] Room.Players parsed:', data);
-            if (isGmcpRoomPlayers(data) && this.handlers.onRoomPlayers) this.handlers.onRoomPlayers(data);
-        } catch (e) { console.error('[GMCP] Parse error in Room.Players:', e, json); }
-    }
 
-    private handleRoomNpcs(json: string) {
-        try {
-            const data = JSON.parse(json);
-            console.log('[GMCP] Room.Chars/Npcs parsed:', data);
-            if (isGmcpRoomPlayers(data) && this.handlers.onRoomNpcs) this.handlers.onRoomNpcs(data);
-            else console.warn('[GMCP] Room.Chars/Npcs rejected by validator:', data);
-        } catch (e) { console.error('[GMCP] Parse error in Room.Chars:', e, json); }
-    }
 
     private handleRoomCharsCombat(json: string) {
         try {

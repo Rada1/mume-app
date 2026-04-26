@@ -187,18 +187,16 @@ export const useActiveOccupants = () => {
     const mode = useModeStore(state => state.mode);
     const isSpectating = useModeStore(state => state.isSpectating && state.activeView === 'target');
     
-    const mainPlayers = useRoomStore(state => state.players);
-    const mainNpcs = useRoomStore(state => state.npcs);
-    
-    const spectatePlayers = useSpectateRoomStore(state => state.players);
-    const spectateNpcs = useSpectateRoomStore(state => state.npcs);
+    const mainChars = useRoomStore(state => state.chars);
+    const spectateChars = useSpectateRoomStore(state => state.chars);
+    const replayChars = useReplayRoomStore(state => state.chars);
 
-    const replayPlayers = useReplayRoomStore(state => state.players);
-    const replayNpcs = useReplayRoomStore(state => state.npcs);
+    const chars = mode === 'replay' || mode === 'scrubbing' ? replayChars : (isSpectating ? spectateChars : mainChars);
 
-    if (mode === 'replay' || mode === 'scrubbing') return { players: replayPlayers, npcs: replayNpcs };
-    if (isSpectating) return { players: spectatePlayers, npcs: spectateNpcs };
-    return { players: mainPlayers, npcs: mainNpcs };
+    return {
+        players: Object.values(chars || {}).filter(c => c.type !== 'npc'),
+        npcs: Object.values(chars || {}).filter(c => c.type === 'npc')
+    };
 };
 
 /**

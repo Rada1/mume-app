@@ -14,48 +14,39 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
 // --- Event Subscriptions ---
 
 gmcpBus.on('Room.Info', (data) => {
-    if (data.isSnooped) return;
+    const mode = useModeStore.getState();
+    if (mode.isSpectating || (data as any).isSnooped) return;
     useRoomStore.getState().applyRoomInfo(data);
 });
 
 gmcpBus.on('Room.UpdateExits', (data) => {
-    if (data.isSnooped) return;
+    if ((data as any).isSnooped) return;
     useRoomStore.getState().applyExitsUpdate(data);
 });
 
 gmcpBus.on('Room.Items', (data) => {
-    if (data.isSnooped) return;
+    if ((data as any).isSnooped) return;
     useRoomStore.getState().setItems(data as any);
 });
 
-gmcpBus.on('Room.AddPlayer', (data) => {
-    if (data.isSnooped) return;
-    useRoomStore.getState().addPlayer(data);
+gmcpBus.on('Room.Chars', (data) => {
+    if ((data as any).isSnooped) return;
+    // setChars is already updated by useGmcpOccupants hook, but we could do it here
 });
 
-gmcpBus.on('Room.RemovePlayer', (data) => {
-    if (data.isSnooped) return;
-    useRoomStore.getState().removePlayer(data);
+gmcpBus.on('Room.AddChar', (data) => {
+    if ((data as any).isSnooped) return;
+    useRoomStore.getState().addChar(data);
 });
 
-gmcpBus.on('Room.Players', (data) => {
-    if (data.isSnooped) return;
-    useRoomStore.getState().setPlayers(data as any);
+gmcpBus.on('Room.UpdateChar', (data) => {
+    if ((data as any).isSnooped) return;
+    useRoomStore.getState().updateChar(data);
 });
 
-gmcpBus.on('Room.Npcs', (data) => {
-    if (data.isSnooped) return;
-    useRoomStore.getState().setNpcs(data as any);
-});
-
-gmcpBus.on('Room.AddNpc', (data) => {
-    if (data.isSnooped) return;
-    useRoomStore.getState().addNpc(data);
-});
-
-gmcpBus.on('Room.RemoveNpc', (data) => {
-    if (data.isSnooped) return;
-    useRoomStore.getState().removeNpc(data);
+gmcpBus.on('Room.RemoveChar', (data) => {
+    if ((data as any).isSnooped) return;
+    useRoomStore.getState().removeChar(data);
 });
 
 export const getRoom = () => useRoomStore.getState();

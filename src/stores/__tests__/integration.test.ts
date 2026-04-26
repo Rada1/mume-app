@@ -28,8 +28,7 @@ describe('MUME Store Integration Tests', () => {
             roomZone: null,
             terrain: null,
             exits: [],
-            players: [],
-            npcs: [],
+            chars: {},
             items: []
         });
 
@@ -93,36 +92,36 @@ describe('MUME Store Integration Tests', () => {
         it('should clear occupants only when room number changes', () => {
             // 1. Initial State: Room 100 with a player
             useRoomStore.setState({ 
-                players: [{ id: 'Aragorn', name: 'Aragorn', keyword: 'aragorn', short: 'Aragorn' }] as any
+                chars: { 1: { id: '1', name: 'Aragorn', keyword: 'aragorn', short: 'Aragorn' } } as any
             });
 
             // 2. Room.Info for same room (e.g. look command)
             gmcpBus.emit('Room.Info', { num: 100, name: 'Room 100' });
-            expect(useRoomStore.getState().players).toHaveLength(1); // Occupants NOT cleared
+            expect(Object.values(useRoomStore.getState().chars)).toHaveLength(1); // Occupants NOT cleared
 
             // 3. Room.Info for different room (movement)
             gmcpBus.emit('Room.Info', { num: 101, name: 'Room 101' });
-            expect(useRoomStore.getState().players).toHaveLength(0); // Occupants cleared
+            expect(Object.values(useRoomStore.getState().chars)).toHaveLength(0); // Occupants cleared
         });
 
         it('should handle dynamic occupant updates (Add/Remove)', () => {
-            gmcpBus.emit('Room.AddPlayer', { name: 'Legolas', keyword: 'legolas', short: 'Legolas' });
-            expect(useRoomStore.getState().players).toHaveLength(1);
-            expect(useRoomStore.getState().players[0].name).toBe('Legolas');
+            gmcpBus.emit('Room.AddChar', { name: 'Legolas', keyword: 'legolas', short: 'Legolas' });
+            expect(Object.values(useRoomStore.getState().chars)).toHaveLength(1);
+            expect(Object.values(useRoomStore.getState().chars)[0].name).toBe('Legolas');
 
-            gmcpBus.emit('Room.RemovePlayer', 'Legolas');
-            expect(useRoomStore.getState().players).toHaveLength(0);
+            gmcpBus.emit('Room.RemoveChar', 'Legolas');
+            expect(Object.values(useRoomStore.getState().chars)).toHaveLength(0);
         });
 
         it('should implement cross-list cleanup (moving NPC to Player)', () => {
             // Setup NPC with ID
-            useRoomStore.setState({ npcs: [{ id: 'Legolas', name: 'Legolas', keyword: 'legolas', short: 'Legolas' }] });
+            useRoomStore.setState({ chars: { 1: { id: '1', name: 'Legolas', keyword: 'legolas', short: 'Legolas' } } as any});
             
             // Add as Player
-            gmcpBus.emit('Room.AddPlayer', { id: 'Legolas', name: 'Legolas', keyword: 'legolas', short: 'Legolas', pc: true });
+            gmcpBus.emit('Room.AddChar', { id: 'Legolas', name: 'Legolas', keyword: 'legolas', short: 'Legolas', pc: true });
             
-            expect(useRoomStore.getState().players).toHaveLength(1);
-            expect(useRoomStore.getState().npcs).toHaveLength(0); // Should be removed from NPCs
+            expect(Object.values(useRoomStore.getState().chars)).toHaveLength(1);
+            expect(Object.values(useRoomStore.getState().chars)).toHaveLength(0); // Should be removed from NPCs
         });
 
         it('should respect spectate gates', () => {
@@ -135,11 +134,11 @@ describe('MUME Store Integration Tests', () => {
         });
 
         it('should handle upsert semantics on re-add', () => {
-            gmcpBus.emit('Room.AddPlayer', { id: 1, name: 'Legolas' });
-            gmcpBus.emit('Room.AddPlayer', { id: 1, name: 'Legolas', short: 'Legolas the Elf' });
+            gmcpBus.emit('Room.AddChar', { id: 1, name: 'Legolas' });
+            gmcpBus.emit('Room.AddChar', { id: 1, name: 'Legolas', short: 'Legolas the Elf' });
             
-            expect(useRoomStore.getState().players).toHaveLength(1);
-            expect(useRoomStore.getState().players[0].short).toBe('Legolas the Elf');
+            expect(Object.values(useRoomStore.getState().chars)).toHaveLength(1);
+            expect(Object.values(useRoomStore.getState().chars)[0].short).toBe('Legolas the Elf');
         });
     });
 });

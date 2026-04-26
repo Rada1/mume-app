@@ -85,6 +85,7 @@ export interface GmcpOccupant {
     keyword?: string;
     type?: string;
     pc?: boolean | number;
+    category?: string;
 }
 
 export interface GmcpRoomPlayers extends Array<string | GmcpOccupant> {}

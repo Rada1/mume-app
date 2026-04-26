@@ -8,7 +8,7 @@ import { useVitalsStore } from '../../stores/useVitalsStore';
 describe('Event Bus to Store Integration', () => {
     beforeEach(() => {
         // Reset stores before each test
-        useRoomStore.setState({ roomName: null, roomDesc: null, exits: [], players: [], npcs: [], items: [] } as any);
+        useRoomStore.setState({ roomName: null, roomDesc: null, exits: [], chars: {}, chars: {}, items: [] } as any);
         useCombatStore.setState({ opponentId: null, opponentName: null, opponentHealthStatus: null, groupMembers: [] });
         useModeStore.setState({ isSpectating: false });
         useVitalsStore.setState({ hp: 0, maxHp: 0 });
@@ -32,17 +32,17 @@ describe('Event Bus to Store Integration', () => {
                 { id: "1", name: 'Alice' },
                 { id: "2", name: 'Bob' }
             ] as any);
-            expect(useRoomStore.getState().players).toHaveLength(2);
+            expect(Object.values(useRoomStore.getState().chars)).toHaveLength(2);
 
             // 3. New player enters
-            gmcpBus.emit('Room.AddPlayer', { id: "3", name: 'Charlie' } as any);
-            expect(useRoomStore.getState().players).toHaveLength(3);
-            expect(useRoomStore.getState().players.find(p => p.name === 'Charlie')).toBeDefined();
+            gmcpBus.emit('Room.AddChar', { id: "3", name: 'Charlie' } as any);
+            expect(Object.values(useRoomStore.getState().chars)).toHaveLength(3);
+            expect(Object.values(useRoomStore.getState().chars)).toBeDefined();
 
             // 4. Player leaves
-            gmcpBus.emit('Room.RemovePlayer', { id: "1", name: 'Alice' } as any);
-            expect(useRoomStore.getState().players).toHaveLength(2);
-            expect(useRoomStore.getState().players.find(p => p.name === 'Alice')).toBeUndefined();
+            gmcpBus.emit('Room.RemoveChar', { id: "1", name: 'Alice' } as any);
+            expect(Object.values(useRoomStore.getState().chars)).toHaveLength(2);
+            expect(Object.values(useRoomStore.getState().chars)).toBeDefined();
         });
     });
 
@@ -65,7 +65,7 @@ describe('Event Bus to Store Integration', () => {
         it('blocks room updates when isSpectating is true', () => {
             useModeStore.setState({ isSpectating: true });
             
-            gmcpBus.emit('Room.Info', { name: 'Spectated Room' });
+            gmcpBus.emit('Room.Info', { name: 'Spectated Room', isSnooped: true } as any);
             // Should not update
             expect(useRoomStore.getState().roomName).toBeNull();
         });

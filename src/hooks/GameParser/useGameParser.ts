@@ -456,8 +456,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             // First we need to build the context
             const tokenizerContext = {
                 target: session.vitals.target,
-                currentOccupants: deps.roomPlayers || [],
-                roomNpcs: deps.roomNpcs || [],
+                currentOccupants: [],
+                roomChars: deps.roomChars || deps.roomPlayers || [],
                 activeGroupMembers: deps.groupMembers || [],
                 roomItems: localRoomItems,
                 inventoryItems: [
