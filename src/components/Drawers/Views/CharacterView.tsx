@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { X, BookOpen, RefreshCw } from 'lucide-react';
-import { useGame, useVitals, useUI } from '../../../context/GameContext';
-import { DrawerLine } from '../../../types';
-import { isObjectSelected } from '../../../utils/selectionUtils';
-import { getCategoryForName, COLOR_OBJ } from '../../../utils/categorizationUtils';
+/**
+ * @file CharacterView.tsx
+ * @description Renders the player's info, practice skills, and quests.
+ */
 
-import { sanitizeMumeHtml } from '../../../utils/securityUtils';
-import '../CharacterDrawer.css';
+import React, { useState, useEffect, useRef } from 'react';
+import { RefreshCw, X } from 'lucide-react';
+import { useGame, useVitals, useUI } from '../../../context/GameContext';
+import { useCharacterLines } from '../../../hooks/drawers/useCharacterLines';
+import { LineItem } from '../LineItem';
 
 interface CharacterViewProps {
     isOpen: boolean;
@@ -19,72 +20,48 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
     onClose,
     executeCommand: propsExecuteCommand
 }) => {
-    // Local activeTab state removed in favor of global ui.characterTab
     const {
         practice,
         executeCommand: contextExecuteCommand,
-        selectedObjectIds,
-        handleLogPointerDown,
-        handleLogPointerUp,
-        handleLogClick,
-        clearObjectSelection,
         triggerHaptic
     } = useGame();
     const { characterInfo } = useVitals();
     const { 
-        ui, setUI, isLibraryOpen, setIsLibraryOpen,
-        scoreLines, infoLines, questLines, practiceLines 
+        ui, setUI, 
+        infoLines: rawInfo, practiceLines: rawPractice, questLines: rawQuest 
     } = useUI();
+    
     const activeTab = ui.characterTab || 'info';
     const setActiveTab = (tab: 'info' | 'practice' | 'quests') => setUI((prev: any) => ({ ...prev, characterTab: tab }));
-
-    // Prioritize context executeCommand if available, fallback to props
     const executeCommand = contextExecuteCommand || propsExecuteCommand;
 
-    const practiceData = practice.practiceData;
-
-    const [isEditingTitle, setIsEditingTitle] = useState(false);
-    const [tempTitle, setTempTitle] = useState('');
-
     const infoContainerRef = useRef<HTMLDivElement>(null);
-    const [tabFontSize, setTabFontSize] = useState<string>('var(--dynamic-log-size, 14px)');
+    const [tabFontSize, setTabFontSize] = useState<string>('inherit');
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!infoContainerRef.current) return;
         const measure = () => {
             const width = infoContainerRef.current?.clientWidth;
-            // Scale font so 80 monospace chars fit safely within the padded container (24px padding)
             if (width) setTabFontSize(`${(width - 24) / 48}px`);
         };
         measure();
         const ro = new ResizeObserver(measure);
         ro.observe(infoContainerRef.current);
         return () => ro.disconnect();
-    }, [activeTab, isOpen, ui.characterTab]);
+    }, [activeTab, isOpen]);
 
-    // Refresh commands are fired by handleTabClick when the drawer opens.
-    // No useEffect needed here — firing again would double-send commands
-    // and race with the tab-click commands on rapid drawer switching.
-
-    useEffect(() => {
-        if (isOpen && characterInfo) {
-            if (!isEditingTitle) setTempTitle(characterInfo.name || '');
-        }
-    }, [isOpen, characterInfo, isEditingTitle]);
-
-    const handleSaveTitle = () => {
-        executeCommand(`change title ${tempTitle}`);
-        setIsEditingTitle(false);
-    };
-
+    const { infoLines, practiceLines, questLines } = useCharacterLines({
+        infoLines: rawInfo,
+        practiceLines: rawPractice,
+        questLines: rawQuest,
+        isAtGuildmaster: practice?.practiceData?.isAtGuildmaster
+    });
 
     const handleRefresh = (e: React.MouseEvent) => {
         e.stopPropagation();
         triggerHaptic(15);
         if (activeTab === 'info') {
             executeCommand('info', true, true, true, true);
-            executeCommand('quest', true, true, true, true);
-            practice.setSilentSyncPending(false);
         } else if (activeTab === 'practice') {
             practice.setIsUiRequested(true);
             executeCommand('practice', true, true, true, true);
@@ -93,490 +70,74 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
         }
     };
 
-    const onClickInternal = (e: React.MouseEvent) => {
-        const target = e.target as HTMLElement;
-        const btn = target.closest('.inline-btn') as HTMLElement;
-        if (btn) {
-            handleLogClick(e);
-        } else if (!target.closest('.drawer-tab')) {
-            if (selectedObjectIds.size > 0) {
-                clearObjectSelection();
-                triggerHaptic(20);
-            }
-        }
-    };
-
-    const DrawerLineItem = React.memo(({
-        line,
-        selectedObjectIds,
-        fontSize,
-        centered = false
-    }: {
-        line: DrawerLine,
-        selectedObjectIds: Set<string>,
-        fontSize: string,
-        centered?: boolean
-    }) => {
-        const depth = line.depth || 0;
-        const prefixId = 'statsLines';
-        const cmdId = 'inline-obj-char';
-        const fullId = `${prefixId}:${line.entityId || line.id}:${line.context || line.id}`;
-        const isSelected = isObjectSelected(selectedObjectIds, fullId, cmdId);
-
-        const brown = COLOR_OBJ;
-        const dim = 'var(--text-primary)';
-
-        const renderTokens = (tokens: import('../../../types').Token[], itemIsSelected: boolean) => {
-            return tokens.map((token, idx) => {
-                if (token.type === 'entity') {
-                    const cat = getCategoryForName(token.content);
-                    const isActuallyContainer = line.isContainer || cat === 'inline-containers';
-                    return (
-                        <span
-                            key={idx}
-                            className={`inline-btn auto-item ${itemIsSelected ? 'selected-item' : ''} ${isActuallyContainer ? 'is-container' : ''}`}
-                            data-id={fullId}
-                            data-line-id={line.id}
-                            data-context={line.context || line.id}
-                            data-action="menu"
-                            data-category={(token as any).metadata?.category || undefined}
-                            data-cmd={cmdId}
-                            data-kind="object"
-                            data-location="inv"
-                            style={{
-                                display: 'inline',
-                                lineHeight: '1.5',
-                                padding: '0 4px',
-                                margin: '0',
-                                background: itemIsSelected ? `rgba(180,100,50,0.15)` : 'transparent',
-                                border: 'none',
-                                borderRadius: '0',
-                                boxShadow: 'none',
-                                cursor: 'default',
-                                color: brown,
-                                whiteSpace: 'pre',
-                            }}
-                        >{token.content}</span>
-                    );
-                }
-                return (
-                    <span key={idx} style={{ color: token.type === 'text' ? dim : undefined }}>
-                        {token.content}
-                    </span>
-                );
-            });
-        };
-
-        const getClassColor = (skillClass?: string) => {
-            if (!skillClass) return 'transparent';
-            const cls = skillClass.toLowerCase();
-            if (cls === 'warrior') return 'rgba(239, 68, 68, 0.15)'; // Red
-            if (cls === 'none' || cls === 'ranger') return 'rgba(34, 197, 94, 0.15)'; // Green
-            if (cls === 'cleric') return 'rgba(234, 179, 8, 0.22)'; // Holy Yellow
-            if (cls === 'thief') return 'rgba(148, 163, 184, 0.15)'; // Silver/Grey
-            if (cls === 'mage') return 'rgba(59, 130, 246, 0.22)'; // Arcane Blue
-            return 'transparent';
-        };
-
-        const isAtGuildmaster = practice?.practiceData?.isAtGuildmaster;
-        const bg = isAtGuildmaster ? 'transparent' : getClassColor(line.practiceSkill?.skillClass);
-
-        if (line.tokens && line.tokens.length > 0) {
+    const renderLines = (lines: any[]) => {
+        if (!lines || lines.length === 0) {
             return (
-                <div style={{
-                    display: 'block',
-                    whiteSpace: 'pre-wrap',
-                    textAlign: centered ? 'center' : 'left',
-                    lineHeight: '1.5',
-                    margin: '0.5px 0',
-                    padding: '1px 8px',
-                    paddingLeft: centered ? '0' : `${depth * 8 + 8}px`,
-                    fontSize,
-                    background: bg !== 'transparent' ? bg : (line.isHeader ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.6)'),
-                    borderRadius: '4px'
-                }}>
-                    {line.prefix && <span style={{ color: dim }}>{line.prefix}</span>}
-                    {renderTokens(line.tokens, isSelected)}
+                <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
+                    <p style={{ fontStyle: 'italic' }}>No data captured.</p>
                 </div>
             );
         }
-
-        if (line.isItem) {
-            const cat = getCategoryForName(line.text);
-            const isActuallyContainer = line.isContainer || cat === 'inline-containers';
-            const articleMatch = line.text.match(/^(a |an |the |some )/i);
-            const article = articleMatch ? articleMatch[1] : '';
-            const afterArticle = line.text.slice(article.length);
-            const condMatch = afterArticle.match(/\s+(\(.*\))$/i);
-            const condition = condMatch ? condMatch[1] : '';
-            const itemName = condMatch ? afterArticle.slice(0, afterArticle.length - condMatch[0].length) : afterArticle;
-
-            return (
-                <div style={{ display: 'block', whiteSpace: 'pre-wrap', textAlign: centered ? 'center' : 'left', lineHeight: '1.5', margin: '0', padding: '0', paddingLeft: centered ? '0' : `${depth * 8}px`, fontSize }}>
-                    {line.prefix && <span style={{ color: dim }}>{line.prefix}</span>}
-                    <span style={{ color: dim }}>{article}</span>
-                    <span
-                        className={`inline-btn auto-item ${isSelected ? 'selected-item' : ''} ${isActuallyContainer ? 'is-container' : ''}`}
-                        data-id={fullId}
-                        data-line-id={line.id}
-                        data-context={line.context || line.id}
-                        data-action="menu"
-                        data-category={cat || undefined}
-                        data-cmd={cmdId}
-                        data-kind="object"
-                        data-location="inv"
-                        style={{
-                            display: 'inline',
-                            lineHeight: '1.5',
-                            padding: '0',
-                            margin: '0',
-                            background: isSelected ? `rgba(180,100,50,0.15)` : 'transparent',
-                            border: 'none',
-                            borderRadius: '0',
-                            boxShadow: 'none',
-                            cursor: 'default',
-                            color: brown,
-                            whiteSpace: 'pre',
-                        }}
-                    >{itemName}</span>
-                    {condition && <span style={{ color: dim }}> {condition}</span>}
-                </div>
-            );
-        }
-
-
-
-        if (line.practiceSkill) {
-            const skill = line.practiceSkill;
-
-            return (
-                <div
-                    className="skill-item-authentic"
-                    style={{
-                        background: bg,
-                        position: 'relative',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        minHeight: '24px',
-                        paddingRight: isAtGuildmaster ? '60px' : '8px'
-                    }}
-                >
-                    <div
-                        style={{ flex: 1, fontFamily: 'var(--font-main, monospace)', whiteSpace: 'pre' }}
-                        dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }}
-                    />
-                    {isAtGuildmaster && (
-                        <button
-                            className="prac-button-inline"
-                            style={{
-                                position: 'absolute',
-                                right: '8px',
-                                width: '18px',
-                                height: '18px',
-                                padding: 0,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                marginTop: '-1px'
-                            }}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                executeCommand(`practice ${skill.name}`, true, true, true, true);
-                                setTimeout(() => {
-                                    executeCommand('practice', true, true, true, true);
-                                }, 300);
-                            }}
-                        >
-                            +
-                        </button>
-                    )}
-                </div>
-            );
-        }
-
-        const isHeader = !!line.isHeader;
-        const rowBg = isHeader ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.6)';
-
-        return (
-            <div style={{
-                textAlign: centered ? 'center' : 'left',
-                paddingLeft: centered ? '0' : `${depth * 8 + 8}px`,
-                paddingRight: '8px',
-                lineHeight: '1.5',
-                whiteSpace: 'pre',
-                fontSize,
-                background: bg !== 'transparent' ? bg : rowBg,
-                margin: '0.5px 0',
-                paddingTop: '1px',
-                paddingBottom: '1px',
-                borderRadius: '4px',
-                borderLeft: 'none',
-                width: '100%',
-                boxSizing: 'border-box',
-                fontFamily: 'var(--font-main, monospace)'
-            }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }} />
-        );
-    });
-
-    return (
-        <div 
-            className="character-view-content" 
-            onClick={onClickInternal} 
-            style={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
-                height: '100%',
-                width: '100%',
-                position: 'relative'
-            }}
-        >
-            <div className="drawer-header" style={{ pointerEvents: 'auto', display: 'flex', justifyContent: 'flex-end', padding: '6px 10px', background: 'transparent' }}>
-                {window.innerWidth > 1024 && (
+        return lines.map(line => (
+            <div key={line.id} style={{ position: 'relative' }}>
+                <LineItem line={line} fontSize="inherit" />
+                {activeTab === 'practice' && practice?.practiceData?.isAtGuildmaster && line.practiceSkill && (
                     <button
-                        style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-                        onClick={(e) => { e.stopPropagation(); onClose(); }}
-                    >
-                        <X size={16} />
-                    </button>
+                        className="prac-button-inline"
+                        style={{
+                            position: 'absolute', right: '8px', top: '2px',
+                            width: '18px', height: '18px', padding: 0,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            background: 'var(--accent)', color: '#000', border: 'none', borderRadius: '4px'
+                        }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            executeCommand(`practice ${line.practiceSkill.name}`, true, true, true, true);
+                            setTimeout(() => executeCommand('practice', true, true, true, true), 300);
+                        }}
+                    >+</button>
                 )}
             </div>
+        ));
+    };
 
-            <div className="drawer-body" style={{ pointerEvents: 'auto', flex: 1, marginRight: '0', overflowY: 'auto', position: 'relative', padding: 0 }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-                    {activeTab === 'info' ? (
-                        <div className="info-tab" style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                            <div ref={infoContainerRef} style={{
-                                fontFamily: 'var(--font-main, monospace)',
-                                fontSize: tabFontSize,
-                                lineHeight: '1.5',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '0',
-                                background: 'transparent',
-                                border: 'none',
-                                borderRadius: '0',
-                                padding: '8px 12px',
-                                boxShadow: 'none',
-                                margin: '0',
-                                position: 'relative',
-                                minHeight: '120px'
-                            }}>
+    return (
+        <div className="character-view-content" style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative' }}>
+            <div ref={infoContainerRef} style={{ flex: 1, overflowY: 'auto', padding: '8px 12px', fontFamily: 'var(--font-main, monospace)', fontSize: tabFontSize }}>
+                {activeTab === 'info' && renderLines(infoLines)}
+                {activeTab === 'practice' && renderLines(practiceLines)}
+                {activeTab === 'quests' && renderLines(questLines)}
+                <div style={{ height: '60px' }} />
+            </div>
 
-                                {infoLines?.length > 0 ? (
-                                    infoLines.map(line => (
-                                        <DrawerLineItem
-                                            key={line.id}
-                                            line={line}
-                                            selectedObjectIds={selectedObjectIds}
-                                            fontSize="inherit"
-                                            centered={false}
-                                        />
-                                    ))
-                                ) : (
-                                    <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
-                                        <p style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontStyle: 'italic' }}>No character data captured.</p>
-                                    </div>
-                                )}
-                                <div style={{ height: '50px', flexShrink: 0 }} />
-                            </div>
+            {/* Bottom Section: Tabs and Refresh */}
+            <div style={{ position: 'absolute', bottom: '12px', left: '0', right: '0', display: 'flex', justifyContent: 'center', gap: '10px', pointerEvents: 'none' }}>
+                <div style={{ display: 'flex', gap: '6px', pointerEvents: 'auto' }}>
+                    {['info', 'practice', 'quests'].map((tab) => (
+                        <div
+                            key={tab}
+                            className={`drawer-tab ${activeTab === tab ? 'active' : ''}`}
+                            onClick={() => { triggerHaptic(15); setActiveTab(tab as any); }}
+                            style={{
+                                padding: '6px 14px', borderRadius: '16px', fontSize: '9px', fontWeight: '900',
+                                textTransform: 'uppercase', cursor: 'pointer',
+                                background: activeTab === tab ? 'var(--accent)' : 'rgba(28, 28, 30, 0.4)',
+                                color: activeTab === tab ? '#000' : 'rgba(255,255,255,0.4)',
+                                border: activeTab === tab ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)'
+                            }}
+                        >
+                            {tab === 'practice' ? 'Skills' : tab}
                         </div>
-                    ) : activeTab === 'practice' ? (
-                        <div className="practice-tab" style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                            <div ref={infoContainerRef} style={{
-                                fontFamily: 'var(--font-main, monospace)',
-                                fontSize: tabFontSize,
-                                lineHeight: '1.5',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '0',
-                                background: 'transparent',
-                                border: 'none',
-                                borderRadius: '0',
-                                padding: '8px 12px',
-                                boxShadow: 'none',
-                                margin: '0',
-                                position: 'relative',
-                                minHeight: '120px'
-                            }}>
-
-                                {practiceLines?.length > 0 ? (
-                                    practiceLines.map(line => (
-                                        <DrawerLineItem
-                                            key={line.id}
-                                            line={line}
-                                            selectedObjectIds={selectedObjectIds}
-                                            fontSize="inherit"
-                                            centered={false}
-                                        />
-                                    ))
-                                ) : (
-                                    <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
-                                        <p style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontStyle: 'italic' }}>No practice data captured.</p>
-                                    </div>
-                                )}
-                                <div style={{ height: '50px', flexShrink: 0 }} />
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="quests-tab" style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                            <div ref={infoContainerRef} style={{
-                                fontFamily: 'var(--font-main, monospace)',
-                                fontSize: tabFontSize,
-                                lineHeight: '1.5',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '0',
-                                background: 'transparent',
-                                border: 'none',
-                                borderRadius: '0',
-                                padding: '8px 12px',
-                                boxShadow: 'none',
-                                margin: '0',
-                                position: 'relative',
-                                minHeight: '120px'
-                            }}>
-
-                                {questLines?.length > 0 ? (
-                                    questLines.map((line: any) => (
-                                        <div key={line.id} style={{ textAlign: 'left', lineHeight: '1.5', whiteSpace: 'pre-wrap', fontSize: 'inherit' }} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html) }} />
-                                    ))
-                                ) : (
-                                    <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
-                                        <p style={{ fontSize: 'var(--dynamic-log-size, 16px)', fontStyle: 'italic' }}>No quest data captured.</p>
-                                    </div>
-                                )}
-                                <div style={{ height: '50px', flexShrink: 0 }} />
-                            </div>
-                        </div>
-                    )}
+                    ))}
                 </div>
-
-                {/* Individual Floating Frosted Tabs */}
-                <div className="utility-nav-tabs" style={{
-                    position: 'absolute',
-                    bottom: '12px',
-                    left: '0',
-                    right: '0',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    gap: '10px',
-                    zIndex: 100,
-                    pointerEvents: 'none',
-                    justifyContent: 'center',
-                    background: 'transparent',
-                    border: 'none',
-                    boxShadow: 'none',
-                    padding: '0 10px'
-                }}>
-                    <div
-                        className={`drawer-tab ${activeTab === 'info' ? 'active' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); setActiveTab('info'); triggerHaptic(15); }}
-                        style={{
-                            padding: '6px 14px',
-                            minWidth: '50px',
-                            height: '24px',
-                            borderRadius: '16px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            pointerEvents: 'auto',
-                            background: activeTab === 'info' ? 'var(--accent)' : 'rgba(28, 28, 30, 0.4)',
-                            backdropFilter: activeTab === 'info' ? 'none' : 'blur(10px) saturate(160%)',
-                            WebkitBackdropFilter: activeTab === 'info' ? 'none' : 'blur(10px) saturate(160%)',
-                            color: activeTab === 'info' ? '#000' : 'rgba(255,255,255,0.4)',
-                            border: activeTab === 'info' ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
-                            boxShadow: activeTab === 'info' ? '0 0 15px var(--accent-glow)' : '0 4px 12px rgba(0,0,0,0.3)',
-                            transition: 'all 0.2s ease',
-                            fontSize: '9px',
-                            fontWeight: '900',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.8px'
-                        }}
-                    >
-                        Info
-                    </div>
-                    <div
-                        className={`drawer-tab ${activeTab === 'practice' ? 'active' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); setActiveTab('practice'); triggerHaptic(15); }}
-                        style={{
-                            padding: '6px 14px',
-                            minWidth: '55px',
-                            height: '24px',
-                            borderRadius: '16px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            pointerEvents: 'auto',
-                            background: activeTab === 'practice' ? 'var(--accent)' : 'rgba(28, 28, 30, 0.4)',
-                            backdropFilter: activeTab === 'practice' ? 'none' : 'blur(10px) saturate(160%)',
-                            WebkitBackdropFilter: activeTab === 'practice' ? 'none' : 'blur(10px) saturate(160%)',
-                            color: activeTab === 'practice' ? '#000' : 'rgba(255,255,255,0.4)',
-                            border: activeTab === 'practice' ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
-                            boxShadow: activeTab === 'practice' ? '0 0 15px var(--accent-glow)' : '0 4px 12px rgba(0,0,0,0.3)',
-                            transition: 'all 0.2s ease',
-                            fontSize: '9px',
-                            fontWeight: '900',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.8px'
-                        }}
-                    >
-                        Skills
-                    </div>
-                    <div
-                        className={`drawer-tab ${activeTab === 'quests' ? 'active' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); setActiveTab('quests'); triggerHaptic(15); }}
-                        style={{
-                            padding: '6px 14px',
-                            minWidth: '55px',
-                            height: '24px',
-                            borderRadius: '16px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            pointerEvents: 'auto',
-                            background: activeTab === 'quests' ? 'var(--accent)' : 'rgba(28, 28, 30, 0.4)',
-                            backdropFilter: activeTab === 'quests' ? 'none' : 'blur(10px) saturate(160%)',
-                            WebkitBackdropFilter: activeTab === 'quests' ? 'none' : 'blur(10px) saturate(160%)',
-                            color: activeTab === 'quests' ? '#000' : 'rgba(255,255,255,0.4)',
-                            border: activeTab === 'quests' ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
-                            boxShadow: activeTab === 'quests' ? '0 0 15px var(--accent-glow)' : '0 4px 12px rgba(0,0,0,0.3)',
-                            transition: 'all 0.2s ease',
-                            fontSize: '9px',
-                            fontWeight: '900',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.8px'
-                        }}
-                    >
-                        Quests
-                    </div>
                 <button
                     className="refresh-button floating-refresh"
-                    title="Refresh"
-                    onClick={(e) => {
-                        handleRefresh(e);
-                    }}
+                    onClick={handleRefresh}
                     style={{
-                        position: 'absolute',
-                        bottom: '8px',
-                        right: '8px',
-                        zIndex: 110,
-                        background: 'rgba(40, 40, 45, 0.4)',
-                        backdropFilter: 'blur(10px) saturate(160%)',
-                        WebkitBackdropFilter: 'blur(10px) saturate(160%)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        color: 'rgba(255,255,255,0.8)',
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: '16px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
-                        pointerEvents: 'auto'
+                        position: 'absolute', bottom: '8px', right: '8px', zIndex: 110,
+                        background: 'rgba(40, 40, 45, 0.4)', backdropFilter: 'blur(10px)',
+                        border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)',
+                        width: '32px', height: '32px', borderRadius: '16px', pointerEvents: 'auto'
                     }}
                 >
                     <RefreshCw size={16} />
@@ -585,3 +146,6 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
         </div>
     );
 };
+
+// Add useLayoutEffect import
+import { useLayoutEffect } from 'react';

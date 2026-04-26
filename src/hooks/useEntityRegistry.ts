@@ -8,7 +8,7 @@ import { useState, useCallback, useRef } from 'react';
 import { GameEntity, EntityCapability, EntityLocation } from '../types';
 import { extractNoun as smartExtractNoun } from '../utils/keywordUtils';
 import { isItemContainer } from '../utils/gameUtils';
-import { getCategoryForName, getCategoryType } from '../utils/categorizationUtils';
+import { getCategoryForName, getCategoryType, getTraitsForName } from '../utils/categorizationUtils';
 
 // palette definitions for consistency (imported from categorizationUtils style)
 const COLOR_NPC = 'rgba(253, 224, 71, 0.95)';
@@ -30,51 +30,67 @@ export const useEntityRegistry = () => {
     }, []);
 
     const detectCapabilities = useCallback((name: string, location: EntityLocation, category?: string): EntityCapability[] => {
-        const caps: EntityCapability[] = [];
+        const caps: Set<EntityCapability> = new Set();
         const lower = name.toLowerCase();
         
-        // 1. Resolve Category
-        const detectedCat = category || getCategoryForName(name) || '';
-        const catType = getCategoryType(detectedCat);
-        const baseId = detectedCat.startsWith('inline-') ? detectedCat.slice(7) : detectedCat;
+        // 1. Resolve Traits (Additive)
+        // We look for traits from the name and also include the specifically passed category if it exists
+        const matchedTraits = getTraitsForName(name);
+        if (category) matchedTraits.push(category);
+        
+        // Remove duplicates and canonicalize
+        const uniqueTraits = Array.from(new Set(matchedTraits));
 
-        // 2. Base Type Assignment
-        const isRoomLocation = location === 'room' as any;
-        if (catType === 'player') {
-            caps.push(EntityCapability.Player);
-            return caps; 
-        }
+        for (const traitId of uniqueTraits) {
+            const catType = getCategoryType(traitId);
+            const baseId = traitId.startsWith('inline-') ? traitId.slice(7) : traitId;
 
-        if (catType === 'npc' || isRoomLocation) {
-            caps.push(EntityCapability.Npc);
+            // 2. Player/NPC Logic (Additive)
+            if (catType === 'player' || baseId === 'ally' || baseId === 'enemy' || baseId === 'neutral') {
+                caps.add(EntityCapability.Player);
+                if (baseId === 'ally') caps.add(EntityCapability.Ally);
+                if (baseId === 'enemy') caps.add(EntityCapability.Enemy);
+                if (baseId === 'neutral') caps.add(EntityCapability.Neutral);
+            } else if (catType === 'npc' || baseId === 'npc') {
+                caps.add(EntityCapability.Npc);
+                
+                // Sub-type NPC detection
+                if (baseId === 'innkeeper' || lower.includes('innkeeper')) caps.add(EntityCapability.Innkeeper);
+                if (baseId === 'shopkeeper' || lower.includes('shopkeeper')) caps.add(EntityCapability.Shopkeeper);
+                if (baseId === 'guildmaster' || lower.includes('guildmaster')) caps.add(EntityCapability.Guildmaster);
+                if (baseId === 'mounts' || lower.includes('horse') || lower.includes('pony') || lower.includes('warg')) {
+                    caps.add(EntityCapability.Mount);
+                }
+            }
+
+            // 3. Item Capability Detection (Additive)
+            const isItem = catType === 'object' || ['weapon', 'armour', 'shield', 'containers', 'corpses', 'food', 'fluidcontainer'].includes(baseId);
             
-            // Sub-type NPC detection via category ID
-            if (baseId === 'innkeeper') caps.push(EntityCapability.Innkeeper);
-            else if (baseId === 'shopkeeper') caps.push(EntityCapability.Shopkeeper);
-            else if (baseId === 'guildmaster') caps.push(EntityCapability.Guildmaster);
-            else if (baseId === 'mounts') caps.push(EntityCapability.Mount);
-            
-            return caps;
+            if (isItem || location === 'carried' || location === 'worn') {
+                if (baseId === 'corpses' || lower.includes('corpse')) caps.add(EntityCapability.Corpse);
+                if (baseId === 'weapon' || lower.includes('sword') || lower.includes('blade')) caps.add(EntityCapability.Weapon);
+                if (baseId === 'armour' || lower.includes('mail') || lower.includes('plate')) caps.add(EntityCapability.Wearable);
+                if (baseId === 'shield' || lower.includes('shield')) caps.add(EntityCapability.Shield);
+                if (baseId === 'containers' || lower.includes('bag') || lower.includes('chest')) caps.add(EntityCapability.Container);
+                if (baseId === 'fluidcontainer' || lower.includes('flask') || lower.includes('bottle')) caps.add(EntityCapability.FluidContainer);
+                if (baseId === 'food' || lower.includes('bread') || lower.includes('meat')) caps.add(EntityCapability.Food);
+                if (baseId === 'lightsource' || lower.includes('lantern') || lower.includes('torch')) caps.add(EntityCapability.Light);
+                
+                if (lower.includes('scroll') || lower.includes('book')) caps.add(EntityCapability.Readable);
+            }
         }
 
-        // 3. Item Capability Detection
-        if (baseId === 'corpses' || lower.includes('corpse')) caps.push(EntityCapability.Corpse);
-        if (baseId === 'weapon') caps.push(EntityCapability.Weapon);
-        if (baseId === 'armour') caps.push(EntityCapability.Wearable);
-        if (baseId === 'shield') caps.push(EntityCapability.Shield);
-        if (baseId === 'containers') caps.push(EntityCapability.Container);
-        if (baseId === 'fluidcontainer') caps.push(EntityCapability.FluidContainer);
-        if (baseId === 'food') caps.push(EntityCapability.Food);
-        if (baseId === 'lightsource' || baseId === 'lantern') caps.push(EntityCapability.Light);
-        if (baseId === 'misc' && (lower.includes('scroll') || lower.includes('book'))) caps.push(EntityCapability.Readable);
-
-        // Fallback or specific sub-types if not fully covered by categories
-        if (!caps.includes(EntityCapability.Weapon) && 
-            /boots|helmet|cloak|ring|belt|gloves|gauntlets|leggings|sleeves|tunic|bracers|hauberk/i.test(lower)) {
-            caps.push(EntityCapability.Wearable);
+        // Special case: fallback for room entities that didn't match any trait
+        if (caps.size === 0 && location === 'room') {
+            caps.add(EntityCapability.Npc);
         }
 
-        return caps;
+        // 5. Shared MUME rules (e.g. if it's a weapon, it's also wearable in some slots, etc.)
+        if (caps.has(EntityCapability.Weapon)) {
+            // In MUME, weapons are held, but for button filtering, they share 'object' traits
+        }
+
+        return Array.from(caps);
     }, []);
 
     const registerEntity = useCallback((id: string, name: string, location: EntityLocation, category?: string) => {

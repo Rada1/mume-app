@@ -45,15 +45,17 @@ export function useLineProcessor(deps: LineProcessorDeps) {
         if (!isHdr && !isNothing && isContainer) addDiagnosticLog?.(`Detected container: ${tOnly}`);
 
         const baseAnsiHtml = ansiConvert.toHtml(l);
-        let prefix = ''; let prefixHtml = ''; let mainText = tOnly; let mainHtml = baseAnsiHtml;
+        let prefix = ''; let prefixHtml = ''; let mainText = tOnly; let mainHtml = baseAnsiHtml; let mainRaw = l;
         
         if (cmd === 'equipmentlist') {
-            const eqMatch = l.match(/^(\s*(?:\x1b\[[0-9;]*m)*<[^>]+>(?:\x1b\[[0-9;]*m)*\s*)(.*)/);
+            // Support both literal <slot> and XML entities &lt;slot&gt;
+            const eqMatch = l.match(/^(\s*(?:\x1b\[[0-9;]*m)*(?:<|&lt;)[^&>]+(?:>|&gt;)(?:\x1b\[[0-9;]*m)*\s*)(.*)/);
             if (eqMatch) {
                 prefixHtml = ansiConvert.toHtml(eqMatch[1]);
-                prefix = tOnly.match(/^<[^>]+>\s*/)?.[0] || '';
+                prefix = tOnly.match(/^(&lt;|<)[^&>]+(&gt;|>)\s*/)?.[0] || '';
                 mainHtml = ansiConvert.toHtml(eqMatch[2]);
-                mainText = tOnly.replace(/^<[^>]+>\s*/, '');
+                mainText = tOnly.replace(/^(&lt;|<)[^&>]+(&gt;|>)\s*/, '');
+                mainRaw = eqMatch[2];
             }
         }
 
@@ -86,6 +88,7 @@ export function useLineProcessor(deps: LineProcessorDeps) {
         for (let i = 0; i < qty; i++) {
             let currentItemText = qty > 1 ? expansionText : mainText;
             let currentItemHtml = qty > 1 ? expansionHtml : mainHtml;
+            let currentItemRaw = qty > 1 ? expansionText : mainRaw; // Use text for qty expansion as we can't easily pluralize raw tags
             
             const noun = extractNoun(currentItemText || l);
             
@@ -132,6 +135,7 @@ export function useLineProcessor(deps: LineProcessorDeps) {
             const line: DrawerLine = {
                 id: context || stableId || Math.random().toString(36).substring(7),
                 text: currentItemText, html: currentItemHtml, prefix, prefixHtml,
+                rawText: currentItemRaw,
                 isItem: !isHdr && !isNothing, isHeader: isHdr, isContainer, depth, cmd, context,
                 stableId,
                 parentItemId, parentItemNoun,

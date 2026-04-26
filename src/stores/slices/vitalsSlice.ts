@@ -66,15 +66,16 @@ export interface VitalsState {
     setCurrentTerrain: (t: string | ((prev: string) => string)) => void;
     setTarget: (t: string | null | ((prev: string | null) => string | null)) => void;
     setActivePrompt: (p: any) => void;
+    setCharacterName: (name: string | null) => void;
 }
 
 export const initialVitalsState = {
-    hp: 0,
-    maxHp: 0,
-    mana: 0,
-    maxMana: 0,
-    move: 0,
-    maxMove: 0,
+    hp: 100,
+    maxHp: 100,
+    mana: 100,
+    maxMana: 100,
+    move: 100,
+    maxMove: 100,
     hpStatus: null,
     manaStatus: null,
     moveStatus: null,
@@ -100,12 +101,12 @@ export const initialVitalsState = {
     activePrompt: null,
     wimpy: 0,
     gmcpVitals: {
-        hp: 0,
-        maxHp: 0,
-        mana: 0,
-        maxMana: 0,
-        move: 0,
-        maxMove: 0,
+        hp: 100,
+        maxHp: 100,
+        mana: 100,
+        maxMana: 100,
+        move: 100,
+        maxMove: 100,
         hpStatus: null as CombatHealthStatus | null,
         manaStatus: null as string | null,
         moveStatus: null as string | null
@@ -120,7 +121,8 @@ export const initialVitalsState = {
 const findStatus = (str: string | undefined): CombatHealthStatus | null => {
     if (!str) return null;
     const lower = str.toLowerCase();
-    if (lower.includes('healthy') || lower.includes('fine')) return 'Healthy';
+    if (lower.includes('healthy')) return 'Healthy';
+    if (lower.includes('fine')) return 'Fine';
     if (lower.includes('hurt')) return 'Hurt';
     if (lower.includes('wounded')) return 'Wounded';
     if (lower.includes('bad')) return 'Bad';
@@ -223,8 +225,8 @@ export const createVitalsActions = (set: any, get: any) => ({
             }
 
             // Combat Info via Vitals
-            if (data.hp_status) {
-                updates.hpStatus = findStatus(data.hp_status);
+            if (data.hp_status || data['hp-string'] || data['health-string']) {
+                updates.hpStatus = findStatus(data.hp_status ?? data['hp-string'] ?? data['health-string']);
             }
 
             if (data['mana-string'] !== undefined || data['sp-string'] !== undefined) {
@@ -333,5 +335,15 @@ export const createVitalsActions = (set: any, get: any) => ({
 
     setActivePrompt: (activePrompt: any) => {
         set((state: VitalsState) => ({ ...state, activePrompt: typeof activePrompt === 'function' ? activePrompt(state.activePrompt) : activePrompt }));
+    },
+    
+    setCharacterName: (name: string | null) => {
+        set((state: VitalsState) => ({
+            ...state,
+            characterInfo: {
+                ...state.characterInfo,
+                name
+            }
+        }));
     }
 });

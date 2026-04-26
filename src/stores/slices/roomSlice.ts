@@ -5,6 +5,7 @@
  */
 
 import { GmcpRoomInfo, GmcpUpdateExits, GmcpOccupant } from '../../types';
+import { normalizeOccupantType } from '../../services/classification/normalizeOccupantType';
 
 export interface RoomState {
     roomName: string;
@@ -84,8 +85,12 @@ const parseOccupant = (data: any): GmcpOccupant | null => {
         if (data.level !== undefined) parsed.level = data.level;
         if (data.hp !== undefined) parsed.hp = data.hp;
         if (data.maxhp !== undefined) parsed.maxhp = data.maxhp;
-        if (data.status || data.hpStatus || data.health) (parsed as any).status = data.status || data.hpStatus || data.health;
-        if (data.type) parsed.type = data.type;
+        if (data.status || data.hpStatus || data.health) parsed.status = data.status || data.hpStatus || data.health;
+        // Normalize MUME's `pc` flag into the canonical `type` field. Without
+        // this, NPCs that arrive with only `pc: 0` (no explicit type) are
+        // invisible to classifyOccupant and never get inline buttons.
+        const normalizedType = normalizeOccupantType(data);
+        if (normalizedType) parsed.type = normalizedType;
         if (data.pc !== undefined) parsed.pc = data.pc;
 
         return parsed as GmcpOccupant;

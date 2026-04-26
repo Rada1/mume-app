@@ -3,24 +3,12 @@ import { gmcpBus } from '../../events/gmcpBus';
 import { useVitalsStore } from '../useVitalsStore';
 import { useRoomStore } from '../useRoomStore';
 import { useModeStore } from '../useModeStore';
+import { initialVitalsState } from '../slices/vitalsSlice';
 
 describe('MUME Store Integration Tests', () => {
     beforeEach(() => {
         // Reset stores before each test
-        useVitalsStore.setState({
-            hp: 0,
-            maxHp: 0,
-            mana: 0,
-            maxMana: 0,
-            move: 0,
-            maxMove: 0,
-            hpStatus: null,
-            position: 'standing',
-            inCombat: false,
-            currentTerrain: '',
-            weather: 'none',
-            isFoggy: false
-        });
+        useVitalsStore.setState(initialVitalsState);
 
         useRoomStore.setState({
             roomName: null,

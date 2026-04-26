@@ -1,6 +1,6 @@
 import { CustomButton, InlineCategoryConfig, GameEntity, EntityCapability, GmcpOccupant } from '../types';
-import { getCategoryForName, canonicalizeCategoryId, resolveKindAndLocation } from './categorizationUtils';
-import { getHierarchyChain } from './buttonHierarchyUtils';
+import { getCategoryForName, canonicalizeCategoryId, resolveKindAndLocation, getTraitConfigsForName } from './categorizationUtils';
+import { getHierarchyChain, getRelevantSets } from './buttonHierarchyUtils';
 
 export interface ActionFilterDeps {
     buttons: CustomButton[];
@@ -11,6 +11,7 @@ export interface ActionFilterDeps {
 
 /**
  * Checks if a specific button is valid for a given entity based on MUME rules.
+ * DIRT SIMPLE VERSION: Trust the kind and location axes.
  */
 export function isButtonValidForEntity(
     button: CustomButton,
@@ -24,105 +25,49 @@ export function isButtonValidForEntity(
     const { inlineCategories, roomNpcs, entities } = deps;
     const entity = entities[entityId];
 
-    // --- STEP 1: Determine Context & Category ---
-    const context = entity?.noun || 
-                   entityId.replace(/^(auto-npc-|auto-item-|auto-obj-|auto-|roomnpcs:|roomitems:|inventorylist:|equipmentlist:|log-npc-|npc-|player-|object-)/, '')
-                           .replace(/-[a-f0-9]+$/, '').replace(/-/g, ' ');
+    // --- STEP 1: Determine Relevant Sets (The "Trait-Based" way) ---
+    // We combine the base kind/location with the entity's detected capabilities
+    const traitConfigs = entity?.name ? getTraitConfigsForName(entity.name, inlineCategories || []) : [];
+    const extraSets = traitConfigs.map(c => c.buttonSetId).filter(Boolean) as string[];
 
-    const dynamicCat = context ? getCategoryForName(context, inlineCategories) : null;
-    const genericBaseCats = ['object-room', 'object-inv', 'object-worn', 'obj-room', 'obj-char', 'obj-worn', 'npc', 'player', 'inline-npc', 'inline-player', 'inline-obj-room', 'inline-obj-char', 'inline-obj-worn'];
-    
-    // Canonicalize the override to ensure comparison works
-    const catIdOverride = categoryOverride ? canonicalizeCategoryId(categoryOverride) : null;
-
-    const detectedCatId = (catIdOverride && !genericBaseCats.includes(catIdOverride)) 
-        ? catIdOverride 
-        : (dynamicCat || catIdOverride || null);
-    
-    // Build hierarchy chain using new axes
-    const fullSetChain = getHierarchyChain(kind, location, detectedCatId || undefined);
-
-    // Debugging for service-related buttons
-    const isServiceButton = button.setId === 'inline-innkeeper' || 
-                            button.setId === 'inline-shopkeeper' || 
-                            button.setId === 'inline-guildmaster';
-
-    if (isServiceButton) {
-        // If the hierarchy chain already includes the target set, we trust it absolutely
-        if (fullSetChain.includes(button.setId)) return true;
-
-        let isMatch = false;
-        
-        // 1. Check explicit capabilities (registered entities)
-        if (entity?.capabilities) {
-            if (button.setId === 'inline-innkeeper' && entity.capabilities.includes(EntityCapability.Innkeeper)) isMatch = true;
-            if (button.setId === 'inline-shopkeeper' && entity.capabilities.includes(EntityCapability.Shopkeeper)) isMatch = true;
-            if (button.setId === 'inline-guildmaster' && entity.capabilities.includes(EntityCapability.Guildmaster)) isMatch = true;
-        }
-
-        // 2. Check roomNpcs (fallback for log-parsed or GMCP entities)
-        if (!isMatch && roomNpcs) {
-            const searchNoun = (context || '').toLowerCase();
-            const matchingNpc = roomNpcs.find(npc => {
-                const name = (typeof npc === 'string' ? npc : npc.name || npc.shortdesc || '').toLowerCase();
-                const id = (typeof npc === 'string' ? '' : npc.id || '');
-                const keyword = (typeof npc === 'string' ? '' : npc.keyword || '').toLowerCase();
-                return id === entityId || name.includes(searchNoun) || keyword.includes(searchNoun);
-            });
-
-            if (matchingNpc) {
-                const npcName = (typeof matchingNpc === 'string' ? matchingNpc : matchingNpc.name || matchingNpc.shortdesc || '').toLowerCase();
-                const npcCatId = getCategoryForName(npcName, inlineCategories);
-                if (button.setId === 'inline-innkeeper' && npcCatId === 'inline-innkeeper') isMatch = true;
-                if (button.setId === 'inline-shopkeeper' && npcCatId === 'inline-shopkeeper') isMatch = true;
-                if (button.setId === 'inline-guildmaster' && npcCatId === 'inline-guildmaster') isMatch = true;
-            }
-        }
-
-        if (isMatch) {
-            if (!fullSetChain.includes(button.setId)) fullSetChain.push(button.setId);
-            return true;
-        }
-    }
+    const relevantSets = entity 
+        ? getRelevantSets(entity, extraSets)
+        : Array.from(new Set([
+            ...getHierarchyChain(kind, location, categoryOverride),
+            ...extraSets
+          ]));
 
     // --- STEP 2: Main Set Validation ---
-    if (!fullSetChain.includes(button.setId) && button.setId !== legacySetId) {
-        return false;
-    }
+    // If the button set is in our relevant traits, it's valid
+    let isValidSet = relevantSets.includes(button.setId) || button.setId === legacySetId;
 
-    // --- STEP 3: MUME Specific Rules ---
-    const isShopCmd = button.command.includes('mend') || button.command.includes('sell') || button.command.includes('value') || button.command === 'list' || button.command.startsWith('buy ');
+    if (!isValidSet) return false;
+
+    // --- STEP 3: MUME Specific Rule Overrides ---
+    // These rules prune buttons that are physically impossible in the current context
+    
     const isPosessed = location === 'carried' || location === 'worn';
 
-    // Block 'Get' for items already in possession
+    // 1. Block 'Get' for items already in possession
     if (button.command.startsWith('get ') && !button.command.includes('all') && isPosessed) {
         return false;
     }
 
-    // Block shop actions for worn items
-    if (isShopCmd && location === 'worn') {
-        return false;
-    }
-
-    // Shop commands require a shopkeeper
-    if (isShopCmd && !fullSetChain.includes('inline-shopkeeper')) {
+    // 2. Shop commands require a shopkeeper (if in a room) or to be in a shop context
+    const isShopCmd = button.command.includes('sell') || button.command.includes('value') || button.command === 'list' || button.command.startsWith('buy ');
+    if (isShopCmd && location !== 'shop') {
+        // If we're not explicitly in a shop context, we need a shopkeeper present in the room
         const hasShopkeeper = roomNpcs?.some(npc => {
-            const npcName = (typeof npc === 'string' ? npc : npc.name || npc.shortdesc || '').toLowerCase();
-            return getCategoryForName(npcName, inlineCategories) === 'inline-shopkeeper';
+            const name = (typeof npc === 'string' ? npc : npc.name || npc.shortdesc || '').toLowerCase();
+            const capList = entities[name]?.capabilities || [];
+            return capList.includes(EntityCapability.Shopkeeper);
         });
         if (!hasShopkeeper) return false;
     }
 
-    // Mend/Wield only for weapon/armour
-    if (button.command.startsWith('mend ')) {
-        const isArmour = detectedCatId === 'object-armour' || entity?.capabilities?.includes(EntityCapability.Wearable);
-        const isWeapon = detectedCatId === 'object-weapon' || entity?.capabilities?.includes(EntityCapability.Weapon);
-        if (!isArmour && !isWeapon) return false;
-    }
-
-    if (button.command.startsWith('wield ')) {
-        const isWeapon = detectedCatId === 'object-weapon' || entity?.capabilities?.includes(EntityCapability.Weapon);
-        if (!isWeapon) return false;
+    // 3. Block shop actions for worn items (MUME requires you to remove them first)
+    if (isShopCmd && location === 'worn') {
+        return false;
     }
 
     return true;

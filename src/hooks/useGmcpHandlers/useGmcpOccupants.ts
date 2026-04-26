@@ -3,6 +3,7 @@ import { GmcpOccupant } from '../../types';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
 import { occupantAnims, getOccupantKey } from '../../components/Mapper/occupantAnimStore';
 import { getCategoryForName } from '../../utils/categorizationUtils';
+import { normalizeOccupantType } from '../../services/classification/normalizeOccupantType';
 
 const parseOccupant = (data: any, characterName: string | null): GmcpOccupant | null => {
     if (!data) return null;
@@ -19,6 +20,13 @@ const parseOccupant = (data: any, characterName: string | null): GmcpOccupant | 
     }
     if (!obj.id) return null;
     if (characterName && obj.name && obj.name.toLowerCase() === characterName.toLowerCase()) return null;
+
+    // Normalize MUME's `pc` flag into the canonical `type` field so the
+    // classifier (strict on `type`) sees a usable value for NPCs that arrive
+    // with only `pc: 0` and no explicit type.
+    const normalizedType = normalizeOccupantType(data);
+    if (normalizedType) obj.type = normalizedType;
+
     return obj;
 };
 
@@ -65,12 +73,11 @@ export const useGmcpOccupants = ({
                 if (shortStr.includes('ridden by you')) setIsRiding(true);
             }
 
-            (obj as any).category = isNpc ? 'npc' : 'player';
             newChars[Number(obj.id)] = obj;
 
             if (registerEntity) {
                 const entityId = `roomchars:${obj.id}`;
-                registerEntity(entityId, obj.name || String(obj.id), 'room', obj.category);
+                registerEntity(entityId, obj.name || String(obj.id), 'room', obj.type);
             }
         });
 
@@ -89,7 +96,6 @@ export const useGmcpOccupants = ({
         if (!obj || obj.id === undefined) return;
 
         const isNpc = obj.type === 'npc';
-        (obj as any).category = isNpc ? 'npc' : 'player';
 
         if (data?.dir && (Date.now() - lastRoomChangeTimeRef.current) > 300) {
             const key = getOccupantKey(obj.id, obj.name);
@@ -101,7 +107,7 @@ export const useGmcpOccupants = ({
 
         if (registerEntity) {
             const entityId = `roomchars:${obj.id}`;
-            registerEntity(entityId, obj.name || String(obj.id), 'room', obj.category);
+            registerEntity(entityId, obj.name || String(obj.id), 'room', obj.type);
         }
 
         import('../../events/gmcpBus').then(({ gmcpBus }) => {

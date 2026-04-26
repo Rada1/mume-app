@@ -39,6 +39,8 @@ interface GeneralSettingsProps {
     setPlayerColor: (val: string) => void;
     npcColor: string;
     setNpcColor: (val: string) => void;
+    roomColor: string;
+    setRoomColor: (val: string) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
     isTimestampEnabled: boolean;
@@ -85,6 +87,12 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setIsHighlighterEnabled,
     objectColor,
     setObjectColor,
+    playerColor,
+    setPlayerColor,
+    npcColor,
+    setNpcColor,
+    roomColor,
+    setRoomColor,
     isBloomEnabled,
     setIsBloomEnabled,
     isTimestampEnabled,
@@ -685,6 +693,40 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             transition: 'all 0.3s'
                         }} />
                     </button>
+                </div>
+            </div>
+
+            <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+                <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', marginBottom: '12px', display: 'block' }}>Category & Highlighting Colors</label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <input type="color" value={playerColor} onChange={(e) => setPlayerColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
+                        <div>
+                            <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Players</div>
+                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Inline menus & logs</div>
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <input type="color" value={npcColor} onChange={(e) => setNpcColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
+                        <div>
+                            <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>NPCs</div>
+                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Inline menus & logs</div>
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <input type="color" value={objectColor.startsWith('rgba') ? '#fb923c' : objectColor} onChange={(e) => setObjectColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
+                        <div>
+                            <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Objects</div>
+                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Highlights & menus</div>
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <input type="color" value={roomColor} onChange={(e) => setRoomColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
+                        <div>
+                            <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Room Items</div>
+                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Static items & names</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

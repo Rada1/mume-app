@@ -27,6 +27,7 @@ interface SettingsState {
     objectColor: string;
     playerColor: string;
     npcColor: string;
+    roomColor: string;
     
     // UI Behavior
     disableSmoothScroll: boolean;
@@ -42,7 +43,6 @@ interface SettingsState {
     // Game/Mechanics
     isSoundEnabled: boolean;
     isNewbieMode: boolean;
-    isNoviceMode: boolean;
     isMmapperMode: boolean;
     autoSaveSessions: boolean;
     soundTriggers: import('../types').SoundTrigger[];
@@ -75,6 +75,7 @@ interface SettingsState {
     setObjectColor: (val: string) => void;
     setPlayerColor: (val: string) => void;
     setNpcColor: (val: string) => void;
+    setRoomColor: (val: string) => void;
     setIsTimestampEnabled: (val: boolean) => void;
     setShowRecordingIndicator: (val: boolean) => void;
     setShowDebugEchoes: (val: boolean) => void;
@@ -84,13 +85,12 @@ interface SettingsState {
     setShowOrganicTerrain: (val: boolean) => void;
     setIsSoundEnabled: (val: boolean) => void;
     setIsNewbieMode: (val: boolean) => void;
-    setIsNoviceMode: (val: boolean) => void;
     setIsMmapperMode: (val: boolean) => void;
     setAutoSaveSessions: (val: boolean) => void;
     setSoundTriggers: (val: import('../types').SoundTrigger[]) => void;
     setTeleportTargets: (val: TeleportTarget[]) => void;
-    setInlineCategories: (val: InlineCategoryConfig[]) => void;
-    setFavorites: (val: string[]) => void;
+    setInlineCategories: (val: InlineCategoryConfig[] | ((prev: InlineCategoryConfig[]) => InlineCategoryConfig[])) => void;
+    setFavorites: (val: string[] | ((prev: string[]) => string[])) => void;
     setZoneMusic: (val: ZoneMusicMapping[]) => void;
     setMasterVolume: (val: number) => void;
     setSfxVolume: (val: number) => void;
@@ -118,6 +118,7 @@ export const useSettingsStore = create<SettingsState>()(
             objectColor: 'rgba(251, 146, 60, 0.95)',
             playerColor: '#89CFF0',
             npcColor: 'rgba(253, 224, 71, 0.95)',
+            roomColor: '#22c55e',
             
             disableSmoothScroll: false,
             isImmersionMode: true,
@@ -131,7 +132,6 @@ export const useSettingsStore = create<SettingsState>()(
             
             isSoundEnabled: true,
             isNewbieMode: false,
-            isNoviceMode: true,
             isMmapperMode: false,
             autoSaveSessions: false,
             soundTriggers: [],
@@ -161,6 +161,7 @@ export const useSettingsStore = create<SettingsState>()(
             setObjectColor: (objectColor) => set({ objectColor }),
             setPlayerColor: (playerColor) => set({ playerColor }),
             setNpcColor: (npcColor) => set({ npcColor }),
+            setRoomColor: (roomColor) => set({ roomColor }),
             setDisableSmoothScroll: (disableSmoothScroll) => set({ disableSmoothScroll }),
             setIsImmersionMode: (isImmersionMode) => set({ isImmersionMode }),
             setIsTimestampEnabled: (isTimestampEnabled) => set({ isTimestampEnabled }),
@@ -172,13 +173,16 @@ export const useSettingsStore = create<SettingsState>()(
             setShowOrganicTerrain: (showOrganicTerrain) => set({ showOrganicTerrain }),
             setIsSoundEnabled: (isSoundEnabled) => set({ isSoundEnabled }),
             setIsNewbieMode: (isNewbieMode) => set({ isNewbieMode }),
-            setIsNoviceMode: (isNoviceMode) => set({ isNoviceMode }),
             setIsMmapperMode: (isMmapperMode) => set({ isMmapperMode }),
             setAutoSaveSessions: (autoSaveSessions) => set({ autoSaveSessions }),
             setSoundTriggers: (soundTriggers) => set({ soundTriggers }),
             setTeleportTargets: (teleportTargets) => set({ teleportTargets }),
-            setInlineCategories: (inlineCategories) => set({ inlineCategories }),
-            setFavorites: (favorites) => set({ favorites }),
+            setInlineCategories: (val) => set((state) => ({ 
+                inlineCategories: typeof val === 'function' ? val(state.inlineCategories) : val 
+            })),
+            setFavorites: (val) => set((state) => ({ 
+                favorites: typeof val === 'function' ? val(state.favorites) : val 
+            })),
             setZoneMusic: (zoneMusic) => set({ zoneMusic }),
             setMasterVolume: (masterVolume) => set({ masterVolume }),
             setSfxVolume: (sfxVolume) => set({ sfxVolume }),

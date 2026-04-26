@@ -52,10 +52,11 @@
         position: absolute;
         top: 20px;
         bottom: 20px;
-        right: 20px;
-        left: auto;
+        /* Position to the RIGHT of the centered log */
+        left: calc(50vw + 450px + 12px);
         width: 420px;
         max-width: none;
+        z-index: var(--z-drawer, 9200);
         height: auto;
         max-height: none;
         
@@ -279,10 +280,10 @@
     position: absolute;
     top: 20px;
     bottom: 20px;
-    /* Position next to centered log (max-width 900px) */
-    /* 50vw - 450px (log half) - 420px (drawer width) - 12px (gap) */
+    /* Position to the LEFT of the centered log */
     left: calc(50vw - 450px - 420px - 12px);
     width: 420px;
+    z-index: var(--z-drawer, 9200);
     background: rgb(10, 13, 21);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
@@ -312,10 +313,17 @@
 @media (max-width: 1800px) {
     .map-drawer-desktop {
         left: 20px;
-        transform: translateY(calc(100% + 40px));
+        right: auto;
+        transform: translateY(40px);
     }
     
-    .map-drawer-desktop.open {
+    .log-card-drawer {
+        right: 20px;
+        left: auto;
+        transform: translateY(40px);
+    }
+    
+    .map-drawer-desktop.open, .log-card-drawer.open {
         transform: translateY(0);
         opacity: 1;
         visibility: visible;
@@ -594,12 +602,19 @@
 .desktop-drawer-tabs {
     position: fixed;
     top: 50%;
-    right: 0;
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
     gap: 8px;
     z-index: 5000;
+}
+
+.desktop-drawer-tabs.right {
+    right: 0;
+}
+
+.desktop-drawer-tabs.left {
+    left: 0;
 }
 
 .desktop-edge-tab {
@@ -638,7 +653,17 @@
 }
 
 .desktop-edge-tab.peeking.left { left: 0; border-radius: 0 10px 10px 0; border-left: none; }
-.desktop-edge-tab.peeking.right { right: 0; border-radius: 10px 0 0 10px; border-right: none; }
+.desktop-edge-tab.right {
+    right: 0;
+    border-radius: 8px 0 0 8px;
+    border-right: none;
+}
+
+.desktop-edge-tab.left {
+    left: 0;
+    border-radius: 0 8px 8px 0;
+    border-left: none;
+}
 
 @media (min-width: 769px) {
     .desktop-edge-tab {
@@ -649,8 +674,15 @@
 .desktop-edge-tab:hover {
     background: rgba(30, 41, 59, 0.6);
     color: var(--text-primary);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.desktop-edge-tab.right:hover {
     transform: translateX(-4px);
-    box-shadow: -5px 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.desktop-edge-tab.left:hover {
+    transform: translateX(4px);
 }
 
 .desktop-edge-tab.active {
@@ -659,7 +691,14 @@
     box-shadow: 0 0 20px var(--accent-glow);
     border-color: var(--accent);
     width: 72px;
+}
+
+.desktop-edge-tab.right.active {
     transform: translateX(-4px);
+}
+
+.desktop-edge-tab.left.active {
+    transform: translateX(4px);
 }
 
 .desktop-edge-tab .tab-icon {

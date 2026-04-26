@@ -55,7 +55,11 @@ export function usePromptParser(deps: PromptParserDeps) {
     };
 
     const parsePrompt = useCallback((textOnly: string, isSnoop: boolean = false) => {
-        const promptRegex = /^(([^\r\n<>]*[>])\s*)/;
+        // Robust MUME prompt detection:
+        // 1. Traditional prompts: HP:Fine MA:Fine >
+        // 2. Symbols-only prompts: ![ C iM NN NS 15092[150:92]
+        // 3. Bracketed prompts: [87%H 40%M]
+        const promptRegex = /^(([^\r\n<>]*[>])\s*|^([\[\!\*\(][^\]\)\r\n]{5,}[\]\)\>]\s*))/;
         const textPMatch = textOnly.match(promptRegex);
         
         if (!textPMatch) return { isMatch: false, promptPart: '', attachedText: '', isEndPrompt: false, isGameplayPrompt: false };
@@ -171,8 +175,8 @@ export function usePromptParser(deps: PromptParserDeps) {
         }
 
         const isEndPrompt = (!!textPMatch && !attachedText && !['practice', 'who', 'shop', 'where', 'quest', 'stat', 'info', 'whois', 'description'].includes(captureStage.current as any)) || 
-            (/^((?:(?:\[.*?\]|[\w\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-\s]|\([^)]+\))\s*)*[>])\s*$/.test(textOnly)) ||
-            (textOnly.includes('HP:') && textOnly.includes('MA:') && textOnly.includes('>'));
+            (/^((?:(?:\[.*?\]|[\w\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-\s]|\([^)]+\))\s*)*[\]\)\>])\s*$/.test(textOnly)) ||
+            (textOnly.includes('HP:') && textOnly.includes('MA:'));
 
         // --- Verbose Status Parsing (Spectate Mode / Snooped Stat) ---
         // Matches both "87/98 hits, 46/130 mana, and 100/106 moves."

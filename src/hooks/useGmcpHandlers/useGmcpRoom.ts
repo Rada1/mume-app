@@ -9,9 +9,8 @@ interface UseGmcpRoomProps {
     setRoomDesc: (desc: string | null) => void;
     setRoomZone: (zone: string | null) => void;
     setRoomExits: (exits: string[]) => void;
-    setRoomPlayers?: React.Dispatch<React.SetStateAction<import('../../types').GmcpOccupant[]>>;
-    setRoomNpcs?: React.Dispatch<React.SetStateAction<import('../../types').GmcpOccupant[]>>;
-    setRoomItems: React.Dispatch<React.SetStateAction<import('../../types').GmcpOccupant[]>>;
+    setRoomChars?: React.Dispatch<React.SetStateAction<Record<number, import('../../types').GmcpOccupant>>>;
+    setRoomItems?: React.Dispatch<React.SetStateAction<import('../../types').GmcpOccupant[]>>;
     setDiscoveredItems: (items: string[]) => void;
     roomDescRef?: React.RefObject<string>;
     detectLighting?: (symbol: string | number) => void;
@@ -36,6 +35,7 @@ export const useGmcpRoom = ({
     setRoomPlayers,
     setRoomNpcs,
     setRoomItems,
+    setRoomChars,
     setDiscoveredItems,
     roomDescRef,
     detectLighting,
@@ -101,9 +101,8 @@ export const useGmcpRoom = ({
             
             // Clear occupants and items for the new room so that text processing
             // doesn't use stale data from the previous room.
-            setRoomPlayers([]);
-            setRoomNpcs([]);
-            setRoomItems([]);
+            setRoomItems?.([]);
+            setRoomChars?.({});
             
             if (playMovementSound) {
                 // Determine riding status: if spectating, we can check Room.Chars or fallback.
@@ -111,7 +110,7 @@ export const useGmcpRoom = ({
                 playMovementSound(isRiding);
             }
         }
-    }, [mapperRef, setCurrentTerrain, setRoomName, setRoomDesc, setRoomExits, setRoomZone, setRoomPlayers, setRoomNpcs, setRoomItems, setDiscoveredItems, playMovementSound, isSpectateMode, detectLighting, isRidingRef, playerPositionRef, lastRoomChangeTimeRef, lastRoomNumRef, lastExitsRef, roomDescRef, sendGMCP]);
+    }, [mapperRef, setCurrentTerrain, setRoomName, setRoomDesc, setRoomExits, setRoomZone, setRoomPlayers, setRoomNpcs, setRoomItems, setRoomChars, setDiscoveredItems, playMovementSound, isSpectateMode, detectLighting, isRidingRef, playerPositionRef, lastRoomChangeTimeRef, lastRoomNumRef, lastExitsRef, roomDescRef, sendGMCP]);
 
     const onRoomUpdateExits = useCallback((data: GmcpUpdateExits) => {
         if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-gmcp-room-exits', { detail: data }));

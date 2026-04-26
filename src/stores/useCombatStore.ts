@@ -39,7 +39,7 @@ gmcpBus.on('Char.Buffer', (data: any) => {
     }
 });
 
-gmcpBus.on('Room.CharsCombat', (data: any) => {
+gmcpBus.on('Room.Chars.Combat', (data: any) => {
     if (data.isSnooped) return;
     useCombatStore.getState().applyRoomCharsCombat(data);
 });

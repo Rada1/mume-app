@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Music, Cog, Activity, HelpCircle } from 'lucide-react';
+import { X, Music, Cog, Activity, HelpCircle, Tag } from 'lucide-react';
 import { useGame, useUI } from '../../context/GameContext';
 import GeneralSettings from '../Settings/GeneralSettings';
 import DataManagement from '../Settings/DataManagement';
@@ -7,7 +7,8 @@ import SoundSettings from '../Settings/SoundSettings';
 import ActionSettings from '../Settings/ActionSettings';
 import ButtonSettings from '../Settings/ButtonSettings';
 import HelpGuides from '../Settings/HelpGuides';
-import { SoundTrigger, UiMode } from '../../types';
+import TraitSettings from '../Settings/TraitSettings';
+import { SoundTrigger, UiMode, InlineCategoryConfig } from '../../types';
 
 interface SettingsModalProps {
     connectionUrl: string;
@@ -49,6 +50,8 @@ interface SettingsModalProps {
     setPlayerColor: (val: string) => void;
     npcColor: string;
     setNpcColor: (val: string) => void;
+    roomColor: string;
+    setRoomColor: (val: string) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
     isTimestampEnabled: boolean;
@@ -73,6 +76,8 @@ interface SettingsModalProps {
     setIsSetManagerOpen: (val: boolean) => void;
     showLegacyButtons: boolean;
     setShowLegacyButtons: (val: boolean) => void;
+    inlineCategories: InlineCategoryConfig[];
+    setInlineCategories: (val: InlineCategoryConfig[] | ((prev: InlineCategoryConfig[]) => InlineCategoryConfig[])) => void;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -84,12 +89,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     disableSmoothScroll, setDisableSmoothScroll, isImmersionMode, setIsImmersionMode,
     isHighlighterEnabled, setIsHighlighterEnabled, objectColor, setObjectColor,
     playerColor, setPlayerColor, npcColor, setNpcColor,
+    roomColor, setRoomColor,
     isBloomEnabled, setIsBloomEnabled,
     isTimestampEnabled, setIsTimestampEnabled, fontFamily, setFontFamily,
     isNewbieMode, setIsNewbieMode, showRecordingIndicator, setShowRecordingIndicator,
     autoSaveSessions, setAutoSaveSessions, showSpectatePromptInLog, setShowSpectatePromptInLog,
     isEditMode, setIsEditMode, isGridEnabled, setIsGridEnabled, createButton,
-    setIsSetManagerOpen, showLegacyButtons, setShowLegacyButtons
+    setIsSetManagerOpen, showLegacyButtons, setShowLegacyButtons,
+    inlineCategories, setInlineCategories
 }) => {
     const {
         isMmapperMode, setIsMmapperMode,
@@ -130,6 +137,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                     </div>
                     <div className={`modal-tab ${settingsTab === 'buttons' ? 'active' : ''}`} onClick={() => setSettingsTab('buttons')}>
                         <Activity size={16} /> <span>Buttons</span>
+                    </div>
+                    <div className={`modal-tab ${settingsTab === 'traits' ? 'active' : ''}`} onClick={() => setSettingsTab('traits')}>
+                        <Tag size={16} /> <span>Traits</span>
                     </div>
                     <div className={`modal-tab ${settingsTab === 'help' ? 'active' : ''}`} onClick={() => setSettingsTab('help')}>
                         <HelpCircle size={16} /> <span>Help & Guides</span>
@@ -175,6 +185,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setPlayerColor={setPlayerColor}
                                 npcColor={npcColor}
                                 setNpcColor={setNpcColor}
+                                roomColor={roomColor}
+                                setRoomColor={setRoomColor}
                                 isBloomEnabled={isBloomEnabled}
                                 setIsBloomEnabled={setIsBloomEnabled}
                                 isTimestampEnabled={isTimestampEnabled}
@@ -226,6 +238,13 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                             setIsGridEnabled={setIsGridEnabled}
                             createButton={createButton}
                             setIsSetManagerOpen={setIsSetManagerOpen}
+                        />
+                    )}
+
+                    {settingsTab === 'traits' && (
+                        <TraitSettings 
+                            inlineCategories={inlineCategories}
+                            setInlineCategories={setInlineCategories}
                         />
                     )}
 

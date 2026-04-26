@@ -5,20 +5,29 @@
 
 import { InlineCategoryConfig } from '../types';
 
-// palette definitions for consistency
+// palette definitions for consistency (These are fallbacks only)
 export const COLOR_NPC = 'rgba(253, 224, 71, 0.95)';
 export const COLOR_PLAYER = '#89CFF0';
 export const COLOR_OBJ = 'rgba(251, 146, 60, 0.95)';   // Vibrant Orange (#fb923c)
+export const COLOR_ALLY = '#22c55e';
+export const COLOR_ENEMY = '#ef4444';
+export const COLOR_NEUTRAL = '#94a3b8';
+export const COLOR_ROOM = '#22c55e';
 
 
 export const LEGACY_ID_MAP: Record<string, string> = {
     'inlinenpc': 'inline-npc',
     'npc': 'inline-npc',
     'inline-npc': 'inline-npc',
-    'inlineplayer': 'inline-player',
-    'player': 'inline-player',
-    'pc': 'inline-player',
-    'inline-player': 'inline-player',
+    // Generic "player" identifiers all collapse to inline-ally — the inline-player
+    // set was retired in favor of the four typed sets (ally/enemy/neutral/npc).
+    'inlineplayer': 'inline-ally',
+    'player': 'inline-ally',
+    'pc': 'inline-ally',
+    'inline-player': 'inline-ally',
+    'ally': 'inline-ally',
+    'enemy': 'inline-enemy',
+    'neutral': 'inline-neutral',
     'innkeeper': 'inline-innkeeper',
     'shopkeeper': 'inline-shopkeeper',
     'mounts': 'inline-mounts',
@@ -46,8 +55,12 @@ export const canonicalizeCategoryId = (id: string): string => {
 };
 
 export const DEFAULT_INLINE_CATEGORIES: InlineCategoryConfig[] = [
-    // --- PLAYERS ---
-    { id: 'inline-player', kind: 'player', keywords: [] },
+    // --- PLAYERS (typed per MUME GMCP Room.Chars: ally / enemy / neutral) ---
+    // No keyword fallback for chars — classification comes from GMCP `type` only.
+    { id: 'inline-player', kind: 'player', keywords: [], color: COLOR_PLAYER },
+    { id: 'inline-ally', kind: 'player', keywords: [], color: COLOR_ALLY },
+    { id: 'inline-enemy', kind: 'player', keywords: [], color: COLOR_ENEMY },
+    { id: 'inline-neutral', kind: 'player', keywords: [], color: COLOR_NEUTRAL },
 
     // --- OBJECTS ---
     { id: 'inline-corpses', kind: 'object', keywords: ['corpse'], color: COLOR_OBJ },
@@ -62,52 +75,67 @@ export const DEFAULT_INLINE_CATEGORIES: InlineCategoryConfig[] = [
     { id: 'inline-misc', kind: 'object', keywords: ['map', 'scroll', 'parchment', 'key', 'relic', 'ring', 'amulet', 'necklace', 'charm', 'stone', 'orb', 'pendant', 'wristband', 'bracelet', 'circlet', 'crown', 'cloakpin', 'brooch', 'book', 'journal', 'libram', 'chronicle', 'paper', 'note', 'instrument', 'flute', 'harp', 'lute', 'drums', 'pipes', 'horn', 'rope', 'lockpicks', 'kit', 'sheath', 'harness', 'baldric', 'boat', 'skiff', 'canoe', 'raft', 'stick', 'fetish', 'die', 'top', 'pen', 'quill', 'lamp', 'lantern', 'light', 'street-lamp'], color: COLOR_OBJ },
     { id: 'inline-obj-room', kind: 'object', keywords: [], color: COLOR_OBJ },
 
+    // --- ROOMS & EXITS ---
+    { id: 'room', kind: 'room', keywords: [], color: COLOR_ROOM },
+    { id: 'exit', kind: 'exit', keywords: ['north', 'south', 'east', 'west', 'up', 'down'], color: 'rgba(255, 255, 255, 0.9)' },
+
     // --- NPCS ---
     { id: 'inline-innkeeper', kind: 'npc', keywords: ['innkeeper', 'barman', 'tender', 'lodging'], color: COLOR_NPC },
     { id: 'inline-shopkeeper', kind: 'npc', keywords: ['shopkeeper', 'dealer', 'keeper', 'merchant', 'weaponsmith', 'armourer', 'smith', 'trader', 'grocer', 'librarian', 'provisioner', 'alchemist', 'herbalist', 'tailor', 'blacksmith', 'vendor', 'cobbler', 'peddler'], color: COLOR_NPC },
     { id: 'inline-mounts', kind: 'npc', keywords: ['horse', 'pony', 'steed', 'donkey', 'mule', 'warg'], color: COLOR_NPC },
     { id: 'inline-guildmaster', kind: 'npc', keywords: ['guildmaster', 'teacher', 'master', 'trainer', 'huor'], color: COLOR_NPC },
-    { id: 'inline-npc', kind: 'npc', keywords: ['orc', 'troll', 'wolf', 'spider', 'goblin', 'warg', 'bandit', 'scout', 'warrior', 'guard', 'citizen', 'deer', 'bear', 'rabbit', 'snake', 'wraith', 'spirit', 'undead', 'zombie', 'skeleton', 'bird', 'eagle', 'hawk', 'owl', 'crow', 'raven', 'rat', 'bat', 'shaman', 'priest', 'cleric', 'mage', 'sorcerer', 'thief', 'assassin', 'mercenary', 'elite', 'veteran', 'captain', 'leader', 'king', 'queen', 'lord', 'lady', 'dúnadan', 'dunadan', 'soldier', 'officer', 'man', 'woman', 'girl', 'boy', 'scholar', 'insolent', 'rugged'], color: COLOR_NPC },
+    { id: 'inline-npc', kind: 'npc', keywords: ['orc', 'troll', 'goblin', 'warg', 'bandit', 'wraith', 'spirit', 'undead', 'zombie', 'skeleton', 'shaman', 'assassin', 'mercenary'], color: COLOR_NPC },
 
-    // --- EXITS ---
-    { id: 'exit', kind: 'exit', keywords: ['north', 'south', 'east', 'west', 'up', 'down'], color: 'rgba(255, 255, 255, 0.9)' },
-    
     // --- FALLBACK ---
     { id: 'inline-object', kind: 'object', keywords: [], color: COLOR_OBJ }
+
 ];
 
 /**
- * Determines the category for a given name based on keyword matching.
+ * Returns all traits (category IDs) for a given name based on keyword matching.
  */
-export function getCategoryForName(name: string, customCategories?: InlineCategoryConfig[]): string | null {
-    if (!name) return null;
+export function getTraitsForName(name: string, customCategories?: InlineCategoryConfig[]): string[] {
+    return getTraitConfigsForName(name, customCategories).map(c => c.id);
+}
+
+/**
+ * Returns all trait configurations for a given name based on keyword matching.
+ */
+export function getTraitConfigsForName(name: string, customCategories?: InlineCategoryConfig[]): InlineCategoryConfig[] {
+    if (!name) return [];
     const lowerName = name.toLowerCase();
-    const categories = (customCategories && Array.isArray(customCategories)) ? customCategories : DEFAULT_INLINE_CATEGORIES;
+    const configs: InlineCategoryConfig[] = [];
 
-    for (const cat of categories) {
-        if ((cat.keywords || []).some(keyword => {
-            const lowKey = keyword.toLowerCase();
-            const regex = new RegExp(`(^|[^a-z])${lowKey.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^a-z]|$)`, 'i');
-            return regex.test(lowerName);
-        })) {
-            return cat.id;
-        }
-    }
-
-    // Fallback to defaults if custom didn't match and was provided
-    if (customCategories) {
-        for (const cat of DEFAULT_INLINE_CATEGORIES) {
-            if (cat.keywords.some(keyword => {
+    const checkCategories = (cats: InlineCategoryConfig[]) => {
+        for (const cat of cats) {
+            if ((cat.keywords || []).some(keyword => {
                 const lowKey = keyword.toLowerCase();
+                // Word boundary check to avoid false positives (e.g., "rugged" matching "rug")
                 const regex = new RegExp(`(^|[^a-z])${lowKey.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^a-z]|$)`, 'i');
                 return regex.test(lowerName);
             })) {
-                return cat.id;
+                configs.push(cat);
             }
         }
+    };
+
+    // 1. Check custom categories first
+    if (customCategories && Array.isArray(customCategories)) {
+        checkCategories(customCategories);
     }
 
-    return null;
+    // 2. Check default categories
+    checkCategories(DEFAULT_INLINE_CATEGORIES);
+
+    return configs;
+}
+
+/**
+ * Determines the primary category for a given name based on keyword matching.
+ */
+export function getCategoryForName(name: string, customCategories?: InlineCategoryConfig[]): string | null {
+    const traits = getTraitsForName(name, customCategories);
+    return traits.length > 0 ? traits[0] : null;
 }
 
 /**
@@ -126,7 +154,7 @@ export function getCategoryType(category: string | null, customCategories?: Inli
     const segments = canonicalId.split('-');
     if (segments.length >= 1) {
         const kind = segments[0];
-        if (['npc', 'player', 'object', 'exit'].includes(kind)) return kind;
+        if (['npc', 'player', 'object', 'exit', 'room'].includes(kind)) return kind;
     }
 
     return null;
@@ -135,24 +163,40 @@ export function getCategoryType(category: string | null, customCategories?: Inli
 /**
  * Gets a glow color based on the category name, enforcing inheritance.
  */
-export function getGlowColorForCategory(category: string | null, customCategories?: InlineCategoryConfig[]): string | null {
+export function getGlowColorForCategory(
+    category: string | null, 
+    customCategories?: InlineCategoryConfig[],
+    kindColors?: { npc?: string, player?: string, object?: string, room?: string }
+): string | null {
     if (!category) return null;
     const canonicalId = canonicalizeCategoryId(category);
     const categories = (customCategories && Array.isArray(customCategories)) ? customCategories : DEFAULT_INLINE_CATEGORIES;
     
+    const kind = getCategoryType(canonicalId, customCategories);
+
+    // 1. Try to get color from kindColors overrides (from settings) - PRIORITY
+    if (kind === 'player' && kindColors?.player) return kindColors.player;
+    if (kind === 'npc' && kindColors?.npc) return kindColors.npc;
+    if (kind === 'object' && kindColors?.object) return kindColors.object;
+    if (kind === 'room' && kindColors?.room) return kindColors.room;
+
+    // 2. Check custom categories (Traits)
     const config = categories.find(c => c.id === canonicalId);
     if (config?.color) return config.color;
 
-    // Inheritance via parent links (T5 feature)
+    // 3. Fallback to the color defined in config (even if it's default)
+    if (config?.color) return config.color;
+
+    // 4. Inheritance via parent links
     if (config?.parent) {
-        return getGlowColorForCategory(config.parent, customCategories);
+        return getGlowColorForCategory(config.parent, customCategories, kindColors);
     }
 
-    // Kind defaults
-    const kind = getCategoryType(canonicalId, customCategories);
+    // 5. Hardcoded Kind defaults (absolute final fallbacks)
     if (kind === 'player') return COLOR_PLAYER;
     if (kind === 'npc') return COLOR_NPC;
     if (kind === 'object') return COLOR_OBJ;
+    if (kind === 'room') return COLOR_ROOM;
 
     return null;
 }
@@ -169,6 +213,7 @@ export const resolveKindAndLocation = (kind?: string | null, location?: string |
     if (cmd === 'inline-obj-shop') return { kind: 'object', location: 'shop' };
     if (cmd === 'inlinenpc' || cmd === 'roomnpcs' || cmd === 'inline-npc') return { kind: 'npc', location: 'room' };
     if (cmd === 'inlineplayer' || cmd === 'inline-player') return { kind: 'player', location: 'room' };
+    if (cmd === 'roomname' || cmd === 'room-name' || cmd === 'exits') return { kind: 'room', location: 'room' };
 
     // Default catch-all
     return { kind: 'object', location: 'room' };

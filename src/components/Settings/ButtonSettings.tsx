@@ -15,6 +15,7 @@ const COLOR_DEFAULTS = {
     player: '#89CFF0',
     npc: 'rgba(253, 224, 71, 0.95)',
     object: 'rgba(251, 146, 60, 0.95)',
+    room: '#22c55e',
 };
 
 const toHex = (color: string): string => {
@@ -64,7 +65,7 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
     createButton,
     setIsSetManagerOpen
 }) => {
-    const { playerColor, setPlayerColor, npcColor, setNpcColor, objectColor, setObjectColor } = useSettingsStore();
+    const { playerColor, setPlayerColor, npcColor, setNpcColor, objectColor, setObjectColor, roomColor, setRoomColor } = useSettingsStore();
 
     return (
         <div className="settings-section">
@@ -172,6 +173,12 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
                     color={objectColor}
                     onChange={setObjectColor}
                     onReset={() => setObjectColor(COLOR_DEFAULTS.object)}
+                />
+                <ColorRow
+                    label="Room"
+                    color={roomColor}
+                    onChange={setRoomColor}
+                    onReset={() => setRoomColor(COLOR_DEFAULTS.room)}
                 />
             </div>
         </div>

@@ -45,6 +45,10 @@ interface PopoverManagerProps {
     accountCharacters?: any[];
     accountState?: any;
     setAccountState?: (val: any) => void;
+    playerColor?: string;
+    npcColor?: string;
+    objectColor?: string;
+    roomColor?: string;
 }
 import { DialMenu } from './DialMenu';
 import { StandardMenuPopover } from './StandardMenuPopover';
@@ -61,7 +65,8 @@ import { getCategoryForName, getGlowColorForCategory } from '../../utils/categor
 export const PopoverManager: React.FC<PopoverManagerProps> = ({
     popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, roomNpcs, roomItems, inventoryLines, eqLines, setSettings, inlineCategories, setInlineCategories, favorites, setFavorites, parley, setParley, whoList,
     isMendingMode, setIsMendingMode, setMendingTarget, setIsEquipmentOpen, setIsInventoryOpen, refreshLogHighlights, practice, shop, openKeywordEdit,
-    entities, registerEntity, selectedObjectIds, clearObjectSelection, keywordOverrides, accountCharacters, accountState, setAccountState
+    entities, registerEntity, selectedObjectIds, clearObjectSelection, keywordOverrides, accountCharacters, accountState, setAccountState,
+    playerColor, npcColor, objectColor, roomColor
 }) => {
 
     useLayoutEffect(() => {
@@ -225,14 +230,13 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     if (!popoverState) return null;
     console.log('[PopoverManager] Current state:', { type: popoverState.type, setId: popoverState.setId, context: popoverState.context, direction: popoverState.direction });
 
-    // Resolve theme color for this menu
-    let themeColor = setSettings[popoverState.setId]?.themeColor || popoverState.accentColor;
-    if (!themeColor) {
-        if (popoverState.setId === 'inlineplayer') themeColor = 'rgb(150, 150, 255)';
-        else if (popoverState.setId?.startsWith('inline-') || popoverState.setId === 'inlinenpc') {
-            themeColor = getGlowColorForCategory(popoverState.category || popoverState.setId, inlineCategories || []) || undefined;
-        }
-    }
+    // Resolve themeColor: Always prioritize base Category colors (NPC, Player, etc) over Trait colors.
+    const detectedCatId = popoverState.category || (popoverState.context ? getCategoryForName(popoverState.context, inlineCategories || []) : popoverState.setId);
+    let themeColor = getGlowColorForCategory(
+        detectedCatId, 
+        inlineCategories || [], 
+        { player: playerColor, npc: npcColor, object: objectColor, room: roomColor }
+    ) || popoverState.accentColor || undefined;
 
     if (popoverState.menuDisplay === 'dial') {
         const detectedCatId = popoverState.category || (popoverState.context ? getCategoryForName(popoverState.context, inlineCategories || []) : null);

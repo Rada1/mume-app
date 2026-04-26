@@ -4,14 +4,15 @@ import { useRoomStore } from '../../stores/useRoomStore';
 import { useCombatStore } from '../../stores/useCombatStore';
 import { useModeStore } from '../../stores/useModeStore';
 import { useVitalsStore } from '../../stores/useVitalsStore';
+import { initialVitalsState } from '../../stores/slices/vitalsSlice';
 
 describe('Event Bus to Store Integration', () => {
     beforeEach(() => {
         // Reset stores before each test
-        useRoomStore.setState({ roomName: null, roomDesc: null, exits: [], chars: {}, chars: {}, items: [] } as any);
+        useRoomStore.setState({ roomName: null, roomDesc: null, exits: [], chars: {}, items: [] } as any);
         useCombatStore.setState({ opponentId: null, opponentName: null, opponentHealthStatus: null, groupMembers: [] });
         useModeStore.setState({ isSpectating: false });
-        useVitalsStore.setState({ hp: 0, maxHp: 0 });
+        useVitalsStore.setState(initialVitalsState);
     });
 
     describe('Char.Vitals', () => {
@@ -48,11 +49,11 @@ describe('Event Bus to Store Integration', () => {
 
     describe('Combat Targeting', () => {
         it('resolves opponent health status from Room.CharsCombat based on Char.Opponent', () => {
-            gmcpBus.emit('Char.Opponent', '99');
+            gmcpBus.emit('Char.Opponent', { data: '99' });
             expect(useCombatStore.getState().opponentId).toBe(99);
 
             // 2. CharsCombat updates health
-            gmcpBus.emit('Room.CharsCombat', [
+            gmcpBus.emit('Room.Chars.Combat', [
                 { id: 99, name: 'Orc', status: 'Hurt' }
             ]);
 

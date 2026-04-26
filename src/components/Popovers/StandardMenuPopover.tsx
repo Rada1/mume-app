@@ -1,12 +1,20 @@
+/**
+ * @file StandardMenuPopover.tsx
+ * @description Main orchestrator for entity and action popovers.
+ */
+
 import React from 'react';
-import { CustomButton, MessageType, PopoverState, InlineCategoryConfig, GameEntity, ParleyState, GmcpOccupant } from '../../types';
-import { isItemContainer, sanitizeGameTarget } from '../../utils/gameUtils';
-import { getEffectiveKeyword } from '../../utils/keywordUtils';
-import { DEFAULT_INLINE_CATEGORIES, getCategoryForName, canonicalizeCategoryId, resolveKindAndLocation } from '../../utils/categorizationUtils';
-import { getHierarchyChain } from '../../utils/buttonHierarchyUtils';
+import { CustomButton, MessageType, PopoverState, InlineCategoryConfig, GameEntity, ParleyState, GmcpOccupant, CharacterEntry } from '../../types';
+import { DEFAULT_INLINE_CATEGORIES, canonicalizeCategoryId, resolveKindAndLocation, getTraitsForName, getTraitConfigsForName } from '../../utils/categorizationUtils';
+import { getHierarchyChain, getRelevantSets, TRAIT_WEIGHTS, SET_DISPLAY_LABELS } from '../../utils/buttonHierarchyUtils';
 import { isButtonValidForEntity } from '../../utils/actionUtils';
 import { CircleHelp } from 'lucide-react';
-import { sanitizeMumeHtml } from '../../utils/securityUtils';
+
+// --- Sub-components ---
+import { TraitToggleSection } from './StandardMenu/TraitToggleSection';
+import { CharacterSelectSection } from './StandardMenu/CharacterSelectSection';
+import { PopoverActionButton } from './StandardMenu/PopoverActionButton';
+import { ParleySection } from './StandardMenu/ParleySection';
 
 interface StandardMenuProps {
     popoverState: PopoverState;
@@ -19,14 +27,14 @@ interface StandardMenuProps {
     addMessage: (type: MessageType, content: string) => void;
     themeColor?: string;
     favorites: string[];
-    setFavorites: (val: string[]) => void;
+    setFavorites: (val: string[] | ((prev: string[]) => string[])) => void;
     keywordOverrides?: Record<string, string>;
     parley: ParleyState;
     setParley: (val: ParleyState) => void;
     whoList: string[];
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean, fromUi?: boolean }) => void;
     inlineCategories?: InlineCategoryConfig[];
-    setInlineCategories?: React.Dispatch<React.SetStateAction<InlineCategoryConfig[]>>;
+    setInlineCategories?: (val: InlineCategoryConfig[] | ((prev: InlineCategoryConfig[]) => InlineCategoryConfig[])) => void;
     isMendingMode?: boolean;
     setIsMendingMode?: (val: boolean) => void;
     setMendingTarget?: (val: string | null) => void;
@@ -42,674 +50,162 @@ interface StandardMenuProps {
     registerEntity: (id: string, name: string, location: import('../../types').EntityLocation, category?: string) => import('../../types').GameEntity;
     selectedObjectIds: Set<string>;
     clearObjectSelection: () => void;
-    accountCharacters?: import('../../types').CharacterEntry[];
+    accountCharacters?: CharacterEntry[];
     accountState?: import('../../types').AccountState;
     setAccountState?: React.Dispatch<React.SetStateAction<import('../../types').AccountState>>;
     direction?: string;
 }
 
-export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
-    popoverState, buttons, availableSets, setPopoverState, setButtons, handleButtonClick, setTarget, addMessage, themeColor,    favorites,
-    setFavorites,
-    keywordOverrides,
-    parley, setParley, whoList, executeCommand, inlineCategories, setInlineCategories,
-    isMendingMode, setIsMendingMode, setMendingTarget, setIsEquipmentOpen, setIsInventoryOpen, refreshLogHighlights, triggerHaptic, openKeywordEdit, roomPlayers, roomNpcs, roomItems,
-    entities, selectedObjectIds, clearObjectSelection,
-    accountCharacters, accountState, setAccountState,
-    direction
-}) => {
-    const [isChoosingCategory, setIsChoosingCategory] = React.useState(false);
-    const [selectedCatId, setSelectedCatId] = React.useState<string | null>(null);
-    const isSetManager = popoverState.setId === 'setmanager';
-    const NPC_SUBCATEGORIES = ['npc-mount', 'npc-shopkeeper', 'npc-innkeeper', 'npc-guildmaster'];
-    
-    // Detect if this specific item name belongs to a category.
-    // We prioritize specific tags (from inlineCategories) over generic location-based ones (like inline-obj-room).
-    const dynamicCat = popoverState.context ? getCategoryForName(popoverState.context, inlineCategories) : null;
-    const genericBaseCats = ['object-room', 'object-inv', 'object-worn', 'obj-room', 'obj-char', 'obj-worn', 'npc', 'player', 'inline-npc', 'inline-player', 'inline-obj-room', 'inline-obj-char', 'inline-obj-worn'];
-    
-    // Ensure the category ID in state is canonicalized before comparison
-    const rawStateCat = popoverState.category;
-    const catIdFromState = rawStateCat ? canonicalizeCategoryId(rawStateCat) : null;
+const NPC_SUBCATEGORIES = ['npc-mount', 'npc-shopkeeper', 'npc-innkeeper', 'npc-guildmaster'];
 
-    const detectedCatId = (catIdFromState && !genericBaseCats.includes(catIdFromState)) 
-        ? catIdFromState 
-        : (dynamicCat || catIdFromState);
+export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
+    const {
+        popoverState, buttons, availableSets, setPopoverState, setButtons, handleButtonClick, setTarget, addMessage, favorites,
+        setFavorites, keywordOverrides, parley, setParley, whoList, executeCommand, inlineCategories, setInlineCategories,
+        setIsInventoryOpen, refreshLogHighlights, triggerHaptic, openKeywordEdit, roomNpcs,
+        entities, selectedObjectIds, clearObjectSelection, accountState, setAccountState, direction,
+        themeColor
+    } = props;
+
+    const [isChoosingCategory, setIsChoosingCategory] = React.useState(false);
+    const isSetManager = popoverState.setId === 'setmanager';
     
+    const traitConfigs = popoverState.context ? getTraitConfigsForName(popoverState.context, inlineCategories || []) : [];
+    const dynamicTraits = traitConfigs.map(c => c.id);
+    const extraSets = traitConfigs.map(c => c.buttonSetId).filter(Boolean) as string[];
     const { kind, location } = resolveKindAndLocation(popoverState.kind, popoverState.location, popoverState.setId);
 
     // Build actual hierarchy chain
-    const fullSetChain = getHierarchyChain(kind, location, detectedCatId);
+    const entity = popoverState.entityId ? entities[popoverState.entityId] : null;
+    const relevantSets = entity 
+        ? getRelevantSets(entity, extraSets)
+        : Array.from(new Set([
+            ...getHierarchyChain(kind, location),
+            ...dynamicTraits,
+            ...extraSets,
+            ...(popoverState.category ? [canonicalizeCategoryId(popoverState.category)] : [])
+          ]));
 
-    console.log('[StandardMenuPopover] detectedCatId:', detectedCatId, 'fullSetChain:', fullSetChain, 'kind:', kind, 'location:', location);
-
+    const sortedSets = [...relevantSets].sort((a, b) => (TRAIT_WEIGHTS[b] || 0) - (TRAIT_WEIGHTS[a] || 0));
     const isTacticalSet = ['warriorskilllist', 'rangerskilllist', 'clericspelllist', 'thiefskilllist', 'magespelllist', 'doors'].includes(popoverState.setId);
 
     const toggleFavorite = (e: React.MouseEvent, command: string) => {
         e.stopPropagation();
-        if (favorites.includes(command)) {
-            setFavorites(favorites.filter(id => id !== command));
-        } else {
-            setFavorites([...favorites, command]);
-        }
+        setFavorites(prev => prev.includes(command) ? prev.filter(id => id !== command) : [...prev, command]);
     };
 
-    const renderButton = (button: CustomButton, depth: number = 0) => {
-        const isFav = favorites.includes(button.command);
-        const isSubButton = depth > 0 || (NPC_SUBCATEGORIES.includes(popoverState.setId) && button.setId === 'npc');
+    let seenCommandsSize = 0;
+    const renderActionButtons = () => {
+        const seenCommands = new Set<string>();
+        const filterDeps = { buttons, inlineCategories: inlineCategories || [], roomNpcs, entities };
         
-        return (
-            <div
-                key={button.id}
-                className={`popover-item ${isSubButton ? 'is-sub-item' : ''}`}
-                data-menu-item="true"
-                data-is-menu={['nav', 'menu', 'select-assign', 'select-recipient', 'select-container', 'assign', 'teleport-manage'].includes(button.actionType || '') || button.label === 'Look In' ? "true" : "false"}
-                data-drop-cmd={button.command}
-                data-drop-context={popoverState.context}
-                data-drop-parent={popoverState.parentNoun}
-                onPointerDown={(e) => { e.stopPropagation(); }}
-                onClick={(e) => {
-                    if (popoverState.assignSourceId) {
-                        const isExecute = popoverState.executeAndAssign;
-                        const dir = popoverState.assignSwipeDir;
-                        setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? (dir ? { 
-                            ...b, 
-                            swipeCommands: { ...(b.swipeCommands || {}), [dir]: button.command }, 
-                            swipeActionTypes: { ...(b.swipeActionTypes || {}), [dir]: button.actionType || 'command' } 
-                        } : { ...b, command: button.command, label: button.label, actionType: button.actionType || 'command' }) : b));
-                        if (isExecute) handleButtonClick(button, e, popoverState.context, undefined, popoverState.parentNoun, direction);
-                        setPopoverState(null);
-                        addMessage('system', `${isExecute ? 'Executed and assigned' : 'Assigned'} '${button.label}'${dir ? ` to swipe ${dir}` : ''}.`);
-                    } else if (button.label === 'Look In') {
-                        const target = sanitizeGameTarget(popoverState.context || '');
-                        executeCommand(`look in ${target}`, true, true);
-                        setPopoverState((prev: any) => {
-                            if (!prev) return null;
-                            return { ...prev, type: 'container', containerItems: [] };
-                        });
-                    } else if (button.label === 'Browse Shop...') {
-                        setPopoverState({ ...popoverState, type: 'shop-search' });
-                    } else if (button.command === 'shop-mend') {
-                        setIsInventoryOpen?.(true);
-                        setPopoverState(null);
-                    } else {
-                        // MULTI-ACTION LOGIC
-                        if (selectedObjectIds && selectedObjectIds.size > 1) {
-                            const selectedEntries = Array.from(selectedObjectIds) as string[];
-                            selectedEntries.forEach(entry => {
-                                const parts = entry.split(':');
-                                const id = parts.length > 2 ? parts[1] : (parts.length === 2 ? parts[1] : parts[0]);
-                                const context = parts.length > 2 ? parts[2] : undefined;
-                                
-                                // Resolves the noun from entity registry if possible, else fallback to extracting from ID
-                                let noun = context || "";
-                                if (entities[id]) {
-                                    const entity = entities[id];
-                                    noun = getEffectiveKeyword(entity.name || '', undefined, entity, keywordOverrides || {});
-                                } else if (!noun) {
-                                    noun = id.replace(/^(auto-npc-|auto-item-|auto-obj-|roomnpcs:|roomitems:|inventorylist:|equipmentlist:|log-npc-|npc-|player-|object-)/, '')
-                                             .replace(/-[a-f0-9]+$/, '').replace(/-/g, ' ');
-                                }
-                                
-                                handleButtonClick(button, e as any, noun, undefined, popoverState.parentNoun, direction);
-                            });
-                            clearObjectSelection();
-                            setPopoverState(null);
-                        } else {
-                            handleButtonClick(button, e as any, popoverState.context, undefined, popoverState.parentNoun, direction);
-                        }
-                    }
-                }}
-                style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'space-between',
-                    paddingLeft: `${16 + (depth * 16)}px`, // Dynamic indent
-                    '--set-accent': button.style.borderColor || button.style.backgroundColor || 'var(--accent)'
-                } as any}
-            >
-                <span style={{ pointerEvents: 'none', display: 'flex', alignItems: 'center' }}>
-                    {depth > 0 && <span style={{ opacity: 0.3, marginRight: '8px', fontSize: '0.8rem' }}>﹂</span>}
-                    {button.label.replace(/%n/g, popoverState.context || '').replace(/%p/g, popoverState.parentNoun || '')}
-                </span>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    {popoverState.context && (
-                        <div 
-                            title={`Help for ${button.command.split(' ')[0]}`}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                triggerHaptic?.(20);
-                                const keyword = button.command.split(' ')[0] || button.label.toLowerCase();
-                                executeCommand(`help ${keyword}`, false, false, false, false, { fromUi: true });
-                                setPopoverState(null);
-                            }}
-                            style={{ 
-                                padding: '8px', 
-                                opacity: 0.4, 
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                transition: 'opacity 0.2s ease',
-                                WebkitTapHighlightColor: 'transparent'
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-                            onMouseLeave={(e) => e.currentTarget.style.opacity = '0.4'}
-                        >
-                            <CircleHelp size={14} />
-                        </div>
-                    )}
-                    <div 
-                        className={`favorite-star ${isFav ? 'active' : ''}`}
-                        onClick={(e) => toggleFavorite(e, button.command)}
-                        style={{ 
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            opacity: isFav ? 1 : 0.3, 
-                            color: isFav ? '#ffd700' : 'inherit',
-                            fontSize: '1.2rem',
-                            transition: 'all 0.2s ease',
-                            padding: '16px 14px', 
-                            margin: '-16px -16px -16px auto', 
-                            cursor: 'pointer',
-                            userSelect: 'none',
-                            WebkitTapHighlightColor: 'transparent',
-                            zIndex: 10
-                        }}
-                    >
-                        {isFav ? '★' : '☆'}
-                    </div>
-                </div>
-            </div>
-        );
-    };
-    
-    // --- Logic Section: Automated Character Gathering ---
-    React.useEffect(() => {
-        if (popoverState.setId === 'play-character-select' && 
-            (!accountState?.characters || accountState.characters.length === 0) && 
-            !accountState?.isGathering) {
-            
-            console.log('[Account] Character list empty, triggering silent list...');
-            setAccountState?.(prev => ({ ...prev, isGathering: true }));
-            executeCommand('list', true, true);
-        }
-    }, [popoverState.setId, accountState?.characters?.length, accountState?.isGathering, executeCommand, setAccountState]);
+        const favoritedButtons = buttons.filter(b => {
+            const isValid = popoverState.entityId 
+                ? isButtonValidForEntity(b, popoverState.entityId, kind, location, filterDeps, popoverState.category, popoverState.setId)
+                : true;
+            if (!isValid) return false;
+            return (relevantSets.includes(b.setId) || (NPC_SUBCATEGORIES.includes(popoverState.setId) && b.setId === 'npc')) && favorites.includes(b.command);
+        });
 
-    // --- SPECIAL RENDERING: Character Selection ---
-    if (popoverState.setId === 'play-character-select') {
-        const chars = accountState?.characters || [];
-        const isGathering = accountState?.isGathering;
-
-        return (
+        const rendered = (
             <>
-                <div className="popover-header" style={{
-                    padding: '12px 16px',
-                    borderBottom: '1px solid rgba(250, 204, 21, 0.2)',
-                    fontSize: '0.9rem',
-                    fontWeight: 800,
-                    color: '#facc15',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.1em',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                }}>
-                    <span>Select Character</span>
-                    {!isGathering && (
-                        <span 
-                            onClick={() => {
-                                setAccountState?.(prev => ({ ...prev, isGathering: true, characters: [] }));
-                                executeCommand('list', true, true);
-                            }}
-                            style={{ fontSize: '0.7rem', opacity: 0.6, cursor: 'pointer', letterSpacing: 'normal' }}
-                        >
-                            REFRESH
-                        </span>
-                    )}
-                </div>
-                <div className="popover-items-container" style={{ maxHeight: '60vh', overflowY: 'auto', minWidth: '240px' }}>
-                    {isGathering ? (
-                        <div style={{ padding: '32px 24px', textAlign: 'center' }}>
-                            <div className="discovery-spinner" style={{ 
-                                width: '24px', height: '24px', border: '2px solid rgba(250, 204, 21, 0.2)', 
-                                borderTopColor: '#facc15', borderRadius: '50%', margin: '0 auto 12px',
-                                animation: 'spin 0.8s linear infinite'
-                            }} />
-                            <div style={{ fontSize: '0.85rem', color: '#fff', opacity: 0.8 }}>Gathering characters...</div>
-                            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-                        </div>
-                    ) : (chars.length === 0) ? (
-                        <div style={{ padding: '24px', textAlign: 'center', opacity: 0.6, fontSize: '0.85rem', color: '#fff' }}>
-                            No characters found.<br/>
-                            <span style={{ fontSize: '0.75rem', opacity: 0.8 }}>Try using the refresh button.</span>
-                        </div>
-                    ) : (
-                        chars.map((char) => (
-                            <div
-                                key={char.name}
-                                className="popover-item"
-                                data-menu-item="true"
-                                onClick={() => {
-                                    triggerHaptic?.(20);
-                                    executeCommand(`play ${char.name}`);
-                                    setPopoverState(null);
-                                }}
-                                style={{
-                                    padding: '12px 16px',
-                                    borderBottom: '1px solid rgba(255,255,255,0.05)',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    gap: '20px',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                    <span style={{ fontSize: '1rem', fontWeight: 700, color: '#fff' }}>{char.name}</span>
-                                    <span style={{ fontSize: '0.75rem', opacity: 0.6 }}>Level {char.level} {char.race}</span>
-                                </div>
-                                <div style={{ textAlign: 'right', fontSize: '0.7rem' }}>
-                                    <div style={{ opacity: 0.6 }}>{char.logon}</div>
-                                    <div style={{ color: '#facc15', marginTop: '4px' }}>{char.area}</div>
-                                </div>
-                            </div>
-                        ))
-                    )}
-                </div>
+                {favoritedButtons.length > 0 && (
+                    <>
+                        <div style={{ padding: '4px 8px', fontSize: '0.65rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid rgba(255,255,255,0.05)', color: 'var(--accent)' }}>★ Favorites</div>
+                        {favoritedButtons.map(b => <PopoverActionButton key={b.id} button={b} {...props} toggleFavorite={toggleFavorite} />)}
+                        <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', margin: '4px 0' }} />
+                    </>
+                )}
+
+                {isInlineMenu ? (
+                    sortedSets.map((setId, chainIdx) => {
+                        const setIdButtons = buttons.filter(b => {
+                            if (b.setId !== setId || favorites.includes(b.command) || seenCommands.has(b.command)) return false;
+                            const isValid = popoverState.entityId 
+                                ? isButtonValidForEntity(b, popoverState.entityId, kind, location, filterDeps, popoverState.category, popoverState.setId)
+                                : true;
+                            if (isValid) seenCommands.add(b.command);
+                            return isValid;
+                        });
+
+                        if (setIdButtons.length === 0) return null;
+                        const label = SET_DISPLAY_LABELS[setId as keyof typeof SET_DISPLAY_LABELS] || (setId.startsWith('inline-') ? setId.replace('inline-', '').toUpperCase().replace(/-/g, ' ') : null);
+                        
+                        return (
+                            <React.Fragment key={setId}>
+                                {label && <div style={{ padding: '6px 12px 2px', fontSize: '0.6rem', opacity: 0.4, textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, color: 'var(--accent)' }}>{label}</div>}
+                                {setIdButtons.map(b => <PopoverActionButton key={b.id} button={b} depth={chainIdx === 0 ? 0 : 1} isSubButton={chainIdx > 0} {...props} toggleFavorite={toggleFavorite} />)}
+                            </React.Fragment>
+                        );
+                    })
+                ) : (
+                    buttons.filter(b => b.setId === popoverState.setId && !favorites.includes(b.command)).map(b => {
+                        seenCommands.add(b.command);
+                        return <PopoverActionButton key={b.id} button={b} {...props} toggleFavorite={toggleFavorite} />;
+                    })
+                )}
             </>
         );
+        
+        seenCommandsSize = seenCommands.size + favoritedButtons.length;
+        return rendered;
+    };
+
+    // --- Special Cases ---
+    if (popoverState.setId === 'play-character-select') {
+        return <CharacterSelectSection accountState={accountState} setAccountState={setAccountState} executeCommand={executeCommand} handleCharacterClick={(char) => { triggerHaptic?.(20); executeCommand(`play ${char.name}`); setPopoverState(null); }} />;
     }
 
-    const favoritedButtons = buttons.filter(b => {
-        // Use the centralized validator
-        const filterDeps = { buttons, inlineCategories, roomNpcs, entities };
-        const isValid = popoverState.entityId 
-            ? isButtonValidForEntity(b, popoverState.entityId, kind, location, filterDeps, popoverState.category, popoverState.setId)
-            : true;
-
-        if (!isValid) return false;
-
-        if (fullSetChain.includes(b.setId)) return favorites.includes(b.command);
-        if (NPC_SUBCATEGORIES.includes(popoverState.setId) && b.setId === 'npc') return favorites.includes(b.command);
-        return false;
-    });
-
-    const isInlineMenu = ['object', 'npc', 'player'].includes(kind) || 
-                         ['inventorylist', 'equipmentlist', 'roomitems', 'roomnpcs', 'selection'].includes(popoverState.setId) ||
-                         popoverState.setId.startsWith('object') || 
-                         popoverState.setId.startsWith('npc');
-
-    const isTargetable = !isTacticalSet && (
-        ['selection', 'inventorylist', 'equipmentlist', 'npc', 'player', 'object-corpse'].includes(popoverState.setId) ||
-        ['player', 'npc'].includes(kind) ||
-        (kind === 'object' && location === 'room') ||
-        NPC_SUBCATEGORIES.includes(popoverState.setId) || 
-        fullSetChain.includes(popoverState.setId)
-    );
-
+    const isInlineMenu = ['object', 'npc', 'player'].includes(kind) || ['inventorylist', 'equipmentlist', 'roomitems', 'roomnpcs', 'selection'].includes(popoverState.setId) || popoverState.setId.startsWith('object') || popoverState.setId.startsWith('npc');
+    const isTargetable = !isTacticalSet && (['selection', 'inventorylist', 'equipmentlist', 'npc', 'player', 'object-corpse'].includes(popoverState.setId) || ['player', 'npc'].includes(kind) || (kind === 'object' && location === 'room') || NPC_SUBCATEGORIES.includes(popoverState.setId) || relevantSets.includes(popoverState.setId));
 
     return (
-        <>
-            <div className="popover-header"
-                onPointerDown={(e) => { e.stopPropagation(); }}
-                style={{
-                    cursor: !isSetManager ? 'pointer' : 'default',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))',
-                    marginBottom: '4px',
-                    paddingBottom: '4px',
-                    color: 'var(--accent)',
-                    fontWeight: 'bold'
-                }}
-                onClick={() => { 
-                    triggerHaptic?.(20);
-                    if (!isSetManager) setPopoverState({ ...popoverState, setId: 'setmanager' }); 
-                }}>
+        <div style={{ '--accent': themeColor || 'var(--accent)', '--set-accent': themeColor || 'var(--accent)' } as any}>
+            <div className="popover-header" onPointerDown={(e) => { e.stopPropagation(); }} style={{ cursor: !isSetManager ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))', marginBottom: '4px', paddingBottom: '4px', color: 'var(--accent)', fontWeight: 'bold' }} onClick={() => { triggerHaptic?.(20); if (!isSetManager) setPopoverState({ ...popoverState, setId: 'setmanager' }); }}>
                 <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                     <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {isSetManager ? 'Main Menu' : (
-                            (selectedObjectIds?.size || 0) > 1 
-                            ? `${selectedObjectIds!.size} Items Selected` 
-                            : (popoverState.context 
-                                ? popoverState.context 
-                                : (popoverState.direction 
-                                    ? `${popoverState.setId.toUpperCase()} (${popoverState.direction.toUpperCase()})` 
-                                    : popoverState.setId.replace(/^inline-?/, '').toUpperCase()))
-                        )}
+                        {isSetManager ? 'Main Menu' : ((selectedObjectIds?.size || 0) > 1 ? `${selectedObjectIds!.size} Items Selected` : (popoverState.context ? popoverState.context : (popoverState.direction ? `${popoverState.setId.toUpperCase()} (${popoverState.direction.toUpperCase()})` : popoverState.setId.replace(/^inline-?/, '').toUpperCase())))}
                     </span>
-                    <span style={{ fontSize: '0.6rem', opacity: 0.6, fontWeight: 'normal', marginTop: '1px' }}>
-                        {popoverState.executeAndAssign ? 'select action to fire and remap button' : 'select action to fire'}
-                    </span>
+                    <span style={{ fontSize: '0.6rem', opacity: 0.6, fontWeight: 'normal', marginTop: '1px' }}>{popoverState.executeAndAssign ? 'select action to fire and remap button' : 'select action to fire'}</span>
                 </div>
                 {!isSetManager && (kind === 'object' || kind === 'npc' || kind === 'player') && (
                     <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
-                        {popoverState.context && (
-                            <div 
-                                title={`Help for ${popoverState.context}`}
-                                onClick={(e) => { 
-                                    e.stopPropagation(); 
-                                    triggerHaptic?.(20);
-                                    executeCommand(`help ${popoverState.context}`, false, false, false, false, { fromUi: true });
-                                    setPopoverState(null);
-                                }}
-                                style={{ 
-                                    padding: '4px', 
-                                    color: 'var(--accent)', 
-                                    borderRadius: '50%',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    background: 'rgba(255,255,255,0.05)',
-                                    border: '1px solid rgba(255,255,255,0.1)',
-                                    transition: 'all 0.2s ease'
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
-                                onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-                            >
-                                <CircleHelp size={16} />
-                            </div>
-                        )}
-                        <div 
-                            onClick={(e) => { e.stopPropagation(); setIsChoosingCategory(!isChoosingCategory); }}
-                            style={{ 
-                                padding: '4px 8px', 
-                                fontSize: '0.65rem', 
-                                background: isChoosingCategory ? 'var(--accent)' : 'rgba(255,255,255,0.1)', 
-                                color: isChoosingCategory ? '#000' : 'var(--accent)', 
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                height: '24px',
-                                display: 'flex',
-                                alignItems: 'center'
-                            }}
-                        >
-                            TAG
-                        </div>
+                        {popoverState.context && <div title={`Help for ${popoverState.context}`} onClick={(e) => { e.stopPropagation(); triggerHaptic?.(20); executeCommand(`help ${popoverState.context}`, false, false, false, false, { fromUi: true }); setPopoverState(null); }} style={{ padding: '4px', color: 'var(--accent)', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', transition: 'all 0.2s ease' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}><CircleHelp size={16} /></div>}
+                        <div onClick={(e) => { e.stopPropagation(); setIsChoosingCategory(!isChoosingCategory); }} style={{ padding: '4px 8px', fontSize: '0.65rem', background: isChoosingCategory ? 'var(--accent)' : 'rgba(255,255,255,0.1)', color: isChoosingCategory ? '#000' : 'var(--accent)', borderRadius: '4px', cursor: 'pointer', height: '24px', display: 'flex', alignItems: 'center' }}>TAG</div>
                     </div>
                 )}
             </div>
 
-            {isChoosingCategory && (
-                <div style={{ padding: '4px', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '8px' }}>
-                    <div style={{ fontSize: '0.65rem', opacity: 0.5, marginBottom: '6px', textAlign: 'center' }}>CHANGE CATEGORY</div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '4px' }}>
-                        {DEFAULT_INLINE_CATEGORIES.map(cat => (
-                            <div 
-                                key={cat.id}
-                                className="popover-item"
-                                style={{ 
-                                    padding: '6px', 
-                                    fontSize: '0.7rem', 
-                                    textAlign: 'center',
-                                    background: selectedCatId === cat.id ? 'var(--accent)' : (detectedCatId === cat.id ? 'rgba(255,255,255,0.1)' : 'transparent'),
-                                    border: `1px solid ${cat.color || 'rgba(255,255,255,0.2)'}`,
-                                    color: selectedCatId === cat.id ? '#000' : (cat.color || '#fff'),
-                                    transition: 'all 0.1s ease'
-                                }}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (!setInlineCategories || !inlineCategories || !popoverState.context) return;
-                                    
-                                    triggerHaptic?.(30);
-                                    setSelectedCatId(cat.id);
-                                    
-                                    const keyword = popoverState.context.toLowerCase();
-                                    setInlineCategories(prev => {
-                                        const next = prev.map(c => ({
-                                            ...c,
-                                            keywords: (c.keywords || []).filter(k => k.toLowerCase() !== keyword)
-                                        }));
-                                        const exists = next.some(c => c.id === cat.id);
-                                        if (!exists) {
-                                            return [...next, { ...cat, keywords: [keyword] }];
-                                        }
-                                        return next.map(c => c.id === cat.id ? { ...c, keywords: [...(c.keywords || []), keyword] } : c);
-                                    });
-                                    
-                                    console.log('[DEBUG] Categorizing:', { context: popoverState.context, catId: cat.id, setId: popoverState.setId });
-                                    if (addMessage) {
-                                        addMessage('system', `Categorized '${popoverState.context}' as ${cat.id.toUpperCase()}`);
-                                    } else {
-                                        console.warn('[WARN] addMessage is missing in StandardMenuPopover');
-                                    }
-                                    refreshLogHighlights?.();
-                                    
-                                    setTimeout(() => {
-                                        setIsChoosingCategory(false);
-                                        setPopoverState(null);
-                                    }, 150);
-                                }}
-                            >
-                                {cat.id.replace('object-', '').replace('npc-', '').replace('inline-', '').toUpperCase()}
-                            </div>
-                        ))}
-                    </div>
-                </div>
+            {isChoosingCategory && setInlineCategories && (
+                <TraitToggleSection popoverState={popoverState} inlineCategories={inlineCategories || []} setInlineCategories={setInlineCategories} dynamicTraits={dynamicTraits} triggerHaptic={triggerHaptic} addMessage={addMessage} refreshLogHighlights={refreshLogHighlights} />
             )}
 
             {isTargetable && !isChoosingCategory && (
-                <div 
-                    className="popover-item" 
-                    data-menu-item="true" 
-                    onPointerDown={(e) => { e.stopPropagation(); }} 
-                    onClick={() => {
-                        triggerHaptic?.(20);
-                        setTarget(popoverState.context || null); setPopoverState(null);
-                    }}
-                    style={{ '--set-accent': popoverState.accentColor || 'var(--accent)' } as any}
-                >Set as Target</div>
+                <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} onClick={() => { triggerHaptic?.(20); setTarget(popoverState.context || null); setPopoverState(null); }} style={{ '--set-accent': themeColor || popoverState.accentColor || 'var(--accent)' } as any}>Set as Target</div>
             )}
 
             {isSetManager ? (
-                availableSets.map(setName => (
-                    <div
-                        key={setName}
-                        className="popover-item"
-                        data-menu-item="true"
-                        data-is-menu="true"
-                        onPointerDown={(e) => { e.stopPropagation(); }}
-                        onClick={() => setPopoverState({ ...popoverState, setId: setName })}
-                    >
-                        {setName}
-                    </div>
-                ))
+                availableSets.map(setName => <div key={setName} className="popover-item" data-menu-item="true" data-is-menu="true" onPointerDown={(e) => { e.stopPropagation(); }} onClick={() => setPopoverState({ ...popoverState, setId: setName })}>{setName}</div>)
             ) : (
                 <>
-                    {!isTacticalSet && popoverState.assignSourceId && (
-                        <div
-                            className="popover-item"
-                            data-menu-item="true"
-                            onPointerDown={(e) => { e.stopPropagation(); }}
-                            style={{ borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))', color: 'var(--accent)', fontWeight: 'bold' }}
-                            onClick={() => {
-                                const setName = popoverState.setId;
-                                const dir = popoverState.assignSwipeDir;
-                                setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? (dir ? { ...b, swipeCommands: { ...b.swipeCommands, [dir]: setName }, swipeActionTypes: { ...b.swipeActionTypes, [dir]: 'menu' } } : { ...b, command: setName, label: setName, actionType: 'menu' }) : b));
-                                setPopoverState(null); addMessage('system', `Assigned sub-menu '${setName}'${dir ? ` to swipe ${dir}` : ''}.`);
-                            }}
-                        >
-                            Assign {popoverState.setId.toUpperCase()} as Menu
-                        </div>
-                    )}
-                    
                     {popoverState.type === 'menu' || !popoverState.type ? (
                         <>
-                            {favoritedButtons.length > 0 && (
-                                <>
-                                    <div style={{ padding: '4px 8px', fontSize: '0.65rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid rgba(255,255,255,0.05)', color: 'var(--accent)' }}>★ Favorites</div>
-                                    {favoritedButtons.map(b => renderButton(b))}
-                                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', margin: '4px 0' }} />
-                                </>
+                            {!isTacticalSet && popoverState.assignSourceId && (
+                                <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} style={{ borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))', color: 'var(--accent)', fontWeight: 'bold' }} onClick={() => { const setName = popoverState.setId; const dir = popoverState.assignSwipeDir; setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? (dir ? { ...b, swipeCommands: { ...b.swipeCommands, [dir]: setName }, swipeActionTypes: { ...b.swipeActionTypes, [dir]: 'menu' } } : { ...b, command: setName, label: setName, actionType: 'menu' }) : b)); setPopoverState(null); addMessage('system', `Assigned sub-menu '${setName}'${dir ? ` to swipe ${dir}` : ''}.`); }}>Assign {popoverState.setId.toUpperCase()} as Menu</div>
                             )}
-
-                            {(() => {
-                                const seenCommands = new Set<string>();
-                                const filterDeps = { buttons, inlineCategories, roomNpcs, entities };
-                                
-                                const renderedContent = isInlineMenu ? (
-                                    [...fullSetChain].reverse().map((setId, chainIdx) => {
-                                        const setIdButtons = buttons.filter(b => {
-                                            if (b.setId !== setId || favorites.includes(b.command)) return false;
-                                            if (seenCommands.has(b.command)) return false;
-                                            
-                                            const isValid = popoverState.entityId 
-                                                ? isButtonValidForEntity(b, popoverState.entityId, kind, location, filterDeps, popoverState.category, popoverState.setId)
-                                                : true;
-
-                                            if (isValid) {
-                                                seenCommands.add(b.command);
-                                            }
-                                            return isValid;
-                                        });
-
-                                        if (setIdButtons.length > 0) {
-                                            console.log(`[StandardMenuPopover] Found ${setIdButtons.length} buttons for setId: ${setId}`);
-                                        }
-
-                                        if (setIdButtons.length === 0) return null;
-                                        const depth = chainIdx;
-                                        
-                                        return (
-                                            <React.Fragment key={setId}>
-                                                {setIdButtons.map(b => renderButton(b, depth))}
-                                            </React.Fragment>
-                                        );
-                                    })
-                                ) : (
-                                    buttons.filter(b => b.setId === popoverState.setId && !favorites.includes(b.command)).map(b => {
-                                        seenCommands.add(b.command);
-                                        return renderButton(b);
-                                    })
-                                );
-
-                                const isEmpty = seenCommands.size === 0 && favoritedButtons.length === 0;
-
-                                return (
-                                    <>
-                                        {renderedContent}
-                                        {isEmpty && isInlineMenu && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && popoverState.setId !== 'npc-shopkeeper' && (
-                                            <div className="popover-empty">No buttons available for this {kind}</div>
-                                        )}
-                                    </>
-                                );
-                            })()}
-
+                            {renderActionButtons()}
+                            {seenCommandsSize === 0 && isInlineMenu && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && popoverState.setId !== 'npc-shopkeeper' && (
+                                <div className="popover-empty" style={{ padding: '12px', textAlign: 'center', opacity: 0.5, fontSize: '0.8rem' }}>No buttons available for this {kind}</div>
+                            )}
                             {openKeywordEdit && isInlineMenu && popoverState.context && (
-                                <div
-                                    className="popover-item"
-                                    data-menu-item="true"
-                                    onPointerDown={(e) => { e.stopPropagation(); }}
-                                    style={{ borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 4, opacity: 0.6, fontSize: '0.82rem' }}
-                                    onClick={() => {
-                                        triggerHaptic?.(20);
-                                        openKeywordEdit(popoverState.context!, popoverState.context!);
-                                        setPopoverState(null);
-                                    }}
-                                >
-                                    ✏ Edit keyword "{popoverState.context}"
-                                </div>
+                                <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} style={{ borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 4, opacity: 0.6, fontSize: '0.82rem' }} onClick={() => { triggerHaptic?.(20); openKeywordEdit(popoverState.context!, popoverState.context!); setPopoverState(null); }}>✏ Edit keyword "{popoverState.context}"</div>
                             )}
                         </>
+                    ) : (popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target') ? (
+                        <ParleySection type={popoverState.type === 'select-parley-command' ? 'command' : 'target'} parley={parley} setParley={setParley} favorites={favorites} setFavorites={setFavorites} whoList={whoList} triggerHaptic={triggerHaptic} setPopoverState={setPopoverState} />
                     ) : null}
                 </>
             )}
-
-            {popoverState.type === 'select-parley-command' && (() => {
-                const COMMANDS = ['tell', 'whisper', 'ask', 'say', 'narrate', 'shout', 'yell', 'sing'];
-                const favCmds = COMMANDS.filter(c => favorites.includes(`parley-cmd-${c}`));
-                const otherCmds = COMMANDS.filter(c => !favorites.includes(`parley-cmd-${c}`));
-                const renderCmd = (cmd: string) => {
-                    const favKey = `parley-cmd-${cmd}`;
-                    const isFav = favorites.includes(favKey);
-                    const isActive = parley.command === cmd;
-                    return (
-                        <div key={cmd} className="popover-item" data-menu-item="true"
-                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-                            onClick={() => { triggerHaptic?.(20); setParley({ ...parley, command: cmd as any }); setPopoverState(null); }}>
-                            <span style={{ pointerEvents: 'none' }}>
-                                {isActive && <span style={{ marginRight: 6, color: 'var(--accent)', fontSize: '0.9rem' }}>✓ </span>}
-                                {cmd.toUpperCase()}
-                            </span>
-                            <div className={`favorite-star ${isFav ? 'active' : ''}`}
-                                onClick={(e) => { e.stopPropagation(); setFavorites(isFav ? favorites.filter(f => f !== favKey) : [...favorites, favKey]); }}
-                                style={{ opacity: isFav ? 1 : 0.3, color: isFav ? '#ffd700' : 'inherit', fontSize: '1.2rem', padding: '16px 20px', margin: '-16px -16px -16px auto', cursor: 'pointer', userSelect: 'none', WebkitTapHighlightColor: 'transparent' }}>
-                                {isFav ? '★' : '☆'}
-                            </div>
-                        </div>
-                    );
-                };
-                return (
-                    <>
-                        {favCmds.length > 0 && (<>
-                            <div style={{ padding: '4px 8px', fontSize: '0.65rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid rgba(255,255,255,0.05)', color: 'var(--accent)' }}>★ Favorites</div>
-                            {favCmds.map(renderCmd)}
-                            <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', margin: '4px 0' }} />
-                        </>)}
-                        {otherCmds.map(renderCmd)}
-                    </>
-                );
-            })()}
-
-            {popoverState.type === 'select-parley-target' && (() => {
-                const favTargets = whoList.filter(n => {
-                    const baseName = n.includes('|') ? n.split('|')[1] : n;
-                    return favorites.includes(`parley-tgt-${baseName}`);
-                });
-                const otherTargets = whoList.filter(n => {
-                    const baseName = n.includes('|') ? n.split('|')[1] : n;
-                    return !favorites.includes(`parley-tgt-${baseName}`);
-                });
-                
-                const renderTarget = (entry: string | null) => {
-                    const [htmlDisplay, baseName] = entry && entry.includes('|') ? entry.split('|') : [entry, entry];
-                    const favKey = baseName ? `parley-tgt-${baseName}` : null;
-                    const isFav = favKey ? favorites.includes(favKey) : false;
-                    const isActive = parley.target === baseName;
-                    const label = baseName ?? '(No Target)';
-                    
-                    return (
-                        <div key={label} className="popover-item" data-menu-item="true"
-                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: entry === null ? 0.6 : 1 }}
-                            onClick={() => { triggerHaptic?.(20); setParley({ ...parley, target: baseName }); setPopoverState(null); }}>
-                            <span style={{ pointerEvents: 'none', display: 'flex', alignItems: 'center' }}>
-                                {isActive && <span style={{ marginRight: 6, color: 'var(--accent)', fontSize: '0.9rem' }}>✓ </span>}
-                                {entry === null ? label : (
-                                    <span 
-                                        style={{ fontFamily: 'monospace', whiteSpace: 'pre', fontSize: '0.85rem' }} 
-                                        dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(htmlDisplay!) }}
-                                    />
-                                )}
-                            </span>
-                            {favKey && (
-                                <div className={`favorite-star ${isFav ? 'active' : ''}`}
-                                    onClick={(e) => { e.stopPropagation(); setFavorites(isFav ? favorites.filter(f => f !== favKey) : [...favorites, favKey]); }}
-                                    style={{ opacity: isFav ? 1 : 0.3, color: isFav ? '#ffd700' : 'inherit', fontSize: '1.2rem', padding: '16px 20px', margin: '-16px -16px -16px auto', cursor: 'pointer', userSelect: 'none', WebkitTapHighlightColor: 'transparent' }}>
-                                    {isFav ? '★' : '☆'}
-                                </div>
-                            )}
-                        </div>
-                    );
-                };
-                return (
-                    <>
-                        {renderTarget(null)}
-                        {favTargets.length > 0 && (<>
-                            <div style={{ padding: '4px 8px', fontSize: '0.65rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid rgba(255,255,255,0.05)', borderTop: '1px solid rgba(255,255,255,0.05)', color: 'var(--accent)' }}>★ Favorites</div>
-                            {favTargets.map(n => renderTarget(n))}
-                            <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', margin: '4px 0' }} />
-                        </>)}
-                        {whoList.length === 0
-                            ? <div className="popover-empty">No players in WHO list</div>
-                            : otherTargets.map(n => renderTarget(n))
-                        }
-                    </>
-                );
-            })()}
-        </>
+        </div>
     );
 };

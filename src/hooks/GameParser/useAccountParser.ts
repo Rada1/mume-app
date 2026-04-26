@@ -234,7 +234,9 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         // 5. Detect Successful Login
         if (trimmedLine.includes('Welcome to MUME') || 
             trimmedLine.includes('The music of the Ainur') ||
-            trimmedLine.includes('Now entering the game')) {
+            trimmedLine.includes('Now entering the game') ||
+            trimmedLine.includes('MUME III') ||
+            trimmedLine.includes('Connected to MUME')) {
             if (addMessage) addMessage('game', `\x1b[33m${line}\x1b[0m`);
             setGameState('playing');
             setAccountState(prev => ({ ...prev, stage: 'none' }));
@@ -245,17 +247,20 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
 
             setTimeout(() => {
                 if (executeCommandRef.current) {
-                    executeCommandRef.current('stat', true, true, true, true);
-                    setTimeout(() => executeCommandRef.current?.('score', true, true, true, true), 100);
-                    setTimeout(() => executeCommandRef.current?.('info %m', true, true, true, true), 200);
-                    setTimeout(() => executeCommandRef.current?.('time', true, true, true, true), 300);
-                    setTimeout(() => executeCommandRef.current?.('info', true, true, true, true), 400);
-                    setTimeout(() => executeCommandRef.current?.('eq', true, true, true, true), 500);
-                    setTimeout(() => executeCommandRef.current?.('inv', true, true, true, true), 600);
-                    setTimeout(() => executeCommandRef.current?.('practice', true, true, true, true), 700);
-                    setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 800);
-                    setTimeout(() => executeCommandRef.current?.('who', true, true, true, true), 900);
-                    setTimeout(() => executeCommandRef.current?.('where', true, true, true, true), 1000);
+                    // Force XML mode on for the new simplified tokenizer
+                    executeCommandRef.current('change xml on', true, true, true, true);
+                    
+                    setTimeout(() => executeCommandRef.current?.('stat', true, true, true, true), 100);
+                    setTimeout(() => executeCommandRef.current?.('score', true, true, true, true), 200);
+                    setTimeout(() => executeCommandRef.current?.('info %m', true, true, true, true), 300);
+                    setTimeout(() => executeCommandRef.current?.('time', true, true, true, true), 400);
+                    setTimeout(() => executeCommandRef.current?.('info', true, true, true, true), 500);
+                    setTimeout(() => executeCommandRef.current?.('eq', true, true, true, true), 600);
+                    setTimeout(() => executeCommandRef.current?.('inv', true, true, true, true), 700);
+                    setTimeout(() => executeCommandRef.current?.('practice', true, true, true, true), 800);
+                    setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 900);
+                    setTimeout(() => executeCommandRef.current?.('who', true, true, true, true), 1000);
+                    setTimeout(() => executeCommandRef.current?.('where', true, true, true, true), 1100);
                 }
             }, 1000);
 

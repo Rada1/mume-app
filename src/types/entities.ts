@@ -27,6 +27,7 @@ export interface InlineCategoryConfig {
     keywords: string[];
     color?: string;              // optional; defaults to kind's color
     categoryType?: EntityKind | 'account' | 'target' | 'quest' | 'none'; // legacy support
+    buttonSetId?: string;        // The button set (menu) to display for this trait
 }
 
 export enum EntityCapability {
@@ -46,6 +47,9 @@ export enum EntityCapability {
     FluidContainer = 'fluid',
     Npc = 'npc',
     Player = 'player',
+    Ally = 'ally',
+    Enemy = 'enemy',
+    Neutral = 'neutral',
     Mount = 'mount',
     Innkeeper = 'innkeeper',
     Shopkeeper = 'shopkeeper',

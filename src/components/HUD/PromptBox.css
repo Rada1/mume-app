@@ -244,10 +244,10 @@
     filter: grayscale(0.8);
 }
 
-.hp .status-text { color: #ffffff !important; text-shadow: 0 0 3px rgba(0,0,0,0.8); }
-.mana .status-text { color: #ffffff !important; text-shadow: 0 0 3px rgba(0,0,0,0.8); }
-.move .status-text { color: #ffffff !important; text-shadow: 0 0 3px rgba(0,0,0,0.8); }
-.opponent .status-text { color: #ffffff !important; text-shadow: 0 0 3px rgba(0,0,0,0.8); }
+.hp .status-text { color: #ffffff !important; }
+.mana .status-text { color: #ffffff !important; }
+.move .status-text { color: #ffffff !important; }
+.opponent .status-text { color: #ffffff !important; }
 
 /* Dividers removed in favor of segments grid */
 

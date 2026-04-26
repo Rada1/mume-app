@@ -28,7 +28,7 @@ interface UIState {
     isSettingsOpen: boolean;
     isLibraryOpen: boolean;
     isButtonsOpen: boolean;
-    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'help';
+    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'help' | 'traits';
     diagnosticLogs: string[];
     showReplayHud: boolean;
     characterTab: 'info' | 'practice' | 'quests';
@@ -43,6 +43,7 @@ interface UIState {
     keywordEditState: { context: string; displayText: string } | null;
     keywordFailureBanner: { context: string; displayText: string } | null;
     selectedObjectIds: Set<string>;
+    managerSelectedSet: string | null;
 
     // Actions
     setIsCharacterOpen: (open: boolean) => void;
@@ -61,7 +62,7 @@ interface UIState {
     setIsSettingsOpen: (open: boolean) => void;
     setIsLibraryOpen: (open: boolean) => void;
     setIsButtonsOpen: (open: boolean) => void;
-    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'help') => void;
+    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'buttons' | 'help' | 'traits') => void;
     addDiagnosticLog: (msg: string) => void;
     setShowReplayHud: (show: boolean) => void;
     setKeywordEditState: (state: { context: string; displayText: string } | null) => void;
@@ -69,6 +70,7 @@ interface UIState {
     setSelectedObjectIds: (ids: Set<string> | ((prev: Set<string>) => Set<string>)) => void;
     toggleObjectSelection: (id: string, setId?: string) => void;
     clearObjectSelection: () => void;
+    setManagerSelectedSet: (setId: string | null) => void;
 
     // Generic Updater for legacy compatibility
     setUI: (update: Partial<UIState> | ((prev: UIState) => UIState)) => void;
@@ -105,7 +107,7 @@ export const useUIStore = create<UIState>((set) => ({
     mapExpanded: typeof window !== 'undefined' ? window.innerWidth >= 1024 : true,
     popoverState: null,
     mumeEditState: defaultMumeEditState,
-    isNewbieMode: true,
+    isNewbieMode: false,
     isSettingsOpen: false,
     isLibraryOpen: false,
     isButtonsOpen: false,
@@ -120,6 +122,7 @@ export const useUIStore = create<UIState>((set) => ({
     keywordEditState: null,
     keywordFailureBanner: null,
     selectedObjectIds: new Set<string>(),
+    managerSelectedSet: null,
 
     setIsCharacterOpen: (open) => set({ isCharacterOpen: open, drawer: open ? 'character' : 'none' }),
     setIsStatsOpen: (open) => set({ isStatsOpen: open, drawer: open ? 'stats' : 'none' }),
@@ -146,7 +149,7 @@ export const useUIStore = create<UIState>((set) => ({
     setIsSettingsOpen: (open) => set({ isSettingsOpen: open }),
     setIsLibraryOpen: (open) => set({ isLibraryOpen: open }),
     setIsButtonsOpen: (open) => set({ isButtonsOpen: open }),
-    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'buttons' | 'help') => set({ settingsTab: tab }),
+    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'buttons' | 'help' | 'traits') => set({ settingsTab: tab }),
     addDiagnosticLog: (msg) => set((state) => ({ 
         diagnosticLogs: [msg, ...state.diagnosticLogs].slice(0, 50) 
     })),
@@ -163,6 +166,7 @@ export const useUIStore = create<UIState>((set) => ({
         return { selectedObjectIds: next };
     }),
     clearObjectSelection: () => set({ selectedObjectIds: new Set() }),
+    setManagerSelectedSet: (setId) => set({ managerSelectedSet: setId }),
 
     setUI: (updater) => set((state) => {
         const next = typeof updater === 'function' ? updater(state) : updater;

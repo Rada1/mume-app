@@ -1,4 +1,4 @@
-﻿import { createButton } from '../../../utils/buttonFactory';
+import { createButton } from '../../../utils/buttonFactory';
 
 /**
  * @file npcs.ts
@@ -30,7 +30,7 @@ export const NPC_BUTTONS = [
     createButton({ id: 'cat-shopitem-buy', label: 'Buy', command: 'buy %n', setId: 'inline-shopitem', color: '#8b5cf6' }),
     createButton({ id: 'cat-shopitem-show', label: 'Show Item', command: 'show item %n', setId: 'inline-shopitem', color: '#3b82f6' }),
 
-    // --- DEFAULT NPC ---
+    // --- LEGACY/FALLBACK ---
     createButton({ id: 'cat-default-kill', label: 'Kill', command: 'kill %n', setId: 'inline-default', color: '#ef4444' })
 ];
 

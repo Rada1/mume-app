@@ -12,7 +12,7 @@ import type {
 export interface GmcpEventMap {
     'Char.Vitals': GmcpCharVitals;
     'Char.Info': GmcpCharInfo;
-    'Char.Name': string | null;
+    'Char.Name': { data: string | null; isSnooped?: boolean };
     'Char.Position': string;
     'Char.Ride': any;
     'Room.Info': GmcpRoomInfo;
@@ -22,8 +22,14 @@ export interface GmcpEventMap {
     'Room.UpdateChar': any;
     'Room.RemoveChar': any;
     'Room.Items': GmcpRoomItems;
-    'Room.CharsCombat': any[];
-    'Char.Opponent': string | null;
+    'Room.Chars.Combat': any[];
+    'Room.Players': any[];
+    'Room.Npcs': any[];
+    'Room.AddPlayer': any;
+    'Room.AddNpc': any;
+    'Room.RemovePlayer': any;
+    'Room.RemoveNpc': any;
+    'Char.Opponent': { data?: string | null; name?: string | null; id?: string | null; isSnooped?: boolean };
     'Char.Buffer': string | null;
     'Group.Add': any;
     'Group.Update': any;

@@ -1,227 +1,146 @@
 /**
  * @file DrawerManager.tsx
  * @description Orchestrates the side drawers (Inventory, Equipment, Stats, Map).
+ * Now using the "Shell & View" pattern with zero-prop architecture.
  */
 
 import React from 'react';
 import { useGame, useUI } from '../../context/GameContext';
-import { useMapper } from '../../context/useMapper';
-import { InventoryDrawer } from './InventoryDrawer';
-import { StatsDrawer } from './StatsDrawer';
-import { CharacterDrawer } from './CharacterDrawer';
-import { PlayersDrawer } from './PlayersDrawer';
-import { Mapper } from '../Mapper/Mapper';
-import { User, Shield, BarChart2, Users, Map as MapIcon } from 'lucide-react';
-import { GutterShell } from './GutterShell';
+import { DrawerShell } from './DrawerShell';
 import { StatsView } from './Views/StatsView';
 import { CharacterView } from './Views/CharacterView';
 import { PlayersView } from './Views/PlayersView';
 import { InventoryView } from './Views/InventoryView';
-import { MapperHandle } from '../Mapper/Mapper';
+import { Mapper } from '../Mapper/Mapper';
+import { User, Shield, BarChart2, Users, Map as MapIcon } from 'lucide-react';
 
-import { DrawerLine, CustomButton, GameEntity } from '../../types';
-
-
-interface DrawerManagerProps {
-    ui: {
-        drawer: string;
-        isDrawerPeeking: boolean;
-        peekingDrawer: string;
-        setManagerOpen: boolean;
-        mapExpanded: boolean;
-        isMenuOpen: boolean;
-        isSetMenuOpen: boolean;
-        menuView: string;
-    };
-    setUI: (val: Record<string, unknown> | ((prev: Record<string, unknown>) => Record<string, unknown>)) => void;
-    inventoryLines: DrawerLine[];
-    statsLines: DrawerLine[];
-    scoreLines: DrawerLine[];
-    eqLines: DrawerLine[];
-    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
-    handleButtonClick: (button: CustomButton, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => void;
-    loginName: string;
-    setLoginName: (val: string) => void;
-    loginPassword: string;
-    setLoginPassword: (val: string) => void;
-    bgImage: string;
-    handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    soundTriggers: Record<string, unknown>[];
-    newSoundPattern: string;
-    setNewSoundPattern: (val: string) => void;
-    newSoundRegex: boolean;
-    setNewSoundRegex: (val: boolean) => void;
-    handleSoundUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    setSoundTriggers: (val: Record<string, unknown>[]) => void;
-}
-
-export const DrawerManager: React.FC<DrawerManagerProps> = ({
-    ui,
-    setUI,
-    inventoryLines,
-    statsLines,
-    scoreLines,
-    eqLines,
-    executeCommand,
-    handleButtonClick,
-    loginName,
-    setLoginName,
-    loginPassword,
-    setLoginPassword,
-    bgImage,
-    handleFileUpload,
-    soundTriggers,
-    newSoundPattern,
-    setNewSoundPattern,
-    newSoundRegex,
-    setNewSoundRegex,
-    handleSoundUpload,
-    setSoundTriggers
-}) => {
+export const DrawerManager: React.FC = () => {
     const { 
         characterName, viewport, triggerHaptic, 
-        displayInventoryLines, displayEqLines, 
-        pendingDrawerContainerRef, inlineCategories, entities, keywordOverrides,
-        gameState,
-        mood, setMood, spellSpeed, setSpellSpeed, alertness, setAlertness
+        gameState, executeCommand,
+        mood, setMood, spellSpeed, setSpellSpeed, alertness, setAlertness,
     } = useGame();
-    const { handleTabClick } = useUI();
-    const mapperRef = React.useRef<MapperHandle>(null);
+    
+    const { 
+        ui, setUI, handleTabClick,
+        displayInventoryLines, displayEqLines,
+        statsLines, scoreLines
+    } = useUI();
     const [activeSlider, setActiveSlider] = React.useState<string | null>(null);
     const [activeButtonRect, setActiveButtonRect] = React.useState<DOMRect | null>(null);
 
-    // On desktop, push the log right/left so side drawers sit beside it instead of over it
+    // Body classes for layout shifts
     React.useEffect(() => {
         if (!viewport.isMobile) {
-            if (ui.mapExpanded) document.body.classList.add('map-drawer-open');
-            else document.body.classList.remove('map-drawer-open');
-
-            if (ui.drawer !== 'none') document.body.classList.add('utility-drawer-open');
-            else document.body.classList.remove('utility-drawer-open');
+            document.body.classList.toggle('map-drawer-open', ui.mapExpanded);
+            document.body.classList.toggle('utility-drawer-open', ui.drawer !== 'none');
         } else {
-            document.body.classList.remove('map-drawer-open');
-            document.body.classList.remove('utility-drawer-open');
+            document.body.classList.remove('map-drawer-open', 'utility-drawer-open');
         }
-
-        return () => { 
-            document.body.classList.remove('map-drawer-open'); 
-            document.body.classList.remove('utility-drawer-open'); 
-        };
     }, [ui.mapExpanded, ui.drawer, viewport.isMobile]);
 
-    const isMapDrawerOpen = ui.mapExpanded && !viewport.isMobile;
-    const isMobilePortrait = viewport.isMobile && !viewport.isLandscape;
-    const showBackdrop = !viewport.isMobile && ui.drawer !== 'none';
-
-    // Mobile uses GutterShell with Views (now handled by MapperCluster)
-    if (isMobilePortrait) {
+    if (viewport.isMobile && !viewport.isLandscape) {
         return null;
     }
 
+    // On desktop, we want drawers to feel like docked panels (no backdrop).
+    // On mobile landscape, a backdrop helps focus the drawer.
+    const showBackdrop = viewport.isMobile && ui.drawer !== 'none';
 
     return (
         <>
             <div
                 className={`drawer-backdrop ${showBackdrop && ui.drawer !== 'character' && ui.drawer !== 'players' ? 'open' : ''}`}
                 style={{ background: 'rgba(0,0,0,0.2)' }}
-                onClick={() => {
-                    if (!viewport.isMobile) {
-                        setUI(prev => ({ ...prev, drawer: 'none', peekingSource: 'none' }));
-                    }
-                }}
+                onClick={() => setUI(prev => ({ ...prev, drawer: 'none' }))}
             />
 
             {!viewport.isMobile && (
-                <div
-                    className={`map-drawer-desktop ${ui.mapExpanded ? 'open' : ''}`}
-                    onClick={(e) => e.stopPropagation()}
-                >
+                <div className={`map-drawer-desktop ${ui.mapExpanded ? 'open' : ''}`}>
                     <div className="drawer-content" style={{ flex: 1, padding: 0, position: 'relative', overflow: 'hidden' }}>
-                        <Mapper
-                            ref={mapperRef}
-                            characterName={characterName || ''}
-                            isMobile={viewport.isMobile}
-                            isExpanded={true}
-                        />
+                        <Mapper characterName={characterName || ''} isMobile={viewport.isMobile} isExpanded={true} />
                     </div>
                 </div>
             )}
 
-            <StatsDrawer
-                isOpen={ui.drawer === 'stats'}
-                onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none' })); }}
-                statsLines={statsLines}
-                scoreLines={scoreLines}
-                executeCommand={executeCommand}
-            />
+            {/* Stats Drawer */}
+            <DrawerShell id="stats" side="right" title="Statistics">
+                <StatsView
+                    statsLines={statsLines}
+                    scoreLines={scoreLines}
+                    executeCommand={executeCommand}
+                    mood={mood} setMood={setMood}
+                    spellSpeed={spellSpeed} setSpellSpeed={setSpellSpeed}
+                    alertness={alertness} setAlertness={setAlertness}
+                    triggerHaptic={triggerHaptic}
+                    activeSlider={activeSlider} setActiveSlider={setActiveSlider}
+                    activeButtonRect={activeButtonRect} setActiveButtonRect={setActiveButtonRect}
+                />
+            </DrawerShell>
 
-            <CharacterDrawer
-                isOpen={ui.drawer === 'character'}
-                onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none' })); }}
-                executeCommand={executeCommand}
-            />
+            {/* Character Drawer */}
+            <DrawerShell id="character" side="right" title="Character Info">
+                <CharacterView
+                    isOpen={ui.drawer === 'character'}
+                    onClose={() => setUI(prev => ({ ...prev, drawer: 'none' }))}
+                    executeCommand={executeCommand}
+                />
+            </DrawerShell>
 
-            <PlayersDrawer
-                isOpen={ui.drawer === 'players'}
-                onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none' })); }}
-                executeCommand={executeCommand}
-            />
+            {/* Players Drawer */}
+            <DrawerShell id="players" side="right" title="World Interaction">
+                <PlayersView
+                    isOpen={ui.drawer === 'players'}
+                    onClose={() => setUI(prev => ({ ...prev, drawer: 'none' }))}
+                    executeCommand={executeCommand}
+                />
+            </DrawerShell>
 
-            {(ui.drawer === 'inventory' || ui.drawer === 'equipment') && (
-                <InventoryDrawer
-                    isOpen={true}
-                    onClose={() => { if (!viewport.isMobile) setUI(prev => ({ ...prev, drawer: 'none' })); }}
+            {/* Inventory / Gear Drawer */}
+            <DrawerShell id="inventory" side="right" title="Equipment & Items">
+                <InventoryView
+                    isOpen={ui.drawer === 'inventory' || ui.drawer === 'equipment'}
+                    onClose={() => setUI(prev => ({ ...prev, drawer: 'none' }))}
+                    triggerHaptic={triggerHaptic}
                     inventoryLines={displayInventoryLines}
                     eqLines={displayEqLines}
-                    handleButtonClick={handleButtonClick}
-                    triggerHaptic={triggerHaptic}
                     executeCommand={executeCommand}
-                    pendingDrawerContainerRef={pendingDrawerContainerRef}
-                    inlineCategories={inlineCategories}
-                    entities={entities}
-                    keywordOverrides={keywordOverrides}
                 />
-            )}
+            </DrawerShell>
 
-            {/* Desktop-only side tabs */}
+            {/* Desktop Side Tabs */}
             {!viewport.isMobile && gameState !== 'disconnected' && (
-                <div className="desktop-drawer-tabs">
-                    <div
-                        className={`desktop-edge-tab right ${ui.drawer === 'stats' ? 'active' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); triggerHaptic(15); handleTabClick('stats'); }}
-                    >
-                        <BarChart2 className="tab-icon" />
-                        <span className="tab-text">Stats</span>
+                <>
+                    {/* Utility Tabs (Right) */}
+                    <div className="desktop-drawer-tabs right">
+                        {[
+                            { id: 'stats', label: 'Stats', icon: BarChart2 },
+                            { id: 'character', label: 'Char', icon: User },
+                            { id: 'players', label: 'Players', icon: Users },
+                            { id: 'equipment', label: 'Gear', icon: Shield }
+                        ].map(tab => (
+                            <div
+                                key={tab.id}
+                                className={`desktop-edge-tab right ${ui.drawer === tab.id || (tab.id === 'equipment' && ui.drawer === 'inventory') ? 'active' : ''}`}
+                                onClick={(e) => { e.stopPropagation(); triggerHaptic(15); handleTabClick(tab.id as any); }}
+                            >
+                                <tab.icon className="tab-icon" />
+                                <span className="tab-text">{tab.label}</span>
+                            </div>
+                        ))}
                     </div>
-                    <div
-                        className={`desktop-edge-tab right ${ui.drawer === 'character' ? 'active' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); triggerHaptic(15); handleTabClick('character'); }}
-                    >
-                        <User className="tab-icon" />
-                        <span className="tab-text">Char</span>
+
+                    {/* Map Tab (Left) */}
+                    <div className="desktop-drawer-tabs left">
+                        <div
+                            className={`desktop-edge-tab left ${ui.mapExpanded ? 'active' : ''}`}
+                            onClick={(e) => { e.stopPropagation(); triggerHaptic(15); setUI(prev => ({ ...prev, mapExpanded: !prev.mapExpanded })); }}
+                        >
+                            <MapIcon className="tab-icon" />
+                            <span className="tab-text">Map</span>
+                        </div>
                     </div>
-                    <div
-                        className={`desktop-edge-tab right ${ui.drawer === 'players' ? 'active' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); triggerHaptic(15); handleTabClick('players'); }}
-                    >
-                        <Users className="tab-icon" />
-                        <span className="tab-text">Players</span>
-                    </div>
-                    <div
-                        className={`desktop-edge-tab right ${ui.drawer === 'equipment' || ui.drawer === 'inventory' ? 'active' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); triggerHaptic(15); handleTabClick('equipment'); }}
-                    >
-                        <Shield className="tab-icon" />
-                        <span className="tab-text">Gear</span>
-                    </div>
-                    <div
-                        className={`desktop-edge-tab right ${ui.mapExpanded ? 'active' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); triggerHaptic(15); setUI(prev => ({ ...prev, mapExpanded: !prev.mapExpanded })); }}
-                    >
-                        <MapIcon className="tab-icon" />
-                        <span className="tab-text">Map</span>
-                    </div>
-                </div>
+                </>
             )}
         </>
     );

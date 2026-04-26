@@ -83,6 +83,7 @@ export interface Message {
     isHitterImpact?: boolean;
     isSnoop?: boolean;
     isSnoopInput?: boolean;
+    isSpacer?: boolean;
     // Add specific data objects for UI support
     shopItem?: any; 
     practiceSkill?: any;

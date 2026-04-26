@@ -1,9 +1,34 @@
 import React from 'react';
 import { Token, EntityToken, AnsiToken } from '../../types';
 import { useVitals } from '../../context/GameContext';
+import { useSettingsStore } from '../../stores/useSettingsStore';
+import { COLOR_PLAYER, COLOR_NPC, COLOR_OBJ, COLOR_ROOM } from '../../utils/categorizationUtils';
 
-export const TokenRenderer: React.FC<{ tokens?: Token[], fallbackHtml?: string }> = ({ tokens, fallbackHtml }) => {
+import { MessageType } from '../../types';
+
+export interface TokenRendererProps {
+    tokens?: Token[];
+    fallbackHtml?: string;
+    type?: MessageType;
+    metadata?: {
+        id?: string;
+        context?: string;
+        kind?: string;
+        location?: string;
+        category?: string;
+        cmd?: string;
+        action?: string;
+    };
+}
+
+export const TokenRenderer: React.FC<TokenRendererProps> = ({ 
+    tokens, 
+    fallbackHtml,
+    type,
+    metadata: propMetadata
+}) => {
     const { target } = useVitals();
+    const settings = useSettingsStore();
 
     if (!tokens || tokens.length === 0) {
         if (!fallbackHtml) return null;
@@ -90,22 +115,43 @@ export const TokenRenderer: React.FC<{ tokens?: Token[], fallbackHtml?: string }
                         extraClasses.push('target-highlighter');
                     }
 
+                    const isRoom = e.metadata?.kind === 'room';
                     const props: any = {
-                        className: `inline-btn ${extraClasses.join(' ')}`,
-                        'data-id': e.entityId,
-                        'data-cmd': isAuto ? (e.metadata?.kind || e.content) : e.content,
-                        'data-context': e.metadata?.context || e.content,
+                        className: `${isRoom ? 'room-name-static' : 'inline-btn'} ${extraClasses.join(' ')}`.trim(),
                     };
 
-                    if (e.metadata?.kind) props['data-kind'] = e.metadata.kind;
-                    if (e.metadata?.location) props['data-location'] = e.metadata.location;
-                    if (e.metadata?.category) props['data-category'] = e.metadata.category;
-                    if (e.metadata?.action) props['data-action'] = e.metadata.action;
+                    if (!isRoom) {
+                        props['data-id'] = propMetadata?.id || e.entityId;
+                        props['data-cmd'] = propMetadata?.cmd || (isAuto ? (e.metadata?.kind || e.content) : e.content);
+                        props['data-context'] = propMetadata?.context || e.metadata?.context || e.content;
+                        if (propMetadata?.kind || e.metadata?.kind) props['data-kind'] = propMetadata?.kind || e.metadata?.kind;
+                        if (propMetadata?.location || e.metadata?.location) props['data-location'] = propMetadata?.location || e.metadata?.location;
+                        if (propMetadata?.category || e.metadata?.category) props['data-category'] = propMetadata?.category || e.metadata?.category;
+                        if (propMetadata?.action || e.metadata?.action) props['data-action'] = propMetadata?.action || e.metadata?.action;
+                    }
 
-                    const style: React.CSSProperties = {};
-                    if (e.metadata?.color) {
-                        style['--glow-color'] = e.metadata.color;
+                    // Apply category colors from settings - PRIORITY: Kind (Category) Master > Trait
+                    let style: React.CSSProperties = { ...(e.metadata?.style || {}) };
+                    const kind = propMetadata?.kind || e.metadata?.kind;
+                    
+                    let categoryColor = null;
+                    if (kind === 'player') categoryColor = settings.playerColor || COLOR_PLAYER;
+                    else if (kind === 'npc') categoryColor = settings.npcColor || COLOR_NPC;
+                    else if (kind === 'object') categoryColor = settings.objectColor || COLOR_OBJ;
+                    else if (kind === 'room') categoryColor = settings.roomColor || COLOR_ROOM;
+
+                    // Only use metadata-provided colors (Traits) if the Kind itself doesn't have a color
+                    if (!categoryColor) {
+                        categoryColor = e.metadata?.glowColor || e.metadata?.color;
+                    }
+                    
+                    if (categoryColor) {
+                        style['--glow-color'] = categoryColor;
                         style.color = 'var(--glow-color)';
+                    }
+
+                    if (isRoom) {
+                        style.fontWeight = 'bold'; // Still make room names stand out as headers
                     }
 
                     return (

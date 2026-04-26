@@ -36,10 +36,14 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
         isWaitingForInv, isWaitingForEq, isWaitingForStats, isWaitingForInfo,
         setWhoList, setWhereList, setRoomItems, registerEntity, setCharacterInfo, setDiscoveredItems, extractNoun, ansiConvert,
-        playerPosition, inlineCategories
+        playerPosition, inlineCategories, isSpectateMode
     } = deps;
 
-    const determineVisibility = useCallback((lower: string, isImportantMessage: boolean, isRoomContent: boolean, isRoomDescription: boolean, isEndPrompt: boolean, isNewbieMode: boolean, cleanLine: string, isRoomWindow?: boolean) => {
+    const determineVisibility = useCallback((lower: string, isImportantMessage: boolean, isRoomContent: boolean, isRoomDescription: boolean, isEndPrompt: boolean, isNewbieMode: boolean, cleanLine: string, isRoomWindow?: boolean, isSnoop?: boolean) => {
+        // --- Snoop Visibility ---
+        // Snooped data should always be visible in its own log, bypassing user-side suppression
+        if (isSnoop) return true;
+
         // --- Sleeping Suppression ---
         // If the player is sleeping, suppress weather and lighting updates
         if (playerPosition === 'sleeping') {
@@ -111,19 +115,20 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         return isVisibleResult;
     }, [captureStage, isSilentCapture, isDrawerCapture, isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen, isWaitingForInv, isWaitingForEq, isWaitingForStats, isWaitingForInfo, playerPosition]);
 
-    const routeMessage = useCallback((msgType: string, textOnly: string, lower: string, cleanLine: string, attachedText: string, isMatch: boolean) => {
+    const routeMessage = useCallback((msgType: string, textOnly: string, lower: string, cleanLine: string, attachedText: string, isMatch: boolean, isSnoop?: boolean) => {
         let finalType = msgType;
-        const stage = captureStage.current;
-        console.log(`[useMessageRouter] routeMessage: stage=${stage}, text="${textOnly.substring(0, 30)}"`);
+        // Snooped lines should never be captured by the user's current drawer stage
+        const stage = isSnoop ? 'none' : captureStage.current;
+        console.log(`[useMessageRouter] routeMessage: stage=${stage}, isSnoop=${isSnoop}, text="${textOnly.substring(0, 30)}"`);
 
         const trimmed = textOnly.trim();
         if (stage === 'who' && trimmed !== 'who:' && trimmed.toLowerCase() !== 'allies' && trimmed.toLowerCase() !== 'minions' && trimmed.toLowerCase() !== 'players' && !trimmed.startsWith('---')) finalType = 'who-list';
         else if (stage === 'where' && !trimmed.startsWith('Player') && !trimmed.startsWith('Who') && !trimmed.startsWith('---')) finalType = 'where-list';
-        else if (stage === 'eq') finalType = 'equipment-list';
-        else if (stage === 'inv') finalType = 'inventory-list';
+        else if (stage === 'eq') finalType = 'equipmentlist';
+        else if (stage === 'inv') finalType = 'inventorylist';
         else if (lower.startsWith('exits:')) finalType = 'room-exits';
-        // In spectate mode, ANY line starting with '>' is a commanded action from the spectated player
-        else if (deps.isSpectateMode && trimmed.startsWith('>') && trimmed.length > 1) finalType = 'snoop-command';
+        // In spectate mode, lines starting with >, [, or ( are usually commanded actions from the spectated player
+        else if (isSpectateMode && isSnoop && (trimmed.startsWith('>') || (trimmed.startsWith('[') && trimmed.endsWith(']')) || (trimmed.startsWith('(') && trimmed.endsWith(')'))) && trimmed.length > 1) finalType = 'snoop-command';
         else if (isMatch && attachedText.length <= 2) finalType = 'prompt';
         else if (lower.startsWith('you go ') || lower.includes(' leaves ') || lower.includes(' arrives from ') || lower.includes(' arrived from ') || lower.includes(' flees ') || lower.includes(' fled ') || lower.includes(' panics') || lower.includes(' attempts') || lower.includes('alas, you cannot go that way') || lower.includes('there is no exit')) finalType = 'move';
 
@@ -160,7 +165,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         } else if (stage === 'whois') setCharacterInfo((prev: any) => ({ ...prev, whois: (prev.whois || '') + textOnly + '\n' }));
 
         return finalType;
-    }, [captureStage, setWhoList, setWhereList, setCharacterInfo, ansiConvert]);
+    }, [captureStage, setWhoList, setWhereList, setCharacterInfo, ansiConvert, isSpectateMode]);
 
     const detectItemsInRoom = useCallback((textOnly: string, cleanLine: string, isDrawerHiding: boolean) => {
         if (captureStage.current !== 'none' || isDrawerHiding) return;

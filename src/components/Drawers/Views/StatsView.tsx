@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
+/**
+ * @file StatsView.tsx
+ * @description Renders the player's stats and score.
+ */
+
+import React from 'react';
 import { RefreshCw } from 'lucide-react';
 import { DrawerLine } from '../../../types';
+import { useStatsLines } from '../../../hooks/drawers/useStatsLines';
+import { LineItem } from '../LineItem';
 import { CombatSettingControl } from '../StatsDrawer/CombatSettingControl';
-import { sanitizeMumeHtml } from '../../../utils/securityUtils';
 
 interface StatsViewProps {
     statsLines: DrawerLine[];
@@ -22,8 +28,8 @@ interface StatsViewProps {
 }
 
 export const StatsView: React.FC<StatsViewProps> = ({
-    statsLines,
-    scoreLines,
+    statsLines: rawStats,
+    scoreLines: rawScore,
     executeCommand,
     mood, setMood,
     spellSpeed, setSpellSpeed,
@@ -32,83 +38,37 @@ export const StatsView: React.FC<StatsViewProps> = ({
     activeSlider, setActiveSlider,
     activeButtonRect, setActiveButtonRect
 }) => {
+    const { statsLines: processedStats, scoreLines: processedScore } = useStatsLines({
+        statsLines: rawStats,
+        scoreLines: rawScore
+    });
+
     return (
         <div style={{ flex: 1, overflowY: 'auto', padding: 0, position: 'relative', display: 'flex', flexDirection: 'column' }}>
             <div className="drawer-section" data-drawer-section="stats">
                 <div style={{ padding: '0 12px' }}>
-                    {/* 1. Score / Info Section */}
-                    {scoreLines.length > 0 && (
+                    {/* Score Section */}
+                    {processedScore.length > 0 && (
                         <div className="stats-block" style={{ marginBottom: '16px' }}>
-                            <div style={{
-                                background: 'rgba(255, 255, 255, 0.05)',
-                                borderRadius: '4px',
-                                margin: '0.5px 0',
-                                padding: '1px 8px',
-                                color: '#ffffff',
-                                opacity: 0.9
-                            }}>score</div>
-                            {scoreLines.map(line => (
-                                <div
-                                    key={line.id}
-                                    style={{
-                                        background: 'rgba(0, 0, 0, 0.6)',
-                                        borderRadius: '4px',
-                                        margin: '0.5px 0',
-                                        padding: '1px 8px',
-                                        width: '100%',
-                                        display: 'block',
-                                        whiteSpace: 'pre',
-                                        boxSizing: 'border-box'
-                                    }}
-                                    dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html.trim()) }}
-                                />
+                            <div className="section-label" style={{ opacity: 0.6, fontSize: '0.8rem', padding: '4px 8px' }}>score</div>
+                            {processedScore.map(line => (
+                                <LineItem key={line.id} line={line} />
                             ))}
                         </div>
                     )}
 
-                    {/* 2. Stats / Combat Section */}
-                    {statsLines.length > 0 ? (
+                    {/* Stats Section */}
+                    {processedStats.length > 0 ? (
                         <div className="stats-block">
-                            <div style={{
-                                background: 'rgba(255, 255, 255, 0.05)',
-                                borderRadius: '4px',
-                                margin: '0.5px 0',
-                                padding: '1px 8px',
-                                color: '#ffffff',
-                                opacity: 0.9
-                            }}>stat</div>
-                            {statsLines.map(line => {
-                                const lowerText = line.text.toLowerCase().trim();
-                                if (lowerText === '[stat]' || lowerText === '[at]' || lowerText === 'at' || lowerText === 'ok.') return null;
-
-                                return (
-                                    <div
-                                        key={line.id}
-                                        style={{
-                                            background: 'rgba(0, 0, 0, 0.6)',
-                                            borderRadius: '4px',
-                                            margin: '0.5px 0',
-                                            padding: '1px 8px',
-                                            width: '100%',
-                                            display: 'block',
-                                            whiteSpace: 'pre',
-                                            boxSizing: 'border-box'
-                                        }}
-                                        dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html.trim()) }}
-                                    />
-                                );
-                            })}
+                            <div className="section-label" style={{ opacity: 0.6, fontSize: '0.8rem', padding: '4px 8px' }}>stat</div>
+                            {processedStats.map(line => (
+                                <LineItem key={line.id} line={line} />
+                            ))}
                             <div style={{ height: '50px', flexShrink: 0 }} />
                         </div>
                     ) : (
-                        scoreLines.length === 0 && (
-                            <div className="empty-stats" style={{
-                                textAlign: 'center',
-                                color: 'rgba(255, 255, 255, 0.3)',
-                                fontSize: '0.9rem',
-                                marginTop: '40px',
-                                fontStyle: 'italic'
-                            }}>
+                        processedScore.length === 0 && (
+                            <div className="empty-stats" style={{ textAlign: 'center', color: 'rgba(255, 255, 255, 0.3)', marginTop: '40px', fontStyle: 'italic' }}>
                                 No character stats data captured. Tap refresh to update.
                             </div>
                         )
@@ -116,29 +76,9 @@ export const StatsView: React.FC<StatsViewProps> = ({
                 </div>
             </div>
 
-            {/* Bottom Section: Action Buttons in Floating Tabs style */}
-            <div style={{
-                position: 'absolute',
-                bottom: '12px',
-                left: '12px',
-                right: '12px',
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '10px',
-                zIndex: 100,
-                pointerEvents: 'none'
-            }}>
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '6px',
-                    pointerEvents: 'auto',
-                    maxWidth: '90%'
-                }}>
+            {/* Combat Controls */}
+            <div style={{ position: 'absolute', bottom: '12px', left: '12px', right: '12px', display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
+                <div style={{ display: 'flex', gap: '6px', pointerEvents: 'auto' }}>
                     <CombatSettingControl
                         id="mood"
                         label="MOOD"
@@ -161,7 +101,6 @@ export const StatsView: React.FC<StatsViewProps> = ({
                         onClose={() => setActiveSlider(null)}
                         triggerHaptic={triggerHaptic}
                     />
-
                     <CombatSettingControl
                         id="spell"
                         label="SPEED"
@@ -184,7 +123,6 @@ export const StatsView: React.FC<StatsViewProps> = ({
                         onClose={() => setActiveSlider(null)}
                         triggerHaptic={triggerHaptic}
                     />
-
                     <CombatSettingControl
                         id="alert"
                         label="ALERT"
@@ -212,33 +150,17 @@ export const StatsView: React.FC<StatsViewProps> = ({
 
             <button
                 className="refresh-button floating-refresh"
-                title="Refresh Stats"
-                onClick={(e) => {
+                onClick={() => {
                     triggerHaptic(15);
-                    console.log('[StatsDrawer] Manual refresh triggered (stat, score, info %m)');
                     executeCommand('stat', true, true, true, true);
                     executeCommand('score', true, true, true, true);
                     executeCommand('info %m', true, true, true, true);
                 }}
                 style={{
-                    position: 'absolute',
-                    bottom: '8px',
-                    right: '8px',
-                    zIndex: 110,
-                    background: 'rgba(40, 40, 45, 0.4)',
-                    backdropFilter: 'blur(10px) saturate(160%)',
-                    WebkitBackdropFilter: 'blur(10px) saturate(160%)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    color: 'rgba(255,255,255,0.8)',
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
-                    pointerEvents: 'auto'
+                    position: 'absolute', bottom: '8px', right: '8px', zIndex: 110,
+                    background: 'rgba(40, 40, 45, 0.4)', backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)',
+                    width: '32px', height: '32px', borderRadius: '16px', cursor: 'pointer'
                 }}
             >
                 <RefreshCw size={16} />

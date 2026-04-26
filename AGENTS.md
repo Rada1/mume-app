@@ -24,6 +24,7 @@ The MUME Client is an **AI-Native, Hook-Driven Mobile Client** for the MUME MUD.
 | **Adjust Mapper** | `src/components/Mapper/`, `src/mapper/renderer.ts` |
 | **Fix Broad Highlighting** | `src/services/parser/Tokenizer.ts`, `src/hooks/useEntityRegistry.ts` |
 | **Spectate Rotation** | `src/hooks/useSpectateAutomator.ts`, `src/hooks/GameParser/useGameParser.ts` |
+| **Manage Entity Traits** | `src/utils/categorizationUtils.ts`, `src/components/Settings/TraitSettings.tsx` |
 
 ## 🛠️ Team Lead Skill (Orchestrator Only)
 Antigravity acts as the **Team Lead**, delegating background tasks to **Jules** via the Gemini CLI.

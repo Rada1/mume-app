@@ -83,6 +83,10 @@ export interface UseGameParserDeps {
     
     playerPosition?: string;
     inlineCategories: InlineCategoryConfig[];
+    objectColor?: string;
+    npcColor?: string;
+    playerColor?: string;
+    roomColor?: string;
     roomPlayers: any[];
     roomNpcs: any[];
     roomItems: any[];

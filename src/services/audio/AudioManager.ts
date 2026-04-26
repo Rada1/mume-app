@@ -226,7 +226,7 @@ export class AudioManager {
 
                 if (key.includes('FIELD') || key.includes('ROAD') || key.includes('BRUSH')) {
                     if (isDay) {
-                        urlToPlay = '/assets/Sounds/Terrain Sounds/dayfield.wav';
+                        urlToPlay = '/assets/Sounds/TerrainSounds/dayfield.wav';
                     } else {
                         urlToPlay = null; // Silence open areas at night
                     }

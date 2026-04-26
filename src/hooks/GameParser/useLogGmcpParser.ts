@@ -11,9 +11,9 @@ interface LogGmcpParserDeps {
     setSpectateWaiting: (val: boolean) => void;
     setSpectateCharacterName: (name: string | null) => void;
     spectateCharacterName: string | null;
-    setRoomPlayers: React.Dispatch<React.SetStateAction<any[]>>;
-    setRoomNpcs: React.Dispatch<React.SetStateAction<any[]>>;
-    setRoomItems: React.Dispatch<React.SetStateAction<any[]>>;
+    setRoomPlayers?: React.Dispatch<React.SetStateAction<any[]>>;
+    setRoomNpcs?: React.Dispatch<React.SetStateAction<any[]>>;
+    setRoomItems?: React.Dispatch<React.SetStateAction<any[]>>;
     setRoomName: (name: string | null) => void;
     setRoomDesc: (desc: string | null) => void;
     setRoomZone: (zone: string | null) => void;
@@ -109,7 +109,7 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         const isSnooped = isSnoopedParam;
         const isExplicitGmcp = /GMCP\s+/i.test(stripped);
         
-        const gmcpRegex = /^[\s\uFFFD\x00-\x1F\x7F-\xFF]*(?:&[a-zA-Z]\s+)*(?:GMCP\s+)?([A-Za-z]+\.[A-Za-z]+[A-Za-z\.]*)(?:\s*(.+))?$/i;
+        const gmcpRegex = /^[\s\uFFFD\x00-\x1F\x7F-\xFF]*(?:(?:&|mp;)[a-zA-Z]\s+)*(?:GMCP\s+)?([A-Za-z]+\.[A-Za-z]+[A-Za-z\.]*)(?:\s*(.+))?$/i;
         const match = stripped.match(gmcpRegex);
         
         if (!match) return false;
@@ -118,7 +118,7 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
         const jsonStr = match[2];
 
         const isReplay = sessionModeRef.current === 'replay';
-        if (!inSpectate && !isExplicitGmcp && !isReplay) return false;
+        if (!inSpectate && !isExplicitGmcp && !isReplay && !isSnooped) return false;
 
         if (!jsonStr) return true;
 
@@ -147,7 +147,7 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                     
                     if (data['opponent-hp'] || data['opponent-hits']) {
                         const status = data['opponent-hp'] || data['opponent-hits'];
-                        gmcpBus.emit('Room.CharsCombat', Object.assign([{
+                        gmcpBus.emit('Room.Chars.Combat', Object.assign([{
                             name: data.opponent,
                             health: status
                         }], { isSnooped }));
@@ -409,7 +409,7 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                 }
 
                 case 'room.chars.combat': {
-                    gmcpBus.emit('Room.CharsCombat', Object.assign(data, { isSnooped }));
+                    gmcpBus.emit('Room.Chars.Combat', Object.assign(data, { isSnooped }));
                     break;
                 }
                 case 'room.chars.remove':

@@ -30,12 +30,12 @@ const MOVE_SEGMENTS = MOVE_TIERS.length - 1;
 
 const HEALTH_MAP: Record<string, { percent: number; color: string }> = {
     'Healthy': { percent: 100, color: '#22c55e' },
-    'Fine': { percent: 90, color: '#4ade80' },
-    'Hurt': { percent: 70, color: '#facc15' },
-    'Wounded': { percent: 45, color: '#fb923c' },
-    'Bad': { percent: 25, color: '#f87171' },
-    'Awful': { percent: 12, color: '#ef4444' },
-    'Dying': { percent: 5, color: '#991b1b' },
+    'Fine': { percent: 83, color: '#4ade80' },
+    'Hurt': { percent: 66, color: '#facc15' },
+    'Wounded': { percent: 50, color: '#fb923c' },
+    'Bad': { percent: 33, color: '#f87171' },
+    'Awful': { percent: 16, color: '#ef4444' },
+    'Dying': { percent: 0, color: '#991b1b' },
     'Stunned': { percent: 25, color: '#a855f7' },
     'None': { percent: 0, color: '#4b5563' }
 };
@@ -78,7 +78,15 @@ const getFilledSegments = (status: string | null | undefined, tiers?: readonly s
 
     if (fallbackPercent === undefined || !tiers || tiers.length === 0) return null;
     const visibleSegments = Math.max(0, tiers.length - 1);
-    return Math.max(0, Math.min(visibleSegments, Math.round((Math.max(0, Math.min(100, fallbackPercent)) / 100) * visibleSegments)));
+    const rawSegments = (Math.max(0, Math.min(100, fallbackPercent)) / 100) * visibleSegments;
+    const rounded = Math.round(rawSegments);
+    
+    // Strict Healthy check: only 100% can show all segments
+    if (fallbackPercent < 100 && rounded === visibleSegments && visibleSegments > 0) {
+        return visibleSegments - 1;
+    }
+    
+    return Math.max(0, Math.min(visibleSegments, rounded));
 };
 
 const ConditionBadge: React.FC<{ 
@@ -424,7 +432,10 @@ const PromptBox: FC<PromptBoxProps> = ({
                             <div ref={hpBarRef} style={{ flex: 1, display: 'flex', minWidth: 0 }}>
                                 <ConditionBadge
                                     status={playerHealthStatus || 'Healthy'}
-                                    percent={maxHp > 0 ? (hp / maxHp) * 100 : (HEALTH_MAP[playerHealthStatus || 'Healthy']?.percent || 0)}
+                                    percent={normalizeTierStatus(playerHealthStatus, HEALTH_TIERS) 
+                                        ? (HEALTH_MAP[normalizeTierStatus(playerHealthStatus, HEALTH_TIERS)!]?.percent ?? 0)
+                                        : (maxHp > 0 ? (hp / maxHp) * 100 : 0)
+                                    }
                                     colorClass="hp"
                                     segments={HEALTH_SEGMENTS}
                                     tiers={HEALTH_TIERS}

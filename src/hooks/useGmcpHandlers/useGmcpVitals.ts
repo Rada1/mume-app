@@ -88,8 +88,8 @@ export const useGmcpVitals = ({
         }
 
         // --- Combat Info via Vitals ---
-        if (data.hp_status) {
-            setPlayerHealthStatus(findStatus(data.hp_status));
+        if (data.hp_status || data['hp-string'] || data['health-string']) {
+            setPlayerHealthStatus(findStatus(data.hp_status ?? data['hp-string'] ?? data['health-string']));
         }
 
         if (data.opponent !== undefined) {
@@ -101,7 +101,7 @@ export const useGmcpVitals = ({
             
             // --- Store Sync ---
             import('../../events/gmcpBus').then(({ gmcpBus }) => {
-                gmcpBus.emit('Char.Opponent', { name: oppName, id: oppId, isSnooped: false });
+                gmcpBus.emit('Char.Opponent', { data: oppId, name: oppName, id: oppId, isSnooped: false });
             });
         }
 
@@ -178,7 +178,7 @@ export const useGmcpVitals = ({
 
         // --- Store Sync ---
         import('../../events/gmcpBus').then(({ gmcpBus }) => {
-            gmcpBus.emit('Room.Chars.Combat', Object.assign({}, data, { isSnooped: false } as any));
+            gmcpBus.emit('Room.Chars.Combat', Object.assign(data, { isSnooped: false }));
         });
     }, [findStatus, opponentName, opponentId, bufferName, setOpponentHealthStatus, setBufferHealthStatus]);
 

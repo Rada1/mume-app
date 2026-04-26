@@ -1,442 +1,364 @@
-import { Token, EntityToken, TextToken, AnsiToken } from '../../types';
-import { getCategoryForName } from '../../utils/categorizationUtils';
+/**
+ * @file Tokenizer.ts
+ * @description AI-Native, Tag-Aware Tokenizer for MUME XML mode.
+ * Replaces complex regex-matching with reliable server-side tagging.
+ * Supports ANSI colors and nested XML entities (NPC, Player, Object, Room).
+ */
+
+import React from 'react';
+import { Token, EntityToken, AnsiToken, TextToken, InlineCategoryConfig } from '../../types';
 
 export interface TokenizerContext {
     target?: string | null;
-    currentOccupants: any[];
-    roomPlayers?: any[];
-    roomNpcs: any[];
-    activeGroupMembers: any[];
-    roomItems: any[];
-    inventoryItems?: any[];
-    equipmentItems?: any[];
-    discoveredItems: any[];
-    inlineCategories: any[];
-    buttons: any[];
-    selectedObjectIds: Set<string>;
-    onlinePlayers?: string[];
+    buttons?: any[]; // Custom user highlights
+    registeredPlayers?: string[]; // Names of players to highlight in text
+    inlineCategories?: InlineCategoryConfig[];
+    npcColor?: string;
+    playerColor?: string;
+    objectColor?: string;
+    roomColor?: string;
 }
 
 export class Tokenizer {
-    public static tokenize(textRaw: string, context: TokenizerContext): Token[] {
-        // This receives the raw text, possibly containing ANSI codes.
-        // First we parse ANSI into a basic AST.
-        let tokens = Tokenizer.parseAnsi(textRaw);
+    private static readonly KNOWN_XML_TAGS = new Set([
+        'room', 'name', 'description', 'character', 'player', 'object', 'header', 
+        'exit', 'prompt', 'movement', 'magic', 'para', 'item', 'terrain', 'exits',
+        'weather', 'achievement', 'gratuitous', 'move_in', 'move_out', 'social',
+        'emote', 'narrate', 'pray', 'say', 'shout', 'song', 'tell', 'yell',
+        'hit', 'damage', 'avoid_damage', 'miss', 'code', 'em', 'status', 
+        'highlight', 'familiar', 'snoop', 'xml', 'prompt'
+    ]);
 
-        // Then we run the highlighter rules on the text content to extract entities.
-        const candidates = Tokenizer.buildCandidates(context);
-        candidates.sort((a, b) => b.priority - a.priority);
+    // Stateful Context for cross-line persistence
+    private currentLocation: string = 'room';
+    private currentParent: string | null = null;
+    private currentStyle: React.CSSProperties = {};
 
-        for (const c of candidates) {
-            tokens = Tokenizer.applyCandidate(tokens, c);
+    private static instance: Tokenizer | null = null;
+
+    public static getInstance(): Tokenizer {
+        if (!this.instance) {
+            this.instance = new Tokenizer();
         }
-
-        // 3. Post-process to "latch onto" MUME color hints (Cyan = Objects, Magenta = Players)
-        tokens = tokens.map(token => {
-            if (token.type !== 'ansi' || !token.style?.color) return token;
-            
-            const color = token.style.color;
-            const content = token.content.trim();
-            const lowerContent = content.toLowerCase();
-            
-            // Ignore very short strings that might be part of prompts or symbols
-            if (content.length < 3) return token;
-
-            // Cyan promotion (Items)
-            if (color === 'var(--ansi-cyan)' || color === 'var(--ansi-bright-cyan)' || color === 'mume-obj') {
-                // Try to find the location from context if possible
-                let location = 'room';
-                let category = 'obj-room';
-                
-                const inEq = context.equipmentItems?.some(i => (typeof i === 'string' ? i : i.name).toLowerCase().includes(lowerContent));
-                const inInv = context.inventoryItems?.some(i => (typeof i === 'string' ? i : i.name).toLowerCase().includes(lowerContent));
-                
-                if (inEq) {
-                    location = 'worn';
-                    category = 'obj-worn';
-                } else if (inInv) {
-                    location = 'carried';
-                    category = 'obj-char';
-                }
-
-                return {
-                    type: 'entity',
-                    content: token.content,
-                    entityId: `auto-color-obj-${lowerContent.replace(/\s+/g, '-')}`,
-                    metadata: {
-                        kind: 'object',
-                        location,
-                        context: content,
-                        category,
-                        action: 'menu',
-                        extraClasses: ['color-latched', 'auto-item']
-                    }
-                } as EntityToken;
-            }
-
-            // Magenta promotion (Players)
-            if (color === 'var(--ansi-magenta)' || color === 'var(--ansi-bright-magenta)' || color === 'mume-pc') {
-                return {
-                    type: 'entity',
-                    content: token.content,
-                    entityId: `auto-color-pc-${lowerContent.replace(/\s+/g, '-')}`,
-                    metadata: {
-                        kind: 'player',
-                        location: 'room',
-                        context: content,
-                        category: 'inline-player',
-                        action: 'menu',
-                        extraClasses: ['color-latched', 'pc-highlighter']
-                    }
-                } as EntityToken;
-            }
-
-            // Yellow promotion (NPCs)
-            if (color === 'var(--ansi-yellow)' || color === 'var(--ansi-bright-yellow)' || color === 'mume-npc') {
-                return {
-                    type: 'entity',
-                    content: token.content,
-                    entityId: `auto-color-npc-${lowerContent.replace(/\s+/g, '-')}`,
-                    metadata: {
-                        kind: 'npc',
-                        location: 'room',
-                        context: content,
-                        category: 'inline-npc',
-                        action: 'menu',
-                        extraClasses: ['color-latched', 'npc-highlighter']
-                    }
-                } as EntityToken;
-            }
-
-            return token;
-        });
-
-        return tokens;
+        return this.instance;
     }
 
-    private static parseAnsi(textRaw: string): Token[] {
-        // Here we build a robust AST directly from ANSI.
-        // MUME ANSI often sets multiple attributes at once.
+    public reset(loc: string = 'room') {
+        this.currentLocation = loc;
+        this.currentParent = null;
+        this.currentStyle = {};
+    }
+
+    /**
+     * Main entry point for tokenizing game output.
+     * Parses mixed ANSI and XML tags into a unified AST.
+     */
+    public tokenize(textRaw: string, context: TokenizerContext, initialLoc?: string): Token[] {
+        if (initialLoc) {
+            this.currentLocation = initialLoc;
+        }
         const tokens: Token[] = [];
+        
+        // Entity Tracking
+        let activeEntity: {
+            tag: string;
+            kind: 'npc' | 'player' | 'object' | 'room' | 'exit' | 'none';
+            metadata: any;
+            content: string;
+            style: React.CSSProperties;
+        } | null = null;
+        
+        // Active tag stack for nested classification
+        const tagStack: string[] = [];
 
-        const ansiRegex = /\x1b\[([0-9;]*?)m/g;
-
-        let lastIndex = 0;
+        // Scanner for XML tags and ANSI codes
+        const scanner = /<(\/?[a-zA-Z0-9\-_]+)([^>]*?)\/?>|\x1b\[[0-9;]*m/g;
         let match;
+        let lastIndex = 0;
 
-        // Simple state tracker
-        let currentColor: string | undefined = undefined;
-        let isBold = false;
+        while ((match = scanner.exec(textRaw)) !== null) {
+            const [fullMatch, tagName, attributes] = match;
 
-        while ((match = ansiRegex.exec(textRaw)) !== null) {
-            // 1. Extract text before this ANSI code
             if (match.index > lastIndex) {
-                const text = textRaw.substring(lastIndex, match.index);
-                if (currentColor || isBold) {
-                     tokens.push({
-                         type: 'ansi',
-                         content: text,
-                         style: {
-                             color: currentColor,
-                             fontWeight: isBold ? 'bold' : 'normal'
-                         }
-                     } as AnsiToken);
-                } else {
-                     tokens.push({ type: 'text', content: text });
-                }
+                const content = textRaw.substring(lastIndex, match.index);
+                this.handleText(content, tokens, this.currentStyle, activeEntity, context);
             }
+            lastIndex = scanner.lastIndex;
 
-            // 2. Parse the ANSI code to update state
-            const codes = match[1] === '' ? ['0'] : match[1].split(';');
-
-            for (let i = 0; i < codes.length; i++) {
-                const code = parseInt(codes[i], 10);
-
-                if (code === 0) {
-                    currentColor = undefined;
-                    isBold = false;
-                } else if (code === 1) {
-                    isBold = true;
-                } else if (code === 22) {
-                    isBold = false;
-                } else if (code >= 30 && code <= 37) {
-                    const colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
-                    currentColor = `var(--ansi-${colors[code - 30]})`;
-                } else if (code === 38 && codes[i+1] === '5' && codes[i+2]) {
-                    const colorIndex = parseInt(codes[i+2], 10);
-                    // Use standard 16 mappings for low indices
-                    if (colorIndex >= 0 && colorIndex <= 7) {
-                        const colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
-                        currentColor = `var(--ansi-${colors[colorIndex]})`;
-                    } else if (colorIndex >= 8 && colorIndex <= 15) {
-                        const colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
-                        currentColor = `var(--ansi-bright-${colors[colorIndex-8]})`;
-                    } else if (colorIndex === 159) {
-                        // Special MUME Object Color (&355)
-                        currentColor = 'mume-obj';
-                    } else if (colorIndex === 201 || colorIndex === 207) {
-                        // Special MUME Player Colors (&505, etc)
-                        currentColor = 'mume-pc';
-                    } else {
-                        currentColor = `rgb-idx-${colorIndex}`;
-                    }
-                    i += 2;
-                } else if (code >= 90 && code <= 97) {
-                    const colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
-                    currentColor = `var(--ansi-bright-${colors[code - 90]})`;
-                }
-            }
-
-            lastIndex = ansiRegex.lastIndex;
-        }
-
-        // Add remaining text
-        if (lastIndex < textRaw.length) {
-            const text = textRaw.substring(lastIndex);
-             if (currentColor || isBold) {
-                 tokens.push({
-                     type: 'ansi',
-                     content: text,
-                     style: {
-                         color: currentColor,
-                         fontWeight: isBold ? 'bold' : 'normal'
-                     }
-                 } as AnsiToken);
-            } else {
-                 tokens.push({ type: 'text', content: text });
-            }
-        }
-
-        if (tokens.length === 0) {
-            tokens.push({ type: 'text', content: textRaw });
-        }
-
-        return tokens;
-    }
-
-    private static buildCandidates(context: TokenizerContext) {
-        const candidates: Array<{ pattern: string; priority: number; createToken: (match: string) => Token, isRegex: boolean }> = [];
-
-        // Static Custom
-        (context.buttons || []).forEach((kh: any) => {
-            if (!kh.pattern || !kh.enabled) return;
-            candidates.push({
-                pattern: kh.pattern,
-                isRegex: !!kh.isRegex,
-                priority: 100,
-                createToken: (match) => ({
-                    type: 'ansi',
-                    content: match,
-                    style: {
-                        color: kh.color,
-                        fontWeight: kh.bold ? 'bold' : 'normal'
-                    }
-                })
-            });
-        });
-
-        // Target
-        if (context.target) {
-            candidates.push({
-                pattern: context.target,
-                isRegex: false,
-                priority: 50,
-                createToken: (match) => ({
-                    type: 'entity',
-                    content: match,
-                    entityId: `target-${context.target!.toLowerCase().replace(/\s+/g, '-')}`,
-                    metadata: {
-                        kind: 'none',
-                        location: 'none',
-                        context: context.target!,
-                        category: 'target',
-                        color: 'var(--accent)',
-                        extraClasses: ['target-highlighter']
-                    }
-                } as EntityToken)
-            });
-        }
-
-        // PCs / NPCs / Online Players
-        const playerNameSet = new Set(
-            (Array.isArray(context.roomPlayers) ? context.roomPlayers : [])
-                .map(o => String(o.name || '').toLowerCase())
-                .filter(Boolean)
-        );
-        const allOccupants = [...(Array.isArray(context.currentOccupants) ? context.currentOccupants : [])];
-        if (Array.isArray(context.roomNpcs)) {
-            context.roomNpcs.forEach(npc => {
-                if (!allOccupants.find(o => o.name === npc.name)) allOccupants.push(npc);
-            });
-        }
-        if (Array.isArray(context.roomPlayers)) {
-            context.roomPlayers.forEach(pc => {
-                if (!allOccupants.find(o => o.name === pc.name)) allOccupants.push(pc);
-            });
-        }
-
-        // Add Online Players (from who list) if not already in occupants
-        if (Array.isArray(context.onlinePlayers)) {
-            context.onlinePlayers.forEach(name => {
-                const nameStr = String(name || '');
-                if (!allOccupants.find(o => o.name && nameStr && String(o.name).toLowerCase() === nameStr.toLowerCase())) {
-                    allOccupants.push({ name: nameStr, location: 'online', isNpc: false });
-                    playerNameSet.add(nameStr.toLowerCase());
-                }
-            });
-        }
-
-        allOccupants.forEach(occ => {
-            const occNameStr = String(occ.name || '');
-            const isNpc = (occ.type === 'npc' || occ.category === 'npc') || (occ.isNpc !== false && !playerNameSet.has(occNameStr.toLowerCase()));
-            const patterns = new Set<string>();
-            if (occ.name) patterns.add(String(occ.name));
-            if (occ.short) patterns.add(String(occ.short));
-            if (occ.keyword) String(occ.keyword).split(/\s+/).forEach((k: string) => { if (k.length > 2) patterns.add(k); });
-            if (occ.id && !String(occ.id).includes('-')) patterns.add(String(occ.id)); // Simple IDs only
-
-            patterns.forEach(pattern => {
-                const patStr = String(pattern);
-                if (!patStr || patStr.length < 3) return;
-
-                // Only search for dynamic categories if it's NOT a player, 
-                // or if the player category itself is customized.
-                let dynamicCat = getCategoryForName(patStr, Array.isArray(context.inlineCategories) ? context.inlineCategories : []);
+            if (fullMatch.startsWith('\x1b')) {
+                this.currentStyle = this.applyAnsi(fullMatch, this.currentStyle);
+            } else if (tagName) {
+                const isClosing = tagName.startsWith('/');
+                const baseName = (isClosing ? tagName.substring(1) : tagName).toLowerCase();
                 
-                if (!isNpc && dynamicCat && dynamicCat === 'inline-npc') {
-                    dynamicCat = null;
-                }
+                if (Tokenizer.KNOWN_XML_TAGS.has(baseName)) {
+                    if (isClosing) {
+                        if (activeEntity && activeEntity.tag.toLowerCase() === baseName) {
+                            this.emitEntity(activeEntity, tokens, context);
+                            activeEntity = null;
+                        }
+                        const idx = tagStack.lastIndexOf(baseName);
+                        if (idx !== -1) tagStack.splice(idx, 1);
+                    } else {
+                        const metadata = this.parseAttributes(attributes);
+                        const kind = this.determineKind(baseName, tagStack);
 
-                candidates.push({
-                    pattern: patStr,
-                    isRegex: false,
-                    priority: (occNameStr === patStr) ? (occ.id ? 15 : 20) : (occ.id ? 5 : 10),
-                    createToken: (match) => {
-                        const cat = dynamicCat || (isNpc ? 'inline-npc' : 'inline-player');
-                        return {
-                            type: 'entity',
-                            content: match,
-                            entityId: occ.id ? String(occ.id) : `auto-${occNameStr || patStr}`,
-                            metadata: {
-                                kind: isNpc ? 'npc' : 'player',
-                                location: 'room',
-                                context: occNameStr || patStr,
-                                category: cat,
-                                action: 'menu',
-                                extraClasses: ['auto-occupant', isNpc ? 'npc-highlighter' : 'pc-highlighter']
-                            }
-                        } as EntityToken;
-                    }
-                });
-            });
-        });
-
-        // Add Inventory/Equipment Items
-        const allItems = [
-            ...(Array.isArray(context.roomItems) ? context.roomItems : []),
-            ...(Array.isArray(context.inventoryItems) ? context.inventoryItems : []),
-            ...(Array.isArray(context.equipmentItems) ? context.equipmentItems : [])
-        ];
-
-        allItems.forEach(item => {
-            const name = typeof item === 'string' ? item : item.name;
-            if (!name) return;
-            const nameStr = String(name);
-
-            const patterns = new Set<string>();
-            patterns.add(nameStr);
-            if (item.short) patterns.add(String(item.short));
-            if (item.keyword) String(item.keyword).split(/\s+/).forEach((k: string) => { if (k.length > 2) patterns.add(k); });
-
-            const location = item.location || 'room';
-
-            patterns.forEach(pattern => {
-                const patStr = String(pattern);
-                if (!patStr || patStr.length < 3) return;
-
-                const dynamicCat = getCategoryForName(patStr, Array.isArray(context.inlineCategories) ? context.inlineCategories : []);
-
-                candidates.push({
-                    pattern: patStr,
-                    isRegex: false,
-                    priority: (nameStr === patStr) ? 5 : 2,
-                    createToken: (match) => {
-                        let cat = dynamicCat;
-                        if (!cat) {
-                            if (location === 'worn') cat = 'obj-worn';
-                            else if (location === 'carried') cat = 'obj-char';
-                            else cat = 'obj-room';
+                        // --- STATE MACHINE: Update Context ---
+                        if (baseName === 'prompt' || baseName === 'room') {
+                            this.currentLocation = 'room';
+                            this.currentParent = null;
                         }
 
-                        return {
-                            type: 'entity',
-                            content: match,
-                            entityId: item.id ? String(item.id) : `item-${nameStr || patStr}`,
-                            metadata: {
-                                kind: 'object',
-                                location: location,
-                                context: nameStr || patStr,
-                                category: cat,
-                                action: 'menu',
-                                extraClasses: ['auto-item']
+                        if (kind !== 'none') {
+                            if (!activeEntity) {
+                                activeEntity = { 
+                                    tag: baseName, 
+                                    kind, 
+                                    metadata, 
+                                    content: '', 
+                                    style: { ...this.currentStyle },
+                                    stack: [...tagStack]
+                                };
+                            } else if (kind === 'player' && activeEntity.kind === 'npc') {
+                                activeEntity.kind = 'player';
+                                if (metadata) {
+                                    activeEntity.metadata = { ...(activeEntity.metadata || {}), ...metadata };
+                                }
                             }
-                        } as EntityToken;
+                        }
+                        
+                        if (!fullMatch.endsWith('/>')) {
+                            tagStack.push(baseName);
+                        }
                     }
-                });
-            });
-        });
-
-        return candidates;
-    }
-
-    private static applyCandidate(tokens: Token[], candidate: { pattern: string; isRegex: boolean; createToken: (match: string) => Token }): Token[] {
-        const newTokens: Token[] = [];
-
-        for (const token of tokens) {
-            if (token.type !== 'text' && token.type !== 'ansi') {
-                newTokens.push(token);
-                continue;
-            }
-
-            // Split logic
-            // Need to correctly handle boundaries
-            // Use a custom boundary check because \b doesn't support accented characters in JS
-            const candPatternStr = String(candidate.pattern);
-            const pattern = candidate.isRegex
-                ? candPatternStr
-                : `(?:^|[^a-zA-Z\\u00C0-\\u00FF])${candPatternStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![a-zA-Z\\u00C0-\\u00FF])`;
-
-            const regex = new RegExp(pattern, 'gi');
-
-            let lastIndex = 0;
-            let match;
-            while ((match = regex.exec(token.content)) !== null) {
-                let matchContent = match[0];
-                let matchIndex = match.index;
-
-                // If we used a custom boundary (the first char), strip it from the token
-                if (!candidate.isRegex && matchContent.length > candidate.pattern.length) {
-                    const firstChar = matchContent[0];
-                    if (/[^a-zA-Z\u00C0-\u00FF]/.test(firstChar)) {
-                        matchContent = matchContent.substring(1);
-                        matchIndex += 1;
-                    }
+                } else {
+                    this.handleText(fullMatch, tokens, this.currentStyle, activeEntity, context);
                 }
-
-                if (matchIndex > lastIndex) {
-                    newTokens.push({ type: token.type, content: token.content.substring(lastIndex, matchIndex), ...((token as any).style ? { style: (token as any).style } : {}) } as any);
-                }
-                newTokens.push(candidate.createToken(matchContent));
-                lastIndex = matchIndex + matchContent.length;
-                // Avoid infinite loops if match is empty
-                if (regex.lastIndex === match.index) regex.lastIndex++;
-            }
-
-            if (lastIndex < token.content.length) {
-                newTokens.push({ type: token.type, content: token.content.substring(lastIndex), ...((token as any).style ? { style: (token as any).style } : {}) } as any);
             }
         }
 
-        return newTokens;
+        if (lastIndex < textRaw.length) {
+            this.handleText(textRaw.substring(lastIndex), tokens, this.currentStyle, activeEntity, context);
+        }
+        
+        if (activeEntity) this.emitEntity(activeEntity, tokens, context);
+
+        return tokens;
+    }
+
+    private decodeEntities(text: string): string {
+        if (!text) return "";
+        return text
+            .replace(/&gt;/gi, '>')
+            .replace(/&lt;/gi, '<')
+            .replace(/&amp;/gi, '&')
+            .replace(/&quot;/gi, '"')
+            .replace(/&apos;/gi, "'");
+    }
+
+    private handleText(
+        content: string, 
+        tokens: Token[], 
+        style: React.CSSProperties, 
+        activeEntity: any,
+        context?: TokenizerContext
+    ) {
+        const decoded = this.decodeEntities(content);
+        const lower = decoded.toLowerCase();
+
+        // --- STATE MACHINE: Context Inference (Handles both tagged and plain text headers) ---
+        if (lower.includes('carrying') && !lower.includes('stop using')) this.currentLocation = 'carried';
+        else if (lower.includes('using') || lower.includes('equipped')) this.currentLocation = 'worn';
+        else if (lower.includes('in the') || lower.includes('contents')) this.currentLocation = 'container';
+        else if (lower.includes('obvious exits')) this.currentLocation = 'room';
+
+        if (activeEntity) {
+            activeEntity.content += decoded;
+            return;
+        }
+
+        const players = context?.registeredPlayers || [];
+        if (players.length > 0) {
+            const validNames = players.filter(n => n.length > 2);
+            if (validNames.length > 0) {
+                const namePattern = `(${validNames.join('|')})`;
+                const nameRegex = new RegExp(namePattern, 'g');
+                
+                let lastIdx = 0;
+                let m;
+                while ((m = nameRegex.exec(decoded)) !== null) {
+                    const playerName = m[1];
+                    const startIdx = m.index;
+                    const endIdx = nameRegex.lastIndex;
+
+                    const prevChar = startIdx > 0 ? decoded[startIdx - 1] : '';
+                    const nextChar = endIdx < decoded.length ? decoded[endIdx] : '';
+                    const isLetter = (c: string) => /[a-zA-Z\xC0-\u024F]/.test(c);
+                    
+                    if (isLetter(prevChar) || isLetter(nextChar)) continue;
+
+                    if (startIdx > lastIdx) {
+                        this.pushText(decoded.substring(lastIdx, startIdx), tokens, style);
+                    }
+                    
+                    const metadata: any = {
+                        kind: 'player',
+                        category: 'inline-player',
+                        context: playerName,
+                        location: 'none',
+                        action: 'menu'
+                    };
+
+                    if (context.playerColor) {
+                        metadata.glowColor = context.playerColor;
+                    }
+
+                    tokens.push({
+                        type: 'entity',
+                        content: playerName,
+                        entityId: playerName.toLowerCase(),
+                        metadata
+                    } as EntityToken);
+                    
+                    lastIdx = endIdx;
+                }
+                
+                if (lastIdx < decoded.length) {
+                    this.pushText(decoded.substring(lastIdx), tokens, style);
+                }
+                return;
+            }
+        }
+
+        this.pushText(decoded, tokens, style);
+    }
+
+    private pushText(content: string, tokens: Token[], style: React.CSSProperties) {
+        if (!content) return;
+        if (Object.keys(style).length > 0) {
+            tokens.push({
+                type: 'ansi',
+                content,
+                style: { ...style }
+            } as AnsiToken);
+        } else {
+            tokens.push({ type: 'text', content } as TextToken);
+        }
+    }
+
+    private emitEntity(activeEntity: any, tokens: Token[], context: TokenizerContext) {
+        const { kind, metadata, content } = activeEntity;
+        if (!content.trim()) return;
+
+        let category = 'none';
+        if (kind === 'player') category = 'inline-player';
+        else if (kind === 'npc') category = 'inline-npc';
+        else if (kind === 'object') {
+            if (this.currentLocation === 'carried') category = 'inline-obj-char';
+            else if (this.currentLocation === 'worn') category = 'inline-obj-worn';
+            else category = 'inline-obj-room';
+        }
+        else if (kind === 'room') category = 'room';
+        else if (kind === 'exit') category = 'exit';
+
+        if (metadata.type) {
+            category = `inline-${metadata.type.toLowerCase()}`;
+        }
+
+        // --- Room Context Override ---
+        // If we are explicitly within a <room> tag (check stack or current context), 
+        // the user wants these to be "room buttons" (categorized as 'room').
+        if (activeEntity.stack?.includes('room')) {
+            category = 'room';
+        }
+
+        // --- COLOR LOOKUP: Prioritize user settings ---
+        let glowColor = undefined;
+        
+        // 1. Check kind-based overrides (User settings from "Button Settings" -> npcColor, playerColor, etc) - PRIORITY
+        if (kind === 'player' && context.playerColor) glowColor = context.playerColor;
+        else if (kind === 'npc' && context.npcColor) glowColor = context.npcColor;
+        else if (kind === 'object' && context.objectColor) glowColor = context.objectColor;
+        else if (kind === 'room' && context.roomColor) glowColor = context.roomColor;
+        
+        // 2. Check if there's a SPECIFIC custom category color (Only if Kind color is not set)
+        if (!glowColor && context.inlineCategories) {
+            const config = context.inlineCategories.find(c => c.id === category);
+            if (config?.color) {
+                glowColor = config.color;
+            }
+        }
+
+        tokens.push({
+            type: 'entity',
+            content,
+            entityId: metadata.id || `auto-${content.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
+            metadata: {
+                kind,
+                category,
+                context: content,
+                location: this.currentLocation,
+                parent: this.currentParent,
+                action: 'menu',
+                style: activeEntity.style,
+                glowColor,
+                ...metadata
+            }
+        } as EntityToken);
+
+        if (activeEntity.tag === 'header' && activeEntity.kind === 'object') {
+            this.currentParent = content;
+        }
+    }
+
+    private parseAttributes(attrStr: string): any {
+        const attrs: any = {};
+        const attrRegex = /([a-zA-Z0-9\-]+)=["']?([^"'\s>]+)["']?/g;
+        let match;
+        while ((match = attrRegex.exec(attrStr)) !== null) {
+            attrs[match[1]] = this.decodeEntities(match[2]);
+        }
+        return attrs;
+    }
+
+    private determineKind(tag: string, stack: string[]): any {
+        const lowerTag = tag.toLowerCase();
+        const fullStack = [...stack.map(s => s.toLowerCase()), lowerTag];
+        
+        if (fullStack.includes('character')) {
+            return fullStack.includes('player') ? 'player' : 'npc';
+        }
+        if (fullStack.includes('player')) return 'player';
+        if (fullStack.includes('object') || fullStack.includes('item')) return 'object';
+        if (fullStack.includes('room') || fullStack.includes('name')) return 'room';
+        if (fullStack.includes('exit')) return 'exit';
+        
+        return 'none';
+    }
+
+    private applyAnsi(ansiMatch: string, style: React.CSSProperties): React.CSSProperties {
+        const codesStr = ansiMatch.substring(2, ansiMatch.length - 1);
+        const codes = codesStr === '' ? ['0'] : codesStr.split(';');
+        const newStyle = { ...style };
+
+        for (let i = 0; i < codes.length; i++) {
+            const code = parseInt(codes[i], 10);
+            if (code === 0) {
+                Object.keys(newStyle).forEach(key => delete (newStyle as any)[key]);
+            } else if (code === 1) {
+                newStyle.fontWeight = 'bold';
+            } else if (code === 22) {
+                newStyle.fontWeight = 'normal';
+            } else if (code >= 30 && code <= 37) {
+                const colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
+                newStyle.color = `var(--ansi-${colors[code - 30]})`;
+            } else if (code === 38 && codes[i+1] === '5' && codes[i+2]) {
+                i += 2;
+            } else if (code >= 90 && code <= 97) {
+                const colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
+                newStyle.color = `var(--ansi-bright-${colors[code - 90]})`;
+            }
+        }
+        return newStyle;
     }
 }

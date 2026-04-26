@@ -92,6 +92,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setPlayerColor,
         npcColor,
         setNpcColor,
+        roomColor,
+        setRoomColor,
         isBloomEnabled,
         setIsBloomEnabled,
         showSpectatePromptInLog,
@@ -231,12 +233,16 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setPlayerColor={setPlayerColor}
                     npcColor={npcColor}
                     setNpcColor={setNpcColor}
+                    roomColor={roomColor}
+                    setRoomColor={setRoomColor}
                     isEditMode={btn.isEditMode}
                     setIsEditMode={btn.setIsEditMode}
                     isGridEnabled={btn.isGridEnabled}
                     setIsGridEnabled={btn.setIsGridEnabled}
                     createButton={btn.createButton}
                     setIsSetManagerOpen={setIsSetManagerOpen}
+                    inlineCategories={inlineCategories}
+                    setInlineCategories={setInlineCategories}
                 />
             )}
 
@@ -343,40 +349,14 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 keywordOverrides={keywordOverrides}
                 accountState={accountState}
                 setAccountState={setAccountState}
+                playerColor={playerColor}
+                npcColor={npcColor}
+                objectColor={objectColor}
+                roomColor={roomColor}
             />
 
-            <DrawerManager
-                ui={{
-                    drawer: ui.drawer,
-                    isDrawerPeeking: ui.isDrawerPeeking,
-                    peekingDrawer: (ui as any).peekingDrawer || 'none',
-                    setManagerOpen: (ui as any).setManagerOpen || false,
-                    mapExpanded: ui.mapExpanded,
-                    isMenuOpen: (ui as any).isMenuOpen || false,
-                    isSetMenuOpen: (ui as any).isSetMenuOpen || false,
-                    menuView: (ui as any).menuView || 'main'
-                }}
-                setUI={setUI}
-                inventoryLines={displayInventoryLines}
-                statsLines={statsLines}
-                scoreLines={scoreLines}
-                eqLines={displayEqLines}
-                executeCommand={executeCommand}
-                handleButtonClick={handleButtonClick}
-                loginName={loginName}
-                setLoginName={setLoginName}
-                loginPassword={loginPassword}
-                setLoginPassword={setLoginPassword}
-                bgImage={bgImage}
-                handleFileUpload={handleFileUpload}
-                soundTriggers={soundTriggers}
-                newSoundPattern={newSoundPattern}
-                setNewSoundPattern={setNewSoundPattern}
-                newSoundRegex={newSoundRegex}
-                setNewSoundRegex={setNewSoundRegex}
-                handleSoundUpload={handleSoundUpload}
-                setSoundTriggers={setSoundTriggers}
-            />
+            <DrawerManager />
+
 
             {keywordEditState && (
                 <KeywordEditModal

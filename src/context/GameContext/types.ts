@@ -121,6 +121,7 @@ export interface UIContextType {
         peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map' | 'help';
         showMapperToolbar: boolean;
         characterTab: 'info' | 'practice' | 'quests';
+        managerSelectedSet: string | null;
     }>>;
     popoverState: PopoverState | null;
     setPopoverState: (val: PopoverState | null) => void;
@@ -137,6 +138,7 @@ export interface UIContextType {
     setIsMapExpanded: (open: boolean) => void;
     setIsSetManagerOpen: (open: boolean) => void;
     setIsPlayersOpen: (open: boolean) => void;
+    setManagerSelectedSet: (setId: string | null) => void;
     handleTabClick: (drawer: 'stats' | 'character' | 'inventory' | 'players' | 'equipment') => void;
     displayInventoryLines: DrawerLine[];
     displayEqLines: DrawerLine[];

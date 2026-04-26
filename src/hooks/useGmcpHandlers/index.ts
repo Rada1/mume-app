@@ -16,9 +16,7 @@ interface GmcpHandlersProps {
     mapperRef: React.RefObject<MapperRef>;
     setCurrentTerrain: (terrain: string) => void;
     setRoomChars?: React.Dispatch<React.SetStateAction<Record<number, GmcpOccupant>>>;
-    setRoomPlayers?: React.Dispatch<React.SetStateAction<GmcpOccupant[]>>;
-    setRoomNpcs?: React.Dispatch<React.SetStateAction<GmcpOccupant[]>>;
-    setRoomItems: React.Dispatch<React.SetStateAction<GmcpOccupant[]>>;
+    setRoomItems?: React.Dispatch<React.SetStateAction<GmcpOccupant[]>>;
     setDiscoveredItems: (items: string[]) => void;
     characterName: string | null;
     setAbilities: React.Dispatch<React.SetStateAction<Record<string, number>>>;
@@ -194,7 +192,7 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
             if (props.setRoomChars) props.setRoomChars({});
             if (props.setRoomPlayers) props.setRoomPlayers([]);
             if (props.setRoomNpcs) props.setRoomNpcs([]);
-            props.setRoomItems([]);
+            if (props.setRoomItems) props.setRoomItems([]);
             props.setWhoList([]);
             props.setWhereList([]);
         },

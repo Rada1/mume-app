@@ -7,7 +7,10 @@
       "WebFetch(domain:nexus.ironrealms.com)",
       "WebFetch(domain:mume.org)",
       "Bash(npm run:*)",
-      "Bash(find '/c/Users/pwetz/Downloads/mume app/src' -type f \\\\\\(-name *.ts -o -name *.tsx \\\\\\))"
+      "Bash(find '/c/Users/pwetz/Downloads/mume app/src' -type f \\\\\\(-name *.ts -o -name *.tsx \\\\\\))",
+      "Bash(git stash *)",
+      "Read(//c/c/Users/pwetz/Downloads/mume app/**)",
+      "Bash(npx vitest *)"
     ]
   }
 }

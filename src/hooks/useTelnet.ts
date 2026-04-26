@@ -48,7 +48,7 @@ export function useTelnet(config: TelnetConfig) {
     const configRef = React.useRef(config);
     const bufferRef = React.useRef("");
     const lastProcessedPromptRef = React.useRef("");
-    const pendingTextLines = React.useRef<string[]>([]);
+    const pendingTextLines = React.useRef<(string | { line: string, isPrompt: boolean })[]>([]);
     const processingTimeout = React.useRef<any>(null);
 
     const gmcpDecoder = React.useRef<GmcpDecoder | null>(null);
@@ -98,71 +98,144 @@ export function useTelnet(config: TelnetConfig) {
 
         console.log(`[useTelnet] processText: bufferLen=${currentBuffer.length}, lines=${rawLines.length}, lastLine="${lastLine.substring(0, 30)}"`);
         
-        const processedLines: string[] = [];
+        const processedLines: (string | { line: string, isPrompt: boolean })[] = [];
 
         const isPrompt = (line: string) => {
-            const clean = line.replace(/\x1b\[[0-9;]*m/g, '').trim();
+            const noAnsi = line.replace(/\x1b\[[0-9;]*m/g, '');
+            const clean = noAnsi.trim();
             if (!clean) return false;
-            const res = (clean.endsWith('>') || 
+
+            // Snooped lines (prefixed with &E, &F, etc.) must not update the user's own HUD.
+            // Pass them straight through to processLine, which strips the prefix and routes
+            // any embedded prompt to the spectate view via setSpectateActivePrompt.
+            if (/^(?:&|mp;)[A-Z] /.test(clean)) return false;
+
+            // In XML mode, prompts are explicitly tagged and should be the entire line
+            if (clean.startsWith('<prompt') && clean.endsWith('</prompt>')) return true;
+
+            // In XML mode, lines often end with a closing tag like </object> or </header>
+            // (whose final `>` is part of the tag, not a prompt symbol). Don't treat those
+            // as prompts — they are normal game text (e.g. equipment lines).
+            if (/<\/[a-zA-Z][a-zA-Z0-9_-]*>$/.test(clean)) return false;
+
+            // Basic MUME prompt heuristics for non-XML or legacy prompts
+            return (clean.endsWith('>') ||
                 clean.toLowerCase().includes('return: continue') ||
                 clean.toLowerCase().endsWith('password:') ||
                 clean.toLowerCase().includes('by what name'));
-            console.log(`[useTelnet] isPrompt check: "${clean.substring(0, 30)}", result=${res}`);
-            if (res) return true;
-            // MUME-style prompts like ![...] >
-            if (/^!\[.*?\]\s*>/.test(clean)) return true;
-            // Combat prompts with vitals like HP:Healthy
-            if (/HP:\w+/.test(clean) && clean.includes('>')) return true;
-            return false;
         };
 
         const handlePromptDetected = (line: string) => {
+            let displayPrompt = line;
+            if (line.includes('<prompt')) {
+                // Strip XML tags and decode entities for the UI display
+                displayPrompt = line
+                    .replace(/<prompt[^>]*>|<\/prompt>/g, '')
+                    .replace(/&gt;/gi, '>')
+                    .replace(/&lt;/gi, '<')
+                    .replace(/&amp;/gi, '&')
+                    .trim();
+                
+                // Remove trailing > delimiter if present for a cleaner HUD look
+                if (displayPrompt.endsWith('>')) {
+                    displayPrompt = displayPrompt.substring(0, displayPrompt.length - 1).trim();
+                }
+            }
+
             if (line !== lastProcessedPromptRef.current) {
                 lastProcessedPromptRef.current = line;
-                console.log(`[useTelnet] handlePromptDetected for: "${line.substring(0, 30)}"`);
-                configRef.current.setPrompt(line);
-                configRef.current.processLine(line, { isPrompt: true });
-                const cleanLine = line.replace(/\x1b\[[0-9;]*m/g, '').trim();
+                console.log(`[useTelnet] handlePromptDetected (queued) for: "${displayPrompt.substring(0, 30)}"`);
+                configRef.current.setPrompt(displayPrompt);
+                
+                // Queue the raw line as an object so the parser still sees the tags if needed
+                processedLines.push({ line, isPrompt: true });
+                
+                const cleanLine = displayPrompt.replace(/\x1b\[[0-9;]*m/g, '').trim();
                 if (configRef.current.handlers.detectLighting) {
                     configRef.current.handlers.detectLighting(cleanLine);
                 }
             }
         };
 
+        // Splits a physical line that contains an XML <prompt>...</prompt> tag
+        // anywhere within it into (preText | prompt | postText) so that:
+        //  - the prompt updates the HUD
+        //  - any other text on the same line (e.g. "<prompt>&gt;</prompt><header>...</header>")
+        //    is still processed as a normal game line and shows up in the log.
+        const splitXmlPrompt = (line: string) => {
+            const re = /<prompt[^>]*>[\s\S]*?<\/prompt>/;
+            const m = line.match(re);
+            if (!m || m.index === undefined) return null;
+            return {
+                preText: line.substring(0, m.index),
+                promptPart: m[0],
+                postText: line.substring(m.index + m[0].length),
+            };
+        };
+
         for (const line of rawLines) {
-            // Check if this "line" (ending in \n) actually contains a prompt followed by more text,
-            // or if it IS a prompt.
-            const mumePromptMatch = line.match(/(.*?)((?:!\[.*?\]\s*>|[^>\n]{0,50}>)\s*)$/);
-            
-            if (mumePromptMatch) {
-                const preText = mumePromptMatch[1];
-                const promptPart = mumePromptMatch[2];
-                if (preText.trim()) processedLines.push(preText);
+            // Snooped lines (prefixed with &E, &F, etc.) must bypass ALL prompt detection.
+            // splitXmlPrompt runs before snoop detection, so a snooped line like
+            // "&E <prompt>&gt;north</prompt>" would have its <prompt> tag extracted and
+            // passed to handlePromptDetected — flickering the user's HUD with snooped commands.
+            // Push straight to processedLines; processLine handles prefix stripping and routing.
+            const cleanForSnoop = line.replace(/\x1b\[[0-9;]*m/g, '').trim();
+            if (/^(?:&|mp;)[A-Z] /.test(cleanForSnoop)) {
+                if (line.length > 0) processedLines.push(line);
+                continue;
+            }
+
+            // Priority 1: Explicit XML Prompt Tag anywhere in the line (MUME's "change xml on" output)
+            const xmlSplit = splitXmlPrompt(line);
+
+            // Priority 2: Legacy MUME prompt at end of line
+            // Stricter check: must look like a real prompt (vitals, account prompt, or standalone >)
+            // This prevents matching the > at the end of XML tags.
+            const legacyPromptMatch = !xmlSplit ? line.match(/^(.*?)((?:!\[.*?\]\s*>|(?:\d+H\s+\d+M\s+\d+V\s+>)|(?:^> )|(?:Password:)|(?:By what name.*?\?))\s*)$/) : null;
+
+            if (xmlSplit) {
+                if (xmlSplit.preText.length > 0) processedLines.push(xmlSplit.preText);
+                handlePromptDetected(xmlSplit.promptPart);
+                if (xmlSplit.postText.length > 0) processedLines.push(xmlSplit.postText);
+            } else if (legacyPromptMatch) {
+                const preText = legacyPromptMatch[1];
+                const promptPart = legacyPromptMatch[2];
+                if (preText.length > 0) processedLines.push(preText);
                 handlePromptDetected(promptPart);
             } else if (isPrompt(line)) {
                 handlePromptDetected(line);
-            } else if (line.trim().length > 0) {
+            } else if (line.length > 0) {
                 processedLines.push(line);
             }
         }
 
         // Handle text remaining in buffer (the part after the last newline)
-        // Check if it's a prompt
-        console.log(`[useTelnet] Checking lastLine for prompt: "${lastLine.substring(0, 30)}" (len=${lastLine.length})`);
-        const mumePromptMatch = lastLine.match(/(.*?)((?:!\[.*?\]\s*>|[^>\n]{0,50}>)\s*)$/);
-        if (mumePromptMatch) {
-            const preText = mumePromptMatch[1];
-            const promptPart = mumePromptMatch[2];
-            console.log(`[useTelnet] mumePromptMatch found! pre="${preText}" prompt="${promptPart}"`);
-            if (preText.trim()) processedLines.push(preText);
-            handlePromptDetected(promptPart);
-            bufferRef.current = ''; // Clear because the end was a prompt
-        } else if (isPrompt(lastLine)) {
-            console.log(`[useTelnet] isPrompt(lastLine) is TRUE`);
-            handlePromptDetected(lastLine);
-            bufferRef.current = '';
-        } else {
+        // Snooped partial lines stay buffered for the next chunk — no prompt detection needed.
+        const lastLineClean = lastLine.replace(/\x1b\[[0-9;]*m/g, '').trim();
+        if (/^(?:&|mp;)[A-Z] /.test(lastLineClean)) {
             bufferRef.current = lastLine;
+        } else {
+            const xmlSplitLast = splitXmlPrompt(lastLine);
+            const legacyPromptMatch = !xmlSplitLast ? lastLine.match(/^(.*?)((?:!\[.*?\]\s*>|(?:\d+H\s+\d+M\s+\d+V\s+>)|(?:^> )|(?:Password:)|(?:By what name.*?\?))\s*)$/) : null;
+
+            if (xmlSplitLast) {
+                if (xmlSplitLast.preText.length > 0) processedLines.push(xmlSplitLast.preText);
+                handlePromptDetected(xmlSplitLast.promptPart);
+                // postText after the prompt may still be a partial line — keep it buffered so
+                // the next chunk can complete it instead of pushing a half-line into the log.
+                bufferRef.current = xmlSplitLast.postText;
+            } else if (legacyPromptMatch) {
+                const preText = legacyPromptMatch[1];
+                const promptPart = legacyPromptMatch[2];
+                if (preText.length > 0) processedLines.push(preText);
+                handlePromptDetected(promptPart);
+                bufferRef.current = '';
+            } else if (isPrompt(lastLine)) {
+                handlePromptDetected(lastLine);
+                bufferRef.current = '';
+            } else {
+                bufferRef.current = lastLine;
+            }
         }
 
         if (processedLines.length > 0) {
@@ -191,13 +264,20 @@ export function useTelnet(config: TelnetConfig) {
                             
                             return {
                                 target: vitalsStore.target,
-                                currentOccupants: roomStore.players || [],
+                                currentOccupants: [
+                                    ...(roomStore.players || []),
+                                    ...(roomStore.npcs || [])
+                                ],
                                 roomNpcs: roomStore.npcs || [],
                                 activeGroupMembers: combatStore.groupMembers || [],
                                 roomItems: roomStore.items || [],
                                 discoveredItems: [],
                                 onlinePlayers,
                                 inlineCategories: settings.inlineCategories || [],
+                                npcColor: settings.npcColor,
+                                playerColor: settings.playerColor,
+                                objectColor: settings.objectColor,
+                                roomColor: settings.roomColor,
                                 buttons: buttonStore.rawButtons || [],
                                 selectedObjectIds: (uiStore as any).selectedObjectIds || new Set<string>()
                             };

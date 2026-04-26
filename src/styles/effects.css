@@ -13,7 +13,6 @@
   filter: brightness(1.0) contrast(1.05); /* Avoid washing out in light mode */
 }
 
-.bloom-enabled .message-log-container,
 .bloom-enabled .hud-cluster,
 .bloom-enabled .custom-btn,
 .bloom-enabled .xbox-cluster,
@@ -26,7 +25,6 @@
 }
 
 /* Darker glows for light mode to maintain readability */
-.light-mode.bloom-enabled .message-log-container,
 .light-mode.bloom-enabled .hud-cluster,
 .light-mode.bloom-enabled .custom-btn,
 .light-mode.bloom-enabled .xbox-cluster,

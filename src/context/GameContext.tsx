@@ -174,8 +174,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const gmcpHandlers = useGmcpHandlers({
         mapperRef: mapperRef, roomDescRef: s.userSession.game.roomDescRef,
         setCurrentTerrain: s.userSession.game.setCurrentTerrain,
-        setRoomPlayers: s.userSession.game.setRoomPlayers,
-        setRoomNpcs: s.userSession.game.setRoomNpcs, setRoomItems: s.userSession.game.setRoomItems, characterName: s.userSession.game.characterName,
+        setRoomChars: s.userSession.game.setRoomChars,
+        setRoomItems: s.userSession.game.setRoomItems, characterName: s.userSession.game.characterName,
         setAbilities: s.userSession.game.setAbilities, addMessage, setCharacterName: s.userSession.game.setCharacterName,
         setPlayerPosition: s.userSession.game.setPlayerPosition,
         setInCombat: s.userSession.game.setInCombat,
@@ -409,6 +409,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         gameTime: s.gameTime,
         accountState: s.accountState,
         inlineCategories: s.inlineCategories,
+        objectColor: settingsStore.objectColor,
+        npcColor: settingsStore.npcColor,
+        playerColor: settingsStore.playerColor,
+        roomColor: settingsStore.roomColor,
         roomPlayers: s.roomPlayers,
         roomNpcs: s.roomNpcs,
         roomItems: s.roomItems,
@@ -467,7 +471,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         shop: shop,
         practice: practice,
         help: help
-    }), [s, v, ui, addMessage, addSystemMessage, playHitImpactSound, playOofSound, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, shop, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
+    }), [s, v, ui, settingsStore, addMessage, addSystemMessage, playHitImpactSound, playOofSound, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, shop, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
 
 
     const parser = useGameParser(deps, s.userSession);
@@ -546,6 +550,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             peekingSource: 'none' as any,
             showMapperToolbar: false,
             characterTab: ui.characterTab,
+            managerSelectedSet: ui.managerSelectedSet,
         },
         setUI: ui.setUI as any,
         popoverState: ui.popoverState,
@@ -563,10 +568,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsMapExpanded: ui.setMapExpanded,
         setIsSetManagerOpen: (open: boolean) => ui.setUI({ setManagerOpen: open }),
         setIsPlayersOpen: ui.setIsPlayersOpen,
+        setManagerSelectedSet: ui.setManagerSelectedSet,
         handleTabClick: (drawer: any) => {
             ui.setDrawer(drawer);
             if (drawer !== 'none') {
-                ui.setMapExpanded(false);
+                // Only close map automatically if we're on mobile to save space
+                if (viewport.isMobile) {
+                    ui.setMapExpanded(false);
+                }
                 // Trigger fresh data capture for the drawer
                 if (drawer === 'inventory') controller.executeCommand('inv', true, true, false, false, { fromUi: true });
                 else if (drawer === 'equipment') controller.executeCommand('eq', true, true, false, false, { fromUi: true });
@@ -584,7 +593,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         whoLines: s.whoLines,
         whereLines: s.whereLines,
         toggleMap: () => {
-            if (ui.drawer !== 'none') {
+            if (viewport.isMobile && ui.drawer !== 'none') {
                 ui.setDrawer('none');
                 ui.setMapExpanded(true);
             } else {
@@ -608,10 +617,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         refreshLogHighlights,
         handleLogPointerDown: controller.handleLogPointerDown,
         handleLogPointerUp: controller.handleLogPointerUp,
-        processMessageTokens: (rawText: string) => {
+        processMessageTokens: (rawText: string, location?: string) => {
             const ctx = {
                 target: v.target,
-                currentOccupants: [...s.roomPlayers, ...s.roomNpcs],
+                currentOccupants: Object.values(s.roomChars || {}),
+                roomChars: s.roomChars,
                 roomPlayers: s.roomPlayers,
                 roomNpcs: s.roomNpcs,
                 activeGroupMembers: v.groupMembers,
@@ -620,13 +630,17 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 equipmentItems: s.eqLines,
                 discoveredItems: s.discoveredItems,
                 inlineCategories: s.inlineCategories,
+                npcColor: settingsStore.npcColor,
+                playerColor: settingsStore.playerColor,
+                objectColor: settingsStore.objectColor,
+                roomColor: settingsStore.roomColor,
                 buttons: btn.buttons,
                 selectedObjectIds: s.selectedObjectIds,
                 onlinePlayers: s.userSession.game.whoList.map(w => w.name)
             };
-            return Tokenizer.tokenize(rawText, ctx as any);
+            return Tokenizer.getInstance().tokenize(rawText, ctx as any, location);
         }
-    }), [activeLog, refreshLogHighlights, controller.handleLogPointerDown, controller.handleLogPointerUp, v.target, s.roomPlayers, s.roomNpcs, v.groupMembers, s.roomItems, s.inventoryLines, s.eqLines, s.discoveredItems, s.inlineCategories, btn.buttons, s.selectedObjectIds, s.userSession.game.whoList]);
+    }), [activeLog, refreshLogHighlights, controller.handleLogPointerDown, controller.handleLogPointerUp, v.target, s.roomPlayers, s.roomNpcs, v.groupMembers, s.roomItems, s.inventoryLines, s.eqLines, s.discoveredItems, s.inlineCategories, settingsStore.npcColor, settingsStore.playerColor, settingsStore.objectColor, settingsStore.roomColor, btn.buttons, s.selectedObjectIds, s.userSession.game.whoList]);
 
     const value: GameContextType = useMemo(() => ({
         ...s,
@@ -634,6 +648,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         telnet,
         parser,
         ...controller,
+        setRoomChars: s.setRoomChars,
         addMessage,
         btn,
         joystick,

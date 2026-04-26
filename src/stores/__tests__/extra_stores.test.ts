@@ -29,10 +29,10 @@ describe('Extra Store and Selector Integration', () => {
 
     describe('Combat Store', () => {
         it('should handle opponent updates via bus', () => {
-            gmcpBus.emit('Char.Opponent', 'Smaug');
+            gmcpBus.emit('Char.Opponent', { data: 'Smaug' });
             expect(useCombatStore.getState().opponentName).toBe('Smaug');
             
-            gmcpBus.emit('Char.Opponent', null);
+            gmcpBus.emit('Char.Opponent', { data: null });
             expect(useCombatStore.getState().opponentName).toBe(null);
         });
 

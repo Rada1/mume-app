@@ -11,6 +11,7 @@ import {
 import { useMessageLog } from '../../hooks/useMessageLog';
 import { useSessionRecorder } from '../../hooks/useSessionRecorder';
 import { useEntityRegistry } from '../../hooks/useEntityRegistry';
+import { classifyOccupant } from '../../services/classification/classifyOccupant';
 import { useUIStore } from '../../stores/useUIStore';
 import { useVitalsStore } from '../../stores/useVitalsStore';
 import { useRoomStore } from '../../stores/useRoomStore';
@@ -72,8 +73,8 @@ export const useSessionState = (
     const roomDesc = rStore?.roomDesc ?? '';
     const roomExits = Array.isArray(rStore?.exits) ? rStore.exits : Object.keys(rStore?.exits || {});
     const roomZone = rStore?.roomZone ?? '';
-    const roomPlayers = useMemo(() => Object.values(rStore?.chars || {}).filter(c => c.category !== 'npc'), [rStore?.chars]);
-    const roomNpcs = useMemo(() => Object.values(rStore?.chars || {}).filter(c => c.category === 'npc'), [rStore?.chars]);
+    const roomPlayers = useMemo(() => Object.values(rStore?.chars || {}).filter(c => classifyOccupant(c)?.kind === 'player'), [rStore?.chars]);
+    const roomNpcs = useMemo(() => Object.values(rStore?.chars || {}).filter(c => classifyOccupant(c)?.kind === 'npc'), [rStore?.chars]);
     const roomItems = rStore?.items ?? [];
     const { whoList, setWhoList, whereList, setWhereList } = rStore;
 
@@ -115,8 +116,7 @@ export const useSessionState = (
     const setIsFoggy = vStore.setIsFoggy;
     const setInCombat = vStore.setInCombat;
     const setPlayerPosition = vStore.setPosition;
-    const setRoomPlayers = rStore.setPlayers;
-    const setRoomNpcs = rStore.setNpcs;
+    const setRoomChars = rStore.setChars;
     const setRoomItems = rStore.setItems;
     const setOpponentName = (cStore as any).setOpponentName;
     const setOpponentId = (cStore as any).setOpponentId;
@@ -192,7 +192,8 @@ export const useSessionState = (
         pendingMove,
         setPendingMove,
         isAccountModeRef,
-        audioTriggers?.playCommMessageSound
+        audioTriggers?.playCommMessageSound,
+        isSpectateSession
     );
 
     // --- Parser State ---
@@ -248,8 +249,10 @@ export const useSessionState = (
             inCombat, setInCombat,
             playerPosition, setPlayerPosition,
             isRiding, setIsRiding,
-            roomPlayers, setRoomPlayers,
-            roomNpcs, setRoomNpcs,
+            roomPlayers,
+            roomNpcs,
+            roomChars: rStore.chars,
+            setRoomChars,
             roomItems, setRoomItems,
             inventoryLines, setInventoryLines,
             statsLines, setStatsLines,
@@ -293,9 +296,9 @@ export const useSessionState = (
     }), [
         vitals, roomName, setRoomName, roomDesc, setRoomDesc, roomExits, setRoomExits,
         roomZone, setRoomZone, currentTerrain, setCurrentTerrain, lighting, setLighting,
-        weather, setWeather, isFoggy, setIsFoggy, inCombat, setInCombat,
-        playerPosition, setPlayerPosition, isRiding, setIsRiding, roomPlayers, setRoomPlayers,
-        roomNpcs, setRoomNpcs, roomItems, setRoomItems, inventoryLines, statsLines,
+        isFoggy, setIsFoggy, inCombat, setInCombat,
+        playerPosition, setPlayerPosition, isRiding, setIsRiding, roomPlayers,
+        roomNpcs, roomItems, setRoomItems, inventoryLines, statsLines,
         infoLines, scoreLines, questLines, practiceLines, whoLines, whereLines,
         eqLines, abilities, characterClass, actions, mood, spellSpeed, alertness,
         level, currentName, setCurrentName, registry, teleportTargets, quests,

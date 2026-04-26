@@ -1,46 +1,103 @@
 /**
  * @file buttonHierarchyUtils.ts
- * @description Centralized hierarchy logic for inline button sets (Object & NPC hierarchies).
+ * @description Utilities for resolving button set traits and inheritance.
  */
 
-export const INLINE_HIERARCHY: Record<string, string[]> = {
-    'object-corpse': ['object-container', 'location-room'],
-    'object-container': ['location-room'],
-    'object-weapon': ['object'],
-    'object-fluid': ['object'],
-    'object-armour': ['object'],
-    'object-shield': ['object'],
-    'object-food': ['object'],
-    'object-room': ['object'],
-    'object-water': ['object'],
-    'object-treasure': ['object'],
-    'object-misc': ['object'],
-    'object-quiver': ['object-container', 'location-room'],
+import { EntityCapability, GameEntity } from '../types/entities';
+
+// --- Trait Mapping Section ---
+
+/**
+ * Maps an EntityCapability to the corresponding button setId.
+ */
+export const CAPABILITY_TO_SET_ID: Record<string, string> = {
+    [EntityCapability.Npc]: 'inline-npc',
+    [EntityCapability.Player]: 'inline-player',
+    [EntityCapability.Ally]: 'inline-player',
+    [EntityCapability.Enemy]: 'inline-player',
+    [EntityCapability.Neutral]: 'inline-player',
+    [EntityCapability.Mount]: 'inline-mounts',
+    [EntityCapability.Innkeeper]: 'inline-innkeeper',
+    [EntityCapability.Shopkeeper]: 'inline-shopkeeper',
+    [EntityCapability.Guildmaster]: 'inline-guildmaster',
+    [EntityCapability.Corpse]: 'corpses',
+    [EntityCapability.Weapon]: 'object-weapon',
+    [EntityCapability.Wearable]: 'object-armour',
+    [EntityCapability.Shield]: 'object-shield',
+    [EntityCapability.Container]: 'object-container',
+    [EntityCapability.FluidContainer]: 'object-fluidcontainer',
+    [EntityCapability.Food]: 'object-food',
+    [EntityCapability.Light]: 'object-lightsource',
+    [EntityCapability.Readable]: 'object-readable',
+};
+
+export const TRAIT_WEIGHTS: Record<string, number> = {
+    'inline-innkeeper': 100,
+    'inline-shopkeeper': 100,
+    'inline-guildmaster': 100,
+    'inline-mounts': 80,
+    'inline-player': 60,
+    'inline-npc': 50,
+    'object-weapon': 40,
+    'object-armour': 40,
+    'object-container': 30,
+    'object': 10, // Base level
+};
+
+/**
+ * Human-readable labels for button sets.
+ */
+export const SET_DISPLAY_LABELS: Record<string, string> = {
+    'inline-innkeeper': 'Innkeeper',
+    'inline-shopkeeper': 'Shopkeeper',
+    'inline-guildmaster': 'Guildmaster',
+    'inline-mounts': 'Mount',
+    'inline-player': 'Player',
+    'inline-npc': 'NPC',
+    'object-weapon': 'Weapon',
+    'object-armour': 'Armour',
+    'object-container': 'Container',
+    'object-fluidcontainer': 'Container',
+    'object-food': 'Food',
+    'object-lightsource': 'Light',
+    'object-readable': 'Reading',
+    'corpses': 'Corpse',
+    'object': 'General',
+};
+
+/**
+ * Resolves all relevant button set IDs for an entity based on its traits.
+ */
+export const getRelevantSets = (entity: GameEntity, extraSets: string[] = []): string[] => {
+    const sets = new Set<string>(extraSets);
     
-    // Entity Kinds
-    'inline-player': ['inlineplayer', 'player', 'object'],
-    'inline-npc': ['inlinenpc', 'npc', 'object'],
-    'inlinenpc': ['inline-npc'], // Legacy compat
-    'inlineplayer': ['inline-player'], // Legacy compat
-    
-    // Specialized NPCs
-    'inline-mounts': ['inline-npc', 'npc'],
-    'inline-shopkeeper': ['inline-npc', 'npc'],
-    'inline-shopkeeper-drop': ['inline-npc', 'npc'],
-    'inline-innkeeper': ['inline-npc', 'npc'],
-    'inline-guildmaster': ['inline-npc', 'npc'],
-    
-    // Specialized Objects
-    'inline-weapon': ['object-weapon', 'inline-object', 'object'],
-    'inline-armour': ['object-armour', 'inline-object', 'object'],
-    'inline-shield': ['object-shield', 'inline-object', 'object'],
-    'inline-containers': ['object-container', 'inline-object', 'object'],
-    'inline-food': ['object-food', 'inline-object', 'object'],
-    'inline-fluidcontainer': ['object-fluid', 'inline-object', 'object'],
-    'inline-water': ['object-water', 'inline-object', 'object'],
-    'inline-treasure': ['object-treasure', 'inline-object', 'object'],
-    'inline-corpses': ['object-corpse', 'inline-object', 'object'],
-    'inline-object': ['object']
+    // 1. Every interactive entity gets the 'object' base set
+    if (entity.kind !== 'exit' && entity.kind !== 'control') {
+        sets.add('object');
+    }
+
+    // 2. Add sets based on capabilities
+    entity.capabilities?.forEach(cap => {
+        const setId = CAPABILITY_TO_SET_ID[cap];
+        if (setId) sets.add(setId);
+    });
+
+    // 3. Add base kind-based sets as fallback
+    if (entity.kind === 'npc') sets.add('inline-npc');
+    if (entity.kind === 'player') sets.add('inline-player');
+    if (entity.kind === 'object') sets.add('object');
+
+    return Array.from(sets);
+};
+
+// --- Legacy Support (To be removed after full refactor) ---
+export const getHierarchyChain = (kind: string, location: string, setId?: string): string[] => {
+    const sets = new Set<string>();
+    if (kind === 'npc') sets.add('inline-npc');
+    if (kind === 'player') sets.add('inline-player');
+    if (kind === 'object' || kind === 'item') sets.add('object');
+    if (setId) sets.add(setId);
+    return Array.from(sets);
 };
 
 export const LOCATION_SETS: Record<string, string> = {
@@ -48,32 +105,4 @@ export const LOCATION_SETS: Record<string, string> = {
     'carried': 'location-carried',
     'worn': 'location-worn',
     'shop': 'location-shop'
-};
-
-/**
- * Resolves the full chain of button sets that apply to a specific entity.
- * Additive logic: [kind] + [location-specific] + [category-specific]
- */
-export const getHierarchyChain = (kind: string, location: string, categoryId?: string): string[] => {
-    const result: string[] = [kind]; // e.g., 'object' or 'npc'
-
-    // Add location-specific layer
-    const locationSetId = LOCATION_SETS[location];
-    if (locationSetId) {
-        result.push(locationSetId);
-    }
-
-    // Add category-specific layer and its parents from INLINE_HIERARCHY
-    if (categoryId && !result.includes(categoryId)) {
-        result.push(categoryId);
-        const catParents = INLINE_HIERARCHY[categoryId] || [];
-        result.push(...catParents);
-    }
-    
-    // Ensure 'object' is always present if kind is npc or player (they inherit from base interactive)
-    if ((kind === 'npc' || kind === 'player') && !result.includes('object')) {
-        result.push('object');
-    }
-
-    return Array.from(new Set(result));
 };

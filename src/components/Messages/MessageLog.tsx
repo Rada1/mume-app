@@ -118,7 +118,7 @@ const MessageItem = React.memo(({
 
     return (
         <div
-            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
+            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
         >
             {msg.type === 'user' || msg.type === 'snoop-command' ? (
                 <div 
@@ -141,8 +141,8 @@ const MessageItem = React.memo(({
                 <PracticeColumnHeaderCard sessionsLeft={msg.practiceHeader?.sessionsLeft} />
             ) : msg.type === 'practice-class-header' ? (
                 <PracticeClassHeaderCard label={ansiConvert.toHtml(msg.textRaw || '')} />
-            ) : (msg.type === 'comm' || msg.isComm) && msg.commSender ? (
-                <div className="comm-bubble-wrapper">
+            ) : ((msg.type === 'comm' || msg.type === 'comm-continue' || msg.isComm) && (msg.commSender || msg.commText)) ? (
+                <div className={`comm-bubble-wrapper ${msg.type === 'comm-continue' ? 'continuation' : ''}`}>
 
                     <div className="comm-content-row">
                         <div
@@ -151,8 +151,12 @@ const MessageItem = React.memo(({
                             onClick={triggerParley}
                         >
                             {timestampEl}
-                            <span className="comm-sender"><TokenRenderer tokens={msg.commSenderTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commSender || ''))} /></span>
-                            <span className="comm-action" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(` ${msg.commAction}: `)) }} />
+                            {msg.type !== 'comm-continue' && (
+                                <>
+                                    <span className="comm-sender"><TokenRenderer tokens={msg.commSenderTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commSender || ''))} /></span>
+                                    <span className="comm-action" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(` ${msg.commAction}: `)) }} />
+                                </>
+                            )}
                             <span className="comm-text"><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} /></span>
                         </div>
                         <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
@@ -196,7 +200,12 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onDragEnd,
     onWheel
 }) => {
-    const { inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, triggerHaptic, playClickSound, playCommMessageSound, isTimestampEnabled, isNewbieMode, showSpectatePromptInLog, input, setInput, sessionMode, setSessionMode } = useBaseGame() as any;
+    const { 
+        inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, 
+        triggerHaptic, playClickSound, playCommMessageSound, isTimestampEnabled, 
+        isNewbieMode, showSpectatePromptInLog, input, setInput, sessionMode, 
+        setSessionMode, npcColor, playerColor, objectColor, roomColor, inlineCategories 
+    } = useBaseGame() as any;
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const { replayer } = useUI() as any;
     const { messages } = useLog();
@@ -257,7 +266,11 @@ const MessageLog: React.FC<MessageLogProps> = ({
             activeGroupMembers: [],
             roomItems: [],
             discoveredItems: [],
-            inlineCategories: [],
+            inlineCategories: inlineCategories || [],
+            npcColor,
+            playerColor,
+            objectColor,
+            roomColor,
             buttons: [],
             selectedObjectIds: new Set<string>()
         };
@@ -386,7 +399,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
         }
         
         return results;
-    }, [sessionMode, replayer.log, target]);
+    }, [sessionMode, replayer.log, target, npcColor, playerColor, objectColor, roomColor, inlineCategories]);
 
 
 

@@ -32,7 +32,8 @@ export function useMessageLog(
     pendingMove?: { dir: string; timestamp: number } | null,
     setPendingMove?: (val: { dir: string; timestamp: number } | null) => void,
     isAccountModeRef?: React.RefObject<boolean>,
-    playCommMessageSound?: () => void
+    playCommMessageSound?: () => void,
+    isSpectateSession?: boolean
 ) {
     const [messages, setMessages] = useState<Message[]>([]);
     const lastMessageRef = useRef<Message | null>(null);
@@ -89,6 +90,30 @@ export function useMessageLog(
         const nonPrompts = pending.filter(m => m.type !== 'prompt');
         const prompts = pending.filter(m => m.type === 'prompt');
         const ordered = nonPrompts.length > 0 ? [...nonPrompts, ...prompts] : pending;
+        
+        // --- Spectate Spacer Logic ---
+        // In spectate mode, we add an empty line (spacer) after each block of text
+        // (usually ending with a prompt) to improve readability in the target view.
+        if (isSpectateSession && ordered.length > 0) {
+            const lastMsg = ordered[ordered.length - 1];
+            // Only add a spacer if the batch is significant (contains more than just a prompt or is a room update)
+            const isSignificant = ordered.some(m => m.type !== 'prompt' || m.isRoomName);
+            
+            if (isSignificant) {
+                const spacer: Message = {
+                    id: `spacer-${currentBatchId}-${Date.now()}`,
+                    type: 'game',
+                    textRaw: '',
+                    html: '<div class="log-spacer"></div>',
+                    timestamp: Date.now(),
+                    isEmpty: true,
+                    isSpacer: true,
+                    batchId: currentBatchId
+                };
+                ordered.push(spacer);
+            }
+        }
+
         if (ordered.length > 0) ordered[ordered.length - 1] = { ...ordered[ordered.length - 1], isBatchEnd: true };
         // Register all flushed mids before committing to state so deduplication
         // is current even before the next render cycle.

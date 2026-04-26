@@ -65,13 +65,12 @@ const MudClient = () => {
     } = useGame();
 
     const { rumble, setTarget, heldButton, setHeldButton } = useVitals();
-    const { setIsSetManagerOpen, popoverState, setUI, ui } = useUI();
+    const { setIsSetManagerOpen, popoverState, setUI, ui, setManagerSelectedSet } = useUI();
     const { messages, addMessage } = useLog();
 
     const { isMobile, isKeyboardOpen, isLandscape, scrollContainerRef } = viewport;
 
     const [btnGlow, setBtnGlow] = useState({ up: false, down: false });
-    const [managerSelectedSet, setManagerSelectedSet] = useState<string | null>(null);
     const [returnToManager, setReturnToManager] = useState(false);
 
     const { handleDragStart, wasDraggingRef } = editor;
@@ -309,7 +308,7 @@ const MudClient = () => {
                             isLoading={isLoading}
                             returnToManager={returnToManager}
                             setReturnToManager={setReturnToManager}
-                            managerSelectedSet={managerSelectedSet}
+                            managerSelectedSet={ui.managerSelectedSet}
                             setManagerSelectedSet={setManagerSelectedSet}
                             connect={() => telnet.connect()}
                         />

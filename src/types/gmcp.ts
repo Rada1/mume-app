@@ -38,6 +38,8 @@ export interface GmcpCharVitals {
     position?: string;
     opponent?: string | null;
     hp_status?: string;
+    'hp-string'?: string;
+    'health-string'?: string;
     buff?: string | null;
     weather?: string | null;
     fog?: string | null;
@@ -46,6 +48,7 @@ export interface GmcpCharVitals {
     move_status?: string;
     stamina_status?: string;
     wimpy?: number;
+    isSnooped?: boolean;
 }
 
 export interface GmcpExitInfo {
@@ -71,10 +74,12 @@ export interface GmcpRoomInfo {
     sundeath?: boolean;
     exits?: Record<string, GmcpExitInfo | number | false>;
     details?: string[];
+    isSnooped?: boolean;
 }
 
 export interface GmcpUpdateExits {
     exits: Record<string, GmcpExitInfo | number | false>;
+    isSnooped?: boolean;
 }
 
 export interface GmcpOccupant {
@@ -83,9 +88,14 @@ export interface GmcpOccupant {
     short?: string;
     shortdesc?: string;
     keyword?: string;
+    desc?: string;
     type?: string;
     pc?: boolean | number;
     category?: string;
+    level?: number;
+    hp?: number;
+    maxhp?: number;
+    status?: string;
 }
 
 export interface GmcpRoomPlayers extends Array<string | GmcpOccupant> {}
@@ -109,6 +119,7 @@ export interface GmcpCharInfo {
     gold?: number;
     description?: string;
     whois?: string;
+    isSnooped?: boolean;
 }
 
 export interface GmcpMumeEdit {

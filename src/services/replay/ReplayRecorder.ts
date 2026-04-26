@@ -16,7 +16,7 @@ const RECORD_EVENTS: (keyof GmcpEventMap)[] = [
     'Char.Vitals', 'Char.Info', 'Char.Name', 'Char.Position', 'Char.Ride',
     'Room.Info', 'Room.UpdateExits', 'Room.Chars',  'Room.Items',
     'Room.AddChar', 'Room.RemoveChar', 'Room.UpdateChar',
-    'Room.CharsCombat', 'Char.Opponent', 'Char.Buffer',
+    'Room.Chars.Combat', 'Char.Opponent', 'Char.Buffer',
     'Group.Add', 'Group.Update', 'Group.Remove', 'Group.Set',
     'Comm.Channel', 'Mume.Edit', 'Core.Ping', 'Core.Goodbye',
     'Connection.Disconnect', 'Session.Reset', 'Session.Start'

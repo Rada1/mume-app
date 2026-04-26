@@ -186,7 +186,9 @@ export const useStageInitializer = (deps: StageInitializerDeps) => {
         }
 
         // 7. Equipment
-        else if ((isWaitingForEq.current || captureStage.current === 'none') && (/you are using|you are equipped with/i.test(lower) || (isWaitingForEq.current && lower.startsWith('<')))) {
+        else if ((isWaitingForEq.current || captureStage.current === 'none') && 
+                 (/you are using|you are equipped with/i.test(lower) || 
+                  (isWaitingForEq.current && (lower.startsWith('<') || lower.startsWith(' <')) && (lower.includes('worn') || lower.includes('wielded') || lower.includes('held'))))) {
             if (captureStage.current === 'eq') return;
             if (captureStage.current !== 'none') finalizeCapture();
             isWaitingForEq.current = false; startStage('eq');
