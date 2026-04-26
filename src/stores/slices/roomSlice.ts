@@ -13,8 +13,7 @@ export interface RoomState {
     terrain: string;
     exits: string[];
     rawExits: Record<string, any>;
-    players: GmcpOccupant[];
-    npcs: GmcpOccupant[];
+    chars: Record<number, GmcpOccupant>;
     items: GmcpOccupant[];
     roomNum: number;
     whoList: string[];
@@ -22,10 +21,10 @@ export interface RoomState {
 
     applyRoomInfo: (data: GmcpRoomInfo) => void;
     applyExitsUpdate: (data: GmcpUpdateExits) => void;
-    addPlayer: (data: any) => void;
-    addNpc: (data: any) => void;
-    removePlayer: (data: any) => void;
-    removeNpc: (data: any) => void;
+    addChar: (data: any) => void;
+    updateChar: (data: any) => void;
+    removeChar: (data: any) => void;
+    setChars: (chars: Record<number, GmcpOccupant> | ((prev: Record<number, GmcpOccupant>) => Record<number, GmcpOccupant>)) => void;
     setWhoList: (list: string[] | ((prev: string[]) => string[])) => void;
     setWhereList: (list: any[] | ((prev: any[]) => any[])) => void;
     setRoomInfo: (info: Partial<{ roomName: string; roomDesc: string; roomZone: string; terrain: string; roomNum: number }>) => void;
@@ -36,8 +35,7 @@ export interface RoomState {
     setExits: (exits: string[] | ((prev: string[]) => string[])) => void;
     setCurrentTerrain: (terrain: string | ((prev: string) => string)) => void;
     setTerrain: (terrain: string | ((prev: string) => string)) => void;
-    setPlayers: (players: GmcpOccupant[] | ((prev: GmcpOccupant[]) => GmcpOccupant[])) => void;
-    setNpcs: (npcs: GmcpOccupant[] | ((prev: GmcpOccupant[]) => GmcpOccupant[])) => void;
+
     setItems: (items: GmcpOccupant[] | ((prev: GmcpOccupant[]) => GmcpOccupant[])) => void;
     applyItemsUpdate: (data: GmcpOccupant[]) => void;
 }
@@ -49,8 +47,7 @@ export const initialRoomState = {
     terrain: '',
     exits: [],
     rawExits: {},
-    players: [],
-    npcs: [],
+    chars: {},
     items: [],
     roomNum: 0,
     whoList: [],
@@ -80,15 +77,18 @@ const parseOccupant = (data: any): GmcpOccupant | null => {
         const id = data.id !== undefined ? String(data.id) : (data.name || data.short || data.shortdesc || null);
         if (!id) return null;
 
-        return {
-            id,
-            name: data.name || data.short || data.shortdesc || id,
-            short: data.short || data.shortdesc || data.name || id,
-            level: data.level,
-            hp: data.hp,
-            maxhp: data.maxhp,
-            status: data.status || data.hpStatus || data.health
-        } as unknown as GmcpOccupant;
+        // Ensure we do not overwrite existing data with undefined during partial updates
+        const parsed: Partial<GmcpOccupant> = { id };
+        if (data.name) parsed.name = data.name;
+        if (data.short || data.shortdesc || data.name || id) parsed.short = data.short || data.shortdesc || data.name || id;
+        if (data.level !== undefined) parsed.level = data.level;
+        if (data.hp !== undefined) parsed.hp = data.hp;
+        if (data.maxhp !== undefined) parsed.maxhp = data.maxhp;
+        if (data.status || data.hpStatus || data.health) (parsed as any).status = data.status || data.hpStatus || data.health;
+        if (data.type) parsed.type = data.type;
+        if (data.pc !== undefined) parsed.pc = data.pc;
+
+        return parsed as GmcpOccupant;
     }
 
     // Case 3: Number (rare, usually an ID)
@@ -143,8 +143,7 @@ export const createRoomActions = (set: any, get: any) => ({
                 terrain: data.terrain || state.terrain,
                 roomNum: incomingId !== undefined && incomingId !== null ? Number(incomingId) : state.roomNum,
                 // SMARTER: Only clear occupants if it's a physical room change
-                players: isNewPhysicalRoom ? [] : state.players,
-                npcs: isNewPhysicalRoom ? [] : state.npcs,
+                chars: isNewPhysicalRoom ? {} : state.chars,
                 items: isNewPhysicalRoom ? [] : state.items,
                 // Exits often come in the same packet
                 exits: data.exits ? Object.keys(data.exits) : state.exits,
@@ -161,40 +160,49 @@ export const createRoomActions = (set: any, get: any) => ({
         });
     },
 
-    addPlayer: (data: any) => {
+    addChar: (data: any) => {
         const parsed = parseOccupant(data);
-        if (!parsed) return;
-        set((state: RoomState) => ({
-            players: upsertOccupant(state.players, parsed),
-            // Cross-list cleanup: ensure they aren't in the NPC list
-            npcs: filterOccupant(state.npcs, parsed)
-        }));
+        if (!parsed || parsed.id === undefined) return;
+        const id = Number(parsed.id);
+        if (isNaN(id)) return;
+
+        set((state: RoomState) => {
+            const newChars = { ...state.chars };
+            newChars[id] = parsed;
+            return { chars: newChars };
+        });
     },
 
-    addNpc: (data: any) => {
+    updateChar: (data: any) => {
         const parsed = parseOccupant(data);
-        if (!parsed) return;
-        set((state: RoomState) => ({
-            npcs: upsertOccupant(state.npcs, parsed),
-            // Cross-list cleanup: ensure they aren't in the player list
-            players: filterOccupant(state.players, parsed)
-        }));
+        if (!parsed || parsed.id === undefined) return;
+        const id = Number(parsed.id);
+        if (isNaN(id)) return;
+
+        set((state: RoomState) => {
+            const newChars = { ...state.chars };
+            const existing = newChars[id];
+            if (existing) {
+                // Shallow merge to preserve keys not in the update message
+                newChars[id] = { ...existing, ...parsed };
+            } else {
+                newChars[id] = parsed;
+            }
+            return { chars: newChars };
+        });
     },
 
-    removePlayer: (data: any) => {
+    removeChar: (data: any) => {
         const parsed = parseOccupant(data);
-        if (!parsed) return;
-        set((state: RoomState) => ({
-            players: filterOccupant(state.players, parsed)
-        }));
-    },
+        if (!parsed || parsed.id === undefined) return;
+        const id = Number(parsed.id);
+        if (isNaN(id)) return;
 
-    removeNpc: (data: any) => {
-        const parsed = parseOccupant(data);
-        if (!parsed) return;
-        set((state: RoomState) => ({
-            npcs: filterOccupant(state.npcs, parsed)
-        }));
+        set((state: RoomState) => {
+            const newChars = { ...state.chars };
+            delete newChars[id];
+            return { chars: newChars };
+        });
     },
 
     setRoomInfo: (info: Partial<{ roomName: string; roomDesc: string; roomZone: string; terrain: string; roomNum: number }>) => {
@@ -220,10 +228,8 @@ export const createRoomActions = (set: any, get: any) => ({
     setTerrain: (terrain: string | ((prev: string) => string)) => 
         set((state: RoomState) => ({ terrain: typeof terrain === 'function' ? terrain(state.terrain) : terrain })),
 
-    setPlayers: (players: GmcpOccupant[] | ((prev: GmcpOccupant[]) => GmcpOccupant[])) =>
-        set((state: RoomState) => ({ players: typeof players === 'function' ? players(state.players) : (Array.isArray(players) ? players : state.players) })),
-    setNpcs: (npcs: GmcpOccupant[] | ((prev: GmcpOccupant[]) => GmcpOccupant[])) =>
-        set((state: RoomState) => ({ npcs: typeof npcs === 'function' ? npcs(state.npcs) : (Array.isArray(npcs) ? npcs : state.npcs) })),
+    setChars: (chars: Record<number, GmcpOccupant> | ((prev: Record<number, GmcpOccupant>) => Record<number, GmcpOccupant>)) =>
+        set((state: RoomState) => ({ chars: typeof chars === 'function' ? chars(state.chars) : chars })),
     setItems: (items: GmcpOccupant[] | ((prev: GmcpOccupant[]) => GmcpOccupant[])) =>
         set((state: RoomState) => ({ items: typeof items === 'function' ? items(state.items) : (Array.isArray(items) ? items : state.items) })),
     

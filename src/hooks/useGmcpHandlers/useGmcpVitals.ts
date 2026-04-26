@@ -178,7 +178,7 @@ export const useGmcpVitals = ({
 
         // --- Store Sync ---
         import('../../events/gmcpBus').then(({ gmcpBus }) => {
-            gmcpBus.emit('Room.Chars.Combat', Object.assign(data, { isSnooped: false }));
+            gmcpBus.emit('Room.Chars.Combat', Object.assign({}, data, { isSnooped: false } as any));
         });
     }, [findStatus, opponentName, opponentId, bufferName, setOpponentHealthStatus, setBufferHealthStatus]);
 

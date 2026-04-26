@@ -15,8 +15,9 @@ import { useGmcpGroup } from './useGmcpGroup';
 interface GmcpHandlersProps {
     mapperRef: React.RefObject<MapperRef>;
     setCurrentTerrain: (terrain: string) => void;
-    setRoomPlayers: React.Dispatch<React.SetStateAction<GmcpOccupant[]>>;
-    setRoomNpcs: React.Dispatch<React.SetStateAction<GmcpOccupant[]>>;
+    setRoomChars?: React.Dispatch<React.SetStateAction<Record<number, GmcpOccupant>>>;
+    setRoomPlayers?: React.Dispatch<React.SetStateAction<GmcpOccupant[]>>;
+    setRoomNpcs?: React.Dispatch<React.SetStateAction<GmcpOccupant[]>>;
     setRoomItems: React.Dispatch<React.SetStateAction<GmcpOccupant[]>>;
     setDiscoveredItems: (items: string[]) => void;
     characterName: string | null;
@@ -39,8 +40,9 @@ interface GmcpHandlersProps {
     opponentId: string | null;
     setOpponentId: (id: string | null) => void;
     bufferName: string | null;
-    roomPlayers: GmcpOccupant[];
-    roomNpcs: GmcpOccupant[];
+    roomChars?: Record<number, GmcpOccupant>;
+    roomPlayers?: GmcpOccupant[];
+    roomNpcs?: GmcpOccupant[];
     suppressNextTextHeaderRef?: React.MutableRefObject<boolean>;
     setGroupMembers: React.Dispatch<React.SetStateAction<GroupMember[]>>;
     setMumeEditState: React.Dispatch<React.SetStateAction<{ isOpen: boolean; title: string; text: string; key: string }>>;
@@ -81,11 +83,11 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
 
     const getCharNameFromId = useCallback((id: string | null | undefined): string | null => {
         if (!id) return null;
-        const match = [...props.roomPlayers, ...props.roomNpcs].find(p =>
+        const match = Object.values(props.roomChars || {}).find(p =>
             p.id === id || p.name?.toLowerCase() === id.toLowerCase() || p.keyword?.toLowerCase() === id.toLowerCase()
         );
         return match?.name || match?.short || match?.keyword || id;
-    }, [props.roomPlayers, props.roomNpcs]);
+    }, [props.roomChars]);
 
     const findStatus = useCallback((str: string | undefined): CombatHealthStatus | null => {
         if (!str) return null;
@@ -110,7 +112,7 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
         playerPositionRef: playerPositionRef as any
     });
 
-    const { onRoomPlayers, onRoomNpcs, onRoomItems, onAddPlayer, onAddNpc, onRemovePlayer, onRemoveNpc } = useGmcpOccupants({
+    const { onRoomChars, onRoomItems, onAddChar, onUpdateChar, onRemoveChar } = useGmcpOccupants({
         ...props,
         lastRoomChangeTimeRef
     });
@@ -160,13 +162,11 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
     return {
         onRoomInfo,
         onRoomUpdateExits,
-        onRoomPlayers,
-        onRoomNpcs,
+        onRoomChars,
         onRoomItems,
-        onAddPlayer,
-        onAddNpc,
-        onRemovePlayer,
-        onRemoveNpc,
+        onAddChar,
+        onUpdateChar,
+        onRemoveChar,
         onCharNameChange,
         onCharInfo,
         onBufferChange: (name: string | null) => props.setBufferName(name),
@@ -191,8 +191,9 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
         onDisconnect: () => {
             props.setCharacterName(null);
             props.setGroupMembers([]);
-            props.setRoomPlayers([]);
-            props.setRoomNpcs([]);
+            if (props.setRoomChars) props.setRoomChars({});
+            if (props.setRoomPlayers) props.setRoomPlayers([]);
+            if (props.setRoomNpcs) props.setRoomNpcs([]);
             props.setRoomItems([]);
             props.setWhoList([]);
             props.setWhereList([]);

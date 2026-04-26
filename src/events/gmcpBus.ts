@@ -3,8 +3,6 @@ import type {
     GmcpCharInfo,
     GmcpRoomInfo,
     GmcpUpdateExits,
-    GmcpRoomPlayers,
-    GmcpRoomNpcs,
     GmcpRoomItems,
     GmcpOccupant,
     GmcpMumeEdit,
@@ -19,13 +17,11 @@ export interface GmcpEventMap {
     'Char.Ride': any;
     'Room.Info': GmcpRoomInfo;
     'Room.UpdateExits': GmcpUpdateExits;
-    'Room.Players': GmcpRoomPlayers;
-    'Room.Npcs': GmcpRoomNpcs;
+    'Room.Chars': any;
+    'Room.AddChar': any;
+    'Room.UpdateChar': any;
+    'Room.RemoveChar': any;
     'Room.Items': GmcpRoomItems;
-    'Room.AddPlayer': string | GmcpOccupant;
-    'Room.RemovePlayer': string | GmcpOccupant;
-    'Room.AddNpc': string | GmcpOccupant;
-    'Room.RemoveNpc': string | GmcpOccupant;
     'Room.CharsCombat': any[];
     'Char.Opponent': string | null;
     'Char.Buffer': string | null;

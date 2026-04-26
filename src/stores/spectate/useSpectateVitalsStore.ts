@@ -19,12 +19,12 @@ export const getSpectateVitals = () => useSpectateVitalsStore.getState();
 // --- Event Subscriptions ---
 
 gmcpBus.on('Char.Vitals', (data) => {
-    if (!data.isSnooped) return;
+    if (!(data as any).isSnooped) return;
     useSpectateVitalsStore.getState().applyCharVitals(data);
 });
 
 gmcpBus.on('Char.Name', (data) => {
-    if (!data.isSnooped) return;
+    if (!(data as any).isSnooped) return;
     const name = data.data || null;
     if (name) {
         useSpectateVitalsStore.getState().setCharacterName(name);
@@ -32,6 +32,6 @@ gmcpBus.on('Char.Name', (data) => {
 });
 
 gmcpBus.on('Char.Info', (data) => {
-    if (!data.isSnooped) return;
+    if (!(data as any).isSnooped) return;
     useSpectateVitalsStore.getState().applyCharInfo(data);
 });

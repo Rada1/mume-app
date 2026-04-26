@@ -24,11 +24,11 @@ export const useVitalsStore = create<VitalsStore>((set, get) => ({
 export const getVitals = () => useVitalsStore.getState();
 
 gmcpBus.on('Char.Vitals', (data) => {
-    if (data.isSnooped) return;
+    if ((data as any).isSnooped) return;
     getVitals().applyCharVitals(data);
 });
 
 gmcpBus.on('Char.Info', (data) => {
-    if (data.isSnooped) return;
+    if ((data as any).isSnooped) return;
     getVitals().applyCharInfo(data);
 });

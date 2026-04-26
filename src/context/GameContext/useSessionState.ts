@@ -72,8 +72,8 @@ export const useSessionState = (
     const roomDesc = rStore?.roomDesc ?? '';
     const roomExits = Array.isArray(rStore?.exits) ? rStore.exits : Object.keys(rStore?.exits || {});
     const roomZone = rStore?.roomZone ?? '';
-    const roomPlayers = rStore?.players ?? [];
-    const roomNpcs = rStore?.npcs ?? [];
+    const roomPlayers = useMemo(() => Object.values(rStore?.chars || {}).filter(c => c.category !== 'npc'), [rStore?.chars]);
+    const roomNpcs = useMemo(() => Object.values(rStore?.chars || {}).filter(c => c.category === 'npc'), [rStore?.chars]);
     const roomItems = rStore?.items ?? [];
     const { whoList, setWhoList, whereList, setWhereList } = rStore;
 

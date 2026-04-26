@@ -338,14 +338,11 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
 
                 case 'Room.Chars.Add':
                 case 'Room.Char.Add':
-                case 'Room.AddPlayer':
-                case 'Room.AddNpc':
                 case 'Room.AddChar':
                 case 'Room.Chars.Update':
+                case 'Room.UpdateChar':
                 case 'Room.Chars.Set':
                 case 'Room.Chars.List':
-                case 'Room.Npcs':
-                case 'Room.Players':
                 case 'Room.Chars':
                 case 'Room.Char':
                 case 'Mume.Client.Chars': {

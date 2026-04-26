@@ -37,8 +37,7 @@ export interface TelnetConfig {
         onGmcpRoom?: (data: any) => void;
         onGmcpGroup?: (data: any) => void;
         onGmcpOccupants?: (data: any) => void;
-        onGmcpRoomPlayers?: (data: any) => void;
-        onGmcpRoomNpcs?: (data: any) => void;
+        onGmcpRoomChars?: (data: any) => void;
         onGmcpRoomItems?: (data: any) => void;
         [key: string]: any;
     };

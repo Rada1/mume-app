@@ -22,46 +22,37 @@ export const getSpectateRoom = () => useSpectateRoomStore.getState();
 // --- Event Subscriptions ---
 
 gmcpBus.on('Room.Info', (data) => {
-    if (!data.isSnooped) return;
+    if (!(data as any).isSnooped) return;
     getSpectateRoom().applyRoomInfo(data);
 });
 
 gmcpBus.on('Room.UpdateExits', (data) => {
-    if (!data.isSnooped) return;
+    if (!(data as any).isSnooped) return;
     getSpectateRoom().applyExitsUpdate(data);
 });
 
-gmcpBus.on('Room.AddPlayer', (data) => {
-    if (!data.isSnooped) return;
-    getSpectateRoom().addPlayer(data);
+gmcpBus.on('Room.AddChar', (data) => {
+    if (!(data as any).isSnooped) return;
+    getSpectateRoom().addChar(data);
 });
 
-gmcpBus.on('Room.RemovePlayer', (data) => {
-    if (!data.isSnooped) return;
-    getSpectateRoom().removePlayer(data);
+gmcpBus.on('Room.RemoveChar', (data) => {
+    if (!(data as any).isSnooped) return;
+    getSpectateRoom().removeChar(data);
 });
 
-gmcpBus.on('Room.Players', (data) => {
-    if (!data.isSnooped) return;
-    getSpectateRoom().setPlayers(data as any);
+gmcpBus.on('Room.Chars', (data) => {
+    if (!(data as any).isSnooped) return;
+    getSpectateRoom().setChars(data as any);
 });
 
-gmcpBus.on('Room.Npcs', (data) => {
-    if (!data.isSnooped) return;
-    getSpectateRoom().setNpcs(data as any);
-});
 
-gmcpBus.on('Room.AddNpc', (data) => {
-    if (!data.isSnooped) return;
-    getSpectateRoom().addNpc(data);
-});
 
-gmcpBus.on('Room.RemoveNpc', (data) => {
-    if (!data.isSnooped) return;
-    getSpectateRoom().removeNpc(data);
-});
+
+
+
 
 gmcpBus.on('Room.Items', (data) => {
-    if (!data.isSnooped) return;
+    if (!(data as any).isSnooped) return;
     getSpectateRoom().applyItemsUpdate(data as any);
 });

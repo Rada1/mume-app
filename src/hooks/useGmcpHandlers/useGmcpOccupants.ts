@@ -4,63 +4,27 @@ import { MapperRef } from '../../components/Mapper/mapperTypes';
 import { occupantAnims, getOccupantKey } from '../../components/Mapper/occupantAnimStore';
 import { getCategoryForName } from '../../utils/categorizationUtils';
 
-const inferIsPlayer = (data: any, fallbackName: string | null, isPlayersList: boolean): boolean => {
-    if (typeof data === 'object' && data !== null) {
-        if (data.pc || data.type === 'pc' || data.type === 'player') return true;
-        if (data.npc || data.type === 'npc') return false;
-    }
-
-    if (isPlayersList) return true;
-    if (!fallbackName) return false;
-
-    const source = String(fallbackName).trim();
-    const words = source.split(/[ \t,]/).filter(Boolean);
-    if (words.length === 0) return false;
-
-    const firstWord = words[0];
-    const startsWithArticle = /^(a|an|the|some)$/i.test(firstWord);
-    if (startsWithArticle) return false;
-
-    const sanitized = source.replace(/[.,:;!]$/, '');
-    if (!/^[A-Z\u00C0-\u00DE]/.test(sanitized)) return false;
-
-    const nameWords = sanitized.split(/\s+/).filter(Boolean);
-    const secondWord = nameWords[1] ?? '';
-    return nameWords.length === 1 || secondWord.toLowerCase() === 'the';
-};
-
 const parseOccupant = (data: any, characterName: string | null): GmcpOccupant | null => {
     if (!data) return null;
-    const obj: GmcpOccupant = typeof data === 'string' || typeof data === 'number'
-        ? { name: String(data), keyword: String(data), short: String(data) }
-        : { ...data, name: data.name || data.keyword || data.short || data.shortdesc };
-    if (!obj.name) return null;
-    if (characterName && obj.name.toLowerCase() === characterName.toLowerCase()) return null;
-    return obj;
-};
-
-const createFilterFn = (idStr: string | null, nameStr: string | null) => (p: GmcpOccupant) => {
-    if (idStr && p.id !== undefined && p.id !== null && String(p.id) === idStr) return false;
-    if (nameStr && (p.name || p.keyword || p.short) === nameStr) return false;
-    return true;
-};
-
-const updateList = (prev: GmcpOccupant[], obj: GmcpOccupant, idStr: string | null, nameStr: string | null) => {
-    const idx = idStr
-        ? prev.findIndex(x => x.id !== undefined && x.id !== null && String(x.id) === idStr)
-        : prev.findIndex(x => (x.name || x.keyword || x.short) === nameStr);
-    if (idx >= 0) {
-        const next = [...prev];
-        next[idx] = { ...next[idx], ...obj };
-        return next;
+    let obj: GmcpOccupant;
+    if (typeof data === 'string' || typeof data === 'number') {
+        obj = { id: String(data), name: String(data), keyword: String(data), short: String(data) };
+    } else {
+        obj = { ...data };
+        obj.id = data.id !== undefined ? String(data.id) : (data.name || data.keyword || data.short || data.shortdesc);
+        // Only set name if it exists in the data, preserving partial updates
+        if (data.name || data.keyword || data.short || data.shortdesc) {
+            obj.name = data.name || data.keyword || data.short || data.shortdesc;
+        }
     }
-    return [...prev, obj];
+    if (!obj.id) return null;
+    if (characterName && obj.name && obj.name.toLowerCase() === characterName.toLowerCase()) return null;
+    return obj;
 };
 
 interface UseGmcpOccupantsProps {
     mapperRef: React.RefObject<MapperRef>;
-    setRoomPlayers: React.Dispatch<React.SetStateAction<GmcpOccupant[]>>;
-    setRoomNpcs: React.Dispatch<React.SetStateAction<GmcpOccupant[]>>;
+    setRoomChars?: React.Dispatch<React.SetStateAction<Record<number, GmcpOccupant>>>;
     setRoomItems: React.Dispatch<React.SetStateAction<GmcpOccupant[]>>;
     characterName: string | null;
     registerEntity?: (id: string, name: string, location: import('../../types').EntityLocation, category?: string) => import('../../types').GameEntity;
@@ -71,8 +35,7 @@ interface UseGmcpOccupantsProps {
 
 export const useGmcpOccupants = ({
     mapperRef,
-    setRoomPlayers,
-    setRoomNpcs,
+    setRoomChars,
     setRoomItems,
     characterName,
     registerEntity,
@@ -81,78 +44,118 @@ export const useGmcpOccupants = ({
     inlineCategories
 }: UseGmcpOccupantsProps) => {
 
-    const handleRoomList = useCallback((data: any, isPlayersList: boolean) => {
-        console.log(`[GMCP] Ingesting ${isPlayersList ? 'Players' : 'NPCs'} list:`, data);
-        let rawList = Array.isArray(data) ? data : (data.players || data.members || data.chars || data.char || data.npcs || data.list || []);
+    const onRoomChars = useCallback((data: any) => {
+        console.log(`[GMCP] Ingesting Room.Chars list:`, data);
+        let rawList = Array.isArray(data) ? data : (data.chars || data.char || data.members || data.list || []);
         if (rawList && !Array.isArray(rawList)) rawList = [rawList];
         if (!Array.isArray(rawList)) {
-            console.warn(`[GMCP] Failed to parse ${isPlayersList ? 'Players' : 'NPCs'} list - rawList is not an array:`, rawList);
+            console.warn(`[GMCP] Failed to parse Room.Chars list - rawList is not an array:`, rawList);
             return;
         }
 
-        const pcList: GmcpOccupant[] = [];
-        const npcList: GmcpOccupant[] = [];
+        const newChars: Record<number, GmcpOccupant> = {};
 
         rawList.forEach(p => {
-            if (!isPlayersList && setIsRiding) {
-                const shortStr = (typeof p === 'string' ? p : (p.short || p.shortdesc || p.name || '')).toLowerCase();
+            const obj = parseOccupant(p, characterName);
+            if (!obj || obj.id === undefined) return;
+
+            const isNpc = obj.type === 'npc';
+            if (setIsRiding && isNpc) {
+                const shortStr = (obj.short || obj.shortdesc || obj.name || '').toLowerCase();
                 if (shortStr.includes('ridden by you')) setIsRiding(true);
             }
 
-            const obj = parseOccupant(p, characterName);
-            if (!obj) return;
+            (obj as any).category = isNpc ? 'npc' : 'player';
+            newChars[Number(obj.id)] = obj;
 
-            const isPc = inferIsPlayer(p, obj.name || obj.keyword || obj.short || null, isPlayersList);
-            obj.category = isPc ? 'player' : 'npc';
-
-            if (isPc) {
-                pcList.push(obj);
-                if (registerEntity) registerEntity(obj.id ? String(obj.id) : `roomplayers:${obj.name}`, obj.name, 'room', 'player');
-            } else {
-                npcList.push(obj);
-                if (registerEntity) registerEntity(obj.id ? String(obj.id) : `roomnpcs:${obj.name}`, obj.name, 'room', 'npc');
+            if (registerEntity) {
+                const entityId = `roomchars:${obj.id}`;
+                registerEntity(entityId, obj.name || String(obj.id), 'room', obj.category);
             }
         });
 
-        console.log(`[GMCP] Resolved: ${pcList.length} PCs, ${npcList.length} NPCs`);
-
-        if (isPlayersList) {
-            setRoomPlayers(pcList);
-            if (npcList.length > 0) {
-                setRoomNpcs(prev => {
-                    let next = [...prev];
-                    npcList.forEach(n => {
-                        next = updateList(next, n, n.id !== undefined && n.id !== null ? String(n.id) : null, n.name || n.keyword || n.short || null);
-                    });
-                    return next;
-                });
-            }
-        } else {
-            // Room.Chars.Set is a full snapshot — always replace both lists
-            setRoomNpcs(npcList);
-            setRoomPlayers(pcList);
-        }
+        console.log(`[GMCP] Resolved ${Object.keys(newChars).length} Room.Chars`);
+        if (setRoomChars) setRoomChars(newChars);
         mapperRef.current?.triggerRender?.();
-    }, [setRoomPlayers, setRoomNpcs, setIsRiding, characterName, registerEntity, mapperRef]);
 
-    const onRoomPlayers = useCallback((data: any) => {
-        handleRoomList(data, true);
         import('../../events/gmcpBus').then(({ gmcpBus }) => {
-            gmcpBus.emit('Room.Players', Object.assign(data, { isSnooped: false }));
+            gmcpBus.emit('Room.Chars', Object.assign(data, { isSnooped: false }));
         });
-    }, [handleRoomList]);
+    }, [setRoomChars, setIsRiding, characterName, registerEntity, mapperRef]);
 
-    const onRoomNpcs = useCallback((data: any) => {
-        handleRoomList(data, false);
+    const onAddChar = useCallback((data: any) => {
+        if (!data) return;
+        const obj = parseOccupant(data, characterName);
+        if (!obj || obj.id === undefined) return;
+
+        const isNpc = obj.type === 'npc';
+        (obj as any).category = isNpc ? 'npc' : 'player';
+
+        if (data?.dir && (Date.now() - lastRoomChangeTimeRef.current) > 300) {
+            const key = getOccupantKey(obj.id, obj.name);
+            occupantAnims.set(key, { dir: String(data.dir).toLowerCase(), type: 'enter', startTime: Date.now(), name: obj.name || String(obj.id), id: String(obj.id), isPlayer: !isNpc });
+            mapperRef.current?.triggerRender?.();
+        }
+
+        if (setRoomChars) setRoomChars(prev => ({ ...prev, [Number(obj.id)]: obj }));
+
+        if (registerEntity) {
+            const entityId = `roomchars:${obj.id}`;
+            registerEntity(entityId, obj.name || String(obj.id), 'room', obj.category);
+        }
+
         import('../../events/gmcpBus').then(({ gmcpBus }) => {
-            gmcpBus.emit('Room.Npcs', Object.assign(data, { isSnooped: false }));
+            gmcpBus.emit('Room.AddChar', { ...obj, isSnooped: false });
         });
-    }, [handleRoomList]);
+    }, [setRoomChars, characterName, registerEntity, lastRoomChangeTimeRef, mapperRef]);
+
+    const onUpdateChar = useCallback((data: any) => {
+        if (!data) return;
+        const obj = parseOccupant(data, characterName);
+        if (!obj || obj.id === undefined) return;
+
+        if (setRoomChars) setRoomChars(prev => {
+            const id = Number(obj.id);
+            const existing = prev[id];
+            if (existing) {
+                return { ...prev, [id]: { ...existing, ...obj } };
+            }
+            return { ...prev, [id]: obj };
+        });
+
+        import('../../events/gmcpBus').then(({ gmcpBus }) => {
+            gmcpBus.emit('Room.UpdateChar', { ...obj, isSnooped: false });
+        });
+    }, [setRoomChars, characterName]);
+
+    const onRemoveChar = useCallback((data: any) => {
+        if (!data) return;
+        const id = (data && typeof data === 'object') ? data.id : data;
+        if (id === undefined || id === null) return;
+
+        const name = (data && typeof data === 'object') ? (data.name || data.keyword || data.short) : undefined;
+        const idStr = String(id);
+
+        if (data?.dir) {
+            const key = getOccupantKey(idStr, name);
+            occupantAnims.set(key, { dir: String(data.dir).toLowerCase(), type: 'exit', startTime: Date.now(), name: name || idStr, id: idStr, isPlayer: data.type !== 'npc' });
+            mapperRef.current?.triggerRender?.();
+        }
+
+        if (setRoomChars) setRoomChars(prev => {
+            const next = { ...prev };
+            delete next[Number(id)];
+            return next;
+        });
+
+        import('../../events/gmcpBus').then(({ gmcpBus }) => {
+            gmcpBus.emit('Room.RemoveChar', { id, isSnooped: false });
+        });
+    }, [setRoomChars, mapperRef]);
 
     const onRoomItems = useCallback((data: any) => {
         console.log('[GMCP] Ingesting Items list:', data);
 
-        // MUME distinguishing between room items and inventory items
         if ((data as any).location && (data as any).location !== 'room' && (data as any).location !== 'objects') {
             console.log('[GMCP] Ignoring non-room items location:', (data as any).location);
             return;
@@ -177,89 +180,16 @@ export const useGmcpOccupants = ({
         console.log(`[GMCP] Resolved ${items.length} room items`);
         setRoomItems(items);
         
-        // --- Store Sync ---
         import('../../events/gmcpBus').then(({ gmcpBus }) => {
             gmcpBus.emit('Room.Items', Object.assign(items, { isSnooped: false }));
         });
     }, [setRoomItems, registerEntity, inlineCategories]);
 
-    const handleAdd = useCallback((data: any, isPlayerDefault: boolean) => {
-        if (!data) return;
-        const obj = parseOccupant(data, characterName);
-        if (!obj) return;
-
-        if (data?.dir && (Date.now() - lastRoomChangeTimeRef.current) > 300) {
-            const key = getOccupantKey(obj.id, obj.name);
-            occupantAnims.set(key, { dir: String(data.dir).toLowerCase(), type: 'enter', startTime: Date.now(), name: obj.name, id: obj.id, isPlayer: isPlayerDefault });
-            mapperRef.current?.triggerRender?.();
-        }
-
-        const isPc = inferIsPlayer(data, obj.name || obj.keyword || obj.short || null, isPlayerDefault);
-        obj.category = isPc ? 'player' : 'npc';
-
-        const idStr = (obj.id !== undefined && obj.id !== null) ? String(obj.id) : null;
-        const nameStr = obj.name || obj.keyword || obj.short || null;
-        const filterFn = createFilterFn(idStr, nameStr);
-
-        if (isPc) {
-            setRoomNpcs(prev => prev.filter(filterFn));
-            if (registerEntity) registerEntity(idStr || `roomplayers:${obj.name}`, obj.name, 'room', 'player');
-
-            setRoomPlayers(prev => updateList(prev, obj, idStr, nameStr));
-            
-            // --- Store Sync ---
-            import('../../events/gmcpBus').then(({ gmcpBus }) => {
-                gmcpBus.emit('Room.AddPlayer', { ...obj, isSnooped: false });
-            });
-        } else {
-            setRoomPlayers(prev => prev.filter(filterFn));
-            if (registerEntity) registerEntity(idStr || `roomnpcs:${obj.name}`, obj.name, 'room', 'npc');
-
-            setRoomNpcs(prev => updateList(prev, obj, idStr, nameStr));
-            
-            // --- Store Sync ---
-            import('../../events/gmcpBus').then(({ gmcpBus }) => {
-                gmcpBus.emit('Room.AddNpc', { ...obj, isSnooped: false });
-            });
-        }
-    }, [setRoomPlayers, setRoomNpcs, characterName, registerEntity, lastRoomChangeTimeRef, mapperRef]);
-
-    const handleRemove = useCallback((data: any, isPlayerDefault: boolean) => {
-        if (!data) return;
-        const id = (data && typeof data === 'object') ? data.id : data;
-        const name = (data && typeof data === 'object') ? (data.name || data.keyword || data.short) : data;
-        const idStr = (id !== undefined && id !== null) ? String(id) : null;
-        const nameStr = (name !== undefined && name !== null && String(name) !== idStr) ? String(name) : (typeof name === 'string' ? name : null);
-
-        if (data?.dir && (idStr || nameStr)) {
-            const key = getOccupantKey(idStr ?? undefined, nameStr ?? '');
-            occupantAnims.set(key, { dir: String(data.dir).toLowerCase(), type: 'exit', startTime: Date.now(), name: nameStr ?? '', id: idStr ?? undefined, isPlayer: isPlayerDefault });
-        }
-
-        const filterFn = createFilterFn(idStr, nameStr);
-        setRoomPlayers(prev => prev.filter(filterFn));
-        setRoomNpcs(prev => prev.filter(filterFn));
-        mapperRef.current?.triggerRender?.();
-        
-        // --- Store Sync ---
-        import('../../events/gmcpBus').then(({ gmcpBus }) => {
-            if (isPlayerDefault) gmcpBus.emit('Room.RemovePlayer', { id: idStr || nameStr, isSnooped: false });
-            else gmcpBus.emit('Room.RemoveNpc', { id: idStr || nameStr, isSnooped: false });
-        });
-    }, [setRoomPlayers, setRoomNpcs, mapperRef]);
-
-    const onAddPlayer = useCallback((data: any) => handleAdd(data, true), [handleAdd]);
-    const onAddNpc = useCallback((data: any) => handleAdd(data, false), [handleAdd]);
-    const onRemovePlayer = useCallback((data: any) => handleRemove(data, true), [handleRemove]);
-    const onRemoveNpc = useCallback((data: any) => handleRemove(data, false), [handleRemove]);
-
     return {
-        onRoomPlayers,
-        onRoomNpcs,
+        onRoomChars,
         onRoomItems,
-        onAddPlayer,
-        onAddNpc,
-        onRemovePlayer,
-        onRemoveNpc
+        onAddChar,
+        onUpdateChar,
+        onRemoveChar
     };
 };

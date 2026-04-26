@@ -288,7 +288,7 @@ export class Tokenizer {
 
         allOccupants.forEach(occ => {
             const occNameStr = String(occ.name || '');
-            const isNpc = occ.isNpc !== false && !playerNameSet.has(occNameStr.toLowerCase());
+            const isNpc = (occ.type === 'npc' || occ.category === 'npc') || (occ.isNpc !== false && !playerNameSet.has(occNameStr.toLowerCase()));
             const patterns = new Set<string>();
             if (occ.name) patterns.add(String(occ.name));
             if (occ.short) patterns.add(String(occ.short));

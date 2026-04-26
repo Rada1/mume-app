@@ -9,8 +9,8 @@ interface UseGmcpRoomProps {
     setRoomDesc: (desc: string | null) => void;
     setRoomZone: (zone: string | null) => void;
     setRoomExits: (exits: string[]) => void;
-    setRoomPlayers: React.Dispatch<React.SetStateAction<import('../../types').GmcpOccupant[]>>;
-    setRoomNpcs: React.Dispatch<React.SetStateAction<import('../../types').GmcpOccupant[]>>;
+    setRoomPlayers?: React.Dispatch<React.SetStateAction<import('../../types').GmcpOccupant[]>>;
+    setRoomNpcs?: React.Dispatch<React.SetStateAction<import('../../types').GmcpOccupant[]>>;
     setRoomItems: React.Dispatch<React.SetStateAction<import('../../types').GmcpOccupant[]>>;
     setDiscoveredItems: (items: string[]) => void;
     roomDescRef?: React.RefObject<string>;
@@ -71,7 +71,7 @@ export const useGmcpRoom = ({
         if (roomDescRef) (roomDescRef as { current: string }).current = data.desc || '';
 
         let zone = data.zone || data.area;
-        if (!zone && roomNum !== undefined && mapperRef.current?.serverIdIndexRef?.current) {
+        if (!zone && roomNum !== undefined && (mapperRef.current as any)?.serverIdIndexRef?.current) {
             const vnum = mapperRef.current.serverIdIndexRef.current[String(roomNum)];
             const staticData = vnum ? mapperRef.current.preloadedCoordsRef.current[vnum] : null;
             if (staticData && staticData[9]) {
