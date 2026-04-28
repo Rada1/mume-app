@@ -1,0 +1,354 @@
+[
+    {
+        "desc": "You have entered a dense, gloomy, entangled forest. The trees grow in all\ndirections, and the thick undergrowth forces you to turn frequently, totally\nruining your sense of direction. From time to time, a couple of red eyes blink\nin the dark, and you hear deep growls and high pitched howls. The entwined\nbranches of the trees above you are so thick that almost no light filters to the\nground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12393"
+                ],
+                "name": "",
+                "out": [
+                    "12394"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "72",
+                    "12392"
+                ],
+                "name": "",
+                "out": [
+                    "12392"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12395"
+                ],
+                "name": "",
+                "out": [
+                    "12392"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12393"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12391",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dense Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 41,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "You have entered a dense, gloomy, entangled forest. The trees grow in all\ndirections, and the thick undergrowth forces you to turn frequently, totally\nruining your sense of direction. From time to time, a couple of red eyes blink\nin the dark, and you hear deep growls and high pitched howls. The entwined\nbranches of the trees above you are so thick that almost no light filters to the\nground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12391",
+                    "12394",
+                    "12395"
+                ],
+                "name": "",
+                "out": [
+                    "12391"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12393"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12394"
+                ],
+                "name": "",
+                "out": [
+                    "12394"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12391",
+                    "12393"
+                ],
+                "name": "",
+                "out": [
+                    "12395"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12392",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dense Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 41,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "You have entered a dense, gloomy, entangled forest. The trees grow in all\ndirections, and the thick undergrowth forces you to turn frequently, totally\nruining your sense of direction. From time to time, a couple of red eyes blink\nin the dark, and you hear deep growls and high pitched howls. The entwined\nbranches of the trees above you are so thick that almost no light filters to the\nground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12393"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12391"
+                ],
+                "name": "",
+                "out": [
+                    "12392"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12393"
+                ],
+                "name": "",
+                "out": [
+                    "12395"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12392"
+                ],
+                "name": "",
+                "out": [
+                    "12392"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12394",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dense Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 42,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "You have entered a dense, gloomy, entangled forest. The trees grow in all\ndirections, and the thick undergrowth forces you to turn frequently, totally\nruining your sense of direction. From time to time, a couple of red eyes blink\nin the dark, and you hear deep growls and high pitched howls. The entwined\nbranches of the trees above you are so thick that almost no light filters to the\nground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "625"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12392"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12392"
+                ],
+                "name": "",
+                "out": [
+                    "12393"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "625",
+                    "12394"
+                ],
+                "name": "",
+                "out": [
+                    "12391"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12395",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dense Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 40,
+        "y": 39,
+        "z": 0
+    }
+]

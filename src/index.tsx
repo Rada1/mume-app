@@ -260,10 +260,6 @@ const MudClient = () => {
             onClick={handleBackgroundClick}
         >
             <div className={`app-content-shaker ${rumble ? 'rumble-active' : ''}`} style={{ flex: 1, position: 'relative' }}>
-                <div className="background-layer" style={{
-                    backgroundImage: bgImage ? `url(${bgImage})` : 'none',
-                    display: bgImage ? 'block' : 'none'
-                }} />
                 <AtmosphericLayer />
 
                 <ErrorBoundary name="Main Content">

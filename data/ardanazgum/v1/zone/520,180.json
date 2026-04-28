@@ -1,0 +1,842 @@
+[
+    {
+        "desc": "Dry stone gives way to hard-packed, damp earth as this cramped channel extends\nfrom east to west. The walls form a wedge as they taper inward and nearly come\ntogether at the floor, leaving only a thin strip on which to walk. Passage to\nthe west becomes more difficult, while there appears to be an easier egress to\nthe east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20584"
+                ],
+                "name": "",
+                "out": [
+                    "20584"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20582"
+                ],
+                "name": "",
+                "out": [
+                    "20582"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20583",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Ditch",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 520,
+        "y": 185,
+        "z": 0
+    },
+    {
+        "desc": "Solid stone has been carved away to form a small chamber. The walls and ceiling\nare only roughly formed, and mining tools litter the ground. It looks as if work\nin this mine shaft was abruptly interrupted for some reason, and all work\nabandoned.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20585"
+                ],
+                "name": "",
+                "out": [
+                    "20585"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20583"
+                ],
+                "name": "",
+                "out": [
+                    "20583"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20584",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Roughly Hewn Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 521,
+        "y": 185,
+        "z": 0
+    },
+    {
+        "desc": "A crude shaft has been dug here, apparently the early phase of a mining\noperation. Heavy, square timbers support the walls and ceiling at regular\nintervals, giving off a heavy smell of pine tar. The splintered, sagging wooden\nsupports have decayed with time, never meant to be more than temporary.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20586"
+                ],
+                "name": "",
+                "out": [
+                    "20586"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20584"
+                ],
+                "name": "",
+                "out": [
+                    "20584"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20585",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "Crude Mineshaft",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 521,
+        "y": 184,
+        "z": 0
+    },
+    {
+        "desc": "Sections of the tunnel walls have been chipped away by crude tools. There are\nshort, dead-end tunnels in several directions, as if someone was exploring the\nsurrounding earth for possible valuable ore. A mineshaft extends to the south,\nwhile natural openings lead to the north and west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20587"
+                ],
+                "name": "",
+                "out": [
+                    "20587"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20585"
+                ],
+                "name": "",
+                "out": [
+                    "20585"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20588"
+                ],
+                "name": "",
+                "out": [
+                    "20588"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20586",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "Entrance to a Mine",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 521,
+        "y": 183,
+        "z": 0
+    },
+    {
+        "desc": "Veins of glittering ore run through the stone, streaking across the tunnel in a\nstark contrast with the surrounding dull black walls. The ore glistens with\nbright silver, gold, and white glints, even in the darkness, and the floor is\ncovered with sparkling dust.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20589"
+                ],
+                "name": "",
+                "out": [
+                    "20589"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20586"
+                ],
+                "name": "",
+                "out": [
+                    "20586"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20587",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "Glittering Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 521,
+        "y": 182,
+        "z": 0
+    },
+    {
+        "desc": "Strange whispers and clicking noises echo in the deep. The tunnel walls are\ninfested with strange insects that crawl over the walls on many legs, appearing\nand quickly disappearing in the tiny burrows in the black stone. The floor is\ncovered in fecal matter and black, empty carapaces.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20586"
+                ],
+                "name": "",
+                "out": [
+                    "20586"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20601"
+                ],
+                "name": "",
+                "out": [
+                    "20601"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20588",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Infested Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 520,
+        "y": 183,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel passage winds into the distance. Sharp, black glass-like crystals\nprotrude from the walls and ceiling like daggers. Ragged articles of clothing,\nstained with dried blood, hang from a few of the crystals, apparently torn from\nprevious travellers as they passed through this treacherous place.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20587"
+                ],
+                "name": "",
+                "out": [
+                    "20587"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20590"
+                ],
+                "name": "",
+                "out": [
+                    "20590"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20589",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Jagged Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 521,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "Coarse, black basalt in the northern part of this tunnel changes abruptly to\nglistening crystal formations to the east. The crystals are sharp, and passage\nto the east could become perilous. The tunnel seems to expand into a much larger\ncave to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20591"
+                ],
+                "name": "",
+                "out": [
+                    "20591"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20589"
+                ],
+                "name": "",
+                "out": [
+                    "20589"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20590",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Transition",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 520,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "Large basalt columns extend up from the floor at random intervals, disappearing\ninto the darkness above. Crudely drawn pictographs depicting what appear to be\nscenes of war are scrawled onto the stone walls with some sort of indelible\nwhite paint.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20590"
+                ],
+                "name": "",
+                "out": [
+                    "20590"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20592"
+                ],
+                "name": "",
+                "out": [
+                    "20592"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20591",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Black Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 520,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "This narrow ledge extends east-west, high above the cave floor below. While the\nwidth here is barely wide enough to allow a tenuous purchase, the ledge narrows\nsharply to the east, making travel in that direction impossible. Sand and rubble\nscattered across the surface prevent sure footing, making a slip and potentially\ndeadly fall a distinct possibility.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20605"
+                ],
+                "name": "",
+                "out": [
+                    "20605"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20606",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Ledge",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 520,
+        "y": 182,
+        "z": 0
+    }
+]

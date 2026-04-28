@@ -1,0 +1,338 @@
+[
+    {
+        "desc": "Bridging the gap between a massive hill of black boulders and a steeply\nascending granite terrace is a long, flat ledge, swept clean of debris by a\nwickedly howling wind. The edge drops away quickly to the south, but the path is\nwide and by keeping to the north wall is not too dangerous.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5557"
+                ],
+                "name": "",
+                "out": [
+                    "5557"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5558"
+                ],
+                "name": "",
+                "out": [
+                    "5558"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5556",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Flat Ledge",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 418,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "Part of a six- or seven-tiered natural terrace, this ridge juts out over the\nsurrounding rock, but is not too high to easily reach. Unfortunately, the ledges\nseem to be among the clouds, and cannot be accessed from here. This place\naffords a good view of the lands to the south; where a sprawling expanse of\nwhite hills seems to push against a thick, dark forest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5554"
+                ],
+                "name": "",
+                "out": [
+                    "5554"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5556"
+                ],
+                "name": "",
+                "out": [
+                    "5556"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5557",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ridge",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 419,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "A huge pile of gargantuan, black boulders clumped together, form this part of\nthe mountainside. The rock is hard and smooth, as if weathered from eons of\nsleet, hail, and cold rain. It is also cold to the core, a deep and ancient cold\nthat goes to your bone and makes you feel small and weak. In your ascent you can\ngo west or east, or head back down to a dark, flat area of plains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5560"
+                ],
+                "name": "",
+                "out": [
+                    "5560"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5556"
+                ],
+                "name": "",
+                "out": [
+                    "5556"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5559"
+                ],
+                "name": "",
+                "out": [
+                    "5559"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5558",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 417,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "The western side of the mountain has eroded away, leaving a precipitous drop of\nhundreds of feet. Far, far below, you can make out a shallow depression filled\nwith water and boulders. It would behoove the traveller to watch his step here;\na slip could lead to a messy death.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5558"
+                ],
+                "name": "",
+                "out": [
+                    "5558"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5559",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cliff",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 416,
+        "y": 39,
+        "z": 0
+    }
+]

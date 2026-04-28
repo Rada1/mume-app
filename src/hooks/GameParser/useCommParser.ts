@@ -1,6 +1,6 @@
 /**
  * @file useCommParser.ts
- * @description Parses communication channels, GMCP comms, and multi-line continuation handling.
+ * @description Parses GMCP communication channels and XML-tagged comm lines.
  */
 
 import { useCallback, useRef } from 'react';
@@ -18,11 +18,8 @@ export function useCommParser(deps: CommParserDeps) {
     const ignoredCommBufferRef = useRef<string | null>(null);
     const lastCommMsgIdRef = deps.lastCommMsgIdRef || useRef<string | null>(null);
     const lastCommTimeRef = deps.lastCommTimeRef || useRef<number>(0);
-    const openCommRef = useRef(false);
-    const lastCommColorRef = useRef<string | undefined>(undefined);
-    const lastCommSenderRef = useRef<string | undefined>(undefined);
 
-    const parseComm = useCallback((line: string, textOnly: string, lower: string) => {
+    const parseComm = useCallback((line: string, textOnly: string, _lower: string) => {
         const gmcpComm = pendingGmcpCommRef?.current ?? null;
         if (gmcpComm) pendingGmcpCommRef!.current = null;
 
@@ -83,54 +80,71 @@ export function useCommParser(deps: CommParserDeps) {
                 .replace(/[\r\x00-\x08\x0B-\x1A\x1C-\x1F]/g, ''); // Strip all other non-ANSI control chars, PRESERVING \x1b (27)
         };
 
-        const getRawRange = (textIdx: number, length: number): string => {
+        const stripMarkup = (text: string): string => text
+            .replace(/\x1b\[[0-9;]*m/g, '')
+            .replace(/<\/?[a-zA-Z][a-zA-Z0-9_-]*(?:\s+[^>]*)?>/g, '')
+            .replace(/&gt;/gi, '>')
+            .replace(/&lt;/gi, '<')
+            .replace(/&amp;/gi, '&')
+            .replace(/&quot;/gi, '"')
+            .replace(/&apos;/gi, "'");
+
+        const textIndexToRawIndex = (raw: string, textIdx: number): number => {
             let tIdx = 0;
             let rIdx = 0;
-            let rawResult = '';
-            
-            while (rIdx < line.length) {
-                // 1. Skip ANSI sequences
-                if (line[rIdx] === '\x1b' && line[rIdx + 1] === '[') {
-                    const mEnd = line.indexOf('m', rIdx);
-                    if (mEnd !== -1) {
-                        const ansiCode = line.substring(rIdx, mEnd + 1);
-                        // Carry styling into the extracted range
-                        if (tIdx >= textIdx && tIdx < textIdx + length) {
-                            rawResult += ansiCode;
-                        }
-                        rIdx = mEnd + 1;
+
+            while (rIdx < raw.length && tIdx < textIdx) {
+                if (raw[rIdx] === '\x1b' && raw[rIdx + 1] === '[') {
+                    const ansiEnd = raw.indexOf('m', rIdx);
+                    if (ansiEnd !== -1) {
+                        rIdx = ansiEnd + 1;
                         continue;
                     }
                 }
-                
-                // 2. Skip XML tags (important for mapping textOnly correctly)
-                if (line[rIdx] === '<') {
-                    const mEnd = line.indexOf('>', rIdx);
-                    if (mEnd !== -1) {
-                        const tag = line.substring(rIdx, mEnd + 1);
-                        // Check if it's a valid XML-like tag
-                        if (/^<\/?(?:[a-zA-Z0-9\-_]+)/.test(tag)) {
-                            // Carry tags into the extracted range so entities remain interactive
-                            if (tIdx >= textIdx && tIdx < textIdx + length) {
-                                rawResult += tag;
-                            }
-                            rIdx = mEnd + 1;
-                            continue;
-                        }
+
+                if (raw[rIdx] === '<') {
+                    const tagEnd = raw.indexOf('>', rIdx);
+                    if (tagEnd !== -1 && /^<\/?[a-zA-Z][a-zA-Z0-9_-]*/.test(raw.substring(rIdx, tagEnd + 1))) {
+                        rIdx = tagEnd + 1;
+                        continue;
                     }
                 }
-                
-                if (tIdx >= textIdx && tIdx < textIdx + length) {
-                    rawResult += line[rIdx];
-                    tIdx++;
-                } else if (tIdx >= textIdx + length) {
-                    return sanitizeExtractedText(rawResult);
-                } else {
-                    tIdx++;
-                }
+
+                tIdx++;
                 rIdx++;
             }
-            return sanitizeExtractedText(rawResult);
+
+            return rIdx;
+        };
+
+        const parseXmlComm = () => {
+            const commTags = ['tell', 'say', 'narrate', 'shout', 'yell', 'song', 'sing', 'pray', 'whisper'];
+            const tagPattern = commTags.join('|');
+            const tagMatch = line.match(new RegExp(`<(${tagPattern})(?:\\s+[^>]*)?>([\\s\\S]*?)<\\/\\1>`, 'i'));
+            if (!tagMatch) return false;
+
+            const tag = tagMatch[1].toLowerCase();
+            const innerRaw = tagMatch[2];
+            const innerPlain = stripMarkup(innerRaw);
+            const leadingOffset = innerPlain.search(/\S/);
+            const innerText = leadingOffset === -1 ? '' : innerPlain.substring(leadingOffset).trim();
+            const actionMatch = innerText.match(/^(.+?)\s+(tells? you|tells?|whispers?|says?|asks?(?:\s+you)?|exclaims?|narrates?|shouts?|yells?|sings?|prays?)(?:\s+.*?|:\s*|,\s*)(.*)$/i);
+            if (!actionMatch || actionMatch.index === undefined) return false;
+
+            const actionStart = leadingOffset + innerText.indexOf(actionMatch[2], actionMatch[1].length);
+            const textStart = leadingOffset + actionMatch[0].length - actionMatch[3].length;
+            const rawActionStart = textIndexToRawIndex(innerRaw, actionStart);
+            const rawTextStart = textIndexToRawIndex(innerRaw, textStart);
+            const chanMap: Record<string, string> = { song: 'sing' };
+            const rawActionIndex = tagMatch.index + tagMatch[0].indexOf(actionMatch[2]);
+
+            replyCommand = chanMap[tag] ?? tag;
+            replyTarget = actionMatch[1].trim();
+            commSender = sanitizeExtractedText(innerRaw.substring(0, rawActionStart)).trim();
+            commAction = actionMatch[2];
+            commText = sanitizeExtractedText(innerRaw.substring(rawTextStart)).trim();
+            commColor = extractColorAtRawIndex(rawActionIndex >= tagMatch.index ? rawActionIndex : line.length);
+            return true;
         };
 
         if (gmcpComm) {
@@ -161,111 +175,14 @@ export function useCommParser(deps: CommParserDeps) {
                     ignoredCommBufferRef.current = commText.substring(lineContentText.length).trim();
                 }
             } else {
-                const prefixMatch = textOnly.match(/^(.*?)\s+(?:says|tells|narrates|yells|shouts|exclaims|sings|whispers|prays|asks)(?:.*?)[,\s:]+\s*/i);
-                if (prefixMatch) {
-                    commSender = getRawRange(0, prefixMatch[1].length);
-                    commText = getRawRange(prefixMatch[0].length, textOnly.length - prefixMatch[0].length);
-                } else {
-                    commText = sanitizeExtractedText(line);
-                }
+                commText = sanitizeExtractedText(line);
             }
         } else {
-            const commPatterns: [RegExp, string, boolean][] = [
-                // Allow optional space before the colon or opening quote, and support intervening text like "from the west"
-                [/^(.+?)\s+(tells? you|tells?|whispers?|tells? the group)(?:\s+.*?|:\s*|,\s*)(?:(['"].*)|)$/i, 'tell', true],
-                [/^(.+?)\s+(says?|asks?(?:\s+you)?|exclaims?)(?:\s+.*?|:\s*|,\s*)(?:(['"].*)|)$/i, 'say', true],
-                [/^(.+?)\s+(narrates?)(?:\s+.*?|:\s*|,\s*)(?:(['"].*)|)$/i, 'narrate', true],
-                [/^(.+?)\s+(shouts?|yells?)(?:\s+.*?|:\s*|,\s*)(?:(['"].*)|)$/i, 'shout', true],
-                [/^(.+?)\s+(sings?)(?:\s+.*?|:\s*|,\s*)(?:(['"].*)|)$/i, 'sing', true],
-                [/^(.+?)\s+(prays?)(?:\s+.*?|:\s*|,\s*)(?:(['"].*)|)$/i, 'pray', true],
-            ];
-                    for (const [re, cmd, hasSender] of commPatterns) {
-                        const m = textOnly.match(re);
-                        if (m) {
-                            replyCommand = cmd;
-                            if (hasSender) {
-                                replyTarget = m[1];
-                                commSender = getRawRange(0, m[1].length);
-                                commAction = m[2];
-                                
-                                // FIND CHANNEL COLOR: 
-                                // Look at the color active at the start of the action (e.g. "tells you")
-                                // We find the index of commAction in textOnly, specifically after the sender
-                                const actionIndexInText = textOnly.indexOf(commAction, m[1].length);
-                                // Map that to raw index
-                                let rawActionIdx = 0;
-                                let tIdx = 0;
-                                let rIdx = 0;
-                                while (rIdx < line.length && tIdx < actionIndexInText) {
-                                    if (line[rIdx] === '\x1b') {
-                                        const mEnd = line.indexOf('m', rIdx);
-                                        if (mEnd !== -1) { rIdx = mEnd + 1; continue; }
-                                    }
-                                    tIdx++; rIdx++;
-                                }
-                                rawActionIdx = rIdx;
-                                commColor = extractColorAtRawIndex(rawActionIdx);
-
-                                if (m[3]) {
-                                    const textStartIdx = m[0].indexOf(m[3]);
-                                    commText = getRawRange(textStartIdx, m[3].length);
-                                } else {
-                                    commText = '';
-                                    openCommRef.current = true;
-                                }
-                            }
-                            break;
-                        }
-                    }
-
-            if (replyCommand && commText !== undefined) {
-                // Determine if a quote was opened and not closed on this line.
-                const trimmedComm = commText.trim();
-                const q = trimmedComm.startsWith("'") ? "'" : trimmedComm.startsWith('"') ? '"' : null;
-
-                if (q) {
-                    // It's considered "open" if there isn't a corresponding closing quote at the end of the line.
-                    const closingRegex = new RegExp(`${q}[\\.\\?\\!\\)\\s]*$`);
-                    openCommRef.current = !closingRegex.test(textOnly.trim());
-                } else if (textOnly.trim() === '' || textOnly.endsWith(':')) {
-                    openCommRef.current = true;
-                } else {
-                    openCommRef.current = false;
-                }
-            }
-
-            if (!replyCommand && lastCommMsgIdRef.current && (Date.now() - lastCommTimeRef.current < 500)) {
-                const lowerOnly = textOnly.toLowerCase().trim();
-                // KILL SWITCH: If the line looks like game protocol, combat, or room info, 
-                // it CANNOT be a communication continuation.
-                const isCombat = /^\d+(\/\d+)? (hits|mana|move)/i.test(lowerOnly) || lowerOnly.includes(' smites ') || lowerOnly.includes(' pounds ') || lowerOnly.includes(' hits ');
-                const isMap = lowerOnly.startsWith('exits:') || lowerOnly.includes(' - [') || lowerOnly.includes(' is here.') || lowerOnly.includes(' are here.');
-                const isProtocol = lowerOnly.startsWith('core.') || lowerOnly.startsWith('comm.') || lowerOnly.startsWith('room.');
-                
-                if (isCombat || isMap || isProtocol) {
-                    openCommRef.current = false;
-                }
-
-                // Treat as continuation when the previous comm line had an unclosed quote.
-                const isLikelyContinuation = openCommRef.current;
-
-                if (isLikelyContinuation) {
-                    msgType = 'comm-continue';
-                    commText = getRawRange(0, textOnly.length);
-                    commSender = lastCommSenderRef.current;
-                    commColor = lastCommColorRef.current;
-                    
-                    // If this line contains a quote, assume it closes the block.
-                    if (textOnly.includes("'") || textOnly.includes('"')) {
-                        openCommRef.current = false;
-                    }
-                }
-            }
+            parseXmlComm();
         }
+
         if (replyCommand) {
             msgType = 'comm';
-            lastCommSenderRef.current = commSender;
-            lastCommColorRef.current = commColor;
         }
 
         return {

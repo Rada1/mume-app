@@ -1,0 +1,672 @@
+[
+    {
+        "desc": "A round tunnel has been bored into the stone, its walls and ceiling hidden by\nthickly-woven webs. The wet stone floor seems to prevent silky strands from\nsticking to it, in spite of the complex weave of tight cords that adorn the rest\nof the tunnel. All surfaces save the floor are covered in thick white ropes that\nglisten with some semi-translucent substance as well as clear moisture droplets\nin the dark passageway.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "18830"
+                ],
+                "name": "",
+                "out": [
+                    "18830"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18827"
+                ],
+                "name": "",
+                "out": [
+                    "18827"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18829",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 32768,
+        "name": "Subterranean Passageway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 620,
+        "y": 77,
+        "z": 0
+    },
+    {
+        "desc": "Thick black mud and pools of dark water make up the floor of the tunnel even as\nimmense strands of sticky silk cords stretch tightly from wall to wall. Every\nsurface other than the floor is entirely white, covered with hideously strong\nwebs that jiggle and dance in a wavelike fashion when touched or jostled.\nStrange claw-like impressions are clearly present in the mud along the floor,\nand a foul reek seems to emanate from the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18831"
+                ],
+                "name": "",
+                "out": [
+                    "18831"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18829"
+                ],
+                "name": "",
+                "out": [
+                    "18829"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18830",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 32768,
+        "name": "White Webbed Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 621,
+        "y": 77,
+        "z": 0
+    },
+    {
+        "desc": "An overwhelming stench permeates this horrid lair at the back of a wet\nweb-filled tunnel. Great bulbous egg sacs hang from the white woven ceiling\namidst a sticky mass of strong strands. Several shrunken husks of former victims\nlay lifeless and shrivelled upon the wet stone floor, undoubtedly serving as\nrecent meals at the convenience of the creatures that have taken up residence\nhere. The roof is not visible through the thick webs spun from wall to wall,\nmasking unknown and foreboding heights that lurk above the countless silk\nstrands in the darkness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18830"
+                ],
+                "name": "",
+                "out": [
+                    "18830"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18831",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 65536,
+        "name": "Foul Nest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 621,
+        "y": 76,
+        "z": 0
+    },
+    {
+        "desc": "Muddy walls form a dangerous looking overhang above a deep crevice that gouges\nsuddenly through the forest floor above. Trickling streams of water form small\npuddles along the floor of the ravine as they steal trace amounts of mud and\nsilt. The small streams make distinct dripping sounds at various locations as\nthey wind their way down into the depths below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18992"
+                ],
+                "name": "",
+                "out": [
+                    "18992"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18937"
+                ],
+                "name": "",
+                "out": [
+                    "18937"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18991",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Overhung Crevice",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 620,
+        "y": 70,
+        "z": 0
+    },
+    {
+        "desc": "The wet stone walls enclosing this dark ravine are uneven and slippery as they\nreach upward toward a narrow gap in the forest floor above. Strange slimy moulds\ngrow on the moist stone, partially disguising small remnants of old spider webs.\nThe deep crevice winds its way below Mirkwood Forest in a north-south direction,\nwhile a large crack in the eastern wall reveals only empty darkness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18991"
+                ],
+                "name": "",
+                "out": [
+                    "18991"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18993"
+                ],
+                "name": "",
+                "out": [
+                    "18993"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18994"
+                ],
+                "name": "",
+                "out": [
+                    "18994"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18992",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Deep Ravine",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 620,
+        "y": 71,
+        "z": 0
+    },
+    {
+        "desc": "Steep slippery stone walls converge inward from above, narrowing to form a deep\ncrack hidden in the woods. A few dark roots crawl down the shiny wet walls,\ngreedily seeking more moisture in the depths below. What little light might have\npierced the treetops grows ever dimmer as the ravine sinks downward beneath the\nforest floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18992"
+                ],
+                "name": "",
+                "out": [
+                    "18992"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18995"
+                ],
+                "name": "",
+                "out": [
+                    "18995"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18993",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrowing Gully",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 620,
+        "y": 72,
+        "z": 0
+    },
+    {
+        "desc": "A great forested crack in the form of a gully suddenly ends in a collapsed pile\nof mud and stone toward the east. Foul smelling moss grows atop the stones while\nsmall mushrooms sprout from patches of moist soil spanning between great chunks\nof mud and mangled roots.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18992"
+                ],
+                "name": "",
+                "out": [
+                    "18992"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18994",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 32768,
+        "name": "Enclosed Gully",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 621,
+        "y": 71,
+        "z": 0
+    },
+    {
+        "desc": "The walls of a large ravine grow wider near its top, making the trail that leads\nupward precariously slippery. The winding path also continues west within the\nrift, descending into the bowels of the forest. Dark gnarled roots twist around\nthe rubble-strewn floor while a damp, foul smelling moss covers the tops of the\nrocks.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18996"
+                ],
+                "name": "",
+                "out": [
+                    "18996"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18993"
+                ],
+                "name": "",
+                "out": [
+                    "18993"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18995",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ravine Opening",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 620,
+        "y": 73,
+        "z": 0
+    }
+]

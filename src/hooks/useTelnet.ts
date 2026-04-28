@@ -95,8 +95,6 @@ export function useTelnet(config: TelnetConfig) {
         const rawLines = currentBuffer.split('\n');
         let lastLine = rawLines.pop() || '';
 
-        console.log(`[useTelnet] processText: bufferLen=${currentBuffer.length}, lines=${rawLines.length}, lastLine="${lastLine.substring(0, 30)}"`);
-        
         const processedLines: (string | { line: string, isPrompt: boolean })[] = [];
 
         const isPrompt = (line: string) => {
@@ -153,7 +151,6 @@ export function useTelnet(config: TelnetConfig) {
             const isNewPrompt = promptKey !== lastProcessedPromptRef.current;
             if (isNewPrompt) {
                 lastProcessedPromptRef.current = promptKey;
-                console.log(`[useTelnet] handlePromptDetected (queued) for: "${displayPrompt.substring(0, 30)}"`);
                 configRef.current.setPrompt(displayPrompt);
 
                 const cleanLine = displayPrompt.replace(/\x1b\[[0-9;]*m/g, '').trim();
@@ -300,7 +297,6 @@ export function useTelnet(config: TelnetConfig) {
                             };
                         },
                         (line, tokens) => {
-                            console.log(`[useTelnet] Internal processLine call for: "${line.substring(0, 30)}"`);
                             configRef.current.processLine(line, tokens);
                         }
                     );
@@ -378,7 +374,6 @@ export function useTelnet(config: TelnetConfig) {
     }
 
     const onData = React.useCallback((data: ArrayBuffer) => {
-        console.log(`[useTelnet] onData received ${data.byteLength} bytes`);
         if (configRef.current.recordEntry) {
             configRef.current.recordEntry('rx', { length: data.byteLength });
         }

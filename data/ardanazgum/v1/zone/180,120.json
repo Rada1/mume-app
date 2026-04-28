@@ -1,0 +1,4617 @@
+[
+    {
+        "desc": "Eastwards the Barrow-downs rise, ridge behind ridge, vanishing out of sight in\nthe distance. The air is misty, and the sound of your steps is enhanced by the\nhumidity. Westwards the landscape seem more flat.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12337",
+                    "12368"
+                ],
+                "name": "",
+                "out": [
+                    "12337"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12369"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12297"
+                ],
+                "name": "",
+                "out": [
+                    "12297"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2434"
+                ],
+                "name": "",
+                "out": [
+                    "2434"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12296",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 180,
+        "y": 124,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself on the top of a hill. The ground seen barren here. You try to\nlook through the misty air, but all you see is the shapes of the other hills,\nlooking like huge, ancient, grazing creatures.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12369"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12377"
+                ],
+                "name": "",
+                "out": [
+                    "12377"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12298",
+                    "12299"
+                ],
+                "name": "",
+                "out": [
+                    "12299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12296"
+                ],
+                "name": "",
+                "out": [
+                    "12296"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "12336"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12297",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Top of a Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 181,
+        "y": 124,
+        "z": 0
+    },
+    {
+        "desc": "You are on the top of a hill. A circle of stones, looking like dancing giants,\nmark the entrance to some old tomb. The entrance, once covered by a huge\nguarding rock, is now only covered by a heap of stones. They seem to slowly\nshift back into place when you move them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12370"
+                ],
+                "name": "",
+                "out": [
+                    "12370"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                    "12378"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12297"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12298",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Top of a Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 182,
+        "y": 124,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself on the top of a hill. The ground seen barren here. You try to\nlook through the misty air, but all you see is the shapes of the other hills,\nlooking like huge, ancient, grazing creatures.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12302"
+                ],
+                "name": "",
+                "out": [
+                    "12331"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12379"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12300"
+                ],
+                "name": "",
+                "out": [
+                    "12300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12297",
+                    "12298"
+                ],
+                "name": "",
+                "out": [
+                    "12297"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "12331"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12299",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Top of a Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 183,
+        "y": 124,
+        "z": 0
+    },
+    {
+        "desc": "Around you the Barrow-downs rise, ridge behind ridge, vanishing out of sight in\nthe distance. The air is misty, and the sound of your steps is enhanced by the\nhumidity. You stand on a small hill, encircled by other hills. You can barely\nsee the sky through the dense air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12330"
+                ],
+                "name": "",
+                "out": [
+                    "12330"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12380"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12301"
+                ],
+                "name": "",
+                "out": [
+                    "12301"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12299"
+                ],
+                "name": "",
+                "out": [
+                    "12299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12300",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 184,
+        "y": 124,
+        "z": 0
+    },
+    {
+        "desc": "You have finally reached this small hill, but it seems to look very much like\nall other hills around. Thus you must continue, or stay here for the rest of\nyour life.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12329"
+                ],
+                "name": "",
+                "out": [
+                    "12329"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12372"
+                ],
+                "name": "",
+                "out": [
+                    "12372"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12302"
+                ],
+                "name": "",
+                "out": [
+                    "12302"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12300"
+                ],
+                "name": "",
+                "out": [
+                    "12300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12301",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 185,
+        "y": 124,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself on the top of a hill. The ground seen barren here. You try to\nlook through the misty air, but all you see is the shapes of the other hills,\nlooking like huge, ancient, grazing creatures.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12326",
+                    "12328"
+                ],
+                "name": "",
+                "out": [
+                    "12326"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12303"
+                ],
+                "name": "",
+                "out": [
+                    "12303"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12301"
+                ],
+                "name": "",
+                "out": [
+                    "12301"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12302",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Top of a Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 186,
+        "y": 124,
+        "z": 0
+    },
+    {
+        "desc": "You have finally reached this small hill, but it seems to look very much like\nall other hills around. Thus you must continue, or stay here for the rest of\nyour life.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12325",
+                    "12327"
+                ],
+                "name": "",
+                "out": [
+                    "12325"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12325"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12304"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12302"
+                ],
+                "name": "",
+                "out": [
+                    "12302"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12303",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 187,
+        "y": 124,
+        "z": 0
+    },
+    {
+        "desc": "You have finally reached this small hill, but it seems to look very much like\nall other hills around. Thus you must continue, or stay here for the rest of\nyour life.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12318"
+                ],
+                "name": "",
+                "out": [
+                    "12318"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12312"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                    "15603"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                    "12303"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12304",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 188,
+        "y": 124,
+        "z": 0
+    },
+    {
+        "desc": "This is a top of a hill, which seems to be somewhat darker than those elsewhere\nin the Barrow-downs. The top is wide and flattened, like a shallow saucer with a\ngreen mounded rim. In the midst stands a single tall stone. The stone is\nshapeless yet significant: like a landmark, or a guarding finger. To the south a\nwoodland of light green trees can be spotted.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12308"
+                ],
+                "name": "",
+                "out": [
+                    "12308"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12387",
+                    "15603"
+                ],
+                "name": "",
+                "out": [
+                    "15603"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "12308"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12305",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Top of the Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 190,
+        "y": 124,
+        "z": 0
+    },
+    {
+        "desc": "A secluded dell runs in a north-south fashion on the side of the hill. The\nslopes are clad in small leaftrees giving shelter from the outside. A small\nspring babbles in the green lush grass at the bottom of the canyon. The air is\nfilled with the scent of flowers drifting along the dell. A small cave entrance\ncan be seen in the western side of the canyon.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12305"
+                ],
+                "name": "",
+                "out": [
+                    "12305"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12309"
+                ],
+                "name": "",
+                "out": [
+                    "12309"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12305"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12308",
+        "light": 2,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "The Spring",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 190,
+        "y": 125,
+        "z": 0
+    },
+    {
+        "desc": "A small cave extends in the side of the canyon. Its walls are rough and wet,\nsmall trickles of water dripping down towards the ground where it gathers in\ntiny pools. Further in the sound of falling water can be heard.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12308"
+                ],
+                "name": "",
+                "out": [
+                    "12308"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12310"
+                ],
+                "name": "",
+                "out": [
+                    "12310"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12309",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Cave by the Spring",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 189,
+        "y": 125,
+        "z": 0
+    },
+    {
+        "desc": "The cave ends in a small waterfall, with rocks preventing anyone from following\nthe stream on its way southwards. The air is damp and still and filled with a\nscent of freshness. The cave extends eastwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12309"
+                ],
+                "name": "",
+                "out": [
+                    "12309"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12310",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Waterfall",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 188,
+        "y": 125,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself on the top of a hill. The ground seen barren here. You try to\nlook through the misty air, but all you see is the shapes of the other hills,\nlooking like huge, ancient, grazing creatures.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12312"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15603"
+                ],
+                "name": "",
+                "out": [
+                    "15603"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12337"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12318"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "12318"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12311",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Top of a Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 189,
+        "y": 123,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself on the top of a hill. The ground seen barren here. You try to\nlook through the misty air, but all you see is the shapes of the other hills,\nlooking like huge, ancient, grazing creatures.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12304",
+                    "12313"
+                ],
+                "name": "",
+                "out": [
+                    "12313"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                    "12311"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12325"
+                ],
+                "name": "",
+                "out": [
+                    "12325"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "12317"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12312",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Top of a Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 189,
+        "y": 122,
+        "z": 0
+    },
+    {
+        "desc": "Around you the Barrow-downs rise, ridge behind ridge, vanishing out of sight in\nthe distance. The air is misty, and the sound of your steps is enhanced by the\nhumidity. You stand on a small hill, encircled by other hills. You can barely\nsee the sky through the dense air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12314"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12312"
+                ],
+                "name": "",
+                "out": [
+                    "12312"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12316",
+                    "12324"
+                ],
+                "name": "",
+                "out": [
+                    "12324"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12313",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 189,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "Your way winds around the hills and between the steep slopes. It seems to be a\nvery seldom used path, but you have no trouble following it. Your legs are\nreally starting to get tired from all this travelling. Perhaps you should rest,\nafter all.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12314"
+                ],
+                "name": "",
+                "out": [
+                    "12314"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12316"
+                ],
+                "name": "",
+                "out": [
+                    "12316"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4101,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12321"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12315",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path around the Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 188,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "This path seem to go round and round, and you seem to come to the same place\ntime after time. You have lost sense of directions.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12315"
+                ],
+                "name": "",
+                "out": [
+                    "12315"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12317"
+                ],
+                "name": "",
+                "out": [
+                    "12317"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12313"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12324"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12316",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path around the Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 188,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "Your way winds around the hills and between the steep slopes. It seems to be a\nvery seldom used path, but you have no trouble following it. Your legs are\nreally starting to get tired from all this travelling. Perhaps you should rest,\nafter all.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12316"
+                ],
+                "name": "",
+                "out": [
+                    "12316"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12318"
+                ],
+                "name": "",
+                "out": [
+                    "12318"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12325"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12312"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12317",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path around the Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 188,
+        "y": 122,
+        "z": 0
+    },
+    {
+        "desc": "This path seems to go round and round, and you seem to come to the same place\ntime after time. You have lost sense of directions.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12317"
+                ],
+                "name": "",
+                "out": [
+                    "12317"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12304"
+                ],
+                "name": "",
+                "out": [
+                    "12304"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "12311"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12327"
+                ],
+                "name": "",
+                "out": [
+                    "12327"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12311"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12318",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path around the Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 188,
+        "y": 123,
+        "z": 0
+    },
+    {
+        "desc": "Around you the Barrow-downs rise, ridge behind ridge, vanishing out of sight in\nthe distance. The air is misty, and the sound of your steps is enhanced by the\nhumidity. You stand on a small hill, encircled by other hills. You can barely\nsee the sky through the dense air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12319"
+                ],
+                "name": "",
+                "out": [
+                    "12319"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12324"
+                ],
+                "name": "",
+                "out": [
+                    "12324"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                    "12315"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12322"
+                ],
+                "name": "",
+                "out": [
+                    "12322"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12321",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 187,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "Around you the Barrow-downs rise, ridge behind ridge, vanishing out of sight in\nthe distance. The air is misty, and the sound of your steps is enhanced by the\nhumidity. You stand on a small hill, encircled by other hills. You can barely\nsee the sky through the dense air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12343"
+                ],
+                "name": "",
+                "out": [
+                    "12343"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12323"
+                ],
+                "name": "",
+                "out": [
+                    "12323"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12321"
+                ],
+                "name": "",
+                "out": [
+                    "12321"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12360",
+                    "12361"
+                ],
+                "name": "",
+                "out": [
+                    "12360"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12322",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 186,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "You have finally reached this small hill, but it seems to look very much like\nall other hills around. Thus you must continue, or stay here for the rest of\nyour life.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12322"
+                ],
+                "name": "",
+                "out": [
+                    "12322"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12326"
+                ],
+                "name": "",
+                "out": [
+                    "12326"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12324"
+                ],
+                "name": "",
+                "out": [
+                    "12324"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12362"
+                ],
+                "name": "",
+                "out": [
+                    "12362"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12323",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 186,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "You have finally reached this small hill, but it seems to look very much like\nall other hills around. Thus you must continue, or stay here for the rest of\nyour life.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12321"
+                ],
+                "name": "",
+                "out": [
+                    "12321"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12325"
+                ],
+                "name": "",
+                "out": [
+                    "12325"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12313",
+                    "12316"
+                ],
+                "name": "",
+                "out": [
+                    "12313"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12323"
+                ],
+                "name": "",
+                "out": [
+                    "12323"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12324",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 187,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "Around you the Barrow-downs rise, ridge behind ridge, vanishing out of sight in\nthe distance. The air is misty, and the sound of your steps is enhanced by the\nhumidity. You stand on a small hill, encircled by other hills. You can barely\nsee the sky through the dense air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12303",
+                    "12324"
+                ],
+                "name": "",
+                "out": [
+                    "12324"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12303",
+                    "12327",
+                    "14747"
+                ],
+                "name": "",
+                "out": [
+                    "12303"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12312",
+                    "12317"
+                ],
+                "name": "",
+                "out": [
+                    "12312"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                    "12326"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12325",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 187,
+        "y": 122,
+        "z": 0
+    },
+    {
+        "desc": "Around you the Barrow-downs rise, ridge behind ridge, vanishing out of sight in\nthe distance. The air is misty, and the sound of your steps is enhanced by the\nhumidity. You stand on a small hill, encircled by other hills. You can barely\nsee the sky through the dense air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12323"
+                ],
+                "name": "",
+                "out": [
+                    "12323"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12302",
+                    "12328"
+                ],
+                "name": "",
+                "out": [
+                    "12302"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12325"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12334"
+                ],
+                "name": "",
+                "out": [
+                    "12334"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12326",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 186,
+        "y": 122,
+        "z": 0
+    },
+    {
+        "desc": "This path seems to go round and round, and you seem to come to the same place\ntime after time. You have lost sense of directions.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12325"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12303"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12318"
+                ],
+                "name": "",
+                "out": [
+                    "12318"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12328"
+                ],
+                "name": "",
+                "out": [
+                    "12328"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12327",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path around the Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 187,
+        "y": 123,
+        "z": 0
+    },
+    {
+        "desc": "This path seems to go round and round, and you seem to come to the same place\ntime after time. You have lost sense of directions.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12326"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12302"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12327"
+                ],
+                "name": "",
+                "out": [
+                    "12327"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12329"
+                ],
+                "name": "",
+                "out": [
+                    "12329"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12328",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path around the Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 186,
+        "y": 123,
+        "z": 0
+    },
+    {
+        "desc": "This path seems to go round and round, and you seem to come to the same place\ntime after time. You have lost sense of directions.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12334"
+                ],
+                "name": "",
+                "out": [
+                    "12334"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12301"
+                ],
+                "name": "",
+                "out": [
+                    "12301"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12328"
+                ],
+                "name": "",
+                "out": [
+                    "12328"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12330"
+                ],
+                "name": "",
+                "out": [
+                    "12330"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12329",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path around the Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 185,
+        "y": 123,
+        "z": 0
+    },
+    {
+        "desc": "You have finally reached this small hill, but it seems to look very much like\nall other hills around. Thus you must continue, or stay here for the rest of\nyour life.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12333",
+                    "12363"
+                ],
+                "name": "",
+                "out": [
+                    "12363"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12300"
+                ],
+                "name": "",
+                "out": [
+                    "12300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12329"
+                ],
+                "name": "",
+                "out": [
+                    "12329"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12331"
+                ],
+                "name": "",
+                "out": [
+                    "12331"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12330",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 184,
+        "y": 123,
+        "z": 0
+    },
+    {
+        "desc": "This path seem to go round and round, and you seem to come to the same place\ntime after time. You have lost sense of directions.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12332"
+                ],
+                "name": "",
+                "out": [
+                    "12332"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "12299"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12330"
+                ],
+                "name": "",
+                "out": [
+                    "12330"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12335"
+                ],
+                "name": "",
+                "out": [
+                    "12335"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12331",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path around the Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 183,
+        "y": 123,
+        "z": 0
+    },
+    {
+        "desc": "Your way winds around the hills and between the steep slopes. It seems to be a\nvery seldom used path, but you have no trouble following it. Your legs are\nreally starting to get tired from all this travelling. Perhaps you should rest,\nafter all.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12364"
+                ],
+                "name": "",
+                "out": [
+                    "12364"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12331"
+                ],
+                "name": "",
+                "out": [
+                    "12331"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12333"
+                ],
+                "name": "",
+                "out": [
+                    "12333"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12370"
+                ],
+                "name": "",
+                "out": [
+                    "12370"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12332",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path around the Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 183,
+        "y": 122,
+        "z": 0
+    },
+    {
+        "desc": "Your way winds around the hills and between the steep slopes. It seems to be a\nvery seldom used path, but you have no trouble following it. Your legs are\nreally starting to get tired from all this travelling. Perhaps you should rest,\nafter all.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12363"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12330"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12334"
+                ],
+                "name": "",
+                "out": [
+                    "12334"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12332"
+                ],
+                "name": "",
+                "out": [
+                    "12332"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12333",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path around the Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 184,
+        "y": 122,
+        "z": 0
+    },
+    {
+        "desc": "Your way winds around the hills and between the steep slopes. It seems to be a\nvery seldom used path, but you have no trouble following it. Your legs are\nreally starting to get tired from all this travelling. Perhaps you should rest,\nafter all.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12362"
+                ],
+                "name": "",
+                "out": [
+                    "12362"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12329"
+                ],
+                "name": "",
+                "out": [
+                    "12329"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12326"
+                ],
+                "name": "",
+                "out": [
+                    "12326"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12333"
+                ],
+                "name": "",
+                "out": [
+                    "12333"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12334",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path around the Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 185,
+        "y": 122,
+        "z": 0
+    },
+    {
+        "desc": "This path seem to go round and round, and you seem to come to the same place\ntime after time. You have lost sense of directions.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12370"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12378"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12331"
+                ],
+                "name": "",
+                "out": [
+                    "12331"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12336"
+                ],
+                "name": "",
+                "out": [
+                    "12336"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12335",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path around the Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 182,
+        "y": 123,
+        "z": 0
+    },
+    {
+        "desc": "This path seem to go round and round, and you seem to come to the same place\ntime after time. You have lost sense of directions.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12369"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12335"
+                ],
+                "name": "",
+                "out": [
+                    "12335"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12337"
+                ],
+                "name": "",
+                "out": [
+                    "12337"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12297"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12336",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path around the Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 181,
+        "y": 123,
+        "z": 0
+    },
+    {
+        "desc": "Your way winds around the hills and between the steep slopes. It seems to be a\nvery seldom used path, but you have no trouble following it. Your legs are\nreally starting to get tired from all this travelling. Perhaps you should rest,\nafter all.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12296"
+                ],
+                "name": "",
+                "out": [
+                    "12296"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12336"
+                ],
+                "name": "",
+                "out": [
+                    "12336"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12311",
+                    "12338"
+                ],
+                "name": "",
+                "out": [
+                    "12338"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12368"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12337",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path around the Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 180,
+        "y": 123,
+        "z": 0
+    },
+    {
+        "desc": "Your way winds around the hills and between the steep slopes. It seems to be a\nvery seldom used path, but you have no trouble following it. Your legs are\nreally starting to get tired from all this travelling. Perhaps you should rest,\nafter all.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12352"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12366"
+                ],
+                "name": "",
+                "out": [
+                    "12366"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12358"
+                ],
+                "name": "",
+                "out": [
+                    "12358"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12354"
+                ],
+                "name": "",
+                "out": [
+                    "12354"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12353",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path around the Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 181,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "This path seem to go round and round, and you seem to come to the same place\ntime after time. You have lost sense of directions.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12374"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12367"
+                ],
+                "name": "",
+                "out": [
+                    "12367"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12353"
+                ],
+                "name": "",
+                "out": [
+                    "12353"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12351"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12354",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path around the Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 180,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "You have finally reached this small hill, but it seems to look very much like\nall other hills around. Thus you must continue, or stay here for the rest of\nyour life.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12356"
+                ],
+                "name": "",
+                "out": [
+                    "12356"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12365"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "12359",
+                    "12360"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12353"
+                ],
+                "name": "",
+                "out": [
+                    "12353"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12360"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12358",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 182,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "You are on the top of a hill. A circle of stones, looking like dancing giants,\nmark the entrance to some old tomb. The entrance, once covered by a huge\nguarding rock, is now only covered by a heap of stones. The seem to slowly shift\nback into place when you move them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12357"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12364"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12360"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12358"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "12364"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12359",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Top of a Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 183,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself on the top of a hill. The ground seen barren here. You try to\nlook through the misty air, but all you see is the shapes of the other hills,\nlooking like huge, ancient, grazing creatures.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12357"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12363"
+                ],
+                "name": "",
+                "out": [
+                    "12363"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12322",
+                    "12361"
+                ],
+                "name": "",
+                "out": [
+                    "12322"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12359"
+                ],
+                "name": "",
+                "out": [
+                    "12358"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "12345",
+                    "12357",
+                    "12358"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12360",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Top of a Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 184,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "You are on the top of the hill. A circle of stones, looking like dancing giants,\nmark the entrance to some old tomb. The entrance, once covered by a huge\nguarding rock, is now only covered by a heap of stones. They seem to slowly\nshift back into place when you move them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12373"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12362"
+                ],
+                "name": "",
+                "out": [
+                    "12362"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12322"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12360"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12361",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Top of the Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 185,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "Around you the Barrow-downs rise, ridge behind ridge, vanishing out of sight in\nthe distance. The air is misty, and the sound of your steps is enhanced by the\nhumidity. You stand on a small hill, encircled by other hills. You can barely\nsee the sky through the dense\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12344",
+                    "12361"
+                ],
+                "name": "",
+                "out": [
+                    "12361"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12334"
+                ],
+                "name": "",
+                "out": [
+                    "12334"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12323"
+                ],
+                "name": "",
+                "out": [
+                    "12323"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12363"
+                ],
+                "name": "",
+                "out": [
+                    "12363"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12362",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 185,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "Around you the Barrow-downs rise, ridge behind ridge, vanishing out of sight in\nthe distance. The air is misty, and the sound of your steps is enhanced by the\nhumidity. You stand on a small hill, encircled by hills. You can barely see the\nsky through the dense air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12360"
+                ],
+                "name": "",
+                "out": [
+                    "12360"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12330",
+                    "12333"
+                ],
+                "name": "",
+                "out": [
+                    "12330"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12362"
+                ],
+                "name": "",
+                "out": [
+                    "12362"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12364"
+                ],
+                "name": "",
+                "out": [
+                    "12364"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12363",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 184,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "You have finally reached this small hill, but it seems to look very much like\nall other hills around. Thus you must continue, or stay here for the rest of\nyour life.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "12359"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12332"
+                ],
+                "name": "",
+                "out": [
+                    "12332"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12363"
+                ],
+                "name": "",
+                "out": [
+                    "12363"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12365"
+                ],
+                "name": "",
+                "out": [
+                    "12365"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12359"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12364",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 183,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "Around you the Barrow-downs rise, ridge behind ridge, vanishing out of sight in\nthe distance. The air is misty, and the sound of your steps is enhanced by the\nhumidity. You stand on a small hill, encircled by other hills. You can barely\nsee the sky through the dense air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                    "12358"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12370"
+                ],
+                "name": "",
+                "out": [
+                    "12370"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12364"
+                ],
+                "name": "",
+                "out": [
+                    "12364"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12366"
+                ],
+                "name": "",
+                "out": [
+                    "12366"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12365",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 182,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "You have finally reached this small hill, but it seems to look very much like\nall other hills around. Thus you must continue, or stay here for the rest of\nyour life.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12353"
+                ],
+                "name": "",
+                "out": [
+                    "12353"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12369"
+                ],
+                "name": "",
+                "out": [
+                    "12369"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12365"
+                ],
+                "name": "",
+                "out": [
+                    "12365"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                    "12367"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12366",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 181,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "You have finally reached this small hill, but it seems to look very much like\nall other hills around. Thus you must continue, or stay here for the rest of\nyour life.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12354",
+                    "12374"
+                ],
+                "name": "",
+                "out": [
+                    "12354"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "12368"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12366"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12369"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12368"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12367",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 180,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "You are on the top of a hill. A circle of stones, looking like dancing giants,\nmark the entrance to some old tomb. The entrance, once covered by a huge\nguarding rock, is now only covered by a heap of stones. They seem to slowly\nshift back into place when you move them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12367"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12296"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12369"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "12337",
+                    "12367"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12368",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Top of a Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 180,
+        "y": 122,
+        "z": 0
+    },
+    {
+        "desc": "Around you the Barrow-downs rise, ridge behind ridge, vanishing out of sight in\nthe distance. The air is misty, and the sound of your steps is enhanced by the\nhumidity. You stand on a small hill, encircled by other hills. You can barely\nsee the sky through the dense air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12296",
+                    "12366"
+                ],
+                "name": "",
+                "out": [
+                    "12366"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                    "12297",
+                    "12336"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12367"
+                ],
+                "name": "",
+                "out": [
+                    "12370"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                    "12368"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12369",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 181,
+        "y": 122,
+        "z": 0
+    },
+    {
+        "desc": "You have finally reached this small hill, but it seems to look very much like\nall other hills around. Thus you must continue, or stay here for the rest of\nyour life.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12365"
+                ],
+                "name": "",
+                "out": [
+                    "12365"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12298",
+                    "12335"
+                ],
+                "name": "",
+                "out": [
+                    "12298"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12332"
+                ],
+                "name": "",
+                "out": [
+                    "12332"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                    "12369"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12370",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 182,
+        "y": 122,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself on the top of a hill. The ground seems barren here. You try to\nlook through the misty air, but all you see is the shapes of the other hills,\nlooking like huge, ancient, grazing creatures.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12311"
+                ],
+                "name": "",
+                "out": [
+                    "12311"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12387"
+                ],
+                "name": "",
+                "out": [
+                    "12387"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12305"
+                ],
+                "name": "",
+                "out": [
+                    "12305"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12304"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15603",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Top of a Hill",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 189,
+        "y": 124,
+        "z": 0
+    }
+]

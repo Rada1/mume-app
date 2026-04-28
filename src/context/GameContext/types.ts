@@ -439,8 +439,8 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     setTeleportTargets: (val: TeleportTarget[] | ((prev: TeleportTarget[]) => TeleportTarget[])) => void;
 
     // Settings
-    bgImage: string;
-    setBgImage: Dispatch<SetStateAction<string>>;
+    bgImage: string | null;
+    setBgImage: (val: string | null) => void;
     connectionUrl: string;
     setConnectionUrl: Dispatch<SetStateAction<string>>;
     loginName: string;

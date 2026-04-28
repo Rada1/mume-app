@@ -45,6 +45,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const { setStats, activePrompt, target } = useVitals() as any;
     const {
         env,
+        bgImage,
         input,
         setInput,
         triggerHaptic,

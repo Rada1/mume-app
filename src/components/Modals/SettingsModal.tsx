@@ -13,8 +13,8 @@ import { SoundTrigger, UiMode, InlineCategoryConfig } from '../../types';
 interface SettingsModalProps {
     connectionUrl: string;
     setConnectionUrl: (val: string) => void;
-    bgImage: string;
-    setBgImage: (val: string) => void;
+    bgImage: string | null;
+    setBgImage: (val: string | null) => void;
     handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
     exportSettings: () => void;
     importSettings: (e: React.ChangeEvent<HTMLInputElement>) => void;

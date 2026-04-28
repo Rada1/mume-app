@@ -1,0 +1,170 @@
+[
+    {
+        "desc": "As the shaft continues its vertical journey through the underground, a tunnel\nsuddenly opens to the north. A ledge has been cut into the wall allowing easy\naccess to the tunnel. From the ledge wooden ladders leave both up through the\nshaft and further down into the mines. Thick ropes, emerging from the darkness\nabove, continue down towards the bottom of the shaft.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12397"
+                ],
+                "name": "",
+                "out": [
+                    "12397"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "26"
+                ],
+                "name": "",
+                "out": [
+                    "26"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23042"
+                ],
+                "name": "",
+                "out": [
+                    "23042"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12398",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mine Shaft",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -25,
+        "y": 60,
+        "z": 0
+    },
+    {
+        "desc": "There is no ceiling in this tunnel, instead the dark walls leap upward into a\nbroad shaft looming above the tunnel. Thick ropes dangle in the darkness from\nthe shaft above. Sturdy wooden ladders mounted on the walls by the use of iron\nhoops ascend into the shaft above. The worn floor is smooth to the touch, worn\ndown by busy feet labouring in the mine.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12398"
+                ],
+                "name": "",
+                "out": [
+                    "12398"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23042",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Beneath a Mine Shaft",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -22,
+        "y": 62,
+        "z": 0
+    }
+]

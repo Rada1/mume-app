@@ -1,4 +1,4 @@
-import { MapperRoom } from '../mapperTypes';
+import { MapperPrediction, MapperRoom } from '../mapperTypes';
 import { useRoomInfoHandler } from './useRoomInfoHandler';
 import { useUpdateExitsHandler } from './useUpdateExitsHandler';
 import { useTerrainHandler } from './useTerrainHandler';
@@ -25,7 +25,7 @@ interface UseMapGmcphandlersProps {
     deathRoomId?: string | null;
     setDeathRoomId?: (val: string | null) => void;
     baseMapExitsRef?: React.MutableRefObject<Record<string, any>>;
-    clientPredictionsRef?: React.MutableRefObject<Array<{ toId: string, toX: number, toY: number, toZ: number }>>;
+    clientPredictionsRef?: React.MutableRefObject<MapperPrediction[]>;
     characterName: string | null;
     executeCommand?: (cmd: string, silent?: boolean) => void;
     activeView: string;
@@ -39,8 +39,11 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
 
     const handleMoveConfirmed = (e?: any) => {
         props.pendingMovesRef.current.shift();
-        if (props.preMoveRef) props.preMoveRef.current = null;
-        if (props.clientPredictionsRef) props.clientPredictionsRef.current = [];
+        if (props.onRoomInfoProcessed) props.onRoomInfoProcessed();
+        else {
+            if (props.preMoveRef) props.preMoveRef.current = null;
+            if (props.clientPredictionsRef) props.clientPredictionsRef.current = [];
+        }
         props.triggerRender?.();
     };
 

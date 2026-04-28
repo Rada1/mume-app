@@ -124,12 +124,26 @@ export const getTerrainColor = (terrain: string | number, isDarkMode: boolean): 
 };
 
 
+export const getExitTargetId = (exit: any): string => {
+    if (!exit) return '';
+    if (typeof exit === 'string' || typeof exit === 'number') return String(exit);
+    return String(exit.target || exit.gmcpDestId || exit.id || exit.to || exit.to_vnum || '');
+};
+
+export const getPreloadedExit = (preloadedExitOrMap: any, d: string) => {
+    if (!preloadedExitOrMap) return undefined;
+    if (getExitTargetId(preloadedExitOrMap) || preloadedExitOrMap.hasDoor !== undefined || preloadedExitOrMap.flags) {
+        return preloadedExitOrMap;
+    }
+    return preloadedExitOrMap[d];
+};
+
 export const getGateState = (rA: any, wE: any, d: string, allRooms: Record<string, any>, preloaded: Record<string, any>) => {
     // Authoritative data source: trust live exits if they exist, but fallback to preloaded if specific exit is missing
-    const exA = (rA?.exits && rA.exits[d]) ? rA.exits[d] : wE?.[d];
+    const exA = (rA?.exits && rA.exits[d]) ? rA.exits[d] : getPreloadedExit(wE, d);
     if (!exA) return { hasExit: false, hasDoor: false, isClosed: false };
 
-    const tV = String(exA.target || exA.gmcpDestId || ""), oD = DIRS[d]?.opp;
+    const tV = getExitTargetId(exA), oD = DIRS[d]?.opp;
     const nId = tV && !tV.startsWith('m_') ? `m_${tV}` : tV;
     const n = tV ? (allRooms[nId] || allRooms[tV] || (preloaded[tV] ? { exits: preloaded[tV][4] } : null)) : null;
     const exB = n?.exits?.[oD], hasDF = (f?: any[]) => f?.some(x => /^(door|gate|portcullis|secret)$/i.test(String(x)));
@@ -138,7 +152,7 @@ export const getGateState = (rA: any, wE: any, d: string, allRooms: Record<strin
     const neighborIsLive = n && (allRooms[nId] || allRooms[tV]);
     if (neighborIsLive && !exB) return { hasExit: true, hasDoor: false, isClosed: false };
 
-    const neighborPointsBack = exB && String(exB.target || exB.gmcpDestId || "").replace(/^m_/, '') === String(rA?.id || "").replace(/^m_/, '');
+    const neighborPointsBack = exB && getExitTargetId(exB).replace(/^m_/, '') === String(rA?.id || "").replace(/^m_/, '');
     const hasD = !!(exA.hasDoor || hasDF(exA.flags) || (neighborPointsBack && (exB.hasDoor || hasDF(exB.flags))));
 
     if (!hasD) return { hasExit: true, hasDoor: false, isClosed: false };

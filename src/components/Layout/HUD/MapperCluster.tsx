@@ -36,6 +36,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
 }) => {
     const {
         triggerHaptic, viewport, btn, handleButtonClick, executeCommand, joystick,
+        handleLogClick,
         spatButtons, setSpatButtons, parley, setParley, whoList,
         inlineCategories, env, isFoggy, gameState, currentTerrain,
     } = useGame() as GameContextType;
@@ -74,7 +75,9 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
             <div
                 className="mobile-gutter-input-wrapper"
                 style={{
-                    padding: '0',
+                    position: 'relative',
+                    zIndex: 1,
+                    padding: '12px 0 0 0',
                     flexShrink: 0,
                     marginBottom: (isShown || ui.drawer !== 'none') ? '4px' : '0'
                 }}
@@ -101,7 +104,14 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
             </div>
             
             {/* Persistent Tactical Buttons for Mobile Portrait */}
-            <div className="mobile-tactical-buttons-persistent">
+            <div
+                className="mobile-tactical-buttons-persistent"
+                style={{
+                    position: 'relative',
+                    zIndex: 20,
+                    overflow: 'visible'
+                }}
+            >
                 <LineCluster
                     isEditMode={isEditMode}
                     handleDragStart={handleDragStart}
@@ -197,7 +207,11 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
             {/* Drawer Area */}
             {!isShown && ui.drawer !== 'none' && (
                 <div className="gutter-drawer-container gutter-panel-card" style={{ display: 'flex', flexDirection: 'column' }}>
-                    <div className="gutter-drawer-content" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+                    <div
+                        className="gutter-drawer-content"
+                        style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}
+                        onClick={handleLogClick as any}
+                    >
                         <UnifiedDrawerContent
                             drawer={ui.drawer}
                             gearTab={gearTab}

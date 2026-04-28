@@ -1,0 +1,1861 @@
+[
+    {
+        "desc": "This narrow tunnel has been burrowed into the earth. Some roots from the trees\nabove form the sides of the burrow. Some solid rock can be seen in the sides and\nfloor of the burrow, mixed with root and dirt. To the west, the tunnel continues\ninto the darkness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20307"
+                ],
+                "name": "",
+                "out": [
+                    "20307"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "20227"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20306",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Burrow",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 529,
+        "y": 166,
+        "z": 0
+    },
+    {
+        "desc": "This cave appears natural, though the smooth floor indicates it has been\ntraversed frequently in recent times. A narrow passage leads out of the cave to\nthe east, while a broad tunnel to the west leads into a wide cavern. A few\nstalactites hang from the ceiling, each with a small trickle of water running\ndown the side.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20306"
+                ],
+                "name": "",
+                "out": [
+                    "20306"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20308"
+                ],
+                "name": "",
+                "out": [
+                    "20308"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20307",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Small Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 528,
+        "y": 166,
+        "z": 0
+    },
+    {
+        "desc": "The cave here opens up into a wide cavern, over twenty feet tall at the ceiling.\nApparently some trolls have made their home here, as there is a sizable\ncollection of discarded bones, bits of flesh, and filthy rags. The disgusting\nodour that hangs thick in the air is enough to turn the stomach of even the most\nstalwart adventurer.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20309"
+                ],
+                "name": "",
+                "out": [
+                    "20309"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20307"
+                ],
+                "name": "",
+                "out": [
+                    "20307"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20313"
+                ],
+                "name": "",
+                "out": [
+                    "20313"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20308",
+        "light": 1,
+        "loadflags": 4,
+        "mobflags": 0,
+        "name": "Cavern Entrance",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 527,
+        "y": 166,
+        "z": 0
+    },
+    {
+        "desc": "There is nothing growing here on the rocky ground of the wide cavern. A few\nrocks and pebbles are strewn about, but the floor is otherwise featureless. The\neastern wall is solid and continues to the north and south. To the west the\ncavern opens wider.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20308"
+                ],
+                "name": "",
+                "out": [
+                    "20308"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20310"
+                ],
+                "name": "",
+                "out": [
+                    "20310"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20312"
+                ],
+                "name": "",
+                "out": [
+                    "20312"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20309",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 527,
+        "y": 167,
+        "z": 0
+    },
+    {
+        "desc": "This natural cavern is big enough for several trolls to stand abreast. Some of\nthe southern wall has collapsed, leaving rough and jagged boulders strewn about\nthe floor. Some water drips in through the cracks in the wall, but it appears\nstable for now.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20309"
+                ],
+                "name": "",
+                "out": [
+                    "20309"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20311"
+                ],
+                "name": "",
+                "out": [
+                    "20311"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20310",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Natural Cavern",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 527,
+        "y": 168,
+        "z": 0
+    },
+    {
+        "desc": "The cavern comes to a corner here, with walls of hard rock standing firm to the\nwest and south. It is evidently inhabited, as the bits of flesh and discarded\nrefuse show the signs of a recent meal. A strong smell of decay, mixed with the\nodour of fresh meat fills the air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20312"
+                ],
+                "name": "",
+                "out": [
+                    "20312"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20310"
+                ],
+                "name": "",
+                "out": [
+                    "20310"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20311",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wide Cavern",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 526,
+        "y": 168,
+        "z": 0
+    },
+    {
+        "desc": "A passage to the west leads out of the cavern into a dark tunnel. In front of\nthe entrance to the tunnel, a few half-eaten animals and makeshift furnishings\nindicate the presence of trolls. The cavern is certainly tall enough to\naccommodate such creatures, though where their food comes from is a mystery.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20313"
+                ],
+                "name": "",
+                "out": [
+                    "20313"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20311"
+                ],
+                "name": "",
+                "out": [
+                    "20311"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20309"
+                ],
+                "name": "",
+                "out": [
+                    "20309"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20314"
+                ],
+                "name": "",
+                "out": [
+                    "20314"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20312",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Tunnel Entrance",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 526,
+        "y": 167,
+        "z": 0
+    },
+    {
+        "desc": "The cavern is quite high here, causing the faint sounds of dripping water to\necho through the chamber. The cave appears to be natural, but the scattered\nrefuse and faint odour of unwashed flesh indicate it is now inhabited. It\nappears to widen to the south, though the dim light makes it difficult to see\nhow much.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20312"
+                ],
+                "name": "",
+                "out": [
+                    "20312"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20308"
+                ],
+                "name": "",
+                "out": [
+                    "20308"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20313",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Natural, Wide Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 526,
+        "y": 166,
+        "z": 0
+    },
+    {
+        "desc": "The rocky walls of this tunnel are jagged and sharp. A bit of dirty water forms\na basin in the middle of the floor, its source not readily apparent. The air is\nhumid, and a thin layer of mud covers the floor. Within the muck, a few pieces\nof bone mixed with trash can be seen.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20312"
+                ],
+                "name": "",
+                "out": [
+                    "20312"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20315"
+                ],
+                "name": "",
+                "out": [
+                    "20315"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20314",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Jagged Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 525,
+        "y": 167,
+        "z": 0
+    },
+    {
+        "desc": "The rocky walls of the tunnel here show no signs of digging, apparently it is a\nnatural formation. The tunnel is tall enough here for a man to walk straight,\nthough the lack of light might make that a somewhat disturbing endeavour. An\nodour of decaying meat wafts through the tunnel, though the source is not\nreadily apparent.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20314"
+                ],
+                "name": "",
+                "out": [
+                    "20314"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20316"
+                ],
+                "name": "",
+                "out": [
+                    "20316"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20315",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rock-walled Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 524,
+        "y": 167,
+        "z": 0
+    },
+    {
+        "desc": "Various bones and body parts lie about, apparently dragged here by some\npredator. They reek with a strong odour of decaying meat. The floor of the the\ntunnel is hard rock, with a few pebbles scattered about. The walls, though hard,\nseem to be made of densely packed earth rather than rock.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20315"
+                ],
+                "name": "",
+                "out": [
+                    "20315"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20317"
+                ],
+                "name": "",
+                "out": [
+                    "20317"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20316",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Natural Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 523,
+        "y": 167,
+        "z": 0
+    },
+    {
+        "desc": "The rocky ground here is grooved with the traces of ancient currents, but the\nwater has long since dried up. The air remains humid with a strong odour of\ndecomposition. The soft parts of the tunnel wall have been shorn up with some\nrough wooden pillars.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20318"
+                ],
+                "name": "",
+                "out": [
+                    "20318"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20316"
+                ],
+                "name": "",
+                "out": [
+                    "20316"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20317",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bend in a Natural Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 522,
+        "y": 167,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel here is mostly of natural formation, probably hollowed out by an\nunderground current. No water flows here now, but a few damp spots on the floor\nindicate there is still water above. The ground is mostly hard rock, but toward\nthe south it looks like it is changing into softer sand.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20317"
+                ],
+                "name": "",
+                "out": [
+                    "20317"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20319"
+                ],
+                "name": "",
+                "out": [
+                    "20319"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20318",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Natural Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 522,
+        "y": 168,
+        "z": 0
+    },
+    {
+        "desc": "The earth is soft and the air humid in this part of the tunnels, making it the\nperfect habitat for the fungi that grow in abundance here. The tunnel is partly\nnatural but has clearly been widened to allow for an easier passage. The ceiling\nis high enough for a man to walk upright without worry.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20318"
+                ],
+                "name": "",
+                "out": [
+                    "20318"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20320"
+                ],
+                "name": "",
+                "out": [
+                    "20320"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20319",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Fungus-covered Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 522,
+        "y": 169,
+        "z": 0
+    },
+    {
+        "desc": "This tunnel looks as though it was dug out with shovels. It is clearly not\nentirely natural, as thick beams cross the ceiling supported by sturdy wooden\npillars. The earth floor is a rough mixture damp dirt and moist sand with a few\nrocks and pebbles here and there. A heavy stone slab blocks the passage to the\nwest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20319"
+                ],
+                "name": "",
+                "out": [
+                    "20319"
+                ]
+            },
+            {
+                "dflags": 1024,
+                "flags": 3,
+                "in": [
+                    "20405"
+                ],
+                "name": "",
+                "out": [
+                    "20405"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20320",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Excavated Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 521,
+        "y": 169,
+        "z": 0
+    },
+    {
+        "desc": "This appears to be one end of a collapsing passage. The tunnel continues to the\nsouth. The roof appears to be on the verge of collapsing further. Some water\ndrips slowly down from the decaying roof, forming small puddles that dot the\nground like freckles.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20405"
+                ],
+                "name": "",
+                "out": [
+                    "20405"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "20400"
+                ],
+                "name": "",
+                "out": [
+                    "20400"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20404",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In a Ruined Passage",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 520,
+        "y": 168,
+        "z": 0
+    },
+    {
+        "desc": "Time and shoddy construction have brought this passage to the brink of collapse.\nSeveral ceiling planks have already broken under the strain of the earth above.\nClots of fresh mud litter the floor in small piles. The poles holding back the\nwall have started to lean inwards as the walls close in. The tunnel seems\nsturdier to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20404"
+                ],
+                "name": "",
+                "out": [
+                    "20404"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20406"
+                ],
+                "name": "",
+                "out": [
+                    "20406"
+                ]
+            },
+            {
+                "dflags": 1024,
+                "flags": 3,
+                "in": [
+                    "20320"
+                ],
+                "name": "",
+                "out": [
+                    "20320"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20405",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Collapsing Passage",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 520,
+        "y": 169,
+        "z": 0
+    },
+    {
+        "desc": "A narrow passage winds its way through the earth here. While to the north\nseveral cave-ins indicate instability in the tunnel, this section looks solid\nand well-maintained. Thick, wooden support pillars look as if they have been\ninstalled recently.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20405"
+                ],
+                "name": "",
+                "out": [
+                    "20405"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20407"
+                ],
+                "name": "",
+                "out": [
+                    "20407"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20406",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In a Sturdy Passage",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 520,
+        "y": 170,
+        "z": 0
+    },
+    {
+        "desc": "This cellar might have been in use at some point, but it is now abandoned. The\nfloor is a mess of upended tables with a thick coating of dust on every surface.\nA wooden stair has been built against the stone wall, leading up to a hole in\nthe ceiling. A narrow passage leads north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20406"
+                ],
+                "name": "",
+                "out": [
+                    "20406"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20408"
+                ],
+                "name": "",
+                "out": [
+                    "20408"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20411"
+                ],
+                "name": "",
+                "out": [
+                    "20411"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20407",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Abandoned Stone Cellar",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 520,
+        "y": 171,
+        "z": 0
+    },
+    {
+        "desc": "A passageway leads downwards to the west from a smoothly-carved landing that\nextends to the east. The clean, square lines show that this tunnel was created\nby master craftsmen, though there are no decorative or other distinguishing\nmarks of any kind. To the west, the downward slope is smooth and gentle, making\nmovement through this tunnel is easy.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20617"
+                ],
+                "name": "",
+                "out": [
+                    "20617"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20615"
+                ],
+                "name": "",
+                "out": [
+                    "20615"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20616",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Smooth Sloping Passageway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 520,
+        "y": 175,
+        "z": 0
+    },
+    {
+        "desc": "This tunnel is wet, filled with mud, slime and pooled water. The air feels more\ndrinkable than breathable, and every step splashes water. A dark hatch carved\nfrom black stone can be seen set into the muddy ceiling. To the west the tunnel\ncontinues into the darkness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20616"
+                ],
+                "name": "",
+                "out": [
+                    "20616"
+                ]
+            },
+            {
+                "dflags": 1024,
+                "flags": 3,
+                "in": [
+                    "20618"
+                ],
+                "name": "",
+                "out": [
+                    "20618"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20617",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dank Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 521,
+        "y": 175,
+        "z": 0
+    },
+    {
+        "desc": "This square room looks like a natural cavern expanded on to make room for the\nnumerous crates, shelves, and cabinets that occupy it. The room, being\nunderground, is chill even during summer. An odour of rancid meat fills the air.\nA narrow stair leads up from this larder, it is much too narrow for the cabinets\nhere; the tunnel disappearing into darkness to the west seems a more likely\norigin.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20618"
+                ],
+                "name": "",
+                "out": [
+                    "20618"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20323"
+                ],
+                "name": "",
+                "out": [
+                    "20323"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20619",
+        "light": 1,
+        "loadflags": 24,
+        "mobflags": 0,
+        "name": "Rancid Larder",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 520,
+        "y": 160,
+        "z": 0
+    }
+]

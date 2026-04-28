@@ -1,0 +1,84 @@
+[
+    {
+        "desc": "Discoloured water and debris slowly pour out from the large, rusted metal gate\njust behind Tharbad's high stone wall, creating an opaque brown plume several\nhundred yards long. Occasionally a mutilated corpse surfaces for a second or two\nbefore diving beneath the murky waves to the unseen depths of the river.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "7801"
+                ],
+                "name": "",
+                "out": [
+                    "7801"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "7949",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Outside the West Gate of Tharbad",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 1,
+        "x": 214,
+        "y": 200,
+        "z": 0
+    }
+]

@@ -1,0 +1,1604 @@
+[
+    {
+        "desc": "This white platform rests comfortably among the branches high in a tree. Several\nshelves stand along the edges, laden with exquisite armour and weapons - the\nsmith's personal favourites which are not for sale. The railing that encircles\nthe flet is made of a fine silver chain resting on smooth black iron posts from\nwhich the light of the silver lamps is reflected in all directions.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14530"
+                ],
+                "name": "",
+                "out": [
+                    "14530"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14527",
+        "light": 0,
+        "loadflags": 2,
+        "mobflags": 0,
+        "name": "Flet of the Armourers",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 421,
+        "y": 139,
+        "z": 0
+    },
+    {
+        "desc": "This small flet glitters and sparkles in the light. On display in cabinets are\nluxurious items, crafted by the last of the great artisans from the old Noldorin\ncity of Ost-in-Edhil. Wooden shelves and work benches are placed in a\nsemi-circle around a small stone hearth that stands off towards a corner. Tiny\nflames dance in the fireplace, allowing the smiths to heat and work their\nmaterial to perfection. A couple of wooden chests and a table are placed along\nthe edge of the flet. In a corner are a few sleeping mats.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14526"
+                ],
+                "name": "",
+                "out": [
+                    "14526"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14528",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 2,
+        "name": "The Jewellers' Flet",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 420,
+        "y": 139,
+        "z": 0
+    },
+    {
+        "desc": "Close to the wall the forest gives way and opens up into a small clearing. At\nits centre stands a small forge with a roof supported by wooden pillars. Here\nthe smiths of the city craft their beautiful artefacts, as well as repair and\ncreate the tools and weaponry that are used daily by the elves. The capacity of\nthe forge is not too large, but the workers are masters of their art and love\ntheir craft.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14530"
+                ],
+                "name": "",
+                "out": [
+                    "14530"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14531"
+                ],
+                "name": "",
+                "out": [
+                    "14531"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14565"
+                ],
+                "name": "",
+                "out": [
+                    "14565"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14529",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 4,
+        "name": "A Small Forge",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 422,
+        "y": 139,
+        "z": 0
+    },
+    {
+        "desc": "On the northern slope of the high hill, close to the wall you hear the sounds of\na forge mixing with elvish songs, laughter and shouts reverberating through the\nwoods. The high trees standing here are crowded with flets, the wooden platforms\nwhere the Galadhrim dwell. Ladders run up almost every tree. Several rope\nbridges connect the tree-crowns.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14539"
+                ],
+                "name": "",
+                "out": [
+                    "14539"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14532"
+                ],
+                "name": "",
+                "out": [
+                    "14532"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14529"
+                ],
+                "name": "",
+                "out": [
+                    "14529"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14571"
+                ],
+                "name": "",
+                "out": [
+                    "14571"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14531",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Beneath the Flets of the Galadhrim",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 423,
+        "y": 139,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself by the wall on the northern slope of the hill, surrounded by\nthe tall mellyrn that are homes for the Galadhrim. Almost every tree rises\nproudly towards the sky and carries several flets among its branches. From\nwithin the greenery you can hear laughter and song, the soft language of the\nelves whispering soothing words.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14540"
+                ],
+                "name": "",
+                "out": [
+                    "14540"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14533"
+                ],
+                "name": "",
+                "out": [
+                    "14533"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14531"
+                ],
+                "name": "",
+                "out": [
+                    "14531"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14572"
+                ],
+                "name": "",
+                "out": [
+                    "14572"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14532",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Beneath the Flets of the Galadhrim",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 424,
+        "y": 139,
+        "z": 0
+    },
+    {
+        "desc": "Here, among the flets in the heart of the Galadhrim habitat, you are surrounded\nby the sounds of everyday life. A child laughing, soft voices and soft singing\nenvelop you among the well-trodden paths. High up in almost every tree lie\nseveral flets, making the treetops burst with life. Rope and wooden ladders\nclimb up the boles of several trees. High in the tree-crowns, rope bridges can\nbe seen running between the flets.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14541"
+                ],
+                "name": "",
+                "out": [
+                    "14541"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14532"
+                ],
+                "name": "",
+                "out": [
+                    "14532"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14573"
+                ],
+                "name": "",
+                "out": [
+                    "14573"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14533",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Beneath the Flets of the Galadhrim",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 425,
+        "y": 139,
+        "z": 0
+    },
+    {
+        "desc": "High up in the air this large wooden platform rests securely in the branches of\na huge mallorn. The flet is furnished rather sparsely although still quite\nfunctionally. Several sleeping mats lie rolled up in a corner and a table and\nsome benches stand in the centre. As a soft breeze gently blows through the\nleaves, the outside light is dispersed and gives life to fantastic displays of\ngreenish light and shadows.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14534"
+                ],
+                "name": "",
+                "out": [
+                    "14534"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14535",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Large Flet",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 426,
+        "y": 139,
+        "z": 0
+    },
+    {
+        "desc": "An excellent view opens from the top of the great green wall that encircles the\nfair city of Caras Galadhon. A well-trodden path atop the bulwarks, shielded by\nprotective crenellations, allows the elven archers to patrol the city and keep a\nvigilant watch on the surrounding woods. Below, the golden forest stretches out\nfar in all directions, the only break in the green and gold being that of the\nwhite stone road far below, running just outside the wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14566"
+                ],
+                "name": "",
+                "out": [
+                    "14566"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14529"
+                ],
+                "name": "",
+                "out": [
+                    "14529"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14565",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Northern Wall",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 422,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "Protecting Caras Galadhon, the broad city walls rise high, allowing a splendid\nview and a perfect defensive position. Letting the eyes wander, one cannot help\nfeeling awed by the beauty of the land. The forest lying below, the white stone\nroad, the deep fosse encircling the city appear to be works of perfection, art\nand harmony. A feeling of peace seems to fill the air as one gazes north into\nthe depths of the golden forest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14567"
+                ],
+                "name": "",
+                "out": [
+                    "14567"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14565"
+                ],
+                "name": "",
+                "out": [
+                    "14565"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14566",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Northern Wall",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 423,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "Facing mainly north, the wall rises high above the ground. Below the wall lies\nthe great golden forest, spreading towards the horizon in all directions before\nvanishing in a haze far far away. Closer by one can see the white stone road\nthat encircles the city and the deep fosse which forms the first line of defence\nof Caras Galadhon.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14568"
+                ],
+                "name": "",
+                "out": [
+                    "14568"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14566"
+                ],
+                "name": "",
+                "out": [
+                    "14566"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14567",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Northern Wall",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 424,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "Broad and high, the impressive wall surrounding the city allows a few elves to\nwalk abreast easily. Curving softly, it faces northeast, giving a beautiful view\nof the golden forest. The most prominent landmark lies at your feet - the deep\nshadowed fosse, lying just outside the wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14567"
+                ],
+                "name": "",
+                "out": [
+                    "14567"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14568",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Northern Wall",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 425,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "This is where the tailors and seamstresses of Caras Galadhon sew, embroider and\nmend the delicate clothes for the elves of the city, from the smallest child to\nLady Galadriel herself. Strips of silk and cotton and rolls of threads lie\nscattered all around the platform. Scissors and needles are stuck into rolls of\nthreads or hung in pouches from the branches. In the back of the flet are many\nbuckets of dyes of all colours. The elves seem to favour most green, blue,\nyellow, white and grey, similar to the colours of the golden forest, but other\ndyes are available as well, for those that might have a fancy to use them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14539"
+                ],
+                "name": "",
+                "out": [
+                    "14539"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14569",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 8,
+        "name": "The Tailors' Flet",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 422,
+        "y": 137,
+        "z": 0
+    },
+    {
+        "desc": "Cradled in the midst of the strong branches close to the great grey trunk of the\ntall mallorn is a small platform that is sparsely furnished. A low railing\nencircles the flet and a few sleeping mats lie on the floor. A small chest for\npersonal belongings stands in a corner. A small table is in the centre of the\ntalan, surrounded by wooden chairs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14571"
+                ],
+                "name": "",
+                "out": [
+                    "14571"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14570",
+        "light": 0,
+        "loadflags": 2,
+        "mobflags": 0,
+        "name": "Platform in the Tree",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 423,
+        "y": 135,
+        "z": 0
+    },
+    {
+        "desc": "High above the ground this platform lies cradled among the branches of the large\ntree. The dense foliage forms a canopy that encloses the flet keeping the\ninhabitants dry. A few sleeping mats lie neatly on the floor, and a large round\ntable with a few benches around it stands by the trunk of the tree. Two large\nwooden chests and a fine bookshelf stand near the edge of the flet side by side.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14572"
+                ],
+                "name": "",
+                "out": [
+                    "14572"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14570"
+                ],
+                "name": "",
+                "out": [
+                    "14570"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14531"
+                ],
+                "name": "",
+                "out": [
+                    "14531"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14571",
+        "light": 0,
+        "loadflags": 18,
+        "mobflags": 0,
+        "name": "A Small Treehouse",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 423,
+        "y": 136,
+        "z": 0
+    },
+    {
+        "desc": "This large flet high up in the tree is scantily furnished with a few sleeping\nmats, a small table and two benches. Besides this furniture, one can see a small\nwooden chest standing near the edge of the platform and a bookshelf that stands\nclose to the trunk of the tree. The branches surrounding the flet offer some\nshelter but still let the light filter in, brightly coloured by the leaves that\nact as a roof. Rope bridges lead from the flet in all directions but north, and\na white ladder leads down to the ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14574"
+                ],
+                "name": "",
+                "out": [
+                    "14574"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14573"
+                ],
+                "name": "",
+                "out": [
+                    "14573"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14571"
+                ],
+                "name": "",
+                "out": [
+                    "14571"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14532"
+                ],
+                "name": "",
+                "out": [
+                    "14532"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14572",
+        "light": 0,
+        "loadflags": 2,
+        "mobflags": 0,
+        "name": "A Flet",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 424,
+        "y": 136,
+        "z": 0
+    },
+    {
+        "desc": "This large wooden platform high among the branches of a tall mallorn tree is\nobviously the home of a few families. The flet is divided into a few smaller\nparts, all of which are furnished in rather similar ways: a few sleeping mats, a\ntable or two, a few chairs or benches and a couple of wooden chests. A ladder\nleads up to another flet along the bole of the tree.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14572"
+                ],
+                "name": "",
+                "out": [
+                    "14572"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14576"
+                ],
+                "name": "",
+                "out": [
+                    "14576"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14533"
+                ],
+                "name": "",
+                "out": [
+                    "14533"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14573",
+        "light": 0,
+        "loadflags": 2,
+        "mobflags": 0,
+        "name": "On a Large Flet",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 425,
+        "y": 136,
+        "z": 0
+    },
+    {
+        "desc": "High above the sloping ground, where the elves of Caras Galadhon reside, wooden\nplatforms, known to the elves as flets, rest amid the thick branches of the tall\ntrees. This platform is neatly furnished. A few sturdy wooden beds and several\nsleeping mats indicate that this is a large household. A finely carved wooden\nchest standing off to the side gives an air of importance to the room, as does a\nlarge table surrounded by carefully crafted chairs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14572"
+                ],
+                "name": "",
+                "out": [
+                    "14572"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14575"
+                ],
+                "name": "",
+                "out": [
+                    "14575"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14540"
+                ],
+                "name": "",
+                "out": [
+                    "14540"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14574",
+        "light": 0,
+        "loadflags": 2,
+        "mobflags": 0,
+        "name": "A Beautiful Flet",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 424,
+        "y": 137,
+        "z": 0
+    },
+    {
+        "desc": "This white talan is rather small and contains only a a wooden desk, a chair and\na couple of bookshelves. Several rolled-up parchments lie on the desk. A quill\npen and a small flask of ink complete the image of a home of an elderly scholar.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14574"
+                ],
+                "name": "",
+                "out": [
+                    "14574"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14575",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "High in a Tree",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 425,
+        "y": 137,
+        "z": 0
+    },
+    {
+        "desc": "This large platform rests securely in the firm grip of the great tree. The flet\nis big enough to house two families that have put up small screens to divide the\nplatform into smaller parts. Sleeping mats lie all over the floor and several\nsmall chests stand along the low wooden railing.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14573"
+                ],
+                "name": "",
+                "out": [
+                    "14573"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14576",
+        "light": 0,
+        "loadflags": 2097158,
+        "mobflags": 0,
+        "name": "On a Flet",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 425,
+        "y": 135,
+        "z": 0
+    }
+]

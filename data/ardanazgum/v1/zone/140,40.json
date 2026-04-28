@@ -1,0 +1,1680 @@
+[
+    {
+        "desc": "The road leading to the hill is wide and its sides are covered by flowers and\nsoft grass. High and beautiful trees give the air purity and a sensation of\ncalm, making the walk easier as the road becomes steep. To the east you can see\na mill, working with the waters of the river.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1760"
+                ],
+                "name": "",
+                "out": [
+                    "1760"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1758"
+                ],
+                "name": "",
+                "out": [
+                    "1758"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20041"
+                ],
+                "name": "",
+                "out": [
+                    "20041"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1759",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Road to the Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 159,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "Here the road heading north from the village of Hobbiton begins to climb the\ntall green hill which overlooks all the surrounding countryside. A humble lane\nleads off to the west along The Hill's lower flanks. To the east is a large\nbuilding, the door of which is partially obstructed by a pile of metal scraps.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1771"
+                ],
+                "name": "",
+                "out": [
+                    "1771"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1759"
+                ],
+                "name": "",
+                "out": [
+                    "1759"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1761"
+                ],
+                "name": "",
+                "out": [
+                    "1761"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1762"
+                ],
+                "name": "",
+                "out": [
+                    "1762"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1760",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hobbiton North Place",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 159,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "This narrow lane travels along The Hill to the west. The slope of the hill above\nit to the north is terraced; lush garden plots and vineyards can be seen.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1760"
+                ],
+                "name": "",
+                "out": [
+                    "1760"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1763"
+                ],
+                "name": "",
+                "out": [
+                    "1763"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1762",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bagshot Row",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 158,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "This small and little-used lane (judging from the relative absence of ruts)\nextends east and west along the southern flank of The Hill. A few modest\nresidential holes have been delved in the bank to the north of the road, each\nwith its own front garden.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1767"
+                ],
+                "name": "",
+                "out": [
+                    "1767"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1762"
+                ],
+                "name": "",
+                "out": [
+                    "1762"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1764"
+                ],
+                "name": "",
+                "out": [
+                    "1764"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1763",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bagshot Row",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 157,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "This is the western end of Bagshot Row, a modest residential lane. Some\nhobbit-homes, each with its own garden before the round door, line the northern,\nhilly sides of the road. This last garden is an especially handsome, well-kept\none.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1765"
+                ],
+                "name": "",
+                "out": [
+                    "1765"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1763"
+                ],
+                "name": "",
+                "out": [
+                    "1763"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "17922"
+                ],
+                "name": "",
+                "out": [
+                    "17922"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1764",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bagshot Row",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 156,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "You are now in the garden of Bagshot Row, home of the Gamgee family. The well\nmaintained flowers and plants are amazing, and it is apparent that they are the\nwork of an artist. Sam \"The Uncle\" Gamgee is famous for his secrets in the\nmaintenance of a good garden, and looking around, it is easy to see why. A\nlittle path of stones leads west towards a door.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1764"
+                ],
+                "name": "",
+                "out": [
+                    "1764"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1765",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Gamgee's Garden",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 156,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "This hole is a typical low-class hobbit house. It is a poor hole, also very well\nmaintained and arranged. The first sight announces clearly one of the major\npoint of the hobbit life: food. Everything here seems to be designed to bring\nthe most delight for meals: large table, comfortable chairs, large kitchen, huge\ncupboards, probably filled with food-stuff.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1767"
+                ],
+                "name": "",
+                "out": [
+                    "1767"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1766",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Twofoot's House",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 157,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "This garden is obviously maintained by a good gardener: it looks rather healthy\nand some appetizing scents are carried on the soft wind. The rows of vegetables\nare straight: one can recognise celery, garlic, onions, tomatoes, potatoes,\nleeks and even cauliflower.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1766"
+                ],
+                "name": "",
+                "out": [
+                    "1766"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1763"
+                ],
+                "name": "",
+                "out": [
+                    "1763"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1767",
+        "light": 2,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "Twofoot's Garden",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 157,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "This is the well tended garden of Bag End. The plants and flowers have been\ncared for by an expert, judging by their quality and condition. A huge old tree\nstands in the middle of the garden.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1769"
+                ],
+                "name": "",
+                "out": [
+                    "1769"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1768",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Garden",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 155,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "You are in the entrance garden of Bag End, reputed to be one of the finest\nsmials in all the Shire. The plants are very well cared for, and the flowers\nhere seem especially fragrant. To the north you see a round green door set in\nthe side of the hill.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "1771"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1770"
+                ],
+                "name": "",
+                "out": [
+                    "1770"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1768"
+                ],
+                "name": "",
+                "out": [
+                    "1768"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1769",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Entrance Garden",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 156,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "This is the well tended garden of Bag End. The plants and flowers here have been\ntaken care of by an expert, judging from the quality and condition of the\nfoliage here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1769"
+                ],
+                "name": "",
+                "out": [
+                    "1769"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1770",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Garden",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 157,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "The road winds up The Hill and eastward around its green flank toward the\nvillage of Overhill. In the lush sides of The Hill, to the north, can be seen\nsome windows and a round green door; the path leading to that door is barred by\nan iron gate.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "1769"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1760"
+                ],
+                "name": "",
+                "out": [
+                    "1760"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1772"
+                ],
+                "name": "",
+                "out": [
+                    "1772"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1771",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Road around the Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 159,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in the middle of a small group of houses that form this tiny\nlittle village. This place is very quiet, except for the wind rustling through\nthe trees. The hobbit holes here do not seem to be as luxurious as those in\nHobbiton. A path winds up the Hill to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1777"
+                ],
+                "name": "",
+                "out": [
+                    "1777"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12492"
+                ],
+                "name": "",
+                "out": [
+                    "12492"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1775"
+                ],
+                "name": "",
+                "out": [
+                    "1775"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "13143"
+                ],
+                "name": "",
+                "out": [
+                    "13143"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1776",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Overhill Village",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 159,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "This hilltop is the highest point for leagues in any direction. Below you, to\nthe south, the little village of Hobbiton lies in the lush, tree-lined valley of\nthe stream called only The Water. Further south, a road can be dimly seen,\nrunning east and west. The sides of the Hill are terraced and covered with\nvines, fruit trees, and vegetable gardens.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1776"
+                ],
+                "name": "",
+                "out": [
+                    "1776"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12492",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 159,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "This smial doesn't look very sturdy. The walls need painting, the floor needs a\ndeep cleaning, and the roof is in disrepair. It appears that the room will not\noffer much protection if a storm comes. The dust and cobwebs lead you to believe\nthe place has been abandoned.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "1776"
+                ],
+                "name": "",
+                "out": [
+                    "1776"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13143",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Deserted Smial",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 158,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "This room is scented with the wonderful makings from a hobbit's feast and the\nafter dinner smoke of mauve petals. Roast mutton and biscuits, libation and\nmauve, the warmth of the glowing lights, all contribute to an atmosphere of\ndelight and perpetual relaxation. Glorious feast must be held here! Candles and\nlanterns, when lit, set this room afire with the glow of a thousand fireflys.\nWere it not for the window to the west, which allows some of the light to\nescape, one might be blinded by the intensity of the lights. In the middle of\nthis room is a grand table made from the stumps of several large oak trees.\nAround this table there are six wooden chairs, crafted by Tolman himself.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "17918"
+                ],
+                "name": "",
+                "out": [
+                    "17918"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17920",
+        "light": 0,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "Dining Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 159,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "This room has obviously just been dug directly out of the ground. The walls and\nceiling have been rubbed incredibly smooth. This room was built for someone of\nshort stature, as the ceiling is only 4 feet high. Earthen tunnels continue to\nthe East and West.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17923"
+                ],
+                "name": "",
+                "out": [
+                    "17923"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17924"
+                ],
+                "name": "",
+                "out": [
+                    "17924"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "1764"
+                ],
+                "name": "",
+                "out": [
+                    "1764"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17922",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground Foyer",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 155,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "This room is made for visiting. The walls, once again, are dug out of the earth\nand rubbed incredibly smooth. Several sitting areas are scattered around, where\nvisitors can sit and share stories of their journeys.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17922"
+                ],
+                "name": "",
+                "out": [
+                    "17922"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17923",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Journey Room",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 156,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "This room is hardly more than a depression in the dirt. Plush pillows are laid\nout for sleeping. A soft glow eminates from a tiny banked fire in the corner.\nThe walls of smooth dirt reflect earthy colours in the light and sooth the\nsenses.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17922"
+                ],
+                "name": "",
+                "out": [
+                    "17922"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17924",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Smooth's Repose",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 154,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "This cubic house, obviously not using the genuine hobbit architecture is used by\nthe Little Folk of Hobbiton for storing all kind of supplies: potatoes,\ntomatoes, wheat, meat, pipe-weed, and so on. All is well-ordered, classified\naccording to type and sorted per owner. Just next to the entrance door, leaning\nagainst the wooden wall, a small desk can be seen, covered with papers.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1759"
+                ],
+                "name": "",
+                "out": [
+                    "1759"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20041",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Old Grange",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 157,
+        "y": 59,
+        "z": 0
+    }
+]

@@ -1,0 +1,340 @@
+[
+    {
+        "desc": "The passage walls bear no mark of pick or chisel, yet are smooth and quite\npolished. The tunnel here continues east and west, paved with wooden planks.\nTorches light the hallway and the sound of their crackling echoes off the stone\nwalls. A light breeze can sometimes be detected coming from somewhere to the\neast.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22444"
+                ],
+                "name": "",
+                "out": [
+                    "22444"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22438"
+                ],
+                "name": "",
+                "out": [
+                    "22438"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22440"
+                ],
+                "name": "",
+                "out": [
+                    "22440"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22439",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ancient Stone Walkway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 339,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "A wooden platform spans from the east to the south, offering footing over a\ngaping chasm that opens down below. Here and there the floorboards are missing,\nand the bridge-like structure creaks and groans as weight is placed upon it.\nNothing can be seen when peering down into the blackness of the chasm.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22441"
+                ],
+                "name": "",
+                "out": [
+                    "22441"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22439"
+                ],
+                "name": "",
+                "out": [
+                    "22439"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22440",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bridge over a Pool of Darkness",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 338,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel narrows here as it traverses north and south, leaving little room to\nwriggle through. The air is hot and stuffy, drafting up from the depths of the\nmountain itself from a crack that runs perpendicular across the tunnel. Some\nmounds of rubble have been pushed aside to clear space through the tunnel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22440"
+                ],
+                "name": "",
+                "out": [
+                    "22440"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22442"
+                ],
+                "name": "",
+                "out": [
+                    "22442"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22441",
+        "light": 1,
+        "loadflags": 4,
+        "mobflags": 0,
+        "name": "Back Passage",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 338,
+        "y": 139,
+        "z": 0
+    },
+    {
+        "desc": "The cold floor and walls of this prison cell are comprised of solid grey rock.\nDesperate dig marks can be seen pocked across the walls from previous prisoners.\nSome soiled straw covers the ground while many sets of iron chains and shackles\ncan be seen fastened to the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22439"
+                ],
+                "name": "",
+                "out": [
+                    "22439"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22443"
+                ],
+                "name": "",
+                "out": [
+                    "22443"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22444",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Gloomy Prison Cell",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 339,
+        "y": 139,
+        "z": 0
+    }
+]

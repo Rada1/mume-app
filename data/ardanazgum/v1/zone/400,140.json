@@ -1,0 +1,4444 @@
+[
+    {
+        "desc": "The stream flows steadily as it makes its way towards the Celebrant. Golden\nmallorn blooms occasionally float down from the great trees above to become as\nlittle boats on a journey through Lothlorien. Some gather along the edge of a\ngreen, mossy stone, but the current quickly dislodges them and sends them on\ntheir way.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14151"
+                ],
+                "name": "",
+                "out": [
+                    "14151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14084"
+                ],
+                "name": "",
+                "out": [
+                    "14084"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14156"
+                ],
+                "name": "",
+                "out": [
+                    "14156"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14086"
+                ],
+                "name": "",
+                "out": [
+                    "14086"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14085",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stream Flowing toward Celebrant",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 418,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "The stream is wide and fairly deep here. It would be possible to dip a\nshortsword into the water at the midpoint between the two banks and still not\ntouch the streambed below. The clear water is as cold, as if it was all runoff\nfrom the ice-melts in the mountains to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14087"
+                ],
+                "name": "",
+                "out": [
+                    "14087"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14085"
+                ],
+                "name": "",
+                "out": [
+                    "14085"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14086",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wide Stream",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 417,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "The stream begins to widen as it leaves the higher lands and heads farther down\ntoward the main arm of the Celebrant. The banks of the stream are laden with\nflat mossy stones that give way to lush green grasses that seem steeped in dew.\nThe water of the stream itself is clear and bright, allowing the pebbles on the\nbottom of the stream to be seen as they reflect the golden light from above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20688"
+                ],
+                "name": "",
+                "out": [
+                    "20688"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14086"
+                ],
+                "name": "",
+                "out": [
+                    "14086"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14151"
+                ],
+                "name": "",
+                "out": [
+                    "14151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14139"
+                ],
+                "name": "",
+                "out": [
+                    "14139"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14087",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Widening Stream",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 417,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "The stream cascades down a waterfall to the west and gathers into a small pool\nhere. The water falls about five feet over slick mossy rocks, making travel to\nthe west difficult to attempt. Large rocks covered with thick green algae\ndominate the bottom of the pool. It would be easy to slip and fall head first\ninto the chilly waters.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14139"
+                ],
+                "name": "",
+                "out": [
+                    "14139"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20688"
+                ],
+                "name": "",
+                "out": [
+                    "20688"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14089"
+                ],
+                "name": "",
+                "out": [
+                    "14089"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14088",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Small Pool",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 416,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "A small stream exits from under a low wooden bridge to the north and turns east,\nwhere the water cascades over a small waterfall and gathers in a pool below.\nMany large flat-topped rocks are embedded into the streambed, making it easy to\ntraverse the stream.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14140"
+                ],
+                "name": "",
+                "out": [
+                    "14140"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14124"
+                ],
+                "name": "",
+                "out": [
+                    "14124"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14088"
+                ],
+                "name": "",
+                "out": [
+                    "14088"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14089",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Atop a Small Waterfall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 415,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "A huge rent in the forest floor opens to the east. The forest floor drops off\nsharply, making travel that way impossible. It looks as if some massive blade\nsliced the very earth itself, leaving a deep cut that is slowly being filled up\nwith old leaves and golden blooms.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14119"
+                ],
+                "name": "",
+                "out": [
+                    "14119"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14600"
+                ],
+                "name": "",
+                "out": [
+                    "14600"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14118",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "West of a Long Crack",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 413,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "The golden forest unfolds its beauty for all to see. The tall, silvery grey\nmellyrn stand in lines in this part of the forest, creating a corridor from\nnorth to south. Their blossom-laden or leaf-laden boughs dip and sway, making\ntheir leaves or golden flowers dance in the breeze. On the forest floor, flowers\nof light purple, pale yellow and bright white grow in abundance.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14120"
+                ],
+                "name": "",
+                "out": [
+                    "14120"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14118"
+                ],
+                "name": "",
+                "out": [
+                    "14118"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14119",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Golden Forest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 413,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "All around, the immense mallorn trees heave their silvery trunks toward the\nheavens. During the day, the golden tree-crowns filter the sunlight from above,\ncasting warm golden hues over everything that dwells in this peaceful wood. The\nyellow elanor and pale niphredil flowers are abundant here, dotting the lush\ngrasses and growing in clusters at the base of the mighty mellyrn.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14121"
+                ],
+                "name": "",
+                "out": [
+                    "14121"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14119"
+                ],
+                "name": "",
+                "out": [
+                    "14119"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14124"
+                ],
+                "name": "",
+                "out": [
+                    "14124"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14120",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Golden Forest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 413,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "This narrow trail is lined with majestic mellyrn, their great boughs spread wide\noverhead, creating a canopy. Occasionally a golden flower floats down from above\nand glides softly to the moist green turf. The turf is spotted with holes and\ndivots; apparently a family of squirrels or other small animals has been storing\nfood here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14120"
+                ],
+                "name": "",
+                "out": [
+                    "14120"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14122"
+                ],
+                "name": "",
+                "out": [
+                    "14122"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14121",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Peaceful Trail",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 413,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "Covered with green grass, the forest trail runs from the west to the east. The\nsound of running water comes from somewhere nearby. Mallorn trees seem to guide\nthe path; to the north the majestic silvery trunks block passage, but the Golden\nWood can be entered to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14124"
+                ],
+                "name": "",
+                "out": [
+                    "14124"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14123"
+                ],
+                "name": "",
+                "out": [
+                    "14123"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14121"
+                ],
+                "name": "",
+                "out": [
+                    "14121"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14122",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Peaceful Trail",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 414,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "This small bridge offers a vantage point over the area. The Golden Wood is all\nabout you; mellyrn of various heights raise their stout, silvery trunks high to\nthe canopy above. Laden by foliage and blossoms, the branches sway slowly from\nside to side as a gentle wind blows through, bringing sweet smells to your nose\nand lilting notes of the forest to your ears.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14147"
+                ],
+                "name": "",
+                "out": [
+                    "14147"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14122"
+                ],
+                "name": "",
+                "out": [
+                    "14122"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14123",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bridge over a Stream",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 415,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "The forest grows dense here. The great silvery arms of the mellyrn intertwine to\ncreate a patchwork of green and pale golden hues that mask the view above after\nonly ten feet or so. Soft winds whisper through the trees. Occasionally the\nmelodic tune of the rustling mallorn boughs is punctuated by a bird call. Barely\nvisible among the grey trunks, a silvery stripe hangs from one of the larger\nmallorn-trees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14122"
+                ],
+                "name": "",
+                "out": [
+                    "14122"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14125"
+                ],
+                "name": "",
+                "out": [
+                    "14125"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14089"
+                ],
+                "name": "",
+                "out": [
+                    "14089"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14120"
+                ],
+                "name": "",
+                "out": [
+                    "14120"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14679"
+                ],
+                "name": "",
+                "out": [
+                    "14679"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14124",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Golden Wood",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 414,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "The green grass here is reminiscent of freshly fallen snow because it looks as\nif no living being has ever tread upon it. The canopy of leaves and branches\nconceals the sky, yet the light from above is still able to make its way down\nthrough the mallorn boughs in bright slants.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14124"
+                ],
+                "name": "",
+                "out": [
+                    "14124"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14126"
+                ],
+                "name": "",
+                "out": [
+                    "14126"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14140"
+                ],
+                "name": "",
+                "out": [
+                    "14140"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14125",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Golden Wood",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 414,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "A deep gash in the ground opens to the west; the drop is sharp and steep. A\nmighty event must have caused such a huge opening to form in the floor of the\nGolden Wood itself. A solitary mallorn-tree overlooks this ravine, its great\nboughs sagging over the depths below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14125"
+                ],
+                "name": "",
+                "out": [
+                    "14125"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14127"
+                ],
+                "name": "",
+                "out": [
+                    "14127"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14141"
+                ],
+                "name": "",
+                "out": [
+                    "14141"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14126",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "East of a Long Crack",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 414,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "The trees and undergrowth get thinner to the east where a stream passes through\nthe forest. Running from the north to the south, it grows steadily ever wider,\nas it makes its way towards the Celebrant. The rushing water has cut deeply into\nthe streambed, making it impossible to get down to the stream from the\ntree-covered bank.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14139"
+                ],
+                "name": "",
+                "out": [
+                    "14139"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14137"
+                ],
+                "name": "",
+                "out": [
+                    "14137"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14141"
+                ],
+                "name": "",
+                "out": [
+                    "14141"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14138",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Beside a Stream",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 416,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "Thick, lush grass grows to two feet and higher on this small plot of land that\nis wedged between a small pool to the north and a running stream to the east.\nThis seems like the perfect place for a tired traveller to lie down and gaze up\nat the graceful interwoven boughs of mellyrn adorned with flowers and leaves of\ngold or pale green.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14088"
+                ],
+                "name": "",
+                "out": [
+                    "14088"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14138"
+                ],
+                "name": "",
+                "out": [
+                    "14138"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14087"
+                ],
+                "name": "",
+                "out": [
+                    "14087"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14140"
+                ],
+                "name": "",
+                "out": [
+                    "14140"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14139",
+        "light": 0,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Moist Grass",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 416,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "The mallorn-trees here are neither very young, nor too tall; most likely, the\nsoft soil near the stream does not allow for deep roots, limiting their growth.\nThe shorter trees allow more light through to the ground and more flowers to\ngrow among the tree-trunks. The golden and white elanor and niphredil here are\njoined by various flowers of pink and soft blues.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14089"
+                ],
+                "name": "",
+                "out": [
+                    "14089"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14141"
+                ],
+                "name": "",
+                "out": [
+                    "14141"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14139"
+                ],
+                "name": "",
+                "out": [
+                    "14139"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14125"
+                ],
+                "name": "",
+                "out": [
+                    "14125"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14140",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mallorn Copse",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 415,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "The mallorn-trees stand in a circle here. Their limbs stretch towards the centre\nof the circle in a manner that makes this clearing look like a temple or a\ngathering place. One could imagine a festival or wedding being held here, among\nthe silvery-grey mallorn trunks standing tall like the pillars of a grand\nbuilding.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14140"
+                ],
+                "name": "",
+                "out": [
+                    "14140"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14142"
+                ],
+                "name": "",
+                "out": [
+                    "14142"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14138"
+                ],
+                "name": "",
+                "out": [
+                    "14138"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14126"
+                ],
+                "name": "",
+                "out": [
+                    "14126"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14141",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Circle of Trees",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 415,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "The trail of well-trodden grass leads up to a stream to the west. One can hear\nthe soft gurgling of water as it makes its way over the rocks in the stream. A\nlight, airy scent of flowers and fresh water is in the air. The mellyrn stand\ntall, soaring seemingly straight to the heavens. Their silvery trunks block the\nway to the north and south, making it impossible to enter the Golden Wood\nproper. The path leads away from the stream eastwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14148"
+                ],
+                "name": "",
+                "out": [
+                    "14148"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14123"
+                ],
+                "name": "",
+                "out": [
+                    "14123"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14147",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trail beside a Stream",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 416,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "Many flowers speckle the sides of this forest trail as it makes its way along a\nstream. Tiny yellow flowers, named elanor by the elves, along with the pale\nblooms of the niphredil, poke out from the lush green grass. Their faint aroma\nbarely reaches your nose.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "20688"
+                ],
+                "name": "",
+                "out": [
+                    "20688"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14149"
+                ],
+                "name": "",
+                "out": [
+                    "14149"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14147"
+                ],
+                "name": "",
+                "out": [
+                    "14147"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14148",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bend in the Trail",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 417,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "This shaded part of the forest offers some comfort for those weary from life on\nthe road. The silvery-trunked trees have a light mossy coating that is soft and\ncool to the touch. The plush green grass is dotted with the fragile pale yellow\nmallorn blooms that have dropped from above. A little hole in the ground at the\nbase of a nearby mallorn shows evidence that a family of chipmunks or other\nsmall forest creatures lives here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14150"
+                ],
+                "name": "",
+                "out": [
+                    "14150"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14152"
+                ],
+                "name": "",
+                "out": [
+                    "14152"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14148"
+                ],
+                "name": "",
+                "out": [
+                    "14148"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14149",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Golden Wood",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 418,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "The trail begins to wind its way through the forest, a small stream ambling\nalong in parallel with it, at some distance to the west. The sound of running\nwater gurgling down the streambed as it makes its course towards the main river\ncan clearly be heard from this spot.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14149"
+                ],
+                "name": "",
+                "out": [
+                    "14149"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14151"
+                ],
+                "name": "",
+                "out": [
+                    "14151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14154"
+                ],
+                "name": "",
+                "out": [
+                    "14154"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "20688"
+                ],
+                "name": "",
+                "out": [
+                    "20688"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14150",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Winding Trail",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 418,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "The trail bends here to avoid the stream which is beginning to pick up its pace\nas it heads from the north to join to the main arm of the mighty Celebrant to\nthe south. The trail continues on to the north and to the east, its turf soft\nand springy - not the hard matted dirt of most forest trails.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14150"
+                ],
+                "name": "",
+                "out": [
+                    "14150"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14085"
+                ],
+                "name": "",
+                "out": [
+                    "14085"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14155"
+                ],
+                "name": "",
+                "out": [
+                    "14155"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14087"
+                ],
+                "name": "",
+                "out": [
+                    "14087"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14151",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trail through the Golden Wood",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 418,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "The majesty of the Golden Wood continues to radiate, as the heart of this\nseemingly undying land is revealed for all to see. When light of the skies falls\nfrom above, the pale yellow and gold hues of the mallorn crowns cast a warm glow\non the surroundings. A couple of mallorn nuts have fallen at the base of one of\nthe trees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14154"
+                ],
+                "name": "",
+                "out": [
+                    "14154"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14153"
+                ],
+                "name": "",
+                "out": [
+                    "14153"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14149"
+                ],
+                "name": "",
+                "out": [
+                    "14149"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14152",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Golden Wood",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 419,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "This part of the Golden Wood continues to display the treasures of Lothlorien.\nThe forest floor is covered in the remnants of golden blooms which have fallen\nfrom the canopy above during previous years. Were these blooms gathered into a\nbed, they might make the most comfortable resting place ever.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14152"
+                ],
+                "name": "",
+                "out": [
+                    "14152"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14155"
+                ],
+                "name": "",
+                "out": [
+                    "14155"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14177"
+                ],
+                "name": "",
+                "out": [
+                    "14177"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14150"
+                ],
+                "name": "",
+                "out": [
+                    "14150"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14154",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Golden Wood",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 419,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "The trail makes a sharp turn here and heads both south and west. Sounds of the\nforest glide to your ear. You can hear the creaking of the trees, the rustle of\nthe leaves, lilting animal cries in the distance and countless other sounds\nthat, added together, seem a symphony.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14154"
+                ],
+                "name": "",
+                "out": [
+                    "14154"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14156"
+                ],
+                "name": "",
+                "out": [
+                    "14156"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14176"
+                ],
+                "name": "",
+                "out": [
+                    "14176"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14151"
+                ],
+                "name": "",
+                "out": [
+                    "14151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14155",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sharp Turn in the Winding Trail",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 419,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "The trail here is a straight passage from north to south. The grass is very wet,\nespecially on the west side of trail, kept moist by the forest stream. The\nflowers near the stream grow tall and their scent seems almost to be\noverpowering. Strange mosses also grow near the stream; their golden-greenish\nhue matches the mallorn foliage nearly identically.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14155"
+                ],
+                "name": "",
+                "out": [
+                    "14155"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14157"
+                ],
+                "name": "",
+                "out": [
+                    "14157"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14175"
+                ],
+                "name": "",
+                "out": [
+                    "14175"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14085"
+                ],
+                "name": "",
+                "out": [
+                    "14085"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14156",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Straightaway",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 419,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "Amid the thick foliage and branches of the mallorn resides an elven home. The\nflet is constructed of sturdy, smooth, polished wood. It has no railings; years\nof living high above the forest floor have enabled the elven residents to move\nthrough their vast network of flets without fear of falling down to the ground\nbelow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14134"
+                ],
+                "name": "",
+                "out": [
+                    "14134"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14495",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Upon a Flet",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 411,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "This is the home of an elven family. The talan, polished smooth, is of medium\nsize, enough to house a few elves and their possessions. The furniture is simple\nand unmistakably of elven make. The only entrance into this home is the rope\nladder leading up the trunk of the great tree.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14174"
+                ],
+                "name": "",
+                "out": [
+                    "14174"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14497",
+        "light": 0,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "An Elven Home",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 411,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "After ascending the fine threaded rope ladder to this talan, a wondrous room is\nrevealed. So neatly tucked away in the higher parts of the mallorn tree is this\nplace, surrounded by a thin screen coloured in pale greens and yellows, that one\ncould very easily miss it. The talan itself is quite large and is populated with\nwell-polished wooden furniture, tapestries displayed over the railings and fine\nembroidered rugs on the smooth wooden floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "14499"
+                ],
+                "name": "",
+                "out": [
+                    "14499"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14202"
+                ],
+                "name": "",
+                "out": [
+                    "14202"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14498",
+        "light": 0,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "Large Talan",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 416,
+        "y": 154,
+        "z": 0
+    },
+    {
+        "desc": "This talan rests high in the branches of a mallorn. It seems that this part of\nthe tree serves as the comfortable bedroom for the elves who live here. On the\nfloor are several wooden pallets with soft down mattresses on them. This talan\nis not as large as the lower one, but is still a good size, with room enough for\na family of elves.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "14498"
+                ],
+                "name": "",
+                "out": [
+                    "14498"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14499",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Small Talan",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 416,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "Being close to the ground, this white platform is not encircled by any rail.\nInstead, beautiful draperies and tapestries hang from the many branches that\nsurround the flet. Swaying gently in the breeze, images on the colourful cloth\ncreate a place where one can stand and let the mind wander into the stories told\nby the everchanging patterns.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14557"
+                ],
+                "name": "",
+                "out": [
+                    "14557"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14558",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 1,
+        "name": "Lower Flet",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 417,
+        "y": 140,
+        "z": 0
+    },
+    {
+        "desc": "Ascent of the thin yet strong rope ladder affords access to one of the many\nflets, or talans in the elvish tongue, that populate the forest of Lothlorien.\nThis flet seems to be used primarily for storage. It is made of the strongest\nwood, smoothly polished by countless footsteps. You can see a bridge over the\nstream to the north, and the stepping stones over the stream to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14124"
+                ],
+                "name": "",
+                "out": [
+                    "14124"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14679",
+        "light": 0,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "Atop a Flet",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 414,
+        "y": 154,
+        "z": 0
+    },
+    {
+        "desc": "A marvellous view opens from the top of the green and broad wall. Circling the\ncity, the broad and high defensive line can be easily defended against any foe\nthat has managed to reach the capital of Lothlorien. The vast forest, reaching\ntowards the hazy horizon, lies at your feet seemingly within your reach. Even\ncloser by, the encircling stone road runs in a perfect semi-circle just outside\nthe deep fosse that lies at the foot of the wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14688"
+                ],
+                "name": "",
+                "out": [
+                    "14688"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14514"
+                ],
+                "name": "",
+                "out": [
+                    "14514"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14687",
+        "light": 0,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "On the Wall",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 419,
+        "y": 144,
+        "z": 0
+    },
+    {
+        "desc": "Curving slightly, the wall here faces almost due west giving one a nice if not\nto say a splendid view of the white stone road that encircles the city. Just\noutside a deep shadowed fosse lies the perfect semi-circle of carefully placed\nwhite stones as a border between the city and the forest. The tall trees\nstanding to the side of the road seem content with their place as the road runs\nundisturbed and unmarked by the forces of nature.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14689"
+                ],
+                "name": "",
+                "out": [
+                    "14689"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14687"
+                ],
+                "name": "",
+                "out": [
+                    "14687"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14688",
+        "light": 0,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "Western Wall",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 419,
+        "y": 143,
+        "z": 0
+    },
+    {
+        "desc": "High and broad, this strong wall gives ample room for several archers to hold\nhere a defensive position. Facing almost due west, one could see what moves\nbelow on the white stone road that encircles the city or, for that matter,\nanything that comes out of the vast forest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14690"
+                ],
+                "name": "",
+                "out": [
+                    "14690"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14688"
+                ],
+                "name": "",
+                "out": [
+                    "14688"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14689",
+        "light": 0,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "Western Wall",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 419,
+        "y": 142,
+        "z": 0
+    },
+    {
+        "desc": "Positioned on the great defensive walls of the fair city of Caras Galadhon, you\nfind yourself high above the ground, thus having an excellent view. Large\ncrenellations are placed along the wall, crafted in such a way as to blend in\nwith the wall and the surrounding greenery, and allowing a defender safely to\nfire his arrows at an incoming foe. Below lies the deep fosse in permanent dusk.\nFarther out, the white stone road encircles the city and beyond it the vast\nexpanse of the golden forest stretches out endlessly.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14689"
+                ],
+                "name": "",
+                "out": [
+                    "14689"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14690",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Western Wall",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 419,
+        "y": 141,
+        "z": 0
+    },
+    {
+        "desc": "The floor of this flet is more narrow than wide and there is scarcely more than\ncrouching room left here for elf or man. Racks of arrows are secured to the\nboles of the two mellyrn whose branches support this platform. Through the dense\ncanopy of the branches one can catch a glimpse of the shimmering waters of the\nriver below and the dusky gloom of the forest on the other side of it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14492"
+                ],
+                "name": "",
+                "out": [
+                    "14492"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14749"
+                ],
+                "name": "",
+                "out": [
+                    "14749"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14748",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 128,
+        "name": "Elven Archers' Flet",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 419,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "The lower branches of the tallest and mightiest mallorn tree around support this\nflet. It is secured at about the third of the way up the trunk. The lower part\nof the trunk is too bare to climb but bears enough young growth to conceal this\nflet from the prying eyes below. The branches part slightly to the south,\nproviding a vantage point to observe traffic along Celebrant.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14748"
+                ],
+                "name": "",
+                "out": [
+                    "14748"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14749",
+        "light": 0,
+        "loadflags": 4,
+        "mobflags": 0,
+        "name": "Observation Perch",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 418,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "Warped floorboards and mouldy discoloured walls frame a small entry into what\nwas was once a cosy riverside cottage. Crude pegs fashioned from sawed-off tree\nbranches protrude from the eastern interior above a short wooden enclosure\npartially caked with mud. The western wall is extremely rotten, having seen more\nthan its share of moisture due to the sagging roof on that side of the abandoned\ndwelling.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18358"
+                ],
+                "name": "",
+                "out": [
+                    "18358"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18360"
+                ],
+                "name": "",
+                "out": [
+                    "18360"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18359",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rundown Entryway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 403,
+        "y": 154,
+        "z": 0
+    },
+    {
+        "desc": "A cold, dark fireplace sits unused in the centre of a large room that must have\nbeen used as a primary living area. Old cobwebs now occupy every corner, though\neven the inhabitants of the webs seem to have moved on. A thin layer of fine\ndust has settled on the floor and atop every surface, while the northern wall\nappears damp and rotten from moisture that has seeped in over time. Several\nsmall tufts of fur ranging in colour as well as thickness lay scattered across\nthe floor as if left unnoticed by the previous occupant.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18359"
+                ],
+                "name": "",
+                "out": [
+                    "18359"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18362"
+                ],
+                "name": "",
+                "out": [
+                    "18362"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18361"
+                ],
+                "name": "",
+                "out": [
+                    "18361"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18360",
+        "light": 1,
+        "loadflags": 2,
+        "mobflags": 0,
+        "name": "Abandoned Cottage",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 403,
+        "y": 155,
+        "z": 0
+    },
+    {
+        "desc": "Various crates and miscellaneous tools still lean against the walls of an old\nstoreroom left in disarray. Sturdy shelves line the walls near the low ceiling,\nand a pair of large hooks remain fastened securely to the eastern wall. A thin\ncord, mouldy and somewhat frayed, still dangles diligently between two sets of\nshelves on opposite sides of the room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18360"
+                ],
+                "name": "",
+                "out": [
+                    "18360"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18361",
+        "light": 1,
+        "loadflags": 8192,
+        "mobflags": 0,
+        "name": "Disused Storeroom",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 404,
+        "y": 155,
+        "z": 0
+    },
+    {
+        "desc": "A meagre nook containing only a makeshift bed overlooks the river to the south\nthrough a crude but carefully constructed window. The alcove protrudes from the\nback of the cottage as if it were added on after the rest of the dwelling had\nbeen initially constructed. It affords more living space in the central room\nwhile moving the bed into a separate, cosy area with a good view of the nearby\nwater.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18360"
+                ],
+                "name": "",
+                "out": [
+                    "18360"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18362",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Small Alcove",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 403,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "Here, a giant mulberry tree stands tall and proud, looking from afar like the\ncanopy of a chariot. It seems to beckon in welcome, its limbs softly stirring\neven in the lightest of breezes. Floral creepers wind up its trunk, caressing\nits limbs, and beyond it the grand forest quickly thickens, concealing what lies\nbeyond.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18371"
+                ],
+                "name": "",
+                "out": [
+                    "18371"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18375"
+                ],
+                "name": "",
+                "out": [
+                    "18375"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18367"
+                ],
+                "name": "",
+                "out": [
+                    "18367"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18365"
+                ],
+                "name": "",
+                "out": [
+                    "18365"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18366",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "At the Threshold of Lothlorien",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 400,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "The trees grow in small huddles. Each stand like a small congregation, they\nmutter softly amongst themselves, their limbs stirring in the breeze. The forest\ngrows more dense to the east, impenetrable to the eye. Thorny creepers cling to\ntrees, legs, and clothing in turn.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18372"
+                ],
+                "name": "",
+                "out": [
+                    "18372"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18373"
+                ],
+                "name": "",
+                "out": [
+                    "18373"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18366"
+                ],
+                "name": "",
+                "out": [
+                    "18366"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18367",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Huddles of Trees",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 401,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "The land swells abruptly, revealing a backbone of steely grey stone, above which\ncling hardy grasses and tumbled patches of gorse and brambles. Forest extends as\nfar as one can see to the southeast, but to the west is a wide saucer-shaped\nflatland of verdant lawns.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18366"
+                ],
+                "name": "",
+                "out": [
+                    "18366"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18372"
+                ],
+                "name": "",
+                "out": [
+                    "18372"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18370"
+                ],
+                "name": "",
+                "out": [
+                    "18370"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18371",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Scrubland",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 0,
+        "x": 400,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "First a lone tree, then scattered clusters of broad-leafed deciduous trees stand\nside by side with pristine mellyrn, the golden trees as fresh and vibrant as the\ndays before Arda was sullied by the hands of Morgoth. To your east, the forest\nthickens into an endless sea of mellyrn.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18367"
+                ],
+                "name": "",
+                "out": [
+                    "18367"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18371"
+                ],
+                "name": "",
+                "out": [
+                    "18371"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18372",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forest Borderlands",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 401,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "Hundreds and hundreds of young mellyrn rise here, silver-skinned and elegant,\nlike a promenade of beauties at a grand, rustic ball. More mellyrn spread out in\nall directions, growing fresh and unsullied, almost like they did during the age\nof the lamps.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18367"
+                ],
+                "name": "",
+                "out": [
+                    "18367"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18374"
+                ],
+                "name": "",
+                "out": [
+                    "18374"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18375"
+                ],
+                "name": "",
+                "out": [
+                    "18375"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18373",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Fields of Mellyrn",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 401,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "Tall mellyrn grow profusely here, their graceful, smooth trunks splaying out\ninto weaving branches that shade the sky. The ground beneath is soft turf, rich\nsoil that supports a variety of grasses and small flowers in addition to the\ngrand old trees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18373"
+                ],
+                "name": "",
+                "out": [
+                    "18373"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18325"
+                ],
+                "name": "",
+                "out": [
+                    "18325"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18376"
+                ],
+                "name": "",
+                "out": [
+                    "18376"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18374",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Golden Woods",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 401,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "One great mallorn stands here above all others, its limbs stretching far, far\nabove you. Dense foliage blankets its branches, and the other trees seem to\nhuddle close to the matriarchal tree, their tops nodding slowly in the breeze\nlike sleepy children huddled for a bedtime story.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18366"
+                ],
+                "name": "",
+                "out": [
+                    "18366"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18376"
+                ],
+                "name": "",
+                "out": [
+                    "18376"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18373"
+                ],
+                "name": "",
+                "out": [
+                    "18373"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18377"
+                ],
+                "name": "",
+                "out": [
+                    "18377"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18375",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Within the Forest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 400,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "Tall and proud, ranked in evenly spaced rows, mellyrn raise their limbs to the\nsky, their branches draped upon each other to form a dense canopy. Light filters\ndown through the spaces, glimmering and dancing upon the waters of Silverlode.\nThe forest continues to the east, deepening and thickening.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18375"
+                ],
+                "name": "",
+                "out": [
+                    "18375"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18326"
+                ],
+                "name": "",
+                "out": [
+                    "18326"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18374"
+                ],
+                "name": "",
+                "out": [
+                    "18374"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18378"
+                ],
+                "name": "",
+                "out": [
+                    "18378"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18376",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Beneath the Forest Canopy",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 400,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "A few large stones lie in the water, making it possible to cross the stream\nwithout getting the feet wet. Even though the trail is well travelled, the light\nsteps of the Elves of this wood have not worn away the mossy coating on the\nstones. A few mallorn branches were caught among the stones and lie in the\ncurrent, glistening silvery as the sparkling stream rolls across them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14148"
+                ],
+                "name": "",
+                "out": [
+                    "14148"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14087"
+                ],
+                "name": "",
+                "out": [
+                    "14087"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14150"
+                ],
+                "name": "",
+                "out": [
+                    "14150"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14088"
+                ],
+                "name": "",
+                "out": [
+                    "14088"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20688",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stones across the Stream",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 417,
+        "y": 157,
+        "z": 0
+    }
+]

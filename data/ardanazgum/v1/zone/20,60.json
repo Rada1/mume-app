@@ -1,0 +1,2034 @@
+[
+    {
+        "desc": "This path, being only a minor trail of the many roads stretched out between\nMithlond and the Dwarven Homes, does not see much use. It follows a natural vein\nof open space through the forest, sometimes not more than a couple of pole\nlengths in width, but most often it measures up to a hundred feet across. While\nthe path leads the way north and east, a gap in the deep, dark forest leers\nwickedly at you from the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "93"
+                ],
+                "name": "",
+                "out": [
+                    "93"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "95"
+                ],
+                "name": "",
+                "out": [
+                    "95"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "511"
+                ],
+                "name": "",
+                "out": [
+                    "511"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "94",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forest Trail",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 39,
+        "y": 60,
+        "z": 0
+    },
+    {
+        "desc": "The forest rim to the south follows this path east and west. Westward the forest\nvanishes in the face of a plain, and north lies an increasingly steep hillside.\nTo the northeast the path, accompanied by an avenue of moist grass, climbs into\na forest-dominated area.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "496"
+                ],
+                "name": "",
+                "out": [
+                    "496"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "498"
+                ],
+                "name": "",
+                "out": [
+                    "498"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "503"
+                ],
+                "name": "",
+                "out": [
+                    "503"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "497",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Track Bordering a Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 33,
+        "y": 60,
+        "z": 0
+    },
+    {
+        "desc": "You are on a green-gowned plain, ornamented with patches of golden flowers. A\npath barely visible in the high grass comes from the west, while another one\nenters the plain from the forest in the east. The two paths team up to make a\ntrail south to a strange formation of stone.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "495"
+                ],
+                "name": "",
+                "out": [
+                    "495"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "500"
+                ],
+                "name": "",
+                "out": [
+                    "500"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "497"
+                ],
+                "name": "",
+                "out": [
+                    "497"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "499"
+                ],
+                "name": "",
+                "out": [
+                    "499"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "498",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Joining of Paths",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 32,
+        "y": 60,
+        "z": 0
+    },
+    {
+        "desc": "You are on the western edge of a fertile plain. To the west lies the domain of\neagles and goats, brash mountains with peaks covered by eternal snow. The\nsmaller shapes of hills spread out to the north. A small path here provides\npassage into the hills, while east it will take you towards the forest on the\nother side of the plain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "494"
+                ],
+                "name": "",
+                "out": [
+                    "494"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "498"
+                ],
+                "name": "",
+                "out": [
+                    "498"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "499",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bend in the Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 31,
+        "y": 60,
+        "z": 0
+    },
+    {
+        "desc": "You have entered a valley secluded by vertical cliffsides in all directions but\nto the north. In the middle of this valley someone has created an eerie circular\nstone formation. Seven crude arches of grey rock are facing you, each covered\nwith runes illuminated by a strange, internal light. Various scenes have been\ncarved into the stones.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "498"
+                ],
+                "name": "",
+                "out": [
+                    "498"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "500",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mystical Ring",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 32,
+        "y": 61,
+        "z": 0
+    },
+    {
+        "desc": "You are in really rough forest now. The soil underfoot is dry, and in effect\nweary and bent trees appear to the south along with withered ash bushes,\nobstructing any advance in that direction. Going back north now seems to be your\nonly alternative.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "502"
+                ],
+                "name": "",
+                "out": [
+                    "502"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "501",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Impenetrable Forest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 34,
+        "y": 61,
+        "z": 0
+    },
+    {
+        "desc": "The conical shapes of tall, elegant firs are all around you, and nothing else.\nIt is not easy to keep directions, but you notice that the ground rises slightly\nsouthwards. You can hear crows and croons from several birds, but you see no\nsigns of movement anywhere.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "503"
+                ],
+                "name": "",
+                "out": [
+                    "505"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "501"
+                ],
+                "name": "",
+                "out": [
+                    "501"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "507"
+                ],
+                "name": "",
+                "out": [
+                    "507"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "502",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tall Silver Firs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 34,
+        "y": 60,
+        "z": 0
+    },
+    {
+        "desc": "You move along a forest slope, on mossgrown ground littered with rocks covered\nby lichen. The ground descends sharply to the north, and the forest seems\nlighter in that direction. To the south, trees cling to a small ridge too erect\nfor safe ascent.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "504"
+                ],
+                "name": "",
+                "out": [
+                    "505"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "508"
+                ],
+                "name": "",
+                "out": [
+                    "508"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "502"
+                ],
+                "name": "",
+                "out": [
+                    "502"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "507",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tall Silver Firs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 35,
+        "y": 60,
+        "z": 0
+    },
+    {
+        "desc": "You are walking on the north side of a ridge in the forest. Near the top of it a\nhuge uprooted tree lies rotting among the pebbles and stones of a scree. To the\neast, where the ridge fades to nothingness, the ground drops to a lower level,\nas it also does northwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "510"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "509",
+                    "510"
+                ],
+                "name": "",
+                "out": [
+                    "509"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "507"
+                ],
+                "name": "",
+                "out": [
+                    "507"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "508",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Tall Silver Firs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 36,
+        "y": 60,
+        "z": 0
+    },
+    {
+        "desc": "You are wandering in deep, dark forest. The moist forest floor has caused a\nlayer of humus to form around the base of the trees, nourishing mushrooms and\nfungi. You can move in any direction, but from here every way seems just as dark\nand uninviting.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "510"
+                ],
+                "name": "",
+                "out": [
+                    "510"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "533"
+                ],
+                "name": "",
+                "out": [
+                    "533"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "511"
+                ],
+                "name": "",
+                "out": [
+                    "511"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "508"
+                ],
+                "name": "",
+                "out": [
+                    "508"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "509",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Humid Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 37,
+        "y": 60,
+        "z": 0
+    },
+    {
+        "desc": "You are in a forest dominated by tall, evergreen firs. It is possible to force\nyour way west, deeper into the forest, but it might be hard to keep your bearing\nin that omnipotent darkness. Through the the many trees to the east, you can see\nthe forest humbly making way for an old path.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "512"
+                ],
+                "name": "",
+                "out": [
+                    "512"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "94"
+                ],
+                "name": "",
+                "out": [
+                    "94"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "509"
+                ],
+                "name": "",
+                "out": [
+                    "509"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "511",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trailside Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 38,
+        "y": 60,
+        "z": 0
+    },
+    {
+        "desc": "You stand on sloping ground, the many firs preventing a good uphill view.\nLooking north you get a fine view of a green vale in the forest, but the ridge\nacross it prevents scrutiny further north or west. From a particularly crowded\npart of the forest, beneath a cliff to the west, you spy a spiralling band of\nascending smoke.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "531"
+                ],
+                "name": "",
+                "out": [
+                    "531"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "539"
+                ],
+                "name": "",
+                "out": [
+                    "539"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "530",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 8192,
+        "name": "Sloping Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 35,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in a small vale on the south side of a overgrown ridge\ncontinuing east and southwest. West of south the ridge joins a line of hills\nlying south of the forest. The forested hillsides to the south seems to offer a\nlong but easy climb into those hills. You can also follow the vale east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "530"
+                ],
+                "name": "",
+                "out": [
+                    "530"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "532"
+                ],
+                "name": "",
+                "out": [
+                    "532"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "531",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forest Vale",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 35,
+        "y": 61,
+        "z": 0
+    },
+    {
+        "desc": "This small forest vale lies between a ridge to the north and growing hills which\ncan be discerned some way to the south. A blanket of needles fallen from the\nmany firs covers the stubby grass. You can follow the vale east and west from\nhere, or ascend the fir-riddled slopes leading south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "539"
+                ],
+                "name": "",
+                "out": [
+                    "539"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "533"
+                ],
+                "name": "",
+                "out": [
+                    "533"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "531"
+                ],
+                "name": "",
+                "out": [
+                    "531"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "532",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forest Vale",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 36,
+        "y": 61,
+        "z": 0
+    },
+    {
+        "desc": "The watery moss saps your strength as you move through the forest. The almost\nunfelt breeze sifting through the dense woods carries a faint reek of decay. To\nthe south and west the forest seems heavier but not so troubled by dampness as\nhere.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "509"
+                ],
+                "name": "",
+                "out": [
+                    "509"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "538"
+                ],
+                "name": "",
+                "out": [
+                    "538"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "534"
+                ],
+                "name": "",
+                "out": [
+                    "534"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "532"
+                ],
+                "name": "",
+                "out": [
+                    "532"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "533",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Humid Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 37,
+        "y": 61,
+        "z": 0
+    },
+    {
+        "desc": "You have waded into a sludgy mire. You sink knee-deep into the mud, making a\nsucking noise at every advancing step. A serpentine strip of muddy water rimmed\nby brown weeds crosses the mire, but it does not look deeper than would prevent\nyou from crossing it to enter the forest lying eastwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "535"
+                ],
+                "name": "",
+                "out": [
+                    "535"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "533"
+                ],
+                "name": "",
+                "out": [
+                    "533"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "534",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Mire",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 38,
+        "y": 61,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in spacious forest by the eastern edge of a quagmire. As you\nstudy the darkening forest around you, it becomes obvious that the rough woods\nare impenetrable in all directions but south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "536"
+                ],
+                "name": "",
+                "out": [
+                    "536"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "534"
+                ],
+                "name": "",
+                "out": [
+                    "534"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "535",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sparse Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 39,
+        "y": 61,
+        "z": 0
+    },
+    {
+        "desc": "As you trudge along between the trees, a mound appears before you. In its side\nyou see a round hole about four feet high, too big to be the entrance to the\nhome of any ordinary forest animal. Peering into it you see nothing but complete\ndarkness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "535"
+                ],
+                "name": "",
+                "out": [
+                    "535"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "537"
+                ],
+                "name": "",
+                "out": [
+                    "537"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "536",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Sparse Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 39,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "You have slid into what can be best described as a mud bath. Water from an\nunderground stream must have mixed with sand and earth, and created this thick\nyellow-brown liquid. The slippery granite floor which caused you to fall leads\nup to the outside.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "536"
+                ],
+                "name": "",
+                "out": [
+                    "536"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "537",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Muddy Pool within the Cavern",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 38,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "In this place the trees look to be in an ongoing battle for sunlight and space.\nAll around, intertwining roots and branches hamper your movement. You stumble\nonward, trying to keep your bearings.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "533"
+                ],
+                "name": "",
+                "out": [
+                    "533"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "539"
+                ],
+                "name": "",
+                "out": [
+                    "539"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "538",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dense Fir Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 37,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "You move among prickly fir branches in the lower parts of a hillside, standing\nabout level with the ridge crest on the other side of the vale to the north. The\nwoodlands give way to the southwest, but still one or two fingers reach south\ninto the hills from the giant palm of the forest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "532"
+                ],
+                "name": "",
+                "out": [
+                    "532"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "538"
+                ],
+                "name": "",
+                "out": [
+                    "538"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "530"
+                ],
+                "name": "",
+                "out": [
+                    "530"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "539",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sloping Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 36,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "Here, far below the surface, the water is cold. In the vague light from above\nthe green and brown vegetation can be seen on the muddy bottom, gently waving as\nthe water slowly moves back and forth. It is extremely difficult to see anything\nfurther than fifteen feet away.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "506"
+                ],
+                "name": "",
+                "out": [
+                    "506"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12405",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "At the Bottom of a Lake",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 30,
+        "y": 63,
+        "z": 0
+    },
+    {
+        "desc": "This modestly furnished cottage is filled with a cosy, tranquil atmosphere. A\nsoothing, dim light cast by a few candles enlightens the room, revealing many\nobscure and ancient artefacts that the landlord has brought along from his long\njourneys. In the corner of the room, a fireplace and a comfy armchair are\nlocated next to each other, allowing one to sit by the fire and perhaps to read\na book about gardening. Deciding by the choice of available books, it looks like\nShaodan really knows a thing or two about the legumes.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "1231"
+                ],
+                "name": "",
+                "out": [
+                    "1231"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17594",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Shaodan's Garden Cottage",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 39,
+        "y": 78,
+        "z": 0
+    },
+    {
+        "desc": "Tools of every variety are scattered around this workshop. Most lie strewn\nacross a great wooden bench that takes up half the room, but others are stacked\nin corners, or just dropped in the middle of the floor. A small layer of sawdust\ncovers every available surface, include a thin cloth pallet that lies against\none wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "23036"
+                ],
+                "name": "",
+                "out": [
+                    "23036"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23037",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cugel's Workshop",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 39,
+        "y": 79,
+        "z": 0
+    }
+]

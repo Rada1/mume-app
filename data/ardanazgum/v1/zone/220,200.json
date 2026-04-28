@@ -1,0 +1,84 @@
+[
+    {
+        "desc": "Sparkling water pushes its way into the city through a large, rusted metal gate\nmade of closely-spaced iron bars. Noises from the city come through unhindered,\ngiving an aural glimpse of what lies beyond the high stone wall that looms high\noverhead. The Greyflood flows from the northeast.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8058"
+                ],
+                "name": "",
+                "out": [
+                    "8058"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "7948",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Outside the East Gate of Tharbad",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 1,
+        "x": 223,
+        "y": 200,
+        "z": 0
+    }
+]

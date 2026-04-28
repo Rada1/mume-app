@@ -1,0 +1,1172 @@
+[
+    {
+        "desc": "You are floating in the middle of a mountain stream. The water flows rapidly and\nyou can clearly see the water pouring out of the big gap on the side of the\nmountain east of you. It seems impossible to move in that direction. You can\nleave up back to the bridge, or you can stay in the water of the stream which is\nmoving west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5982"
+                ],
+                "name": "",
+                "out": [
+                    "5982"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5966"
+                ],
+                "name": "",
+                "out": [
+                    "5966"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5981",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountain River",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 458,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "You are floating in the middle of a mountain stream. The water seems to be more\ncalm here than to the east. On both sides of you, you can see rocky walls,\nmaking it impossible to climb up on any side. The river goes east-west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5981"
+                ],
+                "name": "",
+                "out": [
+                    "5981"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5983"
+                ],
+                "name": "",
+                "out": [
+                    "5983"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5982",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountain Stream",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 457,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "You are floating in the middle of a mountain stream. The water is dark and\nominous, but calm. The rocky walls seem to bend over trying to reach you. The\nriver makes a sharp bend to the south here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5984"
+                ],
+                "name": "",
+                "out": [
+                    "5984"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5982"
+                ],
+                "name": "",
+                "out": [
+                    "5982"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5983",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountain Stream",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 456,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "You are floating in the middle of the mountain stream. On both sides of you,\nthere are big rocky walls which make it impossible for you to enter on any\nshore. The river flows west, but it is possible to go back north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5983"
+                ],
+                "name": "",
+                "out": [
+                    "5983"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5985"
+                ],
+                "name": "",
+                "out": [
+                    "5985"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5984",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountain Stream",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 456,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "Here the river goes underground. The swiftly running water makes it difficult\nfor you to control your craft. You notice a landing to the north. You can go\nnorth or back east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5986"
+                ],
+                "name": "",
+                "out": [
+                    "5986"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5984"
+                ],
+                "name": "",
+                "out": [
+                    "5984"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5985",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Gap in the Mountain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 454,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "This landing is surrounded by rocky walls and cliffs. On all sides of you, there\nare rocks and stones of all shapes and sizes. A dangerous looking hut lies to\nthe east, its walls rotten and murky. A very small path leads to it. To the\nsouth, you can see the mountain river you came from.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5985"
+                ],
+                "name": "",
+                "out": [
+                    "5985"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5987"
+                ],
+                "name": "",
+                "out": [
+                    "5987"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5986",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Landing",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 454,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "You enter an old hut. It has been a very long time since it was last used by the\nlocal mountaineers. The hut has no windows or other exits except from the broken\ndoor that you entered. It is a very primitive hut, but still servicable for use\nas shelter for the night from the cold winds.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5986"
+                ],
+                "name": "",
+                "out": [
+                    "5986"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5987",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "An Old Mountain Hut",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 455,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel bends west here, and you have to go on your knees to get further. The\nfloor of the tunnel is no longer rocky. The tunnel is almost cylindrical. You\nbetter be careful! Ice is slippery stuff.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6027"
+                ],
+                "name": "",
+                "out": [
+                    "6027"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6029"
+                ],
+                "name": "",
+                "out": [
+                    "6029"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6028",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Narrow Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 451,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "Well, the tunnel didn't lead you down to the bottom of the glacier. Instead, the\ntunnel continues down into a hole in the mountain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6028"
+                ],
+                "name": "",
+                "out": [
+                    "6028"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6032"
+                ],
+                "name": "",
+                "out": [
+                    "6032"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6029",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Tunnel End",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 450,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "This ledge has a commanding view of the trails below. The cliff face to the east\nhas a large door sealing off what appears to be a cave. To the west, a steep\ntrail leads down to the other, larger, trails. A cave opens up to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12472"
+                ],
+                "name": "",
+                "out": [
+                    "12472"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23816"
+                ],
+                "name": "",
+                "out": [
+                    "23816"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6030",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "High Ledge",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 445,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "The rocky tunnel bends to and fro, stretching both to the north and to the\nsouth. The southmost end narrows and turns steeply downwards in the same place,\nmaking further travel in that direction impossible for any beast larger than a\nrat. Near this dip in the tunnel a metal ladder has been set into the grey rock\nwall, leading upwards into a cave.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6033"
+                ],
+                "name": "",
+                "out": [
+                    "6033"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6032"
+                ],
+                "name": "",
+                "out": [
+                    "6032"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6031",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Winding Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 449,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "This is a rather small cave, circular in shape and with a diameter slightly less\nthan thirty feet. The black rock walls are almost completely clad in blueish ice\nwhile numerous icicles and stalactites hang down from the cavern ceiling. Two\nmetal ladders disturb the natural air of this cave, one leading down into a\nnarrow hole and the other leading up to another cavern.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6029"
+                ],
+                "name": "",
+                "out": [
+                    "6029"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6031"
+                ],
+                "name": "",
+                "out": [
+                    "6031"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6032",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Icy Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 450,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "The floor of this rocky tunnel is lined with numerous long and irregular rifts.\nSeveral massive stalactites hang from the ceiling high above. In a few spots,\nthe otherwise grey rock is graced with the sparkle of some other, more\nmetal-rich, mineral. The tunnel extends to the north and to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6031"
+                ],
+                "name": "",
+                "out": [
+                    "6031"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6033",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Natural Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 449,
+        "y": 37,
+        "z": 0
+    },
+    {
+        "desc": "Inside a hole stained with blood, you find a large cave. It shows signs of\nhabitation, with strewn bones and mouldy pieces of something even an orc will\nnot eat. Some chairs are put around a large table, which is covered with bones\nand other dead parts of animals or human beings. However, this cave does not\nseem like others you have seen in this area. Shields marked with strange\npictures and walls with strange colours mark this cave as an alien one. What\nonce must have been an opening in the northern wall is now completely covered\nwith debris. The only way out is to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6030"
+                ],
+                "name": "",
+                "out": [
+                    "6030"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12472",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Collapsed Inner Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 446,
+        "y": 38,
+        "z": 0
+    }
+]

@@ -1,0 +1,5341 @@
+[
+    {
+        "desc": "This underground lake measures nearly twelve yards from one wall to the other.\nIt is nearly perfectly round, and a cascade of shimmering water falls from above\nand splashes into the lake. The water is pretty clear in the upper part of the\nlake, but around two, three yards below the surface, it gets darker and dirtier,\nmaking it impossible to see the bottom. A small, crystal clear stream rushes out\nof a narrow tunnel to the east and flows on through a lower, but broader one to\nthe west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15014"
+                ],
+                "name": "",
+                "out": [
+                    "15014"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14988",
+                    "15015"
+                ],
+                "name": "",
+                "out": [
+                    "15015"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15013",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Underground Lake",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 469,
+        "y": 165,
+        "z": 0
+    },
+    {
+        "desc": "The narrow tunnel becomes wider to the west, and the water rushes to that\ndirection. It is just some two feet deep and so clear that it nearly emits its\nown, light blue light. The ground is smooth and mostly flat, whereas moisture\nmakes the walls shimmer slightly. To the east, the tunnel seems to have caved in\nyears ago, and to the south someone created carvings in the stone.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15013"
+                ],
+                "name": "",
+                "out": [
+                    "15013"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15014",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Small Underground Stream",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 470,
+        "y": 165,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel is quite low while the walls, ceiling and floor have been polished by\nthe rushing water. From the ceiling, dark green algae hang into the water and\nsoft moss grows in spots at the upper part of the walls. Further west, the\ntunnel gets even lower and finally, the rock touches the ripples and the fast\nflowing stream continues underwater.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15013"
+                ],
+                "name": "",
+                "out": [
+                    "15013"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15016"
+                ],
+                "name": "",
+                "out": [
+                    "15016"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15015",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Stream in a Low Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 468,
+        "y": 165,
+        "z": 0
+    },
+    {
+        "desc": "The rock is smoothly polished by the permanent current. Some low plants, growing\non the bottom of this stream, move their tendrils in the flow of the water, and\nlittle, yellow dots shimmer on their long, flexible leaves. The tunnel gets\nnarrower but also much higher in the southern part.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15017"
+                ],
+                "name": "",
+                "out": [
+                    "15017"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15015"
+                ],
+                "name": "",
+                "out": [
+                    "15015"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15016",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "An Underground Stream",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 467,
+        "y": 165,
+        "z": 0
+    },
+    {
+        "desc": "While the walls on the sides could be touched by stretching the arms, the bottom\nand ceiling of this stream are barely visible in the dark. Yet, it can be made\nout that the floor seems to be covered with dark soil and an occasional plant\nwith large, nearly perfectly round leaves.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15016"
+                ],
+                "name": "",
+                "out": [
+                    "15016"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15018"
+                ],
+                "name": "",
+                "out": [
+                    "15018"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15017",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Narrow and Deep Underground Stream",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 467,
+        "y": 166,
+        "z": 0
+    },
+    {
+        "desc": "As the underground stream becomes narrow and very low, the current is very\nstrong in this place. In this current, it is hard to figure out where bottom,\nceiling or side are. The walls, however, are slick and napless, and only very\nfew, thin algae are able to grow on the bare rock. In the far end of the sight,\nthe tunnel gets even narrower, and the stream rushes into a black hole to the\nsouth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "11824"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15017"
+                ],
+                "name": "",
+                "out": [
+                    "15017"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15018",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Rushing Underground Stream",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 466,
+        "y": 166,
+        "z": 0
+    },
+    {
+        "desc": "Grass emerges from the shelf to the west, but is cut off by dried and cracked\nground here. Only a few weeds have survived to keep growing, and only from\nwithin the cracks along the ground. Most of the water from the rain probably\nseeks its way into the cracks, giving these weeds enough nutrients to survive.\nThere are stones of various sizes scattered across the ground, with different\ntextures and colours. Some smaller pebbles cover the ground in sections to the\neast. To the north, there is a steep ledge that leads down to a small dale.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "15036"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15032"
+                ],
+                "name": "",
+                "out": [
+                    "15032"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15030"
+                ],
+                "name": "",
+                "out": [
+                    "15030"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15031",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Shelf",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 460,
+        "y": 175,
+        "z": 0
+    },
+    {
+        "desc": "A small ledge begins to form in the centre of these dried grounds. It slowly\ngains height as it climbs to the west, with a few rocks mixed into the soil. The\nground is dry and only few blades of grass have survived here, with three small\nbushes standing on the eastern side of the ledge. The bushes are short, and\ntheir leaves are crisp and dying.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "15035"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15033"
+                ],
+                "name": "",
+                "out": [
+                    "15033"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15031"
+                ],
+                "name": "",
+                "out": [
+                    "15031"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15032",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cracked Ledge",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 461,
+        "y": 175,
+        "z": 0
+    },
+    {
+        "desc": "It looks as though a streambed had once passed through here, though now it is\ndiminished and only a slight trace of it along the ground can be noticed. Many\nfine grains of sand cover most of the ground here along with tiny pebbles, a\nmixture of various colours. The grass along the west and east side of the faded\nstreambed is bright green, as though it really flourished near the water at one\ntime long ago. Near the south end of the old streambed, young blades of grass\nhave grown, but it is not nearly as thick as the surrounding patches.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15034"
+                ],
+                "name": "",
+                "out": [
+                    "15034"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15032"
+                ],
+                "name": "",
+                "out": [
+                    "15032"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15033",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Diminished Streambed",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 462,
+        "y": 175,
+        "z": 0
+    },
+    {
+        "desc": "The streambed appears to have once led here from the west, and after a slight\ncurve it headed in a southbound direction. There are several plants trying to\nemerge from the dried and cracked soil of the dried-up bed, but it would appear\nthey are struggling to survive here. Some bright green grass has grown thick to\nthe north, where it looks like the plains expand.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15080"
+                ],
+                "name": "",
+                "out": [
+                    "15080"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15033"
+                ],
+                "name": "",
+                "out": [
+                    "15033"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15035"
+                ],
+                "name": "",
+                "out": [
+                    "15035"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15034",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Streambed",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 462,
+        "y": 174,
+        "z": 0
+    },
+    {
+        "desc": "The ground is rough and cracked, with very small pebbles upon it in random piles\nall over. The remains of a streambed can be noticed by the markings and patterns\nalong the ground, travelling east and west. A slight ledge forms in the south\nand appears to grow higher as it continues westwards. The ledge to the north is\nvery tall, with some green grass noticeable on the top, continuing both east and\nwest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "15081"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "15032"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15034"
+                ],
+                "name": "",
+                "out": [
+                    "15034"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15036"
+                ],
+                "name": "",
+                "out": [
+                    "15036"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15035",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dried-up Streambed",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 461,
+        "y": 174,
+        "z": 0
+    },
+    {
+        "desc": "The dale is half covered by small pebbles on the west side, and dry patches of\nbare earth on the east. An occasional weed can be noticed, sprouting up from the\nearth between the pebbles and looking very dry and unhealthy. To the north and\nsouth are large walls of natural earth. This dale, long ago though, was most\nlikely a small and quiet stream, but has since dried up and remained bare.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "15094"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "15031"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15035"
+                ],
+                "name": "",
+                "out": [
+                    "15035"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15037"
+                ],
+                "name": "",
+                "out": [
+                    "15037"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15036",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Small Dale",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 460,
+        "y": 174,
+        "z": 0
+    },
+    {
+        "desc": "A rocky protrusion has formed on the walls of the chasm, big enough to stand or\nrest on with a small group, yet it is very uncomfortable. A few smaller bushes\ngrow on the edges, and some grass grows in the cracks of the wall. Every part of\nthe rock and bushes is damp, and small fungi grow all around. It seems to be\nquite easy to climb down into the deep and dark chasm, but only a very skilled\nclimber would be able to find a way up without breaking his neck when trying.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "15055"
+                ],
+                "name": "",
+                "out": [
+                    "15055"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "15058"
+                ],
+                "name": "",
+                "out": [
+                    "15058"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15057",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Protrusion in the Chasms Wall",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 467,
+        "y": 160,
+        "z": 0
+    },
+    {
+        "desc": "The walls rise so high that only a small portion of the sky remains to be seen.\nWhile some parts of the walls seem to offer some hold to plants and even smaller\ntrees, other parts are blank and steep, and not even a crack can be spotted. The\nbottom of this chasm is moist, and large sections have been filled with dirty\nwater which stinks of decay and old mud. Some patches of black grass grow here,\nand from the tenacious, black mud, a few broken bones of animals and travellers,\nwhich have been so unlucky to slide into the chasm, stick out.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15059"
+                ],
+                "name": "",
+                "out": [
+                    "15059"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "15057"
+                ],
+                "name": "",
+                "out": [
+                    "15057"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15058",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Deep and Dark Chasm",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 468,
+        "y": 160,
+        "z": 0
+    },
+    {
+        "desc": "The plains stretch from here, showing an assortment of grasses, wildflowers, and\nsmall bushes of many different colours. A large stone stands almost in the\ncentre of the plain, light grey in colour, with a rough texture to it. Several\nbranches, all being very thin and splintered, are scattered around along the\nground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15089"
+                ],
+                "name": "",
+                "out": [
+                    "15089"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15034"
+                ],
+                "name": "",
+                "out": [
+                    "15034"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15081"
+                ],
+                "name": "",
+                "out": [
+                    "15081"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15080",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Great Plains",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 462,
+        "y": 173,
+        "z": 0
+    },
+    {
+        "desc": "The grass has grown quite fine here, bright green in colour and very thick in\nappearance. The grass ends abruptly to the south, where there is a long drop\ndown to an old streambed below. The stump of an old tree stands firmly in the\nearth still, with a few flowers growing out from around it. The plains appear to\nexpand to the east, and the ledge continues to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15088"
+                ],
+                "name": "",
+                "out": [
+                    "15088"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "15035"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15080"
+                ],
+                "name": "",
+                "out": [
+                    "15080"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15094"
+                ],
+                "name": "",
+                "out": [
+                    "15094"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15081",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ledge of Fine Grass",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 461,
+        "y": 173,
+        "z": 0
+    },
+    {
+        "desc": "Various stumps and boles of long dead trees are lying around here. On a few of\nthe stumps some scar-like markings can be seen, probably cut by a crude hatchet\nor axe. Now some thick and dry brushwood dominates this area, covering\neverything and choking back the trees' every attempt to regain their former\nglory.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15131"
+                ],
+                "name": "",
+                "out": [
+                    "15131"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15085"
+                ],
+                "name": "",
+                "out": [
+                    "15085"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15125"
+                ],
+                "name": "",
+                "out": [
+                    "15125"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15083"
+                ],
+                "name": "",
+                "out": [
+                    "15083"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15084",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Remnants of a Forest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 460,
+        "y": 169,
+        "z": 0
+    },
+    {
+        "desc": "The ground here is barren and dark, being coloured by shades of black and brown.\nMost of the ground is dry, so dry it appears like concrete and is filled with\nsmall hollows and cracks. Small patches of dry grass and various half-dead\nplants are scattered among the ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15084"
+                ],
+                "name": "",
+                "out": [
+                    "15084"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15086"
+                ],
+                "name": "",
+                "out": [
+                    "15086"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15097"
+                ],
+                "name": "",
+                "out": [
+                    "15097"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15095"
+                ],
+                "name": "",
+                "out": [
+                    "15095"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15085",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sere Ground",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 460,
+        "y": 170,
+        "z": 0
+    },
+    {
+        "desc": "Several weeds have sprouted from beneath the ground here, mixed in among long\nblades of grass. The grass appears to be very crisp and dried. There are some\nflowers growing along the western edge of the field, where a narrow dale courses\nthrough the landscape. It looks like a dried-up streambed. The furrows in the\nground suggest that the water once flowed in from the east, perhaps creating a\nsmall waterfall at this point.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15085"
+                ],
+                "name": "",
+                "out": [
+                    "15085"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15087"
+                ],
+                "name": "",
+                "out": [
+                    "15087"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15096"
+                ],
+                "name": "",
+                "out": [
+                    "15096"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "15040"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15086",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "At the Edge of a Narrow Dale",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 460,
+        "y": 171,
+        "z": 0
+    },
+    {
+        "desc": "The field grows long blades of grass spreading out evenly across the ground.\nBetween them are patches of dried and bare ground. The grassy ledge, which is\nalmost unnoticeable until it is too late, travels along the western side of the\nfield, completely covered by tall lengths of grass and weeds. There are a few\nstones littered about the field as well.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15086"
+                ],
+                "name": "",
+                "out": [
+                    "15086"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15094"
+                ],
+                "name": "",
+                "out": [
+                    "15094"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15088"
+                ],
+                "name": "",
+                "out": [
+                    "15088"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "15039"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15087",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grassy Ledge",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 460,
+        "y": 172,
+        "z": 0
+    },
+    {
+        "desc": "The grass is fine here, bright green in colour, with only a few weeds noticeable\nbetween the slender blades. Four trees have also grown here, spreading out\nseveral feet from one another, all having long and thin branches. The leaves on\nthese trees are small, green, and oval in shape. The bark upon the trees appears\nto be very smooth and light brown in colour. The grass gets taller as it expands\nto the east, where there is also a small mound noticeable in the distance.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15096"
+                ],
+                "name": "",
+                "out": [
+                    "15096"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15081"
+                ],
+                "name": "",
+                "out": [
+                    "15081"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15089"
+                ],
+                "name": "",
+                "out": [
+                    "15089"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15087"
+                ],
+                "name": "",
+                "out": [
+                    "15087"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15088",
+        "light": 0,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Slightly Wooded Meadow",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 461,
+        "y": 172,
+        "z": 0
+    },
+    {
+        "desc": "The grassland here seems to continue to the south, though to the west, a few\ntrees stand barely discernible. The soil is broken up, with crisp blades of\ngrass growing in large clumps all over. Small mounds are rising out of the\nearth, giving this landscape a distinct appearance.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15128"
+                ],
+                "name": "",
+                "out": [
+                    "15128"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15080"
+                ],
+                "name": "",
+                "out": [
+                    "15080"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15088"
+                ],
+                "name": "",
+                "out": [
+                    "15088"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15089",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rough Grassland",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 462,
+        "y": 172,
+        "z": 0
+    },
+    {
+        "desc": "The ground is covered by a thick bed of grass, with very few noticeable weeds.\nTo the east the grass becomes longer, though the growth is not as thick as it is\nhere. Some small pebbles are also noticeable along the east side of this grassy\narea. This appears to be a ledge, since to the west and south there is a great\ndistance down to the ground below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15087"
+                ],
+                "name": "",
+                "out": [
+                    "15087"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "15036"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15081"
+                ],
+                "name": "",
+                "out": [
+                    "15081"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "15038"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15094",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grassy Ledge",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 460,
+        "y": 173,
+        "z": 0
+    },
+    {
+        "desc": "The channel is completely dry, filled by tiny grains of sand and small pebbles.\nIt looks as though water had at one time flowed southwest from here, where the\nsand slowly begins to fade and small spots of grass can be noticed. On one side\nof the dried-up channel stands a tall tree, coated by a grey-coloured bark. A\nfew flowers have sprouted up from the earth on both sides of the sandy bed\ntogether with several stones. A large hill stands to the east, but due to the\nerosion over the years, it is impossible to reach it from this side.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15097"
+                ],
+                "name": "",
+                "out": [
+                    "15097"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15088"
+                ],
+                "name": "",
+                "out": [
+                    "15088"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15086"
+                ],
+                "name": "",
+                "out": [
+                    "15086"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15096",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dried-up Channel",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 461,
+        "y": 171,
+        "z": 0
+    },
+    {
+        "desc": "The barren, sandy landscape here is dominated by a dried, meandering channel,\nwhich still bears visible marks of once flowing water. Pebbles along the dry\nvalley are round, as the once gushing water has curved the edges from all\nstones. Small bushes have surrounded the channel and dried there in the past,\nleaving only empty skeletal branches behind. The channel continues to both the\nnorth and the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15125"
+                ],
+                "name": "",
+                "out": [
+                    "15125"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15096"
+                ],
+                "name": "",
+                "out": [
+                    "15096"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15127"
+                ],
+                "name": "",
+                "out": [
+                    "15127"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15085"
+                ],
+                "name": "",
+                "out": [
+                    "15085"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15097",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dead Channel",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 461,
+        "y": 170,
+        "z": 0
+    },
+    {
+        "desc": "This deep, dry basin seems completely lifeless. The ground is dry and extremely\nhard-surfaced, coloured with shades of black and brown. The brinks of this bowl\ndo not rise very steeply. Along the northern edge of the old pool huge logs and\nsmall boulders can be noticed, perhaps the remains of an ancient pier.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15130"
+                ],
+                "name": "",
+                "out": [
+                    "15130"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15097"
+                ],
+                "name": "",
+                "out": [
+                    "15097"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15126"
+                ],
+                "name": "",
+                "out": [
+                    "15126"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15084"
+                ],
+                "name": "",
+                "out": [
+                    "15084"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15125",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Extinct Lake",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 461,
+        "y": 169,
+        "z": 0
+    },
+    {
+        "desc": "Short, stunted grass covers this area into austere embrace. Even the land is\narid and barren, with its grass growing dark green. Some holes of various small\nrodents can be seen all around the landscape, and almost non-existing trails\nconnect the burrows to each other. There are some old fences piled up along the\nnortheast side of the plain, and some large boulders stand in the southeastern\nparts.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15129"
+                ],
+                "name": "",
+                "out": [
+                    "15129"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15127"
+                ],
+                "name": "",
+                "out": [
+                    "15127"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15125"
+                ],
+                "name": "",
+                "out": [
+                    "15125"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15126",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bare Plain",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 462,
+        "y": 169,
+        "z": 0
+    },
+    {
+        "desc": "The slightly rolling country here is filled with stunted hummocks and tussocks.\nSome brushwood, mainly heather and some various herbs grow here. The ground\nappears pretty dry, while the growth is strong and stable. A couple of large\nrocks and circular-shaped stones are scattered around on the ground. To the\nsouth, a slight rise in the earth can be noticed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15126"
+                ],
+                "name": "",
+                "out": [
+                    "15126"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15097"
+                ],
+                "name": "",
+                "out": [
+                    "15097"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15127",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stunted Hummocks",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 462,
+        "y": 170,
+        "z": 0
+    },
+    {
+        "desc": "In the centre of the plains is a large knoll, emerged slightly from the earth.\nGrass has fully covered the knoll, along with some white flowers that have grown\nupon it. There are large stones at the southern end, which were probably some\ntype of a marker long ago, but have since crumbled and toppled over into a large\npile of debris. Long-stemmed wildflowers and tall blades of grass cover the\nlargest portion of debris, making it almost unnoticeable.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15089"
+                ],
+                "name": "",
+                "out": [
+                    "15089"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15128",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Steep Knoll",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 462,
+        "y": 171,
+        "z": 0
+    },
+    {
+        "desc": "The flat field here consists of extremely dry ground. Some remains of fences\nbuilt long ago, made of some huge, dry logs, can still be seen around. Now their\nskeletal forms are the sole guard of this long abandoned area. Some half-buried\nbones are the only other reference to what this land might have formerly been\nused for.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15142"
+                ],
+                "name": "",
+                "out": [
+                    "15142"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15126"
+                ],
+                "name": "",
+                "out": [
+                    "15126"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15130"
+                ],
+                "name": "",
+                "out": [
+                    "15130"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15129",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ancient Lea",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 462,
+        "y": 168,
+        "z": 0
+    },
+    {
+        "desc": "The slightly rolling country has suffered badly from continuous erosion, caused\nby aridity, heat and time. The pebbly and sandy ground here grows only some weak\ngrass but incredibly lush bushes, which reveal some of the landscapes former\nfertility. Some ancient formations of stone can be seen around, half buried into\nthe sand and bush growth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15141"
+                ],
+                "name": "",
+                "out": [
+                    "15141"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15125"
+                ],
+                "name": "",
+                "out": [
+                    "15125"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15129"
+                ],
+                "name": "",
+                "out": [
+                    "15129"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15131"
+                ],
+                "name": "",
+                "out": [
+                    "15131"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15130",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Lush Bushes",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 461,
+        "y": 168,
+        "z": 0
+    },
+    {
+        "desc": "The landscape here is barren, growing weak grass and various thorny bushes. The\nground is mostly composed of sand and pebble instead of soil. Some man-sized\nboulders are lying here, half buried in the sand, and branches of thorny growth\nare rising out from their sides. To the west, the scenery rises slightly while\nit becomes more rocky.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15140"
+                ],
+                "name": "",
+                "out": [
+                    "15140"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15084"
+                ],
+                "name": "",
+                "out": [
+                    "15084"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15130"
+                ],
+                "name": "",
+                "out": [
+                    "15130"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15132"
+                ],
+                "name": "",
+                "out": [
+                    "15132"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15131",
+        "light": 0,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Thorny Bushes",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 460,
+        "y": 168,
+        "z": 0
+    },
+    {
+        "desc": "This part of the cavern is filled with smoke and other strong aromas floating in\nthe air. The stone floor is covered with a thick and soft carpet, which is\ndirtied by all possible blemishes. Pieces of crude furniture, some wrecked and\nsome undamaged, share the floor space in disarray. Above a fireplace in the\ncorner, the cavern ceiling seems to disappear out of sight.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15134"
+                ],
+                "name": "",
+                "out": [
+                    "15134"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "15132"
+                ],
+                "name": "",
+                "out": [
+                    "15132"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15133",
+        "light": 0,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "Smelly Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 464,
+        "y": 169,
+        "z": 0
+    },
+    {
+        "desc": "This dark cavern opens as wide as high, enclosing all of the surroundings to\ndeep shadows. The basement rock along the ground is flooded with all sorts of\nrubbish and food leftovers, which could be fresh marks of the inhabitants. Some\nlight can be seen further into the darkness. A small stream of water flows\nonwards along the ground, only to disappear into a small hole.\n",
+        "exits": [
+            {
+                "dflags": 32,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "15139"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15133"
+                ],
+                "name": "",
+                "out": [
+                    "15133"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15134",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Smelly Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 464,
+        "y": 168,
+        "z": 0
+    },
+    {
+        "desc": "The threshold is long, though narrow, and leading toward a building that lies to\nthe north, with an oaken door marking its entrance. Thick, dark wood was used to\ncreate the threshold, and a glossy finish was placed on it. The ceiling was\ncreated with the same kind of wood, but at the southern end of it, there is a\nred banner that dangles down. The ground is bare of any debris, materials, or\neven grass, with only dry earth to walk over. The threshold is large enough so\nthat it appears to block any sunlight or rough weather from entering.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "15136"
+                ],
+                "name": "",
+                "out": [
+                    "15136"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15040"
+                ],
+                "name": "",
+                "out": [
+                    "15040"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15135",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Threshold to a Shelter",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 468,
+        "y": 171,
+        "z": 0
+    },
+    {
+        "desc": "This shelter was obviously reconstructed over time from its original build, as\nsome of the wood used for the walls is new compared to the rest. It has a glossy\ncoating upon it, while the old portions appear to have started to splinter due\nto age. The western part of the ceiling is solid wood as well, while the rest is\ncovered with a thick tarp along one side of the shelter. Large wooden beams with\nsome engravings support the solid part of the roof, but the other side lacks\nthem. Especially the north-eastern portion of the roof looks extremely aged and\nbuckled. Large sheets of wood cover the floor, with an old rug lying upon them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "15135"
+                ],
+                "name": "",
+                "out": [
+                    "15135"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "15137"
+                ],
+                "name": "",
+                "out": [
+                    "15137"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15136",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 36864,
+        "name": "A Reconstructed Shelter",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 468,
+        "y": 170,
+        "z": 0
+    },
+    {
+        "desc": "This roof covers a very old structure of some kind, even though the boards are\nquite decayed and splintered in several different places. On the southeastern\nside of the roof here, a dark-coloured tarp can be noticed, probably tied there\nto cover a gaping hole. The roof steeply slants up to the west, while the\nnorthern part seems easier to reach. Looking down from the roof, a rocky dale\nruns to the south from this building.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15138"
+                ],
+                "name": "",
+                "out": [
+                    "15138"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "15136"
+                ],
+                "name": "",
+                "out": [
+                    "15136"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15137",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On a Decaying Roof",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 468,
+        "y": 169,
+        "z": 0
+    },
+    {
+        "desc": "The boards used for the roof here are very old, cracked in several places, and\nalready well into a decaying state. The roof rises up on a high slant to the\nwest, and would be too steep to climb to the other side. The boards along the\nupper portion of that slant are even more decayed than those right here. The\nroof offers a view of the surrounding dale but there is no visibility to the\nfields above. A ladder is set against the northern wall of the dale, leading\nupwards to a grassy ledge.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15137"
+                ],
+                "name": "",
+                "out": [
+                    "15137"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15095"
+                ],
+                "name": "",
+                "out": [
+                    "15095"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15138",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On a Decaying Roof",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 1,
+        "x": 468,
+        "y": 168,
+        "z": 0
+    },
+    {
+        "desc": "The growth of tall grass dominates the flat ground here. A small spring gushes\nhere, forming a small stream which then flows rapidly to the west, giving some\nmuch needed moisture to all vegetation. Some blooming plants colour the land\nwhich surrounds the tiny source of the brook. This paradisiacal oasis does not\nseem to have any larger plants though.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15144"
+                ],
+                "name": "",
+                "out": [
+                    "15144"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15131"
+                ],
+                "name": "",
+                "out": [
+                    "15131"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15141"
+                ],
+                "name": "",
+                "out": [
+                    "15141"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15139"
+                ],
+                "name": "",
+                "out": [
+                    "15139"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15140",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Tall Grass",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 460,
+        "y": 167,
+        "z": 0
+    },
+    {
+        "desc": "A short but strong grassbed covers the ground here. The surroundings are painted\nin various shades of green. A constant wind may have forced most of the stalks\nof grass to bend low in this open area. Some small plants have grown at random\nspots here and there, wherever they could manage to find shelter against the\nweather.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15145"
+                ],
+                "name": "",
+                "out": [
+                    "15145"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15130"
+                ],
+                "name": "",
+                "out": [
+                    "15130"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15142"
+                ],
+                "name": "",
+                "out": [
+                    "15142"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15140"
+                ],
+                "name": "",
+                "out": [
+                    "15140"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15141",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Short Grass",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 461,
+        "y": 167,
+        "z": 0
+    },
+    {
+        "desc": "Short, strong grass covers the ground here. Some ancient stumps and boles have\nbroken through the grassbed, revealing the remains of some destroyed forest. A\nsingle tree is still remaining, raising its naked trunk up to the heights. It\nmay have stood here branchless and leafless for ages, but still offers some\nshelter to various small animals such as birds and insects.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15146"
+                ],
+                "name": "",
+                "out": [
+                    "15146"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15129"
+                ],
+                "name": "",
+                "out": [
+                    "15129"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15141"
+                ],
+                "name": "",
+                "out": [
+                    "15141"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15142",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Lone Tree in the Plains",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 462,
+        "y": 167,
+        "z": 0
+    },
+    {
+        "desc": "Some stunted and slow-growing bushes rule the landscape here. Weak grass and\nsome especially strong plants grow below the bushes. The undergrowth is formed\nmostly of different waxy-leafed herbs, which can accept this barren plain as\ntheir substrate.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15148"
+                ],
+                "name": "",
+                "out": [
+                    "15148"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15140"
+                ],
+                "name": "",
+                "out": [
+                    "15140"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15145"
+                ],
+                "name": "",
+                "out": [
+                    "15145"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15143"
+                ],
+                "name": "",
+                "out": [
+                    "15143"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15144",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stunted Plain",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 460,
+        "y": 166,
+        "z": 0
+    },
+    {
+        "desc": "Small bushes have spread their growth all around this area, leaving all of the\ngrass as a weak minority which is forced to fight for its existence. The\nalteration of different ground types is clearly visible here, when the lush\nsteppes, the arid field and the scrubby plains meet. Only a few weeds appear to\nstand out, mainly due to their dark colour.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15149"
+                ],
+                "name": "",
+                "out": [
+                    "15149"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15141"
+                ],
+                "name": "",
+                "out": [
+                    "15141"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15146"
+                ],
+                "name": "",
+                "out": [
+                    "15146"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15144"
+                ],
+                "name": "",
+                "out": [
+                    "15144"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15145",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Small Bushes",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 461,
+        "y": 166,
+        "z": 0
+    },
+    {
+        "desc": "Various bushes grow here, rising knee-high and covering the dry ground below\nthem. The brush has long and slender branches, extending out from the earth. A\nfew thorns which seem to be rather sharp and very short in length can be noticed\nupon these branches.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15150"
+                ],
+                "name": "",
+                "out": [
+                    "15150"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15142"
+                ],
+                "name": "",
+                "out": [
+                    "15142"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15145"
+                ],
+                "name": "",
+                "out": [
+                    "15145"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15146",
+        "light": 0,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Thorny Brush",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 462,
+        "y": 166,
+        "z": 0
+    },
+    {
+        "desc": "In the air here, there flows a gentle fragrance of wood and resin, generated by\nlow, woody shrubs covering the ground. Where bushes and twigs have lost their\ngrasp on the land, dirt and grass cover the earthy ground, here and there\nadjourned by clusters of dandelions and moss. Chickweed seems to grow\neverywhere.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15623"
+                ],
+                "name": "",
+                "out": [
+                    "15623"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15144"
+                ],
+                "name": "",
+                "out": [
+                    "15144"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15149"
+                ],
+                "name": "",
+                "out": [
+                    "15149"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15147"
+                ],
+                "name": "",
+                "out": [
+                    "15147"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15148",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rosiny Bushes",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 460,
+        "y": 165,
+        "z": 0
+    },
+    {
+        "desc": "Short but wide shrubs nestle to each other, forming a dense, green and brown\nliving carpet which burdens movement. Only at a few spots, the carpet opens for\nsome kind of natural pathways paved with nettles, thistles and other small\nplants. The fragrance of different herbs can be smelled in the air, mingled with\na faint, yet sharp stench.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15152"
+                ],
+                "name": "",
+                "out": [
+                    "15152"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15145"
+                ],
+                "name": "",
+                "out": [
+                    "15145"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15150"
+                ],
+                "name": "",
+                "out": [
+                    "15150"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15148"
+                ],
+                "name": "",
+                "out": [
+                    "15148"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15149",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Squat Bushes",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 461,
+        "y": 165,
+        "z": 0
+    },
+    {
+        "desc": "Thick and strong brush covers the area, growing in all shapes and sizes. Nearly\nhidden by the brushwood, a soft slope eases down into a vague sink in the land,\nbarely noticeable for an inattentive observer. Many tiny rills and small holes\nin the surrounding ground yet indicate that the water from rainfalls steadily\nflows into the dip, eroding the vicinity and slowly but steadily filling it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15153"
+                ],
+                "name": "",
+                "out": [
+                    "15153"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15146"
+                ],
+                "name": "",
+                "out": [
+                    "15146"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15149"
+                ],
+                "name": "",
+                "out": [
+                    "15149"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15150",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Shallow Dip in the Brush",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 462,
+        "y": 165,
+        "z": 0
+    },
+    {
+        "desc": "The field is covered with thin, woody grass. A few flowers manage to survive\nwhile being at a permanent strife for survival. Rocks lie here and there on the\nground, and close to most of them, bushes and higher grass grow. The soil is\nhard and poor, and dust can be felt in the air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15155"
+                ],
+                "name": "",
+                "out": [
+                    "15155"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15149"
+                ],
+                "name": "",
+                "out": [
+                    "15149"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15153"
+                ],
+                "name": "",
+                "out": [
+                    "15153"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15623"
+                ],
+                "name": "",
+                "out": [
+                    "15623"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15152",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Scarce Grassland",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 461,
+        "y": 164,
+        "z": 0
+    },
+    {
+        "desc": "The landscape here is dominated by wildly sprawling shrubs and brush. On the\nwind-beaten ground, various rocks are uncovered, protruding through the thin\nlayer of soil. The air is light, enriched by the spicy smell of the bushes which\nnearly conceals the elusive scent of herbs and dirt carried along by the wind.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15154"
+                ],
+                "name": "",
+                "out": [
+                    "15154"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15150"
+                ],
+                "name": "",
+                "out": [
+                    "15150"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15152"
+                ],
+                "name": "",
+                "out": [
+                    "15152"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15153",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wild Brush",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 462,
+        "y": 164,
+        "z": 0
+    },
+    {
+        "desc": "The dry lands are filled with golden grass, grasping through the thin layer of\nsoil on the stony ground with their stems, leaving it cracked. At some places\nthe grass grows to the height of a fully grown man's waist, and yet, at in other\nplaces it has lost the battle against the hard ground, leaving it barren and\nonly covered with a few patches of moss.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15158"
+                ],
+                "name": "",
+                "out": [
+                    "15158"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15153"
+                ],
+                "name": "",
+                "out": [
+                    "15153"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15155"
+                ],
+                "name": "",
+                "out": [
+                    "15155"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15154",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grassy, Cracked Ground",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 462,
+        "y": 163,
+        "z": 0
+    },
+    {
+        "desc": "Among fields of grass in tones of gold and yellow, a tiny hill arises,\noverlooking the vicinity. Although being only small in size, the hill is still\nnoticeable compared to the flat surrounding ground. Green grass and moss cover\nit, and a few barren spots can be seen on it. Flowers of all colours grow\neverywhere, making this a good landmark for a traveller.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15159"
+                ],
+                "name": "",
+                "out": [
+                    "15159"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15152"
+                ],
+                "name": "",
+                "out": [
+                    "15152"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15154"
+                ],
+                "name": "",
+                "out": [
+                    "15154"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15156"
+                ],
+                "name": "",
+                "out": [
+                    "15156"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15155",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Tiny Hill",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 461,
+        "y": 163,
+        "z": 0
+    },
+    {
+        "desc": "The rank ground seems to have hardened over time here. Fragile stems of grass in\ngold and yellow and cabbages in all tones of brown and green cover it. Gravel,\nrocks and hard chunks of soil form the surface between the strays of grass.\nSmall patches of moss clutch at the earth, slowly easing the ground again.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15160"
+                ],
+                "name": "",
+                "out": [
+                    "15160"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15623"
+                ],
+                "name": "",
+                "out": [
+                    "15623"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15155"
+                ],
+                "name": "",
+                "out": [
+                    "15155"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15157"
+                ],
+                "name": "",
+                "out": [
+                    "15157"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15156",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Dry Field",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 460,
+        "y": 163,
+        "z": 0
+    },
+    {
+        "desc": "Large patches of golden grass is growing here, now and then being interrupted by\nsolitary and small clusters of trees. The shimmering grass predominates the\nlandscape as the soil seems to be somewhat unyielding, but compared to what can\nbe seen to the south, it would do well for any farmer willing to bestow it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15163"
+                ],
+                "name": "",
+                "out": [
+                    "15163"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15154"
+                ],
+                "name": "",
+                "out": [
+                    "15154"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15159"
+                ],
+                "name": "",
+                "out": [
+                    "15159"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15158",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Field of Grass",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 462,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "Tall and proud grass grows here in abundance, dominating the ground and rising\nto the waist of a man, confident in its becoming. Its edges are pointy, tickling\na wanderer with every move, while small plants of many different kinds grow\namong it. A few rocks lie around, being a disruption of the otherwise perfectly\nlevel landscape.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15162"
+                ],
+                "name": "",
+                "out": [
+                    "15162"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15155"
+                ],
+                "name": "",
+                "out": [
+                    "15155"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15158"
+                ],
+                "name": "",
+                "out": [
+                    "15158"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15160"
+                ],
+                "name": "",
+                "out": [
+                    "15160"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15159",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rich Grass",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 461,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "A low ledge cuts through the land. Tall and golden grass grows throughout the\narea, bathing the surrounding ground in gold and green. Its cause is uncertain,\nbut it has left a glaring scar in the fertile landscape, and grass and small\nplants can only cover the edge. Rocks and gravel have tumbled down and lie in a\nstony field to the north below the ledge.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15156"
+                ],
+                "name": "",
+                "out": [
+                    "15156"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15159"
+                ],
+                "name": "",
+                "out": [
+                    "15159"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15161"
+                ],
+                "name": "",
+                "out": [
+                    "15161"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "15164"
+                ],
+                "name": "",
+                "out": [
+                    "15164"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15160",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "At a Ledge",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 460,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "The soil here has a genuine richness that would make any attempt at farming a\nsuccess. The grass of these fields, uninhibited by poor soil or lacklustre\nweather, have covered the entire landscape with their golden threads, growing\ntall and strong. Among them, other weeds can be spotted only very rarely, and\nwherever they strive for survival, the grass seems to overwhelm it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15167"
+                ],
+                "name": "",
+                "out": [
+                    "15167"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15159"
+                ],
+                "name": "",
+                "out": [
+                    "15159"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15163"
+                ],
+                "name": "",
+                "out": [
+                    "15163"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15164"
+                ],
+                "name": "",
+                "out": [
+                    "15164"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15162",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Thriving Grass",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 461,
+        "y": 161,
+        "z": 0
+    },
+    {
+        "desc": "The grass here sparkles with an impressive variety of colours. While only a few\nfully green straws can be seen, there are all shades and sizes of golden,\nyellow, brown, grey and orange grass. In the setting sun, this field of colours\nwould have one face, while in the rising sun, an entirely different one would be\nvisible. Downfall is obviously plentiful to feed this variety of plants.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15168"
+                ],
+                "name": "",
+                "out": [
+                    "15168"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15158"
+                ],
+                "name": "",
+                "out": [
+                    "15158"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15162"
+                ],
+                "name": "",
+                "out": [
+                    "15162"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15163",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Lush Grassland",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 462,
+        "y": 161,
+        "z": 0
+    },
+    {
+        "desc": "To the south, the way is blocked by a wide ledge, crossing through the fields.\nIn the shadows beneath, there it lie rocks and gravel as if hurled from the edge\nabove. Traces of animal activity can be seen all along the wall as this location\nis perfect for protection from the path of the sun in the south. A few dark\nspots can be seen along the rock of the ledge.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15166"
+                ],
+                "name": "",
+                "out": [
+                    "15166"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15162"
+                ],
+                "name": "",
+                "out": [
+                    "15162"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15165"
+                ],
+                "name": "",
+                "out": [
+                    "15165"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "15160"
+                ],
+                "name": "",
+                "out": [
+                    "15160"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15164",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Below a Ledge",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 460,
+        "y": 161,
+        "z": 0
+    },
+    {
+        "desc": "Small dunes and some bumps cross through this area, mostly in the southern part\nof it. On the higher parts of the ground, it seems to be drier. Only some golden\ngrass grows there that has partially turned grey and brown. In the lower and\nwetter areas, the grass grows stronger with a more luscious tone, and large\nshrubs spread their branches wide and high.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15170"
+                ],
+                "name": "",
+                "out": [
+                    "15170"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15164"
+                ],
+                "name": "",
+                "out": [
+                    "15164"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15167"
+                ],
+                "name": "",
+                "out": [
+                    "15167"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15124"
+                ],
+                "name": "",
+                "out": [
+                    "15124"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15166",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Uneven Plains",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 460,
+        "y": 160,
+        "z": 0
+    },
+    {
+        "desc": "A thin layer of top-soil tries to cover the ground here, but in some places, it\nhas been eroded and reveals a thick layer of granite. Grass can only be seen in\na few places among large areas of ling, and a tiny path leads northwards sloping\nbetween a few hills. Rocks of all shapes and sizes rest upon the path from their\nbrief fall down the nearby elevations.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15169"
+                ],
+                "name": "",
+                "out": [
+                    "15169"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15162"
+                ],
+                "name": "",
+                "out": [
+                    "15162"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15168"
+                ],
+                "name": "",
+                "out": [
+                    "15168"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15166"
+                ],
+                "name": "",
+                "out": [
+                    "15166"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15167",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Ground",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 461,
+        "y": 160,
+        "z": 0
+    },
+    {
+        "desc": "The flat surface of a steep cliff rises high to the north, looming over the\nlower, grass-covered ground. Many flowers with a short stem and bulbous,\ntriangular blossom bloom here for most of the year, painting the dull landscape\nin tones of violet, blue, pink and white. Among them, where the flowers grow\ndensest, there rests an old, mostly weathered stone with inscriptions on it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15163"
+                ],
+                "name": "",
+                "out": [
+                    "15163"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15167"
+                ],
+                "name": "",
+                "out": [
+                    "15167"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "15171"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15168",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "South of a Steep Cliff",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 462,
+        "y": 160,
+        "z": 0
+    },
+    {
+        "desc": "The evident lack of nutrients has left the shrubs weak and twisted at this\nplace. On the ground, more rocks than soil can be seen, and the fine layer of\ndust that lies atop shifts in occasional breezes. A low, lonely tree can be seen\non a small incline. Large rocks surround it in a nearly perfect semicircular\nshape as if specifically placed there, and surprisingly dense bushes grow close\nby.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15156"
+                ],
+                "name": "",
+                "out": [
+                    "15156"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15148"
+                ],
+                "name": "",
+                "out": [
+                    "15148"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15152"
+                ],
+                "name": "",
+                "out": [
+                    "15152"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15151"
+                ],
+                "name": "",
+                "out": [
+                    "15151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15623",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Twisted Brush",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 460,
+        "y": 164,
+        "z": 0
+    }
+]

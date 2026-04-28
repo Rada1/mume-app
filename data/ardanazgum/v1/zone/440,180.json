@@ -1,0 +1,248 @@
+[
+    {
+        "desc": "Perhaps an extension of this underground area at one time, this chamber has\ncollapsed, leaving a dead end of dirt and stone in all directions except to the\nwest. The air is slightly less damp here than the rest of the tunnel, perhaps\nowing to the raised elevation of this room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12146"
+                ],
+                "name": "",
+                "out": [
+                    "12146"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12190",
+        "light": 2,
+        "loadflags": 3,
+        "mobflags": 4096,
+        "name": "Crumbling Chamber",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 442,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "After the fall of Numenor only some of the shores that were once colonized\nremained property of the 'pure blooded' as the fierce Black Numenoreans called\nthemselves. You are standing in one of those places and the landscape reminds\nyou of Eru's wrath and the days of the Fall. Where once stood the glorious\npurple temples for the Black Lord's worship, dark ruins fester like wounds upon\nthe land. But, who knows, some power might still hide through the shadows of the\npast...\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12475"
+                ],
+                "name": "",
+                "out": [
+                    "12475"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12474",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Hidden Island",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 456,
+        "y": 195,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself in the ancient crypt of a Numenorean prince. Glyphs are etched\ninto the walls, still clear after so many years. The carvings depict the\nstruggle of the proud Numenoreans against the deathless Elves and Valar. The\ndefeat of Ar-Pharazon's fleet and the diminution of Sauron's power is also\nportrayed, with the aims of the surviving people set on complete revenge over\nall of Arda. On the floor itself there are broken pieces of weapons and armour\nstrewn about. Perhaps with some luck, a clever adventurer might find something\nstill of use. Above, dark waters leak through into the crypt.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12474"
+                ],
+                "name": "",
+                "out": [
+                    "12474"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12475",
+        "light": 1,
+        "loadflags": 2228248,
+        "mobflags": 0,
+        "name": "The Crypt",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 457,
+        "y": 195,
+        "z": 0
+    }
+]

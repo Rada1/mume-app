@@ -1,6 +1,7 @@
 import { useCallback, useRef, MutableRefObject } from 'react';
 import { GRID_SIZE, normalizeTerrain } from './mapperUtils';
 import { RenderContext } from './renderers/rendererUtils';
+import { MapperPrediction } from './mapperTypes';
 import { drawTerrains, drawLocalTerrains } from './renderers/drawTerrains';
 import { drawFeatures, drawLocalFeatures } from './renderers/drawFeatures';
 import { drawGrid, drawEntities, drawGroupMembers, drawDeathIndicator, drawMarkers, drawMarquee } from './renderers/drawEntities';
@@ -35,7 +36,7 @@ interface RendererProps {
     walkPath?: string[];
     showOrganicTerrain?: boolean;
     triggerRender?: () => void;
-    clientPredictionsRef?: MutableRefObject<Array<{ toId: string, toX: number, toY: number, toZ: number }>>;
+    clientPredictionsRef?: MutableRefObject<MapperPrediction[]>;
     groupMembers?: import('../../types').GroupMember[];
     serverIdIndexRef?: MutableRefObject<Record<string, string>>;
     roomChars?: Record<number, import('../../types').GmcpOccupant>;

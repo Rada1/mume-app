@@ -1,0 +1,4406 @@
+[
+    {
+        "desc": "You are standing upon one of many plots of dry, broken earth which make up these\nplains. Around you grow evil looking shrubs and weeds that grow taller than\nyou'd think possible. Small shoots of brown grass try to grow within the cracks\nof the dried earth which creaks like old floorboards when you walk on it.\nStanding on a large patch of dried earth, you can see nothing but grey plains\nexcept for a stand of evil-looking trees which jut out to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19990"
+                ],
+                "name": "",
+                "out": [
+                    "19990"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3143"
+                ],
+                "name": "",
+                "out": [
+                    "3143"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3133"
+                ],
+                "name": "",
+                "out": [
+                    "3133"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3134",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Flats",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 280,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself amid a stand of thorny bushes which tear your clothes and skin\nas you try to wade through it. It is at times so thick and dense that you wonder\nwhether you will become stuck in it. But, fortunately, your constant pain pays\noff as your limbs move you, albeit slow and painfully, through this sea of\nthorns.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3136"
+                ],
+                "name": "",
+                "out": [
+                    "3136"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19990"
+                ],
+                "name": "",
+                "out": [
+                    "19990"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3141"
+                ],
+                "name": "",
+                "out": [
+                    "3141"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3132"
+                ],
+                "name": "",
+                "out": [
+                    "3132"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3135",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Brush",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 280,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself amid a stand of thorny bushes which tear your clothes and skin\nas you try to wade through it. It is at times so thick and dense that you wonder\nwhether you will become stuck in it. But, fortunately, your constant pain pays\noff as your limbs move you, albeit slow and painfully, through this sea of\nthorns. `Where has the road gone?', you ask yourself as you scan the brush for\nany sign of the road, but unless your eyes decieve you, you find no sign of the\nroad. It is as if the Old East Road never was.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3140"
+                ],
+                "name": "",
+                "out": [
+                    "3140"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3142"
+                ],
+                "name": "",
+                "out": [
+                    "3142"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3146"
+                ],
+                "name": "",
+                "out": [
+                    "3146"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3135"
+                ],
+                "name": "",
+                "out": [
+                    "3135"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3141",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Brush",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 281,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "You are standing upon one of many plots of dry, broken earth which make up these\nplains. Around you grow evil looking shrubs and weeds that grow taller than\nyou'd think possible. Small shoots of brown grass try to grow within the cracks\nof the dried earth which creaks like old floorboards when you walk on it. This\ndried clump of earth is in the middle of a field of shrubs and a dark stand of\ntrees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3141"
+                ],
+                "name": "",
+                "out": [
+                    "3141"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3143"
+                ],
+                "name": "",
+                "out": [
+                    "3143"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3145"
+                ],
+                "name": "",
+                "out": [
+                    "3145"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19990"
+                ],
+                "name": "",
+                "out": [
+                    "19990"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3142",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Flats",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 281,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You are standing upon one of many plots of dry, broken earth which make up these\nplains. Around you grow evil looking shrubs and weeds that grow taller than\nyou'd think possible. Small shoots of brown grass try to grow within the cracks\nof the dried earth which creaks like old floorboards when you walk on it. These\nflats stretch away to the north and west, bordered to the east by a band of\nshrubs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3142"
+                ],
+                "name": "",
+                "out": [
+                    "3142"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3144"
+                ],
+                "name": "",
+                "out": [
+                    "3144"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3134"
+                ],
+                "name": "",
+                "out": [
+                    "3134"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3143",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Flats",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 281,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself amid a stand of thorny bushes which tear your clothes and skin\nas you try to wade through it. It is at times so thick and dense that you wonder\nwhether you will become stuck in it. But, fortunately, your constant pain pays\noff as your limbs move you, albeit slow and painfully, through this sea of\nthorns.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3145"
+                ],
+                "name": "",
+                "out": [
+                    "3145"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3184"
+                ],
+                "name": "",
+                "out": [
+                    "3184"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3143"
+                ],
+                "name": "",
+                "out": [
+                    "3143"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3144",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Brush",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 282,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself amid a dense stand of thorny bushes, which pluck and tear at\nyou as you try to move through. It is at times so thick and dense that it seems\nyou could soon become completely stuck. But fortunately things have not yet\nbecome quite so bad.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3146"
+                ],
+                "name": "",
+                "out": [
+                    "3146"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3144"
+                ],
+                "name": "",
+                "out": [
+                    "3144"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3174"
+                ],
+                "name": "",
+                "out": [
+                    "3174"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3142"
+                ],
+                "name": "",
+                "out": [
+                    "3142"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3145",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Flats",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 282,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself amid a stand of thorny bushes which tear your clothes and skin\nas you try to wade through it. It is at times so thick and dense that you wonder\nwhether you will become stuck in it. But, fortunately, your constant pain pays\noff as your limbs move you, albeit slow and painfully, through this sea of\nthorns.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3147"
+                ],
+                "name": "",
+                "out": [
+                    "3147"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3145"
+                ],
+                "name": "",
+                "out": [
+                    "3145"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3173"
+                ],
+                "name": "",
+                "out": [
+                    "3173"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3141"
+                ],
+                "name": "",
+                "out": [
+                    "3141"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3146",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Scrubland",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 282,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "Jagged and broken rocks which have peeled away from the crags to the north and\nfallen here clutter these stony and infertile plains. The ground is virtually\nbare of vegetation, and rains have carved deep washes and ravines in the\ngravelly soil.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3178"
+                ],
+                "name": "",
+                "out": [
+                    "3178"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3169"
+                ],
+                "name": "",
+                "out": [
+                    "3169"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "3170"
+                ],
+                "name": "",
+                "out": [
+                    "3170"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3168",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Broken Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 287,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The hard and stony ground here lies slightly higher than the surrounding plains\nto the south and west. Northward, the land rises gently up the flank of a hill.\nFar off upon the summit of the hill, a foreboding tower stands guard over the\nland. A few hardy shrubs cling to life in the thin soil but no wildlife can be\nseen or heard. Silence blankets the land.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3179"
+                ],
+                "name": "",
+                "out": [
+                    "3179"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3185"
+                ],
+                "name": "",
+                "out": [
+                    "3185"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3168"
+                ],
+                "name": "",
+                "out": [
+                    "3168"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3169",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "High Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 288,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "You are standing at the beginning of some broken plains. While the land is\ngentle to the west and south, the land to the east and north is harsh. Off to\nthe northeast, the broken plains rise up into cliff-like hills. There is a\ngravel-strewn slope leading down to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3167"
+                ],
+                "name": "",
+                "out": [
+                    "3167"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3177"
+                ],
+                "name": "",
+                "out": [
+                    "3177"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "3168"
+                ],
+                "name": "",
+                "out": [
+                    "3168"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3171"
+                ],
+                "name": "",
+                "out": [
+                    "3171"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3170",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Broken Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 286,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "Knee deep in grass, you pause to survey your surroundings. To the south and\nwest, the rolling plains continue. Northwards is the Old East Road, beyond\nwhich, the plains continue. To the east, however, the gently rolling grasslands\ngive way to harsher, rockier plains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3166"
+                ],
+                "name": "",
+                "out": [
+                    "3166"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3176"
+                ],
+                "name": "",
+                "out": [
+                    "3176"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3170"
+                ],
+                "name": "",
+                "out": [
+                    "3170"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3172"
+                ],
+                "name": "",
+                "out": [
+                    "3172"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3171",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rolling Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 285,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "Like the swells of the ocean, the land around you rises and falls, covered not\nby foam but tall grass. Also, like the sea, not a soul can be seen. All around\nyou, the rolling plains continue. In the distance to the east, you can see the\nland rise up into steep, rocky hills.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3165"
+                ],
+                "name": "",
+                "out": [
+                    "3165"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3175"
+                ],
+                "name": "",
+                "out": [
+                    "3175"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3171"
+                ],
+                "name": "",
+                "out": [
+                    "3171"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3173"
+                ],
+                "name": "",
+                "out": [
+                    "3173"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3172",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rolling Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 284,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in an area of gently rolling plains. The ground here is covered\nwith tough, dry grass. All around you is silence, as if nature were afraid to\nmake its presence known. The plains continue to the east, while to the north and\nwest the grass is replaced by tall, thorny bushes. Off in the distance to the\neast, you can make out sharp, jagged hills.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3164"
+                ],
+                "name": "",
+                "out": [
+                    "3164"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3174"
+                ],
+                "name": "",
+                "out": [
+                    "3174"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3172"
+                ],
+                "name": "",
+                "out": [
+                    "3172"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3146"
+                ],
+                "name": "",
+                "out": [
+                    "3146"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3173",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rolling Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 283,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "You are standing upon one of many plots of dry, broken earth which make up these\nplains. Around you grow evil looking shrubs and weeds that grow taller than\nyou'd think possible. Small shoots of brown grass try to grow within the cracks\nof the dried earth which creaks like old floorboards when you walk on it. These\nflats stretch away to the south, bordered to the east by a band of shrubs, and\ngiving way to rolling plains to the north and east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3173"
+                ],
+                "name": "",
+                "out": [
+                    "3173"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3184"
+                ],
+                "name": "",
+                "out": [
+                    "3184"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3175"
+                ],
+                "name": "",
+                "out": [
+                    "3175"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3145"
+                ],
+                "name": "",
+                "out": [
+                    "3145"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3174",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Flats",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 283,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You are standing among some gently rolling plains covered with tough, waist-\nhigh grass. An eerie silence blankets the land, making you feel like an\nunwelcome visitor. To the south and west, the land flattens out into dry\nflatlands. The rolling plains continue to the north and east, but you can see\nsome jagged hills rising up to the northeast.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3172"
+                ],
+                "name": "",
+                "out": [
+                    "3172"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3183"
+                ],
+                "name": "",
+                "out": [
+                    "3183"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3176"
+                ],
+                "name": "",
+                "out": [
+                    "3176"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3174"
+                ],
+                "name": "",
+                "out": [
+                    "3174"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3175",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rolling Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 284,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You had never thought that grasslands could be so hot. Without shade, the sun\ncan beat down on you without respite. All around you, these gently rolling\nplains continue, except in the distance to the northeast where you can see where\nthe land rises up and becomes much rockier.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3171"
+                ],
+                "name": "",
+                "out": [
+                    "3171"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3182"
+                ],
+                "name": "",
+                "out": [
+                    "3182"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3177"
+                ],
+                "name": "",
+                "out": [
+                    "3177"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3175"
+                ],
+                "name": "",
+                "out": [
+                    "3175"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3176",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Rolling Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 285,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "Except for the swish of your legs through the grass and the occasional buzz of\nan insect, the silence of this land is unbroken. You get the impression that\npeople rarely travel this land. Judging from the uneasy feeling you get from the\nbroken lands to the north and east, you think you understand why. Switching your\nattention to the south and east, where the grasslands continue, the feeling\npasses.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3170"
+                ],
+                "name": "",
+                "out": [
+                    "3170"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3181"
+                ],
+                "name": "",
+                "out": [
+                    "3181"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3178"
+                ],
+                "name": "",
+                "out": [
+                    "3178"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3176"
+                ],
+                "name": "",
+                "out": [
+                    "3176"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3177",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Rolling Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 286,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You are at the edge of the Lone-lands proper, where the land becomes rugged and\ninhospitable. To the west and south, the land smoothes out into gently rolling\nplains. To the north and east, the land becomes more broken. Cliff-like hills\ndominate the skyline to the north and northeast. East, you see a thicket, a\nveritable garden amid this harsh dry land.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3168"
+                ],
+                "name": "",
+                "out": [
+                    "3168"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3180"
+                ],
+                "name": "",
+                "out": [
+                    "3180"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3179"
+                ],
+                "name": "",
+                "out": [
+                    "3179"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3177"
+                ],
+                "name": "",
+                "out": [
+                    "3177"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3178",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Broken Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 287,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You are in the middle of a dense thicket. Around you is the tortured land of the\nLone-lands. To the north is a steep cliff wall, while to the west and east the\nbroken plains continue. The plains also continue to the south, but a combination\nof roots, gravel, and the rocks make it impossible to go that way.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3169"
+                ],
+                "name": "",
+                "out": [
+                    "3169"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3208"
+                ],
+                "name": "",
+                "out": [
+                    "3208"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3178"
+                ],
+                "name": "",
+                "out": [
+                    "3178"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3179",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "A Dense Thicket",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 288,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You seem to have come to the end of the gently rolling plains. Off to the north\nand east, the land becomes rocky and dry. Further to the northeast, the land\nactually rises up into rocky hills that give you an unexpected feeling of dread.\nTo the west, the grasslands continue.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3178"
+                ],
+                "name": "",
+                "out": [
+                    "3178"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16166"
+                ],
+                "name": "",
+                "out": [
+                    "16166"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3181"
+                ],
+                "name": "",
+                "out": [
+                    "3181"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3180",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rolling Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 287,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The silence of these lands has become almost oppressive. Looking around for\nrelief from the monotony of these grasslands, your eyes fall upon the rocky\nhills to the northeast. A shiver going down your spine, you start to wonder if\nmonotony doesn't have its advantages. You can continue through these plains to\nthe west, north, and east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3177"
+                ],
+                "name": "",
+                "out": [
+                    "3177"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3180"
+                ],
+                "name": "",
+                "out": [
+                    "3180"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3182"
+                ],
+                "name": "",
+                "out": [
+                    "3182"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3181",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rolling Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 286,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The gently rolling grasslands of this part of the Lone-lands surround you. While\nyou might hear the occasional buzz of an insect or rustle of the wind in the\ngrass, the land seems empty and forgotten. The grasslands continue to the north\nand east while, to the west, the land turns into dry flats. Off in the distance,\nto the northeast, the land rises up into cliff-like hills.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3176"
+                ],
+                "name": "",
+                "out": [
+                    "3176"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3181"
+                ],
+                "name": "",
+                "out": [
+                    "3181"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3183"
+                ],
+                "name": "",
+                "out": [
+                    "3183"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3182",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rolling Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 285,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "You are standing upon one of many plots of dry, broken earth which make up these\nplains. Around you grow evil looking shrubs and weeds that grow taller than\nyou'd think possible. Small shoots of brown grass try to grow within the cracks\nof the dried earth which creaks like old floorboards when you walk on it. These\nflats stretch away to the west, giving way to rolling plains to the north and\neast.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3175"
+                ],
+                "name": "",
+                "out": [
+                    "3175"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3182"
+                ],
+                "name": "",
+                "out": [
+                    "3182"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3184"
+                ],
+                "name": "",
+                "out": [
+                    "3184"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3183",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Flats",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 284,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "You are standing upon one of many plots of dry, broken earth which make up these\nplains. Around you grow evil looking shrubs and weeds that grow taller than\nyou'd think possible. Small shoots of brown grass try to grow within the cracks\nof the dried earth which creaks like old floorboards when you walk on it. These\nflats stretch away to the north and east, bordered to the west by a band of\nshrubs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3174"
+                ],
+                "name": "",
+                "out": [
+                    "3174"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3183"
+                ],
+                "name": "",
+                "out": [
+                    "3183"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3144"
+                ],
+                "name": "",
+                "out": [
+                    "3144"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3184",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Flats",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 283,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "Yellowed clumps of grass and lichen provide partial cover to the grey rock and\nstone of the hillside. The land rises to hills in the north and slopes downward\nto the broken plains to the south. Looking around, a few small gullies break up\nthe otherwise featureless plains. Several miles to the north, a dark and\nblackened tower stands silently overlooking the plains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3208"
+                ],
+                "name": "",
+                "out": [
+                    "3208"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3186"
+                ],
+                "name": "",
+                "out": [
+                    "3186"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3169"
+                ],
+                "name": "",
+                "out": [
+                    "3169"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3185",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bleak Grassland",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 289,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "To the north, east and the south, the ground drops gradually away to the plains\nbelow. The hillside spur here provides an excellent vantage point from which you\ncan see far out over the surrounding lands. Equally the open terrain provides\nlittle or no concealment and leaves you visible to any keen-eyed creature abroad\nin these desolate plains. Several miles to the north-west, a tower stares down\nupon you from the crest of a hill.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3209"
+                ],
+                "name": "",
+                "out": [
+                    "3209"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3187"
+                ],
+                "name": "",
+                "out": [
+                    "3187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3185"
+                ],
+                "name": "",
+                "out": [
+                    "3185"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3186",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Raised Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 290,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "You are in the middle of a dense thicket. You haven't seen much in the way of\nvegetation in the Lone-lands, except for the dry, tough grass that covers the\nground. There are a variety of plants in this thicket, some that don't even look\nfamiliar. Peering out of the relative safety of the thicket, you see the start\nof a gully to the south and the continuation of the broken plains to the north\nand east. To the west is a high, rocky outcropping.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3188"
+                ],
+                "name": "",
+                "out": [
+                    "3188"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3210"
+                ],
+                "name": "",
+                "out": [
+                    "3210"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3200"
+                ],
+                "name": "",
+                "out": [
+                    "3200"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3186"
+                ],
+                "name": "",
+                "out": [
+                    "3186"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3187",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Dense Thicket",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 291,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "Finding your way in this rocky land has proven difficult. To the south, you way\nis blocked by a rocky outcropping, but you can make out paths to the north and\neast. To the west, a thicket promises to make travel difficult, but perhaps it\ncould provide an place to rest in relative safety. Beyond the thicket, the land\nrises up into cliff-like hills. A sickening presence to the northwest makes your\nstomach knot with fear.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3199"
+                ],
+                "name": "",
+                "out": [
+                    "3199"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3203"
+                ],
+                "name": "",
+                "out": [
+                    "3203"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3187"
+                ],
+                "name": "",
+                "out": [
+                    "3187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3200",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Broken Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 292,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The Lone-land plains stretch out far and flat to the north, south and west. To\nthe east a river has carved a steep-sided ravine into the land. As you look over\nthe edge, water sparkles and dances its way southward along the base of the\ncanyon. Though barely audible, the tinkling sound of running water reaches up to\nyour ears, breaking the lonely silence of the plains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3200"
+                ],
+                "name": "",
+                "out": [
+                    "3200"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3204"
+                ],
+                "name": "",
+                "out": [
+                    "3204"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3210"
+                ],
+                "name": "",
+                "out": [
+                    "3210"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3203",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Above a River Canyon",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 292,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "A smattering of hardy grasses grows here on the cracked plains. To the north,\nsouth and west the plains continue toward the horizon. Immediately to the east,\ncracks in the ground grow in size where a steep-sided cliff falls away. Looking\nover the edge, you can make out a small river undercutting the high ground from\nwhich you now gaze. The entire cliff edge here looks unstable and liable to fall\nat any minute.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3203"
+                ],
+                "name": "",
+                "out": [
+                    "3203"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3205"
+                ],
+                "name": "",
+                "out": [
+                    "3205"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3204",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Above the River",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 292,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "Exposed and bleak, the terrain stretches out around you. Few trees or bushes can\nsurvive on this thin and infertile ground. Even the scattered tussocks of grass\nand heather which grow here look brown and weathered. Several miles to the\nnorth-west, the plains give way to an area of low hills. Broken plains meet the\neye to all the remaining compass points.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3210"
+                ],
+                "name": "",
+                "out": [
+                    "3210"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3204"
+                ],
+                "name": "",
+                "out": [
+                    "3204"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3206"
+                ],
+                "name": "",
+                "out": [
+                    "3206"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3205",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Irregular Ground",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 291,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "Exposed and windswept, the terrain here provides little comfort or shelter. Here\nand there a lichen-covered boulder lies clear of the hard, featureless ground.\nScrub and short grasses grow where they can, though there is little soil on\nwhich they can gain purchase. The land drops slightly to the north and the west\ninto one of the undulations which break up the landscape.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3209"
+                ],
+                "name": "",
+                "out": [
+                    "3209"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3205"
+                ],
+                "name": "",
+                "out": [
+                    "3205"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3207"
+                ],
+                "name": "",
+                "out": [
+                    "3207"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3206",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Desolate Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 290,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The flat and sterile terrain is broken up by numerous steep-walled washes\ndeepened by wind and rain. Travel is difficult, and little seems to live here. A\nfew tough and prickly leaves, thistles and nettles, poke from between the cracks\nin the stony soil.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3208"
+                ],
+                "name": "",
+                "out": [
+                    "3208"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3206"
+                ],
+                "name": "",
+                "out": [
+                    "3206"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16166"
+                ],
+                "name": "",
+                "out": [
+                    "16166"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3207",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Broken Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 289,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "You pause a moment to wipe a pasty combination of sweat, dust and grime from\nyour forehead and survey your surroundings. You are in the middle of some broken\nterrain. You could call it plains, if it wasn't so rocky. Just to the north,\npassage is impeded by a rocky outcropping that is the beginning of some hills.\nTo the east, the plains continue between two outcroppings, while to the south,\nthe gravel-covered ground slopes away. To the west of you is a thicket promising\nshade and rest within.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3185"
+                ],
+                "name": "",
+                "out": [
+                    "3185"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3207"
+                ],
+                "name": "",
+                "out": [
+                    "3207"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3209"
+                ],
+                "name": "",
+                "out": [
+                    "3209"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3179"
+                ],
+                "name": "",
+                "out": [
+                    "3179"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3208",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Broken Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 289,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in between two rocky outcroppings that form a kind of gully.\nThe rocks provide a little shade, but they don't alleviate the dryness of these\nlands. In fact, their baked surfaces only imprint it more firmly in your mind.\nThe gully continues to the east, while to the west, the terrain opens up a\nlittle bit.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3186"
+                ],
+                "name": "",
+                "out": [
+                    "3186"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3206"
+                ],
+                "name": "",
+                "out": [
+                    "3206"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3210"
+                ],
+                "name": "",
+                "out": [
+                    "3210"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3208"
+                ],
+                "name": "",
+                "out": [
+                    "3208"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3209",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Broken Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 290,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You pause to catch your breath and wipe your brow in the shade these rocky\noutcroppings provide. Looking around, you see that the rocks form a little gully\nhere. To the north, where the terrain opens up, there is a dense thicket that is\nsure to provide even more shade. The gully continues to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3187"
+                ],
+                "name": "",
+                "out": [
+                    "3187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3205"
+                ],
+                "name": "",
+                "out": [
+                    "3205"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3203"
+                ],
+                "name": "",
+                "out": [
+                    "3203"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3209"
+                ],
+                "name": "",
+                "out": [
+                    "3209"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3210",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Broken Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 291,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "This seems to be the dim head of a gully plunging down to the north. The walls\nof the gulch are a hundred feet high, and the sky is only a narrow slash high\nabove; the direct rays of the sun never fall here. A dismal grey-green moss\ncovers some of the dimly lit rocks. To the south is a dark cave-mouth from which\nthe vanished stream once poured; a faint and musty breeze wafts from it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3284"
+                ],
+                "name": "",
+                "out": [
+                    "3284"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3293"
+                ],
+                "name": "",
+                "out": [
+                    "3293"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3292",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Rocky Gully",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 3,
+        "sundeath": 2,
+        "x": 296,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The cave is much bigger than it appeared to be from the outside. It has smooth\nstone walls, probably from the water that once flowed through on its course to\nthe valley. A path leads east, but it is too dark to tell what lies in that\ndirection.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3292"
+                ],
+                "name": "",
+                "out": [
+                    "3292"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3294"
+                ],
+                "name": "",
+                "out": [
+                    "3294"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3293",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cave in the Hillside",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 296,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "Here the breeze blows steadily toward the west, to what looks to be a small\ncavern. Around a slight bend, you see rays of light. It appears to be natural\nlight, from the sun or moon, but you cannot be sure. Getting out of the twists\nand turns of the passages behind you is a very welcome thought.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3295"
+                ],
+                "name": "",
+                "out": [
+                    "3295"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3297"
+                ],
+                "name": "",
+                "out": [
+                    "3297"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3293"
+                ],
+                "name": "",
+                "out": [
+                    "3293"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3294",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Hollow Ridge",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 297,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "Moving on, you soon reach another nexus. Tunnels trail off in all directions\nfrom this place. All details of what might lie ahead are consumed by the\noppressive darkness. A faint scent of urine and excrement tells you that\nsomething dwells inside these corridors of stone.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "3295"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3294",
+                    "3295"
+                ],
+                "name": "",
+                "out": [
+                    "3294"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3295",
+                    "3296"
+                ],
+                "name": "",
+                "out": [
+                    "3296"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "3295"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3295",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Hollow Ridge",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 297,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "You are at a four-way junction now. In every direction lie more of the same\nrocky passages. You try to remember which way is out, but each tunnel looks the\nsame. Using the directional flow of the wind does not seem to work, as the faint\nbreeze seems to be coming from every tunnel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "3296"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3296",
+                    "3297"
+                ],
+                "name": "",
+                "out": [
+                    "3297"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "3296"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3295",
+                    "3296"
+                ],
+                "name": "",
+                "out": [
+                    "3295"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3296",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "A Hollow Ridge",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 298,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The ridge splits three ways here. To the north and west, it joins more passages\nlike the one you are in now. To the south however, it looks as though the tunnel\ndead-ends at a small cavern. The earth in here smells dry and old, but fresh air\nkeeps the place well ventilated.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3296"
+                ],
+                "name": "",
+                "out": [
+                    "3296"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3298"
+                ],
+                "name": "",
+                "out": [
+                    "3298"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3294"
+                ],
+                "name": "",
+                "out": [
+                    "3294"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3297",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "A Hollow Ridge",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 298,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "Dipping slightly below the pool, is a hollowed ridge that once served as an\naqueduct to bring water to the pool. It is bone dry now though, as the water has\nchosen alternate means to get to its destination. The air is fresh here, cool\nand dry. For the freshness, the tunnel must have another exit, shall you bravely\nattempt to find it?\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3297"
+                ],
+                "name": "",
+                "out": [
+                    "3297"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3298",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Hollowed-out Ridge",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 298,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "Before you is a small depression that once was probably a nice watering hole. A\nsinking feeling overcomes you as you realise that it is totally dry now. The\nonly derivation of moisture comes from a thin sheen of dew on one of the rocks\nat the north side of the basin. Any liquid that might escape however, is quickly\nsucked up by the dry earth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3300"
+                ],
+                "name": "",
+                "out": [
+                    "3300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3299",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Small Levee",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 298,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "This broad, flat plateau extends for miles to the east and north (where the\nground seems higher). The ground is stony and the vegetation is sparse - coarse\ngrass, nettles, an occasional thorny bush. Nothing grows here that would be\nedible by respectable folk. It must rain here often enough, judging from the\nwater-carved gullies here and there, but the water must drain quickly into the\npermeable stone. To the west there appears to be a fold or break in the\notherwise seamless grey landscape.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3299"
+                ],
+                "name": "",
+                "out": [
+                    "3299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3302"
+                ],
+                "name": "",
+                "out": [
+                    "3302"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3301"
+                ],
+                "name": "",
+                "out": [
+                    "3301"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3300",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Wide Plateau",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 298,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "This is a broad shelf on the northwest face of a rocky hillside that rises to\nthe south. The rock is flat and soil-less, and only a few scraggly bushes grow\nhere. A fitful breeze blows the dust of the Lone-Lands across the stony surface.\nThis location gives a good view of the ground far below to the north and west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3300"
+                ],
+                "name": "",
+                "out": [
+                    "3300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3301",
+        "light": 2,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "Ledge Overlooking a Settlement",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 297,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "The stony ground continues for miles in all directions - flattish, but covered\nwith broken and worn boulders and fragments of rock. Brownish grass and weeds\nscrape out a miserable living in the crevices and around the intermittent rain\npuddles.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3303"
+                ],
+                "name": "",
+                "out": [
+                    "3303"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3300"
+                ],
+                "name": "",
+                "out": [
+                    "3300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3302",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stony Plateau",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 299,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "You are standing at the beginning of the dry, rugged lands known as the\nLone-lands. The lands truly seem lonely, as even the normal animal sounds you\nnormally hear have disappeared. The much more pleasant rolling plains lie to the\nwest while the rougher terrain continues to the east. A small cave entrance can\nbe seen to the north at the foot of a low ridge of jagged hills.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16167"
+                ],
+                "name": "",
+                "out": [
+                    "16167"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3207"
+                ],
+                "name": "",
+                "out": [
+                    "3207"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3180"
+                ],
+                "name": "",
+                "out": [
+                    "3180"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16166",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Broken Plains",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 288,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "Uneven rock forms the walls and ceiling of this cavity beneath the hills. Once\nan unspoiled creation of nature, it has now been claimed as a den by some\ncreature. Dry, flattened grass lies in one corner of the cave, and on the\nopposite side there are several bones littering the earthen floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16166"
+                ],
+                "name": "",
+                "out": [
+                    "16166"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16167",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In a Small, Dry Den",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 288,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "You wander into a patch of shrubs dominated by dark gnarled trees whos warped\nand twisted branches stretch all around, forming a canopy which blocks out all\nexternal light. As you move, you step on old blackened leaves which crunch\nloudly as you tread upon them and dark crows scatter from their shelter as you\napproach.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3135"
+                ],
+                "name": "",
+                "out": [
+                    "3135"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3134"
+                ],
+                "name": "",
+                "out": [
+                    "3134"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3142"
+                ],
+                "name": "",
+                "out": [
+                    "3142"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19989"
+                ],
+                "name": "",
+                "out": [
+                    "19989"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19990",
+        "light": 1,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Dark Clump of Trees",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 280,
+        "y": 81,
+        "z": 0
+    }
+]

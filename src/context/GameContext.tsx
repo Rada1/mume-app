@@ -106,6 +106,19 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const settingsStore = useSettingsStore();
     const mapperRef = useRef<MapperRef>(null);
 
+    const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            const result = typeof reader.result === 'string' ? reader.result : null;
+            settingsStore.setBgImage(result);
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+    }, [settingsStore]);
+
     // 3. Logic Hooks
     const env = useEnvironment({
         lighting: s.lighting || 'none', setLighting: s.setLighting,
@@ -257,7 +270,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const telnet = useTelnet({
         connectionUrl: settingsStore.connectionUrl,
         processLine: (line, tokens) => {
-            console.log(`[Socket] Calling processLine for: "${line.substring(0, 30)}"`);
             return parserRef.current?.processLine(line, tokens) ?? null;
         },
         recordEntry: (type, data) => s.userSession.recorder.recordEntry(type, data),
@@ -586,7 +598,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, [ui, s.inventoryLines, s.eqLines, s.statsLines, s.scoreLines, s.infoLines, s.practiceLines, s.questLines, s.whoLines, s.whereLines, s.characterName, s.userSession.recorder, settingsStore.showRecordingIndicator, settingsStore.setShowRecordingIndicator, replayer]);
 
     const controller = useCommandController({
-        telnet, addMessage, initAudio, navIntervalRef: { current: null }, mapperRef: { current: null },
+        telnet, addMessage, initAudio, navIntervalRef: { current: null }, mapperRef,
         teleportTargets: settingsStore.teleportTargets, help, 
         captureStage,
         setInventoryLines: s.setInventoryLines, setStatsLines: s.setStatsLines,
@@ -699,6 +711,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         accountStageRef: s.accountStageRef,
         gameTime: s.gameTime,
         setGameTime: s.setGameTime,
+        bgImage: settingsStore.bgImage,
+        setBgImage: settingsStore.setBgImage,
         practice,
         help,
         shop,
@@ -707,7 +721,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         draggedTarget: s.draggedTarget,
         setDraggedTarget: s.setDraggedTarget,
         containerRef: { current: null },
-        handleFileUpload: () => {}, // TODO: Implement if needed
+        handleFileUpload,
         exportSettings: () => ({}),
         exportSettingsFile: () => {},
         importSettings: () => {},

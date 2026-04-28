@@ -1,0 +1,1846 @@
+[
+    {
+        "desc": "The ground here is covered in thick layers of knee-high bat guano. The\ncave-dwelling bats roost in the airy lofts high above, where they must have\nfound access to the outside world. The air is filled with a stinging, acrid\nscent. The deep aggregation of guano continues uninterrupted towards the east,\nwhile the cave southwards may be a route to cleaner places.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17773"
+                ],
+                "name": "",
+                "out": [
+                    "17773"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17776"
+                ],
+                "name": "",
+                "out": [
+                    "17776"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17775",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Guano Deluge",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 354,
+        "y": 19,
+        "z": 0
+    },
+    {
+        "desc": "Vast deposits of bat guano have accrued on the floor of this grotto. The white,\nacidic droppings lie in layers thick enough to reach a hobbit's waist, filling\nthe air with acrid, unpleasant smells. The cavern continues to the east and\nwest, and so too does the guano, although there seems to be slightly less of it\ntowards the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17777"
+                ],
+                "name": "",
+                "out": [
+                    "17777"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17775"
+                ],
+                "name": "",
+                "out": [
+                    "17775"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17776",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Guano Deluge",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 355,
+        "y": 19,
+        "z": 0
+    },
+    {
+        "desc": "The fluttering sounds of batwings higher up in the lofty spaces of this cavern\nis ever present. A shaft can be glimpsed high above, likely a route the\ncavern-dwelling bats take to the surface. Down here at the cavern floor, a great\ndeal of spider webs have been spun between boulders and ledges. The webs reach\nas far up as halfway to the shaft above. Higher up, where the walls are closer\ntogether, the great webs stretch from wall to wall, obviously intended to\nentangle any bat that swoops down too low.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17776"
+                ],
+                "name": "",
+                "out": [
+                    "17776"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17800"
+                ],
+                "name": "",
+                "out": [
+                    "17800"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17777",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hunting Grounds",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 356,
+        "y": 19,
+        "z": 0
+    },
+    {
+        "desc": "The sides of this steep but cragged hole are lit by a faint sickly green glow\nfrom patches of phosphorescent moss growing on the cave walls. A tunnel opens up\nto the west, the opening partly covered by strands of sticky spider webs. Above,\nthe edge of the hole is easily reachable even for those of humble stature.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17801"
+                ],
+                "name": "",
+                "out": [
+                    "17801"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17777"
+                ],
+                "name": "",
+                "out": [
+                    "17777"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17800",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Deep Hole",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 356,
+        "y": 18,
+        "z": 0
+    },
+    {
+        "desc": "Faint skittering sounds can be heard from the north and west. Noise travels far\nin these deep tunnels and the sounds are faint enough to perhaps be imagined. A\nsnarl of webbings line the cave, covering boulders and deep dark holes in the\nuneven walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17800"
+                ],
+                "name": "",
+                "out": [
+                    "17800"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17802"
+                ],
+                "name": "",
+                "out": [
+                    "17802"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17801",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Threshold of a Spider Nest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 355,
+        "y": 18,
+        "z": 0
+    },
+    {
+        "desc": "The ceiling hangs down low enough in this grotto to give even the least\nclaustrophobic of travellers pause. The cavern is made of a mineral-rich rock\nmostly a light grey in colour. Only the lack of seeping water keeps this cave\ntraversible, for if the stunted stalactites hanging down from the ceiling were\nof the lengths such formations can grow into, they would meet the floor and\nclose this tunnel completely. Passageways leads off to the east, west, and\nnorth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17805"
+                ],
+                "name": "",
+                "out": [
+                    "17805"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17801"
+                ],
+                "name": "",
+                "out": [
+                    "17801"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17804"
+                ],
+                "name": "",
+                "out": [
+                    "17804"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17802",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Diverging Tunnels",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 354,
+        "y": 18,
+        "z": 0
+    },
+    {
+        "desc": "This dark tunnel, far beneath the fresh air and open spaces of the outside\nworld, show plenty of signs of a habitual presence of spiders. Webs have been\nspun, stretching between rocks and boulders, crags and stalactites. Any careless\nmovement could cause severe entanglement in the sticky traps.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17802"
+                ],
+                "name": "",
+                "out": [
+                    "17802"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17804",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Webbed Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 353,
+        "y": 18,
+        "z": 0
+    },
+    {
+        "desc": "A great number of stalagmites have formed across the expanse of this cavern,\nrising up from the floor as thick, peaked pillars. Above hang the corresponding\nstalactites, which are much slimmer in shape. Many spider webs have been spun\nhere: most of them are empty, although some of them hold the dried husks of bats\nor lizards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17811"
+                ],
+                "name": "",
+                "out": [
+                    "17811"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17802"
+                ],
+                "name": "",
+                "out": [
+                    "17802"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17805",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Webbed Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 354,
+        "y": 17,
+        "z": 0
+    },
+    {
+        "desc": "Here, deep down near the roots of the world, the rocks enclosing this narrow\ntwisting passageway are as black as the darkest night: shot through with veins\nof faintly glittering minerals. A fair amount of spider webs cover the walls,\nsome of it new and sticky and some merely tangles of old, dry cobwebs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17807"
+                ],
+                "name": "",
+                "out": [
+                    "17807"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17806",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Dark Corner",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 352,
+        "y": 18,
+        "z": 0
+    },
+    {
+        "desc": "The presence of spiders is evident no matter in which direction one turns.\nThick, sticky webs cover the walls, floor and ceiling and the dry, empty husks\nof past prey litters the ground. A smaller chamber lies to the north, the\nentrance so covered in webs it could easily be overlooked. Towards the south\nthere seem to be less webs, and more of the dark rock beneath visible. A way out\nwould surely lie in that direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "17808"
+                ],
+                "name": "",
+                "out": [
+                    "17808"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17806"
+                ],
+                "name": "",
+                "out": [
+                    "17806"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17810"
+                ],
+                "name": "",
+                "out": [
+                    "17810"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17807",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Deep in the Spider's Nest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 352,
+        "y": 17,
+        "z": 0
+    },
+    {
+        "desc": "This entire grotto functions as a hatchery for the spiders of the area. Grey,\nbulging eggsacks hang from sticky spider webs and tiny, hatched eggs litter the\nfloor. Most of the cave is covered in thick webs, the strands far too thick to\nhaving been spun by a common house spider.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "17807"
+                ],
+                "name": "",
+                "out": [
+                    "17807"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17808",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "The Hatchery",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 352,
+        "y": 16,
+        "z": 0
+    },
+    {
+        "desc": "Great webs spun by what must be truly intimidating spiders cover holes and\ncavities in the walls, possibly providing nests and hiding places. A patch of\nbare rock on the southern wall is surprisingly free of webs, and the stone is a\nmuch lighter grey than the surrounding stone. The tunnel leads towards the east,\nwhere faint reflections of water can be glimpsed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "17810"
+                ],
+                "name": "",
+                "out": [
+                    "17810"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17811"
+                ],
+                "name": "",
+                "out": [
+                    "17811"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17809",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Webbed Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 353,
+        "y": 16,
+        "z": 0
+    },
+    {
+        "desc": "Tremendous patience and effort has gone into entangling the walls, floor and\nceiling of this lair in a mesh of webs. Here and there, dry old husks of bats\nand lizards can be seen among the cobwebs, leftovers from creatures the spiders\nin these deep caves have feasted upon.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "17809"
+                ],
+                "name": "",
+                "out": [
+                    "17809"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17807"
+                ],
+                "name": "",
+                "out": [
+                    "17807"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17810",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Spider's Lair",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 353,
+        "y": 17,
+        "z": 0
+    },
+    {
+        "desc": "A dark pool has formed in a hollow in the eastern part of this cave. Thin,\npointed stalactites hang above the pool, some so long that their tips touch the\nsurface of the water. Drops of mineral-enriched water fall from the smaller\nstalactites, as if they were a part of a slow, steady rain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17805"
+                ],
+                "name": "",
+                "out": [
+                    "17805"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17809"
+                ],
+                "name": "",
+                "out": [
+                    "17809"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17811",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Pool in the Nest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 354,
+        "y": 16,
+        "z": 0
+    },
+    {
+        "desc": "This low, wide cavern lies nestled in the very foundations of Arda, deep beneath\nthe world of men and elves. Erosion has hollowed out an uneven cavity with grey\nlimestone walls. Numerous stalagmites rise from the ground where slowly,\ndripping mineral-enriched water has built up small, stunted formations over the\neons.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17797"
+                ],
+                "name": "",
+                "out": [
+                    "17797"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17813"
+                ],
+                "name": "",
+                "out": [
+                    "17813"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17812",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Eroded Limestone Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 358,
+        "y": 19,
+        "z": 0
+    },
+    {
+        "desc": "A hollow cavity has formed here in the limestone bedrock. Layers in shades of\nwhite and grey are easily distinguished on the walls. A narrow shaft, a natural\ntunnel hollowed out through the ages, leads upwards here. To the west, a\nlimestone cave continues into the darkness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17812"
+                ],
+                "name": "",
+                "out": [
+                    "17812"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17814"
+                ],
+                "name": "",
+                "out": [
+                    "17814"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17813",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Eroded Limestone Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 359,
+        "y": 19,
+        "z": 0
+    },
+    {
+        "desc": "Here, a long, slim shaft has formed in the limestone bedrock. The walls are of a\nstratiform of lightly grey and white layers of limestone. The various layers\nhave eroded in varying degrees, providing a multitude of small ledges to place\nhands and feet on, making the shaft accessible to even the most inexperienced\nclimber.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17815"
+                ],
+                "name": "",
+                "out": [
+                    "17815"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17813"
+                ],
+                "name": "",
+                "out": [
+                    "17813"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17814",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Limestone Shaft",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 359,
+        "y": 18,
+        "z": 0
+    },
+    {
+        "desc": "The walls of this grotto shift in streaks of white and grey limestone. The low\nceiling above could cause concern for the claustrophobic, and small stalactites\nhanging down are a potential danger for the tall, unwary adventurer. A chute\nnear the southern wall leads down, deeper into the underworld.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17814"
+                ],
+                "name": "",
+                "out": [
+                    "17814"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17815",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Low Grotto",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 359,
+        "y": 17,
+        "z": 0
+    },
+    {
+        "desc": "The ceilings extend far above, creating halls dozens of feet tall. Pillars of\nblack stone, bordering on a deep purple, have been carved directly from the\nsurrounding rock. In some areas, the walls have been reinforced with massive\nplanks and boulders to prevent a cave-in. The entire area is scattered with\ndecomposing remains; the smell permeates the humid air. The halls continue to\nthe east and south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17863"
+                ],
+                "name": "",
+                "out": [
+                    "17863"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17857"
+                ],
+                "name": "",
+                "out": [
+                    "17857"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17858",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hewn Halls",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 359,
+        "y": 8,
+        "z": 0
+    },
+    {
+        "desc": "Small openings to the north and west both appear to lead to large, dark halls.\nTo the east a smaller cavern can be seen, flickering with a faint light. The\npitch-black walls have a rough appearance, suggesting this hallway was quickly\nexcavated. The area is bare, except for some debris lying on the floor. Broken\ntools lie spread in the hallway, along with smaller rocks, broken planks, live\ncockroaches, and the bones from some sort of animal.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17863"
+                ],
+                "name": "",
+                "out": [
+                    "17863"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17861"
+                ],
+                "name": "",
+                "out": [
+                    "17861"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17864"
+                ],
+                "name": "",
+                "out": [
+                    "17864"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17862",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Hallway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 359,
+        "y": 10,
+        "z": 0
+    },
+    {
+        "desc": "Tall, rough black pillars extend down the centre of this hall, forming parallel\nrows. The hall is wide and tall, its walls lined with sharp stone edges. Little\ncare was used when excavating the area: some of the pillars are crooked and\nappear to be buckling under the weight of the mountain, and now and then ominous\ncreaking sounds can be heard. Small rocks and pebbles lie in the dirt around\nsome of the pillars. A big stone table rises from the ground: it has been carved\ndirectly from the surrounding stone. A strong, putrid smell is ever-present in\nthe thick, humid air. The halls widen to the north, while to the south they\nnarrow into a smaller hallway.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17858"
+                ],
+                "name": "",
+                "out": [
+                    "17858"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17862"
+                ],
+                "name": "",
+                "out": [
+                    "17862"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17863",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hewn Halls",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 359,
+        "y": 9,
+        "z": 0
+    },
+    {
+        "desc": "This hall is in complete disarray: the innermost part has collapsed, leaving a\nheap of rocks, planks, and other debris. A thick layer of stone dust covers the\nwhole area. Huge blocks of black stone lie cracked along the walls. The\ndried-out husks of dead bugs and pulverized bones large enough to be from a\ntroll have been crushed by the rockfall. A small hallway leads eastwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17862"
+                ],
+                "name": "",
+                "out": [
+                    "17862"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17864",
+        "light": 1,
+        "loadflags": 2,
+        "mobflags": 0,
+        "name": "Deteriorating Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 358,
+        "y": 10,
+        "z": 0
+    }
+]

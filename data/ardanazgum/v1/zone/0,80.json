@@ -1,0 +1,2776 @@
+[
+    {
+        "desc": "Between the heights of the Pelori and the sea lie the drear marches of Araman.\nSeparated from Valinor by the high fence of the mountains, this desolate realm\nis fit only for a few hardy grasses which grow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1240"
+                ],
+                "name": "",
+                "out": [
+                    "1240"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1239",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Plains of Araman",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 19,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "Though this is Aman, this stretch of coastline to the east of the mountains\nholds little joy, for no life thrives upon these shores. The wind is always\nstrong and chilled and the waves break upon the stony shore, evoking the spirit\nof sea-longing.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1239"
+                ],
+                "name": "",
+                "out": [
+                    "1239"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1241"
+                ],
+                "name": "",
+                "out": [
+                    "1241"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1240",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Plains of Araman",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 19,
+        "y": 86,
+        "z": 0
+    },
+    {
+        "desc": "Beyond the bay of Eldamar, these lands grow little vegetation. The only sounds\nare the breaking of the waves and the mewing of gulls. Once upon a time, this\nland would have been shrouded, as the shadowy seas roiled against the shoreline,\nand it seems that the land has never known anything other than this emptiness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1240"
+                ],
+                "name": "",
+                "out": [
+                    "1240"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1242"
+                ],
+                "name": "",
+                "out": [
+                    "1242"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1241",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Plains of Araman",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 19,
+        "y": 87,
+        "z": 0
+    },
+    {
+        "desc": "On the northernmost shores of Elvenhome, the coastal landscape changes from the\nenchanting home of the Eldar to the bleak plains of the land of Araman. Though\nless pleasant than the lands to the south, the coastline has a pleasant\ntemperate clime, and the presence of elves is evident. Waves lap gently over\npebbles of a multitude of colours, interspersed with highly-patterned shells and\nconchs discarded by denizens of the waters. Pale grasses grow above the\nshoreline, while isolated groves of scented lairelosse and scarlet-laden\nyavannamire give a dreamy aroma.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1241"
+                ],
+                "name": "",
+                "out": [
+                    "1241"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1243"
+                ],
+                "name": "",
+                "out": [
+                    "1243"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1242",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Strands of Eldalie",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 19,
+        "y": 88,
+        "z": 0
+    },
+    {
+        "desc": "This stretch of shore is where the Teleri decided to make their Haven, away from\nthe radiance of the Two Trees, so that they could still espy the stars above. In\nthese undying lands, many grains of golden wheat wave in the sea-breezes, while\nwhite lilies sway and the golden bells of silver flowers toll. Fragrant\nevergreen trees hold birds whose song never dies, while above come the\nmelancholy cries of the gulls. A coastal path of white stones follows the coast\nsouthward from the gates of the city, its seaward side sheltered by a low stone\nwall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1242"
+                ],
+                "name": "",
+                "out": [
+                    "1242"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1244"
+                ],
+                "name": "",
+                "out": [
+                    "1244"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1250"
+                ],
+                "name": "",
+                "out": [
+                    "1250"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1243",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Strands of Eldalie",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 19,
+        "y": 89,
+        "z": 0
+    },
+    {
+        "desc": "Woods of fragrant evergreens release their heady scent onto the winds of the\nshore. Tracks lead from the white path into plantations, where the fine timbers\nfor the white ships of the Teleri are cut.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1243"
+                ],
+                "name": "",
+                "out": [
+                    "1243"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1245"
+                ],
+                "name": "",
+                "out": [
+                    "1245"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1249"
+                ],
+                "name": "",
+                "out": [
+                    "1249"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1244",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Strands of Eldalie",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 19,
+        "y": 90,
+        "z": 0
+    },
+    {
+        "desc": "Along the stretch of coast followed by the white path, shadowy inland meres\nprovide a habitat for many waterfowl. Of these birds, most recognisable are the\nfamous white swans who once pulled the Swan-ships of the Teleri. Pale green and\nsilver Tasarion dip their laden branches into the waters, creating shade during\nthe heights of the Sun. The calls of the fowl mingle with that of the breaking\nwaves upon the shore and the lyrical sound of a voice.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1244"
+                ],
+                "name": "",
+                "out": [
+                    "1244"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1246"
+                ],
+                "name": "",
+                "out": [
+                    "1246"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1248"
+                ],
+                "name": "",
+                "out": [
+                    "1248"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1245",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Strands of Eldalie",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 19,
+        "y": 91,
+        "z": 0
+    },
+    {
+        "desc": "Within sight of the Lonely Isle, the northern shores of the bay are both\ntemperate and pleasant. Flowering grasses grow above the reach of the tides,\nwhile the pebbles hold something of the magic of the land: long strands of\nverdant seaweed lie like hair upon the shore, while golden barnacles cling to\nthe heavier rocks. The sounds of the sea fill the ears, while the salty tang\ntantalises the senses. The white path stretches along the coast, sheltered by a\nlow stone wall and shaded in many places by groves of fruit trees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1245"
+                ],
+                "name": "",
+                "out": [
+                    "1245"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1247"
+                ],
+                "name": "",
+                "out": [
+                    "1247"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1246",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Northern Shores of the Bay of Eldamar",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 19,
+        "y": 92,
+        "z": 0
+    },
+    {
+        "desc": "The path along the wooded coast bends as it shadows the route of the shore which\nforms part of the bay of Eldamar. There is a strange atmosphere in the land, of\na place that is half remembered in dreams of long ago. The call of a white gull\nis like an echo, reminding you of all the seabirds that whirl along the shores\nof all the lands of the world. The fine mist of sea spray whets the taste and\nthe smell of other journeys in other times. The boat that bobs beyond the\nbreakers, embodies all those boats that were ever set to sea. A waking dream,\nthese shores are the true west, the shores of a world lost but to those like you\nwho follow the road now hidden.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1246"
+                ],
+                "name": "",
+                "out": [
+                    "1246"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1257"
+                ],
+                "name": "",
+                "out": [
+                    "1257"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1247",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Northern Shores of the Bay of Eldamar",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 19,
+        "y": 93,
+        "z": 0
+    },
+    {
+        "desc": "At the head of the bay, the river spills out in to the waters of the sea,\nforming the waters of Shadowmere, whose surface reflects the lights of the land.\nAmongst the turf which grows above the shoreline, a white path weaves along, its\ncoastal side screened by a low stone wall. Beyond the wall, the pebbles of the\nstony beach lie strewn amongst rocky outcroppings, while shallow tidal pools\nteam with green seaweed and pink shells.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1247"
+                ],
+                "name": "",
+                "out": [
+                    "1247"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1258"
+                ],
+                "name": "",
+                "out": [
+                    "1258"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1257",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Shores of Shadowmere",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 18,
+        "y": 93,
+        "z": 0
+    },
+    {
+        "desc": "The banks of the river are luxuriant with a marvellous of fair trees, of pale\nyellow Tasarion and silvery Brethil and Neldoreth. Before the river spills into\nthe sea, a low slender bridge of gleaming metal spans the watercourse, its rails\ngarlanded with white flowers. A white path following the side of the river is\nmet by another from the bridge, and at this juncture a low stone wall starts,\nfollowing the path along the coast.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1259"
+                ],
+                "name": "",
+                "out": [
+                    "1259"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1257"
+                ],
+                "name": "",
+                "out": [
+                    "1257"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1272"
+                ],
+                "name": "",
+                "out": [
+                    "1272"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1258",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Northern Bank of the Cilyaluine",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 17,
+        "y": 93,
+        "z": 0
+    },
+    {
+        "desc": "The slender bridge of silvery metal arcs low over the rippling river below. Its\nrails are draped in garlands of white flower, whose sweet aroma is released onto\nthe wind. At the summit of the span, the bridge swells to provides balconies on\neither side, replete with benches of beech. Thus a visitor might while away many\nan hour sitting above the watercourse and listening to its babbling flow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1258"
+                ],
+                "name": "",
+                "out": [
+                    "1258"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1260"
+                ],
+                "name": "",
+                "out": [
+                    "1260"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1259",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Gleaming Bridge",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 17,
+        "y": 94,
+        "z": 0
+    },
+    {
+        "desc": "The river is marked by willow and low birch, which drink at the waters edge. The\nlight casts the near shore of the river in shade, but within the dimness, the\nflash of red and gold and green and silver betray the presence of an abundance\nof freshwater fish. Upon the turf, a path emerges to pass onto the span which\ncrosses the waterway.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1259"
+                ],
+                "name": "",
+                "out": [
+                    "1259"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1261"
+                ],
+                "name": "",
+                "out": [
+                    "1261"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1260",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Southern Bank of the Cilyaluine",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 17,
+        "y": 95,
+        "z": 0
+    },
+    {
+        "desc": "The Bay of Eldalie west of the Lonely Isle, the temperate waters of Shadowmere\nwash gently upon the jewel-laden strands of the Eldar. Lush evergreens grow in\nabundance above the shoreline, releasing the fragrant aroma of larch and fir.\nThe grassy turf shows faint footprints which leave and enter the woods.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1262"
+                ],
+                "name": "",
+                "out": [
+                    "1262"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1260"
+                ],
+                "name": "",
+                "out": [
+                    "1260"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1261",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Shores of Shadowmere",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 18,
+        "y": 95,
+        "z": 0
+    },
+    {
+        "desc": "This coast of the bay is marked by inland meres surrounded by a multitude of\nreeded beds. Trees bearing lamps of varying hue cast a rainbow of colours upon\nthe tops of the reeds, where flit great dragonflies and strange insects of blue\nand emerald and gold. The sighing and rustling of the grassy stalks mingles with\nthe emergent buzz and hum of many delicate wings.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1261"
+                ],
+                "name": "",
+                "out": [
+                    "1261"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1263"
+                ],
+                "name": "",
+                "out": [
+                    "1263"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1262",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Southern Shores of the Bay of Eldamar",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 18,
+        "y": 96,
+        "z": 0
+    },
+    {
+        "desc": "The coastline rises above the waves upon this coast, encircling the bay with\nsheer shores. Beneath the cliffs carven of translucent crystal, and the foam\nflowers upon the sea. White gulls wheel about the edge, their cries carried\ninland to the grassy coastal lands.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1264"
+                ],
+                "name": "",
+                "out": [
+                    "1264"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1262"
+                ],
+                "name": "",
+                "out": [
+                    "1262"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1263",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Southern Shores of the Bay of Eldamar",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 19,
+        "y": 96,
+        "z": 0
+    },
+    {
+        "desc": "Beyond the blessed lands of Eldamar lies the barrenness of Avathar. This realm\nof Aman was never brightened by the light of the Two Trees, and its drab terrain\nhas not changed much with the coming of the Sun. Small hardy plants grow in\nclumps, threatened by the drear sea-mists that roil against the coast. This\nnarrow strand before the mountains of Aman are rarely trodden.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1263"
+                ],
+                "name": "",
+                "out": [
+                    "1263"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1264",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Wastes of Avathar",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 19,
+        "y": 97,
+        "z": 0
+    },
+    {
+        "desc": "Upon a paved terrace, raised by a wide dais of many steps, stands the largest\nstructure of the city, the House of Finwe. A central dome of marble and silver\ntracery dominates the structure, while from each point of the compass four great\nhalls spring, fully five stories in height. Many pale gems of crystal and\nadamant, topaz and citrine reflect the lights of the city. Pennants and flags\nfly from the balconies of the house, indicating that within the closed doors of\nthe halls lives the Lord of the Noldor of the West, Finarfin.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1267"
+                ],
+                "name": "",
+                "out": [
+                    "1267"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1265",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The House of Finwe",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 16,
+        "y": 97,
+        "z": 0
+    },
+    {
+        "desc": "Nestling on the lower reaches of Tuna, this walled garden provides shade to many\nflowering plants and shrubs. A path lined with chalcedony leads to the foot of a\nwhite tower which is topped by a silver bell. Adjacent to the tower lies a\nmodest dwelling, its walls overgrown with vines.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1268"
+                ],
+                "name": "",
+                "out": [
+                    "1268"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1266",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Garden of the Bell Tower",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 16,
+        "y": 96,
+        "z": 0
+    },
+    {
+        "desc": "Carven of crystal and lined by gleaming balusters of green beryl, the steps\nclimb the upper heights of green Tuna. Though swept clear of diamond dust, the\nstairway still gleams in the myriad lights of the city. From either side, marble\nwalkways lead to mansions of white stone, and gardens of repose where once the\nkinfolk of Noldor and Vanyar once mingled. Now, though it remains an enchanted\nplace, many of the folk are gone, and the steps no longer throng to the\nfootsteps of the Eldar.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1268"
+                ],
+                "name": "",
+                "out": [
+                    "1268"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1276"
+                ],
+                "name": "",
+                "out": [
+                    "1276"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1265"
+                ],
+                "name": "",
+                "out": [
+                    "1265"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1275"
+                ],
+                "name": "",
+                "out": [
+                    "1275"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1267",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Crystal Steps",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 15,
+        "y": 97,
+        "z": 0
+    },
+    {
+        "desc": "From either side of the steps, branch ways of Tirion, and white stairs. A myriad\nof things one can espy from the route: high white houses flying flags, tall\ntowers topped by silver, terraces and courts where shrubs and flowers grow, and\ntree-lined lanes which allow access to monuments before sombre halls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1269"
+                ],
+                "name": "",
+                "out": [
+                    "1269"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1267"
+                ],
+                "name": "",
+                "out": [
+                    "1267"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1266"
+                ],
+                "name": "",
+                "out": [
+                    "1266"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1274"
+                ],
+                "name": "",
+                "out": [
+                    "1274"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1268",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Crystal Steps",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 15,
+        "y": 96,
+        "z": 0
+    },
+    {
+        "desc": "From within the city can be seen Tuna rising, itself shadowed by the mighty\nmountain walls within which the city lies. Upon the hill from the gates are wide\ncrystal steps, which climb to the summit. Within the circle of the city, a road\npaved with flagstones of alabaster provide access to other sectors, shining in\nshades of silver and gold, pale green and cream.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1270"
+                ],
+                "name": "",
+                "out": [
+                    "1270"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1268"
+                ],
+                "name": "",
+                "out": [
+                    "1268"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1269",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Inside the Gates of Tirion",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 15,
+        "y": 95,
+        "z": 0
+    },
+    {
+        "desc": "Tirion sits upon the green hill of Tuna, and the smooth walls encircle the city\nupon the lower skirts of the hill. Within stand the houses of the Noldor, the\nterraces and fragrant gardens, the golden fountains and the silver towers, built\nuncounted centuries ago when the world was whole. A great arch pierces the high\nwhite walls, its keystone as large as house. The silvery gates of the city hang\nopen in welcome.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1271"
+                ],
+                "name": "",
+                "out": [
+                    "1271"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1269"
+                ],
+                "name": "",
+                "out": [
+                    "1269"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1270",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Before the Gates of Tirion",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 15,
+        "y": 94,
+        "z": 0
+    },
+    {
+        "desc": "Between the sheer glassy sides of the Pelori lie the enchanted lands of the\nEldar. While the Two Trees still shone, the Pass of Light was filled with the\nradiance that streamed forth from the Blessed Realm. Even today, ages past, this\nland is still touched by enchantments. Fields of unfading rose release their\nscents into the air, by breezes that sing through the russet briars. Slender\nbirches of silver limbs glow in the light of lamps which chime. It is in this\nland that the hill of Tuna rises, and atop the hill stands the city of Tirion. A\npath leads from the gates of the city down the northern side of the pass,\ntowards the sea.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1270"
+                ],
+                "name": "",
+                "out": [
+                    "1270"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1272"
+                ],
+                "name": "",
+                "out": [
+                    "1272"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1273"
+                ],
+                "name": "",
+                "out": [
+                    "1273"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1271",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Calacirya",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 15,
+        "y": 93,
+        "z": 0
+    },
+    {
+        "desc": "In the cleft of the Pelori, lies the enchanted lands of Eldamar. Here the grass\nis greener than any tended garden. To either side of a white path, tall trees\nstand straight with branches bearing silver leaves, and bedecked by the soft\ngolden light of jewelled lamps. A soft dew hangs upon the turf as if the spring\nsun had but newly risen. Carried by the strong breezes of the Great Ravine,\nvoices raised in song drift through the woods. As the ground slopes upwards to\nthe west, a spring emerges from the earth, its white waters froth and bubble as\nit tumbles by way of silver stairs down to the Sea. This fount of the Cilyaluine\nspills an ever-murmuring music into the air to accompany the song.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1258"
+                ],
+                "name": "",
+                "out": [
+                    "1258"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1271"
+                ],
+                "name": "",
+                "out": [
+                    "1271"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1272",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Calacirya",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 16,
+        "y": 93,
+        "z": 0
+    },
+    {
+        "desc": "The Calacirian is the head of the deep ravine delved in ages past to allow the\nlight of the Two Trees to shine upon Eldamar. It also marks the closest any\nmortal of Middle-earth may come to the Valinor. The host of the Valar stands\neternally before the pass, preventing entrance to all those unbidden. From\nbeyond, you hear the toll of the unceasing bells of the city of Valimar, whose\nsilver domes and jewelled spires you can but barely espy.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1271"
+                ],
+                "name": "",
+                "out": [
+                    "1271"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1273",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Calacirian",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 14,
+        "y": 93,
+        "z": 0
+    },
+    {
+        "desc": "Cut into the side of hill, beside the mighty crystal steps, is the airy\nstructure of the library of Tirion, where all the Eldar may come to reflect on\nthe works of others. Built of glass and marble, the library is unusual in that\nmany open spaces within and around the structure exist for the singing of songs.\nMuch of the lore of the elves is maintained vocally, and rather than being a\nsilent building of hushed voices, the library can echo to the lyrical voices of\nthe bards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1268"
+                ],
+                "name": "",
+                "out": [
+                    "1268"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1274",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Glass Library",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 14,
+        "y": 96,
+        "z": 0
+    },
+    {
+        "desc": "Upon the flank of the hill, paved walkways form a terrace within which flowers\nbloom in fragrant splendour. The air is filled with the scents of jasmine and\npoppy, golden elanor and sweet-smelling lissuin, and many more besides. Small\nbirches provide shade to carved benches of pale wood, where citizens can sit and\ndream amongst the breezes on the green hill.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1267"
+                ],
+                "name": "",
+                "out": [
+                    "1267"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1275",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Flowering Terrace",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 14,
+        "y": 97,
+        "z": 0
+    },
+    {
+        "desc": "Upon the summit of Tuna is the court of the Eldar, the Great Square of Tirion,\nwhere all the most important discussions of the Noldor once took place.\nDominating the expansive open space is the highest tower of Tirion, the Mindon\nEldalieva, where Ingwe once held court. From its eastern side, a long beam of\nlight emerges, passing down the ravine. At the base of the tower grows\nGalathilion, the white tree of the Eldar made in the image of Telperion by\nYavanna. Beside this tree is a pool, brightly lit by golden light.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1267"
+                ],
+                "name": "",
+                "out": [
+                    "1267"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1280"
+                ],
+                "name": "",
+                "out": [
+                    "1280"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1276",
+        "light": 2,
+        "loadflags": 16392,
+        "mobflags": 0,
+        "name": "The Great Square",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 15,
+        "y": 98,
+        "z": 0
+    },
+    {
+        "desc": "Tallest and most high of the towers that stands upon Tuna, the inside of the\nbase of the tower is a single vaulted hall. A circle of tall pillars uphold the\nroof and upper levels of the Mindon. Monoliths of unblemished marble, they rise\nto great capitals carved in many strange figures and symbols; and far above in\nshadow the wide vaulting gleams with dull gold, inset with flowing traceries of\nmany colours. Deep windows in the girth of the tower provide shafts of bright\nillumination during the hours of daylight, but otherwise the only light comes\nfrom slender candles of scented beeswax which flicker in the breeze. A single\nnarrow stair of silver and crystal tightly spirals upwards through the centre of\nthe Mindon.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1280"
+                ],
+                "name": "",
+                "out": [
+                    "1280"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1278"
+                ],
+                "name": "",
+                "out": [
+                    "1278"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1277",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Inside the Mindon",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 17,
+        "y": 99,
+        "z": 0
+    },
+    {
+        "desc": "There are many levels to the Tower of Ingwe, accessible by the crystalline\nstairs. The stairs lead to a chamber, decorated with the finest works of\ncraftsmen. Jewelled chairs stand around tables which have been endued with\ndetailed carvings. Many likewise well-crafted doors, studded with jewels, lead\ninto arched corridors. Some of these portals of are firmly closed off by heavy\ndoors of silver or gold. There seems to be an entire community contained within\nthese white stone walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1279"
+                ],
+                "name": "",
+                "out": [
+                    "1279"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1277"
+                ],
+                "name": "",
+                "out": [
+                    "1277"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1278",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Upper Levels of the Mindon",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 17,
+        "y": 98,
+        "z": 0
+    },
+    {
+        "desc": "This is one of the many levels to the Tower of Ingwe that can be reached by way\nof the many crystalline stairs. Several ornate doors open up to halls with\nhigh-ceilings and great carved tables with high-backed jewelled chairs.\nApartments branch off mosaic corridors with high arches. Impressive collections\nof Eldarin art and grandiose portals of silver and gold are abundant.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1278"
+                ],
+                "name": "",
+                "out": [
+                    "1278"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1279",
+        "light": 2,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "The High Chamber of the Lamp",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 17,
+        "y": 97,
+        "z": 0
+    },
+    {
+        "desc": "Raised above the Great Square upon a dais, stands the lofty tower of the\nEldalie. The colour of untrodden snow, this pinnacle contains the mighty lamp of\nTirion, whose slender beam sends light down the ravine and out to sea. Large\narched windows surround the lower level of the tower, while similarly styled\nwindows dot the upper floors.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1277"
+                ],
+                "name": "",
+                "out": [
+                    "1277"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1276"
+                ],
+                "name": "",
+                "out": [
+                    "1276"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1280",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mindon Eldalieva",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 16,
+        "y": 99,
+        "z": 0
+    }
+]

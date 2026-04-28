@@ -46,6 +46,15 @@ export interface MapperMarker {
     createdAt: number;
 }
 
+export interface MapperPrediction {
+    toId: string;
+    toX: number;
+    toY: number;
+    toZ: number;
+    createdAt: number;
+    seq: number;
+}
+
 export interface MapperRef {
     handleRoomInfo: (data: any) => void;
     handleUpdateExits: (data: any) => void;

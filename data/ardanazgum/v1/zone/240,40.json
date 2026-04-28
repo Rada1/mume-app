@@ -1,0 +1,84 @@
+[
+    {
+        "desc": "It is rather dark and damp inside this cave. You can see some stirring in the\nback of the cave. You can feel the presence of something else inside the cave\nalong with you, but with all the signs of snake presence around, most likely it\nis no more than another snake. There are some rocks towards the side that appear\nto move slightly as if something live was hiding between them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2838"
+                ],
+                "name": "",
+                "out": [
+                    "2838"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13142",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Inside a Large Water Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 246,
+        "y": 54,
+        "z": 0
+    }
+]

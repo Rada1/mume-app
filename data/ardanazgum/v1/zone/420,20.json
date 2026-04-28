@@ -1,0 +1,84 @@
+[
+    {
+        "desc": "*WHEW* You have finally made it to the top. It was definitely worth the climb,\nbecause the view from here is amazing. You can see a great deal of Arda from\nyour position here. You really would like to stay up here much longer, but the\nthin air and high winds make it difficult to stay here and be safe.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6078"
+                ],
+                "name": "",
+                "out": [
+                    "6078"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6090",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Top of the Misty Mountains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 439,
+        "y": 37,
+        "z": 0
+    }
+]

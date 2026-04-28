@@ -4,7 +4,7 @@
  */
 
 import React, { useMemo, useEffect, useRef, useCallback } from 'react';
-import { useBaseGame, useGame, useVitals } from '../../context/GameContext';
+import { useBaseGame, useGame, useVitals, useUI } from '../../context/GameContext';
 import { useMapper } from '../../context/useMapper';
 import { getTerrainColor, WALL_COLOR, getGateState, GRID_SIZE } from '../Mapper/mapperUtils';
 import { drawTerrainIcon, applyRoomShading } from '../Mapper/renderers/drawTerrains';
@@ -14,8 +14,10 @@ import { RenderContext } from '../Mapper/renderers/rendererUtils';
 import './MiniMapRoom.css';
 
 export const MiniMapRoom: React.FC = () => {
-    const { roomPlayers, roomNpcs, roomItems, theme, groupMembers, characterName } = useBaseGame();
-    const { triggerHaptic, setPopoverState, opponentId, opponentName } = useGame();
+    const { roomPlayers, roomNpcs, roomItems, theme } = useBaseGame();
+    const { triggerHaptic } = useGame();
+    const { groupMembers, characterName, opponentId, opponentName } = useVitals();
+    const { setPopoverState } = useUI();
     const mapper = useMapper();
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const imagesRef = useRef<Record<string, HTMLImageElement>>({});

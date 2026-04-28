@@ -1,0 +1,840 @@
+[
+    {
+        "desc": "A huge glowing fire stands in the middle of the place, overheating the whole\nbuilding. A large heap of coal is lying against the northern wall and a huge\nbellows is filling the eastern part of the forge. Against the southern wall\nseveral unfinished tools are standing: a few picks, some shovels and other\ncommon gardening tools.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1760"
+                ],
+                "name": "",
+                "out": [
+                    "1760"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1761",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Forge",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 160,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "This wide path bends around the Hill and leads towards the small village of\nOverhill. There is an animal pen directly east and the hill, itself, stands to\nthe west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1773"
+                ],
+                "name": "",
+                "out": [
+                    "1773"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1774"
+                ],
+                "name": "",
+                "out": [
+                    "1774"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1771"
+                ],
+                "name": "",
+                "out": [
+                    "1771"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1772",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Road to Overhill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 160,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "This wide path wraps around the hill towards the small village of Overhill. To\nthe east are large spans of green fields, and to the west is the hill itself.\nThis area doesn't seem to be as densely populated as the rest of the Shire.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1775"
+                ],
+                "name": "",
+                "out": [
+                    "1775"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1772"
+                ],
+                "name": "",
+                "out": [
+                    "1772"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1773",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Road to Overhill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 160,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "This is a scene of disorder, uncharacteristic of the Shire. In front of a\ndwelling dug into the hillside to the east, flowers have been tramped into the\nmud, and the grass is marked up by many footprints. A door to the east has been\nnailed firmly shut, its lock stopped up with lead, and a sign has been hung on\nit, written in black ink.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1772"
+                ],
+                "name": "",
+                "out": [
+                    "1772"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1774",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In Front of a Purple Door",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 161,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "You have finally reached the village. To the west a few smials are clustered\ntogether, forming the nucleus of the village. This village seems even more\npeaceful than the others in the Shire.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "17918"
+                ],
+                "name": "",
+                "out": [
+                    "17918"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1773"
+                ],
+                "name": "",
+                "out": [
+                    "1773"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "16212"
+                ],
+                "name": "",
+                "out": [
+                    "16212"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1776"
+                ],
+                "name": "",
+                "out": [
+                    "1776"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1775",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Road to Overhill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 160,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "You walk warily on, following the twists and turns of the tiny tunnel. With\nevery step, the smooth mud walls seem to edge ever closer, threatening to close\nin on you.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2076"
+                ],
+                "name": "",
+                "out": [
+                    "2076"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2081"
+                ],
+                "name": "",
+                "out": [
+                    "2081"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2080",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Brockenbores",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 175,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "Without warning, the tunnel walls suddenly part and retreat from you, and you\nfind yourself in some kind of small cave with -- you gasp, and feel your heart\nthumping with excitement. Can it be that you have chanced upon an ancient\ntreasure trove? Dust-covered chests are lined neatly against the walls, perhaps\nforgotten by whoever hid them here. You get closer to the chests, then notice\nthe note pasted on one of them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2080"
+                ],
+                "name": "",
+                "out": [
+                    "2080"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2081",
+        "light": 2,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "The Brockenbores",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 174,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "The inside of the door to this home is painted a colorful grassy green with a\nknob in the centre. The floor is made of rich old wood and a large window cut\nout of the far wall overlooks a well-tended garden. Teacups and biscuits lie\nstrewn on the modest table along with what looks to be the resident's daily mail\ndelivery. Oftentimes one can hear the kettle steeping more tea or the chirp of\nthe birds outside the large window.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "1775"
+                ],
+                "name": "",
+                "out": [
+                    "1775"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16212",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Home of Baradoc",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 161,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "The old and ragged walls of this room are composed of packed dirt, some of which\nfalls to the ground from time to time only to be trampled by the countless\nmembers of a hairfooted society. In one corner of the room is a mound of rubbish\nthat appears to have been collected for quite a period of time. While much of\nthe rubbish is inorganic, an odor is still emitted from the pile that would make\nany elf gag. To the west and north rooms with better lighting and more appealing\ncontent can be found.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "17919"
+                ],
+                "name": "",
+                "out": [
+                    "17919"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "1775"
+                ],
+                "name": "",
+                "out": [
+                    "1775"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "17920"
+                ],
+                "name": "",
+                "out": [
+                    "17920"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17918",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Filthy Entrance",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 160,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "This room is the cleanest and most tranquil in the house. In the east corner of\nthe room there is a dresser that contains an assortment of boxes and trinkets.\nIn the centre of the back wall one of Tolman's dagger has been mounted. This\nparticular dagger is from his better days of battle and adventure. In the\nwesternmost part of the room, a man size bed has been placed, awaiting all those\nwho are willing to risk the comfort of this rich hobbit.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "17918"
+                ],
+                "name": "",
+                "out": [
+                    "17918"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17919",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sleeping Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 160,
+        "y": 52,
+        "z": 0
+    }
+]

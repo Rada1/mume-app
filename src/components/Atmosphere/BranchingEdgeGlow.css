@@ -1,0 +1,22 @@
+/**
+ * @file BranchingEdgeGlow.css
+ * @description Canvas layer for procedural edge-map glow reveal.
+ */
+
+.branching-edge-glow {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    background: transparent;
+}
+
+.branching-edge-glow__canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    mix-blend-mode: screen;
+    filter: drop-shadow(0 0 24px rgba(205, 240, 255, 0.42));
+    image-rendering: auto;
+}

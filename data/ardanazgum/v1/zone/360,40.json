@@ -1,0 +1,2222 @@
+[
+    {
+        "desc": "The forest here is a tangled mess of thorns and brush, you can probably move\neast or west, but traversing the forest in the northern or southernly directions\nwould be impossible. On the brighter side, a few small animals can be seen in\nthe area, making the forest a tad less sorrowful.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3826"
+                ],
+                "name": "",
+                "out": [
+                    "3826"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3824"
+                ],
+                "name": "",
+                "out": [
+                    "3824"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3825",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 360,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "The canopy overhead has begun to thin, letting through enough light to\ndistinguish night from day, but not yet enough to permit a vigorous stand of\nunderbrush. Northwards however, a large amount of brush has blocked travel, and\nsouthwards a robust group of vines does the same.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3827"
+                ],
+                "name": "",
+                "out": [
+                    "3827"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3825"
+                ],
+                "name": "",
+                "out": [
+                    "3825"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3826",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 361,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "Small amounts of underbrush can be seen to the north, suggesting more light than\nis usual for this portion of the forest. In all other directions the canopy\noverhead has kept the ground clear of vegetation, albeit a bit dark also.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3849"
+                ],
+                "name": "",
+                "out": [
+                    "3849"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3832"
+                ],
+                "name": "",
+                "out": [
+                    "3832"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3826"
+                ],
+                "name": "",
+                "out": [
+                    "3826"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3827",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 362,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "The forest here overlooks a small trail to the south, and fends off a field to\nthe west. Underbrush is a common obstacle, but easily routed around. The canopy\noverhead is almost complete, providing just a little light to the plants that\nlive closer to the earth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3829"
+                ],
+                "name": "",
+                "out": [
+                    "3829"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3778"
+                ],
+                "name": "",
+                "out": [
+                    "3778"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3846"
+                ],
+                "name": "",
+                "out": [
+                    "3846"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3828",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 362,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "As you travel under the grace of the trees you are reminded of your small\nstature in comparison with the rest of the world. Be you a legend among men you\nare still but an ant among the more fearsome creatures of the forest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3830"
+                ],
+                "name": "",
+                "out": [
+                    "3830"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3828"
+                ],
+                "name": "",
+                "out": [
+                    "3828"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3833"
+                ],
+                "name": "",
+                "out": [
+                    "3833"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3829",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 362,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "Several small stands of mushrooms can be found along the forest floor in this\narea. Sprouting out from the matt of needles that form the forest floor they\nprovide the housekeeping for the forest, decomposing the more protein rich\nsubstances that find their way here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3831"
+                ],
+                "name": "",
+                "out": [
+                    "3831"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3829"
+                ],
+                "name": "",
+                "out": [
+                    "3829"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3836"
+                ],
+                "name": "",
+                "out": [
+                    "3836"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3830",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 362,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "This forest must be centuries old, its large trees raising towards the sky, each\nin its own space, meshing perfectly above with its neighbours. Gone however, are\nthe protectors of the forest, as is evident by the various forms of desecration\npracticed against their woody skin.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3832"
+                ],
+                "name": "",
+                "out": [
+                    "3832"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3830"
+                ],
+                "name": "",
+                "out": [
+                    "3830"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3837"
+                ],
+                "name": "",
+                "out": [
+                    "3837"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3831",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 362,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "A sense of evil pervades the forest here, as if something powerful and sinister\nwas watching your every move. A few ravens can be heard screeching overhead, but\nthe sky has been covered with a leafy replacement that readily conceals the\nbirds.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3827"
+                ],
+                "name": "",
+                "out": [
+                    "3827"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3831"
+                ],
+                "name": "",
+                "out": [
+                    "3831"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3838"
+                ],
+                "name": "",
+                "out": [
+                    "3838"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3832",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 362,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "The buzz of insects can be heard, coming from a large bush near the southern\nedge of the forest. Closer inspection reveals a dead raccoon, beset upon by a\nhorde of flies and be The insects have finished off too much of it to make any\njudgement on how it died.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3836"
+                ],
+                "name": "",
+                "out": [
+                    "3836"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3846"
+                ],
+                "name": "",
+                "out": [
+                    "3846"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3829"
+                ],
+                "name": "",
+                "out": [
+                    "3829"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3834"
+                ],
+                "name": "",
+                "out": [
+                    "3834"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3833",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 361,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "Large amounts of underbrush fill the space in-between the trees here, where the\ngrass nearby fights for ground against the tall trees of the forest. It is\nquestionable who will win this war, for both sides - the grass and the trees -\nlook tired and unhealthy.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3835"
+                ],
+                "name": "",
+                "out": [
+                    "3835"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3845"
+                ],
+                "name": "",
+                "out": [
+                    "3845"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3833"
+                ],
+                "name": "",
+                "out": [
+                    "3833"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3843"
+                ],
+                "name": "",
+                "out": [
+                    "3843"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3834",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 360,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "A huge blackberry bush sits on the western edge of the forest here, separating\nthe forest from a clearing to the west. It is certainly possible to manuever\naround the bush, and a few small animals can be seen using it as shelter.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3840"
+                ],
+                "name": "",
+                "out": [
+                    "3840"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3834"
+                ],
+                "name": "",
+                "out": [
+                    "3834"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3836"
+                ],
+                "name": "",
+                "out": [
+                    "3836"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3842"
+                ],
+                "name": "",
+                "out": [
+                    "3842"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3835",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 360,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "Like so many pillars holding up the sky, the trees of this forest have created a\nvast hall. With the canopy overhead providing shelter from the light and heat of\nday, and some shelter from the rains and winds, the only thing missing is\ndinner. Of course, that may be your purpose here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3837"
+                ],
+                "name": "",
+                "out": [
+                    "3837"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3833"
+                ],
+                "name": "",
+                "out": [
+                    "3833"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3830"
+                ],
+                "name": "",
+                "out": [
+                    "3830"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3835"
+                ],
+                "name": "",
+                "out": [
+                    "3835"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3836",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 361,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "A solid stand of trees blocks the way west. Hidden among them, and surely\nunreachable by you, one can just barely glimpse the large nests of some giant\nbirds hidden at the base of the canopy. You cannot determine what kind of bird\nit is that dwells in the darkness under the canopy, but it surely must have good\nnight-vision to feed its young.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3838"
+                ],
+                "name": "",
+                "out": [
+                    "3838"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3836"
+                ],
+                "name": "",
+                "out": [
+                    "3836"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3831"
+                ],
+                "name": "",
+                "out": [
+                    "3831"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3837",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 361,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "Thick vegetation and spiny creepers choke off any thoughts of passage to the\nwest or north here. The trees continue to grow thick and support their\ntremendous canopy, but you can see faint hints of light northwards, where the\nforest may be thinning.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3837"
+                ],
+                "name": "",
+                "out": [
+                    "3837"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3832"
+                ],
+                "name": "",
+                "out": [
+                    "3832"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3838",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 361,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "The barren forest floor has been rudely interupted by large amounts of brush and\ncreepers to the north and east, making those directions impassable. A few small\nanimals can be seen scurrying around the vegetation, but none can be seen\nforaging any farther into the forest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3840"
+                ],
+                "name": "",
+                "out": [
+                    "3840"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3841"
+                ],
+                "name": "",
+                "out": [
+                    "3841"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3839",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 360,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "Several large trees grow close together to the east, forming a natural barrier\nfor travellers. Numerous choke creepers can be seen winding their way around the\ntrees in this area, their thick thorns guarding the trunks of the trees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3839"
+                ],
+                "name": "",
+                "out": [
+                    "3839"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3835"
+                ],
+                "name": "",
+                "out": [
+                    "3835"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3804"
+                ],
+                "name": "",
+                "out": [
+                    "3804"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3840",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 360,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "This grassy field separates the forest to the north from a small trail to the\nsouth. The grass itself is more a mixture of various weeds, all quite happy and\nhealthy. A couple cows, or a herd of sheep would survive well here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3834"
+                ],
+                "name": "",
+                "out": [
+                    "3834"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3776"
+                ],
+                "name": "",
+                "out": [
+                    "3776"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3846"
+                ],
+                "name": "",
+                "out": [
+                    "3846"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3844"
+                ],
+                "name": "",
+                "out": [
+                    "3844"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3845",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Withering Grass",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 360,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "This large field of grass, broken by the occasional lone tree, extends north and\neast until it meets the border of a large forest, and south until stopped by a\ntrail that is situated between it and the southern forest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3833"
+                ],
+                "name": "",
+                "out": [
+                    "3833"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3777"
+                ],
+                "name": "",
+                "out": [
+                    "3777"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3828"
+                ],
+                "name": "",
+                "out": [
+                    "3828"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3845"
+                ],
+                "name": "",
+                "out": [
+                    "3845"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3846",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Withering Grass",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 361,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "The forest seems to have been split and pushed open here, with a massive\ncollection of trees smashed to the sides, forming a natural barricade between\nthe clearing and the rest of the forest. A few saplings have begun to return the\narea to the clutches of the forest, thus providing evidence that whatever trauma\ndid this has not been back.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3849"
+                ],
+                "name": "",
+                "out": [
+                    "3849"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3848",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trampled Ground",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 361,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "The forest here has been decimated. Many hundreds of logs have been uprooted and\npushed aside, and the ground bears large ditches, as if two gigantic beasts had\nonce fought here. Whatever it might have been seems to be gone now, as one can\nsee the small plants and saplings that have begun to grow again.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3827"
+                ],
+                "name": "",
+                "out": [
+                    "3827"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3848"
+                ],
+                "name": "",
+                "out": [
+                    "3848"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3849",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trampled Ground",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 362,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "Moving along this narrow and tall passage, you brush up against roots and other\nplant parts protruding from the hard-packed dirt. Fears about a cave in are not\nthat high, as the roots themselves hold all the dirt in place. Obviously, trolls\ndug this passage out, and have been using it frequently. The acrid smell of\ntroll fills your nose and makes your eyes water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4568"
+                ],
+                "name": "",
+                "out": [
+                    "4568"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4572"
+                ],
+                "name": "",
+                "out": [
+                    "4572"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4571",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Earthy Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 361,
+        "y": 40,
+        "z": 0
+    },
+    {
+        "desc": "Sloping slightly downwards, the tunnel makes its way further and further along\nfrom south to north. Strange sounds echo hollowly through here, mostly muffled\nby the earthy walls. You brush aside a large root with annoyance as you\ncontemplate getting out of here as quickly as possible, before the stench of\ntroll forces you to vomit.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4571"
+                ],
+                "name": "",
+                "out": [
+                    "4571"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4573"
+                ],
+                "name": "",
+                "out": [
+                    "4573"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4572",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Earthy Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 361,
+        "y": 41,
+        "z": 0
+    },
+    {
+        "desc": "Onwards, this irregular tunnel moves along under the massive trunks above. It\nbends from the west to the north, seemingly ignoring any roots that might have\nbeen growing here. The marks of crude cuts line some of the bigger roots,\ntestimony to the strength and purpose of the makers. Splayed footprints line the\ndirt floor, with the occasional bone or excrement as well. You hurry along to\nescape this foul place.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4572"
+                ],
+                "name": "",
+                "out": [
+                    "4572"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4574"
+                ],
+                "name": "",
+                "out": [
+                    "4574"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4573",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Earthy Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 361,
+        "y": 42,
+        "z": 0
+    },
+    {
+        "desc": "Bending sharply to the east and south, the tunnel continues under the immense\nforest above. You are not sure which is safer, the daunting growth above or the\nlurking dangers here. One thing is sure, safety is no where close. The stench of\ntroll keeps your mind focused on any possible threats.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4575"
+                ],
+                "name": "",
+                "out": [
+                    "4575"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4573"
+                ],
+                "name": "",
+                "out": [
+                    "4573"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4574",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Earthy Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 360,
+        "y": 42,
+        "z": 0
+    },
+    {
+        "desc": "Running north and south, the earthern passageway burrows along at an even angle.\nTiny bits of dirt fall on your head from the unsupported ceiling, but the roots\nseem to be holding it together enough to prevent a collapse. The smell of troll\nis quite strong here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4574"
+                ],
+                "name": "",
+                "out": [
+                    "4574"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4576"
+                ],
+                "name": "",
+                "out": [
+                    "4576"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4575",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Earthy Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 360,
+        "y": 43,
+        "z": 0
+    },
+    {
+        "desc": "This is the beginning of the earth troll's tunnels. Dug crudely but efficiently\nfrom the very ground, this passage is damp from the wet soil all around you.\nTwigs, decaying branches, crumbling leaves, and roots all form the walls, floor,\nand ceiling. A thick, musty smell pervades the air, making breathing a little\ndifficult. Your senses stay alert to the danger that lies down these parts.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4575"
+                ],
+                "name": "",
+                "out": [
+                    "4575"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4576",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 32768,
+        "name": "Earthy Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 360,
+        "y": 44,
+        "z": 0
+    }
+]

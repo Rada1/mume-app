@@ -1,0 +1,3746 @@
+[
+    {
+        "desc": "The trail leads east-west here. Big rocks have fallen down from the cliff. The\nrocks in the middle of the trail were pushed aside so that horses and\nhorse-drawn carts can pass here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5173"
+                ],
+                "name": "",
+                "out": [
+                    "5173"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5175"
+                ],
+                "name": "",
+                "out": [
+                    "5175"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5174",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trail under the Cliffs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 399,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "The trail leads east-west here. Under some rocks you discover a hidden camp-\nfire. Considering the look of the ashes the fire is maybe two days old. You also\nfind hidden rubbish and the remains of a meal. Finding tracks of people who used\nthe campfire is very hard and you can only guess where they went.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5174"
+                ],
+                "name": "",
+                "out": [
+                    "5174"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5176"
+                ],
+                "name": "",
+                "out": [
+                    "5176"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5175",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trail under the Cliffs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 398,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "The trail leads east-west here. Broken off branches from trees and bushes are\nlying on the ground. You wonder where they came from since you can't see any\ntrees or bushes here. Maybe they have fallen down the cliff and above you is a\nforest or another kind of vegetation? Unluckily you can't see any green leaves\nand your hope of finding living beings vanishes again.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5175"
+                ],
+                "name": "",
+                "out": [
+                    "5175"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5177"
+                ],
+                "name": "",
+                "out": [
+                    "5177"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5176",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trail under the Cliffs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 397,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "The trail leads east-west here. In the cliff to the north you can see the\nentrance to a larger cave. Big footprints lead to the cave. The footprints look\nlike they were made by the paws of a gigantic bear.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "5245"
+                ],
+                "name": "",
+                "out": [
+                    "5245"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5176"
+                ],
+                "name": "",
+                "out": [
+                    "5176"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5178"
+                ],
+                "name": "",
+                "out": [
+                    "5178"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5177",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trail under the Cliffs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 396,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "The trail leads east-west here. You can see strange paintings in small caves in\nthe cliff. One of the upper caves contains a painting of a dragon and in the\nnorthern part of the cave you see a broken altar.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5177"
+                ],
+                "name": "",
+                "out": [
+                    "5177"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5179"
+                ],
+                "name": "",
+                "out": [
+                    "5179"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5178",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trail under the Cliffs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 395,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "A path is leading north up to a cliff. The trail leads east-west here and leads\nfurther east under a high cliff. You find signs of tracks here. The tracks lead\nfrom the east to the path north. The trails is used here at least sometimes.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5181"
+                ],
+                "name": "",
+                "out": [
+                    "5181"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5178"
+                ],
+                "name": "",
+                "out": [
+                    "5178"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5180"
+                ],
+                "name": "",
+                "out": [
+                    "5180"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5179",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Junction in the Trail",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 394,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "The trail leads east and west. East is a crossing of trails, while to the north\nand south lie just barren, endless plains only interrupted by sky- high cliffs.\nTo the west the trail leads through a small canyon between two cliffs. The\ncanyon is blocked by the remains of a rockslide.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5179"
+                ],
+                "name": "",
+                "out": [
+                    "5179"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5180",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trail",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 393,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "The path is leading north-south and fast up around a cliff. The path is very\nnarrow here and it looks like it is very seldom used. To the east you can see\noverhanging rocks above your head, but none of them has fallen down yet!\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5182"
+                ],
+                "name": "",
+                "out": [
+                    "5182"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5179"
+                ],
+                "name": "",
+                "out": [
+                    "5179"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5181",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path near the Cliffs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 394,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "The path bends south-east here. The rocks above you look more unstable and you\nnotice small ones on the ground. A weathered signpost is here, but the writing\nhas long ago faded away. You get a first glimpse of the landscape ahead. It\nlooks plain and empty.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5197"
+                ],
+                "name": "",
+                "out": [
+                    "5197"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5181"
+                ],
+                "name": "",
+                "out": [
+                    "5181"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5183"
+                ],
+                "name": "",
+                "out": [
+                    "5183"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5182",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bend in the Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 394,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "The path is gentle here passing a cliff to the south. To the north are endless\nempty plains. Rocks are falling down from the cliff and trying to avoid them you\nnearly fall over the ones in the path. The cliff isn't so high here anymore and\nyou can climb up to its top. The path bends east-west here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5198"
+                ],
+                "name": "",
+                "out": [
+                    "5198"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5244"
+                ],
+                "name": "",
+                "out": [
+                    "5244"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5184"
+                ],
+                "name": "",
+                "out": [
+                    "5184"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5182"
+                ],
+                "name": "",
+                "out": [
+                    "5182"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5183",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 395,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "The path leads west-east here. A dense fog is coming from the north what makes\nit impossible to even guess what comes next and where you really are.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5201"
+                ],
+                "name": "",
+                "out": [
+                    "5201"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5243"
+                ],
+                "name": "",
+                "out": [
+                    "5243"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5185"
+                ],
+                "name": "",
+                "out": [
+                    "5185"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5183"
+                ],
+                "name": "",
+                "out": [
+                    "5183"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5184",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky and Foggy Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 396,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "The path leads east-west. A dense fog is coming from the north what makes it\nimpossible to even guess what comes next and where you really are. What evil may\nbe hidden behind the fog, or is it maybe a hidden treasure? The path has reached\nthe same altitude.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5202"
+                ],
+                "name": "",
+                "out": [
+                    "5202"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5242"
+                ],
+                "name": "",
+                "out": [
+                    "5242"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5186"
+                ],
+                "name": "",
+                "out": [
+                    "5186"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5184"
+                ],
+                "name": "",
+                "out": [
+                    "5184"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5185",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky and Foggy Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 397,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "The path leads east-west here and leads gently around a forest to the north.\nFootprints are leading to the forest in the north. Oops, they really look big!\nYou see bones being thrown out of holes in the forest. Broken armour, weapons\nand other equipment lies around and you are for sure not the first careless\ntraveller who has ended his life in a big cooking pot!\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5203"
+                ],
+                "name": "",
+                "out": [
+                    "5203"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5241"
+                ],
+                "name": "",
+                "out": [
+                    "5241"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5187"
+                ],
+                "name": "",
+                "out": [
+                    "5187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5185"
+                ],
+                "name": "",
+                "out": [
+                    "5185"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5186",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Gentle Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 398,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "The path leads east-west here and passes a forest to the north. Dark shadows lie\nover the path and a cold wind from the north blows icy air into your face. Human\nskeletons are pinned to stone stakes in front of the forest. It looks like evil\ncreatures have eaten the poor ones alive!\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5204"
+                ],
+                "name": "",
+                "out": [
+                    "5204"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5240"
+                ],
+                "name": "",
+                "out": [
+                    "5240"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5188"
+                ],
+                "name": "",
+                "out": [
+                    "5188"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5186"
+                ],
+                "name": "",
+                "out": [
+                    "5186"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5187",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Gentle Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 399,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "The plain stretches in every direction. Stones cover the ground and from time to\ntime you find bushes and small areas where grass and other vegetation grows. It\nlooks like this barren landscape will go on forever. But wait! You find\nsomething like a path where the rocks were pushed aside, but you can't discover\nany tracks.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5200"
+                ],
+                "name": "",
+                "out": [
+                    "5200"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5182"
+                ],
+                "name": "",
+                "out": [
+                    "5182"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5198"
+                ],
+                "name": "",
+                "out": [
+                    "5198"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5197",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Barren Plain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 394,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "You have entered an area of plain, barren plains. Spare vegetation grows here\nand the ground is covered with frost. In the north you can see a high mountain-\nrange. The plain stretches from the east to the west as far as you can see.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5199"
+                ],
+                "name": "",
+                "out": [
+                    "5199"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5183"
+                ],
+                "name": "",
+                "out": [
+                    "5183"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5197"
+                ],
+                "name": "",
+                "out": [
+                    "5197"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5198",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Barren Plain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 395,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "The progress here is very difficult. Large rocks are in your way and you have\nproblems to discover paths between them. On the other hand the rocks also give\nyou some shelter against the icy wind.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5209"
+                ],
+                "name": "",
+                "out": [
+                    "5209"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5198"
+                ],
+                "name": "",
+                "out": [
+                    "5198"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5200"
+                ],
+                "name": "",
+                "out": [
+                    "5200"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5199",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Plain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 395,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "You find tracks leading north here. The tracks are less hidden as you go\nnorthwards. You can't escape the icy wind that comes down the mountains in the\nnorth and you have just made it half the way to the mountains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5210"
+                ],
+                "name": "",
+                "out": [
+                    "5210"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5197"
+                ],
+                "name": "",
+                "out": [
+                    "5197"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5199"
+                ],
+                "name": "",
+                "out": [
+                    "5199"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5200",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Barren Plain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 394,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "You can barely see your own hands. The fog here is really unbelievably thick. It\njust cannot be natural fog! The plain is barren and empty here and you feel that\nthere are no living beings near.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5184"
+                ],
+                "name": "",
+                "out": [
+                    "5184"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5202"
+                ],
+                "name": "",
+                "out": [
+                    "5202"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5201",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Foggy Plain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 396,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "Fog, fog, fog! You feel a soft wind coming from the north; maybe that's the\ndirection where it comes from? The fog stops where the forest begins in the\neast. Small round stones can be found and the ground is covered with frost.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5218"
+                ],
+                "name": "",
+                "out": [
+                    "5218"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5185"
+                ],
+                "name": "",
+                "out": [
+                    "5185"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5203"
+                ],
+                "name": "",
+                "out": [
+                    "5203"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5201"
+                ],
+                "name": "",
+                "out": [
+                    "5201"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5202",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Foggy Plain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 397,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "The forest suddenly becomes very dark here. The trees build a solid top that\nblocks the sunlight totally. You notice broken off branches and small openings\nin the undergrowth. It looks like huge creatures walk through this forest. As\nyou progress deeper into the forest you see smoke coming out of holes in the\nground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5186"
+                ],
+                "name": "",
+                "out": [
+                    "5186"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5204"
+                ],
+                "name": "",
+                "out": [
+                    "5204"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5202"
+                ],
+                "name": "",
+                "out": [
+                    "5202"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "5223"
+                ],
+                "name": "",
+                "out": [
+                    "5223"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5203",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 398,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "The forest is extremely dark here and the undergrowth is very thick. The trees\nare overgrown with moss and it even hangs down from their branches. Gigantic\nfunguses grow on rotten tree stumps and thorny bushes are everywhere. Ouch! A\nhole is in the ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5187"
+                ],
+                "name": "",
+                "out": [
+                    "5187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5203"
+                ],
+                "name": "",
+                "out": [
+                    "5203"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5220"
+                ],
+                "name": "",
+                "out": [
+                    "5220"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5204",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Dark Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 399,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "The aren't so many rocks here as before and you feel the icy wind from the north\nagain. In front of a rock you make a cruel discovery. Two frozen mummies inside\nof iron cages. Someone must have put them here that they froze to death.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5199"
+                ],
+                "name": "",
+                "out": [
+                    "5199"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5219"
+                ],
+                "name": "",
+                "out": [
+                    "5219"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5209",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Plain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 395,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "The tracks slowly lead west and you discover hidden signs on the rocks. It is so\ncold here that even the vegetation is completely frozen. Here it is where the\nicy winds from the north hit the plain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5211"
+                ],
+                "name": "",
+                "out": [
+                    "5211"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5200"
+                ],
+                "name": "",
+                "out": [
+                    "5200"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5210",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Barren Plain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 394,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "Finally you have reached the mountains. The mountains go vertically up for quite\na while and build a cliff. Under the cliff you find shelter from the icy wind.\nSlowly recovering you look around and are surprised. The vegetation that grows\nhere is dense and looks like someone has planted it. The tracks lead to the\nwest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5210"
+                ],
+                "name": "",
+                "out": [
+                    "5210"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5212"
+                ],
+                "name": "",
+                "out": [
+                    "5212"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5213"
+                ],
+                "name": "",
+                "out": [
+                    "5213"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5211",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Barren Plain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 394,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "Shadows lie over this plain and giving those not accustom to the lower light an\nuneasy feeling. In the sky one can often seen black crows circling above. The\ncrow's eyes seem to pierce even the darkest shadows as if they are spying upon\nthe land looking for intruders.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5207"
+                ],
+                "name": "",
+                "out": [
+                    "5207"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5211"
+                ],
+                "name": "",
+                "out": [
+                    "5211"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5212",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Shady Plain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 395,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "You find areas which look like fields, even when you are not sure what plants\ngrow here. The plants must be extremely resistant against frost. To the west is\nthe entrance to a small village.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5211"
+                ],
+                "name": "",
+                "out": [
+                    "5211"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5214"
+                ],
+                "name": "",
+                "out": [
+                    "5214"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5213",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Barren Plain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 393,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in front of a wooden gate that blocks the entrance to the\nhillmen village. The village is surrounded by a wooden stockade. A small tower\nis built above the gate for the guards on watch. Evil signs are painted on the\ngate. It is pretty obvious that you will be hanged on the highest post\navailable.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "5215"
+                ],
+                "name": "",
+                "out": [
+                    "5215"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5213"
+                ],
+                "name": "",
+                "out": [
+                    "5213"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5214",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Entrance to the Hillmen Village",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 392,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "You are under the watch-tower. The tunnel you are in is leading north inside the\nvillage. Embrasures are in the wooden tunnel walls and you see a second, open\ngate at the exit inside the village. Wagon tracks are in the mud and\nhorse-droppings cover the ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "5214"
+                ],
+                "name": "",
+                "out": [
+                    "5214"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5215",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Inside the Gate",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 392,
+        "y": 52,
+        "z": 0
+    },
+    {
+        "desc": "Now you have found the place where all this fog comes from. The hill is about\ntwice as high as an average human and its surface is smooth and black. Strange\nred glowing runes are written on the hill. The hill doesn't look natural at all\nand you wonder how runes can glow. This hill is surely a magical construction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5217"
+                ],
+                "name": "",
+                "out": [
+                    "5217"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5216",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Strange-looking Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 398,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "You really must be near now. The fog is so thick here that you can't even see\nyour own hands. As you go further north-east you bump into rocks right and left\nof you. You are going through a narrow passage.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5216"
+                ],
+                "name": "",
+                "out": [
+                    "5216"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5218"
+                ],
+                "name": "",
+                "out": [
+                    "5218"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5217",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Foggy Plain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 398,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "The fog becomes thicker and thicker now, but you discover that the fog doesn't\ncover a big area. It comes from something in the north-east. The rocky ground is\ninterrupted by small, dust covered areas. You see strange irregularities in the\ndust.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5219"
+                ],
+                "name": "",
+                "out": [
+                    "5219"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5202"
+                ],
+                "name": "",
+                "out": [
+                    "5202"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5217"
+                ],
+                "name": "",
+                "out": [
+                    "5217"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5218",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Foggy Plain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 397,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "This must be an old battlefield. You see frost-covered skeletons everywhere and\nyou find rusty swords and armour here. There are two types of skeletons, one\nkind looks like human skeletons and the other kind is much smaller. Maybe orc-\nskeletons? You also discover that the armour is split into three different\ntypes. This looks like a battlefield of old Angmar. Orcs and hillmen fighting\nagainst other humans.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5218"
+                ],
+                "name": "",
+                "out": [
+                    "5218"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5209"
+                ],
+                "name": "",
+                "out": [
+                    "5209"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5219",
+        "light": 2,
+        "loadflags": 524288,
+        "mobflags": 0,
+        "name": "Battlefield",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 397,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "The stench in this hole makes you vomit. Unidentifiable dirt is everywhere here\non the ground. You can't see any furniture. The hole is barely lit with light\nthat comes from the opening above. You feel a light wind coming out of the\nnorth-west corner.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "5221"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5204"
+                ],
+                "name": "",
+                "out": [
+                    "5204"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5220",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Troll Hole",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 392,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel bends east-west here. Water is dropping from the ceiling and the\nground is covered with a black, slimy mass. Shadows flit over the tunnel walls.\nYou hear screams coming from the west where the tunnel widens into an inter-\nsection. There is a hole in the east wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "5220"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5222"
+                ],
+                "name": "",
+                "out": [
+                    "5222"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5221",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 391,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "Two tunnels, one from the south and one from the east, are crossing each other\nhere. They lead west into the main part of this underground area. Skull-headed\nstaffs stick right and left of you in front of the tunnel walls. This is for\nsure no resting place for an exhausted traveller!\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5223"
+                ],
+                "name": "",
+                "out": [
+                    "5223"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5221"
+                ],
+                "name": "",
+                "out": [
+                    "5221"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5224"
+                ],
+                "name": "",
+                "out": [
+                    "5224"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5222",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Tunnel Intersection",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 390,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "As you enter the hole you see a small path leading north through piles of trash.\nThe hole was dug out a long time ago and it looks like the entrance to a larger\nunderground construction. Maybe it was built to give sun-shy creatures shelter\nin the day?\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5222"
+                ],
+                "name": "",
+                "out": [
+                    "5222"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "5203"
+                ],
+                "name": "",
+                "out": [
+                    "5203"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5223",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Troll Hole",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 390,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "You are in a large room with a big fire in the centre. On top of the fire is a\nhuge cooking pot. The pot is even big enough to put complete human beings in it!\nYou see a screaming head looking over the edge of the cooking pot waving at you\nand begging for mercy and help. All kinds of eaten up body parts are scattered\nover the ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5225"
+                ],
+                "name": "",
+                "out": [
+                    "5225"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5222"
+                ],
+                "name": "",
+                "out": [
+                    "5222"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5224",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 1,
+        "name": "Main Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 389,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "In this room there is a large grill. A corpse spit on a roasting spit slowly\ncooks over it. From the size of the corpse you can only guess that this poor\ncreature once was a dwarf or hobbit. In the north-east corner you can see more\ncorpses ready prepared for the fire. In the small pot next to the grill a sauce\nfor the meat is boiling. You don't dare to think what the sauce is made of.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5224"
+                ],
+                "name": "",
+                "out": [
+                    "5224"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5225",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Grill Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 389,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "The vegetation is lighter here as in the forest to the west. The bushes are\ndried out and there are no trees here. Sand covers the rocky ground but you\ncan't discover any tracks here. Down you can see a trail coming out of the west\nleading towards a ford in the Bruinen.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5187"
+                ],
+                "name": "",
+                "out": [
+                    "5187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5239"
+                ],
+                "name": "",
+                "out": [
+                    "5239"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5241"
+                ],
+                "name": "",
+                "out": [
+                    "5241"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5240",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cliff",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 399,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "The forest looks rotten here and the trees are decaying. Trees are split in half\nand others look like someone with really big teeth was chewing on them. The\nundergrowth is trampled into the ground and no signs of living animals can be\nfound. A cold wind comes from the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5186"
+                ],
+                "name": "",
+                "out": [
+                    "5186"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5240"
+                ],
+                "name": "",
+                "out": [
+                    "5240"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5242"
+                ],
+                "name": "",
+                "out": [
+                    "5242"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5241",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rotten Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 398,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "You are in a dark forest. Dead, burned-out trees surround you and the ground\nglooms in a dark light. The trees look like they have turned to stone a long\ntime ago and they have no leaves. You are not sure if they are alive or not! A\ncouple of trees are broken off and you wonder who and what for they are used\nnow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5185"
+                ],
+                "name": "",
+                "out": [
+                    "5185"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5241"
+                ],
+                "name": "",
+                "out": [
+                    "5241"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5243"
+                ],
+                "name": "",
+                "out": [
+                    "5243"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5242",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Dark Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 397,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "A dense fog is coming from the north and you can barely see your own hands. You\ncan't see anything of the surrounding landscape and you are not sure where the\ncliff ends. It is very quiet here and the only living thing you can find is\nlichen on the rocks.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5184"
+                ],
+                "name": "",
+                "out": [
+                    "5184"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5242"
+                ],
+                "name": "",
+                "out": [
+                    "5242"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5244"
+                ],
+                "name": "",
+                "out": [
+                    "5244"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5243",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cliff",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 396,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "The cliff is a break in the slowly rising landscape. Huge rocks are lying on the\nground making it almost impossible for you to move on, but you have a perfect\nview over the surrounding landscape. Down the cliff you can see a trail bending\nfrom the east to the west. A path is leading north-east from the trail and you\ncan see the Bruinen in the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5183"
+                ],
+                "name": "",
+                "out": [
+                    "5183"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5243"
+                ],
+                "name": "",
+                "out": [
+                    "5243"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5244",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cliff",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 395,
+        "y": 58,
+        "z": 0
+    }
+]

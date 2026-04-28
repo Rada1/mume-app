@@ -36,7 +36,9 @@ export class PipelineOrchestrator {
              const textRaw = typeof entry === 'string' ? entry : entry.line;
              const isPrompt = typeof entry === 'string' ? false : entry.isPrompt;
              
-             const tokens = Tokenizer.getInstance().tokenize(textRaw, context);
+             const tokenizer = Tokenizer.getInstance();
+             tokenizer.reset('room');
+             const tokens = tokenizer.tokenize(textRaw, context);
              if (isPrompt) {
                  (tokens as any).isPrompt = true;
              }
@@ -50,10 +52,14 @@ export class PipelineOrchestrator {
         textRaw: string,
         ansiHtml: string,
         type: MessageType,
-        context: TokenizerContext
+        context: TokenizerContext,
+        providedTokens?: Token[]
     ): Message {
-        // Build robust AST tokens from ANSI string matching rules
-        const tokens = Tokenizer.getInstance().tokenize(textRaw, context);
+        const tokens = providedTokens || (() => {
+            const tokenizer = Tokenizer.getInstance();
+            tokenizer.reset('room');
+            return tokenizer.tokenize(textRaw, context);
+        })();
         const textOnly = tokens.map(t => t.content).join('');
         
         // Generate actual interactive HTML from the tokens

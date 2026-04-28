@@ -1,0 +1,254 @@
+[
+    {
+        "desc": "The walls of the tunnel are getting closer and closer to each other, making the\npassageway only a few yards wide at the narrowest point. The uneven floor\ncombined with the rough ceiling cause the height of this tunnel to vary, causing\nit to be very cramped.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16882"
+                ],
+                "name": "",
+                "out": [
+                    "16882"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16885"
+                ],
+                "name": "",
+                "out": [
+                    "16885"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16884",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Narrow Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 459,
+        "y": 111,
+        "z": 0
+    },
+    {
+        "desc": "This passage is very narrow, and seems to be natural, rather than cut into the\nstone. While the tunnel continues toward the east, one can exit by climbing out\nwithout much difficulty, as the jagged edges make for great footholds for bipeds\nto use. Many small bones are scattered on the floor, in solemn tribute to\nsmaller animals which have fallen in and been unable to exit.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16884"
+                ],
+                "name": "",
+                "out": [
+                    "16884"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "16886"
+                ],
+                "name": "",
+                "out": [
+                    "16886"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16885",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "End of a Small Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 458,
+        "y": 111,
+        "z": 0
+    },
+    {
+        "desc": "Hundreds and again hundreds of old, sturdy logs have gathered and and become\nstuck together, creating a massive log jam which seems to span across the whole\nAnduin. The logs are intertwined into each other in several layers, forming a\ndangerous, rickety, but possibly passable, passageway across. Some of the logs\nare more than eight yards long, and as thick as a medium-sized stone troll.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "16961"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18503"
+                ],
+                "name": "",
+                "out": [
+                    "18503"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "16896"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16897",
+        "light": 0,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Log Jam in the Anduin River",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 1,
+        "x": 459,
+        "y": 116,
+        "z": 0
+    }
+]

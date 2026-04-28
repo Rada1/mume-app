@@ -1,6 +1,6 @@
 import React from 'react';
 import { Users } from 'lucide-react';
-import { useGame } from '../../../context/GameContext';
+import { useVitals } from '../../../context/GameContext';
 import { MemberRow } from '../../Drawers/MemberRow';
 import './GroupDrawer.css';
 
@@ -16,7 +16,7 @@ interface GroupDrawerProps {
 export const GroupDrawer: React.FC<GroupDrawerProps> = ({
     uiPositions, isEditMode, dragState, handleDragStart
 }) => {
-    const { groupMembers } = useGame();
+    const { groupMembers } = useVitals();
 
     const pos = uiPositions.group || {};
     const isDefault = pos.x === undefined && pos.y === undefined;

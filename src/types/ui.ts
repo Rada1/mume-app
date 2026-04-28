@@ -18,6 +18,17 @@ export interface UiPosition {
     scale?: number;
 }
 
+export interface BranchingEdgeGlowControls {
+    spreadSpeed: number;
+    branchingFactor: number;
+    persistenceMs: number;
+}
+
+export interface BranchingEdgeGlowProps {
+    imageUrl: string | null;
+    controls?: Partial<BranchingEdgeGlowControls>;
+}
+
 export type UiPositions = Record<string, UiPosition>;
 
 export interface PopoverState {

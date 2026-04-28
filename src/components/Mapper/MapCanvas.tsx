@@ -1,6 +1,7 @@
 import React, { useRef, useCallback, useEffect, forwardRef } from 'react';
 import { useMapperRenderer } from './useMapperRenderer';
 import { useMapAnimation } from './useMapAnimation';
+import { MapperPrediction } from './mapperTypes';
 
 interface MapCanvasProps {
     rooms: Record<string, any>;
@@ -42,7 +43,7 @@ interface MapCanvasProps {
     walkTargetId?: string | null;
     walkPath?: string[];
     baseMapExitsRef: React.MutableRefObject<Record<string, any>>;
-    clientPredictionsRef?: React.MutableRefObject<Array<{ toId: string, toX: number, toY: number, toZ: number }>>;
+    clientPredictionsRef?: React.MutableRefObject<MapperPrediction[]>;
     groupMembers?: import('../../types').GroupMember[];
     serverIdIndexRef?: React.MutableRefObject<Record<string, string>>;
     roomChars?: Record<number, import('../../types').GmcpOccupant>;

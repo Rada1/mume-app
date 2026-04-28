@@ -1,0 +1,3048 @@
+[
+    {
+        "desc": "Hills cover this landscape , and their size grow towards the west. Every rise,\nvalley, and hilltop is covered with dark, brooding trees, most of them fir or\nbirch. The hills here are dwarfed by a plateau, a higher part of Dol Guldur,\nwhich towers to the north and northwest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20203"
+                ],
+                "name": "",
+                "out": [
+                    "20203"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20199"
+                ],
+                "name": "",
+                "out": [
+                    "20199"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20202",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark and Sloping Forest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 520,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "Forest covers these slopes, conspiring with the plateau to the north to keep\nthese woods in permanent shadows. The slopes ascend gently towards the west,\nslowly climbing towards higher heights. The trees are gnarled and ancient, some\nof them true behemoths that must have been standing here since the the time of\nthe last alliance.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20204"
+                ],
+                "name": "",
+                "out": [
+                    "20204"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20202"
+                ],
+                "name": "",
+                "out": [
+                    "20202"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20203",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Craggy Slope beneath a Plateau",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 521,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "The trees of this forest are towering, ancient giants. Many of them are gnarled\nand twisted. Large roots protrude through the thick layer of rotting leaves on\nthe ground. Aside from the trees, little grows here except and the fungi and\nmushrooms that draw their nourishment from the tree's trunks, as little light\nfinds its way through the canopy.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20205"
+                ],
+                "name": "",
+                "out": [
+                    "20205"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20203"
+                ],
+                "name": "",
+                "out": [
+                    "20203"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20204",
+        "light": 0,
+        "loadflags": 32,
+        "mobflags": 32768,
+        "name": "Dark and Dreary Corner of Mirkwood",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 522,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "These shrub-covered fields lie in the shadow of a high plateau to the west, and\nthat shade probably kept the trees of Mirkwood to the east from creeping all the\nway up to the foot of the plateau. The vegetation consists of thorn-covered\nbushes and sturdy-looking shrubs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20206"
+                ],
+                "name": "",
+                "out": [
+                    "20206"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20204"
+                ],
+                "name": "",
+                "out": [
+                    "20204"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20205",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tangled, Ensnaring Thornbushes",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 0,
+        "x": 522,
+        "y": 155,
+        "z": 0
+    },
+    {
+        "desc": "This thicket-covered stretch of land lies between denser undergrowth to the\nnorth, the dark depths of Mirkwood to the east, and a plateau to the west. The\nground is overgrown with thorny thickets cut with wide paths. Most of the bushes\nhave long, nasty thorns pointing every which way.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20207"
+                ],
+                "name": "",
+                "out": [
+                    "20207"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20205"
+                ],
+                "name": "",
+                "out": [
+                    "20205"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20206",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tangled Thornbushes",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 0,
+        "x": 522,
+        "y": 154,
+        "z": 0
+    },
+    {
+        "desc": "The uneven terrain here at the foot of the high plateau to the west is entirely\ncovered by immense thickets. Thousands of shrubs grow in such proximity that to\neach other that the whole thicket appears like one single plant. A few paths\nexist where a mount or traveller can make their way through.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20208"
+                ],
+                "name": "",
+                "out": [
+                    "20208"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20206"
+                ],
+                "name": "",
+                "out": [
+                    "20206"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20207",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Thorny Thicket",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 2,
+        "x": 522,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "The slopes of this hill are covered by a dark forest. The trees are black oaks\nwith gnarled roots and twisted trunks, and tall, dark alders. The undergrowth of\nstrangling vines and long-thorned bushes has been haphazardly crushed and torn\nup, root and all, as if something very large and impatient smashed through.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20209"
+                ],
+                "name": "",
+                "out": [
+                    "20209"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20207"
+                ],
+                "name": "",
+                "out": [
+                    "20207"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20210"
+                ],
+                "name": "",
+                "out": [
+                    "20210"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20208",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Wooded Hill",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 2,
+        "x": 522,
+        "y": 152,
+        "z": 0
+    },
+    {
+        "desc": "Raised over the surrounding dark forest, this hill might once have been lit by\nthe warm sun. But now the black oaks have stolen most of the light with their\ndense cover of dark leaves. The hill's summit and slopes are covered by a layer\nof dead leaves and several large, round boulders.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20208"
+                ],
+                "name": "",
+                "out": [
+                    "20208"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20209",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 16384,
+        "name": "Steep, Sombre Hill",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 2,
+        "x": 522,
+        "y": 151,
+        "z": 0
+    },
+    {
+        "desc": "This brush-covered area is squeezed between dark woods to the north and a steep\nplateau to the south. The ground is very stony, but the poor soil seems adequate\nfor a variety of plantlife consisting of brown, tough shrubs, wild grass, as\nwell as some larger thornbushes.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20208"
+                ],
+                "name": "",
+                "out": [
+                    "20208"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20211"
+                ],
+                "name": "",
+                "out": [
+                    "20211"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20210",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Brush in the Shadow of a Plateau",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 521,
+        "y": 152,
+        "z": 0
+    },
+    {
+        "desc": "This patch of brushland is squeezed between the forest to the north and a\nplateau to the south. The plantlife consists mainly of low, brown shrubs and\nlong, thorny vines that creep across the ground for lack of trees to climb. The\nplateau to the south overshadows these lower lands, casting them into gloom for\nmuch of the day.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20242"
+                ],
+                "name": "",
+                "out": [
+                    "20242"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20210"
+                ],
+                "name": "",
+                "out": [
+                    "20210"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20212"
+                ],
+                "name": "",
+                "out": [
+                    "20212"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20211",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Brush between Mirkwood and a Plateau",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 520,
+        "y": 152,
+        "z": 0
+    },
+    {
+        "desc": "Black oaks and alders make up this part of the forest. Their limbs and leaves\nform a dense ceiling that blocks out all light. The ground is soft and muddy and\nthe air is stagnant. Sickly grey-green lichen and patches of fungi cover many of\nthe trunks.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20249"
+                ],
+                "name": "",
+                "out": [
+                    "20249"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20211"
+                ],
+                "name": "",
+                "out": [
+                    "20211"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20241"
+                ],
+                "name": "",
+                "out": [
+                    "20241"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20242",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Adumbral Mirkwood",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 520,
+        "y": 151,
+        "z": 0
+    },
+    {
+        "desc": "Here, in the depth of Mirkwood, the land is shrouded in shadows and mirk by the\nthick layers of branch and leaf overhead. The air is humid and stagnant with the\nsmells of rot and decay. Thick layers of fallen leaves, knee-deep in some\nplaces, cover the forest floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20242"
+                ],
+                "name": "",
+                "out": [
+                    "20242"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20240"
+                ],
+                "name": "",
+                "out": [
+                    "20240"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20299"
+                ],
+                "name": "",
+                "out": [
+                    "20299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20249",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Under Adumbral Canopies",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 520,
+        "y": 150,
+        "z": 0
+    },
+    {
+        "desc": "Bleak and bare hills form this windswept plateau. The forest covering the lower\nhills is here replaced by a few struggling brambles and weeds. The plateau\nextends in all directions for miles and its edges are sharp and steep. The only\nway down seems to be the slope to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20293"
+                ],
+                "name": "",
+                "out": [
+                    "20293"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20294"
+                ],
+                "name": "",
+                "out": [
+                    "20294"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20291"
+                ],
+                "name": "",
+                "out": [
+                    "20291"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20289"
+                ],
+                "name": "",
+                "out": [
+                    "20289"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20290",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bleak, Windswept Plateau",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 520,
+        "y": 154,
+        "z": 0
+    },
+    {
+        "desc": "The bare and flat ground extends in all directions except towards the east where\na sudden drop marks the border of the plateau. There are no trees here, and\nvegetation is sparse. The windswept heights hold little topsoil except what's\ntrapped in small cracks.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20292"
+                ],
+                "name": "",
+                "out": [
+                    "20292"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20295"
+                ],
+                "name": "",
+                "out": [
+                    "20295"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20290"
+                ],
+                "name": "",
+                "out": [
+                    "20290"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20291",
+        "light": 0,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Edge of a Bleak Plateau",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 521,
+        "y": 154,
+        "z": 0
+    },
+    {
+        "desc": "This plateau rises above the forest to the east and north. Its windswept heights\nlook down on the dark canopy. The flat surface of the plateau has very little\nsoil, mostly it is bare, black rock. At one place boulders are piled in a\nhalf-circle, as if someone tried to build a windshelter here, but it looks like\nit would provide little shelter.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20291"
+                ],
+                "name": "",
+                "out": [
+                    "20291"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20293"
+                ],
+                "name": "",
+                "out": [
+                    "20293"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20292",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Corner of a Windswept Plateau",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 521,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "A steep rise ascends from the lower plateau to this higher promontory. Bare,\nblack rock covers the ground and no plant or tree grow here. The promontory\noverlooks the lower forest to the west and to the north, but the canopy is too\ndense to see through. Far to the west a rocky outcrop stands out against the sky\nwith the main part of Dol Guldur beyond it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20290"
+                ],
+                "name": "",
+                "out": [
+                    "20290"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20292"
+                ],
+                "name": "",
+                "out": [
+                    "20292"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20293",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Promontory",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 520,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "The flat plateau is crossed by a shallow ravine filled with brambles and\nboulders. Little grows on top of the windswept plateau where the ground is black\nrock with barely any soil. The few straggly trees that do grow here are sad\nlooking things with thin branches and few leaves.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20290"
+                ],
+                "name": "",
+                "out": [
+                    "20290"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20295"
+                ],
+                "name": "",
+                "out": [
+                    "20295"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20294",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "At a Ravine on a Plateau",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 520,
+        "y": 155,
+        "z": 0
+    },
+    {
+        "desc": "Some twisted, scraggly birches accompanied by dry, brown bushes are the only\nsigns of life on this otherwise desolate plateau. The lower land south and east\nis covered by a dense forest, but is unreachable due to the steep sides of the\nplateau.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20291"
+                ],
+                "name": "",
+                "out": [
+                    "20291"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20294"
+                ],
+                "name": "",
+                "out": [
+                    "20294"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20296"
+                ],
+                "name": "",
+                "out": [
+                    "20296"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20295",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bleak, Windswept Plateau",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 521,
+        "y": 155,
+        "z": 0
+    },
+    {
+        "desc": "This cave has been dug directly out of the plateau. The floor is rough stone,\nbut piles of eroded dirt blur the lines between the walls and the ground. A\nhitching post and feed trough line one wall, surrounded by a ring of brown,\ndried, droppings. Clearly the occupants are not overly concerned with cleaning.\nTo the other side, a few logs have been set around a crude fire pit.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20295"
+                ],
+                "name": "",
+                "out": [
+                    "20295"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20296",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Hollowed Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 521,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "The slopes of these gentle hills are covered with birch and fir, while the\nhilltops are dominated by gnarly old oaks. Their crowns are wide and dense,\ncasting the land into an everlasting darkness. Faint murmurs rustle through the\nleaves as the wind stirs them, as if the trees whisper to one another in hushed\nvoices.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20300"
+                ],
+                "name": "",
+                "out": [
+                    "20300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20332"
+                ],
+                "name": "",
+                "out": [
+                    "20332"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20249"
+                ],
+                "name": "",
+                "out": [
+                    "20249"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20299",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Shaded Mirkwood Hillock",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 520,
+        "y": 149,
+        "z": 0
+    },
+    {
+        "desc": "Gentle, rolling hillocks cover the lands in this part of Mirkwood. Slopes,\nhilltops and long valleys continue in every direction except toward the west\nwhere a sudden drop puts a halt to any consideration of travel. The sturdy\ntrees, ancient-looking behemoths, are covered in ensnaring vines and moss in\nvarious shades of green and grey.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20299"
+                ],
+                "name": "",
+                "out": [
+                    "20299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20338"
+                ],
+                "name": "",
+                "out": [
+                    "20338"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20301"
+                ],
+                "name": "",
+                "out": [
+                    "20301"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20300",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Slopes of a Mirkwood Hillock",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 520,
+        "y": 148,
+        "z": 0
+    },
+    {
+        "desc": "The round, softly sloped hills in this area are covered with a dense, strange\nlooking forest. Most of the trees are oaks that grew tall and strong, but their\nbark is almost black. A few ashes and pines stand between the oaks. The\nundergrowth is thick, with many thorny climbing vines that conceal some nasty\nlittle cracks in the ground. A sharp edged cliff protects the hills to the west,\nwhile to the east the land changes to a plain forest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20302"
+                ],
+                "name": "",
+                "out": [
+                    "20302"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20300"
+                ],
+                "name": "",
+                "out": [
+                    "20300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20301",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forested Mirkwood Hillocks",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 520,
+        "y": 147,
+        "z": 0
+    },
+    {
+        "desc": "These woods are dark and gloomy, no sky is visible through the ceiling of\nleaves. The trees are mostly dark oaks with rough bark and thick branches laden\nwith leaves. Due to the lack of light, little brush grows under the trees. Dead\nleaves cover the ground in a thick layer of rotting plant material, adding an\nunpleasant aroma.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20303"
+                ],
+                "name": "",
+                "out": [
+                    "20303"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20301"
+                ],
+                "name": "",
+                "out": [
+                    "20301"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20302",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sinister Forest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 521,
+        "y": 147,
+        "z": 0
+    },
+    {
+        "desc": "The forest is extremely dark and dense, with huge trees that prevent any\nsunlight from reaching the ground. A crude camp was set up between some large\nrocks and ancient trees. It consists of a few ragged furs and dirty hides around\na fireplace. A huge dulled, dirty cauldron, used to cook something or someone,\nhangs over the fire.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20302"
+                ],
+                "name": "",
+                "out": [
+                    "20302"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20304"
+                ],
+                "name": "",
+                "out": [
+                    "20304"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20303",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Camp of the Hill Trolls",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 522,
+        "y": 147,
+        "z": 0
+    },
+    {
+        "desc": "This tunnel has been hollowed out by the hill trolls out of the black rock that\nmakes up Dol Guldur. A rough stair leads back upwards into the forest that seems\nto have been a natural cave at some point in time.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20340"
+                ],
+                "name": "",
+                "out": [
+                    "20340"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20341"
+                ],
+                "name": "",
+                "out": [
+                    "20341"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20303"
+                ],
+                "name": "",
+                "out": [
+                    "20303"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20304",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tunnel of the Hill Trolls",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 522,
+        "y": 144,
+        "z": 0
+    },
+    {
+        "desc": "The forest rises to cover a wide but low hill. The trees are old, black oaks in\nthe lower parts and tall firs higher up. They form a dense ceiling, beneath\nwhich the shadows reign. Little grows here but the ground is covered in dead,\nrotting leaves.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20338"
+                ],
+                "name": "",
+                "out": [
+                    "20338"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20336"
+                ],
+                "name": "",
+                "out": [
+                    "20336"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20333"
+                ],
+                "name": "",
+                "out": [
+                    "20333"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20299"
+                ],
+                "name": "",
+                "out": [
+                    "20299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20332",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Deep Forested Hillock",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 521,
+        "y": 149,
+        "z": 0
+    },
+    {
+        "desc": "The valley floor is covered with a dense and dark wood of ancient oaks, which\nblock most of what sunlight there might be above. The valley continues to the\nsouth while gentle slopes rise to the north and west, leading up to higher\nground, which even so look equally covered by dense forest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20339"
+                ],
+                "name": "",
+                "out": [
+                    "20339"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20334"
+                ],
+                "name": "",
+                "out": [
+                    "20334"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20332"
+                ],
+                "name": "",
+                "out": [
+                    "20332"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20333",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Deep Forested Valley",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 522,
+        "y": 149,
+        "z": 0
+    },
+    {
+        "desc": "The floor of this wide valley is covered by enormous oaks. It narrows to the\nnorth while the south side is blocked off by slopes too steep to ascend. Fallen\nleaves cover the ground in a thick layer of rotting compost. The smell of rotten\nplantlife hangs heavily in the air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20333"
+                ],
+                "name": "",
+                "out": [
+                    "20333"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20336"
+                ],
+                "name": "",
+                "out": [
+                    "20336"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "20335"
+                ],
+                "name": "",
+                "out": [
+                    "20335"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20334",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Deep Forested Valley",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 522,
+        "y": 150,
+        "z": 0
+    },
+    {
+        "desc": "The branches of this tree form a loose canopy. The footing is treacherous, but\nplentiful. Rotten vegetation clings to the trunk, giving off an unpleasant\nodour. The tree itself seems solid, though it has hard to tell behind the\nmultiple layers of moss.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "20334"
+                ],
+                "name": "",
+                "out": [
+                    "20334"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20335",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Up an Oak Tree",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 523,
+        "y": 150,
+        "z": 0
+    },
+    {
+        "desc": "No light reaches the ground of this forest. The crowns of the trees block the\nsunlight completely. The old oaks are black and have a strangeness about them.\nMost of them did not grow straight, their trunks are twisted and their roots\nseem to wrestle with each other to get the most nutrients from the soil.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20332"
+                ],
+                "name": "",
+                "out": [
+                    "20332"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20337"
+                ],
+                "name": "",
+                "out": [
+                    "20337"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20334"
+                ],
+                "name": "",
+                "out": [
+                    "20334"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20336",
+        "light": 1,
+        "loadflags": 32,
+        "mobflags": 4096,
+        "name": "Looming Trees",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 521,
+        "y": 150,
+        "z": 0
+    },
+    {
+        "desc": "The ground under the dark canopy is soft and muddy. The trees are mostly oaks\nand alders that look like they have stood here since an earlier age. The alders\nsurround a small sinkhole filled with murky, muddy water that smells of sulphur.\nThe deep tracks of large foot prints leading to the water show that it is\npotable for at least some kind of creature.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20336"
+                ],
+                "name": "",
+                "out": [
+                    "20336"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20337",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "At a Black Forest Pond",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 521,
+        "y": 151,
+        "z": 0
+    },
+    {
+        "desc": "Tall dark trees dominate these rolling hills, their leaf-covered branches\nforming an almost solid ceiling above. Little sun ever reaches the ground and as\na result the undergrowth is very sparse. The hills expand in all directions\nexcept to the south, where there is a steep drop.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20332"
+                ],
+                "name": "",
+                "out": [
+                    "20332"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20339"
+                ],
+                "name": "",
+                "out": [
+                    "20339"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20300"
+                ],
+                "name": "",
+                "out": [
+                    "20300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20338",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Densely Forested Hillock",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 521,
+        "y": 148,
+        "z": 0
+    },
+    {
+        "desc": "This forested hillock is elevated over the lower parts of Mirkwood to the east\nand north. The same gnarly ancients grow here though, their massive trunks\nstanding a tad too close to each other. Their outstretched branches intertwine\nabove to form an almost solid ceiling of vegetation.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20333"
+                ],
+                "name": "",
+                "out": [
+                    "20333"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20338"
+                ],
+                "name": "",
+                "out": [
+                    "20338"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20339",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Gloomy Hillock",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 522,
+        "y": 148,
+        "z": 0
+    },
+    {
+        "desc": "The dark tunnel suddenly stops in what seems to be dead end. A few splintered\ncrates, some completely upended, have been dumped unceremoniously at the end of\nthe tunnel. Some roots grow down from the forest above amongst the troll filth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20304"
+                ],
+                "name": "",
+                "out": [
+                    "20304"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20340",
+        "light": 1,
+        "loadflags": 2097152,
+        "mobflags": 0,
+        "name": "Tunnel of the Hill Trolls",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 523,
+        "y": 144,
+        "z": 0
+    },
+    {
+        "desc": "The walls of the tunnel are stricken with claw marks that can be seen leading to\nthe south and east where they finally disappear into darkness. A foetid smell of\nrotting flesh reeks from the southern tunnel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20342"
+                ],
+                "name": "",
+                "out": [
+                    "20342"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20304"
+                ],
+                "name": "",
+                "out": [
+                    "20304"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20341",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tunnel of the Hill Trolls",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 521,
+        "y": 144,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel suddenly opens into a large cave that has been turned into a foul\nlarder. Rotting corpses hang from crude hooks to preserve the meat and prevent\nany worms from reaching the flesh. The only way out of here is to head back\nnorth through the tunnel where the air smells slightly cleaner.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20341"
+                ],
+                "name": "",
+                "out": [
+                    "20341"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20342",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Larder of the Hill Trolls",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 521,
+        "y": 145,
+        "z": 0
+    }
+]

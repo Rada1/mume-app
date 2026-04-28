@@ -1,0 +1,170 @@
+[
+    {
+        "desc": "Not far to the south, the forbidding gates of Tharbad can be seen, tall and\nimposing. The road here is made of interlocking granite slabs mortared with\nhard-packed dirt, and to either side of the road tall smooth walls climb high,\nas if funneling travellers toward the city gates. A heavy door of stout oak\nplanks is set into the eastern wall, presumably leading to some sort of guard\nhut. Any traveller trapped here would be at the mercy of the denizens of\nTharbad.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "7754"
+                ],
+                "name": "",
+                "out": [
+                    "7754"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "7756"
+                ],
+                "name": "",
+                "out": [
+                    "7756"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "14745"
+                ],
+                "name": "",
+                "out": [
+                    "14745"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "7755",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Approaching the North Gate of Tharbad",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 213,
+        "y": 185,
+        "z": 0
+    },
+    {
+        "desc": "You are in front of a huge wooden gate. On the city wall, beside the gate, you\nnotice a big sign. To the north, the road leads to the Shire, far away.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "7755"
+                ],
+                "name": "",
+                "out": [
+                    "7755"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "7756",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Outside the North Gate of Tharbad",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 1,
+        "x": 213,
+        "y": 186,
+        "z": 0
+    }
+]

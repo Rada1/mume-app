@@ -1,0 +1,2770 @@
+[
+    {
+        "desc": "The fields continue here, full of the same lush green grass as most of the\nnearby land. Mostly it seems flat all around, except to the north where the\nfields rise up into a sudden bluff. To the south a line of sparse alder trees\ncut across the land, their sinuous canopies waving in the wind.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10175"
+                ],
+                "name": "",
+                "out": [
+                    "10175"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10178"
+                ],
+                "name": "",
+                "out": [
+                    "10178"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10228"
+                ],
+                "name": "",
+                "out": [
+                    "10228"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10177",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Meadow Bordered by Trees",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 313,
+        "y": 240,
+        "z": 0
+    },
+    {
+        "desc": "These white-trunked trees are located widely apart, thus manoeuvring through the\ngrove is fairly easy. North of this stand of trees are miles of lush green\nmeadowland, with a small rise in the distance the only break in the horizon. To\nthe south, the bases of the trees are immersed in small pools of water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10177"
+                ],
+                "name": "",
+                "out": [
+                    "10177"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10180"
+                ],
+                "name": "",
+                "out": [
+                    "10180"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10179"
+                ],
+                "name": "",
+                "out": [
+                    "10179"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10178",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Among a Stand of Alder Trees",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 313,
+        "y": 241,
+        "z": 0
+    },
+    {
+        "desc": "The trees here are sparse, their canopies little more than a bush-like tangle of\nsinuous branches and leaves. The ground below is covered in an ankle-high layer\nof grass, with the occasional shrub here and there. North of this grove are lush\nfields, stretching for miles. The trees to the south are in parts surrounded by\nwater, their roots dipping into the pools.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10228"
+                ],
+                "name": "",
+                "out": [
+                    "10228"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10181"
+                ],
+                "name": "",
+                "out": [
+                    "10181"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10226"
+                ],
+                "name": "",
+                "out": [
+                    "10226"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10178"
+                ],
+                "name": "",
+                "out": [
+                    "10178"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10179",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Stand of Alder Trees",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 314,
+        "y": 241,
+        "z": 0
+    },
+    {
+        "desc": "This clearing is on a small rise, surrounded by wetlands to the east and a line\nof alder trees to the north. There is a small smoke pit built here, with signs\nof recent use, and a wooden shanty to the west. Apparently, someone has made a\npermanent camp here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10178"
+                ],
+                "name": "",
+                "out": [
+                    "10178"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10181"
+                ],
+                "name": "",
+                "out": [
+                    "10181"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10180",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Secluded Clearing",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 313,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "The ground here is soaked, almost as a swamp in parts. Large pools of water lie\neverywhere, with tall reeds sprouting like pointing fingers. Dry land is still\nthe majority, but even there the water squelches out of every footprint. The\npools do not appear to be deep at least, and should not impede any traveller\nother than wetting their ankles. West the land rises and dries out, while east\nthe pools of water become more abundant.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10179"
+                ],
+                "name": "",
+                "out": [
+                    "10179"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10182"
+                ],
+                "name": "",
+                "out": [
+                    "10182"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10180"
+                ],
+                "name": "",
+                "out": [
+                    "10180"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10181",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Receding Wetlands",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 7,
+        "sundeath": 1,
+        "x": 314,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "Large pools of water have overtaken the land here. There are hardly any dry\npatches left. Tall reeds abound, bordering the pools and restricting your view.\nThe water is more like a shallow lake than dry land in parts, complete with the\nsplashing of fish and the croaking of frogs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10226"
+                ],
+                "name": "",
+                "out": [
+                    "10226"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10183"
+                ],
+                "name": "",
+                "out": [
+                    "10183"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10181"
+                ],
+                "name": "",
+                "out": [
+                    "10181"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10182",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Saturated Marshland",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 7,
+        "sundeath": 1,
+        "x": 315,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "Dry land is scarce here, although even there the earth is muddy and saturated\nwith water. Tall, green reeds of grass with brown tips grow in large clumps\nalong the edges of the shallow water, limiting your view. The water itself is\nstagnant, unmoving except in the wake of some small animal swimming.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10225"
+                ],
+                "name": "",
+                "out": [
+                    "10225"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10184"
+                ],
+                "name": "",
+                "out": [
+                    "10184"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10182"
+                ],
+                "name": "",
+                "out": [
+                    "10182"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10183",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Flooded Marshland",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 7,
+        "sundeath": 1,
+        "x": 316,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "Here the earth is largely below water, with only the tops of the grass and\ncattails sticking up out of a constant foot of water. The tips of the grass seem\nto make little islands in the water, but it is an illusion - there is no dry\nland here. North some giant thick brush mingles with the reeds to form an\nimpenetrably tangled barrier, while east the water runs into a small pond in the\nplains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10185"
+                ],
+                "name": "",
+                "out": [
+                    "10185"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10183"
+                ],
+                "name": "",
+                "out": [
+                    "10183"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10184",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Watery Fields",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 317,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "The ground here is covered in shallow pools of stagnant, murky brown water. The\nmuddy ground in-between sinks slightly, trying to swallow those who treads upon\nit. Clumps of reeds appear here and there, creating secluded nesting places for\nwildlife. North there is an abandoned way-station atop a small hill, which once\nhoused a guard post and an inn for travellers on the Great South Road. To the\nsouth water trickles out of these wetlands and on through the plains in a small\nstream.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10223"
+                ],
+                "name": "",
+                "out": [
+                    "10223"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10186"
+                ],
+                "name": "",
+                "out": [
+                    "10186"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10218"
+                ],
+                "name": "",
+                "out": [
+                    "10218"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10184"
+                ],
+                "name": "",
+                "out": [
+                    "10184"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10185",
+        "light": 2,
+        "loadflags": 40,
+        "mobflags": 0,
+        "name": "A Shallow Pond",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 318,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "Little more than a streamlet dribbling through the dustlands, this tiny line of\nwater is one of many tributaries to the Isen, which it feeds into far south of\nhere. It draws its waters from the wetlands around the Old South Road and,\nskirting around the edges of the hill, carries on through the plains. The water\nlooks unclear, a little coloured by the soil maybe, but perfectly drinkable.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10185"
+                ],
+                "name": "",
+                "out": [
+                    "10185"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10187"
+                ],
+                "name": "",
+                "out": [
+                    "10187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10186",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Small Stream amongst the Flatlands",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 318,
+        "y": 246,
+        "z": 0
+    },
+    {
+        "desc": "Born from the wetlands a few miles north of here, this little stream is one of\nmany tributaries to the mighty Isen a long way distant. Somehow it trickles and\ndribbles its way that far through the seemingly flat plains, pushed onwards by\nthe constant flow of rainwater. It has some practical uses too, as a source of\nwater for the Dunlending camp atop the hill just north of here. Every morning\nlarge amounts of water are collected onto a wheeled contraption, then hauled up\nthe extremely steep southwestern hillside with a long rope and many horses.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10186"
+                ],
+                "name": "",
+                "out": [
+                    "10186"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10188"
+                ],
+                "name": "",
+                "out": [
+                    "10188"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10214"
+                ],
+                "name": "",
+                "out": [
+                    "10214"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10187",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Tiny Brook",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 318,
+        "y": 247,
+        "z": 0
+    },
+    {
+        "desc": "Miles of gently undulating plains are the norm in southern Enedwaith, and here\nis no exception. The nearest break in that pattern is a low flat hill several\nmiles northwards. Even more distantly lie the White Mountains, on the horizon to\nthe southeast, so named for their snow-capped peaks. Even at this distance their\nsize is obvious; up close they must be truly towering. Just east of here a small\ntrail picks its way through the terrain without trouble, one of the multitude of\nDunlending paths that criss-cross these lands.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10187"
+                ],
+                "name": "",
+                "out": [
+                    "10187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10189"
+                ],
+                "name": "",
+                "out": [
+                    "10189"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10211"
+                ],
+                "name": "",
+                "out": [
+                    "10211"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10188",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Endless Prairie",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 318,
+        "y": 248,
+        "z": 0
+    },
+    {
+        "desc": "These long plains are part of the huge upland of Enedwaith, which stretches\nbetween the great rivers of Greyflood on the borders of Eregion, and the Isen,\nstill a long way south of here. Mostly they are uninhabited, with an occasional\nsmattering of isolated Dunlending towns here and there. One of those towns can\nbe seen a few miles north of here, atop a low flat hill. A path runs south from\nthere, passing by just east of you, and continuing south until it passes out of\nyour eyesight.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10188"
+                ],
+                "name": "",
+                "out": [
+                    "10188"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10190"
+                ],
+                "name": "",
+                "out": [
+                    "10190"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10210"
+                ],
+                "name": "",
+                "out": [
+                    "10210"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10189",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Flat Dunland Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 318,
+        "y": 249,
+        "z": 0
+    },
+    {
+        "desc": "The land is flat all around, for almost as far as the eye can see. The only\nexception is the faint impression left on the southern horizon by the White\nMountains. Just east of here a small path runs north to south, but it too is\nsubsumed into the plains, disappearing over both horizons. Quite possibly it is\nas much of a landmark as a path, as it would seem to be rather easy to get lost\namongst the immensity of flat land, without any other landmark as a guide.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10189"
+                ],
+                "name": "",
+                "out": [
+                    "10189"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10191"
+                ],
+                "name": "",
+                "out": [
+                    "10191"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10190",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Uninhabited Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 318,
+        "y": 250,
+        "z": 0
+    },
+    {
+        "desc": "Like a dotted line, infrequently marked by little white stones, this path makes\nits way across the flatlands. It appears to have no obvious end either to the\nnorth or south, stretching to both horizons and beyond. Underfoot it is merely\nwell-trodden earth, with the ruts of wheelmarks and hooves visible. Far away to\nthe southeast lie the White Mountains, the only feature on the landscape. All\nelse is merely the plains of Enedwaith, stretching out endlessly.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10210"
+                ],
+                "name": "",
+                "out": [
+                    "10210"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10192"
+                ],
+                "name": "",
+                "out": [
+                    "10192"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10190"
+                ],
+                "name": "",
+                "out": [
+                    "10190"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10191",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On a Small Trail",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 319,
+        "y": 250,
+        "z": 0
+    },
+    {
+        "desc": "Straight north to south across the wide plain goes this path, from the large\nDunlending town of Wulfston to the crossing points on the Isen far south. Here\nit passes by a small camp on the eastern side, where the Dunlendings stop by on\ntheir long hunting trips. The path itself is little more than a track worn by\nfeet and hooves, marked occasionally by white stones but completely unpaved.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10211"
+                ],
+                "name": "",
+                "out": [
+                    "10211"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10191"
+                ],
+                "name": "",
+                "out": [
+                    "10191"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10209"
+                ],
+                "name": "",
+                "out": [
+                    "10209"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10189"
+                ],
+                "name": "",
+                "out": [
+                    "10189"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10210",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trail across the Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 319,
+        "y": 249,
+        "z": 0
+    },
+    {
+        "desc": "Through these flat plains a path is not truly necessary, and indeed this one is\njust used to mark the swiftest route between two points. Northwards it leads to\na Dunlending town, and many miles south to a boating point on the swift river\nIsen. It is unpaved, although with a white stone every hundred yards marking its\nside. Just north of here a small stream can be seen, bending away to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10214"
+                ],
+                "name": "",
+                "out": [
+                    "10214"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10210"
+                ],
+                "name": "",
+                "out": [
+                    "10210"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10212"
+                ],
+                "name": "",
+                "out": [
+                    "10212"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10188"
+                ],
+                "name": "",
+                "out": [
+                    "10188"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10211",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Small Dunlending Trail",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 319,
+        "y": 248,
+        "z": 0
+    },
+    {
+        "desc": "Worn into the plains rather than built, this path takes a route straight north\nand south from here. Little in the terrain obstructs it, other than infrequent\nhollows. It serves as a supply and trading route for the large Dunlending fort\nnorth of here, sited on the crown of a low flat hillock. The trail runs to the\neastern base of that hill, and then splits. One fork winds up the hillside to\nthe only gates, while the other continues north to the remains of the Great\nSouth Road.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10215"
+                ],
+                "name": "",
+                "out": [
+                    "10215"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10211"
+                ],
+                "name": "",
+                "out": [
+                    "10211"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10213"
+                ],
+                "name": "",
+                "out": [
+                    "10213"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10187"
+                ],
+                "name": "",
+                "out": [
+                    "10187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10214",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trail through the Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 319,
+        "y": 247,
+        "z": 0
+    },
+    {
+        "desc": "Two rough trails meet here, at the eastern end of a long low hill. One heads a\nshort length northwards to the Old South Road, and straight south through the\nplains. The other slowly ascends the hillside to the west, winding to lessen the\nclimb. It is the only road up to the Dunlending fortress-camp, surrounded by\nearthen embankments along the crown of the hill. From here you can just pick out\nwhere it enters the town, passing through gates in the wooden ring.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10218"
+                ],
+                "name": "",
+                "out": [
+                    "10218"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10214"
+                ],
+                "name": "",
+                "out": [
+                    "10214"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10216"
+                ],
+                "name": "",
+                "out": [
+                    "10216"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10234"
+                ],
+                "name": "",
+                "out": [
+                    "10234"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10215",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trail below a Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 319,
+        "y": 246,
+        "z": 0
+    },
+    {
+        "desc": "The road has succumbed to the erosion of the water to the west, and now is only\na muddy mix of gravel and small pools. The few remains of the once giant paving\nstones are covered in mud and slimy algae. Some stones have become so dislodged\nthat their edges stick up out of the mud to trip up any unwary traveller. The\nroad continues up away from the wetlands to the north, and travels through the\nplains to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10219"
+                ],
+                "name": "",
+                "out": [
+                    "10219"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10215"
+                ],
+                "name": "",
+                "out": [
+                    "10215"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10217"
+                ],
+                "name": "",
+                "out": [
+                    "10217"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10185"
+                ],
+                "name": "",
+                "out": [
+                    "10185"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10218",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Muddy Remains of an Old Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 319,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "The causeway which carries this road for many miles to the north-west begins\nhere, near a deserted hilltop settlement to the west. East the lands are gentle\nrolling plains of well-kept farmlands, while west beyond the hills are mostly\nflat wetlands. These rains have made the soil in this land very fertile, but in\nparts the land floods when the water cannot drain away. Southwards the old road\ncrumbles in a sunken muddy mess.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10220"
+                ],
+                "name": "",
+                "out": [
+                    "10220"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10218"
+                ],
+                "name": "",
+                "out": [
+                    "10218"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10222"
+                ],
+                "name": "",
+                "out": [
+                    "10222"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10223"
+                ],
+                "name": "",
+                "out": [
+                    "10223"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10219",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Great South Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 319,
+        "y": 241,
+        "z": 0
+    },
+    {
+        "desc": "The worn remains of the Great South Road run around the base of a hillock here,\nwhere the ruins of a small settlement can be seen. The buildings are destitute\nand no people can be seen living there anymore. The road continues west on its\ncauseway through the wetlands in a dreadful condition, pockmarked with holes and\njagged slabs. South it lowers to the level of the plains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10219"
+                ],
+                "name": "",
+                "out": [
+                    "10219"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10221"
+                ],
+                "name": "",
+                "out": [
+                    "10221"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10231"
+                ],
+                "name": "",
+                "out": [
+                    "10231"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10169"
+                ],
+                "name": "",
+                "out": [
+                    "10169"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10220",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Tattered Remains of a Road",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 319,
+        "y": 240,
+        "z": 0
+    },
+    {
+        "desc": "This courtyard was once a fairly busy place, bustling with travellers and the\nguards posted here to watch the road. Since the road is now all but forgotten,\nthe way station has long been abandoned. All that remains now is a small and\novergrown gravel path leading to the centre of the courtyard, and two of the\nstone buildings. West was the stable yard, while north was the old inn. Nothing\nremains of the barracks to the north-west except scattered piles of stones. The\ncourtyard slopes away downward to the south to a small muddy pond, and eastward\ndown the hillside onto the great road.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10232"
+                ],
+                "name": "",
+                "out": [
+                    "10232"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10185"
+                ],
+                "name": "",
+                "out": [
+                    "10185"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10219"
+                ],
+                "name": "",
+                "out": [
+                    "10219"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10223",
+        "light": 2,
+        "loadflags": 524288,
+        "mobflags": 0,
+        "name": "An Overgrown Courtyard",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 318,
+        "y": 241,
+        "z": 0
+    },
+    {
+        "desc": "Here, pools of murky green water gather, reflecting the grass underneath. Along\nthe edges of these pools of water grow tall reeds of grass and cattails. These\ntufts of vegetation make excellent nesting grounds, making the plains almost\nlike the side of a lake. South, the reeds grow into thick brush, and become\nutterly impassable. East is the western side of a hillock, a steep bluff with no\nroute up.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10230"
+                ],
+                "name": "",
+                "out": [
+                    "10230"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10225"
+                ],
+                "name": "",
+                "out": [
+                    "10225"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10224",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Saturated Marshland",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 1,
+        "x": 317,
+        "y": 241,
+        "z": 0
+    },
+    {
+        "desc": "There are few patches of dry area in this land, almost completely flooded with\nwater. Even the ground that appears dry seeps with water if any pressure is\napplied to it. The vegetation is sparse and tough, mostly near-dead brown grass\nand rustling ferns. Much small wildlife can be heard rustling about, but always\nout of sight. The wetlands continue in all directions, although receding to the\nnorth-west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10229"
+                ],
+                "name": "",
+                "out": [
+                    "10229"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10183"
+                ],
+                "name": "",
+                "out": [
+                    "10183"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10224"
+                ],
+                "name": "",
+                "out": [
+                    "10224"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10226"
+                ],
+                "name": "",
+                "out": [
+                    "10226"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10225",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Soggy Marshland",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 7,
+        "sundeath": 1,
+        "x": 316,
+        "y": 241,
+        "z": 0
+    },
+    {
+        "desc": "The large pools of water are not so predominant here as in the terrain to the\neast and south. There are tall reeds bordering the pools, excellent nesting\nplaces for several species of bird. Still, there is enough dry ground to follow\na trail of sorts through here. To the south and east the pools grow in size,\nnumber and depth, and there is far less dry land around.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10227"
+                ],
+                "name": "",
+                "out": [
+                    "10227"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10182"
+                ],
+                "name": "",
+                "out": [
+                    "10182"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10225"
+                ],
+                "name": "",
+                "out": [
+                    "10225"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10179"
+                ],
+                "name": "",
+                "out": [
+                    "10179"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10226",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Receding Wetlands",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 315,
+        "y": 241,
+        "z": 0
+    },
+    {
+        "desc": "These trees border the wetlands to the south and east, buffering them from the\nencroaching water. The trees are spread sparsely, which allows plenty of light\nduring the day through their canopy of sinuous branches and leaves. Underfoot\nthe ground is covered with light short grass and occasional puddles of water,\nsubmersing the roots of some of the trees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10173"
+                ],
+                "name": "",
+                "out": [
+                    "10173"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10226"
+                ],
+                "name": "",
+                "out": [
+                    "10226"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10229"
+                ],
+                "name": "",
+                "out": [
+                    "10229"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10228"
+                ],
+                "name": "",
+                "out": [
+                    "10228"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10227",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Strip of Alder Trees",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 315,
+        "y": 240,
+        "z": 0
+    },
+    {
+        "desc": "Here the land is flat and is covered with rich, green grass that is knee deep in\nspots. There is evidence of grazing in some areas where the grass has been\nchewed down to the ground. In the south, there is a line of alder trees. The\ntrees continues to the east, while to the north the fields begin to gently rise\nup on the side of a bluff.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10174"
+                ],
+                "name": "",
+                "out": [
+                    "10174"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10179"
+                ],
+                "name": "",
+                "out": [
+                    "10179"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10227"
+                ],
+                "name": "",
+                "out": [
+                    "10227"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10177"
+                ],
+                "name": "",
+                "out": [
+                    "10177"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10228",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Lush Meadow",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 314,
+        "y": 240,
+        "z": 0
+    },
+    {
+        "desc": "Small to mid-size pools of water pepper the ground here. Being a slight bit\nhigher than the surrounding land it is not as wet as south or north of here,\nwhere the land is completely saturated. Looking around it seems as if these\nwetlands are stagnant, the water unable to drain away. What little vegetation\nthat grows here is brown and barely clinging to life, unable to draw much life\nfrom the poor soil.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10172"
+                ],
+                "name": "",
+                "out": [
+                    "10172"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10225"
+                ],
+                "name": "",
+                "out": [
+                    "10225"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10230"
+                ],
+                "name": "",
+                "out": [
+                    "10230"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10227"
+                ],
+                "name": "",
+                "out": [
+                    "10227"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10229",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Raised Wetlands",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 316,
+        "y": 240,
+        "z": 0
+    },
+    {
+        "desc": "The ground in this area is too saturated to take in any more water. If even the\ngentlest pressure is applied the water beneath the grass seeps up and tries to\ncover the object displacing it. To the north and east an old earthen causeway\ncarries a road through the wetlands. Its sides are slippery, the many small\nstones eroded from its banks making footing uncertain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10224"
+                ],
+                "name": "",
+                "out": [
+                    "10224"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10231"
+                ],
+                "name": "",
+                "out": [
+                    "10231"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10229"
+                ],
+                "name": "",
+                "out": [
+                    "10229"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10171"
+                ],
+                "name": "",
+                "out": [
+                    "10171"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10230",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grassland Soaked with Water",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 1,
+        "x": 317,
+        "y": 240,
+        "z": 0
+    },
+    {
+        "desc": "This road is near impassable, pitted with eroded marks. In parts the old paving\nstones give way to tip up the unwary traveller. What used to be the Great South\nRoad turns slightly eastward here to pass around a hillock. The Numenoreans\nbuilt a way-station there long ago, to provide food and shelter for travellers\nbetween Arnor and Gondor. The buildings are ruined now, with only the walls\nremaining. The road continues north-west, where it rises on an causeway to cut\nthrough the wetlands, and south-east towards the Gap of Rohan.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10170"
+                ],
+                "name": "",
+                "out": [
+                    "10170"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10220"
+                ],
+                "name": "",
+                "out": [
+                    "10220"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10230"
+                ],
+                "name": "",
+                "out": [
+                    "10230"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10231",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Tattered Remains of a Road",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 318,
+        "y": 240,
+        "z": 0
+    },
+    {
+        "desc": "You are by the gates of a Dunlending camp, which lies atop a low flat hill in\nthe plains. This is the fortress of Wulfston, named after the Dunlending chief\nwho ransacked Rohan nearly a century ago. It has survived to this day; besieged\noccasionally, but never captured due to the natural defences. The main gate is\njust to the west of you, through a gap in the earthworks. That fortification\nwall circles the crown of the hill, topped by sharp ten foot wooden stakes. It\nis clear to see that this fortress would take some power to storm.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10215"
+                ],
+                "name": "",
+                "out": [
+                    "10215"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10234",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Before the Gates",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 316,
+        "y": 247,
+        "z": 0
+    }
+]

@@ -1,0 +1,5428 @@
+[
+    {
+        "desc": "Having left the civilised part of Fornost, you now stand in front of something\nthat looks more like a sparse forest, than a ruined city. Time has long since\ncaught up with the old houses, and grass and bushes cover them. However, the\nroad you are standing on still seems to be traversable westwards, among the\nruins.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2546"
+                ],
+                "name": "",
+                "out": [
+                    "2546"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2545"
+                ],
+                "name": "",
+                "out": [
+                    "2545"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2548"
+                ],
+                "name": "",
+                "out": [
+                    "2548"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2544",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "West of the Wooden Gate",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 213,
+        "y": 6,
+        "z": 0
+    },
+    {
+        "desc": "Just to the east, the wooden palisade rises, to protect the inhabitants of\nFornost from whatever lives on this side. To the north, you see the remains of\nthe King's Road that once ran from the main gates to the castle that lies on the\ncliff that towers above you to the west and the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2544"
+                ],
+                "name": "",
+                "out": [
+                    "2544"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2547"
+                ],
+                "name": "",
+                "out": [
+                    "2547"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2545",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruins at the Wooden Wall",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 213,
+        "y": 7,
+        "z": 0
+    },
+    {
+        "desc": "Here, just behind the wooden wall, that the citizens of \"new\" Fornost put up,\nthe scene is quite different. Remains of old houses lie as piles of stone blocks\non the ground, overgrown by grass and small trees. Nothing remains to remind you\nof the beautiful city that once stood here, except the old castle, that still\nstands on a high hill to the south-west. To the north, the old city wall still\nstands, protecting the world outside from the dangers that lie within.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2544"
+                ],
+                "name": "",
+                "out": [
+                    "2544"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2549"
+                ],
+                "name": "",
+                "out": [
+                    "2549"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2546",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruins at the Wooden Wall",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 213,
+        "y": 5,
+        "z": 0
+    },
+    {
+        "desc": "Moss clad stones are the only sign of this part of Arthedain's old capital. No\nman has lived here for over nine hundred years, and only small animals run\naround between the rocks these days.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2548"
+                ],
+                "name": "",
+                "out": [
+                    "2548"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2545"
+                ],
+                "name": "",
+                "out": [
+                    "2545"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2552"
+                ],
+                "name": "",
+                "out": [
+                    "2552"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2547",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grassy Ruins",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 212,
+        "y": 7,
+        "z": 0
+    },
+    {
+        "desc": "There is certainly nothing royal about this road any more. The square white\nstones that once formed an easily travelled road, slowly climbing up to the\ncastle above, now are cracked and crooked.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2549"
+                ],
+                "name": "",
+                "out": [
+                    "2549"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2547"
+                ],
+                "name": "",
+                "out": [
+                    "2547"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2544"
+                ],
+                "name": "",
+                "out": [
+                    "2544"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2551"
+                ],
+                "name": "",
+                "out": [
+                    "2551"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2548",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruined King's Road",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 212,
+        "y": 6,
+        "z": 0
+    },
+    {
+        "desc": "Grass and bushes cover the ruins of Fornost Erain. Looking around you, you\nnotice the ruined road to the south, the city wall to the north, and nothing but\nmore ruins in the other directions. Further south, you see the dark castle,\noverlooking the once great city. A large tree stands here between the rocks.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2548"
+                ],
+                "name": "",
+                "out": [
+                    "2548"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2546"
+                ],
+                "name": "",
+                "out": [
+                    "2546"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2550"
+                ],
+                "name": "",
+                "out": [
+                    "2550"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2549",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Overgrown Ruins",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 212,
+        "y": 5,
+        "z": 0
+    },
+    {
+        "desc": "To the north you see the only real evidence of the old city that once stood\nhere. It is a part of the outer walls of Fornost, that has survived the long\nyears since the invasion of the Witch-king. To the south, there is a small,\nwithered road, and beyond it, you see the ominous Royal Castle of Fornost.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2551"
+                ],
+                "name": "",
+                "out": [
+                    "2551"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2549"
+                ],
+                "name": "",
+                "out": [
+                    "2549"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2555"
+                ],
+                "name": "",
+                "out": [
+                    "2555"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2550",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruins of Fornost",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 211,
+        "y": 5,
+        "z": 0
+    },
+    {
+        "desc": "The road still runs straight from the east to the west, slowly climbing its way\nup on the hill that the western part of Fornost was once built upon. Grass,\nbushes and small trees stand everywhere around you in the ruined houses.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2550"
+                ],
+                "name": "",
+                "out": [
+                    "2550"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2552"
+                ],
+                "name": "",
+                "out": [
+                    "2552"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2548"
+                ],
+                "name": "",
+                "out": [
+                    "2548"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2554"
+                ],
+                "name": "",
+                "out": [
+                    "2554"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2551",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruined King's Road",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 211,
+        "y": 6,
+        "z": 0
+    },
+    {
+        "desc": "It seems that you should be careful if you wish to travel in this area, for\nstones and rubble litter the ground, half-hidden among the grass and the tall\nweeds, ready to trip you. These broken fragments of larger stones are all that\nremains of the old city of Fornost, and now this place is home only to the\nunseen creatures who can be faintly heard, scurrying through the undergrowth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2551"
+                ],
+                "name": "",
+                "out": [
+                    "2551"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2547"
+                ],
+                "name": "",
+                "out": [
+                    "2547"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2553"
+                ],
+                "name": "",
+                "out": [
+                    "2553"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2552",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Among the Ruins",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 211,
+        "y": 7,
+        "z": 0
+    },
+    {
+        "desc": "Once, houses bordered this road, but they all lie in ruins these days. The road\nis sort of intact though, and can take you north or west from here. Looking\nsouth, you see the old castle sitting silently on the hill, its high towers\nstretching high into the sky.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2554"
+                ],
+                "name": "",
+                "out": [
+                    "2554"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2552"
+                ],
+                "name": "",
+                "out": [
+                    "2552"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2558"
+                ],
+                "name": "",
+                "out": [
+                    "2558"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2553",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruined King's Road",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 210,
+        "y": 7,
+        "z": 0
+    },
+    {
+        "desc": "The road bends here. To the east, it leads to the safety of the civilised parts\nof Fornost, and to the south, it slowly climbs around the hill from which the\nold castle looks down on the ruins that surround you.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2555"
+                ],
+                "name": "",
+                "out": [
+                    "2555"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2553"
+                ],
+                "name": "",
+                "out": [
+                    "2553"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2551"
+                ],
+                "name": "",
+                "out": [
+                    "2551"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2557"
+                ],
+                "name": "",
+                "out": [
+                    "2557"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2554",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruined King's Road",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 210,
+        "y": 6,
+        "z": 0
+    },
+    {
+        "desc": "The high wall of Fornost still stands to the north, preventing you from any\nattempt to go that way. To the south you see an old road leading towards the\nlarge hill with the abandoned castle on top. Looking west, you see what might be\nan old house still standing against the wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2554"
+                ],
+                "name": "",
+                "out": [
+                    "2554"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2550"
+                ],
+                "name": "",
+                "out": [
+                    "2550"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2556"
+                ],
+                "name": "",
+                "out": [
+                    "2556"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2555",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "At the Old City Wall",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 210,
+        "y": 5,
+        "z": 0
+    },
+    {
+        "desc": "This must be one of the very few houses that have lasted since the city was\nvirtually destroyed. Its northern wall is actually the old city wall, and you\ncan leave the house through the empty doorway to the east. The floor is covered\nwith dirt and grass, and as you look up, you see that the entire ceiling is\ngone.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2557"
+                ],
+                "name": "",
+                "out": [
+                    "2557"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2555"
+                ],
+                "name": "",
+                "out": [
+                    "2555"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2563"
+                ],
+                "name": "",
+                "out": [
+                    "2563"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2556",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Ruined House",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 209,
+        "y": 5,
+        "z": 0
+    },
+    {
+        "desc": "All around you, you see grass-covered piles of stones, but to the north of you\nstands what appears to be a fairly intact house. To the south you can see the\nruined remains of the King's Road.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2556"
+                ],
+                "name": "",
+                "out": [
+                    "2556"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2558"
+                ],
+                "name": "",
+                "out": [
+                    "2558"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2554"
+                ],
+                "name": "",
+                "out": [
+                    "2554"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2562"
+                ],
+                "name": "",
+                "out": [
+                    "2562"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2557",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Among the Ruins",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 209,
+        "y": 6,
+        "z": 0
+    },
+    {
+        "desc": "The road runs east and west here. Looking south, you can see a pile of many\nstones - obviously the remnants of a larger house. The remains of a wall\nprevents you from going very far in that direction. A small stone catches your\neye.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2557"
+                ],
+                "name": "",
+                "out": [
+                    "2557"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2553"
+                ],
+                "name": "",
+                "out": [
+                    "2553"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2561"
+                ],
+                "name": "",
+                "out": [
+                    "2561"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2558",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruined King's Road",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 209,
+        "y": 7,
+        "z": 0
+    },
+    {
+        "desc": "This small height once was a place of death. The Dunedain never penalized anyone\nwith death, but orcs hung people in large numbers - a far more merciful fate\nthan the one that could await you at their torturers in the dungeons of the old,\nruined castle that towers south of here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2560"
+                ],
+                "name": "",
+                "out": [
+                    "2560"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2559",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Gallows Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 209,
+        "y": 8,
+        "z": 0
+    },
+    {
+        "desc": "This street once led to the gallows hill just east of here. Now, no one has used\nit for over eight hundred years, and it lies in ruins. The cobblestones that\nused to be perfectly lined up now lie in a mess, and most of them are overgrown\nby thick, brownish grass.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2561"
+                ],
+                "name": "",
+                "out": [
+                    "2561"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2559"
+                ],
+                "name": "",
+                "out": [
+                    "2559"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2560",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Gallows Street",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 208,
+        "y": 8,
+        "z": 0
+    },
+    {
+        "desc": "Carefully looking around for traces of the civilisation that once stood here,\nyou notice that the once great King's Road crosses another decayed road which\nleads from an old square to the north towards a small hill just south of here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2562"
+                ],
+                "name": "",
+                "out": [
+                    "2562"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2560"
+                ],
+                "name": "",
+                "out": [
+                    "2560"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2558"
+                ],
+                "name": "",
+                "out": [
+                    "2558"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2570"
+                ],
+                "name": "",
+                "out": [
+                    "2570"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2561",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruined King's Road",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 208,
+        "y": 7,
+        "z": 0
+    },
+    {
+        "desc": "Here, in the middle of what seems to have been a small square, you see a stone\ncircle, that once was a well. Now, there is nothing left but a dark hole in the\nground. To the west, you see some houses that seem to have withstood the test of\ntime, with their walls still standing.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2561"
+                ],
+                "name": "",
+                "out": [
+                    "2561"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2557"
+                ],
+                "name": "",
+                "out": [
+                    "2557"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2569"
+                ],
+                "name": "",
+                "out": [
+                    "2569"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2562",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "At the Old Fountain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 208,
+        "y": 6,
+        "z": 0
+    },
+    {
+        "desc": "There are many large white stones littering the area, obviously the common\nbuilding material of that era. However, the layout of the stones bears no\nresemblance to the buildings of the great city that once stood here. Everything\nthat consisted of wood must have rotted away centuries ago, leaving nothing but\na hostile, scary sea of grass covered stones.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2556"
+                ],
+                "name": "",
+                "out": [
+                    "2556"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2564"
+                ],
+                "name": "",
+                "out": [
+                    "2564"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2563",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Overgrown Ruins",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 208,
+        "y": 5,
+        "z": 0
+    },
+    {
+        "desc": "Just to the north of here the city wall stretches some thirty feet into the air\nabove you. The city that once lay within seems to be far away though, since the\nonly thing you can spot around you are small birches and a few bushes.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2569"
+                ],
+                "name": "",
+                "out": [
+                    "2569"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2563"
+                ],
+                "name": "",
+                "out": [
+                    "2563"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2565"
+                ],
+                "name": "",
+                "out": [
+                    "2565"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2564",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "At the Wall",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 207,
+        "y": 5,
+        "z": 0
+    },
+    {
+        "desc": "This rather small house must once have been the home of a medium sized family.\nThe doors to the east and south have long since rotted, but the gaps have\nallowed animals to run in and out rather freely, which, from the faeces that lie\nall about you, they obviously have done.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2568"
+                ],
+                "name": "",
+                "out": [
+                    "2568"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2564"
+                ],
+                "name": "",
+                "out": [
+                    "2564"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2565",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In an Overgrown House",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 206,
+        "y": 5,
+        "z": 0
+    },
+    {
+        "desc": "You have now reached the northwestern corner of the once mighty city. The high\ncity wall turns from the east to the south here and to the east you see the back\nof a small house. The breach in the wall that you passed on your way here is\nclearly visible to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2567"
+                ],
+                "name": "",
+                "out": [
+                    "2567"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2566",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "At the Corner of the City Wall",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 205,
+        "y": 5,
+        "z": 0
+    },
+    {
+        "desc": "In the year of 1974, when the foul orcs of Angmar attacked Fornost, they managed\nto break down the city wall at this very point. Looking through the wide hole,\nyou see a green forest stretching in all directions. A few houses with their\nwalls still standing can be seen to the east, but most of the city that once lay\nhere seems to be gone.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2566"
+                ],
+                "name": "",
+                "out": [
+                    "2566"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2568"
+                ],
+                "name": "",
+                "out": [
+                    "2568"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2588"
+                ],
+                "name": "",
+                "out": [
+                    "2588"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2567",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "At the Breach in the Wall",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 205,
+        "y": 6,
+        "z": 0
+    },
+    {
+        "desc": "A small grove of birches has taken root here in the ruins of the city. An\noccasional rock sticks up between the roots, but not much else is left to see\nhere.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2565"
+                ],
+                "name": "",
+                "out": [
+                    "2565"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2577"
+                ],
+                "name": "",
+                "out": [
+                    "2577"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2569"
+                ],
+                "name": "",
+                "out": [
+                    "2569"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2567"
+                ],
+                "name": "",
+                "out": [
+                    "2567"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2568",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Among the Trees",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 206,
+        "y": 6,
+        "z": 0
+    },
+    {
+        "desc": "Not much is left to see of the road that once led north from the King's Road\ntowards the city wall. Looking west, you see the wall of a crooked house, with\nits empty windows gaping at the surroundings. To the south you can see the\nremains of the once busy Kings Road.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2564"
+                ],
+                "name": "",
+                "out": [
+                    "2564"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2570"
+                ],
+                "name": "",
+                "out": [
+                    "2570"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2562"
+                ],
+                "name": "",
+                "out": [
+                    "2562"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2568"
+                ],
+                "name": "",
+                "out": [
+                    "2568"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2569",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Decaying Road",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 207,
+        "y": 6,
+        "z": 0
+    },
+    {
+        "desc": "The wide road that was once the King's Road crosses a smaller street that leads\nfrom the south to the north. The King's Road used to be over forty yards wide\nand easily travelled on the perfectly fitting white stones from the White Downs.\nNow, war and nature has slowly broken it down, and only a few broken stones peek\nout from the undergrowth reminding you of its former beauty.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2569"
+                ],
+                "name": "",
+                "out": [
+                    "2569"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2571"
+                ],
+                "name": "",
+                "out": [
+                    "2571"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2561"
+                ],
+                "name": "",
+                "out": [
+                    "2561"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2577"
+                ],
+                "name": "",
+                "out": [
+                    "2577"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2570",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruined King's Road",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 207,
+        "y": 7,
+        "z": 0
+    },
+    {
+        "desc": "A small, once paved, street leads north and south. Passages to the east and west\nare blocked by the crumbled walls of old houses. To the north, you see the\nruined King's Road, and to the south there is the remains of an old house.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2570"
+                ],
+                "name": "",
+                "out": [
+                    "2570"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2572"
+                ],
+                "name": "",
+                "out": [
+                    "2572"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2571",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Small Street",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 207,
+        "y": 8,
+        "z": 0
+    },
+    {
+        "desc": "From the layout of this ruined building, you quickly decide that it must once\nhave been one of the stables of Fornost. Arthedain never really used cavalry,\nbut horses were widely used for transportation, and from the adorned walls, you\nsee that the Dunedain cared a lot about their mounts.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2571"
+                ],
+                "name": "",
+                "out": [
+                    "2571"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2572",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Inside the Old Stables",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 207,
+        "y": 9,
+        "z": 0
+    },
+    {
+        "desc": "The road is getting rather steep, making motion rather slow. Just south of here,\nthe road meets another, smaller road in a T-junction. To the east and west,\nsteep slopes offer no grip for climbing.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2578"
+                ],
+                "name": "",
+                "out": [
+                    "2578"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2580"
+                ],
+                "name": "",
+                "out": [
+                    "2580"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2573",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruined King's Road",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 206,
+        "y": 9,
+        "z": 0
+    },
+    {
+        "desc": "Looking around you, you see the remnants of a house that is now completely\ndestroyed. Crumbled remnants of the buildings walls lie all about you, reminding\nyou of how violent the war must have been.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2579"
+                ],
+                "name": "",
+                "out": [
+                    "2579"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2574",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Inside the Fallen Walls",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 205,
+        "y": 9,
+        "z": 0
+    },
+    {
+        "desc": "You can still see the remainder of some neat flower beds in this small backyard.\nIt surely must have been the pride and joy of some skilled housewife several\nhundred years ago, before the orcs came here and mutilated everything.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2576"
+                ],
+                "name": "",
+                "out": [
+                    "2576"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2575",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "At the Small Backyard",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 205,
+        "y": 8,
+        "z": 0
+    },
+    {
+        "desc": "The roof of this small building is since long gone, lying rotted to dust\nsomewhere on the floor probably. To the east is the large road that once was the\nKing's Road, and to the south you see something that looks like a small\nbackyard, perhaps used for herbs once long ago.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2575"
+                ],
+                "name": "",
+                "out": [
+                    "2575"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2577"
+                ],
+                "name": "",
+                "out": [
+                    "2577"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2576",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Roofless House",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 205,
+        "y": 7,
+        "z": 0
+    },
+    {
+        "desc": "The road turns here in a straight ninety degrees angle. To the south, it slowly\nbegins to climb the hill towards the ruined castle, and to the east it can take\nyou back towards the inhabited parts of Fornost Erain - the northern fortress of\nthe kings.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2568"
+                ],
+                "name": "",
+                "out": [
+                    "2568"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2578"
+                ],
+                "name": "",
+                "out": [
+                    "2578"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2570"
+                ],
+                "name": "",
+                "out": [
+                    "2570"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2576"
+                ],
+                "name": "",
+                "out": [
+                    "2576"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2577",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruined King's Road",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 206,
+        "y": 7,
+        "z": 0
+    },
+    {
+        "desc": "The wide road starts to narrow as it begins to wind its way towards the top of\nthe hill with the castle on top. Thick tufts of grass have emerged between the\ncrooked paving-stones that still lie here covered in moss and lichen.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2577"
+                ],
+                "name": "",
+                "out": [
+                    "2577"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2573"
+                ],
+                "name": "",
+                "out": [
+                    "2573"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2578",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruined King's Road",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 206,
+        "y": 8,
+        "z": 0
+    },
+    {
+        "desc": "The road that led up here is nothing but a small path now. It turns here from\nthe east to the south, where it climbs around the hill. Just north of here you\nsee the crumbled walls of a house, destroyed ages ago.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2574"
+                ],
+                "name": "",
+                "out": [
+                    "2574"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2585"
+                ],
+                "name": "",
+                "out": [
+                    "2585"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2580"
+                ],
+                "name": "",
+                "out": [
+                    "2580"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2579",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bend in the Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 205,
+        "y": 10,
+        "z": 0
+    },
+    {
+        "desc": "Here, the wide road meets a smaller street that leads east on a wide ledge\naround the hill that lies to the south east. To the west, the road leads up on\nthe hill to the gates of the royal castle.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2573"
+                ],
+                "name": "",
+                "out": [
+                    "2573"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2581"
+                ],
+                "name": "",
+                "out": [
+                    "2581"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2579"
+                ],
+                "name": "",
+                "out": [
+                    "2579"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2580",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruined King's Road",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 206,
+        "y": 10,
+        "z": 0
+    },
+    {
+        "desc": "This old street leads halfway up the castle hill that rises to the south. You\ncannot find any spot to climb the steep cliff between you and the castle and not\nfar to the north is the edge of a steep cliff which would surely mean certain\ndeath for any climbers.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2582"
+                ],
+                "name": "",
+                "out": [
+                    "2582"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2580"
+                ],
+                "name": "",
+                "out": [
+                    "2580"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2581",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Old Street",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 207,
+        "y": 10,
+        "z": 0
+    },
+    {
+        "desc": "The small street ends here with a large house to the south. It has withstood\nwind and rain, and still stands as a memory of the beauty once seen throughout\nthe city. The street leads halfway up the hill on which the Royal Castle still\nstands, sheer drops to the north and the east clearly indicate that there is no\nway to proceed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2583"
+                ],
+                "name": "",
+                "out": [
+                    "2583"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2581"
+                ],
+                "name": "",
+                "out": [
+                    "2581"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2582",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "End of the Old Street",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 208,
+        "y": 10,
+        "z": 0
+    },
+    {
+        "desc": "As you enter the old building, you can't help being impressed by the skill of\nthe Dunedain masons that once built it. Beautiful ornaments surround the now\nempty door posts and a splendid mosaic on the south wall, now covered with dust,\nshows a picture of what must have been the city of Fornost at the peak of its\nbeauty.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2582"
+                ],
+                "name": "",
+                "out": [
+                    "2582"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2583",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Inside the Old House",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 208,
+        "y": 11,
+        "z": 0
+    },
+    {
+        "desc": "Once these barracks must have offered lodging for hundreds of soldiers. However,\nthere is very little left of this old building - most probably it was virtually\ndestroyed when the thousands of orcs from Angmar poured in over the city.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2585"
+                ],
+                "name": "",
+                "out": [
+                    "2585"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2584",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Ruined Barracks",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 206,
+        "y": 11,
+        "z": 0
+    },
+    {
+        "desc": "The path quickly climbs its way south and up, towards the outer gates of the\ncastle that lies south east of here. At this point, it passes the ruins of a\nlarge house to the east, and to the west, you see a small path sloping down\ntowards the foot of the hill.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2579"
+                ],
+                "name": "",
+                "out": [
+                    "2579"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2601"
+                ],
+                "name": "",
+                "out": [
+                    "2601"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2584"
+                ],
+                "name": "",
+                "out": [
+                    "2584"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2586"
+                ],
+                "name": "",
+                "out": [
+                    "2586"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2585",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sloping Path to the Old Castle",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 205,
+        "y": 11,
+        "z": 0
+    },
+    {
+        "desc": "The small path you are standing on zigzags its way past boulders and trees,\ntaking you either north to some kind of statue at the base of the hill or east\nto the path leading up to the castle.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2587"
+                ],
+                "name": "",
+                "out": [
+                    "2587"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2585"
+                ],
+                "name": "",
+                "out": [
+                    "2585"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2586",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Winding Path up the Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 204,
+        "y": 11,
+        "z": 0
+    },
+    {
+        "desc": "A large statue stands here in memory of the fallen elves and humans that lie\nburied behind the iron gate to the west. Looking through the bars of the gate,\nyou see a large tree-covered burial mound surrounded by a soft mist. To the\nsouth, a small path winds its way up the foot of the hill.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2586"
+                ],
+                "name": "",
+                "out": [
+                    "2586"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2587",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Entrance to the Burial Grounds",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 204,
+        "y": 10,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in a green forest growing at the foot of a high wall to the\neast. The wall is several paces high, and once contained the prospering city of\nFornost Erain. Looking between the high trees, you see that there is a wide\nbreach in the wall at this very spot, allowing anyone, who has the nerves it\ntakes, to enter the abandoned city.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2567"
+                ],
+                "name": "",
+                "out": [
+                    "2567"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20824"
+                ],
+                "name": "",
+                "out": [
+                    "20824"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2588",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forest outside the Breach in the Wall",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 204,
+        "y": 6,
+        "z": 0
+    },
+    {
+        "desc": "You are standing on the remnants of the road that leads to the castle on the\nhill above, overlooking the ruined city behind you. To the east, there is a\nsmall path slowly climbing upwards, and you have to walk carefully not to trip\nover the old, crooked cobblestones.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2601"
+                ],
+                "name": "",
+                "out": [
+                    "2601"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2590"
+                ],
+                "name": "",
+                "out": [
+                    "2590"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2589",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sloping Path to the Old Castle",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 205,
+        "y": 13,
+        "z": 0
+    },
+    {
+        "desc": "The path slowly takes you up the hill. Once, this was a road paved with cut\nstones from the White Downs far in the west of Arthedain. It has, however, not\nbeen in use since the big war with Angmar, when the city below you was ruined,\nleaving nothing but crumbled walls and the surprisingly intact castle that looms\nabove you to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2591"
+                ],
+                "name": "",
+                "out": [
+                    "2591"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2589"
+                ],
+                "name": "",
+                "out": [
+                    "2589"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2590",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sloping Path to the Old Castle",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 206,
+        "y": 13,
+        "z": 0
+    },
+    {
+        "desc": "Finally, you have reached the end of the withered path. You are on a small\ndrawbridge that can take you into the black gap where the gates of the castle\nonce were. Looking downhill, to the west, you can only see traces of the road\nthat used to lead up here. Looking over the edge of the bridge, you see the dike\nwhich was once used to stop the ferocious hordes of orcs that plundered Fornost\na millennium ago.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2594"
+                ],
+                "name": "",
+                "out": [
+                    "2594"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2590"
+                ],
+                "name": "",
+                "out": [
+                    "2590"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2593"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2591",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Castle's Drawbridge",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 207,
+        "y": 13,
+        "z": 0
+    },
+    {
+        "desc": "This room obviously once contained the sleeping-chambers of the gate guards.\nLooking around, you can see old pieces of rotten wood that were once the\nfurnishings in this dark cellar. An old stone stairway leads to the floor above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "2593"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16162"
+                ],
+                "name": "",
+                "out": [
+                    "16162"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2592",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Guards' Quarters",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 207,
+        "y": 12,
+        "z": 0
+    },
+    {
+        "desc": "Jumping down from the drawbridge, you find yourself stuck in the steep dike that\nwas once used to prevent any invasion attempts against the royal castle that\ntowers above you. Unfortunately, you can't seem to find any way up from here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2592"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "2591"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2593",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Below the Drawbridge",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 207,
+        "y": 14,
+        "z": 0
+    },
+    {
+        "desc": "Looking up, you see a sturdy stone arch holding the battlements above on its\nshoulders. Examining the wall to the west closer, you see that the great hinges\nthat once held the gates are nothing but rust, and the gates themselves are\nnothing but dust lying on the ground. You can either enter the outer yard of the\ncastle to the east, go back on the drawbridge or go through the black hole that\nonce was a door to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16162"
+                ],
+                "name": "",
+                "out": [
+                    "16162"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2596"
+                ],
+                "name": "",
+                "out": [
+                    "2596"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2591"
+                ],
+                "name": "",
+                "out": [
+                    "2591"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2594",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Inside the Gates",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 208,
+        "y": 13,
+        "z": 0
+    },
+    {
+        "desc": "The road follows the high wall to the south. It can take you either uphill, to\nthe east, where the citadel lies, or downhill to the silent ruins of Fornost\nbelow. High grass grows everywhere, making it obvious that no man has travelled\nhere in a very long time.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2596"
+                ],
+                "name": "",
+                "out": [
+                    "2596"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2597"
+                ],
+                "name": "",
+                "out": [
+                    "2597"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2595",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Road inside the Walls",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 210,
+        "y": 13,
+        "z": 0
+    },
+    {
+        "desc": "The road leaves the gates of the outer wall to the west, and slowly climbs the\nsmall slope that will take you to the main building of the castle in the\nnorth-east. South of here, the high battlements rises above you, overlooking the\nsurroundings.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2595"
+                ],
+                "name": "",
+                "out": [
+                    "2595"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2594"
+                ],
+                "name": "",
+                "out": [
+                    "2594"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2596",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Road inside the Walls",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 209,
+        "y": 13,
+        "z": 0
+    },
+    {
+        "desc": "Looking around you, you see the high outer wall to the east, and a large stone\nhouse to the west, its roof since long gone, but the walls still look intact.\nBehind it, you see the high towers of the citadel rising high into the air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2598"
+                ],
+                "name": "",
+                "out": [
+                    "2598"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2600"
+                ],
+                "name": "",
+                "out": [
+                    "2600"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2595"
+                ],
+                "name": "",
+                "out": [
+                    "2595"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2597",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Road inside the Walls",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 205,
+        "y": 16,
+        "z": 0
+    },
+    {
+        "desc": "This is the final part of the old road that leads from the outer gates to the\ncitadel that lies west of here, on the other side of a small square. The road\ncontinues south, taking you downhill, past the remains of a rather large stone\nbuilding.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2597"
+                ],
+                "name": "",
+                "out": [
+                    "2597"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2599"
+                ],
+                "name": "",
+                "out": [
+                    "2599"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2598",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Road inside the Walls",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 205,
+        "y": 15,
+        "z": 0
+    },
+    {
+        "desc": "This once was a place filled with people. Now, only a withered well standing in\nthe middle of the square is left from those days. Looking west, you see the\nlarge gate to the citadel, with its towers stretching into the sky. A road\nleaves the square to the east, taking you downhill.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2598"
+                ],
+                "name": "",
+                "out": [
+                    "2598"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2599",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Square at the Castle",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 204,
+        "y": 15,
+        "z": 0
+    },
+    {
+        "desc": "Crumbling stone walls are the only remnants of a large house - once the home of\nthe hundred soldiers that once was the Royal Guard of Arthedain. The roof has\nfallen in, and you see no traces of any living beings. You shiver as you look\naround and see the piles of human bones that reminds of the horrible slaughter\nthat once took place within these walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2597"
+                ],
+                "name": "",
+                "out": [
+                    "2597"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2600",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "The Old Barracks",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 204,
+        "y": 16,
+        "z": 0
+    },
+    {
+        "desc": "You are now standing just north of the point where the path starts turning east,\naround the hill. You can see the silhouette of the castle here as you turn your\ngaze to the east, where it lies silently on its hill.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2585"
+                ],
+                "name": "",
+                "out": [
+                    "2585"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2589"
+                ],
+                "name": "",
+                "out": [
+                    "2589"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2601",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sloping Path to the Old Castle",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 205,
+        "y": 12,
+        "z": 0
+    },
+    {
+        "desc": "This room probably once contained the gate guard of the castle. A hole in the\nwall to the south, once filled by a door, takes you back towards the gates. In\none corner of the room, a stone stair leads down into the darkness of the\nbasement, and up in a small tower above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2594"
+                ],
+                "name": "",
+                "out": [
+                    "2594"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16163"
+                ],
+                "name": "",
+                "out": [
+                    "16163"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2592"
+                ],
+                "name": "",
+                "out": [
+                    "2592"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16162",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "The Room of the Gate Guards",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 208,
+        "y": 12,
+        "z": 0
+    },
+    {
+        "desc": "This small tower overlooks the outer gates of the castle, and the drawbridge\nbelow it. The battlements once continued both north and south, but to the north\nthey seem to be anything but safe to walk. A small stair leads down to the old\nguard room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16164"
+                ],
+                "name": "",
+                "out": [
+                    "16164"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16162"
+                ],
+                "name": "",
+                "out": [
+                    "16162"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16163",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Small Tower",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 209,
+        "y": 11,
+        "z": 0
+    },
+    {
+        "desc": "You have reached the battlements just above the drawbridge. To the west, you see\na small, overgrown path winding slowly up the slope towards the citadel on the\nsmall hill to the north east. You can continue your stroll on the battlements to\nthe east, although they don't look very inviting.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16163"
+                ],
+                "name": "",
+                "out": [
+                    "16163"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16165"
+                ],
+                "name": "",
+                "out": [
+                    "16165"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16164",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Battlements",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 209,
+        "y": 12,
+        "z": 0
+    },
+    {
+        "desc": "The battlements are indeed in a poor state of repair here, and the narrow\nwalkway has crumbled almost completely away in some places, so that progress to\nthe east is quite impossible from here. The only choice is to head west, where\nthe walls are in a better condition.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16164"
+                ],
+                "name": "",
+                "out": [
+                    "16164"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16165",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruined Battlements",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 210,
+        "y": 12,
+        "z": 0
+    },
+    {
+        "desc": "Tall granite cliffs to the west and south dominate the skyline of the flat land\nbelow. A scattering of short shrubs decorates the short, maintained grass, and a\nlightly-defined path runs north through it. On the eastern end of the field, a\nsmall pool of clear water bubbles out of the ground. The stream it forms flows\nwest, amidst the grass, rocks, and shrubs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20826"
+                ],
+                "name": "",
+                "out": [
+                    "20826"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2588"
+                ],
+                "name": "",
+                "out": [
+                    "2588"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20824",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Field under Grey Peaks",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 203,
+        "y": 6,
+        "z": 0
+    },
+    {
+        "desc": "Sheer rock faces of smooth granite rise high to the north and east. The tree\ncover is very thin in this field, and only a smattering of pine and oak trees\ndot the landscape. The grass is manicured and scythed short here, and the grey\nwalls of Fornost loom large to the southeast. A nondescript path leads through\nthe field, to the west and south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20824"
+                ],
+                "name": "",
+                "out": [
+                    "20824"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20780"
+                ],
+                "name": "",
+                "out": [
+                    "20780"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20826",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grassy Field near Fornost",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 203,
+        "y": 5,
+        "z": 0
+    }
+]

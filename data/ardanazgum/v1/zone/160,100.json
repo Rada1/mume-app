@@ -1,0 +1,6333 @@
+[
+    {
+        "desc": "This is the western border of the Old Forest. The larger trees seem as if they\nare aware of all that goes on under their branches. Perhaps watching and waiting\nto act should something they see disturb them. To the west is the High Hay, a\nhedge the protects Buckland by forming an impassable boundary between the forest\nand the town.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                    "2352",
+                    "12260",
+                    "12277",
+                    "12286"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12288",
+                    "12289"
+                ],
+                "name": "",
+                "out": [
+                    "12289"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12265",
+                    "12270",
+                    "12282",
+                    "12284"
+                ],
+                "name": "",
+                "out": [
+                    "12276"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "12263",
+                    "12265",
+                    "12266",
+                    "12278"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2355",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 166,
+        "y": 114,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in a deep forest. The trees don't seem to be so menacing, but\nyou still have the sensation they are watching all your movements. The path\nseems to be less obvious and you could lose yourself very easily here. You get\nyour map out and pray.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "2358"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2357"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2356",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Deep inside the Old Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 170,
+        "y": 117,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in a deep forest. The trees don't seem to be so menacing, but\nyou still have the sensation they are watching all your movements. The path\nseems to be less obvious and you could lose yourself very easily here. You get\nyour map out and pray.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 16,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2414"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4113,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4113,
+                "in": [
+                    "2356"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2357",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Deep inside the Old Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 171,
+        "y": 117,
+        "z": 0
+    },
+    {
+        "desc": "You must follow the only obvious path in this huge forest. Roots spread from\neverywhere and you stumble and trip often. Branches lash at your face and arms\nand you find it impossible to watch your step and what lies ahead\nsimultaneously.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2356"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2415"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2359"
+                ],
+                "name": "",
+                "out": [
+                    "2358"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "2358"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2358",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Dangerous Path in the Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 170,
+        "y": 118,
+        "z": 0
+    },
+    {
+        "desc": "These plains are wide open and are fairly level. The grass here is about calf\nlength and blow gently with the breeze. Walking here is fairly easy. In the sky\nyou can see various birds flying high over head, you can also hear them calling\nto each other. Far to the north you see a dark line that could be the trees\nbordering the road. You are wandering around staring up at the sky at the birds\nand you don't notice that you are not walking in a set direction. You just seem\nto be taking a relaxing walk through the plains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2372"
+                ],
+                "name": "",
+                "out": [
+                    "2372"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2365",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 174,
+        "y": 104,
+        "z": 0
+    },
+    {
+        "desc": "This high bank borders the road, down from here the road runs southwest to\nnortheast. You can see where the road has fallen into disrepair due to recent\nheavy rains. It is rutted and full of many potholes. A tall stand of trees\nborders the road on the north side.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2368"
+                ],
+                "name": "",
+                "out": [
+                    "2368"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1374"
+                ],
+                "name": "",
+                "out": [
+                    "1374"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2367",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On Top of a Sloping Bank",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 174,
+        "y": 103,
+        "z": 0
+    },
+    {
+        "desc": "These plains are wide open and are fairly level. The grass here is about calf\nlength and blows gently with the breeze. Walking here is fairly easy. In the sky\nyou can see various birds flying high overhead, you can also hear them calling\nto each other. Closer to the north you see a tall stand of trees, you realise\nthis is the forest that borders Old East Road. To the west is a high bank that\nborders the road to the south. All other directions are wide open plains as far\nas the eye can see.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2372"
+                ],
+                "name": "",
+                "out": [
+                    "2372"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2370"
+                ],
+                "name": "",
+                "out": [
+                    "2370"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2367"
+                ],
+                "name": "",
+                "out": [
+                    "2367"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2368",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 175,
+        "y": 103,
+        "z": 0
+    },
+    {
+        "desc": "These plains are wide open and are fairly level. The grass here is about half\nlength and blow gently with the breeze. Walking here is fairly easy. In the sky\nyou can see various birds flying high over head, you can also hear them calling\nto each other. Far to the north you see a dark line that could be the trees\nbordering the road. You are wandering around staring up at the sky at the birds\nand you don't notice that you are not walking in a set direction. You just seem\nto be taking a relaxing walk through the plains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2371"
+                ],
+                "name": "",
+                "out": [
+                    "2371"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2368"
+                ],
+                "name": "",
+                "out": [
+                    "2368"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2370",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 176,
+        "y": 103,
+        "z": 0
+    },
+    {
+        "desc": "These plains are wide open and are fairly level. The grass here is about half\nlength and blow gently with the breeze. Walking here is fairly easy. In the sky\nyou can see various birds flying high over head, you can also hear them calling\nto each other. Far to the north you see a dark line that could be the trees\nbordering the road. You are wandering around staring up at the sky at the birds\nand you don't notice that you are not walking in a set direction. You just seem\nto be taking a relaxing walk through the plains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2370"
+                ],
+                "name": "",
+                "out": [
+                    "2370"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2372"
+                ],
+                "name": "",
+                "out": [
+                    "2372"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2371",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 176,
+        "y": 104,
+        "z": 0
+    },
+    {
+        "desc": "These plains are wide open and are fairly level. The grass here is about calf\nlength and blow gently with the breeze. Walking here is fairly easy. In the sky\nyou can see various birds flying high over head, you can also hear them calling\nto each other. Far to the north you see a dark line that could be the trees\nbordering the road. You are wandering around staring up at the sky at the birds\nand you don't notice that you are not walking in a set direction. You just seem\nto be taking a relaxing walk through the plains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2368"
+                ],
+                "name": "",
+                "out": [
+                    "2368"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2375"
+                ],
+                "name": "",
+                "out": [
+                    "2375"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2371"
+                ],
+                "name": "",
+                "out": [
+                    "2371"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2365"
+                ],
+                "name": "",
+                "out": [
+                    "2365"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2372",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 175,
+        "y": 104,
+        "z": 0
+    },
+    {
+        "desc": "You've travelled over countless hills and it seems that many more hills lie\nahead of you. If only there wasn't thick fog in the valleys that seem to cause\nyou to lose all track of direction. Even up here on this hilltop there is some\nfog and you can't really see in what direction you are truly heading. You've the\nfeeling that it is very easy for one to get lost in the downs, especially after\ndark.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2374"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2374"
+                ],
+                "name": "",
+                "out": [
+                    "2374"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2374"
+                ],
+                "name": "",
+                "out": [
+                    "2374"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2374"
+                ],
+                "name": "",
+                "out": [
+                    "2374"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2373",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Northern Downs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 178,
+        "y": 103,
+        "z": 0
+    },
+    {
+        "desc": "You've travelled over countless hills and it seems that many more hills lie\nahead of you. If only there wasn't thick fog in the valleys that seem to cause\nyou to lose all track of direction. Even up here on this hilltop there is some\nfog and you can't really see in what direction you are truly heading. You've the\nfeeling that it is very easy for one to get lost in the downs, especially after\ndark.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2373"
+                ],
+                "name": "",
+                "out": [
+                    "2373"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2373",
+                    "2378"
+                ],
+                "name": "",
+                "out": [
+                    "2378"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2373"
+                ],
+                "name": "",
+                "out": [
+                    "2373"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2373"
+                ],
+                "name": "",
+                "out": [
+                    "2373"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2374",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Northern Downs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 178,
+        "y": 104,
+        "z": 0
+    },
+    {
+        "desc": "These plains are wide open and are fairly level. The grass here is about half\nlength and blows gently with the breeze. Walking here is fairly easy. In the sky\nyou can see various birds flying high over head, you can also hear them calling\nto each other. Far to the north you see a dark line that could be the trees\nbordering the road. East there is a long wall, that used to mark some sort of\nboundary. Travelling along this wall for a bit you find a hole big enough to\nwalk through.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2372"
+                ],
+                "name": "",
+                "out": [
+                    "2372"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2376"
+                ],
+                "name": "",
+                "out": [
+                    "2376"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2375",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 175,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "You're walking through the thick wall that used to mark the boundaries to an old\nand almost forgotten about kingdom from long ago. You realise there must be a\nsad tale about why only the wall remains, but you think it's best to never ask\nsomeone to tell you the story.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2377"
+                ],
+                "name": "",
+                "out": [
+                    "2377"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2375"
+                ],
+                "name": "",
+                "out": [
+                    "2375"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2376",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hole in the Wall",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 176,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "On the far side of this deep dike you see a huge wall that used to mark the\nboundaries of a kingdom. This kingdom is now in ruins and is buried beneath the\nhills of the downs. The line you saw previously, was that of a line of bushes\nthat has grown along the edge of this dike. Travelling along side this wall you\nfind a exit big enough to walk through to the other side.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2378"
+                ],
+                "name": "",
+                "out": [
+                    "2378"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2376"
+                ],
+                "name": "",
+                "out": [
+                    "2376"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2377",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Deep Dike",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 177,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "You've travelled over countless hills and it seems that many more hills lie\nahead of you. If only there wasn't thick fog in the valleys that seem to cause\nyou to lose all track of direction. Even up here on this hilltop there is some\nfog and you can't really see in what direction you are truly heading. You've the\nfeeling that it is very easy for one to get lost in the downs, especially after\ndark.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2374"
+                ],
+                "name": "",
+                "out": [
+                    "2374"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2381",
+                    "2382"
+                ],
+                "name": "",
+                "out": [
+                    "2381"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12306"
+                ],
+                "name": "",
+                "out": [
+                    "12306"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2377"
+                ],
+                "name": "",
+                "out": [
+                    "2377"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2378",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Northern Downs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 178,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "You've travelled over countless hills and it seems that many more hills lie\nahead of you. If only there wasn't thick fog in the valleys that seem to cause\nyou to lose all track of direction. Even up here on this hilltop there is some\nfog and you can't really see in what direction you are truly heading. You've the\nfeeling that it is very easy for one to get lost in the downs, especially after\ndark.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2378",
+                    "2382",
+                    "12306"
+                ],
+                "name": "",
+                "out": [
+                    "2378"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2382"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "2382"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2381",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Northern Downs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 178,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "You've travelled over countless hills and it seems that many more hills lie\nahead of you. If only there wasn't thick fog in the valleys that seem to cause\nyou to lose all track of direction. Even up here on this hilltop there is some\nfog and you can't really see in what direction you are truly heading. You've the\nfeeling that it is very easy for one to get lost in the downs, especially after\ndark.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2381",
+                    "2383"
+                ],
+                "name": "",
+                "out": [
+                    "2378"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2383"
+                ],
+                "name": "",
+                "out": [
+                    "2381"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2381"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2383"
+                ],
+                "name": "",
+                "out": [
+                    "2383"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2382",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Northern Downs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 178,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "You've travelled over countless hills and it seems that many more hills lie\nahead of you. If only there wasn't thick fog in the valleys that seem to cause\nyou to lose all track of direction. Even up here on this hilltop there is some\nfog and you can't really see in what direction you are truly heading. You've the\nfeeling that it is very easy for one to get lost in the downs, especially after\ndark.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2382"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2382"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2382"
+                ],
+                "name": "",
+                "out": [
+                    "2382"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2387"
+                ],
+                "name": "",
+                "out": [
+                    "2387"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2383",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Northern Downs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 177,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "Out of breath from your climb up the slope of this hill, you are happy to have\nfinally reached the top. Up here you can almost see forever. As you slowly catch\nyour breath, you sadly realise there are many more hills to climb in these downs\nbefore you reach your destination. After a bit, you begin looking for a safe way\ndown off this hill.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2385"
+                ],
+                "name": "",
+                "out": [
+                    "2385"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2390"
+                ],
+                "name": "",
+                "out": [
+                    "2390"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2384",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wandering Path along the Ridge of a Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 178,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "This is the perfect place for viewing the trail you must follow to reach your\ndestination. Up here you can see almost everything. Far off to the north you see\na line going east west that from this distance looks like trees before the road.\nBoth north and south there are many more ridges of hills left to traverse. These\nhills peep out at you through the fog that blankets the valleys between the\nhills.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2384"
+                ],
+                "name": "",
+                "out": [
+                    "2384"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2386"
+                ],
+                "name": "",
+                "out": [
+                    "2386"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2385",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wandering Path along the Ridge of a Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 177,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "This hill is so steep you must travel the slope sideways. If you tried to walk\nstraight up or down this hill you would gain too much momentum and would soon\ntumble over and roll down this hill. Half way during your travel you notice the\nfaint grassy path you have been following splits into two different directions.\nOne of the forks leads down into what looks like a small peaceful valley.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2387"
+                ],
+                "name": "",
+                "out": [
+                    "2387"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2389"
+                ],
+                "name": "",
+                "out": [
+                    "2389"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2385"
+                ],
+                "name": "",
+                "out": [
+                    "2385"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2386",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Steep Hill Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 176,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "You're standing in a valley on the foot of a what seems to be the tallest hill\nin the downs. To the north you see ridges of more hills that seem to fade off\ninto the distance. Still no sign of the road as you begin your journey again\nwith weary feet.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2386"
+                ],
+                "name": "",
+                "out": [
+                    "2386"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2383"
+                ],
+                "name": "",
+                "out": [
+                    "2383"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2388"
+                ],
+                "name": "",
+                "out": [
+                    "2388"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2387",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Valley before a Steep Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 176,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "On top of this small hill you are able to see more clearly all the ridges you\nmay have to climb to the north. Also you look around for the best path to take\nthat might get you out of the downs a lot quicker. Clearly the best path seems\nto lie to the north-east, the hills seem a little less steep in this direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2387"
+                ],
+                "name": "",
+                "out": [
+                    "2387"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2388",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On Top of a Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 175,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "Steep grassy hills surround this small and secluded valley on all sides. The\nonly exit is to climb back up the hill that brought you to this place. The grass\nunder your feet is soft and lush green. The air smells so sweet from the scent\nof the grass, that you decide this is a nice place to sit and relax your tired,\nweary feet. On the horizon to the north you can see the rounded peaks of ridge\nafter ridge of hills. You've still a long way to travel to the road, so a rest\nhere in this beautiful valley might better prepare you physically as well as\nmentally for the journey ahead of you.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2386"
+                ],
+                "name": "",
+                "out": [
+                    "2386"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2389",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Tiny Valley hidden within the Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 176,
+        "y": 109,
+        "z": 0
+    },
+    {
+        "desc": "The only way to traverse this hill is to weave slowly back and forth along the\nincline. This is such a labour to do and you quickly begin to run out of breath.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2384"
+                ],
+                "name": "",
+                "out": [
+                    "2384"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2391"
+                ],
+                "name": "",
+                "out": [
+                    "2391"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2390",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Grassy Path up a Steep Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 178,
+        "y": 109,
+        "z": 0
+    },
+    {
+        "desc": "Before you stands what must be one of the highest hills in the downs. The only\nway up the hill seems to be a faint path in the grass that wanders up the steep\nincline. To your east, is a smaller hill, but much more difficult to ascend\nbecause it's even steeper slope. South the path seems to wander to even more\nhills.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2392"
+                ],
+                "name": "",
+                "out": [
+                    "2392"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2390"
+                ],
+                "name": "",
+                "out": [
+                    "2390"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2391",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Grassy Path Heading up a Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 178,
+        "y": 110,
+        "z": 0
+    },
+    {
+        "desc": "The hills are rolling steeply here, and you have reached the end of a\nwell-tended path. The stone-border is sparse here, and the path goes up and\ndown, across the hills and between them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2391"
+                ],
+                "name": "",
+                "out": [
+                    "2391"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12375"
+                ],
+                "name": "",
+                "out": [
+                    "12293"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2393"
+                ],
+                "name": "",
+                "out": [
+                    "2393"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2392",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Well-tended Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 178,
+        "y": 111,
+        "z": 0
+    },
+    {
+        "desc": "The path is now plain before you, well-tended and bordered with stone. It goes\nup to the top of a grassy knoll, down again, and then back up a long, smooth\nhillside of turf.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2394"
+                ],
+                "name": "",
+                "out": [
+                    "2394"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2392"
+                ],
+                "name": "",
+                "out": [
+                    "2392"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2393",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Well-tended Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 177,
+        "y": 111,
+        "z": 0
+    },
+    {
+        "desc": "The path is now plain before you, well-tended and bordered with stone. It goes\nup to the top of a grassy knoll, down again, and then back up a long, smooth\nhillside of turf.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2393"
+                ],
+                "name": "",
+                "out": [
+                    "2393"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2395"
+                ],
+                "name": "",
+                "out": [
+                    "2395"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2394",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Well-tended Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 177,
+        "y": 112,
+        "z": 0
+    },
+    {
+        "desc": "The path is now plain before you, well-tended and bordered with stone. It goes\nup to the top of a grassy knoll, down again, and then back up a long, smooth\nhillside of turf.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2396"
+                ],
+                "name": "",
+                "out": [
+                    "2396"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2394"
+                ],
+                "name": "",
+                "out": [
+                    "2394"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2395",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Well-tended Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 176,
+        "y": 112,
+        "z": 0
+    },
+    {
+        "desc": "The path is now plain before you, well-tended and bordered with stone. It goes\nup to the top of a grassy knoll, down again, and then back up a long, smooth\nhillside of turf.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2395"
+                ],
+                "name": "",
+                "out": [
+                    "2395"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2397"
+                ],
+                "name": "",
+                "out": [
+                    "2397"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2396",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Well-tended Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 176,
+        "y": 113,
+        "z": 0
+    },
+    {
+        "desc": "The path is now plain before you, well-tended and bordered with stone. It goes\nup to the top of a grassy knoll, down again, and then back up a long, smooth\nhillside of turf.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2396"
+                ],
+                "name": "",
+                "out": [
+                    "2396"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2398"
+                ],
+                "name": "",
+                "out": [
+                    "2398"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2397",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Well-tended Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 176,
+        "y": 114,
+        "z": 0
+    },
+    {
+        "desc": "There is no tree or visible water. It is a country of grass and short springy\nturf, silent except for the whisper of the wind over the edges of the land, and\nhigh lonely cries of strange birds. When you catch a glimpse of the country\nwestward the distant forest appears to be wreathed in smoke.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2397"
+                ],
+                "name": "",
+                "out": [
+                    "2397"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2399"
+                ],
+                "name": "",
+                "out": [
+                    "2399"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2405"
+                ],
+                "name": "",
+                "out": [
+                    "2405"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2398",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On Some Short Springy Turf",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 176,
+        "y": 115,
+        "z": 0
+    },
+    {
+        "desc": "There is no tree or visible water. It is a country of grass and short springy\nturf, silent except for the whisper of the wind over the edges of the land, and\nhigh lonely cries of strange birds. When you catch a glimpse of the country\nwestward the distant forest appears to be wreathed in smoke.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2398"
+                ],
+                "name": "",
+                "out": [
+                    "2398"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2400"
+                ],
+                "name": "",
+                "out": [
+                    "2400"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2403"
+                ],
+                "name": "",
+                "out": [
+                    "2403"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2399",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On Some Short Springy Turf",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 176,
+        "y": 116,
+        "z": 0
+    },
+    {
+        "desc": "Your view is screened by a tall line of beans on poles. The red flowers of the\nbeans glow against the green leaves. Westward, you see the impressive Old\nForest. You can hear a strange murmuring, the trees seem to communicate between\nthemselves. But, as you are in Tom's land, you should not fear no beast or tree.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2399"
+                ],
+                "name": "",
+                "out": [
+                    "2399"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2401"
+                ],
+                "name": "",
+                "out": [
+                    "2401"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2400",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path along the Bean Field",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 176,
+        "y": 117,
+        "z": 0
+    },
+    {
+        "desc": "Your view is screened by a tall line of beans on poles. The red flowers of the\nbeans glow against the green leaves. Westward, you see the impressive Old\nForest. You can hear a strange murmuring, the trees seem to communicate between\nthemselves. But, as you are in Tom's land, you should not fear no beast or tree.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2402"
+                ],
+                "name": "",
+                "out": [
+                    "2402"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2400"
+                ],
+                "name": "",
+                "out": [
+                    "2400"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2401",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path along the Bean Field",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 177,
+        "y": 117,
+        "z": 0
+    },
+    {
+        "desc": "Your view is screened by a tall line of beans on poles. The red flowers of the\nbeans glow against the green leaves. Westward, you see the impressive Old\nForest. You can hear a strange murmuring, the trees seem to communicate between\nthemselves. But, as you are in Tom's land, you should not fear no beast or tree.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 7,
+                "in": [
+                    "2408"
+                ],
+                "name": "",
+                "out": [
+                    "2408"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "2401"
+                ],
+                "name": "",
+                "out": [
+                    "2401"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2402",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path along the Bean Field",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 178,
+        "y": 117,
+        "z": 0
+    },
+    {
+        "desc": "There is no tree or visible water. It is a country of grass and short springy\nturf, silent except for the whisper of the wind over the edges of the land, and\nhigh lonely cries of strange birds. When you catch a glimpse of the country\nwestward the distant forest appears to be wreathed in smoke.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2405"
+                ],
+                "name": "",
+                "out": [
+                    "2405"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2404"
+                ],
+                "name": "",
+                "out": [
+                    "2404"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2399"
+                ],
+                "name": "",
+                "out": [
+                    "2399"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2403",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On Some Short Springy Turf",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 177,
+        "y": 116,
+        "z": 0
+    },
+    {
+        "desc": "There is no tree or visible water. It is a country of grass and short springy\nturf, silent except for the whisper of the wind over the edges of the land, and\nhigh lonely cries of strange birds. When you catch a glimpse of the country\nwestward the distant forest appears to be wreathed in smoke.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2406"
+                ],
+                "name": "",
+                "out": [
+                    "2406"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2403"
+                ],
+                "name": "",
+                "out": [
+                    "2403"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2404",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On Some Short Springy Turf",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 178,
+        "y": 116,
+        "z": 0
+    },
+    {
+        "desc": "There is no tree or visible water. It is a country of grass and short springy\nturf, silent except for the whisper of the wind over the edges of the land, and\nhigh lonely cries of strange birds. When you catch a glimpse of the country\nwestward the distant forest appears to be wreathed in smoke.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2403"
+                ],
+                "name": "",
+                "out": [
+                    "2403"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2406"
+                ],
+                "name": "",
+                "out": [
+                    "2406"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2398"
+                ],
+                "name": "",
+                "out": [
+                    "2398"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2405",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On Some Short Springy Turf",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 177,
+        "y": 115,
+        "z": 0
+    },
+    {
+        "desc": "There is no tree or visible water. It is a country of grass and short springy\nturf, silent except for the whisper of the wind over the edges of the land, and\nhigh lonely cries of strange birds. When you catch a glimpse of the country\nwestward the distant forest appears to be wreathed in smoke.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2404"
+                ],
+                "name": "",
+                "out": [
+                    "2404"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2405"
+                ],
+                "name": "",
+                "out": [
+                    "2405"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2406",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On Some Short Springy Turf",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 178,
+        "y": 115,
+        "z": 0
+    },
+    {
+        "desc": "The entrance to Tom and Goldberry's house is humble. No great portal, just a\nsimple little gate. Flowers of every shape and colour flourish here, carefully\nplaced so as to best show the forms and hues of each. The clear and beautiful\nvoice of a maiden sings above you.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12251"
+                ],
+                "name": "",
+                "out": [
+                    "12251"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2408"
+                ],
+                "name": "",
+                "out": [
+                    "2408"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2407",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tom and Goldberry's Flower Garden",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 177,
+        "y": 118,
+        "z": 0
+    },
+    {
+        "desc": "The entrance to Tom and Goldberry's house is humble. No great portal, just a\nsimple little garden gate. You admire the work of Goldberry, the flowers are\nclassified by their different species. But all are flourishing, showing you\ntheir multiple colours. You hear the clear voice of Golberry singing for the\nhealth of her plants and you listen with delight.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 7,
+                "in": [
+                    "2402"
+                ],
+                "name": "",
+                "out": [
+                    "2402"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12249"
+                ],
+                "name": "",
+                "out": [
+                    "12249"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2407"
+                ],
+                "name": "",
+                "out": [
+                    "2407"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2408",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In Front of the Garden Gate",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 178,
+        "y": 118,
+        "z": 0
+    },
+    {
+        "desc": "Off to the north you can see the beginning of Tom Bombadil's lovely flower\ngarden. A number of flowers grow here as well, but most of the garden is north\nof here. The threshold of Tom's house lies to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2407"
+                ],
+                "name": "",
+                "out": [
+                    "2407"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2409"
+                ],
+                "name": "",
+                "out": [
+                    "2409"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12251",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Entrance to the Flower Garden",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 1,
+        "x": 177,
+        "y": 119,
+        "z": 0
+    },
+    {
+        "desc": "The kitchen is a small room with a fire place and a big wooden table. You can\nimagine Goldberry cooking blackberry tarts or other fine desserts, good as can\nbe found in the Shire.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12253"
+                ],
+                "name": "",
+                "out": [
+                    "12253"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12252",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Kitchen",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 178,
+        "y": 114,
+        "z": 0
+    },
+    {
+        "desc": "You are in a long, low room, filled with the light of lamps swinging from the\nbeams of the ceiling. A magnificent chair, surrounded by white water-lilies\npreserved in green and brown earthenware, seems to be awaiting its noble\noccupant.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12254"
+                ],
+                "name": "",
+                "out": [
+                    "12254"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12252"
+                ],
+                "name": "",
+                "out": [
+                    "12252"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12256"
+                ],
+                "name": "",
+                "out": [
+                    "12256"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2409"
+                ],
+                "name": "",
+                "out": [
+                    "2409"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12253",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 8192,
+        "name": "The Main Room",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 178,
+        "y": 113,
+        "z": 0
+    },
+    {
+        "desc": "You go down a short staircase and find yourself in a low room with a sloping\nceiling. Its walls are of clean stone, but they are mostly covered with green\nand yellow curtains. There are four deep mattresses, each piled with white\nblankets.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12253"
+                ],
+                "name": "",
+                "out": [
+                    "12253"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12255"
+                ],
+                "name": "",
+                "out": [
+                    "12255"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12254",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Low Bedroom",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 178,
+        "y": 112,
+        "z": 0
+    },
+    {
+        "desc": "You enter a bathroom and see a long bench placed against the wall with a wide\nearthenware basin. Beside it stand brown ewers filled with water, some cold,\nsome steaming hot.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12256"
+                ],
+                "name": "",
+                "out": [
+                    "12256"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12254"
+                ],
+                "name": "",
+                "out": [
+                    "12254"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12255",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Bathroom",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 179,
+        "y": 112,
+        "z": 0
+    },
+    {
+        "desc": "This is a large bedroom in the house of Tom Bombadil, easily able to accomodate\nsix people. Several beds are made and neatly cared for, ready for any visitors.\nTo the north the bathroom can be entered, and a doorway to the west leads into\nthe main room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12255"
+                ],
+                "name": "",
+                "out": [
+                    "12255"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12253"
+                ],
+                "name": "",
+                "out": [
+                    "12253"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12256",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Large Bedroom",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 179,
+        "y": 113,
+        "z": 0
+    },
+    {
+        "desc": "This is the Old Forest, a remnant of the great forest that once covered most of\nEriador. The trees have an odd quality about them. It is as if they seem to be\nmoving slowly and watching every move. Perhaps though, it is just the wind\nwhispering in the leaves and not that the trees are whispering schemes against\nthose who dare to walk under them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12276"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12289"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2355"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12287"
+                ],
+                "name": "",
+                "out": [
+                    "12289"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12263",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 169,
+        "y": 115,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in a deep forest. The trees don't seem to be so menacing, but\nyou still have the sensation they are watching all your movements. The path\nseems to be less obvious and you could lose yourself very easily here. You get\nyour map out and pray.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12270"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12276"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12260"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12276"
+                ],
+                "name": "",
+                "out": [
+                    "12276"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12264",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Deep Inside the Old Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 169,
+        "y": 116,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12287"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12269",
+                    "12275",
+                    "12283"
+                ],
+                "name": "",
+                "out": [
+                    "12266"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2355"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2355"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12265",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 0,
+        "x": 169,
+        "y": 118,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12265",
+                    "12287"
+                ],
+                "name": "",
+                "out": [
+                    "12276"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12289"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2355"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12284"
+                ],
+                "name": "",
+                "out": [
+                    "12269"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12266",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 0,
+        "x": 169,
+        "y": 119,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12267"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12272"
+                ],
+                "name": "",
+                "out": [
+                    "12267"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                    "12258"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                    "12273",
+                    "12285"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12268",
+        "light": 2,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 0,
+        "x": 169,
+        "y": 117,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12283"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12264"
+                ],
+                "name": "",
+                "out": [
+                    "12258"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12275"
+                ],
+                "name": "",
+                "out": [
+                    "12283"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12271"
+                ],
+                "name": "",
+                "out": [
+                    "2355"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12270",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 0,
+        "x": 165,
+        "y": 119,
+        "z": 0
+    },
+    {
+        "desc": "This is the Old Forest, a remnant of the great forest that once covered most of\nEriador. The trees have an odd quality about them. It is as if they seem to be\nmoving slowly and watching every move. Perhaps though, it is just the wind\nwhispering in the leaves and not that the trees are whispering schemes against\nthose who dare to walk under them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12284"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12282"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12283"
+                ],
+                "name": "",
+                "out": [
+                    "12270"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12289"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12271",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 165,
+        "y": 118,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12274",
+                    "12280"
+                ],
+                "name": "",
+                "out": [
+                    "12268"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12267"
+                ],
+                "name": "",
+                "out": [
+                    "12282"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12278"
+                ],
+                "name": "",
+                "out": [
+                    "12257"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12287"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12272",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 0,
+        "x": 166,
+        "y": 118,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12267"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12279"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12262",
+                    "12267"
+                ],
+                "name": "",
+                "out": [
+                    "12268"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12283"
+                ],
+                "name": "",
+                "out": [
+                    "12258"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12273",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 0,
+        "x": 166,
+        "y": 117,
+        "z": 0
+    },
+    {
+        "desc": "This is the Old Forest, a remnant of the great forest that once covered most of\nEriador. The trees have an odd quality about them. It is as if they seem to be\nmoving slowly and watching every move. Perhaps though, it is just the wind\nwhispering in the leaves and not that the trees are whispering schemes against\nthose who dare to walk under them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12289"
+                ],
+                "name": "",
+                "out": [
+                    "12278"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12286"
+                ],
+                "name": "",
+                "out": [
+                    "12272"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12280"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12286"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12274",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 166,
+        "y": 116,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12265"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12284",
+                    "12287"
+                ],
+                "name": "",
+                "out": [
+                    "12279"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12269"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12270"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12275",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 0,
+        "x": 167,
+        "y": 116,
+        "z": 0
+    },
+    {
+        "desc": "This is the Old Forest. The trees of this very ancient forest are said to be\nsomehow odd. It is said that they would move around and open and close paths. A\nclearing seems to be west from here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12264",
+                    "12267"
+                ],
+                "name": "",
+                "out": [
+                    "12284"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12263",
+                    "12266",
+                    "12277"
+                ],
+                "name": "",
+                "out": [
+                    "12277"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12264"
+                ],
+                "name": "",
+                "out": [
+                    "12264"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2355"
+                ],
+                "name": "",
+                "out": [
+                    "12279"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12276",
+        "light": 2,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Old Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 168,
+        "y": 116,
+        "z": 0
+    },
+    {
+        "desc": "This is the Old Forest, a remnant of the great forest that once covered most of\nEriador. The trees have an odd quality about them. It is as if they seem to be\nmoving slowly and watching every move. Perhaps though, it is just the wind\nwhispering in the leaves and not that the trees are whispering schemes against\nthose who dare to walk under them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12276"
+                ],
+                "name": "",
+                "out": [
+                    "12276"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2355"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12288"
+                ],
+                "name": "",
+                "out": [
+                    "12277"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12277",
+                    "12281"
+                ],
+                "name": "",
+                "out": [
+                    "12267"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12277",
+        "light": 2,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Old Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 168,
+        "y": 117,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12258"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12274"
+                ],
+                "name": "",
+                "out": [
+                    "12269"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2355"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12272"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12278",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 0,
+        "x": 168,
+        "y": 118,
+        "z": 0
+    },
+    {
+        "desc": "This is the place where the Hobbits of Buckland burned so many trees during the\nattack of the Forest on Buckland. No trees have grown here since that time, but\ngrass, weeds and nettles are scattered about the glade, and the Old Forest looms\nat the edge of the clearing, gloomy and forbidding.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12273",
+                    "12275"
+                ],
+                "name": "",
+                "out": [
+                    "12285"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2421"
+                ],
+                "name": "",
+                "out": [
+                    "12285"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12276"
+                ],
+                "name": "",
+                "out": [
+                    "12267"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12279",
+        "light": 2,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Bonfire Glade",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 168,
+        "y": 119,
+        "z": 0
+    },
+    {
+        "desc": "This is the western border of the Old Forest. The larger trees seem as if they\nare aware of all that goes on under their branches. Perhaps watching and waiting\nto act should something they see disturb them. To the west is the High Hay, a\nhedge the protects Buckland by forming an impassible boundary between the forest\nand the town.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12271",
+                    "12272",
+                    "12283"
+                ],
+                "name": "",
+                "out": [
+                    "12283"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12259"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12267"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2355"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12282",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 167,
+        "y": 119,
+        "z": 0
+    },
+    {
+        "desc": "This is the Old Forest, a remnant of the great forest that once covered most of\nEriador. The trees have an odd quality about them. It is as if they seem to be\nmoving slowly and watching every move. Perhaps though, it is just the wind\nwhispering in the leaves and not that the trees are whispering schemes against\nthose who dare to walk under them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12265"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12270",
+                    "12280",
+                    "12282",
+                    "12285"
+                ],
+                "name": "",
+                "out": [
+                    "12282"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12273"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12270"
+                ],
+                "name": "",
+                "out": [
+                    "12271"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12283",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 167,
+        "y": 118,
+        "z": 0
+    },
+    {
+        "desc": "This is the Old Forest, a remnant of the great forest that once covered most of\nEriador. The trees have an odd quality about them. It is as if they seem to be\nmoving slowly and watching every move. Perhaps though, it is just the wind\nwhispering in the leaves and not that the trees are whispering schemes against\nthose who dare to walk under them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12275"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12271",
+                    "12276"
+                ],
+                "name": "",
+                "out": [
+                    "12267"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12266"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2355"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12284",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 167,
+        "y": 117,
+        "z": 0
+    },
+    {
+        "desc": "This is the Old Forest, a remnant of the great forest that once covered most of\nEriador. The trees have an odd quality about them. It is as if they seem to be\nmoving slowly and watching every move. Perhaps though, it is just the wind\nwhispering in the leaves and not that the trees are whispering schemes against\nthose who dare to walk under them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12279"
+                ],
+                "name": "",
+                "out": [
+                    "12283"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12279"
+                ],
+                "name": "",
+                "out": [
+                    "12280"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12257"
+                ],
+                "name": "",
+                "out": [
+                    "12268"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12258"
+                ],
+                "name": "",
+                "out": [
+                    "12281"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12285",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 166,
+        "y": 119,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12261"
+                ],
+                "name": "",
+                "out": [
+                    "12275"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12261",
+                    "12265"
+                ],
+                "name": "",
+                "out": [
+                    "12266"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12272"
+                ],
+                "name": "",
+                "out": [
+                    "12263"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2421",
+                    "12261"
+                ],
+                "name": "",
+                "out": [
+                    "12281"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12287",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 0,
+        "x": 168,
+        "y": 115,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2355"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12259"
+                ],
+                "name": "",
+                "out": [
+                    "12289"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12277"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12288",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 0,
+        "x": 167,
+        "y": 115,
+        "z": 0
+    },
+    {
+        "desc": "This is the Old Forest, a remnant of the great forest that once covered most of\nEriador. The trees have an odd quality about them. It is as if they seem to be\nmoving slowly and watching every move. Perhaps though, it is just the wind\nwhispering in the leaves and not that the trees are whispering schemes against\nthose who dare to walk under them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2355",
+                    "12262",
+                    "12263",
+                    "12266",
+                    "12288"
+                ],
+                "name": "",
+                "out": [
+                    "2355"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "12274"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12263",
+                    "12271"
+                ],
+                "name": "",
+                "out": [
+                    "12261"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2307"
+                ],
+                "name": "",
+                "out": [
+                    "2307"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12289",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 166,
+        "y": 115,
+        "z": 0
+    },
+    {
+        "desc": "You've travelled over countless hills and it seems that there are many more\nhills to climb ahead of you. You've the feeling that this particular hilltop is\nhigher than the others surrounding it since the fog is less dense here. To the\nnorth you see a small hill that seems to be set apart from the rest - a bit\ntaller, with a bit better view.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12307"
+                ],
+                "name": "",
+                "out": [
+                    "12307"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2381"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2378"
+                ],
+                "name": "",
+                "out": [
+                    "2378"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12306",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Northern Downs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 179,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "This is a northward-facing bluff from which the low hills round about can be\nseen. To the east is a sea of thick brownish-grey brush. To the north you can\nspy the line of a road in the distance. Northwest of here is some flatter land\ncut by what seems to be an old stone wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12306"
+                ],
+                "name": "",
+                "out": [
+                    "12306"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12307",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Small Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 179,
+        "y": 104,
+        "z": 0
+    }
+]

@@ -2,7 +2,8 @@ import { useCallback, useMemo, useRef, useEffect } from 'react';
 import { Direction, TeleportTarget, MessageType, DrawerLine, GameAction, CaptureStage } from '../types';
 import { extractNoun } from '../utils/gameUtils';
 import { MapperRef } from '../components/Mapper/mapperTypes';
-import { getGateState } from '../components/Mapper/mapperUtils';
+import { getExitTargetId, getGateState } from '../components/Mapper/mapperUtils';
+import { useSettingsStore } from '../stores/useSettingsStore';
 
 // --- Command Registry Imports ---
 import { CommandRegistry } from '../services/command/CommandRegistry';
@@ -86,6 +87,11 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
     const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, _isHistorical = false, fromDrawer = false) => {
         const d = depsRef.current;
         const { telnet, addMessage, initAudio, navIntervalRef, status } = d;
+        const debugMapperPrediction = (message: string) => {
+            if (useSettingsStore.getState().showDebugEchoes) {
+                addMessage('system', `[MapperPredict] ${message}`);
+            }
+        };
 
         initAudio();
         
@@ -120,19 +126,11 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         if (!silent) {
             const promptPrefix = activePrompt || '';
             const logText = d.isPasswordMode ? '********' : finalCmd;
-            console.log('[useCommandExecutor] Sending to addMessage:', { 
-                type: 'user', 
-                text: `${promptPrefix}${logText}`, 
-                isPasswordMode: d.isPasswordMode,
-                hasAddMessage: !!addMessage
-            });
             
             (addMessage as any)('user', `${promptPrefix}${logText}`, undefined, undefined, undefined, { 
                 textOnly: `${promptPrefix}${logText}`, 
                 lower: `${promptPrefix}${logText}`.toLowerCase() 
             });
-        } else {
-            console.log('[useCommandExecutor] Logging skipped because silent=true');
         }
 
         // --- 8. Mapper Movement Hooks ---
@@ -148,6 +146,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             const currentRoomId = mapperRef?.current?.stableRoomIdRef?.current;
             const rooms = mapperRef?.current?.stableRoomsRef?.current;
             const preloaded = mapperRef?.current?.preloadedCoordsRef?.current;
+            const serverIdIndex = mapperRef?.current?.serverIdIndexRef?.current;
             
             if (currentRoomId && rooms && preloaded) {
                 const room = rooms[currentRoomId] || rooms[`m_${currentRoomId}`];
@@ -155,15 +154,25 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
                 const wEx = preloaded[rawId]?.[4]?.[dir];
                 
                 const { hasExit, hasDoor, isClosed } = getGateState(room, wEx, dir, rooms, preloaded);
+                debugMapperPrediction(`${dir}: room=${currentRoomId} raw=${rawId} exit=${hasExit ? 'yes' : 'no'} door=${hasDoor ? (isClosed ? 'closed' : 'open') : 'no'}`);
                 
                 if (hasExit && (!hasDoor || !isClosed)) {
-                    const exA = room?.exits ? room.exits[dir] : wEx;
-                    const targetId = exA?.target || exA?.gmcpDestId;
+                    const exA = room?.exits?.[dir] || wEx;
+                    const targetId = getExitTargetId(exA);
                     if (targetId) {
-                        const finalTargetId = String(targetId).startsWith('m_') ? String(targetId) : `m_${targetId}`;
+                        const targetKey = String(targetId).replace(/^m_/, '');
+                        const internalTargetId = serverIdIndex?.[targetKey] || targetKey;
+                        const finalTargetId = String(internalTargetId).startsWith('m_') ? String(internalTargetId) : `m_${internalTargetId}`;
+                        debugMapperPrediction(`${dir}: target=${targetId} resolved=${finalTargetId}`);
                         if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-push-pre-move', { detail: { dir, targetId: finalTargetId } }));
+                    } else {
+                        debugMapperPrediction(`${dir}: no target id on exit`);
                     }
+                } else if (hasDoor && isClosed) {
+                    debugMapperPrediction(`${dir}: prediction blocked by closed door`);
                 }
+            } else {
+                debugMapperPrediction(`${dir}: missing mapper context current=${currentRoomId || 'none'} rooms=${rooms ? 'yes' : 'no'} preloaded=${preloaded ? 'yes' : 'no'}`);
             }
             if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-push-move', { detail: dir }));
         }

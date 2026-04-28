@@ -872,10 +872,11 @@
 .input-form {
     display: flex;
     gap: 10px;
-    align-items: flex-end;
+    align-items: center;
     flex: 1;
     min-width: 0;
-    padding: 4px 0;
+    min-height: 100%;
+    padding: 0;
 }
 
 .cmd-prompt {
@@ -884,8 +885,7 @@
     font-size: 1.2rem;
     display: flex;
     align-items: center;
-    height: 1.4em;
-    /* Match textarea line-height */
+    align-self: center;
 }
 
 .input-field {
@@ -901,6 +901,8 @@
     user-select: text;
     -webkit-user-select: text;
     min-height: 1.4em;
+    line-height: 1.4;
+    align-self: center;
     resize: none;
     /* Removed the dragger dot */
     overflow: hidden !important;
@@ -918,6 +920,38 @@
 
 .input-field::placeholder {
     color: var(--text-faded);
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+    .mobile-gutter-input-wrapper {
+        padding-top: 12px;
+    }
+
+    .mobile-gutter-input-wrapper .input-main-container {
+        min-height: 38px;
+        padding: 0 12px;
+        border-radius: 16px;
+    }
+
+    .mobile-gutter-input-wrapper .input-form {
+        gap: 8px;
+    }
+
+    .mobile-gutter-input-wrapper .cmd-prompt,
+    .mobile-gutter-input-wrapper .input-field {
+        font-size: max(16px, calc(var(--dynamic-log-size, 16px) + 1px));
+    }
+
+    .mobile-gutter-input-wrapper .input-actions-container {
+        gap: 6px;
+        align-items: center;
+    }
+
+    .mobile-gutter-input-wrapper .msg-repeat-btn,
+    .mobile-gutter-input-wrapper .msg-cancel-btn {
+        width: 30px;
+        height: 30px;
+    }
 }
 
 .inline-btn:not(.comm-bubble):not(.reply-btn) {

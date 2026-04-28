@@ -1,0 +1,19 @@
+{
+    "directions": [
+        "NORTH",
+        "SOUTH",
+        "EAST",
+        "WEST",
+        "UP",
+        "DOWN",
+        "UNKNOWN",
+        "NONE"
+    ],
+    "maxX": 621,
+    "maxY": 261,
+    "maxZ": 2,
+    "minX": -26,
+    "minY": 2,
+    "minZ": -1,
+    "roomsCount": 23819
+}

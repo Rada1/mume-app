@@ -1,0 +1,1016 @@
+[
+    {
+        "desc": "Ranges of flat-topped, rugged hills dominate the landscape here. The craggy\nhillsides are partly covered with vegetation, mostly patches of short grass and\nred-coloured shrubs. The lower hills are covered with heath, and a few pine\ntrees grow in the stony soil at the foot of the hills.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19044"
+                ],
+                "name": "",
+                "out": [
+                    "19044"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19042"
+                ],
+                "name": "",
+                "out": [
+                    "19042"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19043",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rugged Hills",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 100,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "Moss covered rocks crown this windswept hillside. To the lea of the hill, small\nbrackish pools have formed in the hollows; clearly drainage is a problem and\nonly the hardier varieties of grass and shrub have found a home here. To the\nsouth a small thicket of pine trees breaks the monotony of the stony ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19045"
+                ],
+                "name": "",
+                "out": [
+                    "19045"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19043"
+                ],
+                "name": "",
+                "out": [
+                    "19043"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19044",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Windswept Hillside",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 100,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "The ground is bearably steep, rising from the valley to the north to meet the\nridgeline that extends as far as the eye can see to the south. A few heather\nplants push themselves up from between the rocks spreading, unchallenged, across\nthe ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19046"
+                ],
+                "name": "",
+                "out": [
+                    "19046"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19044"
+                ],
+                "name": "",
+                "out": [
+                    "19044"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19052"
+                ],
+                "name": "",
+                "out": [
+                    "19052"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19045",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Steep Ridgeline",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 100,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "A thin, brown thread marks the passage of the trail across the green, undulating\nterrain. The wide, rutted wagon-trail snakes its way between the hills and\nvalleys, picking its path along the contours of the land. At the side of the\ntrail a broken, mouldy wagon-wheel rots away, providing a home for ants and\nother insects.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19047"
+                ],
+                "name": "",
+                "out": [
+                    "19047"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19045"
+                ],
+                "name": "",
+                "out": [
+                    "19045"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "19051"
+                ],
+                "name": "",
+                "out": [
+                    "19051"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19046",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Deeply-rutted Wagon Trail",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 100,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "The fertile hills support a variety of flora, most of it varieties of grasses\nthat fight for supremacy among the stunted bushes. The lack of animal grazing\nhere has allowed the grass to grow tall; high enough to cause even the tallest\nof men some difficulty. To the south, a busy track cuts across the land.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19048"
+                ],
+                "name": "",
+                "out": [
+                    "19048"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19046"
+                ],
+                "name": "",
+                "out": [
+                    "19046"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19050"
+                ],
+                "name": "",
+                "out": [
+                    "19050"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19047",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Scrub-covered Hills",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 100,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "The ground underfoot is covered with an abundance of bushy scrub. None of the\nplants are particularly tall but the thick, woody stems are a trip hazard to the\nunwary. The rolling hills to the west and south are mottled with browns and\ngreens and stretch as far as the eye can see.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19047"
+                ],
+                "name": "",
+                "out": [
+                    "19047"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19049"
+                ],
+                "name": "",
+                "out": [
+                    "19049"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19048",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Scrub-covered Hills",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 100,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "A wide ventilation shaft has been cut into the rock. The steep shaft has had\ncrude steps hacked out of the stone to allow miners to climb the shaft and\naccess the machinery that lines the passageway. All that now remains are\ntattered fragments of twisted iron and a sturdy hand-rail that has been deeply\nanchored into the rock. A wide cavern opens up to the south where the bulk of\nthe excavations have taken place.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19059"
+                ],
+                "name": "",
+                "out": [
+                    "19059"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19041"
+                ],
+                "name": "",
+                "out": [
+                    "19041"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19058",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Mineshaft",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 101,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "Here the cavern branches with a side-tunnel running off to the east away from\nthe main north-south passage. Red staining around the ceiling to the east\nindicates that there was once a rich seam of iron ore in the rock but it has\nlong been exhausted leaving only traces of rust deposits in the puddles that\naccumulate on the ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19058"
+                ],
+                "name": "",
+                "out": [
+                    "19058"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19062"
+                ],
+                "name": "",
+                "out": [
+                    "19062"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19060"
+                ],
+                "name": "",
+                "out": [
+                    "19060"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19059",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Junction in the Mine",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 101,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel opens out into a vast, circular cavern. The mineral deposits that\nmake up this mine are very distinctive and are showcased in the walls here.\nBands of minerals alternate from sparkling quartz to the reddish-brown hue of\niron-ore to the black of plain bedrock creating a rainbow-like effect in earthy\ntones. Some thin bands of the iron-ore that the miners sought still remain in\nthe walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19061"
+                ],
+                "name": "",
+                "out": [
+                    "19061"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19059"
+                ],
+                "name": "",
+                "out": [
+                    "19059"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19060",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rich Mine",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 102,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel narrows here, twisting and turning to follow the route of the mineral\nseam that the miners were following until it eventually stops completely. The\nminers, having exhausted the minerals, discarded their worn-out tools before\nabandoning the mine forever. The sheer number of broken picks and discarded\ncrowbars indicate that this was a very active area in the past.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19060"
+                ],
+                "name": "",
+                "out": [
+                    "19060"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19061",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Depleted Ore Vein",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 102,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "The rough-cut tunnel extends far into the gloom to the north while to the south\nfresh air flows through a wide opening. The remains of grooves in the floor\nindicate where a mining cart one ran on rails but the rails are long gone,\nseemingly having fallen victim to metal scavengers. The uneven walls are covered\nwith pick marks with niches and crevices where the miners have searched for ore.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19059"
+                ],
+                "name": "",
+                "out": [
+                    "19059"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19063"
+                ],
+                "name": "",
+                "out": [
+                    "19063"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19062",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Mine Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 101,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "The ground here is rugged and rocky, and there is little vegetation in the\nbarren soil. A tall rock-face overlooks the landscape, obstructing travel to the\nnorth. Grey, angular rocks large and small litter the ground among patches of\ndry, yellow grass. The terrain slopes gently down towards a boggy glen to the\nsouth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19125"
+                ],
+                "name": "",
+                "out": [
+                    "19125"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19123"
+                ],
+                "name": "",
+                "out": [
+                    "19123"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19124",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Grounds",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 100,
+        "y": 59,
+        "z": 0
+    }
+]

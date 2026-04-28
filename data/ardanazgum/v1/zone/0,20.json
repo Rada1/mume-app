@@ -1,0 +1,1598 @@
+[
+    {
+        "desc": "This rocky tunnel is still being excavated, but already a few hardy Dwarves are\nclaiming it for their homes. There is a small vein of silver running through the\nmountains here, and the Dwarves mine it carefully. Carts of iron ore are also\nfrequently wheeled away to the blast furnace.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14892"
+                ],
+                "name": "",
+                "out": [
+                    "14892"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14894"
+                ],
+                "name": "",
+                "out": [
+                    "14894"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14893",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Kizdin-Zirak",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 19,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "Starting from the mouth of a tunnel to the east, it appears that many dwarves\nhave already chosen this place to make their homes. A marble hall, though its\nconstruction is kept very simple, glimmers brightly when answering the\nreflection of the burning flame from the torches that are hung on the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "19517"
+                ],
+                "name": "",
+                "out": [
+                    "19517"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14893"
+                ],
+                "name": "",
+                "out": [
+                    "14893"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14895"
+                ],
+                "name": "",
+                "out": [
+                    "14895"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14894",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Marble Hall",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 18,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "The marble hall takes a turn northwards, as it leads to the dwarven homes that\nare built deep inside the mountain. Torches line the way, their light flickering\nand dancing on the walls. Most times, the faint sounds of mining and falling\nrocks can be heard echoing off the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14896"
+                ],
+                "name": "",
+                "out": [
+                    "14896"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14894"
+                ],
+                "name": "",
+                "out": [
+                    "14894"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14895",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Marble Hall",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 17,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "The marble walkway takes yet another turn, leading deeper into the stone-laid\ndwarven tunnels. The polished marble glitters in return to any light source that\npasses, and echoes hollowly upon every step taken. Most times sounds of further\ndigging echo off the walls. It seems as if the dwarves here seldom rest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14895"
+                ],
+                "name": "",
+                "out": [
+                    "14895"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14897"
+                ],
+                "name": "",
+                "out": [
+                    "14897"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14896",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Marble Hall",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 17,
+        "y": 37,
+        "z": 0
+    },
+    {
+        "desc": "The marble tunnel comes to a stop at an intersection of excavations. To all\ndirections but east lie sites for new dwarven homes, carefully channeled into\nthe stone by the busy dwarven builders of the Blue Mountains. A few piles of\nflint and rocks litter the floor of the hall, indicating that the construction\nhere is at the final stage.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14898"
+                ],
+                "name": "",
+                "out": [
+                    "14898"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "14905"
+                ],
+                "name": "",
+                "out": [
+                    "14905"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14896"
+                ],
+                "name": "",
+                "out": [
+                    "14896"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14904"
+                ],
+                "name": "",
+                "out": [
+                    "14904"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14897",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Marble Hall",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 16,
+        "y": 37,
+        "z": 0
+    },
+    {
+        "desc": "A grand hall connects the marble corridor which connects a network of dwarven\nhomes. The polished finish of the stone bears witness to the grand craftsmanship\nof the dwarves, showing off their strength and will when molding the stone to\ntheir liking. To the north stands an archway, leading to a dwarven home site.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14900"
+                ],
+                "name": "",
+                "out": [
+                    "14900"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14897"
+                ],
+                "name": "",
+                "out": [
+                    "14897"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "19518"
+                ],
+                "name": "",
+                "out": [
+                    "19518"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14899"
+                ],
+                "name": "",
+                "out": [
+                    "14899"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14898",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Khazad-Gundu",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 16,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "This enormous underground hall leads to the east and west, connecting several\ndwarven homes and home sites. The grey and black stone walls are partly tiled\nwith marble, though it seems that some parts of these tunnels are still under\nconstruction. A cart with a load of ore has been left to stand in one corner,\nevidence of further building.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14898"
+                ],
+                "name": "",
+                "out": [
+                    "14898"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14901"
+                ],
+                "name": "",
+                "out": [
+                    "14901"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14899",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Khazad-Gundu",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 15,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "A rocky landing marks an entrance to a Dwarven home. The construction is not\nfinalised, lots of larger rocks and piles of flint circle the site. However, it\nseems that the basic building has been finished, providing a perfect spot for\nany eager dwarf to build a cosy and luxurious home here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 4099,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14898"
+                ],
+                "name": "",
+                "out": [
+                    "14898"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14900",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "An Excavated Landing",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 16,
+        "y": 35,
+        "z": 0
+    },
+    {
+        "desc": "The partly tiled hall comes to an end here as it reaches the western part of\nthis housing section. Slates of rock are piled against the western wall, a\nresult of digging the large halls that will be inhabited to north and south.\nEastwards the mixed corridors of marble and stone take one closer to the inner\nheart of the Blue Mountains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14902"
+                ],
+                "name": "",
+                "out": [
+                    "14902"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14903"
+                ],
+                "name": "",
+                "out": [
+                    "14903"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14899"
+                ],
+                "name": "",
+                "out": [
+                    "14899"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14901",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Khazad-Gundu",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 14,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "The walls of the tunnel are still coarse from the large excavation tools. Rocky\npebbles can be felt rolling underfoot. This opening however, looks perfectly\nsuitable for building a home. Most of the needed alterations have already been\nmade. A few mining carts stand at the northern end of the landing, probably left\nhere to aid the homeowner in further construction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22962"
+                ],
+                "name": "",
+                "out": [
+                    "22962"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14901"
+                ],
+                "name": "",
+                "out": [
+                    "14901"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14902",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "An Excavation",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 14,
+        "y": 35,
+        "z": 0
+    },
+    {
+        "desc": "This rocky landing has a smooth stony floor. It looks as if the dwarven builders\nhave started to work on this vacant lot in order to make it more suitable for a\ncomfortable home. Some spots on the wall have been reinforced with polished\nstone plates. The rest lies bare, waiting for the touches of its new habitant.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14901"
+                ],
+                "name": "",
+                "out": [
+                    "14901"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "19516"
+                ],
+                "name": "",
+                "out": [
+                    "19516"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22961"
+                ],
+                "name": "",
+                "out": [
+                    "22961"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14903",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "An Excavated Landing",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 14,
+        "y": 37,
+        "z": 0
+    },
+    {
+        "desc": "The landing rises up from the marble hall, a set of stone stairs carved in\nbetween, probably for easier access. The landing has been cleaned up, apart from\na lone mine-cart that stands in the corner, half-filled with rubble and stones.\nIt looks as this arched stone tunnel could be easily arranged to fit to a\ndwarfs' liking, providing them with a comfortable home.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14897"
+                ],
+                "name": "",
+                "out": [
+                    "14897"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14904",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "An Excavated Landing",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 15,
+        "y": 37,
+        "z": 0
+    },
+    {
+        "desc": "The large hall is filled with large tables with all sort of miniature mining\nequipment placed on them. On one of the tables small carts are placed on some\nsort of railway, while miniatures of dwarves are equipped with small picks,\nhammers and tongs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "14897"
+                ],
+                "name": "",
+                "out": [
+                    "14897"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14906"
+                ],
+                "name": "",
+                "out": [
+                    "14906"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "14907"
+                ],
+                "name": "",
+                "out": [
+                    "14907"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14905",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Gabildum of the Miniatures",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 16,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "This small oval shaped hall has rich decorated walls; gems, each with a label\nattached are placed on one of the shelves at the left wall, while several maps,\nwith marks of dwarf mining activity are attached to the opposite wall. At the\nfar end of the hall you notice a bed made of solid granite and a couple of\nchests. One of them has dirty clothes hanging out of it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "14905"
+                ],
+                "name": "",
+                "out": [
+                    "14905"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14907",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Francis' Gundu",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 17,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "Tall obsidian pillars rise from the dark floor of this ominous hall and stretch\nto the curved ceiling above. Glowing runes woven with silver and gold adorn the\npillars, narrating Iror's many adventures and triumphs. Rising from the centre\nof the hall is an obsidian throne, so dark it appears to absorb the light which\nfills the hall from two roaring fireplaces. Flanking the throne are many niches\ndelved between the pillars consisting of Iror's personal library, bed chambers,\nand other rooms. A lectern stands in front of the throne, with a hastily\nscribbled scroll tossed upon it...\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "14903"
+                ],
+                "name": "",
+                "out": [
+                    "14903"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19516",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Iror's Private Halls",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 14,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "The room has been carved from granite, now smooth like glass. A fireplace in the\nsouthern part heats the room. A bed sits against the western wall, and to the\neast a small desk and a chair. A sconce above the desk holds a lit torch, giving\nlight to the workspace. A small sign has been nailed to one of the walls. A\nsmall ventilation shaft can be seen high up in the north-eastern corner of the\nceiling, leading in air which streams out through the roaring fireplace, giving\nthe room good ventilation. The granite floor is slightly heated from the grand\nfireplace.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "14894"
+                ],
+                "name": "",
+                "out": [
+                    "14894"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19517",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Nainn's Quarters",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 18,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "Exquisite chandeliers of glimmering metals embedded with shining gemstones have\nbeen mounted on the walls, bathing the large hall in a warm light and showing\nthe great craftsmanship that has perfected the hard rock of Ered Luin into\nsmooth walls. Centred in the room is a long table made from dark mahogany, large\nenough to host a full party of adventurers. The seats are mostly fit for\ndwarves, but a few are there for occasional guests of other races. At the head\nof the table is an ebony chair, almost looking like a throne, where the host can\nsalute his guests with glasses full of fine beverages. Parts of the walls are\ncovered with heavy draperies of crimson, hemlined with gilded thread. A somewhat\ngreasy hearth along the northern wall is used to keep the awaiting dishes hot\nduring long meals.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "14898"
+                ],
+                "name": "",
+                "out": [
+                    "14898"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19518",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Hall Fit for Feasts",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 17,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "The natural walls here have been carved and chiseled with an extraordinary\npattern that resembles a brick wall. A large forge stands along the western\nwall, ablaze and venting through the ceiling above. Tool racks along the eastern\nwall are neatly kept and well organized. A large mural was beautifully painted\nnear the forge of seven well-formed dwarves that are sleeping peacefully, while\na craftsmen guards them protectively. The glow from the forge compliments this\nmural to honour Aule and the Seven Fathers.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "14903"
+                ],
+                "name": "",
+                "out": [
+                    "14903"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22961",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Shrine of Aule",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 13,
+        "y": 37,
+        "z": 0
+    },
+    {
+        "desc": "This is a dimly lit cave of hard grey stone. What little light there is shines\nupon the Duergar Coat of Arms above the hearth. The room is sparsley furnished\nwith a bed, bookshelf and a few chairs. The shelf contains fantastical books of\nmythical creatures. Weapons and mining picks lie astray on the floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "14902"
+                ],
+                "name": "",
+                "out": [
+                    "14902"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22962",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Home of the Grey",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 14,
+        "y": 34,
+        "z": 0
+    }
+]

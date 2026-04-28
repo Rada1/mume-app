@@ -56,5 +56,6 @@ export const DEFAULT_SET_SETTINGS: Record<string, ButtonSetSettings> = {
     thiefskilllist: { activeSet: 'thiefskilllist', isEditMode: false, isGridEnabled: false, gridSize: 10, editingButtonId: null, selectedButtonIds: new Set(), themeColor: '#94a3b8' },
     doors: { activeSet: 'doors', isEditMode: false, isGridEnabled: false, gridSize: 10, editingButtonId: null, selectedButtonIds: new Set(), themeColor: '#06b6d4' },
     'social list': { activeSet: 'social list', isEditMode: false, isGridEnabled: false, gridSize: 10, editingButtonId: null, selectedButtonIds: new Set(), themeColor: '#06b6d4' },
+    target: { activeSet: 'target', isEditMode: false, isGridEnabled: false, gridSize: 10, editingButtonId: null, selectedButtonIds: new Set(), themeColor: '#facc15' },
     'inline-default': { activeSet: 'inline-default', isEditMode: false, isGridEnabled: false, gridSize: 10, editingButtonId: null, selectedButtonIds: new Set(), themeColor: '#facc15' }
 };

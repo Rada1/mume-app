@@ -10,8 +10,8 @@ import { useMapData } from '../components/Mapper/hooks/useMapData';
 import { useMapPersistence } from '../components/Mapper/hooks/useMapPersistence';
 import { useMapActions } from '../components/Mapper/hooks/useMapActions';
 import { useMapGmcphandlers } from '../components/Mapper/hooks/useMapGmcphandlers';
-import { DIRS } from '../components/Mapper/mapperUtils';
-import { MapperRoom, MapperMarker } from '../components/Mapper/mapperTypes';
+import { DIRS, getExitTargetId, getGateState } from '../components/Mapper/mapperUtils';
+import { MapperPrediction, MapperRoom, MapperMarker } from '../components/Mapper/mapperTypes';
 import { useSettingsStore } from '../stores/useSettingsStore';
 import { useModeStore } from '../stores/useModeStore';
 
@@ -42,7 +42,7 @@ interface MapperContextType {
     handleMoveConfirmed: (e?: any) => void;
     handleMoveFailure: () => void;
     preMoveRef: React.MutableRefObject<{ dir: string, targetId: string, time: number } | null>;
-    clientPredictionsRef: React.MutableRefObject<Array<{ toId: string, toX: number, toY: number, toZ: number }>>;
+    clientPredictionsRef: React.MutableRefObject<MapperPrediction[]>;
     spatialIndexRef: React.MutableRefObject<any>;
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
     serverIdIndexRef: React.MutableRefObject<Record<string, string>>;
@@ -124,7 +124,9 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // Refs
     const pendingMovesRef = useRef<{ dir: string, time: number, resolved?: boolean }[]>([]);
     const preMoveRef = useRef<{ dir: string, targetId: string, time: number } | null>(null);
-    const clientPredictionsRef = useRef<Array<{ toId: string, toX: number, toY: number, toZ: number }>>([]);
+    const clientPredictionsRef = useRef<MapperPrediction[]>([]);
+    const predictionSeqRef = useRef(0);
+    const predictionClearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const lastDetectedTerrainRef = useRef<string | null>(null);
     const discoverySourceRef = useRef<string | null>(null);
     const firstExploredAtRef = useRef<Record<string, number>>({});
@@ -184,19 +186,71 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     useEffect(() => { loadMasterMap(); }, [loadMasterMap]);
 
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const debugWindow = window as Window & {
+            __mumeMapperDebug?: () => Record<string, unknown>;
+        };
+
+        debugWindow.__mumeMapperDebug = () => {
+            const currentId = currentRoomIdRef.current;
+            const rawId = currentId?.replace(/^m_/, '') || null;
+            return {
+                currentId,
+                rawId,
+                room: currentId ? roomsRef.current[currentId] || roomsRef.current[`m_${currentId}`] || null : null,
+                preloadedRoom: rawId ? preloadedCoordsRef.current[rawId] || null : null,
+                preMove: preMoveRef.current,
+                predictions: clientPredictionsRef.current,
+                pendingMoves: pendingMovesRef.current,
+                serverMatch: rawId ? serverIdIndexRef.current[rawId] || null : null,
+                mapLoaded: hasLoadedRef.current,
+                preloadedCount: Object.keys(preloadedCoordsRef.current).length
+            };
+        };
+
+        return () => {
+            delete debugWindow.__mumeMapperDebug;
+        };
+    }, [clientPredictionsRef, currentRoomIdRef, preloadedCoordsRef, roomsRef, serverIdIndexRef]);
+
     // Actions
     const { handleAddRoom, handleDeleteRoom, handleClearMap, handleSyncLocation, handleResetAndSync } = useMapActions({
         rooms, setRooms, roomsRef, markers, setMarkers, markersRef, setExploredVnums, setExploredMarkers, setCurrentRoomId, currentRoomIdRef,
         preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, addMessage, lastDetectedTerrainRef, loadMasterMap
     });
 
-    const onRoomInfoProcessed = useCallback(() => {
+    const clearPrediction = useCallback((seq?: number) => {
+        if (seq !== undefined && clientPredictionsRef.current[0]?.seq !== seq) return;
         preMoveRef.current = null;
         if (clientPredictionsRef.current.length > 0) {
             clientPredictionsRef.current = clientPredictionsRef.current.slice(1);
             triggerRender();
         }
     }, [triggerRender]);
+
+    const onRoomInfoProcessed = useCallback(() => {
+        const prediction = clientPredictionsRef.current[0];
+        if (!prediction) {
+            preMoveRef.current = null;
+            return;
+        }
+
+        const remainingMs = Math.max(0, 450 - (Date.now() - prediction.createdAt));
+        if (predictionClearTimerRef.current) clearTimeout(predictionClearTimerRef.current);
+
+        if (remainingMs > 0) {
+            const seq = prediction.seq;
+            predictionClearTimerRef.current = setTimeout(() => {
+                predictionClearTimerRef.current = null;
+                clearPrediction(seq);
+            }, remainingMs);
+            return;
+        }
+
+        clearPrediction(prediction.seq);
+    }, [clearPrediction]);
 
     const { activeView } = useModeStore();
 
@@ -220,6 +274,10 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const handleMoveFailure = useCallback(() => {
         pendingMovesRef.current.shift();
         preMoveRef.current = null;
+        if (predictionClearTimerRef.current) {
+            clearTimeout(predictionClearTimerRef.current);
+            predictionClearTimerRef.current = null;
+        }
         clientPredictionsRef.current = [];
         triggerRender();
     }, [triggerRender]);
@@ -231,22 +289,66 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const onInfo    = (e: any) => masterHandlers.handleRoomInfo(e.detail);
         const onExits   = (e: any) => masterHandlers.handleUpdateExits(e.detail);
         const onTerrain = (e: any) => masterHandlers.handleTerrain(e.detail);
-        const onPush    = (e: any) => pushPendingMove(e.detail);
+        const onPush    = (e: any) => {
+            const dir = e.detail;
+            pushPendingMove(dir);
+
+            const currentRoomId = currentRoomIdRef.current;
+            const rooms = roomsRef.current;
+            const preloaded = preloadedCoordsRef.current;
+            if (!currentRoomId || !rooms || !preloaded) return;
+
+            const room = rooms[currentRoomId] || rooms[`m_${currentRoomId}`];
+            const rawId = currentRoomId.startsWith('m_') ? currentRoomId.substring(2) : currentRoomId;
+            const wEx = preloaded[rawId]?.[4]?.[dir];
+            const { hasExit, hasDoor, isClosed } = getGateState(room, wEx, dir, rooms, preloaded);
+            if (showDebugEchoesRef.current) {
+                addMessageRef.current?.('system', `[MapperPredict] push ${dir}: room=${currentRoomId} exit=${hasExit ? 'yes' : 'no'} door=${hasDoor ? (isClosed ? 'closed' : 'open') : 'no'}`);
+            }
+            if (!hasExit || (hasDoor && isClosed)) return;
+
+            const exA = room?.exits?.[dir] || wEx;
+            const targetId = getExitTargetId(exA);
+            if (!targetId) return;
+
+            const targetKey = String(targetId).replace(/^m_/, '');
+            const internalTargetId = serverIdIndexRef.current[targetKey] || targetKey;
+            const finalTargetId = String(internalTargetId).startsWith('m_') ? String(internalTargetId) : `m_${internalTargetId}`;
+            onPre({ detail: { dir, targetId: finalTargetId } });
+        };
         const onConfirm = (e: any) => handleMoveConfirmed(e);
         const onFail    = ()       => handleMoveFailure();
         const onPre     = (e: any) => {
             const { dir, targetId } = e.detail;
-            preMoveRef.current = { dir, targetId, time: Date.now() };
+            const createdAt = Date.now();
+            const seq = predictionSeqRef.current + 1;
+            predictionSeqRef.current = seq;
+            if (predictionClearTimerRef.current) {
+                clearTimeout(predictionClearTimerRef.current);
+                predictionClearTimerRef.current = null;
+            }
+            preMoveRef.current = { dir, targetId, time: createdAt };
+            if (showDebugEchoesRef.current) {
+                addMessageRef.current?.('system', `[MapperPredict] received ${dir} -> ${targetId}`);
+            }
 
             // Populate clientPredictionsRef with target room coords for the dotted-line preview
             const targetRoom = roomsRef.current[targetId];
             if (targetRoom) {
-                clientPredictionsRef.current = [{ toId: targetId, toX: targetRoom.x, toY: targetRoom.y, toZ: targetRoom.z }];
+                clientPredictionsRef.current = [{ toId: targetId, toX: targetRoom.x, toY: targetRoom.y, toZ: targetRoom.z, createdAt, seq }];
+                if (showDebugEchoesRef.current) {
+                    addMessageRef.current?.('system', `[MapperPredict] stored live coords ${targetRoom.x},${targetRoom.y},${targetRoom.z || 0}`);
+                }
             } else {
                 const rawVnum = targetId.startsWith('m_') ? targetId.substring(2) : targetId;
                 const coords = preloadedCoordsRef.current[rawVnum];
                 if (coords) {
-                    clientPredictionsRef.current = [{ toId: targetId, toX: coords[0], toY: coords[1], toZ: coords[2] }];
+                    clientPredictionsRef.current = [{ toId: targetId, toX: coords[0], toY: coords[1], toZ: coords[2], createdAt, seq }];
+                    if (showDebugEchoesRef.current) {
+                        addMessageRef.current?.('system', `[MapperPredict] stored map coords ${coords[0]},${coords[1]},${coords[2] || 0}`);
+                    }
+                } else if (showDebugEchoesRef.current) {
+                    addMessageRef.current?.('system', `[MapperPredict] no coords for ${targetId}`);
                 }
             }
 
@@ -271,6 +373,10 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             window.removeEventListener('mume-mapper-push-pre-move', onPre);
         };
     }, [masterHandlers, pushPendingMove, handleMoveConfirmed, handleMoveFailure, triggerRender]);
+
+    useEffect(() => () => {
+        if (predictionClearTimerRef.current) clearTimeout(predictionClearTimerRef.current);
+    }, []);
 
     const value = useMemo(() => ({
         rooms, setRooms, markers, setMarkers, currentRoomId, setCurrentRoomId,

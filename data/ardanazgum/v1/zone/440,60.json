@@ -1,0 +1,4305 @@
+[
+    {
+        "desc": "This seems like the lowest point of the mountain ranges in the vicinity. For a\nchange your lungs get a good supply of oxygen, making you feel lightheaded\nsuddenly. You find that the only direction you can go from here is west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5634"
+                ],
+                "name": "",
+                "out": [
+                    "5634"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5633",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Small Valley",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 440,
+        "y": 69,
+        "z": 0
+    },
+    {
+        "desc": "You can see a grand view from this summit; your eyes wander far to the west,\nover the foothills and the forests below; perhaps that is the Mitheithel on the\nhorizon. There is no obvious path downwards, but it is possible to negotiate a\nridge that leads toward the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5640"
+                ],
+                "name": "",
+                "out": [
+                    "5640"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "5659",
+                    "5660"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5639",
+        "light": 2,
+        "loadflags": 524288,
+        "mobflags": 0,
+        "name": "On Top of a Mountain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 440,
+        "y": 67,
+        "z": 0
+    },
+    {
+        "desc": "This is the southern most tip of the mountain top. From here you can climb down\nthe mountain pretty easily. This side of the mountain seems much safer than the\nothers. Farther south you see the range continuing as far as your eyes can see.\nThe fog that envelopes the top seems to be pretty thin, though from far you\nthought it was dense.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5639"
+                ],
+                "name": "",
+                "out": [
+                    "5639"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5635"
+                ],
+                "name": "",
+                "out": [
+                    "5635"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5640",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On Top of a Mountain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 440,
+        "y": 68,
+        "z": 0
+    },
+    {
+        "desc": "This wide shelf houses an eyrie. The nest itself is foul, covered with filth and\nrotting meat, indicating that these eagles are not kin to the noble line of\nThorondor. Perhaps when Morgoth held sway over Middle-earth while the Valar\ndwelt in Valinor, he bred such corrupt birds in mockery of the eagles of Manwe\nthat dwell upon high Taniquetil.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5659"
+                ],
+                "name": "",
+                "out": [
+                    "5659"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5641",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "An Eagle's Eyrie",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 440,
+        "y": 66,
+        "z": 0
+    },
+    {
+        "desc": "Here again the steep slope continues. There seem to be a lot of nooks and\nperches in these slopes where an ambush party could be waiting to pounce on you\nwhen you least expect it. You also seem to hear the sounds of eagles nearby,\nthough you don't see their homes. There does not seem to be a lot of places to\ngo from here except west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5657"
+                ],
+                "name": "",
+                "out": [
+                    "5657"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5656",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Steep Slope",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 443,
+        "y": 65,
+        "z": 0
+    },
+    {
+        "desc": "This narrow ledge gives a brief respite to those attempting to climb the steep\nscree-covered slope. Below, the slope is too steep to descend, as the slightest\nmisstep would send an unfortunate adventurer tumbling down to the canyon floor\nbelow. It is possible to manoeuvre east and west along the ledge, and one can\nprobably climb up as well.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5656"
+                ],
+                "name": "",
+                "out": [
+                    "5656"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5658"
+                ],
+                "name": "",
+                "out": [
+                    "5658"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "5660"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "5654"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5657",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Steep Slope",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 442,
+        "y": 65,
+        "z": 0
+    },
+    {
+        "desc": "The steep mountain side continues here from the east. There is not much of a\nhope of any way out of here but to continue the climb. The climb seems to get\nmore and more dangerous as you take each step. You regret your decision to climb\nthese slopes. You hope some of the great eagles of this region will take pity on\nyou and take you to safety but they are nowhere to be seen now.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5657"
+                ],
+                "name": "",
+                "out": [
+                    "5657"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5658",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Steep Slope",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 441,
+        "y": 65,
+        "z": 0
+    },
+    {
+        "desc": "Here the sounds of the great eagles sounds nearer. Maybe there is an eyrie\nnearby. You wonder if the evil of Sauron has touched their souls yet. The only\nhope for your mission to succeed is that they are still enemies of the one Enemy\nand will aid you. Without their help, the path through these mountains might be\ntoo difficult for you to overcome. If you do not find them, you will have to\ncontinue your trudge upwards and hope your shoes do not fail you.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5660"
+                ],
+                "name": "",
+                "out": [
+                    "5660"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5641"
+                ],
+                "name": "",
+                "out": [
+                    "5641"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "5639"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5659",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Steep Slope",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 441,
+        "y": 66,
+        "z": 0
+    },
+    {
+        "desc": "You find that at such heights, the air is very rare and your breathing has grown\ndeeper. Stories of people dying of lack of air come to mind. You shudder. Hey\nwhat was that? An eagle. ... No, it is just an illusion of your frightened mind.\nSteep slopes all around, and lots of hidden nooks. Enough to drive your crazed\nmind out through the doors into the land of paranoia. Maybe you can rest nearby\nfor a while.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5659"
+                ],
+                "name": "",
+                "out": [
+                    "5659"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "5639"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "5657"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5660",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Steep Slope",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 442,
+        "y": 66,
+        "z": 0
+    },
+    {
+        "desc": "This peak looks much the same as all the others you've climbed. The view is also\nmuch the same. The only thing really of any interest is the peak to the\nsouthwest. Higher than most of the others around here, it stands almost as a\nproud warrior of stone. Unfortunately, it appears that the slopes of it are much\ntoo steep to climb.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5692"
+                ],
+                "name": "",
+                "out": [
+                    "5692"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5688"
+                ],
+                "name": "",
+                "out": [
+                    "5688"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5690",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountain Peak",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 446,
+        "y": 60,
+        "z": 0
+    },
+    {
+        "desc": "Here there is a small hollow in the mountains, affording some protection from\nthe snow and the constant, biting winds. The mountain walls around you are grey\nand ragged, and various rocks and protuberances look as if they could come\ncrashing down at any time. Indeed, the ground around you contains the jagged\nremnants of many boulders which have done just that.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5696"
+                ],
+                "name": "",
+                "out": [
+                    "5696"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5691",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Small Depression",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 447,
+        "y": 60,
+        "z": 0
+    },
+    {
+        "desc": "More and more, you dwell on the horror stories of large stone giants that wander\ndeep in these mountains. The mountain peaks continue north and east of here.\nFrom your location low in the mountains, not much is visible here except for the\nendless ranges of stone and rock. With the trail lost, you might never find your\nway out of the mountains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5690"
+                ],
+                "name": "",
+                "out": [
+                    "5690"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17684"
+                ],
+                "name": "",
+                "out": [
+                    "17684"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5699"
+                ],
+                "name": "",
+                "out": [
+                    "5699"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5692",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Misty Mountains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 446,
+        "y": 61,
+        "z": 0
+    },
+    {
+        "desc": "As you pass by the never ending slopes and peaks of the mountains, you begin to\nlose hope of ever finding your way back to the trail you lost. While the\nmountains continue in their uninteresting fashion in all directions, you find\nthat you are only able to climb up to a close mountain peak, or north, to more\nof the same mountainous terrain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17684"
+                ],
+                "name": "",
+                "out": [
+                    "17684"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5694"
+                ],
+                "name": "",
+                "out": [
+                    "5694"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5698"
+                ],
+                "name": "",
+                "out": [
+                    "5698"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5693",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Misty Mountains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 446,
+        "y": 63,
+        "z": 0
+    },
+    {
+        "desc": "Ahead of you, a towering mountain rises steadily forward. Its peak, shrouded in\nwispy plumes of fog and mist readily fit into the monotonous scene, yet a single\nspur races towards you from which a thin curl of steam can most evidently be\nseen, causing your eye to pay attention to this behemoth mountain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5695"
+                ],
+                "name": "",
+                "out": [
+                    "5695"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "17751"
+                ],
+                "name": "",
+                "out": [
+                    "17751"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5693"
+                ],
+                "name": "",
+                "out": [
+                    "5693"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5694",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Misty Mountains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 447,
+        "y": 63,
+        "z": 0
+    },
+    {
+        "desc": "Like the tail of a huge scorpion ready to strike, the towering mountain looms\nahead. Its spur, reaches towards you guarding the higher mountain behind it. Up\nahead, the ground increases in pitch, making you bite into the ground firmly.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5696"
+                ],
+                "name": "",
+                "out": [
+                    "5696"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5694"
+                ],
+                "name": "",
+                "out": [
+                    "5694"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5695",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Near the Eastern Spur",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 447,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "The ground pitches violently upwards here, as the mountain's spur, like a thick\nmuscular root, digs into the rocky ground and shoots upwards. The thin plume of\nsteam can be seen coming from directly ahead, no doubt the only warmth in an\notherwise cold and lifeless climate.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5691"
+                ],
+                "name": "",
+                "out": [
+                    "5691"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5695"
+                ],
+                "name": "",
+                "out": [
+                    "5695"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5696",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Eastern Spur",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 447,
+        "y": 61,
+        "z": 0
+    },
+    {
+        "desc": "Even standing high on this peak of the mountains, you find yourself dwarfed\ncompared to the yet higher mountain top just north of you. Utter confusion fills\nyou when you look down. For some reason, the slope of the mountain looks\ndifferent. More and more, you feel completely lost in these mountains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17684"
+                ],
+                "name": "",
+                "out": [
+                    "17684"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5697",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountain Peak",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 445,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "Even standing high on this peak of the mountains, you find yourself dwarfed\ncompared to the yet higher mountain top just north of you. Utter confusion fills\nyou when you look down. For some reason, the slope of the mountain looks\ndifferent. More and more, you feel completely lost in these mountains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5693"
+                ],
+                "name": "",
+                "out": [
+                    "5693"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5698",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountain Peak",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 446,
+        "y": 64,
+        "z": 0
+    },
+    {
+        "desc": "High on this mountain top, you find that the air is very thin. So thin, that you\nare unable to speak. Perhaps if the weather was ever good in this region, you\nwould have a wonderous view of the surrounding mountains. As it is, however, all\nyou can see are clouds, and more clouds.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5692"
+                ],
+                "name": "",
+                "out": [
+                    "5692"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5699",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountain Peak",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 445,
+        "y": 61,
+        "z": 0
+    },
+    {
+        "desc": "The rock underfoot is unstable, but you manage to keep your balance. The valley\nin the east seems to roughly follow the line of peaks to the south-east, or you\ncan descend into the valley and then back up the side of another mountain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5795"
+                ],
+                "name": "",
+                "out": [
+                    "5795"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5748"
+                ],
+                "name": "",
+                "out": [
+                    "5748"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5775"
+                ],
+                "name": "",
+                "out": [
+                    "5775"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5774",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On a Mountainside",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 457,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "Small breaks in the snow here allow you to descend the side of the mountain if\nyou wish, or you can continue along this ridge which leads to the south east. It\nis difficult to see clearly, but you think there is a traversable valley in the\neast.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5794"
+                ],
+                "name": "",
+                "out": [
+                    "5794"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5792"
+                ],
+                "name": "",
+                "out": [
+                    "5792"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5774"
+                ],
+                "name": "",
+                "out": [
+                    "5774"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5775",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On Top of a Mountain",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 456,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "The mountain drops down to a valley in the east, or you can travel along this\nridge to the south and west. On one of the highest peaks in this range, you can\nsee for miles around, even spotting a dark forest many miles to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5782"
+                ],
+                "name": "",
+                "out": [
+                    "5782"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5772"
+                ],
+                "name": "",
+                "out": [
+                    "5772"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5776",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On Top of a Mountain",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 458,
+        "y": 64,
+        "z": 0
+    },
+    {
+        "desc": "The mountains extend in a long sinuous chain to the north-west and south-east.\nFar to the north you spot a dark line which could only be a path leading east\nand west. Closer, you can see a valley in the east following this ridge of peaks\nwhich you are travelling on.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5793"
+                ],
+                "name": "",
+                "out": [
+                    "5793"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5778"
+                ],
+                "name": "",
+                "out": [
+                    "5778"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5777",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On Top of a Mountain",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 457,
+        "y": 64,
+        "z": 0
+    },
+    {
+        "desc": "A small trail leads up the mountain to the east allowing to climb back up to the\nridge, or you can stay sheltered and travel west or south along the sides of\nthis large mountain, being careful not to stand on any loose scree which may\ncause you to fall to your death hundreds of feet below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5780"
+                ],
+                "name": "",
+                "out": [
+                    "5780"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5777"
+                ],
+                "name": "",
+                "out": [
+                    "5777"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5779"
+                ],
+                "name": "",
+                "out": [
+                    "5779"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5778",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Mountainside",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 456,
+        "y": 64,
+        "z": 0
+    },
+    {
+        "desc": "You can travel east or north, but you can see no way of climbing back up to the\ntop of the mountain from here. Rising majestically above you to both the north\nand south, the snow covered peaks make you feel very small and insignificant in\ncomparison.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5791"
+                ],
+                "name": "",
+                "out": [
+                    "5791"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5778"
+                ],
+                "name": "",
+                "out": [
+                    "5778"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5779",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Mountainside",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 455,
+        "y": 64,
+        "z": 0
+    },
+    {
+        "desc": "You can travel east or north, but you can see no way of climbing back up to the\ntop of the mountain from here. Rising majestically above you to both the north\nand south, the snow covered peaks make you feel very small and insignificant in\ncomparison.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5778"
+                ],
+                "name": "",
+                "out": [
+                    "5778"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5781"
+                ],
+                "name": "",
+                "out": [
+                    "5781"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5780",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On a Mountainside",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 456,
+        "y": 65,
+        "z": 0
+    },
+    {
+        "desc": "You can either climb back up the mountain to the east, or travel west along the\nmountainside. A large rock wall looms in the south, with a dark hole in the\nmiddle of it probably indicating the entrance to a cave.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5785"
+                ],
+                "name": "",
+                "out": [
+                    "5785"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5782"
+                ],
+                "name": "",
+                "out": [
+                    "5782"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5780"
+                ],
+                "name": "",
+                "out": [
+                    "5780"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5781",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Mountainside",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 457,
+        "y": 65,
+        "z": 0
+    },
+    {
+        "desc": "The wind here chills you to the bone, and the rocks move beneath your feet.\nBalancing precariously, you see that you can follow this ridge to the north and\neast, or you can go into the shelter of the mountainside to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5776"
+                ],
+                "name": "",
+                "out": [
+                    "5776"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5783"
+                ],
+                "name": "",
+                "out": [
+                    "5783"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5781"
+                ],
+                "name": "",
+                "out": [
+                    "5781"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5782",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On Top of a Mountain",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 458,
+        "y": 65,
+        "z": 0
+    },
+    {
+        "desc": "Standing here you are dwarfed by the size of the peak which rises in the south.\nIt looks impossibly steep for climbing, with many sharp rocks which could cut\nyour hands to shreds. You can travel west and follow the ridge of smaller peaks\nwhich snakes out to the north-west, or you can descend the mountain to a valley\nin the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "5784"
+                ],
+                "name": "",
+                "out": [
+                    "5784"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5771"
+                ],
+                "name": "",
+                "out": [
+                    "5771"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5782"
+                ],
+                "name": "",
+                "out": [
+                    "5782"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5783",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On Top of a Mountain",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 459,
+        "y": 65,
+        "z": 0
+    },
+    {
+        "desc": "This is one of the highest peaks in the area, and from here you can look all\naround and see the Misty Mountains in all their glorious splendour. To the\nnorth, the mountains slowly descend into a shallow valley, cut by a brown ribbon\nwhich must be a road, running east-west. To the south the mountains close ranks,\nforming an impassable barrier of rock, while to the east and west the mountains\ncontinue on for miles in their snow-capped, mist-wreathed splendour.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "5783"
+                ],
+                "name": "",
+                "out": [
+                    "5783"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5784",
+        "light": 2,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "A Very High Peak",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 459,
+        "y": 66,
+        "z": 0
+    },
+    {
+        "desc": "This cave has been worn from the rock by the passage of many millions of quarts\nof water. This room is lit by the light streaming in from outside, but you can\nsee that the cave extending further back into the mountain is shrouded in\ndarkness. A foul odor avails your senses as you sniff around looking to see what\nmight be living here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5781"
+                ],
+                "name": "",
+                "out": [
+                    "5781"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5786"
+                ],
+                "name": "",
+                "out": [
+                    "5786"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5788"
+                ],
+                "name": "",
+                "out": [
+                    "5788"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5785",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cave Entrance",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 457,
+        "y": 66,
+        "z": 0
+    },
+    {
+        "desc": "Shrouded in darkness the gloom here is depressing. Peering around you, you can\nsee that the cave extends to the west, or you can go back to the light in the\nnorth where the entrance is.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5785"
+                ],
+                "name": "",
+                "out": [
+                    "5785"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5787"
+                ],
+                "name": "",
+                "out": [
+                    "5787"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5786",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Back of the Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 457,
+        "y": 67,
+        "z": 0
+    },
+    {
+        "desc": "A sulfurous stench comes from the water to the south, a lake which is wreathed\nin mist. Peering into the gloom you can see the cave extending east and west,\nand the ever present sound of dripping water un-nerves you in the darkness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5788"
+                ],
+                "name": "",
+                "out": [
+                    "5788"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5800"
+                ],
+                "name": "",
+                "out": [
+                    "5800"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5786"
+                ],
+                "name": "",
+                "out": [
+                    "5786"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5790"
+                ],
+                "name": "",
+                "out": [
+                    "5790"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5787",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 456,
+        "y": 67,
+        "z": 0
+    },
+    {
+        "desc": "The constant drip..drip..drip of water puts your nerves on edge. The darkness\nall around does nothing to allay any fears you may have about the inhabitants of\nthis cave complex, and neither does the powdered bones on the floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5787"
+                ],
+                "name": "",
+                "out": [
+                    "5787"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5785"
+                ],
+                "name": "",
+                "out": [
+                    "5785"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5789"
+                ],
+                "name": "",
+                "out": [
+                    "5789"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5788",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 456,
+        "y": 66,
+        "z": 0
+    },
+    {
+        "desc": "The light in here is eerie, and you see it comes from the luminous fungi growing\nall over the walls and roof, in many shades of green, orange, red and yellow.\nObviously it is the decay of dead fungi that causes the awful stench in here. Or\nis it... unidentifiable remains lie scattered about the floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5790"
+                ],
+                "name": "",
+                "out": [
+                    "5790"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5788"
+                ],
+                "name": "",
+                "out": [
+                    "5788"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5789",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Smelly Corner",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 455,
+        "y": 66,
+        "z": 0
+    },
+    {
+        "desc": "A foul stench comes from the water to the south, and the steam rising from it\nhas a sulfurous smell. You spot a glimmer of surreal light from the north, but\nto the east all you can see is the ever present, all pervading darkness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5789"
+                ],
+                "name": "",
+                "out": [
+                    "5789"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5802"
+                ],
+                "name": "",
+                "out": [
+                    "5802"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5787"
+                ],
+                "name": "",
+                "out": [
+                    "5787"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5790",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Dark Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 455,
+        "y": 67,
+        "z": 0
+    },
+    {
+        "desc": "Ahh, at last, some shelter from the wind. Although the sides of this mountain\nare rather slippery, you don't have too much trouble keeping your footing. You\ncan travel further south, or climb back up to the mountain top.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5779"
+                ],
+                "name": "",
+                "out": [
+                    "5779"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5792"
+                ],
+                "name": "",
+                "out": [
+                    "5792"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5791",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Mountainside",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 455,
+        "y": 63,
+        "z": 0
+    },
+    {
+        "desc": "Mountains, mountains and more mountains. If they weren't so beautiful, I guess\nyou would be getting sick of them by now. Standing on the peak of this one, you\nhave an excellent view all around. You can follow this trail along the peaks\nnorth or east. To the west you can descend a little to the side of the mountain\nto get some shelter from the harsh winds.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5775"
+                ],
+                "name": "",
+                "out": [
+                    "5775"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5793"
+                ],
+                "name": "",
+                "out": [
+                    "5793"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5791"
+                ],
+                "name": "",
+                "out": [
+                    "5791"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5792",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On Top of a Mountain",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 456,
+        "y": 63,
+        "z": 0
+    },
+    {
+        "desc": "The ridge of peaks along which you are walking extends further to the south and\nwest. You can descend the mountain to the east, but then you would not be able\nto see these mountains in their full magnificence. You spot a valley in the east\nfollowing roughly the same direction as the ridge you are on.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5777"
+                ],
+                "name": "",
+                "out": [
+                    "5777"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5773"
+                ],
+                "name": "",
+                "out": [
+                    "5773"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5792"
+                ],
+                "name": "",
+                "out": [
+                    "5792"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5793",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On Top of a Mountain",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 457,
+        "y": 63,
+        "z": 0
+    },
+    {
+        "desc": "The mist-shrouded water moves gently around you. Strange sounds are echoed and\namplified, distorted beyond recognition by the vast chamber in which this lake\nsits. The water smells foul, the stench of sulfur and decay ever-present in your\npoor nostrils. The lake extends to the south and west. You can also climb back\nto the cave in the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5787"
+                ],
+                "name": "",
+                "out": [
+                    "5787"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5801"
+                ],
+                "name": "",
+                "out": [
+                    "5801"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5802"
+                ],
+                "name": "",
+                "out": [
+                    "5802"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5800",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Steaming Lake",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 456,
+        "y": 68,
+        "z": 0
+    },
+    {
+        "desc": "You are gently rocked by ripples on the surface of this underground lake. Mist\nand foul-smelling gases rise from the surface of the water, seemingly reaching\nfor your throat, trying to tear your lungs from your body. The lake extends to\nthe north. In the west you see a low island jutting above the water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5800"
+                ],
+                "name": "",
+                "out": [
+                    "5800"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5803"
+                ],
+                "name": "",
+                "out": [
+                    "5803"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5801",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Steaming Lake",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 456,
+        "y": 69,
+        "z": 0
+    },
+    {
+        "desc": "Ripples bounce backward and forward from the shore. The mist quickly rises up to\nwrap itself around your throat, and you can almost feel it trying to strangle\nyou. The lake extends east, and to the south you spot a low island jutting above\nthe surface.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5790"
+                ],
+                "name": "",
+                "out": [
+                    "5790"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5803"
+                ],
+                "name": "",
+                "out": [
+                    "5803"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5800"
+                ],
+                "name": "",
+                "out": [
+                    "5800"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5802",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Steaming Lake",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 455,
+        "y": 68,
+        "z": 0
+    },
+    {
+        "desc": "This rocky island must be where the inhabitants of the caves kept their most\nprecious possessions, for in the middle of the island sits a very heavy stone\nchest with a very sturdy lock on it. The passage of many feet has worn the\nsurface of the rock smooth, and the island is just high enough to prevent the\nmist covering it. Looking around, you see the lake to the east and north is\ncovered with mist, making you feel truly isolated here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5802"
+                ],
+                "name": "",
+                "out": [
+                    "5802"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5801"
+                ],
+                "name": "",
+                "out": [
+                    "5801"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5803",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "Rocky Island",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 455,
+        "y": 69,
+        "z": 0
+    },
+    {
+        "desc": "Here the gully bends to the east and north. You can spot no way to climb up the\nmountainside from here, and so you must follow the crude path along the bottom\nof this depression to wherever it may take you.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6147"
+                ],
+                "name": "",
+                "out": [
+                    "6147"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6149"
+                ],
+                "name": "",
+                "out": [
+                    "6149"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6148",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In a Deep Gully",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 452,
+        "y": 60,
+        "z": 0
+    },
+    {
+        "desc": "The ditch bends to the west and south here, and to the south you spot a large\npile of rocks seeming to block off any further progress. To the west you can see\nthat the gully makes another bend to the north again. You can see no way of\nclimbing the mountain from here, so for better or worse you must follow the path\nyou are on.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6151"
+                ],
+                "name": "",
+                "out": [
+                    "6151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6148"
+                ],
+                "name": "",
+                "out": [
+                    "6148"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6149",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In a Deep Gully",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 453,
+        "y": 60,
+        "z": 0
+    },
+    {
+        "desc": "A large rockfall here has sealed off any progress further south, and the pile is\ntoo large for you to climb across. However, on close inspection you see that\nthere is something not quite right about the way the rocks are arranged against\neach other, and it looks like it may be possible to move the large rock on the\nwestern side without causing the rest to crash down and bury you in debris.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6151"
+                ],
+                "name": "",
+                "out": [
+                    "6151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6150",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rockfall",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 453,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "As you pick your way carefully through the various sizes of rocks strewn about\nthe floor of the gully, you spot a pile of rocks to the south, but there is\nsomething rather suspicious about the way they are sitting, you feel that there\nis something not entirely natural about them. You can travel north or south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6149"
+                ],
+                "name": "",
+                "out": [
+                    "6149"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6150"
+                ],
+                "name": "",
+                "out": [
+                    "6150"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6151",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In a Deep Gully",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 453,
+        "y": 61,
+        "z": 0
+    },
+    {
+        "desc": "As you have grown accustomed to, in these dull mountains, everything seems\nbland. Everything, that is, except for the high peak just north of you. Although\nyou cannot seem to go either east nor west, you can follow the mountains both\nnorth and south. In addition, you can climb a slope up to a mountain top.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5692"
+                ],
+                "name": "",
+                "out": [
+                    "5692"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5693"
+                ],
+                "name": "",
+                "out": [
+                    "5693"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5697"
+                ],
+                "name": "",
+                "out": [
+                    "5697"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17684",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Misty Mountains",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 446,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "This is a simply constructed cabin, yet it looks solid enough to withstand\nweather and wind. There is one window each on the northern and southern walls. A\ndoor to the west seems to be the cabin's only exit aside from a trapdoor of\nsolid-looking wood in the floor. An old rug lies on the floor in the centre of\nthe room, covered in dust and dirt. An old burnt-out lantern is standing on a\nsmall table next to a bed. The bed itself is tipped over, and its mattress and\ncover lie discarded in a corner, gathering dust and mould.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17752"
+                ],
+                "name": "",
+                "out": [
+                    "17752"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "5694"
+                ],
+                "name": "",
+                "out": [
+                    "5694"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "17753"
+                ],
+                "name": "",
+                "out": [
+                    "17753"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17751",
+        "light": 1,
+        "loadflags": 2,
+        "mobflags": 0,
+        "name": "An Abandoned Mountain Cabin",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 448,
+        "y": 63,
+        "z": 0
+    },
+    {
+        "desc": "There is a small cabinet in one of the corners. A small wooden table has been\nplaced between two shelves. Some cutlery and old, dirty plates lie covered in\ndust on the floor. Mouldy groceries have been left to rot on the shelves. The\ntight space opens into a main room to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17751"
+                ],
+                "name": "",
+                "out": [
+                    "17751"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17752",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Storage Room",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 448,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "The cellar is in complete disarray. Bookshelves cover the walls on all sides.\nThe books, pamphlets, scrolls and parchments that once stood on said shelves lie\nscattered on the floor. An old lantern lies in pieces on the ground. Another\nlantern, unlit and its glass cracked, hangs from the ceiling. Several simple\nchests stand along the walls, their locks broken or lids smashed, and their\ncontents apparently looted. A small, unsteady staircase leads up to another room\nabove.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "17751"
+                ],
+                "name": "",
+                "out": [
+                    "17751"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17753",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Underground Study",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 448,
+        "y": 64,
+        "z": 0
+    }
+]

@@ -1,0 +1,2209 @@
+[
+    {
+        "desc": "This tunnel, once crafted with skill and persistence by the Dwarves, is now\nabandoned. Once the tunnel was swarming with busy miners transporting minerals\nfound on the lower levels. The air is thick with dust and cobwebs here, making\nbreathing tiresome and your throat dry. In a corner you see a heap of broken\ntools and oily rags, presumably left when the mine was abandoned.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "9686"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9683"
+                ],
+                "name": "",
+                "out": [
+                    "9683"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9685",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dirty Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 340,
+        "y": 199,
+        "z": 0
+    },
+    {
+        "desc": "This wooden lift is no work of great craftsmanship. The maker of the lift can\nnot have had much skill with wood, and the well-worn planks forming the floor\nhave not been maintained in years. The sound of creaking beneath your weight is\nnot enough to cause alarm though, as the planks are made of oak strong and thick\nenough to last. On the western and southern sides of the lift are openings in\nthe six foot fence through which to leave the lift. On its eastern side is a\nsmall but noticeable metal socket.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "9685"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "9677"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9686",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Inside a Wooden Lift",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 340,
+        "y": 198,
+        "z": 0
+    },
+    {
+        "desc": "Holes about a foot in diameter dot this area, littering the ground with small\ndepressions that are impossible to see without the observer being right beside\nthem. A traveller on foot would not have much trouble, but riders might find\ntheir mounts stumbling. The grass is over a foot long, giving good grazing to\nwild animals in the area.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10250"
+                ],
+                "name": "",
+                "out": [
+                    "10250"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10242"
+                ],
+                "name": "",
+                "out": [
+                    "10242"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10240"
+                ],
+                "name": "",
+                "out": [
+                    "10240"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10241",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Fertile Downs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 340,
+        "y": 182,
+        "z": 0
+    },
+    {
+        "desc": "Dips and rises in the surrounding plains make it easy to see for long distances,\nbut it can be difficult to determine exactly what will be on the other side of\nan individual rise. Wild grasses and patches of flowers grow abundantly on every\navailable patch of ground. Not a stone or rock can be seen to mar the almost\ntotal swath of vegetation.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10251"
+                ],
+                "name": "",
+                "out": [
+                    "10251"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10243"
+                ],
+                "name": "",
+                "out": [
+                    "10243"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10241"
+                ],
+                "name": "",
+                "out": [
+                    "10241"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10242",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Green Downs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 341,
+        "y": 182,
+        "z": 0
+    },
+    {
+        "desc": "While mostly flat, small dips and rises can be seen in the surrounding\nlandscape. A healthy layer of grass covers everything, as if reluctant to let\nother types of vegetation grow in the fertile soil. The bright blooms of flowers\nmake patches of colour against the otherwise green ground. The air is fresh\nhere, free from the confusing mixture of smells that herald civilization.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10252"
+                ],
+                "name": "",
+                "out": [
+                    "10252"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10242"
+                ],
+                "name": "",
+                "out": [
+                    "10242"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10243",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Green Downs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 342,
+        "y": 182,
+        "z": 0
+    },
+    {
+        "desc": "The small amount of rise and fall the ground has here makes for a complacent\nview, when mixed with the grass blowing in the wind. Thick and verdant grass\ncovers every inch of available soil, with wild flowers poking through in small\npatches.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10255"
+                ],
+                "name": "",
+                "out": [
+                    "10255"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10241"
+                ],
+                "name": "",
+                "out": [
+                    "10241"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10251"
+                ],
+                "name": "",
+                "out": [
+                    "10251"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10249"
+                ],
+                "name": "",
+                "out": [
+                    "10249"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10250",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Downs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 340,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "The land is made up of a series of small, grassy rises spaced unevenly apart.\nNone of those rises are large enough to be considered to be a hill, but make it\nimpossible to see for any distance unless the observer is standing atop one.\nGrasses dominate the tops of the rises, with patches of flowers taking shelter\nalong the gentle slopes. The small valleys created have small shrubs in them\nwhich are too small to impede any traveller's progress.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10254"
+                ],
+                "name": "",
+                "out": [
+                    "10254"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10242"
+                ],
+                "name": "",
+                "out": [
+                    "10242"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10252"
+                ],
+                "name": "",
+                "out": [
+                    "10252"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10250"
+                ],
+                "name": "",
+                "out": [
+                    "10250"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10251",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Fertile Green Downs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 341,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "Long slopes and valleys, none of which are more than the height of a man,\nstretch on for miles in every direction. The ground is covered with a thick\nlayer of grass, which is soft and springy to tread on. No flowers or shrubs grow\nhere, as there is little protection from the elements. Small holes dot the area,\nperhaps the homes of foxes or woodchucks.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10253"
+                ],
+                "name": "",
+                "out": [
+                    "10253"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10243"
+                ],
+                "name": "",
+                "out": [
+                    "10243"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10251"
+                ],
+                "name": "",
+                "out": [
+                    "10251"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10252",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wide Downs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 342,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "The ground is mostly flat here, making it possible to see for miles in every\ndirection. Wild grasses are plentiful, covering every inch of landscape with a\nthick carpet of green. Bushes grow sparsely, with little to shield them from the\nwind in this wide open area.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10262"
+                ],
+                "name": "",
+                "out": [
+                    "10262"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10252"
+                ],
+                "name": "",
+                "out": [
+                    "10252"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10254"
+                ],
+                "name": "",
+                "out": [
+                    "10254"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10253",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Green Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 342,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "The ground is flat and covered in grass. In some places, the vegetation has been\ntrampled flat by many feet. There may be herds which use this area for pasture.\nMany piles of dung lie in the trampled area, left by previous four- legged\nvisitors. Most of the tracks appear to come from and leave to the west, making a\nbroad path. There might be something of interest to a herd in that direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "10265"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10251"
+                ],
+                "name": "",
+                "out": [
+                    "10251"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10253"
+                ],
+                "name": "",
+                "out": [
+                    "10253"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "10255"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10254",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Green Fertile Pasture",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 341,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "The main focus of the land in this area seems to be a large pond which has most\nlikely seen cleaner days. Hoofprints have torn up all of the grass around it,\nand manure covers much of the area. Despite all of that, the water appears to be\ndrinkable. The grass for hundreds of yards around the water has been stripped to\nthe ground, eaten by the animals which come to water here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10266"
+                ],
+                "name": "",
+                "out": [
+                    "10266"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10250"
+                ],
+                "name": "",
+                "out": [
+                    "10250"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                    "10254"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10256"
+                ],
+                "name": "",
+                "out": [
+                    "10256"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10255",
+        "light": 2,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "The Watering Hole",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 340,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "This is an entrance to a narrow crooked path that provides passage between the\nsteep inclines of the Misty Mountains. Scars can be seen along the walls of the\npassage, where the rock was painfully chiselled away. The pass appears to be\nageless, cut from solid granite and shielded from environmental weathering by\nthe towering mountains. However, crusty remains of tools and shifts in the\nmountain itself indicate the passage is hundreds if not thousands of years old.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "ancientslab",
+                "out": [
+                    "9474"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14703"
+                ],
+                "name": "",
+                "out": [
+                    "14703"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23063"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14702",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mouth of a Mountain Pass",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 354,
+        "y": 186,
+        "z": 0
+    },
+    {
+        "desc": "Embedded deep into the granite mountain, the pass continues both west and south.\nA sheer cliff lies to the east while to the north the mountain wall blocks the\nscenery and access to the valley floor. While much effort and care went into\nconstruction of the passage, how it came to be is indeterminable.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14704"
+                ],
+                "name": "",
+                "out": [
+                    "14704"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1025,
+                "in": [
+                    "14711"
+                ],
+                "name": "",
+                "out": [
+                    "14711"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14702"
+                ],
+                "name": "",
+                "out": [
+                    "14702"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14703",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountain Pass",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 355,
+        "y": 186,
+        "z": 0
+    },
+    {
+        "desc": "This pass, on the fringes of the Misty Mountains, is narrow and crooked. To the\neast, both north and south, the mountains continue, blocking much of your\nvision, while to the southwest the region where the mountains turn to plains is\nvisible. The pass itself is embedded deep into the rock for each step was\npainfully chiselled into the rough terrain. While the exact age of the pass is\nunknown, it appears to predate the flight of people, now known as Dunlendings,\nwho chose to settle the area now known as Bree.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14703"
+                ],
+                "name": "",
+                "out": [
+                    "14703"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14705"
+                ],
+                "name": "",
+                "out": [
+                    "14705"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14704",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountain Pass",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 355,
+        "y": 187,
+        "z": 0
+    },
+    {
+        "desc": "Cut deep into the granite rock, the narrow passage winds its way through the\nMisty Mountains. All around the mountains loom above blocking much of your\nvision of the surrounding terrain. To the east the pass approaches a large\ncrater while to the west the pass continues as it winds through the mountains\nand later to the base of an ancient forest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1033,
+                "in": [
+                    "14711"
+                ],
+                "name": "",
+                "out": [
+                    "14711"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14706"
+                ],
+                "name": "",
+                "out": [
+                    "14706"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14704"
+                ],
+                "name": "",
+                "out": [
+                    "14704"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14705",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountain Pass",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 356,
+        "y": 187,
+        "z": 0
+    },
+    {
+        "desc": "Some thirty feet deep, the crater is largely formed of granite sprinkled with a\nfew glistening pieces of silicate. While the exact origin of the crater can not\nbe determined, it was clearly created by an internal force pushing out towards\nthe surface. Yet the granite rock contains little evidence of being exposed to\nextreme heat, indicating that the crater was not caused by volcanic activity.\nThe bottom of the crater contains a large lake which appears to absorb all light\ngiving it a silky black appearance.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1033,
+                "in": [
+                    "14712"
+                ],
+                "name": "",
+                "out": [
+                    "14712"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "14705"
+                ],
+                "name": "",
+                "out": [
+                    "14705"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14707"
+                ],
+                "name": "",
+                "out": [
+                    "14707"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14706",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Craggy Crater",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 357,
+        "y": 187,
+        "z": 0
+    },
+    {
+        "desc": "The lake is very dark, almost like a black pearl. While the surface is very\nstill, a slight undertow can be felt. A small ripple here and there gives an\nimpression of something swimming across these dark waters.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14706"
+                ],
+                "name": "",
+                "out": [
+                    "14706"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14708"
+                ],
+                "name": "",
+                "out": [
+                    "14708"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14707",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Dark Lake",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 357,
+        "y": 188,
+        "z": 0
+    },
+    {
+        "desc": "You have entered a large underwater cavern. A strong current flows over the\nmuddy bottom towards the east causing the water to turn a murky brown which\nmakes it difficult to see your surroundings.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14709"
+                ],
+                "name": "",
+                "out": [
+                    "14709"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14719"
+                ],
+                "name": "",
+                "out": [
+                    "14719"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14718"
+                ],
+                "name": "",
+                "out": [
+                    "14718"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14707"
+                ],
+                "name": "",
+                "out": [
+                    "14707"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14708",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underwater Cavern",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 357,
+        "y": 189,
+        "z": 0
+    },
+    {
+        "desc": "This chamber is narrower towards the east but begins to widen towards the north\nand west. The walls are very smooth, almost unnaturally smooth. The chamber is\ncompletely empty and the floor is hard rock. There is a very strong current\ntowards the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14708"
+                ],
+                "name": "",
+                "out": [
+                    "14708"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14720"
+                ],
+                "name": "",
+                "out": [
+                    "14720"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14710"
+                ],
+                "name": "",
+                "out": [
+                    "14710"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14709",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underwater Cavern",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 357,
+        "y": 190,
+        "z": 0
+    },
+    {
+        "desc": "This is a very large submerged cavern with a low ragged roof. While there is an\nobvious exit towards the east, a faint westerly current can be felt. There are\nmany small rocks scattered across the uneven floor of the cavern.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14709"
+                ],
+                "name": "",
+                "out": [
+                    "14709"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14710",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underwater Cavern",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 356,
+        "y": 190,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14705"
+                ],
+                "name": "",
+                "out": [
+                    "14705"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14703"
+                ],
+                "name": "",
+                "out": [
+                    "14703"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14711",
+        "light": 1,
+        "loadflags": 16777216,
+        "mobflags": 0,
+        "name": "",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 356,
+        "y": 186,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14706"
+                ],
+                "name": "",
+                "out": [
+                    "14706"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14712",
+        "light": 1,
+        "loadflags": 16777216,
+        "mobflags": 0,
+        "name": "",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 358,
+        "y": 187,
+        "z": 0
+    },
+    {
+        "desc": "The cavern comes to a sudden end forming a small underwater room. The water has\ncome to a standstill, leaving the sandy bottom undisturbed. There is a number of\nneatly arranged small rocks in the far corner forming what could be a small nest\nof some sort.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14708"
+                ],
+                "name": "",
+                "out": [
+                    "14708"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14718",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underwater Cavern",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 356,
+        "y": 189,
+        "z": 0
+    },
+    {
+        "desc": "This is a very small cavern. The walls are ragged with sharp outcroppings while\nthe bottom is covered with soft clay that lies beneath a layer of silt which has\na murky appearance. From the pattern of the silt it is evident that there is a\nstrong current flowing southward.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14720"
+                ],
+                "name": "",
+                "out": [
+                    "14720"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14708"
+                ],
+                "name": "",
+                "out": [
+                    "14708"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14719",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underwater Cavern",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 358,
+        "y": 189,
+        "z": 0
+    },
+    {
+        "desc": "Oddly, the water whips around this small cavern forming a small whirlpool which,\nthrough the passage of time, has worn the walls smooth. The ground is littered\nwith small stones and a few larger rocks. There is a thin layer of soft silt\ncovering the hard bottom, much of it collected by and pushed through the hole at\nthe bottom where the water flows out.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14719"
+                ],
+                "name": "",
+                "out": [
+                    "14719"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14709"
+                ],
+                "name": "",
+                "out": [
+                    "14709"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14721"
+                ],
+                "name": "",
+                "out": [
+                    "14721"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14720",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Underwater Cavern",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 358,
+        "y": 190,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "14702"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23063",
+        "light": 0,
+        "loadflags": 16777216,
+        "mobflags": 0,
+        "name": "",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 1,
+        "x": 353,
+        "y": 186,
+        "z": 0
+    }
+]

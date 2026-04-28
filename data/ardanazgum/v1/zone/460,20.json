@@ -1,0 +1,495 @@
+[
+    {
+        "desc": "You go on, and soon you feel lost. You make a turn and walk back, looking for\nthe path you left. You are pretty sure that you are walking the exact same route\nthat lead you to this place. Still, the area you are in seems unfamiliar. There\nis no sign of the path. Did you take the wrong turn somewhere? Hmm. The way back\nto he path must be around the hill east of here. It has to be.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "6036"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "14731"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14730",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Soon Lost",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 460,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "You were wrong! You find no path. You are far away from it and lost. Your only\noption is to walk on. So you do, firmly believing that you have to run into a\npath eventually.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "14730"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "14732"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14731",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 461,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "You walk a while. The hope of finding the path grows smaller. You are far and\ndeep into the Mountains. Snow covers the ground, and there is a strong wind.\nSnow drifts away by the wind, making the outlines of the landscape blurry. The\nwind is cold! Your cheeks are aching. You go at a good pace; your body and feet\nare still warm.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "14733"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "14731"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14732",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 461,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "You have no idea of where you are. Your range of vision is very limited. The\nwind is very strong. Snow is drifting in the wind at great speed. Tiny ice\ncrystals constantly bombard your face. It feels like someone pricks your face\nwith hundreds of small needles every second. You can barely see anything; you\nare forced to keep your eyes closed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14734"
+                ],
+                "name": "",
+                "out": [
+                    "14734"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "14732"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14733",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Lost in a Blizzard",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 462,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "The wind makes walking very troublesome. At times you have to sit down, or else\nyou would be blown away. The ground is still covered by snow. It is dry and\nhard, almost like ice, polished by days of strong wind. Your strength drains\nrapidly. If you do not find any shelter quickly, you risk severe frostbite.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14733"
+                ],
+                "name": "",
+                "out": [
+                    "14733"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "14735"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14734",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Lost in a Blizzard",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 462,
+        "y": 37,
+        "z": 0
+    },
+    {
+        "desc": "You can't go any further in these extreme weather conditions. Your face already\nsuffers from frostbite. It's numb with cold. So are your fingers. Some you can't\nmove. For a while, they have had a deep purple colour and aching. Now they feel\nwarm, but large areas are of a white colour, and small black spots appear. You\ndoubt that is a good sign. It really is very cold, it's not only the wind making\nit feel like it. The snow is dry and crispy, squeaking beneath your feet. Any\nliquid from your mouth, nose or eyes freezes instantly, and even breathing is\ntroublesome. You'll have to find shelter fast. These conditions might kill you\nwithin the end of the day, no matter how hard you struggle against them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "14734"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14735",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Very Cold Place",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 463,
+        "y": 37,
+        "z": 0
+    }
+]

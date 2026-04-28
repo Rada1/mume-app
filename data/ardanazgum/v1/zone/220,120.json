@@ -1,0 +1,166 @@
+[
+    {
+        "desc": "The heat in this room is intense, as the fires appear to be constantly stoked. A\nlarge forge has been built into the west wall. By its appearance it looks to be\nwell used. A large anvil, seemingly made of mithril, resides in the centre of\nthis chamber. Shelves line the the remaining walls, items stacked upon them in\nchaos, as if they had been placed there in great haste. The ceiling is black\nwith soot and the floor is covered in metal shavings.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23006"
+                ],
+                "name": "",
+                "out": [
+                    "23006"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23008",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Burk's Forge",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 237,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "Concealed behind silky curtains is this cosy, chamber filled with soft pillows\nand furs. Various small scented candles and incense burn slowly giving the room\nan exotic combination of dancing shadows and elegant aromas. Clearly the intent\nhere was to create an atmosphere that makes one yearn for physical satisfaction.\nPictures of beautiful females, rather scantly dressed, can be seen on the walls.\nXile, the master of this house, clearly has a taste for every race, from\ngraceful elves and beautiful women to even a bearded but enticing-looking dwarf.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22939"
+                ],
+                "name": "",
+                "out": [
+                    "22939"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23011",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "House of Ill fame",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 238,
+        "y": 120,
+        "z": 0
+    }
+]

@@ -130,11 +130,14 @@
 
 /* Specific override for when it's inside the MapperCluster gutter */
 .mobile-tactical-buttons-persistent {
+    position: relative;
     padding: 0 4px;
-    z-index: 2600;
+    z-index: 20;
+    overflow: visible;
 }
 
 .mobile-tactical-buttons-persistent .line-cluster {
+    position: relative;
     flex-direction: row !important;
     width: fit-content !important;
     justify-content: center !important;
@@ -147,6 +150,8 @@
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
     backdrop-filter: none !important;
+    overflow: visible !important;
+    z-index: 1;
 }
 
 .mobile-tactical-buttons-persistent .line-cluster .custom-btn {
@@ -181,6 +186,6 @@
 .mobile-bottom-gutter .line-cluster .custom-btn:active,
 .mobile-bottom-gutter .line-cluster .custom-btn.is-swiping {
     transform: rotate(45deg) scale(2.0) !important;
-    z-index: 100 !important;
+    z-index: 30 !important;
     transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
 }

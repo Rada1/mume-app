@@ -1,0 +1,333 @@
+[
+    {
+        "desc": "You are standing in a magnificent hall, the walls are filled with all sorts of\nthings collected from near and far. To the east there is a sturdy oakdoor which\nleads out from this home, south of here there is another chamber.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12403"
+                ],
+                "name": "",
+                "out": [
+                    "12403"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "14889"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12230",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Entrance",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 19,
+        "y": 41,
+        "z": 0
+    },
+    {
+        "desc": "The walls of this chamber are very smooth and if it wasnt already known there\nwould almost not be any way of telling this is a chamber dug out of the stone.\nThe floor is made of marble and is very carefully polished almost making it\npossible to see reflections in it. To the west a velved passage leads into a\nsmall back-chamber which probably is the bed chamber of the owner of this\nbeautyful home. North of here is an entrance hall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12230"
+                ],
+                "name": "",
+                "out": [
+                    "12230"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12404"
+                ],
+                "name": "",
+                "out": [
+                    "12404"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12403",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "An Inner Chamber",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 19,
+        "y": 42,
+        "z": 0
+    },
+    {
+        "desc": "This bed chamber is has a very relaxing atmosphere, along one wall there is a\nmagnificent bed made out of sturdy oak-wood and over it is lays a bedspread made\nout of the finest furs. Several very interesting metal pieces and other trophies\nare hanging from the walls and standing in the corners, the owner of this home\nmust be out of the ordinary, even for being a dwarf.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12403"
+                ],
+                "name": "",
+                "out": [
+                    "12403"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12404",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Cosy Bed Chamber",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 18,
+        "y": 42,
+        "z": 0
+    },
+    {
+        "desc": "In the rough cut walls small sparkles of silver reflect the light comming from\nthe large hall to the north. A huge wooden desk, with a silver plated top, is\nplaced in the center of the hall. An unfinished picture of mining equipment is\nplaced on the desk. Cabinets and racks with bound sheets of paper are placed\nalong the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14905"
+                ],
+                "name": "",
+                "out": [
+                    "14905"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14906",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Kibilgundu",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 16,
+        "y": 40,
+        "z": 0
+    }
+]

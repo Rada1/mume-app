@@ -1,0 +1,419 @@
+[
+    {
+        "desc": "You are in the eastern part of the dwarven mines bearing closer to the east side\nof the mountain. The rumbling sound of rock giving way to the dwarven pickaxes\nechoes through the mine. Into the eastern wall a tunnel passes under an arch of\ncoal-black rock, widening slightly ahead.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23044"
+                ],
+                "name": "",
+                "out": [
+                    "23044"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23043",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dwarven Mine",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -14,
+        "y": 64,
+        "z": 0
+    },
+    {
+        "desc": "A narrow ceiling soars upwards carried by strong beams of oak reaching from wall\nto wall. The wood seems more decorative than functional as the sturdy rock could\neasily support itself. The walls, straight and tall, mauled from the rock of the\nmountain, rise high reaching to conjoin with the ceiling, more than at the\nheight of three men from the ground. In the northern wall there is a large\nniche.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23046"
+                ],
+                "name": "",
+                "out": [
+                    "23046"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23045"
+                ],
+                "name": "",
+                "out": [
+                    "23045"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23043"
+                ],
+                "name": "",
+                "out": [
+                    "23043"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23044",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Narrow Hall",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": -13,
+        "y": 64,
+        "z": 0
+    },
+    {
+        "desc": "The chamber, cut into the hard mountain rock, shows signs of recent digging in\nan attempt to enlarge it. The work appears to have been finished recently and\nthe chamber now acts as a storage space. Broad wooden shelves mounted on the\nsurrounding walls serve as a holding area for food and other goods.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23044"
+                ],
+                "name": "",
+                "out": [
+                    "23044"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23045",
+        "light": 0,
+        "loadflags": 6,
+        "mobflags": 0,
+        "name": "Storage Chamber",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": -12,
+        "y": 64,
+        "z": 0
+    },
+    {
+        "desc": "The cavern winds its smoothly curving walls around a stairway leading upwards in\nthe centre. A coal-black rock floor serves as a steadfast foundation for the\nascending stairway. Near the roof of the cavern is a wooden platform stretched\nfrom wall to wall. The ringing sound of metal forcing its strength upon hard\nrock can be heard in the distance.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23044"
+                ],
+                "name": "",
+                "out": [
+                    "23044"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23047"
+                ],
+                "name": "",
+                "out": [
+                    "23047"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23046",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Circular Cavern",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": -13,
+        "y": 65,
+        "z": 0
+    },
+    {
+        "desc": "Strong oak planks span across a cavern some fifteen feet below. The platform\neasily carries more than a dozen men in full armour, yet it seems that there is\nmore to this construction than meets the eye. The roof of grey rock, chiselled\nwith the utmost care, casts dull shadows on the platform. In the centre of the\nplatform is a rectangular hole, large enough for three dwarves to descend at\nonce.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "12401"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23046"
+                ],
+                "name": "",
+                "out": [
+                    "23046"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23047",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wooden Platform",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -12,
+        "y": 65,
+        "z": 0
+    }
+]

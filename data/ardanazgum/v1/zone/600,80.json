@@ -1,0 +1,2191 @@
+[
+    {
+        "desc": "Silk strands dangle from the ceiling of a smooth-walled tunnel. Aged, grey husks\nof butterflies hang from tightly-woven webs. One of these hapless creatures\nseems to have escaped from one web only to get caught in another, telltale\nstrands trailing back to its penultimate snare on the opposite side of the\ntunnel. The roof rises abruptly to the east, expanding into a vast and murky\ncavern.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "18654"
+                ],
+                "name": "",
+                "out": [
+                    "18654"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18652"
+                ],
+                "name": "",
+                "out": [
+                    "18652"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18653",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 32768,
+        "name": "Sticky Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 604,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "An enormous chamber cuts into the rock, its lofty ceiling soaring dozens of\nyards above the rocky floor. Great spiralling webs interweave in irregular\npatterns: old, dusty silk yields to new, sticky filaments. The floor is\nblanketed in fallen strands that absorb the echoes one might otherwise expect in\na cavern of this size. A patch of fresh-looking webs stretch across a large hole\nin the floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18655"
+                ],
+                "name": "",
+                "out": [
+                    "18655"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18653"
+                ],
+                "name": "",
+                "out": [
+                    "18653"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18656"
+                ],
+                "name": "",
+                "out": [
+                    "18656"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18654",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 32768,
+        "name": "Vast, Webbed Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 605,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "A giant, sprawling web covers the ceiling of the eastern end of a spacious\nchamber. Some of the strands hang to the floor, where they may clearly be seen\nto be the thickness of a slender rope. Immense cocoons dangle from the web,\ntelling the harrowing tale of a creature capable of snagging such impressive\nprey. Where the eastern wall of the chamber meets the ceiling, there is a dark\ntunnel that leads upward.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18654"
+                ],
+                "name": "",
+                "out": [
+                    "18654"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "18693"
+                ],
+                "name": "",
+                "out": [
+                    "18693"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18655",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Vast, Webbed Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 606,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "A rough tunnel zigs and zags as it slopes away from a vast chamber that lies\nabove it. Sticky spiders' weavings span the tunnel. The walls are rough and\ngritty, made of grey-and-black speckled granite. The floor is covered in dusty\nclumps of silk.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18691"
+                ],
+                "name": "",
+                "out": [
+                    "18691"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18654"
+                ],
+                "name": "",
+                "out": [
+                    "18654"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18656",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Webbed Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 605,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "This broad cavern is littered with the bones of small creatures. Spatters of\nblood stain the floor in dark brown patches. Quartz crystals bulge from the\nceiling, and shattered pieces glitter on the floor. The cave climbs gently\ntoward an opening to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18682"
+                ],
+                "name": "",
+                "out": [
+                    "18682"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18678"
+                ],
+                "name": "",
+                "out": [
+                    "18678"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18681",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Spacious Den",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 612,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "A bed of leafy branches and tufts of grass sits in a dark corner of a cave,\nhidden beneath a granite overhang. Several hard, crusty tubes of solidified\ndroppings rest a few yards away from the comfortable alcove. Piles of dark black\nfur lie scattered across the floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18681"
+                ],
+                "name": "",
+                "out": [
+                    "18681"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18683"
+                ],
+                "name": "",
+                "out": [
+                    "18683"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18682",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Spacious Den",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 612,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "This underground passage weaves back and forth along natural veins in the rock.\nIt climbs from the clammy mist and rumbling din of a river to the stale, quiet\nair of a den. The walls and floor are dark and smooth, reflecting no light. The\nceiling hides in a distant gloom.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18682"
+                ],
+                "name": "",
+                "out": [
+                    "18682"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18684"
+                ],
+                "name": "",
+                "out": [
+                    "18684"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18683",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Twisting Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 611,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "A subterranean river of black water pours from a breach in the cavern wall to\nthe north. It flows westward, carving out a broad channel. To the east the\ncavern floor climbs suddenly, and is mirrored by the cavern ceiling which rises\nwith it. Shelves of rock climb the steep face at the eastern end, meeting at\nswitchbacks which form a continuous path.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18685"
+                ],
+                "name": "",
+                "out": [
+                    "18685"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18683"
+                ],
+                "name": "",
+                "out": [
+                    "18683"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18684",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "By a Subterranean River",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 611,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "A steady flow of black water pours from a gaping hole in the roof into a\nshallow, murky pool. It flows thence into a broad, shallow channel that empties\ninto a subterranean river. The spray from the falling water chills the air as it\nfills it with a fine mist.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18686"
+                ],
+                "name": "",
+                "out": [
+                    "18686"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18684"
+                ],
+                "name": "",
+                "out": [
+                    "18684"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "18704"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18685",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "By a Subterranean Cataract",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 610,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "A broad ledge overlooks a river that froths and bubbles as it flows through a\njumble of jagged boulders. The gurgling water sends a bitter mist wafting into\nthe air. The riverbanks are steep and composed of black and white marbled\ngranite.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18685"
+                ],
+                "name": "",
+                "out": [
+                    "18685"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18687"
+                ],
+                "name": "",
+                "out": [
+                    "18687"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18686",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "By Subterranean Rapids",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 610,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "A murky river flows through the gaps in a line of rough boulders and broken\nslabs. Slimy black moss thrives in this damp environment, blanketing the rocky\nsurfaces and making this crossing treacherous. A ledge climbs from the southern\nbank of the river, rising as it follows the river eastward.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18686"
+                ],
+                "name": "",
+                "out": [
+                    "18686"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18688"
+                ],
+                "name": "",
+                "out": [
+                    "18688"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18687",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "By a Subterranean River",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 609,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "A murky subterranean river cuts around a protruding granite rock formation. The\nnear bank is relatively flat and covered in small rocks and pebbles deposited by\nthe flowing water. Black moss covers the walls of this tunnel, thriving in the\nwet environment. The damp air bears an acrid taste of noxious vapour.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18689"
+                ],
+                "name": "",
+                "out": [
+                    "18689"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18687"
+                ],
+                "name": "",
+                "out": [
+                    "18687"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18688",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "By a Subterranean River",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 608,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "A tunnel leading from the west broadens into a large chamber facing a torrent of\npitch-black water that disappears around a sharp bend to the south. To the\nnorth, the near bank is relatively flat, this in contrast to the steep wall that\nruns along the distant bank. Tenuous webs stretch from the tunnel and across the\nriver into gloomy shadows on the other side.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18688"
+                ],
+                "name": "",
+                "out": [
+                    "18688"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 32,
+                "flags": 3,
+                "in": [
+                    "18690"
+                ],
+                "name": "",
+                "out": [
+                    "18690"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18689",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "By a Subterranean River",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 608,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "Droplets of water drip from the cavern ceiling, shimmering as they trail down\nthick webs laced across this tunnel. The spiders who wrought these webs seem to\nhave now forsaken this section of their domain, perhaps because of the moisture\nthat renders their silken snares useless. The floor is damp; it readily soaks up\nthe sprinkling water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 32,
+                "flags": 3,
+                "in": [
+                    "18689"
+                ],
+                "name": "",
+                "out": [
+                    "18689"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18691"
+                ],
+                "name": "",
+                "out": [
+                    "18691"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18690",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Webbed Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 606,
+        "y": 86,
+        "z": 0
+    },
+    {
+        "desc": "Fluffy white sacs hang suspended from strong webs stretching across a bulge in a\nlong tunnel. Several of the sacs are deflated and sway easily with the vibration\nof the webs. Gossamer-thin strands of silk extend from these empty vessels, the\nfirst weavings of freshly-hatched spiderlings. The walls of the chamber are\nfluid with the motion of skittering spiders.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18656"
+                ],
+                "name": "",
+                "out": [
+                    "18656"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18690"
+                ],
+                "name": "",
+                "out": [
+                    "18690"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18691",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Webbed Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 605,
+        "y": 86,
+        "z": 0
+    },
+    {
+        "desc": "Ripped webs dangle from the ceiling of this tunnel. Large rocks litter the\nground. Many of them bear stray strands of silk, some of which lead back to the\nwebs from which they were torn. A large mound of rubble sits against the\ntapering eastern end of the tunnel; on the other end, the tunnel meets a sudden\nend where it opens into the top of a large chamber.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 32,
+                "flags": 3,
+                "in": [
+                    "18694"
+                ],
+                "name": "",
+                "out": [
+                    "18694"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "18655"
+                ],
+                "name": "",
+                "out": [
+                    "18655"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18693",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rubble-Clogged Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 606,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "This chamber forms a rounded dome with smooth walls, except at its western end\nwhere jagged scars show where rocks have been torn from the wall. The product of\nthis destruction is a massive pile that sits in front of the entrance to a\ntunnel in the middle of the same wall. Several broken chisels and a large, crude\nhammer are strewn around this entrance. The desiccated corpse of a spider rests\nin the centre of the room, its head crushed by a massive boulder.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18696"
+                ],
+                "name": "",
+                "out": [
+                    "18696"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18695"
+                ],
+                "name": "",
+                "out": [
+                    "18695"
+                ]
+            },
+            {
+                "dflags": 32,
+                "flags": 3,
+                "in": [
+                    "18693"
+                ],
+                "name": "",
+                "out": [
+                    "18693"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18694",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Marred Dome",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 607,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "The sound of rushing water reverberates throughout a recess at the eastern end\nof a round dome. A black torrent gushes down a waterfall which intersects the\neastern end of this alcove as it cascades downward on its way to an unseen\ndestination far below. The chamber is spattered with spray from the protruding\nrocks that interrupt the descending water. The floor is slippery and descends\naway from the falls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18694"
+                ],
+                "name": "",
+                "out": [
+                    "18694"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "18704"
+                ],
+                "name": "",
+                "out": [
+                    "18704"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18695",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Subterranean Cataract",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 608,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "Sheer rock walls flank a narrow crevice bottom covered in a layer of shattered\nrocks. The gap between the walls broadens considerably as the chasm expands\nupward and eastward. A round hole in the southern wall leads to a remarkably\nsmooth-walled chamber.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18694"
+                ],
+                "name": "",
+                "out": [
+                    "18694"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18697"
+                ],
+                "name": "",
+                "out": [
+                    "18697"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18696",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bottom of a Chasm",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 607,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "A great empty void extends upward from a rough cave floor covered in mounds of\nguano. A swarming mass of black specks obscures the distant ceiling. Broken\nrocks trail from the end of a slab that leans precariously against a ledge on\nthe northern wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18696"
+                ],
+                "name": "",
+                "out": [
+                    "18696"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "18698"
+                ],
+                "name": "",
+                "out": [
+                    "18698"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18697",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bottom of a Chasm",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 608,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "A narrow ledge runs along the edge of a deep chasm. Its surface is covered in\nslimy bat droppings, making it very slippery. The ledge broadens to the west,\nwhere it provides access to a narrow breach in the ceiling. To the east, this\nshelf comes to an abrupt end where the slab that formed it has cracked, falling\nto rest its distant end against the chasm floor below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18699"
+                ],
+                "name": "",
+                "out": [
+                    "18699"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "18697"
+                ],
+                "name": "",
+                "out": [
+                    "18697"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18698",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Slippery Ledge",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 608,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "A narrow ledge stands at the edge of a vast chamber which is dozens of yards\nwide. This ledge continues around the chasm, descending gently as it runs\neastward along the northern end of this broad gap. A strong scent of fir drifts\nin from a crack that leads upward.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18698"
+                ],
+                "name": "",
+                "out": [
+                    "18698"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "18700"
+                ],
+                "name": "",
+                "out": [
+                    "18700"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18699",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ledge Skirting a Chasm",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 607,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "This region of the plateau is surprisingly devoid of trees. Mounds of boulders\nform a half-ring around a dark, stagnant pool. The water is an opaque green, and\nblack lilies float silently on its surface. The rocks surrounding it are densely\ncarpeted in thick, yellow lichen; there are scattered bare patches where it has\nbeen torn from the surface.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18700"
+                ],
+                "name": "",
+                "out": [
+                    "18700"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18839"
+                ],
+                "name": "",
+                "out": [
+                    "18839"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "18803"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18702",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Fir-Clad Plateau",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 607,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "A slick slab juts into a descending deluge of water. A tunnel north of this slab\nleads away from the torrent of water. It carries a fresh breeze that attempts to\nsweep away the cold mist of the cascade. The waterfall roars as it reaches its\nfinal destination somewhere in the gloom below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18840"
+                ],
+                "name": "",
+                "out": [
+                    "18840"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "18695"
+                ],
+                "name": "",
+                "out": [
+                    "18695"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "18685"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18704",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Subterranean Cataract",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 609,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "A recent landslide from the shelf above this plateau has torn through wide ranks\nof fir trees. Shattered trunks protrude from beneath the boulders that struck\nthem down. Fuzzy moss already grows on the mounds of rock, making a soft yet\nslippery blanket.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18703"
+                ],
+                "name": "",
+                "out": [
+                    "18703"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18702"
+                ],
+                "name": "",
+                "out": [
+                    "18702"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18839",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Fir-Clad Plateau",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 608,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "Large boulders shelter a niche in the cliff wall that hides a secluded eyrie.\nThe niche offers a clear view of a valley full of blighted, dying trees. Damp,\nacrid mist drifts from a tunnel that carves into the cliff to the south. A\ndistant roar of falling water emanates from the tunnel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18704"
+                ],
+                "name": "",
+                "out": [
+                    "18704"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18840",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Isolated Nest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 609,
+        "y": 82,
+        "z": 0
+    }
+]

@@ -18,8 +18,8 @@ interface GeneralSettingsProps {
     setIsMmapperMode: (val: boolean) => void;
     theme: 'light' | 'dark';
     setTheme: (val: 'light' | 'dark') => void;
-    bgImage: string;
-    setBgImage: (val: string) => void;
+    bgImage: string | null;
+    setBgImage: (val: string | null) => void;
     handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
     showDebugEchoes: boolean;
     setShowDebugEchoes: (val: boolean) => void;
@@ -743,7 +743,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                     <label htmlFor="bg-upload" className="btn-secondary" style={{ marginTop: 0, width: 'auto' }}>
                         <Upload size={16} /> Upload
                     </label>
-                    <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={() => setBgImage("")}>
+                    <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={() => setBgImage(null)}>
                         Clear
                     </button>
                     <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={() => setBgImage(DEFAULT_BG)}>

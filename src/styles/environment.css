@@ -29,11 +29,11 @@
 
 .lighting-state-sun .overlay-layer {
     background: linear-gradient(to bottom, 
-        rgba(135, 206, 250, 0.22) 0%, 
-        rgba(176, 226, 255, 0.12) 40%, 
-        rgba(0, 5, 20, 0.04) 100%
+        rgba(135, 206, 250, 0.12) 0%, 
+        rgba(176, 226, 255, 0.06) 40%, 
+        rgba(0, 5, 20, 0.02) 100%
     );
-    /* SLIGHTLY VIBRANT sky-blue wash near the top, fading to a subtle ambient tint below */
+    /* SUBTLE sky-blue wash near the top, fading to a very faint ambient tint below */
 }
 
 .storm-overlay-layer {
@@ -116,12 +116,12 @@
     mix-blend-mode: screen;
     z-index: 100;
     /* Move ABOVE combat grayscale and other atmospheric filters */
-    filter: saturate(1.8) contrast(1.05);
-    /* Force high color saturation */
+    filter: saturate(1.3) contrast(1.02);
+    /* SUBTLE color saturation boost */
 }
 
 .lighting-moon {
-    filter: saturate(0.8) contrast(1.02);
+    filter: saturate(0.95) contrast(1.08) brightness(1.08);
 }
 
 .lighting-inner {
@@ -130,24 +130,25 @@
 }
 
 .lighting-sun .lighting-inner {
-    /* TONED DOWN sun origin to let the blue sky gradient do more work */
+    /* WEAKENED sun origin to minimize interference with log readability */
     background: radial-gradient(ellipse 90% 160% at 92% -30%,
-            rgba(255, 255, 252, 0.65) 0%,
-            rgba(255, 252, 230, 0.25) 45%,
-            transparent 85%);
-}
-
-.is-mobile .lighting-sun .lighting-inner {
-    /* TONED DOWN sun origin for mobile */
-    background: radial-gradient(ellipse 160% 130% at 92% -30%,
-            rgba(255, 255, 252, 0.65) 0%,
-            rgba(255, 252, 230, 0.25) 40%,
+            rgba(255, 255, 252, 0.52) 0%,
+            rgba(255, 252, 230, 0.2) 40%,
             transparent 82%);
 }
 
+.is-mobile .lighting-sun .lighting-inner {
+    /* WEAKENED sun origin for mobile */
+    background: radial-gradient(ellipse 160% 130% at 92% -30%,
+            rgba(255, 255, 252, 0.52) 0%,
+            rgba(255, 252, 230, 0.2) 36%,
+            transparent 80%);
+}
+
 .lighting-moon .lighting-inner {
-    background: radial-gradient(circle at 50% 15%, rgba(200, 220, 255, 0.05), transparent 80%),
-        linear-gradient(to bottom, rgba(140, 160, 230, 0.01), transparent);
+    background: radial-gradient(circle at 50% 15%, rgba(210, 230, 255, 0.11), rgba(210, 230, 255, 0.03) 35%, transparent 80%),
+        radial-gradient(circle at 50% 55%, rgba(170, 190, 255, 0.05), transparent 62%),
+        linear-gradient(to bottom, rgba(140, 160, 230, 0.03), transparent);
 }
 
 .lighting-artificial .lighting-inner {

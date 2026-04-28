@@ -1,0 +1,256 @@
+[
+    {
+        "desc": "A long, black fissure can be seen in the southwest corner of this cave leading,\nto an unending void of darkness. Wooden planks are stacked in front of it\nhelping to bar anything from falling through. Torches help light the area\ncasting flickering shadows which dance mysteriously on the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22441"
+                ],
+                "name": "",
+                "out": [
+                    "22441"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22443"
+                ],
+                "name": "",
+                "out": [
+                    "22443"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22442",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ancient Stone Walkway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 338,
+        "y": 140,
+        "z": 0
+    },
+    {
+        "desc": "The stone walkway extends to the west and east but branching in other directions\nas well. To the north and south, dark metal doors contrast with the rock wall.\nThe south opens up into a larger hall where some smoke can be seen flowing in.\nPelts of various animals line the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22444"
+                ],
+                "name": "",
+                "out": [
+                    "22444"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22445"
+                ],
+                "name": "",
+                "out": [
+                    "22445"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22431"
+                ],
+                "name": "",
+                "out": [
+                    "22431"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22442"
+                ],
+                "name": "",
+                "out": [
+                    "22442"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22443",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ancient Stone Walkway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 339,
+        "y": 140,
+        "z": 0
+    },
+    {
+        "desc": "A thick plume of smoke billows upwards from a rough campfire, exiting from a\nsmall hole in the ceiling, which allows for some respite from the difficult to\nbreathe air. A few bunkbeds made of wooden stand around the edges of the room,\nas if bolted to the walls. Heavy, warm bear hides have been strung up around the\ndormitory.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22443"
+                ],
+                "name": "",
+                "out": [
+                    "22443"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22445",
+        "light": 1,
+        "loadflags": 2097152,
+        "mobflags": 0,
+        "name": "Smoky Sleeping Quarters",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 339,
+        "y": 141,
+        "z": 0
+    }
+]

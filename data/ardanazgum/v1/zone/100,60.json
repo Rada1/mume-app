@@ -1,0 +1,1776 @@
+[
+    {
+        "desc": "Moss-covered peat blankets the soggy ground here. The wetland has a seemingly\nsimple flora; only patches of purple-coloured grass and long-stemmed bog cotton\ngrow on the wet, spongy ground. The small pools of water with their surrounding\ntufts of bog grass give way to rockier terrain towards the north, where the land\nrises.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19124"
+                ],
+                "name": "",
+                "out": [
+                    "19124"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19126"
+                ],
+                "name": "",
+                "out": [
+                    "19126"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19125",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Small Bog",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 100,
+        "y": 60,
+        "z": 0
+    },
+    {
+        "desc": "Tall, thick grass and weeds grow in abundance on this abandoned farmland. A huge\nboulder, composed of weathered granite stands here. A clump of slender trees\nsurround the granite boulder, forming a small island on the field. Small\ndepressions remain where a ditch used run, long ago overgrown. Patches of\nwildflowers border a faint trail leading to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "19593"
+                ],
+                "name": "",
+                "out": [
+                    "19593"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19594"
+                ],
+                "name": "",
+                "out": [
+                    "19594"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19134"
+                ],
+                "name": "",
+                "out": [
+                    "19134"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19135",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Huge Boulder on a Field",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 100,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "The forest here is low and very dense. The local fauna consists of hazels,\nbirches, beeches, and elms, none even close to their full height or width. A\nhill rises in the northwest, covered in dense forest. The forest floor mainly\nexhibits low bushes and a soft bed of old, rotting leaves.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19188"
+                ],
+                "name": "",
+                "out": [
+                    "19188"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19189"
+                ],
+                "name": "",
+                "out": [
+                    "19189"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19186"
+                ],
+                "name": "",
+                "out": [
+                    "19186"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19187",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Young Forest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 100,
+        "y": 68,
+        "z": 0
+    },
+    {
+        "desc": "The trees here grow close to each other and straight upwards, competing for the\nobtainable sunlight. Covering the forest floor are many thick, moss-covered\nroots, which seem to dive in and out of the rich soil below. Upon the forest\nfloor lies a thick layer of dead leaves, twigs, and branches.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19193"
+                ],
+                "name": "",
+                "out": [
+                    "19193"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19187"
+                ],
+                "name": "",
+                "out": [
+                    "19187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19161"
+                ],
+                "name": "",
+                "out": [
+                    "19161"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19188",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Edge of a Forest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 100,
+        "y": 67,
+        "z": 0
+    },
+    {
+        "desc": "The trail leads through a dense forest. None at full height, thin hazels and\nbeeches compete for an unrivalled chance of sunlight. A thick layer of fallen\nleaves are decaying on the ground, providing nourishment for the herbivores that\nforage here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19187"
+                ],
+                "name": "",
+                "out": [
+                    "19187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "19190"
+                ],
+                "name": "",
+                "out": [
+                    "19190"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19189",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Faded Trail",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 100,
+        "y": 69,
+        "z": 0
+    },
+    {
+        "desc": "A thin forest surrounds the trail on the north and south sides. The trail is\npartly overgrown with tree sprouts and mosses, suggesting that visitors are a\nrare sight in these forests. The trees to the north are noticeably higher than\nthose that grow nearby.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "19189"
+                ],
+                "name": "",
+                "out": [
+                    "19189"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19205"
+                ],
+                "name": "",
+                "out": [
+                    "19205"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "19191"
+                ],
+                "name": "",
+                "out": [
+                    "19191"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19190",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Faded Trail through a Forest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 100,
+        "y": 70,
+        "z": 0
+    },
+    {
+        "desc": "Judging by their appearance, these barren fields have been abandoned for a long\ntime. The fertile top layers of soil have blown away, leaving nothing but dust\nand stone. Many of the larger rocks are blackened at their highest points, as if\nthey were burned when a fire swept across this land long ago.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19194"
+                ],
+                "name": "",
+                "out": [
+                    "19194"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19188"
+                ],
+                "name": "",
+                "out": [
+                    "19188"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19196"
+                ],
+                "name": "",
+                "out": [
+                    "19196"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19193",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Barren Fields",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 100,
+        "y": 66,
+        "z": 0
+    },
+    {
+        "desc": "This path is dusty and windswept. It follows the edge of a large field to the\nwest. Dry, withered weeds lie upon the edges of the path, continuing further out\ninto the surrounding fields. Several lengths of cracked and blackened poles\nstand between the field and the path, resembling what was once a proud, sturdy\nfence. The path continues to the north, into what looks like the ruins of a\nsmall village.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "19195"
+                ],
+                "name": "",
+                "out": [
+                    "19195"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19193"
+                ],
+                "name": "",
+                "out": [
+                    "19193"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19197"
+                ],
+                "name": "",
+                "out": [
+                    "19197"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19194",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path through Barren Fields",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 100,
+        "y": 65,
+        "z": 0
+    },
+    {
+        "desc": "A path from the south ends at a small open area here. The open area seems likely\nto be the village square. Old, partially-collapsed buildings surround the\nsquare. The walls that still stand look blackened, as if a fire burned the\nvillage down sometime long ago. The ground is dry, dusty, and mostly barren.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19594"
+                ],
+                "name": "",
+                "out": [
+                    "19594"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "19194"
+                ],
+                "name": "",
+                "out": [
+                    "19194"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19597"
+                ],
+                "name": "",
+                "out": [
+                    "19597"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19195",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path through a Ruined Village",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 100,
+        "y": 64,
+        "z": 0
+    },
+    {
+        "desc": "Towards the north and west, a faint trail can be seen weaving between the\nlichen-covered trunks of towering trees. The low hanging branches are completely\ndevoid of foliage, either from lack of sunlight or the voracious appetites of\nthe local fauna. The ground is covered with clumps of stunted grass and bushes.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19190"
+                ],
+                "name": "",
+                "out": [
+                    "19190"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19206"
+                ],
+                "name": "",
+                "out": [
+                    "19206"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19192"
+                ],
+                "name": "",
+                "out": [
+                    "19192"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19205",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Edge of a Forest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 100,
+        "y": 71,
+        "z": 0
+    },
+    {
+        "desc": "Tall grass grows in abundance across these sprawling fields. Moderately uniform\nin height, various types of weeds, thistles, and bushes thrive here, offering\nmagnificent cover for hiding animals. A low forest flourishes in the northwest,\nstretching for several miles. Several animal paths cross the grasslands,\nemerging from the forest's edge.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19205"
+                ],
+                "name": "",
+                "out": [
+                    "19205"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19207"
+                ],
+                "name": "",
+                "out": [
+                    "19207"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19206",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bushy Grassland",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 0,
+        "x": 100,
+        "y": 72,
+        "z": 0
+    },
+    {
+        "desc": "Halfway up the wide staircase, a minstrel's gallery has been built overlooking\nthe main hall. If grand feasts were held below, the musicians might have\ngathered here to play for the guests. The ominous creaking and groaning that now\ncomes from the wooden platform suggests that it hasn't aged all that well. Wide\nstone steps lead up through a hatch to the bastion of the tower, or back down to\nthe main hall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "19364"
+                ],
+                "name": "",
+                "out": [
+                    "19364"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "19363"
+                ],
+                "name": "",
+                "out": [
+                    "19363"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19353"
+                ],
+                "name": "",
+                "out": [
+                    "19353"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19354",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wide Staircase",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 100,
+        "y": 75,
+        "z": 0
+    },
+    {
+        "desc": "High above the surrounding lands, this turret provides a bird's eye view of the\nneighbouring countryside. A tall parapet made of hard, grey rock provides the\nwatchers with protection from any missiles that might be fired at them. To the\nsouth, an old cobblestone path leads to and from the tower along a rocky\nescarpment. To the east, a shimmering creek weaves its way through the\ngrasslands like a silvery thread upon a lush green blanket.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "19354"
+                ],
+                "name": "",
+                "out": [
+                    "19354"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19363",
+        "light": 1,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "Top of a Tower",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 100,
+        "y": 74,
+        "z": 0
+    },
+    {
+        "desc": "This room is plain, verging on the austere; the occupant obviously valued\nfunction over comfort and had no time for ornamentation of any sort. Facing the\ndoor is a battered but serviceable oak desk, the drawers stuffed with crumbling\nparchment. The few remaining legible scraps indicate that the scrolls were\nmilitary maps of the area. A long rack set into the northern wall held pegs from\nwhich various weapons were hung, ready to be issued should the tower come under\nattack.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "19354"
+                ],
+                "name": "",
+                "out": [
+                    "19354"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19364",
+        "light": 1,
+        "loadflags": 4,
+        "mobflags": 0,
+        "name": "Guard Commander's Room",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 101,
+        "y": 75,
+        "z": 0
+    },
+    {
+        "desc": "A wild and overgrown hedge surrounds this ruined farmstead. Moss-covered\nfoundations of buildings remain amidst primroses and willows. The inhabitants\nmust have abandoned this place a long time ago, since all the wooden structures\nhave rotted away. A fading gravel path leads to the south through a hedge.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "19135"
+                ],
+                "name": "",
+                "out": [
+                    "19135"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19593",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Among Moss-covered Ruins",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 100,
+        "y": 61,
+        "z": 0
+    },
+    {
+        "desc": "These fields may once have yielded great harvests of wheat, potatoes, or\nwhatever else those working the fields planted. Those days are gone and the\nfields are now abandoned, and nothing grow here but weed and wildflowers. The\nfields continue to the north and west, while a ruined village lies to the south.\nThere is a ruin of a small house just adjacent to the fields to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19135"
+                ],
+                "name": "",
+                "out": [
+                    "19135"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19195"
+                ],
+                "name": "",
+                "out": [
+                    "19195"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19595"
+                ],
+                "name": "",
+                "out": [
+                    "19595"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19596"
+                ],
+                "name": "",
+                "out": [
+                    "19596"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19594",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Abandoned Fields",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 100,
+        "y": 63,
+        "z": 0
+    },
+    {
+        "desc": "The floor in this ruin is made of compacted earth. Only the walls remain of the\nruin to the north and south, and the ceiling collapsed long ago. Wreckage from\nthe collapsed roof, consisting mostly of broken pieces of wooden planks, litter\nthe ground. The walls to the east and west remain largely intact, though they\nare scorched from an old fire. The walls are painted red, and wherever the fire\ndid not blacken them, the paint is flaking badly.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19594"
+                ],
+                "name": "",
+                "out": [
+                    "19594"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19595",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruined Hut",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 101,
+        "y": 63,
+        "z": 0
+    },
+    {
+        "desc": "This farmhouse was ravaged by a fire in the past. Most of the roof is gone, and\nwhat were once walls now lie in haphazard piles of blackened wood upon the\nground. Near the north-western corner, a gaping hole leads down into an old\ncellar. The remains of an old hatch has long since rotted away and collapsed\ninto the darkness below. The only way to safely leave this ruin is through the\nempty, skeletal door frame to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19597"
+                ],
+                "name": "",
+                "out": [
+                    "19597"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19599"
+                ],
+                "name": "",
+                "out": [
+                    "19599"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19598",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruined Farmhouse",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 102,
+        "y": 64,
+        "z": 0
+    },
+    {
+        "desc": "This cellar is small and cramped. It's square in shape and no more than ten feet\nacross. It's further restricted by rows of wooden shelves on the walls.\nEverything here is coated in a thick layer of dust and soot. Broken glass lies\non the floor beneath a cracked, broken shelf.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19600"
+                ],
+                "name": "",
+                "out": [
+                    "19600"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19598"
+                ],
+                "name": "",
+                "out": [
+                    "19598"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19599",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Root Cellar",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 102,
+        "y": 65,
+        "z": 0
+    },
+    {
+        "desc": "This narrow dead end is draped in old cobwebs. The air is dry and dusty and the\nfloor is covered in a thick layer of grime. The walls are close together and\nthere are no shelves to either side, except for an old, empty wooden rack that\nstands against the back wall. To the east there is a slightly larger cellar with\na set of stairs that leads up through a hatch in the ceiling.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19599"
+                ],
+                "name": "",
+                "out": [
+                    "19599"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19600",
+        "light": 1,
+        "loadflags": 4,
+        "mobflags": 0,
+        "name": "Narrow Niche",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 101,
+        "y": 65,
+        "z": 0
+    },
+    {
+        "desc": "The surrounding branches grow from the trunk of this large tree in unusual\nfashion; where normally the branches are thin and dispersed numerous feet apart,\nthese grow thick and close together, forming a natural platform of sorts. The\nthick branches below follow suit in a semi-circular pattern from just feet off\nthe ground, slowly circling upwards around the trunk of the tree. With the\nexception of a brief, sparse tangle of intertwined branches just below, even the\nmost unskilled climber would have little trouble navigating the boughs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "19177"
+                ],
+                "name": "",
+                "out": [
+                    "19177"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19601",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Thick Branches",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 101,
+        "y": 70,
+        "z": 0
+    }
+]

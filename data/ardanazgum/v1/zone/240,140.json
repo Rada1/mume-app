@@ -1,0 +1,1466 @@
+[
+    {
+        "desc": "The bushes make movement difficult but it is possible to travel farther into the\nbrush to the north and south while movement to the east is impossible. The\nground is covered with short grass in between the bushes. The area seems quite\ndesolate showing no signs of civilised inhabitants.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8155"
+                ],
+                "name": "",
+                "out": [
+                    "8155"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8153"
+                ],
+                "name": "",
+                "out": [
+                    "8153"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8178"
+                ],
+                "name": "",
+                "out": [
+                    "8178"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8177"
+                ],
+                "name": "",
+                "out": [
+                    "8177"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8154",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Edge of the Brush",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 242,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "The dry ground is covered with a foot high green grass where the thorny bushes\ncovering the area in all directions have yielded. It seems impossible to get\nfarther east while travel in other directions will take you into other parts of\nthe brush. To the south the grass is getting shorter but also less coarse as the\nsoil contains more accessible water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8156"
+                ],
+                "name": "",
+                "out": [
+                    "8156"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8154"
+                ],
+                "name": "",
+                "out": [
+                    "8154"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8189"
+                ],
+                "name": "",
+                "out": [
+                    "8189"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8155",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Scattered Brush",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 242,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "The dry ground is covered with an equal mixture of a foot high green grass that\nseems to be able to draw enough water to thrive and coarse bushes. The bushes\nscattered over the area are getting taller and denser to the north where they\nseem to be weeding most other vegetation but it might still be possible to find\na way through. The brush continues to the west and south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "8157"
+                ],
+                "name": "",
+                "out": [
+                    "8157"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8155"
+                ],
+                "name": "",
+                "out": [
+                    "8155"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8190"
+                ],
+                "name": "",
+                "out": [
+                    "8190"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8156",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dense Brush",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 242,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "The dry ground covered with short, parched brown grass is hard and lumpy. Here,\ntall gorse bushes provide a little protection from the wind, but they also stop\npassage in most directions. It might be possible to clear a way to the west,\nwhile to the south the coarse bushes give up control to the flourishing green\ngrass.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "8158"
+                ],
+                "name": "",
+                "out": [
+                    "8158"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "8156"
+                ],
+                "name": "",
+                "out": [
+                    "8156"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "8209"
+                ],
+                "name": "",
+                "out": [
+                    "8209"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8157",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dense Brush",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 242,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "The hard ground is lumpy and covered with short and parched brown grass. The\nonly form of shelter is provided by the tall gorse bushes covering most of the\narea and keeping all other vegetation at bay. Passage is blocked by the bushes\nin all directions except south where it might be possible to clear a way through\nthe bushes.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "8157"
+                ],
+                "name": "",
+                "out": [
+                    "8157"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8158",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Deep in the Thorns",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 242,
+        "y": 155,
+        "z": 0
+    },
+    {
+        "desc": "The animal den has recently been dug into the hard, dry soil. The earthen walls\nstill show fresh traces of medium sized clawmarks. The first six to seven yards\nbeing a rather narrow tunnel opening up into a large den. Recent footprints on\nthe dusty floor bears witness of wolves having used the den recently.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8154"
+                ],
+                "name": "",
+                "out": [
+                    "8154"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8177",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Animal Den",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 243,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "Thin, dry grass carpets the ground. The carpet is only broken by large patches\nof white thorn and other bushes. These bushes grow into brush to the east, and\nthe grass grows shorter towards the south. To the west and north, the dry land\nremains the same. Very few animals inhabit this barren and desolate area.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8189"
+                ],
+                "name": "",
+                "out": [
+                    "8189"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8176"
+                ],
+                "name": "",
+                "out": [
+                    "8176"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8154"
+                ],
+                "name": "",
+                "out": [
+                    "8154"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8179"
+                ],
+                "name": "",
+                "out": [
+                    "8179"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8178",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dry Land",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 241,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "The dry ground supports only grass and stiff coarse bushes with razor-sharp\nleaves. The grass is getting shorter towards the south while the bushes get more\nrare towards the west. Upon closer inspection the bushes turn out to be mainly\nwhite thorn but also some brambles.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8188"
+                ],
+                "name": "",
+                "out": [
+                    "8188"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8175"
+                ],
+                "name": "",
+                "out": [
+                    "8175"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8178"
+                ],
+                "name": "",
+                "out": [
+                    "8178"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8180"
+                ],
+                "name": "",
+                "out": [
+                    "8180"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8179",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dry Land",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 240,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "The dry ground supports mainly thin coarse grass and patches of bushes. Looking\naround the horizon the landscape is similar in all directions save west where\nthe bushes are more scarce and the grass more dominant possibly due to more\nnourishment in the soil.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8191"
+                ],
+                "name": "",
+                "out": [
+                    "8191"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8179"
+                ],
+                "name": "",
+                "out": [
+                    "8179"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8189"
+                ],
+                "name": "",
+                "out": [
+                    "8189"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8187"
+                ],
+                "name": "",
+                "out": [
+                    "8187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8188",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dry Land",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 240,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "Only thin coarse grass and patches of bushes have survived on this dry ground.\nThis dreary land extends to the west and south while the shrubbery grows into\nbrush to the east and north. Not many animals can be found here since the land\noffers so little nourishment.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8190"
+                ],
+                "name": "",
+                "out": [
+                    "8190"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8178"
+                ],
+                "name": "",
+                "out": [
+                    "8178"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8155"
+                ],
+                "name": "",
+                "out": [
+                    "8155"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8188"
+                ],
+                "name": "",
+                "out": [
+                    "8188"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8189",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dry Land",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 241,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "The plant life here is all brittle and twisted, finding little nutrients in the\nparched ground. As you force through the dense undergrowth, thorny fingers grip\nto your clothing and you can feel dry roots and branches breaking under your\nweight. This dreary landscape goes on in all directions.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8209"
+                ],
+                "name": "",
+                "out": [
+                    "8209"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8189"
+                ],
+                "name": "",
+                "out": [
+                    "8189"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8156"
+                ],
+                "name": "",
+                "out": [
+                    "8156"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8191"
+                ],
+                "name": "",
+                "out": [
+                    "8191"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8190",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Scattered Brush",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 241,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "The land is evenly covered with dry grasses and bushy undergrowth striving to\ndraw nourishment from the dry soil. The brush gets denser looking north and east\nwhile the terrain looks the same to the south. To the west the grass is the\ndominant plant life.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8210"
+                ],
+                "name": "",
+                "out": [
+                    "8210"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8188"
+                ],
+                "name": "",
+                "out": [
+                    "8188"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8190"
+                ],
+                "name": "",
+                "out": [
+                    "8190"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8192"
+                ],
+                "name": "",
+                "out": [
+                    "8192"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8191",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dry Land",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 240,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "Protected by large prickly thorns, the huge bushes and shrubs totally dominate\nthe landscape in all directions. Movement is difficult as the dense vegetation\nleaves little room to manoeuvre. A few patches of short coarse grass manage to\nthrive at the foot of the bushes but are ever in danger of being choked should\nthe bushes expand.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "8207"
+                ],
+                "name": "",
+                "out": [
+                    "8207"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8208",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Deep in the Bushes",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 240,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "Dry gorse bushes grow to a mans height all around the horizon making it hard to\nmove around. It is impossible to work your way farther to the north while it\nmight be possible to find a path in between the bushes farther east. Little\nother vegetation grows here except the dry brown grass striving to survive.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8190"
+                ],
+                "name": "",
+                "out": [
+                    "8190"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "8157"
+                ],
+                "name": "",
+                "out": [
+                    "8157"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8210"
+                ],
+                "name": "",
+                "out": [
+                    "8210"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8209",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dense Brush",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 241,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "Tall dry bushes totally dominate the landscape only allowing short brown grass\nto share what little nourishment the soil offers. The bushes have razor-sharp\nleaves and stiff pointed thorns making them look extremely nasty. The bushes are\nloosing space to the grass to the west and south while the brush goes on to the\nnorth and west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8224"
+                ],
+                "name": "",
+                "out": [
+                    "8224"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8191"
+                ],
+                "name": "",
+                "out": [
+                    "8191"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8209"
+                ],
+                "name": "",
+                "out": [
+                    "8209"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8211"
+                ],
+                "name": "",
+                "out": [
+                    "8211"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8210",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Scattered Brush",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 240,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "As if responding to a cry for mercy, the taller, healthier grass from the west\nsurges in to rescue the withered native undergrowth. Clinging defiantly to the\nbroken soil while being choked by larger gorse bushes, the thin grass battles\nfor its right to live in this bitter landscape but the thorny bushes show no\nmercy.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "8224"
+                ],
+                "name": "",
+                "out": [
+                    "8224"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "8222"
+                ],
+                "name": "",
+                "out": [
+                    "8222"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8223",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dense Brush",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 240,
+        "y": 154,
+        "z": 0
+    },
+    {
+        "desc": "Covered by coarse gorse bushes, the land has little hope of ever being released\nfrom their iron grip. Short, parched brown grass grows in small clumps in spots\nnot yet conquered by the gorse bushes. Movement is difficult, since the prickly\nthorns grab hold of anything they touch. The brush continues in all directions.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "8223"
+                ],
+                "name": "",
+                "out": [
+                    "8223"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8210"
+                ],
+                "name": "",
+                "out": [
+                    "8210"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8225"
+                ],
+                "name": "",
+                "out": [
+                    "8225"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8224",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dense Brush",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 240,
+        "y": 155,
+        "z": 0
+    }
+]

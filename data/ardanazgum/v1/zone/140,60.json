@@ -1,0 +1,5162 @@
+[
+    {
+        "desc": "All around you are fields of corn, wheat, vegetables, and various other things\nthat the hobbits grow. Every now and then you can see a busy hobbit running from\nfield to field doing one of many tasks that are needed to keep these fields in\ntheir current condition. The Border Road passes through the fields to the south.\nTo the east you can see a small pond.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1706"
+                ],
+                "name": "",
+                "out": [
+                    "1706"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1704"
+                ],
+                "name": "",
+                "out": [
+                    "1704"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1707"
+                ],
+                "name": "",
+                "out": [
+                    "1707"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1705",
+        "light": 2,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "Cultivated Farmland",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 153,
+        "y": 79,
+        "z": 0
+    },
+    {
+        "desc": "A tilled field lies before you, obviously not yet planted. The plough still lies\nin the corner of the field and everything is prepared for planting. It simply\nlooks as if the farmer has not had the time to plant this area of his fields.\nThere is a minor irrigation system laid out around the edges of the field. To\nthe east you can see a large barn; thick bushes block passage to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1705"
+                ],
+                "name": "",
+                "out": [
+                    "1705"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1706",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Quiet Field",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 153,
+        "y": 78,
+        "z": 0
+    },
+    {
+        "desc": "Right in the middle of all this farmland, this little pond looks completely out\nof place. However, the hobbit who farms this land seems to have made the best of\nit. A rather complex irrigation system has been erected in the area, feeding\nmost of the crops in this field and even some of the neighbouring fields. A\nsmall creek runs south from here. To the north you can see a large barn.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1715"
+                ],
+                "name": "",
+                "out": [
+                    "1715"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1708"
+                ],
+                "name": "",
+                "out": [
+                    "1708"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1705"
+                ],
+                "name": "",
+                "out": [
+                    "1705"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1707",
+        "light": 2,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "A Small Pond",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 154,
+        "y": 79,
+        "z": 0
+    },
+    {
+        "desc": "Around you are acres of pastures in lightly rolling hills. This area seems to be\nwell used, as patches of grass seem to have disappeared, leaving only mud and\ndirt where they used to be. However, there is still much grass left for the\nlivestock to feed upon. To the north you can see the centre of the farm.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1716"
+                ],
+                "name": "",
+                "out": [
+                    "1716"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1709"
+                ],
+                "name": "",
+                "out": [
+                    "1709"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1707"
+                ],
+                "name": "",
+                "out": [
+                    "1707"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1708",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rolling Pastures",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 155,
+        "y": 79,
+        "z": 0
+    },
+    {
+        "desc": "Lush green grass grows here, this pasture seems not to have been used at any\ntime in the near past. It looks as though the owners of the farm have this\npasture off on rotation, although, with one look at the field to the west, it\nmight be time they moved the cows back over to here. A fence separates this\nfield from the field to the east. A small gate leads north to the farm.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1710"
+                ],
+                "name": "",
+                "out": [
+                    "1710"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1708"
+                ],
+                "name": "",
+                "out": [
+                    "1708"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1709",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Small Pasture",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 156,
+        "y": 79,
+        "z": 0
+    },
+    {
+        "desc": "Around you is the workings of a decent sized dairy farm. You are not too far\nfrom the Shire's largest village, Hobbiton, and you can imagine that this dairy\nfarm is the major source for milk and cheese in the area. The owners of this\ndairy farm must be quite prosperous, as the area seems clean and there is a\nsmall square where workers can stop and rest. In the middle of the square there\nis a small water fountain. To the south, you can see a rather large pasture.\nThere is also a barn to the west, and the entrance to the farm is to the east.\nTo the north behind a hedge you can see a path surrounded by trees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1718"
+                ],
+                "name": "",
+                "out": [
+                    "1718"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1717",
+        "light": 2,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "A Dairy Farm",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 155,
+        "y": 78,
+        "z": 0
+    },
+    {
+        "desc": "You are at the entrance to a small dairy farm just outside of Hobbiton. There\nare many cart and animal tracks here, and the ground is hard packed. You can\nsmell manure all around you as it assaults your nostrils. To the south, there is\na small pasture. To the east is a small path leading to the fields outside of\nHobbiton.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1721"
+                ],
+                "name": "",
+                "out": [
+                    "1721"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "20040"
+                ],
+                "name": "",
+                "out": [
+                    "20040"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1717"
+                ],
+                "name": "",
+                "out": [
+                    "1717"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1718",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Entrance to a Dairy Farm",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 156,
+        "y": 78,
+        "z": 0
+    },
+    {
+        "desc": "On the sides of the path, trees have been replaced by thick vegetation. The loud\nhumming of insects gives evidence of a nearby bog. One may follow the path back\neast towards Hobbiton or continue along west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13144"
+                ],
+                "name": "",
+                "out": [
+                    "13144"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1720"
+                ],
+                "name": "",
+                "out": [
+                    "1720"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12461"
+                ],
+                "name": "",
+                "out": [
+                    "12461"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1719",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path near the Rushock Bog",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 0,
+        "x": 154,
+        "y": 77,
+        "z": 0
+    },
+    {
+        "desc": "The path here is fairly moist due to its proximity to water to the north. It\ncontinues to the west while also leading east towards the village of Hobbiton.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12491"
+                ],
+                "name": "",
+                "out": [
+                    "12491"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1721"
+                ],
+                "name": "",
+                "out": [
+                    "1721"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1719"
+                ],
+                "name": "",
+                "out": [
+                    "1719"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1720",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path Surrounded by Trees",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 155,
+        "y": 77,
+        "z": 0
+    },
+    {
+        "desc": "This path runs parallel to the water which can be faintly heard beyond a thick\nline of trees. The way leads west to Little Delving and east to Hobbiton, one of\nthe largest towns in all the Shire.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12417"
+                ],
+                "name": "",
+                "out": [
+                    "12417"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1718"
+                ],
+                "name": "",
+                "out": [
+                    "1718"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1735"
+                ],
+                "name": "",
+                "out": [
+                    "1735"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1720"
+                ],
+                "name": "",
+                "out": [
+                    "1720"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1721",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path Surrounded by Trees",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 156,
+        "y": 77,
+        "z": 0
+    },
+    {
+        "desc": "All around you are the sounds of many winged insects and mosquitoes. This trail\nis not used too often, making it difficult to advance through the sedges. You\ncan go either north or south, but it is impossible to know what lies in either\ndirection.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1723"
+                ],
+                "name": "",
+                "out": [
+                    "1723"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "12461"
+                ],
+                "name": "",
+                "out": [
+                    "12461"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13144"
+                ],
+                "name": "",
+                "out": [
+                    "13144"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1722",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trail in the Sedges",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 153,
+        "y": 76,
+        "z": 0
+    },
+    {
+        "desc": "The ground is damp and boggy. Here and there you come upon pools and wide\nstretches of reeds and rushes filled with the warbling of little hidden birds.\nYou must make your way carefully to avoid falling in and getting covered by the\nmud. The bog continues east while to the south a trail is discernible through a\nthick stand of sedges. One can see water to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1725"
+                ],
+                "name": "",
+                "out": [
+                    "1725"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1722"
+                ],
+                "name": "",
+                "out": [
+                    "1722"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1724"
+                ],
+                "name": "",
+                "out": [
+                    "1724"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1723",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Rushock Bog",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 153,
+        "y": 73,
+        "z": 0
+    },
+    {
+        "desc": "The ground is damp and boggy. Here and there you come upon pools and wide\nstretches of reeds and rushes filled with the warbling of little hidden birds.\nYou must make your way carefully to avoid falling in and getting covered by the\nmud. The bog continues west while there is water to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1726"
+                ],
+                "name": "",
+                "out": [
+                    "1726"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13144"
+                ],
+                "name": "",
+                "out": [
+                    "13144"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1728"
+                ],
+                "name": "",
+                "out": [
+                    "1728"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1723"
+                ],
+                "name": "",
+                "out": [
+                    "1723"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1724",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Rushock Bog",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 154,
+        "y": 73,
+        "z": 0
+    },
+    {
+        "desc": "The river here is murky. The water has a brownish tinge to it due to the effects\nof the nearby bog. Swampy plants and flowers float on the surface of the water.\nExcept for the humming of the mosquitoes that live in the stagnant water, it is\nsilent.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12519"
+                ],
+                "name": "",
+                "out": [
+                    "12519"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1723"
+                ],
+                "name": "",
+                "out": [
+                    "1723"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1726"
+                ],
+                "name": "",
+                "out": [
+                    "1726"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1725",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Water",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 153,
+        "y": 72,
+        "z": 0
+    },
+    {
+        "desc": "The river here is murky. The water has a brownish tinge to it due to the effects\nof the nearby bog. Swampy plants and flowers float on the surface of the water.\nExcept for the humming of the mosquitoes that live in the stagnant water, it is\nsilent.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12518"
+                ],
+                "name": "",
+                "out": [
+                    "12518"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1724"
+                ],
+                "name": "",
+                "out": [
+                    "1724"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                    "1727"
+                ],
+                "name": "",
+                "out": [
+                    "1727"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1725"
+                ],
+                "name": "",
+                "out": [
+                    "1725"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1726",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Water",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 154,
+        "y": 72,
+        "z": 0
+    },
+    {
+        "desc": "The river here makes a soft bend to the south, leading to the Brandywine River\nto the east. The large trees are being slowly replaced by thick vegetation, and\nthe water is slowly becoming more and more stagnant. Mosquitoes seem to be\neverywhere.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12516"
+                ],
+                "name": "",
+                "out": [
+                    "12516"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                    "1728"
+                ],
+                "name": "",
+                "out": [
+                    "1728"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12517"
+                ],
+                "name": "",
+                "out": [
+                    "12517"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1726"
+                ],
+                "name": "",
+                "out": [
+                    "1726"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1727",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Water",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 155,
+        "y": 72,
+        "z": 0
+    },
+    {
+        "desc": "The river here makes a soft bend to the north and east. Around the banks of the\nriver trees are becoming sparse and more insects than normal are buzzing around.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1727"
+                ],
+                "name": "",
+                "out": [
+                    "1727"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12491"
+                ],
+                "name": "",
+                "out": [
+                    "12491"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                    "1729"
+                ],
+                "name": "",
+                "out": [
+                    "1729"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1724"
+                ],
+                "name": "",
+                "out": [
+                    "1724"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1728",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Water",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 155,
+        "y": 73,
+        "z": 0
+    },
+    {
+        "desc": "There is a bank to the south, where you can leave this gentle river. The flowing\nbecomes dimmer as you get closer to the source, somewhere to the west. To the\nsouth-east, you see a large cabin hidden in the trees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12517"
+                ],
+                "name": "",
+                "out": [
+                    "12517"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12417"
+                ],
+                "name": "",
+                "out": [
+                    "12417"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                    "1730"
+                ],
+                "name": "",
+                "out": [
+                    "1730"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1728"
+                ],
+                "name": "",
+                "out": [
+                    "1728"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1729",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Water",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 156,
+        "y": 73,
+        "z": 0
+    },
+    {
+        "desc": "The water flows gently here, cutting through the quiet plains of the Shire. With\nthe soft rippling of the water and the calm wind in your face, you feel as if\nyou could sail all the way down the Water to the Brandywine and beyond to the\nfar sea.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12513"
+                ],
+                "name": "",
+                "out": [
+                    "12513"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12418"
+                ],
+                "name": "",
+                "out": [
+                    "12418"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                    "1731"
+                ],
+                "name": "",
+                "out": [
+                    "1731"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1729"
+                ],
+                "name": "",
+                "out": [
+                    "1729"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1730",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Water",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 157,
+        "y": 73,
+        "z": 0
+    },
+    {
+        "desc": "The river turns gently here flowing southeasterly, carrying you in its travel\nthrough the lands of the Shire. To the south, you think you see a large cabin\nhalf-hidden in the trees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12511"
+                ],
+                "name": "",
+                "out": [
+                    "12511"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1734"
+                ],
+                "name": "",
+                "out": [
+                    "1734"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12508"
+                ],
+                "name": "",
+                "out": [
+                    "12508"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1730"
+                ],
+                "name": "",
+                "out": [
+                    "1730"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1731",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Water",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 158,
+        "y": 73,
+        "z": 0
+    },
+    {
+        "desc": "The water flows gently here, cutting across the quiet plains of the Shire. With\nthe wind at your back, you feel as if you could follow this river all the way to\nthe Brandywine and then out to the great seas of the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12508"
+                ],
+                "name": "",
+                "out": [
+                    "12508"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1733"
+                ],
+                "name": "",
+                "out": [
+                    "1733"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1734"
+                ],
+                "name": "",
+                "out": [
+                    "1734"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1732",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Water",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 159,
+        "y": 74,
+        "z": 0
+    },
+    {
+        "desc": "The river turns gently from the north back towards the east, carrying you in its\ntravel through the lands of the Shire. To the south, you think you see a large\ncabin half-hidden in the trees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1731"
+                ],
+                "name": "",
+                "out": [
+                    "1731"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1732"
+                ],
+                "name": "",
+                "out": [
+                    "1732"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1734",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Water",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 158,
+        "y": 74,
+        "z": 0
+    },
+    {
+        "desc": "On the sides of the path, the fresh scent of the large trees makes your walk\npleasant. To the north there is a big wooden cabin half-hidden in the trees.\nThere must be water somewhere to the north as murmurs of a river can be heard.\nThe path leads towards Little Delving to the west while leading to Hobbiton\neastwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1737"
+                ],
+                "name": "",
+                "out": [
+                    "1737"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "20040"
+                ],
+                "name": "",
+                "out": [
+                    "20040"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1736"
+                ],
+                "name": "",
+                "out": [
+                    "1736"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1721"
+                ],
+                "name": "",
+                "out": [
+                    "1721"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1735",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path Surrounded by Trees",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 157,
+        "y": 77,
+        "z": 0
+    },
+    {
+        "desc": "This path runs parallel to the Water which turns west-south here. If you follow\nthe road west, you will find Little Delving. At some distance to the east lies\nHobbiton, the largest village in all the Shire.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1744"
+                ],
+                "name": "",
+                "out": [
+                    "1744"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1735"
+                ],
+                "name": "",
+                "out": [
+                    "1735"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1736",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path Surrounded by Trees",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 158,
+        "y": 77,
+        "z": 0
+    },
+    {
+        "desc": "You have now entered a large wooden cabin. It is well equipped with camping\nsupplies. Judging by the contents of the room, the inhabitant here must really\nhave a passion for nature. A door leads eastward into another room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1735"
+                ],
+                "name": "",
+                "out": [
+                    "1735"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1738"
+                ],
+                "name": "",
+                "out": [
+                    "1738"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1737",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Wooden Cabin",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 157,
+        "y": 76,
+        "z": 0
+    },
+    {
+        "desc": "This room is where Valindur the Ranger teaches woodcraft to pupils willing to\nlearn. Many strange herbs are stored in pots and several bookshelves hold tomes\non the various arts of riding, healing, and hunting.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1737"
+                ],
+                "name": "",
+                "out": [
+                    "1737"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1738",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 64,
+        "name": "Lessons Room",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 158,
+        "y": 76,
+        "z": 0
+    },
+    {
+        "desc": "Around you grows many small bushes. Gooseberries, currants and raspberries grow\nhere in abundance. These fields seem to be treated much differently than the\nother fields in the area, as fruits do not need as much attention as vegetable\nfields or corn fields do. The fields suddenly end to the north as they come to a\nsmall path. To the west you can see a pasture behind a fence.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20040"
+                ],
+                "name": "",
+                "out": [
+                    "20040"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1740"
+                ],
+                "name": "",
+                "out": [
+                    "1740"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1743"
+                ],
+                "name": "",
+                "out": [
+                    "1743"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1739",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "A Berry Field",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 157,
+        "y": 79,
+        "z": 0
+    },
+    {
+        "desc": "Many different types of flowers grow here. Mainly golden poppies and mountain\nlaurels, but there are a fair amount of roses and purple lilacs to one side as\nwell. Some smaller plantings of various herbs and some onions also make up much\nof this area.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1744"
+                ],
+                "name": "",
+                "out": [
+                    "1744"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1742"
+                ],
+                "name": "",
+                "out": [
+                    "1742"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14867"
+                ],
+                "name": "",
+                "out": [
+                    "14867"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1739"
+                ],
+                "name": "",
+                "out": [
+                    "1739"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1743",
+        "light": 2,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "A Small Flower Garden",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 158,
+        "y": 79,
+        "z": 0
+    },
+    {
+        "desc": "This path follows the same general path as the water to the north. On the sides\nof the path are rows of trees which provide the traveller with ample shade. To\nthe east lies the village of Hobbiton while to the west lies Little Delving.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1736"
+                ],
+                "name": "",
+                "out": [
+                    "1736"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1743"
+                ],
+                "name": "",
+                "out": [
+                    "1743"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1745"
+                ],
+                "name": "",
+                "out": [
+                    "1745"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "20040"
+                ],
+                "name": "",
+                "out": [
+                    "20040"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1744",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path Surrounded by Trees",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 158,
+        "y": 78,
+        "z": 0
+    },
+    {
+        "desc": "This path follows along The Water westwards. A fairly busy village can be heard\nto the north-east, which could possibly have a place to rest after your long\nadventures. The path runs west towards the town of Little Delving.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14867"
+                ],
+                "name": "",
+                "out": [
+                    "14867"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1746"
+                ],
+                "name": "",
+                "out": [
+                    "1746"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1744"
+                ],
+                "name": "",
+                "out": [
+                    "1744"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1745",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path Surrounded by Trees",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 159,
+        "y": 78,
+        "z": 0
+    },
+    {
+        "desc": "Lush fields stand between the East Road, and the village of Hobbiton. Well\ntended, and separated from the surrounding countryside by lush, and neatly\ntrimmed hedgerows, these fields obviously see frequent use, and a narrow trail\ncuts north to south, where the people of the Shire use it as a short- cut from\nthe main road to the numerous smials, which you can see a small distance to the\nnorth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1748"
+                ],
+                "name": "",
+                "out": [
+                    "1748"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1686"
+                ],
+                "name": "",
+                "out": [
+                    "1686"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1792"
+                ],
+                "name": "",
+                "out": [
+                    "1792"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1747",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Fields near Hobbiton",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 159,
+        "y": 64,
+        "z": 0
+    },
+    {
+        "desc": "This is the village of Hobbiton, one of the most important places in the Shire.\nMany hobbits have their home here or in the surroundings, and the town has good\nstores where the people can find what they need. To the east is a well equipped\nGeneral Store, and to the north you see the centre of the village.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1756"
+                ],
+                "name": "",
+                "out": [
+                    "1756"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1747"
+                ],
+                "name": "",
+                "out": [
+                    "1747"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1749"
+                ],
+                "name": "",
+                "out": [
+                    "1749"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1748",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hobbiton Village",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 159,
+        "y": 63,
+        "z": 0
+    },
+    {
+        "desc": "Built in the middle of the largest village in the Shire, this square is often\nused as a gathering place for reunions and parties. The square is very clean and\nappears to be well kept by the fine inhabitants of this village.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1757"
+                ],
+                "name": "",
+                "out": [
+                    "1757"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1748"
+                ],
+                "name": "",
+                "out": [
+                    "1748"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1753"
+                ],
+                "name": "",
+                "out": [
+                    "1753"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1780"
+                ],
+                "name": "",
+                "out": [
+                    "1780"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1756",
+        "light": 2,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Hobbiton Central",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 159,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "This rather wide path leaves the village of Hobbiton towards the lands north. A\nbridge lies ahead, allowing you safe passage over the water. You can see a large\nhill farther up the road. To the west is a small dock used to launch boats onto\nthe water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1758"
+                ],
+                "name": "",
+                "out": [
+                    "1758"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1756"
+                ],
+                "name": "",
+                "out": [
+                    "1756"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20042"
+                ],
+                "name": "",
+                "out": [
+                    "20042"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1757",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Road to the Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 159,
+        "y": 61,
+        "z": 0
+    },
+    {
+        "desc": "A bridge made of solid wood allows travellers to pass over the water without\nfear of getting wet. To the north, a rather large hill can be seen, while the\nvillage of Hobbiton can be spotted to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1759"
+                ],
+                "name": "",
+                "out": [
+                    "1759"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1757"
+                ],
+                "name": "",
+                "out": [
+                    "1757"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1758",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bridge over the Water",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 159,
+        "y": 60,
+        "z": 0
+    },
+    {
+        "desc": "This is a large and comfortable smial, the dwelling of a well-off hobbit, or so\nit seems. Comfortable furniture rests on soft carpeting; polished molding lines\nthe round doorways which lead off to the other sections of the home.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1779"
+                ],
+                "name": "",
+                "out": [
+                    "1779"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1778",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Large Smial",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 157,
+        "y": 61,
+        "z": 0
+    },
+    {
+        "desc": "You are in a charming place away from the hustle and bustle of the village.\nSmall trees grow on the sides of the square, inviting you to take rest beneath\ntheir boughs. A large and beautiful smial lies to the north and to the south is\nthe Post Office of Hobbiton. A small street leads eastward to the centre of the\nvillage, while to the west it turns into a placid lane heading through the\nfields towards Needlehole and Little Delving.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1778"
+                ],
+                "name": "",
+                "out": [
+                    "1778"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1781"
+                ],
+                "name": "",
+                "out": [
+                    "1781"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1780"
+                ],
+                "name": "",
+                "out": [
+                    "1780"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1746"
+                ],
+                "name": "",
+                "out": [
+                    "1746"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1779",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "White Square",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 157,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "This street goes east and west through Hobbiton. Here you can see small houses\non each side of the road. It does not appear to be a very busy area. To the west\nthe street ends at a charming square while to the east is the centre of the\nvillage.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4099,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1756"
+                ],
+                "name": "",
+                "out": [
+                    "1756"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1779"
+                ],
+                "name": "",
+                "out": [
+                    "1779"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1780",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Small Street",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 158,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "In this building can be found the local post office of the Shire. Many hobbit\nemployees run around busily, organizing letters in order to get them to their\ndestiny. You can check the desk to see if anything has arrived for you.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1779"
+                ],
+                "name": "",
+                "out": [
+                    "1779"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1781",
+        "light": 2,
+        "loadflags": 131072,
+        "mobflags": 0,
+        "name": "Post Office",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 157,
+        "y": 63,
+        "z": 0
+    },
+    {
+        "desc": "The bank here is ideal for launching boats into the water north. To the south\nlies a small path, a white picket fence blocks your way into the garden to the\neast.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1729"
+                ],
+                "name": "",
+                "out": [
+                    "1729"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1721"
+                ],
+                "name": "",
+                "out": [
+                    "1721"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12491"
+                ],
+                "name": "",
+                "out": [
+                    "12491"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12417",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bank of the Water",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 156,
+        "y": 76,
+        "z": 0
+    },
+    {
+        "desc": "You are completely surrounded by flowers. Every possible flower you can think of\nis here. Red and White roses, Lilacs, Mayflowers, Violets, Carnations,\nMistletoe, Apple Blossoms, and many more. Although, there seems to be an\nabundance of Lilies of the Valley closer to the middle of the garden. Almost in\nthe centre of the garden, is a quaint little gazebo, painted white, with ancient\nvines stretching up into its rafters. There are benches in all four corners of\nthe garden, and lanterns lit at intervals around the garden. To the north, you\ncan see the Water as it makes its way towards the Brandywine River.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1730"
+                ],
+                "name": "",
+                "out": [
+                    "1730"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12418",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Beautiful Flower Garden",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 157,
+        "y": 74,
+        "z": 0
+    },
+    {
+        "desc": "One can tell from the thick vegetation and the loud hum of insects on the sides\nof the path that a bog is nearby. The path leads eastwards while to the north a\ntrail breaks in between the sedges.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1722"
+                ],
+                "name": "",
+                "out": [
+                    "1722"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1719"
+                ],
+                "name": "",
+                "out": [
+                    "1719"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12461",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path near the Rushock Bog",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 0,
+        "x": 153,
+        "y": 77,
+        "z": 0
+    },
+    {
+        "desc": "An old birch marks the beginning of what seems to be a long line of trees\ncontinuing as far east as eye can see. The lowest branches of the tree are too\nhigh to reach, and the trunk is simply too big to scale without any support.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1728"
+                ],
+                "name": "",
+                "out": [
+                    "1728"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1720"
+                ],
+                "name": "",
+                "out": [
+                    "1720"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12417"
+                ],
+                "name": "",
+                "out": [
+                    "12417"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13144"
+                ],
+                "name": "",
+                "out": [
+                    "13144"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12491",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Beginning of a Tree Line",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 155,
+        "y": 76,
+        "z": 0
+    },
+    {
+        "desc": "Some vegetables and wild corn grow here and there, but otherwise there is no\nsign of organized farming nearby. There is no obvious explanation to why the\nfields have been abandoned even though the river in the south would provide all\nthe moisture for succesfull farming. A few ditches have been dug in the ground\nlong ago, but they are now overgrown as well.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12509"
+                ],
+                "name": "",
+                "out": [
+                    "12509"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1732"
+                ],
+                "name": "",
+                "out": [
+                    "1732"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12505"
+                ],
+                "name": "",
+                "out": [
+                    "12505"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1731"
+                ],
+                "name": "",
+                "out": [
+                    "1731"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12508",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Abandoned Fields",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 159,
+        "y": 73,
+        "z": 0
+    },
+    {
+        "desc": "Hay grows all over this field, and much of it has already been piled below a\nsmall shelter in the centre of the field. Tracks of a pony and a carriage form\nan often used trail from the shelter, leading southeast. The field extends far\nto the north, where it turns into bushes.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12510"
+                ],
+                "name": "",
+                "out": [
+                    "12510"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12508"
+                ],
+                "name": "",
+                "out": [
+                    "12508"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12506"
+                ],
+                "name": "",
+                "out": [
+                    "12506"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12511"
+                ],
+                "name": "",
+                "out": [
+                    "12511"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12509",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Large Fields of Hay",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 159,
+        "y": 72,
+        "z": 0
+    },
+    {
+        "desc": "A lack of trees in the area has allowed taller bushes to take root. Many of them\nblossom in the summer, their peace only disturbed by random travellers on the\nsmall footpath going west and east through the opening.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12509"
+                ],
+                "name": "",
+                "out": [
+                    "12509"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12507"
+                ],
+                "name": "",
+                "out": [
+                    "12507"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12512"
+                ],
+                "name": "",
+                "out": [
+                    "12512"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12510",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Break in the Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 159,
+        "y": 71,
+        "z": 0
+    },
+    {
+        "desc": "Many small rocks have been neatly set in the riverbank to serve as stairs\nleading down to the river. Above, the riverside has been found to be perfect\nspot for a lonely smial, which by the look of the yard houses some very active\nhobbit children.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12512"
+                ],
+                "name": "",
+                "out": [
+                    "12512"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1731"
+                ],
+                "name": "",
+                "out": [
+                    "1731"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12509"
+                ],
+                "name": "",
+                "out": [
+                    "12509"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12513"
+                ],
+                "name": "",
+                "out": [
+                    "12513"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "13145"
+                ],
+                "name": "",
+                "out": [
+                    "13145"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12511",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Riverbank",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 158,
+        "y": 72,
+        "z": 0
+    },
+    {
+        "desc": "The forest gets darker and gloomier here, the underbrush becoming thick with\nshrubs and small vegetation. The bushes create excellent hiding places for many\nsmall animals that have left their markings along the path that runs east-west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12511"
+                ],
+                "name": "",
+                "out": [
+                    "12511"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12510"
+                ],
+                "name": "",
+                "out": [
+                    "12510"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12514"
+                ],
+                "name": "",
+                "out": [
+                    "12514"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12512",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path in the Dark Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 158,
+        "y": 71,
+        "z": 0
+    },
+    {
+        "desc": "The river to the south has eroded its way deep into the ground, forming a steep\nbank here. The ground slopes slighly upwards in the north and as it slowly turns\ninto forest. Some kind of wooden rail has been built on the slope, possibly this\nis used to send logs down to the river.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12514"
+                ],
+                "name": "",
+                "out": [
+                    "12514"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1730"
+                ],
+                "name": "",
+                "out": [
+                    "1730"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12511"
+                ],
+                "name": "",
+                "out": [
+                    "12511"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12517"
+                ],
+                "name": "",
+                "out": [
+                    "12517"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12513",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Slope by the River",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 157,
+        "y": 72,
+        "z": 0
+    },
+    {
+        "desc": "The forest grows denser to the north, while here it is pretty light and\ncolourful thriving in the vast amount of sunlight that reaches the ground. A\nsmall footpath traverses up from the bog in the west and continues east through\nthe forest, circling around trees like a snake.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12513"
+                ],
+                "name": "",
+                "out": [
+                    "12513"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12512"
+                ],
+                "name": "",
+                "out": [
+                    "12512"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12515"
+                ],
+                "name": "",
+                "out": [
+                    "12515"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12514",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path in the Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 157,
+        "y": 71,
+        "z": 0
+    },
+    {
+        "desc": "As the ground slopes slightly toward east it becomes drier. There are still\nnumerous small pools and patches of reeds in the vicinity. A couple of long\nplanks have been set upon the ground, making it possible to walk between dry\npatches without wetting ones' toes.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12517"
+                ],
+                "name": "",
+                "out": [
+                    "12517"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12514"
+                ],
+                "name": "",
+                "out": [
+                    "12514"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12516"
+                ],
+                "name": "",
+                "out": [
+                    "12516"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12515",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Bog",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 156,
+        "y": 71,
+        "z": 0
+    },
+    {
+        "desc": "There is very little solid ground here, and even the few patches are covered\nwith reeds. The water is rather shallow however, allowing some hobbits to manage\nexploring this area when the water level is low.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1727"
+                ],
+                "name": "",
+                "out": [
+                    "1727"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12515"
+                ],
+                "name": "",
+                "out": [
+                    "12515"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12518"
+                ],
+                "name": "",
+                "out": [
+                    "12518"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12516",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Bog",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 155,
+        "y": 71,
+        "z": 0
+    },
+    {
+        "desc": "Only a small ridge of solid ground reaches to the bog from the east, making a\nway through many small pools of water. While the water flows freely in the river\nsouth of here, in the west and north the surface is hidden by endless stretches\nof reed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12515"
+                ],
+                "name": "",
+                "out": [
+                    "12515"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1729"
+                ],
+                "name": "",
+                "out": [
+                    "1729"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12513"
+                ],
+                "name": "",
+                "out": [
+                    "12513"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1727"
+                ],
+                "name": "",
+                "out": [
+                    "1727"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12517",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Boggy Riverside",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 156,
+        "y": 72,
+        "z": 0
+    },
+    {
+        "desc": "The soil gets more swampy as it descends into a slight bog in the east. Slowly\nit becomes more difficult, yet not overly dangerous, to travel through. The\nground is quite uneven, allowing for small pools of water to collect upon the\nground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1726"
+                ],
+                "name": "",
+                "out": [
+                    "1726"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12516"
+                ],
+                "name": "",
+                "out": [
+                    "12516"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12519"
+                ],
+                "name": "",
+                "out": [
+                    "12519"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12518",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Riverside Fields",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 154,
+        "y": 71,
+        "z": 0
+    },
+    {
+        "desc": "The fields on this side of the river would be good for farming if not for the\nfact it looks like the water seems to often flood this area. The soil is not\nquite as swampy as it seems to be on the south side of the river. Still,\nefficient farming would require more work against the flooding than the hobbits\nprobably consider worthwhile.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1725"
+                ],
+                "name": "",
+                "out": [
+                    "1725"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12518"
+                ],
+                "name": "",
+                "out": [
+                    "12518"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12519",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Riverside Fields",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 153,
+        "y": 71,
+        "z": 0
+    },
+    {
+        "desc": "Due to excessive moisture from the nearby bog, only a few larger bushes have\nbeen able to hold their root in the wet soil long enough to gain size. The\ntaller they grow, the higher becomes the risk of a strong autumn wind simply\npulling them up from the loose ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1724"
+                ],
+                "name": "",
+                "out": [
+                    "1724"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1719"
+                ],
+                "name": "",
+                "out": [
+                    "1719"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12491"
+                ],
+                "name": "",
+                "out": [
+                    "12491"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1722"
+                ],
+                "name": "",
+                "out": [
+                    "1722"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13144",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Low Shrubs",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 154,
+        "y": 76,
+        "z": 0
+    },
+    {
+        "desc": "It is obvious that this smial was built with children and their play in mind.\nPlenty of open space has been left in the centre of the round main hall and\neverything that might be dangerous to little ones has probably been put safely\naway in the closets and cabinets that line the walls. A few steps of stairs lead\noutside.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "12511"
+                ],
+                "name": "",
+                "out": [
+                    "12511"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13145",
+        "light": 0,
+        "loadflags": 4,
+        "mobflags": 0,
+        "name": "Inside a Smial",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 158,
+        "y": 69,
+        "z": 0
+    },
+    {
+        "desc": "Around you are many acres of hay fields, however, they seem to have been\nharvested some time in the recent past. The rolls of hay are piled relatively\nneatly in the south-west corner of the fields. A small flower garden lies to the\nwest; to the north you can see a small path running behind a line of trees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1745"
+                ],
+                "name": "",
+                "out": [
+                    "1745"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14868"
+                ],
+                "name": "",
+                "out": [
+                    "14868"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14866"
+                ],
+                "name": "",
+                "out": [
+                    "14866"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1743"
+                ],
+                "name": "",
+                "out": [
+                    "1743"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14867",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Large Hay Field",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 159,
+        "y": 79,
+        "z": 0
+    },
+    {
+        "desc": "Many carts and animals have travelled this path, as the ground here is\nwell-packed. To the south you can see a field that is full of small bushes. The\npath runs west-east here, entering a large farm to the west and joining another\npath to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1735"
+                ],
+                "name": "",
+                "out": [
+                    "1735"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1739"
+                ],
+                "name": "",
+                "out": [
+                    "1739"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1744"
+                ],
+                "name": "",
+                "out": [
+                    "1744"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1718"
+                ],
+                "name": "",
+                "out": [
+                    "1718"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20040",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Path to a Small Farm",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 157,
+        "y": 78,
+        "z": 0
+    },
+    {
+        "desc": "The Water flows calmly to the north here making a soft sound when it caresses\nthe wood of the docks. It is like a cooing song, and you could well stay for a\nnap. The river can be entered here, but you need a boat to do it. Then you'll be\nable to explore it and go wherever it takes you. A post in the sand here has a\nsmall note attached.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1782"
+                ],
+                "name": "",
+                "out": [
+                    "1782"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1757"
+                ],
+                "name": "",
+                "out": [
+                    "1757"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20042",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 2,
+        "name": "Docks on the Bank of the Water",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 2,
+        "sundeath": 1,
+        "x": 158,
+        "y": 61,
+        "z": 0
+    }
+]

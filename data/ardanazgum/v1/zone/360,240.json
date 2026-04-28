@@ -1,0 +1,1568 @@
+[
+    {
+        "desc": "From the verdant lowlands in the west the land climbs up to the wind-beaten\nplains in the east, a gentle treeless slope, furrowed with folds and gullies.\nSome white and purple flowers dot the grassy slope. A gust of wind sweeping\nacross the plains carries the faint scent of the grassy meadows. The grassy\nplains of the Rohirrim stretch away to the horizon.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12975"
+                ],
+                "name": "",
+                "out": [
+                    "12975"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12938"
+                ],
+                "name": "",
+                "out": [
+                    "12938"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12936"
+                ],
+                "name": "",
+                "out": [
+                    "12936"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12937",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Long Treeless Slope",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 360,
+        "y": 245,
+        "z": 0
+    },
+    {
+        "desc": "The empty wind-beaten lands grow scarce with grass, the short turf breaking away\nin some places, exposing the barren, heavily textured soil. The wide grey-green\nplains stretch far to the southerly lands of the realm of Rohan. To the north\nand west the ground slopes down to the plains below, gradually turning into\nverdant grasslands.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12974"
+                ],
+                "name": "",
+                "out": [
+                    "12974"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12939"
+                ],
+                "name": "",
+                "out": [
+                    "12939"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12937"
+                ],
+                "name": "",
+                "out": [
+                    "12937"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12938",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Windy Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 361,
+        "y": 245,
+        "z": 0
+    },
+    {
+        "desc": "Sparse grasses, short and needle-like, grow in patches scattered across the\nwindy plains. The short turf has withdrawn in places to reveal the coarse soil\nunderneath. The wind-beaten lands spread out to the southerly lands of the realm\nof Rohan while to the north the lands become more verdant with green slopes and\nwaves of grass.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12940"
+                ],
+                "name": "",
+                "out": [
+                    "12940"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12938"
+                ],
+                "name": "",
+                "out": [
+                    "12938"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12939",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Windy Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 362,
+        "y": 245,
+        "z": 0
+    },
+    {
+        "desc": "Nothing but the short needle-like grass grows on this long wind-beaten slope.\nThe ground steadily climbs upwards from the grassy expanse in the north to the\nwindy plains in the south. Far to the north the eaves of the great forest can be\nseen, a distant shadow at the feet of the Misty Mountains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12941"
+                ],
+                "name": "",
+                "out": [
+                    "12941"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12939"
+                ],
+                "name": "",
+                "out": [
+                    "12939"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12974"
+                ],
+                "name": "",
+                "out": [
+                    "12974"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12940",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rising Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 362,
+        "y": 244,
+        "z": 0
+    },
+    {
+        "desc": "Tufts of tall yellow-green grass sprout from the short turf between strips of\nbarren land that reveal the coarse soil underneath. Some white poppies grow\namidst the patches of grass. The grasslands expand to the north towards the\ndistant forest while to the south the land gradually climbs towards the\nwind-beaten plains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12942"
+                ],
+                "name": "",
+                "out": [
+                    "12942"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12940"
+                ],
+                "name": "",
+                "out": [
+                    "12940"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12973"
+                ],
+                "name": "",
+                "out": [
+                    "12973"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12941",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sparse Grasses",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 362,
+        "y": 243,
+        "z": 0
+    },
+    {
+        "desc": "The grassy land has been bruised in a great circle. Many heavy feet have beaten\nthe land and turf has been torn and grass been trampled. At the centre of the\nring lie charred remains of a tree torn from the ground. Tracks lead out from\nthe ring north-westwards, towards the mountains that lies ten or more leagues\naway. To the south, the level grasslands reach far to the horizon.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12943"
+                ],
+                "name": "",
+                "out": [
+                    "12943"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12941"
+                ],
+                "name": "",
+                "out": [
+                    "12941"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12972"
+                ],
+                "name": "",
+                "out": [
+                    "12972"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12942",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Beaten Land",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 362,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "Patches of short needle-like grass grow on the barren dusty ground of the wide\nplains. Tufts of taller grass sprout between the patches scattered across the\nplains. In spots, the grass has withdrawn to expose the barren textured soil. To\nthe north some overgrown ruins sit amidst the grasses. The wide plains spread\nout in every direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12944"
+                ],
+                "name": "",
+                "out": [
+                    "12944"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12942"
+                ],
+                "name": "",
+                "out": [
+                    "12942"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12971"
+                ],
+                "name": "",
+                "out": [
+                    "12971"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12943",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sparse Grasses",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 362,
+        "y": 241,
+        "z": 0
+    },
+    {
+        "desc": "A pile of stones and rotting planks, overgrown with grasses, sit at the centre\nof a dusty clearing, all that is left of a building that once stood here. The\nhouse must have been burned down, judging by the blackened stones and few\ncharred remains of wood. A barely noticeable path, overgrown by weeds, leads\nnorthwards to a wide field of golden-yellow hay. The grasslands stretch away to\nthe south and west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12945"
+                ],
+                "name": "",
+                "out": [
+                    "12945"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12943"
+                ],
+                "name": "",
+                "out": [
+                    "12943"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12970"
+                ],
+                "name": "",
+                "out": [
+                    "12970"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12944",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Overgrown Ruins",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 362,
+        "y": 240,
+        "z": 0
+    },
+    {
+        "desc": "The plains are covered with a carpet of short needle-like grass. Some herbs with\nbroad green leaves grow amidst the grass, adding a sweet fragrance to the air.\nIn the west the plains rise noticeably towards a line of low downs that sit far\nto the southwest. The plains stretch away far to the east towards the distant\nriver lands.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12969"
+                ],
+                "name": "",
+                "out": [
+                    "12969"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12971"
+                ],
+                "name": "",
+                "out": [
+                    "12971"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12944"
+                ],
+                "name": "",
+                "out": [
+                    "12944"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12979"
+                ],
+                "name": "",
+                "out": [
+                    "12979"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12970",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sparse Grassland",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 361,
+        "y": 240,
+        "z": 0
+    },
+    {
+        "desc": "The grassy lands rise considerably towards a line of low downs visible in the\nwest. The level grasslands spread out to the edge of sight, white poppies\ndotting the green background. Some low bushes grow scattered around the plains.\nTowards the south the ground becomes harder and the grass shorter.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12970"
+                ],
+                "name": "",
+                "out": [
+                    "12970"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12972"
+                ],
+                "name": "",
+                "out": [
+                    "12972"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12943"
+                ],
+                "name": "",
+                "out": [
+                    "12943"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12978"
+                ],
+                "name": "",
+                "out": [
+                    "12978"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12971",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains by the Downs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 361,
+        "y": 241,
+        "z": 0
+    },
+    {
+        "desc": "Short needle-like grass covers the empty level plains in a green carpet, with\npatches of grey in some places where the grass has withdrawn to expose the\nunder-lying bedrock. The grass-covered plains expand far to the horizon. A\ncluster of white and red poppies grows amidst the grasses.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12971"
+                ],
+                "name": "",
+                "out": [
+                    "12971"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12973"
+                ],
+                "name": "",
+                "out": [
+                    "12973"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12942"
+                ],
+                "name": "",
+                "out": [
+                    "12942"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12977"
+                ],
+                "name": "",
+                "out": [
+                    "12977"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12972",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sparse Grasses",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 361,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "The ground here becomes harder and the grass shorter, in spots the grass has\nretreated to reveal the bare soil underneath. Some tufts of taller grass and\npatches of white poppies lie scattered around the flatlands. To the south the\nland gradually starts to rise towards a wind-beaten stretch of plains, while\nelsewhere the level grass-covered plains spread out.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12972"
+                ],
+                "name": "",
+                "out": [
+                    "12972"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12974"
+                ],
+                "name": "",
+                "out": [
+                    "12974"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12941"
+                ],
+                "name": "",
+                "out": [
+                    "12941"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12976"
+                ],
+                "name": "",
+                "out": [
+                    "12976"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12973",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bare Flatlands",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 361,
+        "y": 243,
+        "z": 0
+    },
+    {
+        "desc": "Short grass covers the sloping plains, tufts of taller grass thrusting out from\nthe hard ground in places. Some white and red poppies dot the green slope,\ngrowing in folds and narrows of the furrowed land. In the south the empty\nwind-beaten lands stretch far away to the southerly lands.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12973"
+                ],
+                "name": "",
+                "out": [
+                    "12973"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12938"
+                ],
+                "name": "",
+                "out": [
+                    "12938"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12940"
+                ],
+                "name": "",
+                "out": [
+                    "12940"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12975"
+                ],
+                "name": "",
+                "out": [
+                    "12975"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12974",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rising Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 361,
+        "y": 244,
+        "z": 0
+    },
+    {
+        "desc": "The plains of grass stretch far to the edge of sight. Tall grasses, spotted with\nwhite flowers, cover the lands. To the east the plains gradually rise higher\nwhile in the southwest the plains slope down to verdant lowlands filled with\nflowers. Some droppings on the ground hints of the animals that graze the\ngrasslands.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12976"
+                ],
+                "name": "",
+                "out": [
+                    "12976"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12937"
+                ],
+                "name": "",
+                "out": [
+                    "12937"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12974"
+                ],
+                "name": "",
+                "out": [
+                    "12974"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12990"
+                ],
+                "name": "",
+                "out": [
+                    "12990"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12975",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wide Empty Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 360,
+        "y": 244,
+        "z": 0
+    },
+    {
+        "desc": "The bare flatlands spread out all around. The treeless plains are covered with\ntall yellow-green grasses. Far to the north a low humpbacked ridge rises from\nthe barren grasslands. The white head of Methedras, the last peak of the Misty\nMountains, glimmering in a grey cloud can be seen in the northwest. The wind\ncarries the faint scent of the grassy plains. Clusters of white flowers grow\namidst the grasses in water-filled dips.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12977"
+                ],
+                "name": "",
+                "out": [
+                    "12977"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12975"
+                ],
+                "name": "",
+                "out": [
+                    "12975"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12973"
+                ],
+                "name": "",
+                "out": [
+                    "12973"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12989"
+                ],
+                "name": "",
+                "out": [
+                    "12989"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12976",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wide Empty Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 360,
+        "y": 243,
+        "z": 0
+    },
+    {
+        "desc": "The grasslands swell up to a line of downs running from north to west. The green\nlands are covered with grasses and flowers. The flat plains stretch away from\nthe downs. The air is soft and has a faint scent of the verdant grasslands. A\nclump of bushes grows nearby, its berries already eaten by some animals.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12978"
+                ],
+                "name": "",
+                "out": [
+                    "12978"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12976"
+                ],
+                "name": "",
+                "out": [
+                    "12976"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12972"
+                ],
+                "name": "",
+                "out": [
+                    "12972"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12988"
+                ],
+                "name": "",
+                "out": [
+                    "12988"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12977",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains by the Downs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 360,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "The downs offer a view of the surrounding flatlands stretching away from the\nfoot of the ridge. The land slopes steeply down to the barren, level plains. The\nwind-beaten ground of the mound is hard and covered with short turf. To the\nsouth the lands seem to be more alive and verdant, covered in tall green grass\nand dotted with flowers.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12979"
+                ],
+                "name": "",
+                "out": [
+                    "12979"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12977"
+                ],
+                "name": "",
+                "out": [
+                    "12977"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12971"
+                ],
+                "name": "",
+                "out": [
+                    "12971"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12987"
+                ],
+                "name": "",
+                "out": [
+                    "12987"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12978",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Line of Downs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 360,
+        "y": 241,
+        "z": 0
+    },
+    {
+        "desc": "The plains swell up to a grassy ridge where a line of humpbacked downs stands in\nthe south. Tufts of grass protrude from the sloping land. The flatlands spread\nout far to the north towards the mountains and the great forest. The ground\nunderfoot is hard and dry, and covered with short turf. Some small stones lies\nscattered around the slope.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12980"
+                ],
+                "name": "",
+                "out": [
+                    "12980"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12978"
+                ],
+                "name": "",
+                "out": [
+                    "12978"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12970"
+                ],
+                "name": "",
+                "out": [
+                    "12970"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12986"
+                ],
+                "name": "",
+                "out": [
+                    "12986"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12979",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rising Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 360,
+        "y": 240,
+        "z": 0
+    }
+]

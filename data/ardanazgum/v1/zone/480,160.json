@@ -1,0 +1,86 @@
+[
+    {
+        "desc": "A large beech tree stands upon a small hill, the only point of recognition for\nmiles, as the surrounding landscape is filled with the same small bushes and\nrandom vegetation. Thick, grey roots have surfaced over five feet away from the\ntree, covered with many small fungi.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19785"
+                ],
+                "name": "",
+                "out": [
+                    "19785"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19782"
+                ],
+                "name": "",
+                "out": [
+                    "19782"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19783",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Lone Beech Tree",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 480,
+        "y": 160,
+        "z": 0
+    }
+]

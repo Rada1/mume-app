@@ -351,6 +351,21 @@ export const useRoomInfoHandler = ({
         // Check for any changes without relying on React's functional updater closures,
         // which can lead to stale local variables in strict mode.
         let topologyChanged = false;
+        const gmcpIdNumber = Number(gmcpId) || 0;
+        const gmcpIdKey = String(gmcpId);
+
+        if (!isVnumZero && matchedInternalId && gmcpIdNumber > 0) {
+            const mappedRoom = preloadedCoordsRef.current[matchedInternalId];
+            const currentServerId = Array.isArray(mappedRoom) ? mappedRoom[6] : undefined;
+            const hasServerId = currentServerId !== undefined && currentServerId !== null && String(currentServerId) !== '' && String(currentServerId) !== '0';
+
+            if (Array.isArray(mappedRoom) && (!hasServerId || String(currentServerId) === gmcpIdKey)) {
+                mappedRoom[6] = gmcpIdKey;
+                serverIdIndexRef.current[gmcpIdKey] = matchedInternalId;
+            } else if (!serverIdIndexRef.current[gmcpIdKey]) {
+                serverIdIndexRef.current[gmcpIdKey] = matchedInternalId;
+            }
+        }
 
         // Use the current stable ref to determine changes synchronously
         const prevRooms = roomsRef.current;
@@ -409,6 +424,7 @@ export const useRoomInfoHandler = ({
 
             const isDark = isVnumZero;
             const needsUpdate = !isDark && (
+                existingRoom.gmcpId !== gmcpIdNumber ||
                 existingRoom.terrain !== finalTerrain ||
                 existingRoom.name !== name ||
                 existingRoom.desc !== desc ||
@@ -426,7 +442,7 @@ export const useRoomInfoHandler = ({
                 newRooms = { ...prevRooms };
                 newRooms[targetId!] = {
                     ...existingRoom,
-                    gmcpId: isDark ? (existingRoom.gmcpId || 0) : (Number(gmcpId) || 0),
+                    gmcpId: isDark ? (existingRoom.gmcpId || 0) : gmcpIdNumber,
                     name, desc, zone,
                     terrain: finalTerrain,
                     mobFlags: newMobFlags,

@@ -1,0 +1,84 @@
+[
+    {
+        "desc": "Four stone pillars support the domed ceiling of Moria's eastern gate. A great\narch frames the impending darkness to the west. The two large bronze gates are\nnicked and marred in ancient battle. To the east can be seen a lush dale, the\nfragrance of pine and wildflowers fall in stark contrast to the dank humidity of\nthe caves. The north and south yield sheer drops onto a talus covered field.\nBelow, a wide marble staircase leads to the broken road of Durin's way.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "11468"
+                ],
+                "name": "",
+                "out": [
+                    "11468"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12468",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Great Gates",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 139,
+        "y": 207,
+        "z": 0
+    }
+]

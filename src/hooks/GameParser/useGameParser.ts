@@ -272,7 +272,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if (parseLogGmcp(cleanLine, isSnoop)) return;
 
         const tokenizer = Tokenizer.getInstance();
-        if (!tokens) tokenizer.reset('room');
+        tokenizer.reset('room');
         
         const tokenizerContext = {
             target: session.vitals.target,
@@ -345,12 +345,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             capture.startSession(expectedCaptureType);
         }
 
-        // --- Highlighting Refresh ---
-        tokenizerContext.registeredPlayers = Object.values(deps.entitiesRef.current || {})
-            .filter(e => e.capabilities.includes(EntityCapability.Player))
-            .map(p => p.name);
-            
-        let finalTokens = tokenizer.tokenize(lineToParse, tokenizerContext);
+        let finalTokens = derivedTokens;
         if (!isSnoop && (capture.getActiveType() === 'who' || capture.getActiveType() === 'where')) {
             finalTokens = buildPlayerLineTokens(textOnly, registerEntity) || finalTokens;
         }
@@ -409,16 +404,20 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if (isVisible) {
             const mid = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
             const ansiHtml = deps.ansiConvert.toHtml(lineToParse);
-            const messageObj = PipelineOrchestrator.processTextLine(lineToParse, ansiHtml, finalType, tokenizerContext);
-            messageObj.tokens = finalTokens;
+            const messageObj = PipelineOrchestrator.processTextLine(lineToParse, ansiHtml, finalType, tokenizerContext, finalTokens);
+            const tokenizeFresh = (text: string) => {
+                const freshTokenizer = Tokenizer.getInstance();
+                freshTokenizer.reset('room');
+                return freshTokenizer.tokenize(text, tokenizerContext);
+            };
             
             deps.addMessage(
                 finalType, textOnly, undefined, mid, false, 
                 { textOnly, lower, html: messageObj.html, tokens: messageObj.tokens },
                 undefined, undefined, undefined, false, 
                 commResult.replyTarget, commResult.replyCommand, commResult.commSender, commResult.commAction, commResult.commText, commResult.commColor,
-                commResult.commSender ? Tokenizer.getInstance().tokenize(commResult.commSender, tokenizerContext) : undefined,
-                commResult.commText ? Tokenizer.getInstance().tokenize(commResult.commText, tokenizerContext) : undefined,
+                commResult.commSender ? tokenizeFresh(commResult.commSender) : undefined,
+                commResult.commText ? tokenizeFresh(commResult.commText) : undefined,
                 undefined, undefined, undefined, isSnoop
             );
         }

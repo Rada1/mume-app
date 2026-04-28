@@ -1,0 +1,1936 @@
+[
+    {
+        "desc": "Charred stumps rise from a valley floor blanketed in powdery grey ash. Scorched\ngiant skulls are impaled on blackened poles lining a cleared path down the\ncentre of the valley. Steep rock walls close in to either side, making this a\nnatural bottleneck.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2053,
+                "in": [
+                    "18797"
+                ],
+                "name": "",
+                "out": [
+                    "18797"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18766"
+                ],
+                "name": "",
+                "out": [
+                    "18766"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18796",
+        "light": 2,
+        "loadflags": 16384,
+        "mobflags": 32768,
+        "name": "Blackened Outpost",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 584,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "An erosion-carved furrow divides contrasting terrain as it meanders up a steep\nincline. Below, a vast part of the mountain slope has fallen away, leaving\nexposed rocks and reddish dirt. Above, a great fire has left blackened shrubs\nand shattered trees. Numerous rills trickle downward through the ashes, the\nbeginnings of a process that will send the mountainside cascading into the\nvalley below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18800"
+                ],
+                "name": "",
+                "out": [
+                    "18800"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18802"
+                ],
+                "name": "",
+                "out": [
+                    "18802"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18801",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Eroding Mountainside",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 581,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "A narrow gap between two peaks shows signs of wear by the elements. Dry runnels\nmeander down the slopes, and there are broad swaths of missing vegetation now\noccupied by mounds of unstable scree. The entire mountainside is scorched, and\nthere is no hint of green indicating regrowth of vegetation. Even the moss and\nlichen have not recovered on these black and barren slopes.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18803"
+                ],
+                "name": "",
+                "out": [
+                    "18803"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18801"
+                ],
+                "name": "",
+                "out": [
+                    "18801"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18802",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Eroding Mountainside",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 582,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "A broad ledge curves around a mountain, leading to an overlook immediately to\nthe west. Large boulders have tumbled onto the ledge here and there, and gaps in\nthe ledge show where some have broken through. An unstable scree slope to the\neast leads down to an isolated plateau covered in fir trees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18802"
+                ],
+                "name": "",
+                "out": [
+                    "18802"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "18702"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18804"
+                ],
+                "name": "",
+                "out": [
+                    "18804"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18803",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ledge above a Plateau",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 582,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "This overlook affords an excellent view of a broad valley stretching from\nnortheast to southwest. Sharp, broken rock juts from either side of this crag,\nand mounds of debris far below are evidence of its erosion. The surface is\nsomewhat unstable, and idle footsteps send small stones cascading down below.\nEagles' nests dot the slopes of a peak to the immediate south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18803"
+                ],
+                "name": "",
+                "out": [
+                    "18803"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18804",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rugged Overlook",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 581,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "A crude, marble-lined tunnel running in from the north comes to an abrupt\ndead-end at a rough granite wall to the south. Notches in the wall show the\nlocations of unsuccessful attempts to try to break through this hard rock;\nbroken pickaxes on the floor further testify to this failure. An alternate route\nbypassing the granite wall is given in the form of a jagged, crudely-carved hole\nin the ceiling which leads upward into a spacious burrow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18811"
+                ],
+                "name": "",
+                "out": [
+                    "18811"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18809"
+                ],
+                "name": "",
+                "out": [
+                    "18809"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18810",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Roughly-Hewn Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 586,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "A crudely-delved tunnel runs north and south, bulging here where it meets an\nunderground cavity. This cavity opens east and west, its smoothly layered walls\na stark contrast to the sloppy, uneven surfaces of the tunnel. A faint, acrid\nburnt odour lingers in the stale, dry air that fills this underground chamber.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19020"
+                ],
+                "name": "",
+                "out": [
+                    "19020"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18810"
+                ],
+                "name": "",
+                "out": [
+                    "18810"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18814"
+                ],
+                "name": "",
+                "out": [
+                    "18814"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19021"
+                ],
+                "name": "",
+                "out": [
+                    "19021"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18811",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Roughly-Hewn Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 586,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "Smooth dolomite makes up the surfaces of a large, circular chamber. The floor is\ncovered in small piles of ashes and charred coals, and black scorch marks mar\nthe white walls of the chamber. A crude alcove in the eastern wall holds wood,\ntorches, and flints - materials for making a fire. A raised platform in the\ncentre of the chamber is piled with mounds of singed bedding.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18811"
+                ],
+                "name": "",
+                "out": [
+                    "18811"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18814",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 65536,
+        "name": "Scorched Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 587,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "Filthy water trickles across the floor of a cave, pooling into stagnant puddles\nwhere there are dips in the rock. Sodden pelts scattered on the floor are\nstarting to rot; they emit a rank stench. Several giant skeletons rest against\nthe walls, surrounded by spatters of long-dried blood. The smooth natural walls\nof the cavern turn eastward, opening into a grisly scene in the chamber to the\neast. However, the trickle of the water continues down a narrow, rubble-lined\nmine-tunnel to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18816"
+                ],
+                "name": "",
+                "out": [
+                    "18816"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18798"
+                ],
+                "name": "",
+                "out": [
+                    "18798"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19019"
+                ],
+                "name": "",
+                "out": [
+                    "19019"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18815",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Damp Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 584,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "An opaque stream of water flows in from a tunnel to the south. It proceeds to\nseep beneath a mound of rubble that entirely covers what would be a gap in the\neastern cave wall. Iron chains extend from rings embedded in the walls, leading\nto shackles meant to restrain the slaves that excavated this mine. The dusty\nfloor is littered with filthy refuse and rotting scraps of food.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18815"
+                ],
+                "name": "",
+                "out": [
+                    "18815"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18816",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Collapsed Dead-End",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 584,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "The forest floor is covered with rocky outcroppings and leaves fallen from the\ntremendous black oaks of this mountainous region of Mirkwood. Thick, thorny\nvines climb trunks, circling round and round as if trying to choke the trees.\nBranch, leaf, and vine conspire to create a canopy, yet it is not dense enough\nto hide the sky from view.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18917"
+                ],
+                "name": "",
+                "out": [
+                    "18917"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18915"
+                ],
+                "name": "",
+                "out": [
+                    "18915"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18918"
+                ],
+                "name": "",
+                "out": [
+                    "18918"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18916",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tangled Slope",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 598,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "Deep ruts have been formed in varying patterns on the ground here as a product\nof erosion and water flowing down from higher ground. Between these cracks,\nplant life has taken advantage of the cool shade and grows in abundance. One\nspecies of thorn bushes seems to thrive unlike any other plant. Their long,\nspiny branches scrape and scratch anything that comes too close to their domain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18916"
+                ],
+                "name": "",
+                "out": [
+                    "18916"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18927"
+                ],
+                "name": "",
+                "out": [
+                    "18927"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18917",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Raveled Mesa",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 598,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "A thick forest of oak and beech covers large, sprawling hills that extend\ntowards the east. The ground is overgrown with large bushes that surround and\nembrace the old, gnarly trunks. The bushes grow so dense and tall that little of\nthe terrain can be seen in other directions.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18916"
+                ],
+                "name": "",
+                "out": [
+                    "18916"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18918",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sprawling Hills",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 597,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "A large moss-covered boulder stands squat in the middle of the mountain pass,\nwith overgrown bushes on one side and a twisted oak tree on the other one. The\ngnarled branches of the tree, draped in clinging black vines, scrape against the\nboulder. The surrounding terrain is arid and sparsely vegetated, though tough\nweeds seem to find the area agreeable.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18921"
+                ],
+                "name": "",
+                "out": [
+                    "18921"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18923"
+                ],
+                "name": "",
+                "out": [
+                    "18923"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18922",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Mountain Pass",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 599,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "Dense and nearly impassable undergrowth covers this ridge. Thorny shrubs and\ntwisting vines make up most of the vegetation, while gnarly, ancient trees with\nenormous trunks, which carry great and sprawling crowns, rise through the brush.\nThough the trees do not grow dense, their foliage creates a green roof which\nblots out the sky.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18927"
+                ],
+                "name": "",
+                "out": [
+                    "18927"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18925"
+                ],
+                "name": "",
+                "out": [
+                    "18925"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18926",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Thorny Promontory",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 599,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "The terrain becomes very steep towards the north where a slope climbs towards\nhigher ground; to the west, another short but steep slope beckons. Great sprawls\nof thorny bushes cover the gentler parts of the slope, and in-between pebbles\nand small rocks make footing unsure. A few trees dot the area, sparse enough not\nto be called a proper forest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18926"
+                ],
+                "name": "",
+                "out": [
+                    "18926"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18917"
+                ],
+                "name": "",
+                "out": [
+                    "18917"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18927",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Overgrown Slope",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 599,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "Elderberry bushes and willows grow amongst the hummocks that rise above the\nmoist muck in this area. Ancient, gnarled alders stand defiant amongst the\nsedges, branches drooping low. The smell of decomposition rises up from the bog,\nadding to the stifling atmosphere of these marshlands. Ribbitting and chirping\ncan be heard from various places amongst the vegetation.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                    "19022"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18942"
+                ],
+                "name": "",
+                "out": [
+                    "18942"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18901"
+                ],
+                "name": "",
+                "out": [
+                    "18901"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18940",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tangled Marshlands",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 598,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "Noxious fumes rise from the wet forest floor, gasses emanating from the\ndecomposing vegetation that fills the shallow, black soil. Tall reeds surround\nthorny shrubs growing among the black trees. A thin, dark mist hovers over the\nground, a foreboding sign that continues throughout the area.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "19022"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "19022"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "19001"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "18900"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18941",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Miasmal Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 599,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "Dense groves of sprawling trees populate this soggy valley. Some trees lie\nupended and rotting in the muddy terrain. Poison ivy grows along the bark of the\ntrees, covering some of them from root to crown. The ground slopes down to a\ndirty rivulet in the centre of this valley, fed by the rainfall draining down\nthe surrounding mountainsides.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18940"
+                ],
+                "name": "",
+                "out": [
+                    "18940"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "18912"
+                ],
+                "name": "",
+                "out": [
+                    "18912"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18942",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Musty Copse",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 597,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "This chamber stands witness to a ghastly slaughter. Dark red splotches stain the\nwalls and floor. Large bones are scattered across the ground, none arranged in\nany semblance of skeleton. Split and shattered skulls testify to the sheer\nbrutality of butchery that occurred here. A crudely-carved tunnel leads downward\nout of this macabre scene; it seems those who delved here did not bother to\nclear the carnage.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18815"
+                ],
+                "name": "",
+                "out": [
+                    "18815"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19020"
+                ],
+                "name": "",
+                "out": [
+                    "19020"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19019",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Gruesome Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 585,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "A crude tunnel cuts through dark-grey marble, slanting downward from a\nblood-spattered chamber above it. The walls of the tunnel are coarse and rough,\nand pocked with many natural cavities and crevices in the rock. The tunnel\nlevels out and broadens to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18811"
+                ],
+                "name": "",
+                "out": [
+                    "18811"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19019"
+                ],
+                "name": "",
+                "out": [
+                    "19019"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19020",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rough-Hewn Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 586,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "Piles of supplies line the walls of this dolomite cave. Large, open barrels\nholding clear water sit on rough shelves carved into the rock. Crates filled\nwith mundane tools such as picks and hammers fill an alcove near the entrance of\nthe chamber. Tanned hides hang from the ceiling, and slats of wood rest against\nthe walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18811"
+                ],
+                "name": "",
+                "out": [
+                    "18811"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19021",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Cramped Storage Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 585,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "This swamp is very congested by dense trees whose masses of black foliage block\nthe sky above. The ground is sodden and covered with waterlogged moss. The roots\nof the trees offer little support, and even those that appear sturdy are very\nslippery as they are covered with wet fungi, moss, and a foul ooze secreted by\nthe trees themselves.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 4113,
+                "in": [
+                    "18941"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4113,
+                "in": [
+                    "18941"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "19025"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "18940"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19022"
+                ],
+                "name": "",
+                "out": [
+                    "19022"
+                ]
+            }
+        ],
+        "id": "19022",
+        "light": 1,
+        "loadflags": 16416,
+        "mobflags": 4096,
+        "name": "Foul Sunless Bog",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 599,
+        "y": 53,
+        "z": 0
+    }
+]

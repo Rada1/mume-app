@@ -1,0 +1,1358 @@
+[
+    {
+        "desc": "This narrow ledge has a dizzying view of the cirque to the north. The valley\ncontains a dark lake that almost totally fills the bottom of the bowl-shaped\narea. To the west the ledge quickly peters out, but to the south it is possible\nto maneuver among the rocky formations.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10521"
+                ],
+                "name": "",
+                "out": [
+                    "10521"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10519"
+                ],
+                "name": "",
+                "out": [
+                    "10519"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10518",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Rocky Ledge",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 364,
+        "y": 161,
+        "z": 0
+    },
+    {
+        "desc": "To the north, this narrow trail descends to a relatively wide ledge over-\nlooking a bowl-shaped valley. The valley below contains a dark lake - only a\nnarrow stretch of land along the northern edge allows access to the head of the\nvalley. To the south, the trail climbs upward to the crest of a ridge, while to\nthe west a narrow ledge clings to the cliff wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10625"
+                ],
+                "name": "",
+                "out": [
+                    "10625"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10520"
+                ],
+                "name": "",
+                "out": [
+                    "10520"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10518"
+                ],
+                "name": "",
+                "out": [
+                    "10518"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10519",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Goats Trail",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 365,
+        "y": 161,
+        "z": 0
+    },
+    {
+        "desc": "It is not unusual to find goats this high up in the mountains and you can follow\nthe muddy goats trail around the back of the pinnacle. The trail is still\nclimbing high onto the back of Celebdil. There is snow on the ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10519"
+                ],
+                "name": "",
+                "out": [
+                    "10519"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10521"
+                ],
+                "name": "",
+                "out": [
+                    "10521"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10620"
+                ],
+                "name": "",
+                "out": [
+                    "10620"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10520",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Goats Trail",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 365,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "To the north-east there is a large stack of rock extending to the sky for\nseveral hundreds of feet. There is no way over it, you will have to go around\none way or the other.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10518"
+                ],
+                "name": "",
+                "out": [
+                    "10518"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10520"
+                ],
+                "name": "",
+                "out": [
+                    "10520"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10641"
+                ],
+                "name": "",
+                "out": [
+                    "10641"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10521",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountainous Terrain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 364,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "You sense the water is deep, with something sinister lurking below. Every now\nand then a few bubbles will cause dark ripples on the otherwise still surface of\nthe water. The stone cliffs tower high above you and look as featureless as\never. To your east you can see where a trail has been drowned as the lake\nemerges. It leads straight into the walls. You are veiled by the eerie shadow of\nCelebdil.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10627"
+                ],
+                "name": "",
+                "out": [
+                    "10627"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10629"
+                ],
+                "name": "",
+                "out": [
+                    "10629"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10523"
+                ],
+                "name": "",
+                "out": [
+                    "10523"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16208"
+                ],
+                "name": "",
+                "out": [
+                    "16208"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10522",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Festering Lake",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 8,
+        "sundeath": 1,
+        "x": 361,
+        "y": 160,
+        "z": 0
+    },
+    {
+        "desc": "You are at the south end of a festering lake. The water is thick and stagnant\nwhich also makes it very smelly. All around you is barred with mountains except\nto the north. You cannot tell how far the lake extends. You are veiled by the\neerie shadow of Celebdil.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10635"
+                ],
+                "name": "",
+                "out": [
+                    "10635"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10522"
+                ],
+                "name": "",
+                "out": [
+                    "10522"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10524"
+                ],
+                "name": "",
+                "out": [
+                    "10524"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "16208"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10523",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Festering Lake",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 8,
+        "sundeath": 1,
+        "x": 360,
+        "y": 160,
+        "z": 0
+    },
+    {
+        "desc": "This high on the slopes of Celebdil, the world is encased in a permanent blanket\nof snow and ice. The air grows thinner and more difficult to breathe. Each step\nupward is more and more of an exertion, and the narrow trail still climbs above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10621"
+                ],
+                "name": "",
+                "out": [
+                    "10621"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10520"
+                ],
+                "name": "",
+                "out": [
+                    "10520"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10620",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Snow Line",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 366,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "The footing on this trail is treacherous, as the rocks are covered in a thin\ncasing of ice. Only a few hardy lichens subsist on the occasional patches of\nexposed rocky soil, and even the mountain goats seem to shun this harsh area.\nThe trail continues leading steadily upward, toward an unknown destination,\nwhile below it passes into a milder clime.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10622"
+                ],
+                "name": "",
+                "out": [
+                    "10622"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10620"
+                ],
+                "name": "",
+                "out": [
+                    "10620"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10621",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Icy Trail",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 367,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "High on the shoulder of a spur of Celebdil, this ice-covered ledge is buffeted\nby high winds. A small cavern to the east offers a modicum of shelter from the\nharsh climate. A narrow trail leads down the side of the mountain, but it\nappears to be impossible to scale the cliffs above. Far below to the west, the\nhills of Eregion can be seen in the distance.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10623"
+                ],
+                "name": "",
+                "out": [
+                    "10623"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10621"
+                ],
+                "name": "",
+                "out": [
+                    "10621"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10622",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Icy Ledge",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 368,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "This cave, high on the flank of Celebdil, is apparently the home of some\nintelligent creature, for there is a small fire burning here in a small circle\nof stones. There is no hint as to what would motivate someone to live in such a\nharsh locale, and whoever does dwell here must have a difficult life.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10624"
+                ],
+                "name": "",
+                "out": [
+                    "10624"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10622"
+                ],
+                "name": "",
+                "out": [
+                    "10622"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10623",
+        "light": 1,
+        "loadflags": 4,
+        "mobflags": 4096,
+        "name": "Rimy Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 369,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "The room is essentially a natural cavern - it has had little if any work done to\nimprove upon its natural state. The walls are cold stone that is encrusted in\nmany places by a thin layer of ice. The temperature here is just below freezing,\nand this place is apparently used as cold storage for perishable food by whoever\ninhabits this place.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10623"
+                ],
+                "name": "",
+                "out": [
+                    "10623"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10624",
+        "light": 1,
+        "loadflags": 19,
+        "mobflags": 0,
+        "name": "Storage Room",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 370,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "The wide area atop the cliffs over Durin's Gate narrows quickly to the south.\nDirectly below is the cirque that forms the head of the valley of the Sirannon -\nexcept for a narrow strip of land along the northeast portion, it is flooded\nwith dark water. The ground is littered with droppings of goats and elk, and\ntheir frequent wanderings have worn a trail leading up to the southwest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10630"
+                ],
+                "name": "",
+                "out": [
+                    "10630"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10519"
+                ],
+                "name": "",
+                "out": [
+                    "10519"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10625",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "The Top of Moria Walls",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 365,
+        "y": 160,
+        "z": 0
+    },
+    {
+        "desc": "Dark and silent, the smooth grey cliffs rise from the water of the lake, looming\noverhead with a forbidding solemnity. The cliffside to the east is smooth and\nunbroken by any seam or crack. A narrow strip of dry land clings to the base of\nthe cliff - cluttered with fallen rock and rubble, it provides a means of\nskirting the dark lake to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10628"
+                ],
+                "name": "",
+                "out": [
+                    "10628"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10522"
+                ],
+                "name": "",
+                "out": [
+                    "10522"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10629",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Under a Grey Stone Cliff",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 362,
+        "y": 160,
+        "z": 0
+    },
+    {
+        "desc": "As you slide below the surface of the murky pool, your vision decreases to the\npoint of barely detecting your hand in front of your face. Light filters in from\nthe surface however, just enough to see a piece of ripped flesh go floating in\nfront of your eyes. Mixtures of animal excrement and decaying organic matter is\nwhat gives the pool its murkiness. The water is cool, having just passed through\nunderground rivers, and there is an air of evil here. Long dim shapes sway\nominously a few feet away.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16209"
+                ],
+                "name": "",
+                "out": [
+                    "16209"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10522",
+                    "10523",
+                    "10524",
+                    "10635"
+                ],
+                "name": "",
+                "out": [
+                    "10522"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16208",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 65536,
+        "name": "Underwater in the Festering Lake",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 2,
+        "x": 360,
+        "y": 161,
+        "z": 0
+    },
+    {
+        "desc": "The last tremulous gleam reflected by the surface of the lake momentarily dances\non the walls of the opening before the darkness swallows everything. The filth\nthat has for long poured inside the mountain has shaped this drifting tunnel.\nFilled with a calmness, it slithers wide into the mountain. The sharp\nfoundation, which is surrounded by a cold, murky water, emerges each time the\ntunnel narrows. The silence is unbroken with the exception of softly vibrating\ndebris that briefly stir the viscous excrement at the bottom.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16208"
+                ],
+                "name": "",
+                "out": [
+                    "16208"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16210"
+                ],
+                "name": "",
+                "out": [
+                    "16210"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16209",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Tranquility",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 2,
+        "x": 360,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "The dark subterranean passage contains a liquid as cold and viscous as if it has\npoured through the mountain since the day it was carved out from the filthy\nearth. The distinctive currents breaking through the cracked foundation agitate\nan unnumbered amount of particles that struggle to fit between the sharp and\nsedimented walls of the cavity. Embedded in a bleary breadth of view, the sludge\nis accompanied by the constant sound of splattering, making it extremely\ndifficult to perceive the surroundings.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16209"
+                ],
+                "name": "",
+                "out": [
+                    "16209"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16210",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Turbulent Sludge",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 363,
+        "y": 165,
+        "z": 0
+    }
+]

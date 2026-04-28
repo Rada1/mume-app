@@ -1,3 +1,5 @@
+import { MapperPrediction } from '../mapperTypes';
+
 export interface RenderContext {
     ctx: CanvasRenderingContext2D;
     dpr: number;
@@ -37,7 +39,7 @@ export interface RenderContext {
     walkPath?: string[];
     baseMapExitsRef: React.MutableRefObject<Record<string, any>>;
     triggerRender?: () => void;
-    clientPredictionsRef?: React.MutableRefObject<Array<{ toId: string, toX: number, toY: number, toZ: number }>>;
+    clientPredictionsRef?: React.MutableRefObject<MapperPrediction[]>;
     /** Maps MUME internal server vnum -> local preloaded vnum string (for resolving group member mapid) */
     serverIdIndexRef?: React.MutableRefObject<Record<string, string>>;
     /** Group members received from GMCP — used to render green friend-orbs on the map */

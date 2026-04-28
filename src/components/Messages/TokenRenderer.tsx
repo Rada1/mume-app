@@ -6,6 +6,17 @@ import { COLOR_PLAYER, COLOR_NPC, COLOR_OBJ, COLOR_ROOM } from '../../utils/cate
 
 import { MessageType } from '../../types';
 
+interface InlineTargetProps {
+    className: string;
+    'data-id': string;
+    'data-cmd': string;
+    'data-context': string;
+    'data-kind': string;
+    'data-category': string;
+    'data-location': string;
+    'data-action': string;
+}
+
 export interface TokenRendererProps {
     tokens?: Token[];
     fallbackHtml?: string;
@@ -36,6 +47,17 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
     }
 
     const currentTarget = target?.toLowerCase() || null;
+
+    const getInlineTargetProps = (id: string, context: string): InlineTargetProps => ({
+        className: 'inline-btn is-target target-highlighter',
+        'data-id': id,
+        'data-cmd': 'target',
+        'data-context': context,
+        'data-kind': 'target',
+        'data-category': 'target',
+        'data-location': 'none',
+        'data-action': 'menu'
+    });
 
     return (
         <>
@@ -83,12 +105,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                         parts.push(
                             <span 
                                 key={`target-${matchIndex}`} 
-                                className="inline-btn is-target target-highlighter"
-                                data-id={`reactive-target-${currentTarget}`}
-                                data-ctx={currentTarget}
-                                data-kind="target"
-                                data-category="target"
-                                data-location="none"
+                                {...getInlineTargetProps(`reactive-target-${currentTarget}`, currentTarget)}
                             >
                                 {targetMatch}
                             </span>
@@ -121,13 +138,17 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                     };
 
                     if (!isRoom) {
-                        props['data-id'] = propMetadata?.id || e.entityId;
-                        props['data-cmd'] = propMetadata?.cmd || e.metadata?.category || (isAuto ? (e.metadata?.kind || e.content) : e.content);
-                        props['data-context'] = propMetadata?.context || e.metadata?.context || e.content;
-                        if (propMetadata?.kind || e.metadata?.kind) props['data-kind'] = propMetadata?.kind || e.metadata?.kind;
-                        if (propMetadata?.location || e.metadata?.location) props['data-location'] = propMetadata?.location || e.metadata?.location;
-                        if (propMetadata?.category || e.metadata?.category) props['data-category'] = propMetadata?.category || e.metadata?.category;
-                        if (propMetadata?.action || e.metadata?.action) props['data-action'] = propMetadata?.action || e.metadata?.action;
+                        if (isTargetMatch && currentTarget) {
+                            Object.assign(props, getInlineTargetProps(propMetadata?.id || e.entityId || `entity-target-${currentTarget}`, currentTarget));
+                        } else {
+                            props['data-id'] = propMetadata?.id || e.entityId;
+                            props['data-cmd'] = propMetadata?.cmd || e.metadata?.category || (isAuto ? (e.metadata?.kind || e.content) : e.content);
+                            props['data-context'] = propMetadata?.context || e.metadata?.context || e.content;
+                            if (propMetadata?.kind || e.metadata?.kind) props['data-kind'] = propMetadata?.kind || e.metadata?.kind;
+                            if (propMetadata?.location || e.metadata?.location) props['data-location'] = propMetadata?.location || e.metadata?.location;
+                            if (propMetadata?.category || e.metadata?.category) props['data-category'] = propMetadata?.category || e.metadata?.category;
+                            if (propMetadata?.action || e.metadata?.action) props['data-action'] = propMetadata?.action || e.metadata?.action;
+                        }
                     }
 
                     // Apply category colors from settings - PRIORITY: Kind (Category) Master > Trait
@@ -172,10 +193,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                             <span 
                                 key={idx} 
                                 style={a.style}
-                                className={isTargetMatch ? 'inline-btn is-target target-highlighter' : undefined}
-                                data-id={isTargetMatch ? `ansi-target-${currentTarget}` : undefined}
-                                data-ctx={isTargetMatch ? currentTarget : undefined}
-                                data-kind={isTargetMatch ? 'target' : undefined}
+                                {...(isTargetMatch && currentTarget ? getInlineTargetProps(`ansi-target-${currentTarget}`, currentTarget) : {})}
                             >
                                 {currentTarget && !isTargetMatch ? renderTextWithTarget(a.content, idx) : a.content}
                             </span>
@@ -189,10 +207,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                         return (
                             <span 
                                 key={idx} 
-                                className={isTargetMatch ? 'inline-btn is-target target-highlighter' : undefined}
-                                data-id={isTargetMatch ? `text-target-${currentTarget}` : undefined}
-                                data-ctx={isTargetMatch ? currentTarget : undefined}
-                                data-kind={isTargetMatch ? 'target' : undefined}
+                                {...(isTargetMatch && currentTarget ? getInlineTargetProps(`text-target-${currentTarget}`, currentTarget) : {})}
                             >
                                 {token.content}
                             </span>

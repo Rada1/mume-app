@@ -1,0 +1,418 @@
+[
+    {
+        "desc": "Built on the western shores of Aman, facing only the Encircling Sea and the Wall\nof the Night stand the vast Halls of Mandos. In this small and remote corner of\nthe Halls of Awaiting you tarry in a time of recollection, perhaps listening to\nechoes of times long gone by, or perhaps dreaming dreams of your own and\nwondering when the time will come that you are able to return once more to roam\nfreely upon Middle-earth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12485"
+                ],
+                "name": "",
+                "out": [
+                    "12485"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12484",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 1,
+        "name": "Halls of Awaiting",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": -3,
+        "y": 112,
+        "z": 0
+    },
+    {
+        "desc": "Vast and strong are the Halls of Awaiting, tall are the Pelori, called also the\nMountains of Defence, and long and mysterious is the Straight Way to the True\nWest, and yet still sometimes rumour reaches this place of the deeds and words\nof those who still dwell upon Middle-earth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12486"
+                ],
+                "name": "",
+                "out": [
+                    "12486"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12487"
+                ],
+                "name": "",
+                "out": [
+                    "12487"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18504"
+                ],
+                "name": "",
+                "out": [
+                    "18504"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12484"
+                ],
+                "name": "",
+                "out": [
+                    "12484"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12485",
+        "light": 2,
+        "loadflags": 131072,
+        "mobflags": 0,
+        "name": "Halls of Awaiting",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -2,
+        "y": 112,
+        "z": 0
+    },
+    {
+        "desc": "Half-substance, half-shadow, high walls rise to the distant roof of the Halls.\nFar above, just below the roof, many narrow windows have been cut in the shadowy\nfabric. Through these windows golden and silvery light enters the Halls and\nstrange scents and whispers drift in. Some of these whispers speak of strange\nlands and things; others are in no language of Middle-earth that you can\nrecognise.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12485"
+                ],
+                "name": "",
+                "out": [
+                    "12485"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12486",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Halls of Awaiting",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": -2,
+        "y": 111,
+        "z": 0
+    },
+    {
+        "desc": "In this corner of the Halls of Awaiting you might hear echoes and rumours of\nthings long gone by, or catch a glimpse of more recent events on Middle-earth.\nFor though you are far removed here from the events in the mortal realm, still\nlike reflections and dreams their tales sometimes reach you here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12485"
+                ],
+                "name": "",
+                "out": [
+                    "12485"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12487",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Halls of Awaiting",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": -2,
+        "y": 113,
+        "z": 0
+    },
+    {
+        "desc": "The floor in this part of the wide halls slopes down until it turns into a wide\npool of silvery water. The pool's surface is still and shining like a polished\nmirror, yet deep down it is filled with a faint light. The light seems clearer\nand cleaner than anything you have ever seen. Sometimes it seems the light would\ncome from within of the pool's water itself; these silver reflections are only\nfaint, but still bright and blinding as the highest sun.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12485"
+                ],
+                "name": "",
+                "out": [
+                    "12485"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18504",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "The Silver Pool",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": -1,
+        "y": 112,
+        "z": 0
+    }
+]

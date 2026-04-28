@@ -15,6 +15,7 @@ export const INLINE_CATEGORY_BUTTONS: CustomButton[] = [
 ];
 
 export const CATEGORY_BUTTON_MAP: Record<string, string[]> = {
+    'target': ['tgt-look', 'tgt-examine', 'tgt-get', 'tgt-kill', 'tgt-clear'],
     'inline-lantern': ['cat-lantern-light', 'cat-lantern-snuff', 'cat-lantern-fill'],
     'inline-lightsource': ['cat-lightsource-cover', 'cat-lightsource-uncover'],
     'inline-food': ['cat-food-eat'],

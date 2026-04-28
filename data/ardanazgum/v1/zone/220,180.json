@@ -1,0 +1,349 @@
+[
+    {
+        "desc": "The interior of this building is a single rectangular room of uninspiring design\nand proportions. Four narrow, slitted openings can be seen: two to each side of\nthe heavy oak door in the western wall. A model of the most spartan\nfunctionality with plain stone walls and a well-worn stone floor, this little\nbuilding was obviously constructed to serve as little more than a sentry box to\nlook over the approaches to the gates of Tharbad.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "7755"
+                ],
+                "name": "",
+                "out": [
+                    "7755"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14745",
+        "light": 2,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "Inside a Small Stone Building",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 234,
+        "y": 182,
+        "z": 0
+    },
+    {
+        "desc": "OUCH! The current here is swift and turbulent, smashing you against large\nboulders. It is almost impossible to keep any sense of direction in the fierce\nriver, since the water is full of bubbles and dirt.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20707",
+                    "20710"
+                ],
+                "name": "",
+                "out": [
+                    "20710"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "20707"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20699",
+                    "20707"
+                ],
+                "name": "",
+                "out": [
+                    "20699"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "20707"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "7812"
+                ],
+                "name": "",
+                "out": [
+                    "7812"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20707",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The River Bottom",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 239,
+        "y": 185,
+        "z": 0
+    },
+    {
+        "desc": "The bottom is rocky and devoid of loose soil here, as the swift current sweeps\nit away south. You have trouble holding on to the featureless rock. To the\nsouth, there is a booming reverberation through the water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8017",
+                    "20711"
+                ],
+                "name": "",
+                "out": [
+                    "20711"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20707"
+                ],
+                "name": "",
+                "out": [
+                    "20707"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20706"
+                ],
+                "name": "",
+                "out": [
+                    "20706"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "7811"
+                ],
+                "name": "",
+                "out": [
+                    "7811"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20710",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The River Bottom",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 239,
+        "y": 184,
+        "z": 0
+    },
+    {
+        "desc": "This is a rather deep section of the river. The water is dirty and blocks most\nof the light from the surface off. The seaweed covered bottom slopes downward to\nthe south. The north bank rises abruptly in a rotten bluff of crumbling\nlimestone.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "8016"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20710"
+                ],
+                "name": "",
+                "out": [
+                    "20710"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20703"
+                ],
+                "name": "",
+                "out": [
+                    "20703"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "7811"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20711",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The River Bottom",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 239,
+        "y": 183,
+        "z": 0
+    }
+]

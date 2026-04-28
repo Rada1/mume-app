@@ -1,0 +1,2848 @@
+[
+    {
+        "desc": "This long and proud street is named after the Valar's domain which is now beyond\nthe circles of the earth but was reachable when the city was founded. It ends in\na flat, open place west of here and also leads east. A strong animal smell is\ncoming from the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1208"
+                ],
+                "name": "",
+                "out": [
+                    "1208"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1181"
+                ],
+                "name": "",
+                "out": [
+                    "1181"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1183"
+                ],
+                "name": "",
+                "out": [
+                    "1183"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1182",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Valinor Street",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 39,
+        "y": 89,
+        "z": 0
+    },
+    {
+        "desc": "The Valinor Street ends here, not far from the Harlond quay. Only a few small\nbuildings without any ornaments stand among the trees here. The street continues\nto the east, and to the west you can see the edge of the city quay with moored\nboats of many different types. The faint sound of water lapping against stone\nmixed with occasional shrieks from seagulls drifts in from the Gulf of Lhun.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1182"
+                ],
+                "name": "",
+                "out": [
+                    "1182"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1184"
+                ],
+                "name": "",
+                "out": [
+                    "1184"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1183",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "End of Valinor Street",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 38,
+        "y": 89,
+        "z": 0
+    },
+    {
+        "desc": "You are on a round part of the quay, paved with white, recently cleaned stones.\nIn the centre, a slender tree has been planted. Its white flowers illuminate the\nsurrounding facades without casting shadows anywhere. A long pier stretches out\nto the west, and a proud and wide street begins to the east. The quay, lined\nwith boats of all sizes, begins to the south and continues further north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1187"
+                ],
+                "name": "",
+                "out": [
+                    "1187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1183"
+                ],
+                "name": "",
+                "out": [
+                    "1183"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1185"
+                ],
+                "name": "",
+                "out": [
+                    "1185"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1184",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Light Court",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 37,
+        "y": 89,
+        "z": 0
+    },
+    {
+        "desc": "You are standing on a narrow jetty, no more than six feet across, which runs out\ntowards a tall, ancient lighthouse to the west. The rocks are a bit slippery so\nyou have to walk slowly. Boats lie on both sides and cold waves bounce them\nslowly up and down.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1184"
+                ],
+                "name": "",
+                "out": [
+                    "1184"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1186"
+                ],
+                "name": "",
+                "out": [
+                    "1186"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1185",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Light Jetty",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 36,
+        "y": 89,
+        "z": 0
+    },
+    {
+        "desc": "A cold, salt wind blows across the jetty here, and some waves are big enough to\nwash your feet. A tall, stone-built lighthouse stands nearby, having withstood\nthousands of storms. Its entrance, through a wooden door, is to the north, and\nthe way back is to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1185"
+                ],
+                "name": "",
+                "out": [
+                    "1185"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1186",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Light Jetty",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 35,
+        "y": 89,
+        "z": 0
+    },
+    {
+        "desc": "This is the main quay for ships coming from Pelargir, the port of Anduin and\nMinas Tirith. A few ships still travel that route, and the quay is far from\nempty despite the Shadow near Pelargir. You can walk north and south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1188"
+                ],
+                "name": "",
+                "out": [
+                    "1188"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1184"
+                ],
+                "name": "",
+                "out": [
+                    "1184"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1187",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Pelargir Quay",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 37,
+        "y": 88,
+        "z": 0
+    },
+    {
+        "desc": "Large ships recently arrived from the cities of Belfalas and Lebennin are docked\nhere. Some of them are in need of repair and you notice some Elves working on a\nfew of them. South of here ships from Pelargir lie and the quay continues to the\nnorth. The Gulf of Lhun stretches out to the west, its salty water lapping\nagainst the grey quay.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1189"
+                ],
+                "name": "",
+                "out": [
+                    "1189"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1187"
+                ],
+                "name": "",
+                "out": [
+                    "1187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1188",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grand Quay",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 37,
+        "y": 87,
+        "z": 0
+    },
+    {
+        "desc": "Several large ships, both the slender, elven ships and the sturdier-looking\nman-made vessels are moored here. The quay continues south and east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1188"
+                ],
+                "name": "",
+                "out": [
+                    "1188"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1191"
+                ],
+                "name": "",
+                "out": [
+                    "1191"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1189",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grand Quay",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 37,
+        "y": 86,
+        "z": 0
+    },
+    {
+        "desc": "The great elven ships departing for Valinor leave from this pier. Many long\nfarewells have occurred at this pier. As each month passes, more and more elves\ntire of Middle-earth and decide to sail back to Valinor in the west. You can go\nback to the quay to the east. A wooden barrier prevents you from reaching the\nwestern end of the pier.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1192"
+                ],
+                "name": "",
+                "out": [
+                    "1192"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 32,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1190",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Pier of the Grey Havens",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 37,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "This is the large market-place where goods arriving by ship are auctioned out,\ntraded, and transported to distant kingdoms. Large quays go further north and\nwest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1192"
+                ],
+                "name": "",
+                "out": [
+                    "1192"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1189"
+                ],
+                "name": "",
+                "out": [
+                    "1189"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1191",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grand Market",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 38,
+        "y": 86,
+        "z": 0
+    },
+    {
+        "desc": "This is where the large ships enter Harlond. The huge white sails are fluttering\nin the salt breeze, and sailors are climbing around in the rigs. The quay\ncontinues north, and connects to a market south. A pier reaches out into the\nGulf of Lhun to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1199"
+                ],
+                "name": "",
+                "out": [
+                    "1199"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1191"
+                ],
+                "name": "",
+                "out": [
+                    "1191"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1193"
+                ],
+                "name": "",
+                "out": [
+                    "1193"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1190"
+                ],
+                "name": "",
+                "out": [
+                    "1190"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1192",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grand Quay",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 38,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "The finest sails on this side of the ocean are made here. They are white as\nsnow, light and strong enough to take advantage of fearsome gales. The exit to\nthe quay is west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1192"
+                ],
+                "name": "",
+                "out": [
+                    "1192"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1193",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sailmaker's Workshop",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 39,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "The scent of a thousand rare herbs blend together in the air of this tiny but\nwell stocked shop. Hundreds of small pots and jars with mystic inscriptions fill\nthe shelves along with fresh herbs in water-filled vases and oddly-shaped\ncontainers filled with spices with remote, exotic and sometimes unknown origins.\nYour mind feels heavy, and you suspect that this is a subtle trick of the\nshopkeeper to make you pay more.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1195"
+                ],
+                "name": "",
+                "out": [
+                    "1195"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1199"
+                ],
+                "name": "",
+                "out": [
+                    "1199"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1196",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 2,
+        "name": "Herbalist",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 39,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "From here, the fishing-boats go out before sunrise, and return many hours later,\nwith hopefully a good load of fish to sell on the market. The quay is littered\nwith wooden boxes, rope coils, buckets, and much else that the elven fishermen\ndidn't bother to stuff away. The market is east, and the quay continues west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1200"
+                ],
+                "name": "",
+                "out": [
+                    "1200"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1198"
+                ],
+                "name": "",
+                "out": [
+                    "1198"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1197",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Fish Quay",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 39,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "This is where the ferry docks. Riding this can take you to Forlond on the other\nside of the Gulf of Lhun. The quay continues east and south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1199"
+                ],
+                "name": "",
+                "out": [
+                    "1199"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1197"
+                ],
+                "name": "",
+                "out": [
+                    "1197"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1238"
+                ],
+                "name": "",
+                "out": [
+                    "1238"
+                ]
+            }
+        ],
+        "id": "1198",
+        "light": 2,
+        "loadflags": 8388608,
+        "mobflags": 0,
+        "name": "Ferry Quay",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 38,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "From far away, the great ships arrive here, carrying a precious load of herbs\nand spices. A bitter-sweet scent almost makes you forget the intense smell of\nfish, and there is a small shop, striking in its insignificance, to the east.\nThe quay continues north and south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1198"
+                ],
+                "name": "",
+                "out": [
+                    "1198"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1192"
+                ],
+                "name": "",
+                "out": [
+                    "1192"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1196"
+                ],
+                "name": "",
+                "out": [
+                    "1196"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1199",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Herb Quay",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 38,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "Despite being a bit removed from the other shops in town, many customers are\nmoving about in here. Many different pets are available. You can hear a\nmultitude of different sounds in here. It really is a bit loud. If you would\nlike a pet, you should probably decide quickly. A grey-haired elven shopkeeper\nis standing here, cleaning up after the animals.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1182"
+                ],
+                "name": "",
+                "out": [
+                    "1182"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1211"
+                ],
+                "name": "",
+                "out": [
+                    "1211"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1208",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 32,
+        "name": "Pet Shop",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 39,
+        "y": 88,
+        "z": 0
+    },
+    {
+        "desc": "This is the most famous meeting-place in Harlond where people of all sorts\nexchange news, rumours, deals and friendships. Sailors from the entire coast of\nMiddle-earth, as far as Dol Amroth and even Pelargir, are frequent guests here.\nFor the sleepy, there is a reception and chambers upstairs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1206"
+                ],
+                "name": "",
+                "out": [
+                    "1206"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1212"
+                ],
+                "name": "",
+                "out": [
+                    "1212"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1209",
+        "light": 2,
+        "loadflags": 65536,
+        "mobflags": 16,
+        "name": "Seagull Inn",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 39,
+        "y": 87,
+        "z": 0
+    },
+    {
+        "desc": "A vast variety of ropes are made here, from common tarred hemp-rope to soft\nelven ropes, which are far stronger than their size appears. Also, the heavy,\ncoarse ropes used for ships' rigging are woven here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1205"
+                ],
+                "name": "",
+                "out": [
+                    "1205"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1210",
+        "light": 2,
+        "loadflags": 2097152,
+        "mobflags": 0,
+        "name": "Ropeworks",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 39,
+        "y": 86,
+        "z": 0
+    },
+    {
+        "desc": "This spacious barn has obviously been set up to function as a stable. Along two\nfacing walls are arranged stalls and loose-boxes. At the end of each of the\nstalls pegs and stout racks have been fashioned, to accommodate tack and feed\nbuckets; the uniformity of these suggests that perhaps these stalls are used by\nthe mounts of the Elven garrison stationed here. The loose-boxes, by contrast,\nappear to be used less regularly, and are most likely for livery animals. But\nwhether for steeds of citizens or visitors, the accommodations are universally\nclean and well-maintained, with thick beds of new straw on the floor, and clear\nwater in long troughs for every animal.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1208"
+                ],
+                "name": "",
+                "out": [
+                    "1208"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1211",
+        "light": 2,
+        "loadflags": 262144,
+        "mobflags": 0,
+        "name": "Harlond's Stable",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 38,
+        "y": 88,
+        "z": 0
+    },
+    {
+        "desc": "Happy to find a bed that does not heave and roll, sailors and travellers can get\na good night's sleep here with their belongings safely stashed away. On the way\nto your room you see a bulletin board. It appears that you can easily find out\nabout changes in Middle-earth. The Inn is downstairs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1209"
+                ],
+                "name": "",
+                "out": [
+                    "1209"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1212",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 1,
+        "name": "Seagull Reception",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 38,
+        "y": 87,
+        "z": 0
+    },
+    {
+        "desc": "This room is richly decorated by paintings and many old artefacts from the sea\nand it is enjoyed by sailors and townspeople alike. Many important decisions are\ninformally made here while dining on one of the inn's specialities and a glass\nof wine. A number of people are sitting at tables here enjoying their meal. The\nonly exit is north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1233"
+                ],
+                "name": "",
+                "out": [
+                    "1233"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1234",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Inner Room",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 38,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "This small but robust vessel is actually a real sailing boat, since sailing\nacross the Lhun might be treacherous at times. The elven boat is made out of\npale timbers with some small ornaments. The sails are furled and secure, while\nthe ferry is docked to the quay of Forlond.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1198"
+                ],
+                "name": "",
+                "out": [
+                    "1198"
+                ]
+            }
+        ],
+        "id": "1238",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Aboard the Ferry (at the quay in Forlond)",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 34,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The sea breaks in upon the land, the waters surging up a narrow inlet before\nreceding. The pebbles that the sea covers are strewn with fair jewels of\nflawless pearl, rainbow opal and pale ruby. Beside, a sandy path lined with\nshells leads to a white house with a door upon silver steps. A banner reveals\nthe home is that of the House of Kelwe, renowned singers amongst a race of\nrenowned singers upon the shore. The song from the halls continues unabated,\nflowing from the open windows of the upper stories, though the identity of the\nsinger remains a mystery. White birds wheel above the inlet as if an audience,\nadding their own accompaniment.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1245"
+                ],
+                "name": "",
+                "out": [
+                    "1245"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1248",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The House of Kelwe",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 20,
+        "y": 91,
+        "z": 0
+    },
+    {
+        "desc": "Under construction are several ships, in a range of sizes. Covered yards hold\nneatly piled stocks of timber, along with several steel vats. Many houses of\nvarying grandeur line the outer circle of the shipyards, but all are walled in\nwhite and fly pennants bearing the design of ships and swans.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1244"
+                ],
+                "name": "",
+                "out": [
+                    "1244"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1249",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Shipyards of the Teleri",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 20,
+        "y": 90,
+        "z": 0
+    },
+    {
+        "desc": "Upon the strands of Eldamar, long ago did the Teleri make a home here,\nreluctantly forsaking the Lonely Isle. White walls surround the haven, extending\naround the heights of the cove to end abruptly to either side of the great\nsea-arch. No towers pierce the walls except at this point; twin turrets extend\nupwards, forming pillars which anchor a great pair of gates of pale shell and\nshining pearl. The eternal lights of the haven pour out of the open gates along\nthe path that leads away.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1251"
+                ],
+                "name": "",
+                "out": [
+                    "1251"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "1243"
+                ],
+                "name": "",
+                "out": [
+                    "1243"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1250",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Before the Gates of Alqualonde",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 20,
+        "y": 89,
+        "z": 0
+    },
+    {
+        "desc": "The white walls of Alqualonde are here broken by a pair of towers which form the\nstructures upon which gates of pearl and shell pivot. Stone doors on either side\nallow access into the towers, but stand closed. The main route up from the\nlevels below, passes through the gateway.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1250"
+                ],
+                "name": "",
+                "out": [
+                    "1250"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1252"
+                ],
+                "name": "",
+                "out": [
+                    "1252"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1251",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Inside the Gates of Alqualonde",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 21,
+        "y": 89,
+        "z": 0
+    },
+    {
+        "desc": "The roadway forms the conduit between the lower levels of the hollowed cove and\nthe walls above. Walkways slope off to either side to plazas and courts lined by\nhalls and domed-mansions and lesser structures. Flanking the paved thoroughfare\nare cut steps and timber handrails, provided for those less sure-of-foot.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1253"
+                ],
+                "name": "",
+                "out": [
+                    "1253"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1251"
+                ],
+                "name": "",
+                "out": [
+                    "1251"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1252",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Main Thoroughfare",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 21,
+        "y": 90,
+        "z": 0
+    },
+    {
+        "desc": "Besides their love of ship-building, the Teleri revere the stars. So it was that\nwhen moving from Tol Eressea, they chose to build their home far from the light\nof the Two Trees, so that they might still gaze in wonder to the skies above.\nThis circular court is dedicated to the first lights of the sky, made aeons ago\nby Varda. An inscribed pool stands at the centre of the court, while unadorned\nhedges mark the perimeter.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1254"
+                ],
+                "name": "",
+                "out": [
+                    "1254"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1252"
+                ],
+                "name": "",
+                "out": [
+                    "1252"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1253",
+        "light": 2,
+        "loadflags": 16392,
+        "mobflags": 0,
+        "name": "The Court of Stars",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 22,
+        "y": 90,
+        "z": 0
+    },
+    {
+        "desc": "Upon the middle terrace of Alqualonde, an excellent view is afforded of both the\nhouses of the town, and the ships moored in the harbour below. No wall protects\nthe unwary as this is a working platform, with wooden cranes to haul and lower\ngoods. Breezes bring the tang of the sea to the nostrils.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1255"
+                ],
+                "name": "",
+                "out": [
+                    "1255"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1256"
+                ],
+                "name": "",
+                "out": [
+                    "1256"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1253"
+                ],
+                "name": "",
+                "out": [
+                    "1253"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1254",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Viewing Platform over the Quay",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 23,
+        "y": 90,
+        "z": 0
+    },
+    {
+        "desc": "The most splendid of the houses of Swanhaven stands upon the middle terrace:\nthat of Olwe, lord of the Teleri who passed into the West. With walls of pearl,\nits surfaces shimmer and shine a soft radiance, lighting up the northern wall of\nthe cove.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1254"
+                ],
+                "name": "",
+                "out": [
+                    "1254"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1255",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Mansion of Olwe",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 23,
+        "y": 89,
+        "z": 0
+    },
+    {
+        "desc": "The only walkable route to the harbour below is provided by these stairs cut\ninto the southward wall of the cove. From the top can be seen the ships below,\nmoored on the piers and landings of the harbour, the lights of the lamps casting\na rainbow of colours on the beams which stow the white sails.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1254"
+                ],
+                "name": "",
+                "out": [
+                    "1254"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14755"
+                ],
+                "name": "",
+                "out": [
+                    "14755"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1256",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Top of the Stairs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 23,
+        "y": 91,
+        "z": 0
+    },
+    {
+        "desc": "Long ago did the Teleri make a home upon the strands of Eldamar, and chief of\ntheir towns was Alqualonde, the Haven of the Swan-ships. Like a bason of quiet\nwaters is Swanhaven, save that towards the eastward and the seas the ring of\nrocks that encloses it sinks somewhat, and there does the sea pierce through, so\nthat there is a mighty arch of living stone. By reason of the surrounding wall,\nand that the light of the Two Trees never shone on the haven, the town was ever\nlit by a ring of lamps of gold, and shines to this day. Moreover, upon the\nquays, lanterns there are too of many colours tokening the wharves and landings\nof the different houses. Very beautiful is this harbour to gaze upon, as the\nwaters of the harbour mirror the radiance of the lamps into rippling lights,\nweaving strange patterns of many twinkling lines. Reflected also in this inner\nsea are the many ships of the elves, more wondrous than any that have ever\nsailed mortal lands, though they are a mere echo of those that were seized by\nthe Host of the Noldor in the dread events of the Kinslaying.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14755"
+                ],
+                "name": "",
+                "out": [
+                    "14755"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14754",
+        "light": 2,
+        "loadflags": 8388608,
+        "mobflags": 0,
+        "name": "Upon the Lamplit Quay",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 24,
+        "y": 90,
+        "z": 0
+    },
+    {
+        "desc": "Under the shadow of the southern arm of the rocky cove, a steep stair carved of\nthe living rock climbs to the higher terraces of the Haven. Lengths of flaxen\ncord, passing through the eyes of silver balusters, provide a flexible support\non the narrow steps. The ring of golden lights on the rocky wall of the cove\nprovide plenty of illumination.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14754"
+                ],
+                "name": "",
+                "out": [
+                    "14754"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1256"
+                ],
+                "name": "",
+                "out": [
+                    "1256"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14755",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bottom of the Stairs",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 24,
+        "y": 91,
+        "z": 0
+    }
+]

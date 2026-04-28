@@ -1,0 +1,1186 @@
+[
+    {
+        "desc": "The spectacle that is the confluence of the rushing rivers to the south and east\ncan be best viewed here by standing close to a twisted iron railing. The white\nfoam created by the meeting of the turbulent waters looks almost like a sea of\nclouds resting upon the waters. Much of the rail hangs down over the edge,\nteasing the swirling confluence of rivers below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "9338"
+                ],
+                "name": "",
+                "out": [
+                    "9338"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "9340"
+                ],
+                "name": "",
+                "out": [
+                    "9340"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9339",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Riverbluff Walk",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 299,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "This narrow walk travels along the outer rim of the sunken hillside. Carved high\ninto the granite bluff here it meets a small footpath leading north. A mangled\nwrought iron railing coloured so dark it cannot be seen at night lines the\nsouthern edge of the walk. Perhaps the residents of this city did not walk this\npath after sunset or perhaps they had walked so many times admiring the rivers\nbeauty they needed no rail to warn them of the bluff's edge.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "9337"
+                ],
+                "name": "",
+                "out": [
+                    "9337"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "9339"
+                ],
+                "name": "",
+                "out": [
+                    "9339"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "9345"
+                ],
+                "name": "",
+                "out": [
+                    "9345"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9340",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Riverbluff Walk",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 298,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "Specks of dirt and granite flakes, from the path to the north, have drifted down\nthe hillside and cover the northern side of this narrow walkway. A large tree\nhas fallen diagonally across the walkway and continues on to hang over the cliff\nto the south. Tangled in the branches are the remains of a wrought iron railing\nthat once warned weary travellers of the abrupt edge. From its size the tree\nappears to be at least a thousand years old. An odd place for a tree to have\ngrown so close, this one obviously took root and died all in the interim of time\npassed since this city's downfall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "9335"
+                ],
+                "name": "",
+                "out": [
+                    "9335"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "9342"
+                ],
+                "name": "",
+                "out": [
+                    "9342"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "15507"
+                ],
+                "name": "",
+                "out": [
+                    "15507"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9341",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Riverbluff Walk",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 296,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "A wrought iron railing to the southwest and this once smooth walkway is the only\nevidence that this land was ever inhabited. This part of the walk is badly\novergrown. The wild bushes block most of the walk and have entangled themselves\nin and around the railing obscuring it. The walkway continues up some overgrown\nand mildewed stone steps to the north and continues on eastward perhaps to\nbetter preserved areas of this kingdom.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "9334"
+                ],
+                "name": "",
+                "out": [
+                    "9334"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "9341"
+                ],
+                "name": "",
+                "out": [
+                    "9341"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9342",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Riverbluff Walk",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 295,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "Various fungi and spores flourish here covering every inch of the decaying\nfoundation. Metal spools indicate that this might once have been a ropeworks.\nBeing so close to the river it is quite possible this was a place to purchase\nand repair fishing nets. Perhaps the algae on nets that long ago dissolved into\nnothingness is what gave birth to the rampant mould.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15507"
+                ],
+                "name": "",
+                "out": [
+                    "15507"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9343",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Decaying Ropeworks",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 296,
+        "y": 201,
+        "z": 0
+    },
+    {
+        "desc": "Perhaps this was once a beautiful, low-arched granite causeway which spanned the\nnorthern edge of the harbour down below. Through the ages, however, time has\nerased all of the grandeur it once held. Several thick stone support beams jut\nout irregularly to the side causing the bridge to lean precariously sideways,\nreminding the cautious traveller that too much weight here would not be prudent.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "9345"
+                ],
+                "name": "",
+                "out": [
+                    "9345"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "15507"
+                ],
+                "name": "",
+                "out": [
+                    "15507"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9344",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Skewed Stone Causeway",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 297,
+        "y": 202,
+        "z": 0
+    },
+    {
+        "desc": "Carved into the riverside bluff, this narrow path is bordered on the north by\nhillside and south by the rushing river. Even after centuries of abandonment,\nthe path is still visible through the mass of weeds and clumps of dirt that have\nfallen from higher ground. From this point one cannot help but hear the rumbling\nriver flow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9346"
+                ],
+                "name": "",
+                "out": [
+                    "9346"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15510"
+                ],
+                "name": "",
+                "out": [
+                    "15510"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "9344"
+                ],
+                "name": "",
+                "out": [
+                    "9344"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "9340"
+                ],
+                "name": "",
+                "out": [
+                    "9340"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9345",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Riverbluff Walk",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 298,
+        "y": 202,
+        "z": 0
+    },
+    {
+        "desc": "Metal rods welded together to form the frame of a boat lay here, untouched for\nages on the exposed foundation of this structure. Perhaps long ago a shipwright\ncarefully built this boat here in his shop. He may have sat carefully fitting\npieces of wood into the frame forming the curved base of a small sailing vessel.\nWound on a metal stand are several lengths of chain accompanied by several\nanchors of varying sizes. Most of the metal chain has turned a bright, rusted\namber colour.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9345"
+                ],
+                "name": "",
+                "out": [
+                    "9345"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9346",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Perishing Depot",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 298,
+        "y": 201,
+        "z": 0
+    },
+    {
+        "desc": "Several broken stone bookcases lie on their sides having been knocked down\nagainst the west wall. Elven words carved in some rounded stone posts that once\nstood at the end of each bookshelf seem to denote an ancient filing system.\nLying on the floor are the remains of several stone boxes about the size of a\nlarge journal. It would have taken a rather strong person to have lifted these\nheavy stone containers high enough to have cracked them open against the floor\nexposing the manuscripts inside. Brown flaky dust covers the floor along with\nsome small brass fasteners, apparently all that is left of this library's\ncontents, eroded into nothingness over the course of centuries.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9382"
+                ],
+                "name": "",
+                "out": [
+                    "9382"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9381",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Toppled Stacks",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 287,
+        "y": 203,
+        "z": 0
+    },
+    {
+        "desc": "Broad black smears cross the barren walls of this once great vaulted chamber of\nantiquities. When the sun or moon is aglow, bars of light cast through rents in\nthe walls making motes of dust glitter throughout. Scorch-marks mar the walls,\nthe floor, the ceiling. Shattered display cases of iron and glass litter the\nhall. It appears that whatever great heirlooms may have been housed here were\nlooted long ago. A formidable stone staircase angles both upwards to the room\nabove and twists downward to the room below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9376"
+                ],
+                "name": "",
+                "out": [
+                    "9376"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9381"
+                ],
+                "name": "",
+                "out": [
+                    "9381"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9382",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Raided Lower Gallery",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 288,
+        "y": 203,
+        "z": 0
+    },
+    {
+        "desc": "There are several directions to chose from at this junction in the river bluff\nwalk. The walk curves a bit to the north, aiming travellers toward a decaying\nstructure. To the east one can ascend an aged causeway over the bluff. The sound\nof river water beckons to the south and this scenic walk continues upward. A\nplethora of choices in which one can walk in the long ago forgotten footsteps of\nthis once grand city's residents. There is a sticky substance covering the\nground to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9343"
+                ],
+                "name": "",
+                "out": [
+                    "9343"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15508"
+                ],
+                "name": "",
+                "out": [
+                    "15508"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "9344"
+                ],
+                "name": "",
+                "out": [
+                    "9344"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "9341"
+                ],
+                "name": "",
+                "out": [
+                    "9341"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15507",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Riverbluff Walk",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 296,
+        "y": 202,
+        "z": 0
+    },
+    {
+        "desc": "Five rectangular stone pillars coming out of the water look to be part of an\nancient pier. A sixth pillar must have existed at some point but it is gone now,\neither crumbled or washed away. It is easy to imagine planks of wood running\nbetween these stones creating an S-shape landing stretching out over the river.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15507"
+                ],
+                "name": "",
+                "out": [
+                    "15507"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15509"
+                ],
+                "name": "",
+                "out": [
+                    "15509"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15508",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Receding Pier",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 7,
+        "sundeath": 1,
+        "x": 296,
+        "y": 203,
+        "z": 0
+    },
+    {
+        "desc": "A long metal chain with links so strong they have withstood the centuries\nextends from a stone column into the depths of the river. Several other stone\ncolumns extend out in a line several feet into the river. The various water\nstages of the river have left their marks on the columns by eroding and\ndiscolouring the granite. One can imagine that in the past the citizens of this\nancient city docked their ships in this safe river harbour.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8899"
+                ],
+                "name": "",
+                "out": [
+                    "8899"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15510"
+                ],
+                "name": "",
+                "out": [
+                    "15510"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15508"
+                ],
+                "name": "",
+                "out": [
+                    "15508"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15509",
+        "light": 0,
+        "loadflags": 32,
+        "mobflags": 4096,
+        "name": "Empty Harbour",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 1,
+        "x": 297,
+        "y": 203,
+        "z": 0
+    },
+    {
+        "desc": "A few stone posts and some badly rusted chains are all that is left of this\nabandoned pier. So old is the chain, one good tug from a small child would\nsurely loosen several links. Much of the bluff has eroded over the centuries\nleaving some portions totally surrounded by water. Each time the river rises\nmuch of the southern section of this area floods leaving everything here\nknee-deep under water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9345"
+                ],
+                "name": "",
+                "out": [
+                    "9345"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15509"
+                ],
+                "name": "",
+                "out": [
+                    "15509"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15510",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Flooded Pier",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 7,
+        "sundeath": 1,
+        "x": 298,
+        "y": 203,
+        "z": 0
+    }
+]
