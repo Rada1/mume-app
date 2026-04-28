@@ -37,7 +37,7 @@ const extractPlayerName = (text: string) => {
     const markerPrefix = String.raw`(?:\[[^\]]*\]|<[^>]+>|\([^)]+\))\s*`;
     const symbolPrefix = String.raw`[!*=+?~-]+\s*`;
     const wordFlagPrefix = String.raw`[A-Z]{1,4}\s+`;
-    const match = text.match(new RegExp(String.raw`^\s*(?:(?:${markerPrefix}|${symbolPrefix}|${wordFlagPrefix}))*([A-Z][a-zA-Z\u00C0-\u00FF'-]{1,20})(?=\b)`));
+    const match = text.match(new RegExp(String.raw`^\s*(?:(?:${markerPrefix}|${symbolPrefix}|${wordFlagPrefix}))*([A-Z\u00C0-\u00DE][a-zA-Z\u00C0-\u00FF'-]{1,20})(?=\b)`));
     const name = match?.[1];
     if (!name || HEADER_WORDS.has(name.toLowerCase())) return null;
 

@@ -1,6 +1,6 @@
 # Replay & Recording System Redesign
 
-## Status: IN PROGRESS — Phase 2 in progress
+## Status: IN PROGRESS — Phase 6 next (Phase 5 complete)
 
 ---
 
@@ -100,31 +100,32 @@ type LogEntry =
 - [ ] Update RecorderHUD to be a passive indicator (or remove it)
 
 ### Phase 2 — Sandboxed Replay Session
-- [ ] Add `'replay'` as a valid `SessionSlot` in types
-- [ ] Create replay session context (parallel to user/spectate in `useSessionState`)
-- [ ] Wire replay `onData` callback to inject into replay session context only
-- [ ] Update `MessageLog` to read from the active session's message store
-- [ ] Ensure live session state is never mutated during replay
-- [ ] Switch `activeSession` to `'replay'` on library open, restore on dismiss
+- [x] Wire replay `onData` callback to sandboxed `replayMsg` store (live state never touched)
+- [x] GMCP skipped during replay — no live state mutation
+- [x] `replayMessages: Message[]` exposed via `LogContextType` / `useLog()`
+- [x] `sessionMode` driven from `replayer.log` via `useEffect` in GameContext (set to `'replay'` on load, `'live'` on clear)
+- [x] `MessageLog` uses `sessionMode === 'replay'` to switch display to pre-computed replay messages (time-filtered by `currentTime` — handles seeking correctly)
+- [x] Live log hidden while replay is active (different message store shown)
+- [x] `LibraryModal` export inlined (removed dependency on removed `saveLog`)
 
 ### Phase 3 — Theater Mode Trigger Fix
-- [ ] Remove scroll-up trigger for theater mode / ReplayHUD visibility
-- [ ] Theater mode only activates via Library selection
-- [ ] Audit all places that set `replayer.state.isVisible = true` and restrict to library path
+- [x] Removed "Live Attach Logic" useEffect from MessageLog (was calling `attachToLive` → `setIsVisible(true)` on scroll-up)
+- [x] Removed Timeline Scrubber overlay from MessageLog (appeared on scroll-up)
+- [x] Removed `setIsVisible(true)` from `attachToLive` in `useSessionReplayer.ts`
+- [x] Theater mode now ONLY activates from Library (`loadLog` → `setIsVisible(true)`) or "Show Replay Controls" menu item when log already loaded
 
 ### Phase 4 — Death Flagging
-- [ ] Add `'flag'` entry type to `LogEntry` union in types
-- [ ] In recording pipeline, scan each incoming `rx` line for death patterns
-- [ ] Emit `death_self` flag when line contains `"You are dead!"`
-- [ ] Emit `death_enemy_player` flag when line matches `*Name* has drawn his last breath! R.I.P.`
-- [ ] Add retroactive rescan in `loadLog()` for logs recorded before this feature
+- [x] `'flag'` entry type already in `LogEntry` union (`src/types/session.ts`)
+- [x] `recordEntry` in `useSessionRecorder.ts` scans `rx` data for death patterns and pushes `FlagEntry` immediately after the `rx` entry
+- [x] `death_self` — detects `"You are dead!"` in decoded rx text
+- [x] `death_enemy_player` — detects `*Name* has drawn his last breath! R.I.P.` regex
+- [x] Retroactive rescan in `loadLog()` — injects flag entries for older logs without modifying originals
 
 ### Phase 5 — Timeline Markers in ReplayHUD
-- [ ] Parse flag entries out of loaded log on `loadLog()`
-- [ ] Render colored marker dots on the scrubber at flag timestamps
-- [ ] Red dot = `death_self`, Gold dot = `death_enemy_player`
-- [ ] Clicking a marker seeks to that timestamp
-- [ ] Add prev/next death jump buttons to ReplayHUD
+- [x] `flagMarkers` useMemo parses `typ: 'flag'` entries from `replayer.log` in ReplayHUD
+- [x] Red dot = `death_self`, Gold dot = `death_enemy_player` on scrubber
+- [x] Clicking a dot seeks to that timestamp; tooltip shows who died
+- [x] Prev/next death navigation (☠ counter) in the search row
 
 ### Phase 6 — Spectate Live Buffer
 - [ ] Create `useSpectateBuffer` hook (in-memory rolling log, `bufferMs` param)

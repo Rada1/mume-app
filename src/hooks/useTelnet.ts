@@ -51,6 +51,7 @@ export function useTelnet(config: TelnetConfig) {
     const lastQueuedPromptRef = React.useRef<{ key: string, time: number } | null>(null);
     const pendingTextLines = React.useRef<(string | { line: string, isPrompt: boolean })[]>([]);
     const processingTimeout = React.useRef<any>(null);
+    const hasSentGameEntrySetupRef = React.useRef(false);
 
     const gmcpDecoder = React.useRef<GmcpDecoder | null>(null);
     if (!gmcpDecoder.current) {
@@ -86,7 +87,18 @@ export function useTelnet(config: TelnetConfig) {
 
     React.useEffect(() => {
         configRef.current.handlers.setStatus(isConnected ? 'connected' : 'disconnected');
+        if (!isConnected) {
+            hasSentGameEntrySetupRef.current = false;
+        }
     }, [isConnected]);
+
+    const sendGameEntrySetup = React.useCallback((source: string) => {
+        if (hasSentGameEntrySetupRef.current) return;
+        hasSentGameEntrySetupRef.current = true;
+        console.log(`[Telnet] Sending game-entry setup from ${source}: change xml on, change page off`);
+        sendBytes(new TextEncoder().encode('change xml on\n'));
+        sendBytes(new TextEncoder().encode('change page off\n'));
+    }, [sendBytes]);
 
     const processText = (text: string) => {
         bufferRef.current += text;
@@ -311,6 +323,10 @@ export function useTelnet(config: TelnetConfig) {
         try { parsed = JSON.parse(data); } catch(e) {}
 
         // 1. Explicitly mapped handlers
+        if (pkg.startsWith('Room.Info') || pkg.startsWith('Char.Name') || pkg.startsWith('Char.Vitals')) {
+            sendGameEntrySetup(pkg);
+        }
+
         if (pkg.startsWith('Char.Vitals')) {
             if (handlers.onCharVitals) handlers.onCharVitals(parsed);
         } else if (pkg.startsWith('Room.Info')) {
@@ -333,7 +349,7 @@ export function useTelnet(config: TelnetConfig) {
         if ((handlers as any)[handlerName]) {
             (handlers as any)[handlerName](parsed);
         }
-    }, []);
+    }, [sendGameEntrySetup]);
 
     const handleSubnegotiation = React.useCallback((buffer: number[]) => {
         if (buffer.length === 0) return;

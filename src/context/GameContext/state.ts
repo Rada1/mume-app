@@ -86,6 +86,10 @@ export const useGameProviderState = (audioTriggers?: {
             move: active.vitals.stats?.move || 0,
             maxMove: active.vitals.stats?.maxMove || 0,
             wimpy: active.vitals.stats?.wimpy || 0,
+            ob: active.vitals.stats?.ob,
+            db: active.vitals.stats?.db,
+            pb: active.vitals.stats?.pb,
+            armour: active.vitals.stats?.armour,
             conditions: active.vitals.stats?.conditions || {}
         }
     } as any;

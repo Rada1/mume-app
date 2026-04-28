@@ -105,6 +105,11 @@ export const useGmcpVitals = ({
             });
         }
 
+        const opponentStatus = findStatus(data['opponent-hits'] ?? data['opponent-hp']);
+        if (opponentStatus) {
+            setOpponentHealthStatus(opponentStatus);
+        }
+
         if (data.weather !== undefined) {
             // MUME sends weather as a string or null
             if (data.weather === null || data.weather === 'clear') setCurrentWeather('clear');

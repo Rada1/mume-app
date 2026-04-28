@@ -4,7 +4,6 @@ import MessageLog from '../Messages/MessageLog';
 import InputArea from '../Controls/InputArea';
 import { useGame, useUI, useVitals, useLog } from '../../context/GameContext';
 import { useModeStore } from '../../stores/useModeStore';
-import CombatStatsPanel from '../Combat/CombatStatsPanel';
 import { LineCluster } from './HUD/LineCluster';
 import PromptBox from '../HUD/PromptBox';
 import { ansiConvert } from '../../utils/ansi';
@@ -191,7 +190,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         onDragStart={handleDragStart as any}
                         onDragEnd={handleDragEnd as any}
                     />
-                    {(!isMobile || (viewport as any).isForceDesktop || isLandscape) && <CombatStatsPanel />}
                 </div>
 
                 {!isMobile && (

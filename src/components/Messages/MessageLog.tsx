@@ -1,9 +1,8 @@
-import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react';
+import React, { useCallback, useMemo, useEffect, useRef } from 'react';
 import { Message } from '../../types';
 import { ansiConvert } from '../../utils/ansi';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
 import { TokenRenderer } from './TokenRenderer';
-import { Tokenizer } from '../../services/parser/Tokenizer';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import ShopItemCard from '../Shop/ShopItemCard';
 import PracticeSkillCard from '../Practice/PracticeSkillCard';
@@ -202,213 +201,81 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const { 
         inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, 
         triggerHaptic, playClickSound, playCommMessageSound, isTimestampEnabled, 
-        isNewbieMode, showSpectatePromptInLog, input, setInput, sessionMode, 
-        setSessionMode, npcColor, playerColor, objectColor, roomColor, inlineCategories 
+        isNewbieMode, showSpectatePromptInLog, input, setInput, sessionMode
     } = useBaseGame() as any;
     const isSpectateMode = useModeStore(s => s.isSpectating);
-    const { replayer } = useUI() as any;
+    const { replayer, spectateBuffer } = useUI() as any;
     const { messages } = useLog();
     const { target, setTarget, opponentName, opponentHealthStatus } = useVitals();
     const { scrollContainerRef, messagesEndRef, scrollToBottom, isLockedToBottomRef } = viewport;
 
-    const { userSession, spectateSession, activeSession } = useBaseGame();
-    const [isInternalLocked, setIsInternalLocked] = useState(viewport.isLockedToBottomRef.current);
-
-    // --- Live Attach Logic ---
-    const [isAttachedToLive, setIsAttachedToLive] = useState(false);
-    
-    useEffect(() => {
-        if (isInternalLocked) {
-            if (isAttachedToLive) {
-                setIsAttachedToLive(false);
-            }
-        } else if (sessionMode === 'live' && !isAttachedToLive) {
-            const currentSession = activeSession === 'user' ? userSession : spectateSession;
-            const entries = (currentSession.recorder as any).entries || [];
-            const logSnapshot = {
-                version: 1,
-                startTime: new Date().toISOString(),
-                log: [...entries],
-                metadata: { client: 'MUME AI Studio', version: '1.0.0' }
-            };
-            replayer.attachToLive(logSnapshot);
-            setIsAttachedToLive(true);
-        }
-    }, [isInternalLocked, sessionMode, activeSession, isAttachedToLive, userSession, spectateSession]);
-
     // --- Replay Mode Mapping ---
+    // rx entries: pre-processed message objects { type, text, html, tokens, ... } from useMessageLog
+    // ui entries: user commands { event: 'executeCommand', cmd }
+    // useTelnet also writes rx entries as { length: N } (junk) — these are skipped
     const replayMessages = useMemo(() => {
-        if (sessionMode !== 'replay' || !replayer.log) return [];
-        
+        if (!replayer.log) return [];
+
         const results: Message[] = [];
-        let combinedRx = '';
-        let lastTimestamp = 0;
-        let pendingComm: any = null;
-
-        const COMM_COLORS: Record<string, string> = {
-            'tell': '#ff55ff',
-            'yell': '#ff5555',
-            'say': '#00ffff',
-            'shout': '#ffbbee',
-            'narrate': '#ffff55',
-            'chat': '#55ff55',
-            'group': '#77ff77',
-            'whisper': '#aaaaaa'
-        };
-
-        // Context for tokenizer
-        const tokenizerContext = {
-            target,
-            currentOccupants: [],
-            roomNpcs: [],
-            activeGroupMembers: [],
-            roomItems: [],
-            discoveredItems: [],
-            inlineCategories: inlineCategories || [],
-            npcColor,
-            playerColor,
-            objectColor,
-            roomColor,
-            buttons: [],
-            selectedObjectIds: new Set<string>()
-        };
 
         replayer.log.log.forEach((entry: any, idx: number) => {
-            // LogEntry uses compact field names: typ, d, t
             const typ = entry.typ ?? entry.type;
             const data = entry.d ?? entry.data;
             const ts = entry.t ?? entry.timestamp ?? 0;
 
-            if (typ === 'gmcp') {
-                const method = data?.method;
-                const gData = data?.data;
-                if (method === 'Comm.Channel') {
-                    pendingComm = {
-                        sender: gData.sender,
-                        action: gData.channel,
-                        text: gData.message,
-                        color: COMM_COLORS[gData.channel] || '#ffffff',
-                        id: `replay-comm-${idx}`
-                    };
-                }
-            } else if (typ === 'rx') {
-                // rx data in logs is often a raw byte array. We MUST strip telnet 
-                // subnegotiations (like GMCP) so they don't appear as raw text entries 
-                // in the Archive View.
-                let bytes: Uint8Array;
-                if (data instanceof Uint8Array) bytes = data;
-                else if (Array.isArray(data)) bytes = new Uint8Array(data);
-                else if (typeof data === 'string') bytes = new TextEncoder().encode(data);
-                else bytes = new Uint8Array();
-
-                // Simple telnet stripper: hides everything between IAC SB and IAC SE
-                const cleanBytes: number[] = [];
-                for (let i = 0; i < bytes.length; i++) {
-                    if (bytes[i] === 255 && bytes[i + 1] === 250) { // IAC SB (255 250)
-                        i += 2;
-                        while (i < bytes.length && !(bytes[i - 1] === 255 && bytes[i] === 240)) i++; // Skip to IAC SE
-                        continue;
-                    }
-                    if (bytes[i] === 255 && bytes[i + 1] >= 251 && bytes[i + 1] <= 254) { // IAC WILL/WONT/DO/DONT (3 bytes)
-                        i += 2;
-                        continue;
-                    }
-                    if (bytes[i] === 255) continue; // Skip naked IAC
-                    cleanBytes.push(bytes[i]);
-                }
-
-                combinedRx += new TextDecoder().decode(new Uint8Array(cleanBytes));
-                lastTimestamp = ts;
-            } else if (typ === 'tx' || typ === 'sys' || typ === 'ui') {
-                // Flush pending RX as message lines
-                if (combinedRx) {
-                    const html = ansiConvert.toHtml(combinedRx);
-                    const msgId = pendingComm ? pendingComm.id : `replay-rx-${idx}`;
-                    
+            if (typ === 'rx') {
+                // Pre-processed message object recorded by useMessageLog
+                if (data && typeof data === 'object' && typeof data.text === 'string') {
+                    // User commands are recorded twice: once as rx (from addMessage) and once as ui
+                    // (from executeCommand). Skip rx entries to avoid duplicates.
+                    if (data.type === 'user') return;
                     results.push({
-                        id: msgId,
-                        type: (pendingComm ? 'comm' : 'system') as any,
-                        textRaw: combinedRx,
-                        html: html,
-                        tokens: Tokenizer.tokenize(combinedRx, tokenizerContext),
-                        timestamp: lastTimestamp,
-                        isCombat: false,
-                        isComm: !!pendingComm,
-                        commSender: pendingComm?.sender,
-                        commAction: pendingComm?.action,
-                        commText: pendingComm?.text,
-                        commColor: pendingComm?.color,
-                        replyCommand: pendingComm?.action,
-                        replyTarget: pendingComm?.sender
+                        id: data.mid || `replay-rx-${idx}`,
+                        type: (data.type || 'game') as any,
+                        textRaw: data.text,
+                        html: data.html || data.text,
+                        tokens: data.tokens,
+                        timestamp: ts,
+                        isRoomName: data.isRoomName,
+                        isCombat: data.isCombat,
+                        isComm: data.isComm,
+                        isNarrate: data.isNarrate,
+                        commSender: data.commSender,
+                        commAction: data.commAction,
+                        commText: data.commText,
+                        commColor: data.commColor,
                     });
-                    combinedRx = '';
-                    pendingComm = null;
                 }
-
-                if (typ === 'tx') {
-                    const text = typeof data === 'string' ? data : String(data);
-                    // Filter out automated synchronization commands
-                    const lower = text.toLowerCase();
-                    if (lower.includes('change width') || lower.includes('change length') || lower.includes('cha wid') || lower.includes('cha len')) {
-                        // Skip
-                    } else {
+                // { length: N } entries from useTelnet are silently skipped
+            } else if (typ === 'ui') {
+                // User command: { event: 'executeCommand', cmd }
+                if (data?.event === 'executeCommand' && typeof data.cmd === 'string') {
+                    const cmd: string = data.cmd;
+                    const lower = cmd.toLowerCase();
+                    if (!lower.includes('change width') && !lower.includes('change length') &&
+                        !lower.includes('cha wid') && !lower.includes('cha len')) {
                         results.push({
-                            id: `replay-tx-${idx}`,
-                            type: 'user',
-                            textRaw: text,
-                            html: text,
-                            tokens: Tokenizer.tokenize(text, tokenizerContext),
-                            timestamp: ts
+                            id: `replay-ui-${idx}`,
+                            type: 'user' as any,
+                            textRaw: cmd,
+                            html: cmd,
+                            timestamp: ts,
                         });
                     }
-                } else if (typ === 'sys') {
-                    const text = typeof data === 'string' ? data : JSON.stringify(data);
-                    results.push({
-                        id: `replay-sys-${idx}`,
-                        type: 'system',
-                        textRaw: text,
-                        html: text,
-                        tokens: Tokenizer.tokenize(text, tokenizerContext),
-                        timestamp: ts
-                    });
                 }
             }
+            // gmcp, sys, flag, tx: not rendered
         });
-        
-        // Final flush of any remaining RX
-        if (combinedRx) {
-            const html = ansiConvert.toHtml(combinedRx);
-            const msgId = pendingComm ? pendingComm.id : `replay-final`;
-            results.push({
-                id: msgId,
-                type: (pendingComm ? 'comm' : 'system') as any,
-                textRaw: combinedRx,
-                html: html,
-                tokens: Tokenizer.tokenize(combinedRx, tokenizerContext),
-                timestamp: lastTimestamp,
-                isComm: !!pendingComm,
-                commSender: pendingComm?.sender,
-                commAction: pendingComm?.action,
-                commText: pendingComm?.text,
-                commColor: pendingComm?.color,
-                replyCommand: pendingComm?.action,
-                replyTarget: pendingComm?.sender
-            });
-        }
-        
+
         return results;
-    }, [sessionMode, replayer.log, target, npcColor, playerColor, objectColor, roomColor, inlineCategories]);
+    }, [replayer.log]);
 
 
 
     const displayMessages = useMemo(() => {
         if (sessionMode === 'replay') {
             // Filter replay messages to only show what has been "played" according to currentTime.
-            // This prevents the log from being stuck at the bottom (end of session) and makes
-            // it feel live/theatrical.
             const now = replayer.state.currentTime;
-            
-            // Replay messages are already sorted by timestamp. Binary search for efficiency.
             let low = 0;
             let high = replayMessages.length;
             while (low < high) {
@@ -418,14 +285,17 @@ const MessageLog: React.FC<MessageLogProps> = ({
             }
             return replayMessages.slice(0, low);
         }
-        
-        // Show all regular prompts in the log history as requested by user.
-        // Snoop prompts still respect the toggle to avoid clutter during dual-play.
-        const result = messages.filter(m => m.type !== 'prompt' || !m.isSnoop || showSpectatePromptInLog);
-        const userMsgs = result.filter(m => m.type === 'user');
-        console.log(`[MessageLog] displayMessages update: total=${result.length}, messages=${messages.length}, userCommands=${userMsgs.length}`, userMsgs.map(m => m.textRaw));
-        return result;
-    }, [messages, replayMessages, sessionMode, showSpectatePromptInLog, replayer.state.currentTime]);
+
+        const base = messages.filter(m => m.type !== 'prompt' || !m.isSnoop || showSpectatePromptInLog);
+
+        // Spectate DVR buffer: hide messages newer than displayCutoff so the user
+        // can watch from an earlier point in the session and advance in real-time.
+        if (isSpectateMode && !spectateBuffer.isLive) {
+            return base.filter(m => m.timestamp <= spectateBuffer.displayCutoff);
+        }
+
+        return base;
+    }, [messages, replayMessages, sessionMode, showSpectatePromptInLog, replayer.state.currentTime, isSpectateMode, spectateBuffer.isLive, spectateBuffer.displayCutoff]);
 
     const lastUserMsgIndex = useMemo(() => {
         for (let i = displayMessages.length - 1; i >= 0; i--) {
@@ -482,7 +352,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
             // If we are scrolling DOWN and hit the threshold, relock.
             if (isScrollingUp || isNearBottom) {
                 viewport.isLockedToBottomRef.current = isNearBottom;
-                setIsInternalLocked(isNearBottom);
             }
         }
 
@@ -510,7 +379,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
             // Wheeling down should maintain the lock if near bottom.
             if (e.deltaY < 0 && viewport.isLockedToBottomRef.current) {
                 viewport.isLockedToBottomRef.current = false;
-                setIsInternalLocked(false);
             }
         };
 
@@ -670,39 +538,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
                         );
                     })}
                 </div>
-                {/* --- Timeline Scrubber --- */}
-                {!isInternalLocked && sessionMode !== 'replay' && (
-                    <div className="timeline-scrubber-overlay">
-                        <div className="scrubber-track-outer">
-                            <input 
-                                type="range"
-                                min={0}
-                                max={replayer.state.duration}
-                                value={replayer.state.currentTime}
-                                onChange={(e) => {
-                                    const time = parseInt(e.target.value);
-                                    if (sessionMode !== 'scrubbing') setSessionMode('scrubbing');
-                                    replayer.seek(time);
-                                }}
-                                className="scrubber-slider"
-                            />
-                            <div className="scrubber-timestamp">
-                                {formatTimestamp(Date.now() - (replayer.state.duration - replayer.state.currentTime))}
-                            </div>
-                        </div>
-                        <button 
-                            className="back-to-live-btn"
-                            onClick={() => {
-                                setSessionMode('live');
-                                viewport.isLockedToBottomRef.current = true;
-                                viewport.scrollToBottom(true, true, 'BackToLive');
-                            }}
-                        >
-                            Back To Live
-                        </button>
-                    </div>
-                )}
-
                 <div className="log-bottom-spacer" ref={messagesEndRef} style={{ height: '12px', flexShrink: 0 }} />
             </div>
         </div>

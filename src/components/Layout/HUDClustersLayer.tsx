@@ -9,6 +9,7 @@ import { GridOverlay } from '../Grid/GridOverlay';
 import { StatsCluster } from './HUD/StatsCluster';
 import { LineCluster } from './HUD/LineCluster';
 import { ReplayHUD } from './HUD/ReplayHUD';
+import { LiveBufferHUD } from './HUD/LiveBufferHUD';
 import { SpectateQueueHUD } from './HUD/SpectateQueueHUD';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/useMapper';
@@ -150,6 +151,7 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
             )}
 
             <SpectateQueueHUD />
+            <LiveBufferHUD />
             <ReplayHUD />
             <MumeEditor />
         </>

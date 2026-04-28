@@ -24,8 +24,8 @@ export const useGestures = (deps: InteractionDeps) => {
             if (ui.mapExpanded) {
                 setIsMapExpanded(false);
             } else {
-                console.log('[Gestures] Triggering CHARACTER sequence (stat, score, info %m, quest, practice)');
-                executeCommand('stat', true, true, true, true);
+                console.log('[Gestures] Triggering CHARACTER sequence (info %O %D %k %A, score, info %m, quest, practice)');
+                executeCommand('info %O %D %k %A', true, true, true, true);
                 setTimeout(() => executeCommand('score', true, true, true, true), 100);
                 setTimeout(() => executeCommand('info %m', true, true, true, true), 200);
                 setTimeout(() => executeCommand('quest', true, true, true, true), 300);
@@ -38,8 +38,8 @@ export const useGestures = (deps: InteractionDeps) => {
             handleTabClick('equipment');
             setGearTab('inv');
         } else if (dir === 'right') {
-            console.log('[Gestures] Triggering STAT sequence (stat, score, info %m)');
-            executeCommand('stat', true, true, true, true);
+            console.log('[Gestures] Triggering STAT sequence (info %O %D %k %A, score, info %m)');
+            executeCommand('info %O %D %k %A', true, true, true, true);
             setTimeout(() => executeCommand('score', true, true, true, true), 100);
             setTimeout(() => executeCommand('info %m', true, true, true, true), 200);
             handleTabClick('character');

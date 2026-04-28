@@ -40,6 +40,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
     // --- State for Automated Gathering ---
     const hasAutomatedListRef = useRef(false);
     const isSilentListingRef = useRef(false);
+    const hasSentGameEntrySetupRef = useRef(false);
 
     const parseAccountLine = useCallback((line: string, isPrompt: boolean = false): boolean => {
         const cleanLine = line.replace(/\x1b\[[0-9;]*m/g, '');
@@ -65,29 +66,35 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             setAccountState(prev => ({ ...prev, stage: 'none' }));
             setIsPasswordMode(false);
             gmcpBus.emit('Session.Start', { characterName: 'Player' });
+
+            if (!hasSentGameEntrySetupRef.current) {
+                hasSentGameEntrySetupRef.current = true;
+                sendCommand('change xml on');
+                sendCommand('change page off');
+            }
+
             setTimeout(() => {
                 if (executeCommandRef.current) {
-                    executeCommandRef.current('change xml on', true, true, true, true);
-                    executeCommandRef.current('change page off', true, true, true, true);
-                    setTimeout(() => executeCommandRef.current?.('stat', true, true, true, true), 100);
-                    setTimeout(() => executeCommandRef.current?.('score', true, true, true, true), 200);
-                    setTimeout(() => executeCommandRef.current?.('info %m', true, true, true, true), 300);
-                    setTimeout(() => executeCommandRef.current?.('time', true, true, true, true), 400);
-                    setTimeout(() => executeCommandRef.current?.('info', true, true, true, true), 500);
-                    setTimeout(() => executeCommandRef.current?.('eq', true, true, true, true), 600);
-                    setTimeout(() => executeCommandRef.current?.('inv', true, true, true, true), 700);
-                    setTimeout(() => executeCommandRef.current?.('practice', true, true, true, true), 800);
-                    setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 900);
-                    setTimeout(() => executeCommandRef.current?.('who', true, true, true, true), 1000);
-                    setTimeout(() => executeCommandRef.current?.('where', true, true, true, true), 1100);
+                    executeCommandRef.current('info %O %D %k %A', true, true, true, true);
+                    setTimeout(() => executeCommandRef.current?.('score', true, true, true, true), 100);
+                    setTimeout(() => executeCommandRef.current?.('info %m', true, true, true, true), 200);
+                    setTimeout(() => executeCommandRef.current?.('time', true, true, true, true), 300);
+                    setTimeout(() => executeCommandRef.current?.('info', true, true, true, true), 400);
+                    setTimeout(() => executeCommandRef.current?.('eq', true, true, true, true), 500);
+                    setTimeout(() => executeCommandRef.current?.('inv', true, true, true, true), 600);
+                    setTimeout(() => executeCommandRef.current?.('practice', true, true, true, true), 700);
+                    setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 800);
+                    setTimeout(() => executeCommandRef.current?.('who', true, true, true, true), 900);
+                    setTimeout(() => executeCommandRef.current?.('where', true, true, true, true), 1000);
                 }
-            }, 1000);
+            }, 150);
             return false;
         }
 
         // During gameplay, skip all account parsing except detecting return to Account>
         if ((gameStateRef.current as string) === 'playing') {
             if (trimmedLine === 'Account>') {
+                hasSentGameEntrySetupRef.current = false;
                 setGameState('account');
                 setAccountState(prev => ({ ...prev, stage: 'account-menu' }));
                 setIsPasswordMode(false);
@@ -110,7 +117,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 if (activePrompt || gameStateRef.current !== 'playing') {
                     console.log(`[AccountParser] Detected prompt: ${activePrompt ? 'Name' : 'Password'}. Switching to account state.`);
                     setGameState('account');
-                    setAccountState((prev: any) => ({ ...prev, stage: 'login' }));
+                    setAccountState(prev => ({ ...prev, stage: 'login' }));
                     
                     if (activePassPrompt) setIsPasswordMode(true);
                     else if (activePrompt) setIsPasswordMode(false);
@@ -280,28 +287,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         }
 
         return false;
-    }, [setAccountState, setGameState, addMessage, gameState, accountState.isGathering]);
+    }, [setAccountState, setGameState, addMessage, gameState, accountState.isGathering, sendCommand]);
 
     return { parseAccountLine };
-}
-
-/**
- * Strips characters from the end of a string while ignoring ANSI escape sequences for length calculation.
- */
-function visualTruncate(str: string, limit: number): string {
-    let visualCount = 0;
-    let i = 0;
-    while (i < str.length && visualCount < limit) {
-        if (str[i] === '\x1b') {
-            const match = str.slice(i).match(/^\x1b\[[0-9;]*m/);
-            if (match) {
-                i += match[0].length;
-                continue;
-            }
-        }
-        visualCount++;
-        i++;
-    }
-    // Append a reset code to be safe, then trim trailing spaces
-    return str.slice(0, i).trimEnd() + '\x1b[0m';
 }

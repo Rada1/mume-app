@@ -14,7 +14,7 @@ interface LibraryModalProps {
 }
 
 export const LibraryModal: React.FC<LibraryModalProps> = ({ isOpen, onClose }) => {
-    const { triggerHaptic, saveLog } = useGame();
+    const { triggerHaptic } = useGame();
     const { replayer } = useUI();
     const [sessions, setSessions] = useState<StoredSession[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -73,7 +73,13 @@ export const LibraryModal: React.FC<LibraryModalProps> = ({ isOpen, onClose }) =
     const handleExport = (session: StoredSession, e: React.MouseEvent) => {
         e.stopPropagation();
         triggerHaptic(15);
-        saveLog(session);
+        const blob = new Blob([JSON.stringify(session, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `mume-log-${session.startTime?.replace(/[:.]/g, '-') ?? Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
     };
 
     const handleClearAll = async () => {

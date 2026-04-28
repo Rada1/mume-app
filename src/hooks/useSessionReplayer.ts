@@ -93,8 +93,38 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
       console.error('[Replayer] Invalid log uploaded:', newLog);
       return;
     }
-    setLog(newLog);
-    logRef.current = newLog;
+
+    // Retroactive death flag scan — inject flag entries for logs recorded before
+    // death flagging was added, without modifying the original entries.
+    const decoder = new TextDecoder();
+    const existingFlagTimes = new Set(
+      newLog.log.filter(e => e.typ === 'flag').map(e => `${e.t}:${(e as any).d?.kind}`)
+    );
+    const injected: typeof newLog.log = [];
+    for (const entry of newLog.log) {
+      injected.push(entry);
+      if (entry.typ !== 'rx') continue;
+      let text: string;
+      if (typeof entry.d === 'string') {
+        text = entry.d;
+      } else {
+        const bytes = entry.d instanceof Uint8Array ? entry.d : Array.isArray(entry.d) ? new Uint8Array(entry.d) : null;
+        text = bytes ? decoder.decode(bytes) : '';
+      }
+      if (text.includes('You are dead!') && !existingFlagTimes.has(`${entry.t}:death_self`)) {
+        injected.push({ t: entry.t, typ: 'flag', d: { kind: 'death_self' } });
+      }
+      const m = text.match(/\*([^*]+)\* has drawn his last breath! R\.I\.P\./);
+      if (m && !existingFlagTimes.has(`${entry.t}:death_enemy_player`)) {
+        injected.push({ t: entry.t, typ: 'flag', d: { kind: 'death_enemy_player', name: m[1] } });
+      }
+    }
+    const patchedLog: SessionLog = injected.length !== newLog.log.length
+      ? { ...newLog, log: injected }
+      : newLog;
+
+    setLog(patchedLog);
+    logRef.current = patchedLog;
     const durationCount = newLog.log.length > 0 
       ? newLog.log[newLog.log.length - 1].t 
       : 0;
@@ -126,7 +156,6 @@ export const useSessionReplayer = (onData: (type: 'rx' | 'tx' | 'gmcp', data: an
       duration: durationValue,
       currentIndex: liveLog.log.length,
     });
-    setIsVisible(true);
   }, []);
 
   const updateLiveDuration = useCallback(() => {

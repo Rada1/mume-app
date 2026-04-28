@@ -56,11 +56,30 @@ export const useSessionRecorder = () => {
       }
     }
 
-    entriesRef.current.push({
-      t: Date.now() - startTimeRef.current,
-      typ: type,
-      d: recordedData
-    });
+    const t = Date.now() - startTimeRef.current;
+    entriesRef.current.push({ t, typ: type, d: recordedData });
+
+    // Death flag detection on rx entries (pre-processed format: { text: string })
+    if (type === 'rx') {
+      let text: string = '';
+      if (typeof data === 'string') {
+        text = data;
+      } else if (data && typeof data === 'object' && typeof data.text === 'string') {
+        text = data.text; // pre-processed message from useMessageLog
+      } else {
+        const bytes = data instanceof Uint8Array ? data : Array.isArray(data) ? new Uint8Array(data) : null;
+        text = bytes ? new TextDecoder().decode(bytes) : '';
+      }
+
+      if (text.includes('You are dead!')) {
+        entriesRef.current.push({ t, typ: 'flag', d: { kind: 'death_self' } });
+      }
+
+      const enemyDeathMatch = text.match(/\*([^*]+)\* has drawn his last breath! R\.I\.P\./);
+      if (enemyDeathMatch) {
+        entriesRef.current.push({ t, typ: 'flag', d: { kind: 'death_enemy_player', name: enemyDeathMatch[1] } });
+      }
+    }
   }, []);
 
   const stopRecording = useCallback((characterName?: string): SessionLog => {

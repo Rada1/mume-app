@@ -81,11 +81,22 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
 
     const getCharNameFromId = useCallback((id: string | null | undefined): string | null => {
         if (!id) return null;
+        const idString = String(id);
         const match = Object.values(props.roomChars || {}).find(p =>
-            p.id === id || p.name?.toLowerCase() === id.toLowerCase() || p.keyword?.toLowerCase() === id.toLowerCase()
+            String(p.id) === idString ||
+            p.name?.toLowerCase() === idString.toLowerCase() ||
+            p.keyword?.toLowerCase() === idString.toLowerCase()
         );
-        return match?.name || match?.short || match?.keyword || id;
+        return match?.name || match?.short || match?.keyword || idString;
     }, [props.roomChars]);
+
+    React.useEffect(() => {
+        if (!props.opponentId) return;
+        const opponentName = getCharNameFromId(props.opponentId);
+        if (opponentName && opponentName !== props.opponentId) {
+            props.setOpponentName(opponentName);
+        }
+    }, [props.opponentId, props.roomChars, props.setOpponentName, getCharNameFromId]);
 
     const findStatus = useCallback((str: string | undefined): CombatHealthStatus | null => {
         if (!str) return null;

@@ -57,8 +57,12 @@ export const useSessionState = (
         move: vStore?.move ?? 0, 
         maxMove: vStore?.maxMove ?? 0, 
         wimpy: vStore?.wimpy ?? 0,
+        ob: vStore?.ob,
+        db: vStore?.db,
+        pb: vStore?.pb,
+        armour: vStore?.armour,
         conditions: (vStore as any)?.conditions ?? {}
-    }), [vStore?.hp, vStore?.maxHp, vStore?.mana, vStore?.maxMana, vStore?.move, vStore?.maxMove, vStore?.wimpy, (vStore as any)?.conditions]);
+    }), [vStore?.hp, vStore?.maxHp, vStore?.mana, vStore?.maxMana, vStore?.move, vStore?.maxMove, vStore?.wimpy, vStore?.ob, vStore?.db, vStore?.pb, vStore?.armour, (vStore as any)?.conditions]);
 
     const playerHealthStatus = vStore?.hpStatus ?? 'healthy';
     const playerPosition = vStore?.position ?? 'standing';
@@ -99,6 +103,10 @@ export const useSessionState = (
             move: currentStore.move ?? 0,
             maxMove: currentStore.maxMove ?? 0,
             wimpy: currentStore.wimpy ?? 0,
+            ob: currentStore.ob,
+            db: currentStore.db,
+            pb: currentStore.pb,
+            armour: currentStore.armour,
             conditions: (currentStore as any).conditions ?? {}
         };
     }, [isSpectateSession]);

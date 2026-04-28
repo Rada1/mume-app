@@ -86,7 +86,6 @@ export interface VitalsContextType {
 
 export interface LogData {
     messages: Message[];
-    replayMessages: Message[];
     setMessages: Dispatch<SetStateAction<Message[]>>;
     addMessage: (type: MessageType, text: string, extra?: any, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string, html?: string, tokens?: any[] }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, isSystem?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, commSenderTokens?: import('../../types').Token[], commTextTokens?: import('../../types').Token[], providedCombatSide?: 'player' | 'opponent' | 'groupmate', providedIsHitImpact?: boolean, providedIsHitterImpact?: boolean, providedIsSnoop?: boolean, providedIsSnoopInput?: boolean) => void;
     addSystemMessage: (text: string) => void;
@@ -100,6 +99,7 @@ export interface LogData {
 }
 
 export interface LogContextType extends LogData {
+    replayMessages: Message[];
     refreshLogHighlights: () => void;
     handleLogPointerDown: (e: React.PointerEvent) => void;
     handleLogPointerUp: (e: React.PointerEvent) => void;
@@ -185,6 +185,17 @@ export interface UIContextType {
         stopExport: () => void;
         exportAsText: () => void;
         performSearch: (query: string) => void;
+    };
+    spectateBuffer: {
+        isLive: boolean;
+        isPlaying: boolean;
+        displayCutoff: number;
+        seekTo: (ts: number) => void;
+        play: () => void;
+        pause: () => void;
+        goBack: (ms: number) => void;
+        jumpToLive: () => void;
+        clear: () => void;
     };
 }
 

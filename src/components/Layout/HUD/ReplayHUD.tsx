@@ -3,16 +3,34 @@
  * @description HUD component for session playback controls.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useUI } from '../../../context/GameContext';
-import { 
+import {
     Play, Pause, Square, FastForward, Rewind, Download, Video, X, Eye, EyeOff,
     Search, ChevronLeft, ChevronRight, FileText, Scissors
 } from 'lucide-react';
 
 export const ReplayHUD: React.FC = () => {
     const { replayer, setIsLibraryOpen } = useUI();
-    const { state, play, pause, seek, setSpeed, setPrivacyMode, loadLog, startExport, exportAsText, stopExport, setIsVisible, performSearch, setTrimRange } = replayer;
+    const { log, state, play, pause, seek, setSpeed, setPrivacyMode, startExport, exportAsText, stopExport, performSearch, setTrimRange } = replayer;
+
+    const flagMarkers = useMemo(() => {
+        if (!log?.log) return [];
+        return log.log
+            .filter((e): e is any => e.typ === 'flag')
+            .map(e => ({ t: e.t, kind: e.d.kind as 'death_self' | 'death_enemy_player', name: e.d.name as string | undefined }));
+    }, [log]);
+
+    const jumpToFlag = (dir: 'next' | 'prev') => {
+        if (!flagMarkers.length) return;
+        if (dir === 'next') {
+            const next = flagMarkers.find(f => f.t > state.currentTime + 100);
+            seek(next !== undefined ? next.t : flagMarkers[0].t);
+        } else {
+            const prevs = flagMarkers.filter(f => f.t < state.currentTime - 100);
+            seek(prevs.length ? prevs[prevs.length - 1].t : flagMarkers[flagMarkers.length - 1].t);
+        }
+    };
     const [isHovered, setIsHovered] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [isTrimMode, setIsTrimMode] = useState(false);
@@ -160,6 +178,15 @@ export const ReplayHUD: React.FC = () => {
                         <button onClick={() => jumpToResult('next')} style={{ background: 'none', border: 'none', color: '#4a90e2', cursor: 'pointer', padding: '2px' }}><ChevronRight size={16} /></button>
                     </div>
                 )}
+                {flagMarkers.length > 0 && (
+                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center', background: 'rgba(255,68,68,0.08)', borderRadius: '8px', padding: '2px 6px' }}>
+                        <button onClick={() => jumpToFlag('prev')} style={{ background: 'none', border: 'none', color: '#ff8888', cursor: 'pointer', padding: '2px' }}><ChevronLeft size={14} /></button>
+                        <span style={{ fontSize: '0.65rem', color: '#ff8888', fontWeight: 'bold' }}>
+                            ☠ {flagMarkers.filter(f => f.t <= state.currentTime).length}/{flagMarkers.length}
+                        </span>
+                        <button onClick={() => jumpToFlag('next')} style={{ background: 'none', border: 'none', color: '#ff8888', cursor: 'pointer', padding: '2px' }}><ChevronRight size={14} /></button>
+                    </div>
+                )}
             </div>
 
             {/* Scrubber */}
@@ -200,7 +227,7 @@ export const ReplayHUD: React.FC = () => {
                 
                 {/* Search Markers */}
                 {state.searchResults?.map((t, idx) => (
-                    <div 
+                    <div
                         key={idx}
                         style={{
                             position: 'absolute',
@@ -211,6 +238,30 @@ export const ReplayHUD: React.FC = () => {
                             backgroundColor: '#fff',
                             boxShadow: '0 0 4px #4a90e2',
                             pointerEvents: 'none',
+                            zIndex: 3
+                        }}
+                    />
+                ))}
+
+                {/* Death Flag Markers */}
+                {flagMarkers.map((f, idx) => (
+                    <div
+                        key={`flag-${idx}`}
+                        title={f.kind === 'death_self' ? 'You died here' : `${f.name ?? 'Enemy player'} died here`}
+                        onClick={(e) => { e.stopPropagation(); seek(f.t); }}
+                        style={{
+                            position: 'absolute',
+                            left: `${(f.t / state.duration) * 100}%`,
+                            top: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: '10px',
+                            height: '10px',
+                            borderRadius: '50%',
+                            backgroundColor: f.kind === 'death_self' ? '#ff4444' : '#ffd700',
+                            boxShadow: f.kind === 'death_self'
+                                ? '0 0 6px rgba(255,68,68,0.8)'
+                                : '0 0 6px rgba(255,215,0,0.8)',
+                            cursor: 'pointer',
                             zIndex: 3
                         }}
                     />

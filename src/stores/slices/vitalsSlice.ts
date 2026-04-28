@@ -29,6 +29,10 @@ export interface VitalsState {
     maxMana: number;
     move: number;
     maxMove: number;
+    ob?: number;
+    db?: number;
+    pb?: number;
+    armour?: number;
     hpStatus: CombatHealthStatus | null;
     manaStatus: string | null;
     moveStatus: string | null;
@@ -77,6 +81,10 @@ export const initialVitalsState = {
     maxMana: 100,
     move: 100,
     maxMove: 100,
+    ob: undefined,
+    db: undefined,
+    pb: undefined,
+    armour: undefined,
     hpStatus: null,
     manaStatus: null,
     moveStatus: null,

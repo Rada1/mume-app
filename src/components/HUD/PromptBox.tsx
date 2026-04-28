@@ -14,6 +14,7 @@ import { getCategoryForName, getGlowColorForCategory } from '../../utils/categor
 import { useActiveVitals, useActiveCombat, useActiveCharacter } from '../../stores/useActiveGameState';
 import { useModeStore } from '../../stores/useModeStore';
 import { TokenRenderer } from '../Messages/TokenRenderer';
+import PromptCombatStatsLine from './PromptCombatStatsLine';
 
 interface PromptBoxProps {
     processMessageHtml?: (html: string, mid: string, isRoomName: boolean, type?: string, isCombat?: boolean, side?: string) => string;
@@ -427,52 +428,55 @@ const PromptBox: FC<PromptBoxProps> = ({
                 <div className="prompt-vitals-row-ascii">
                     {/* Player Side */}
                     <div className="vitals-side-container side-left">
-                        <div className="player-stats-group">
-                            <Heart size={11} className="vitals-icon hp-icon" strokeWidth={3} />
-                            <div ref={hpBarRef} style={{ flex: 1, display: 'flex', minWidth: 0 }}>
-                                <ConditionBadge
-                                    status={playerHealthStatus || 'Healthy'}
-                                    percent={normalizeTierStatus(playerHealthStatus, HEALTH_TIERS) 
-                                        ? (HEALTH_MAP[normalizeTierStatus(playerHealthStatus, HEALTH_TIERS)!]?.percent ?? 0)
-                                        : (maxHp > 0 ? (hp / maxHp) * 100 : 0)
-                                    }
-                                    colorClass="hp"
-                                    segments={HEALTH_SEGMENTS}
-                                    tiers={HEALTH_TIERS}
+                        <div className="player-vitals-stack">
+                            <PromptCombatStatsLine />
+                            <div className="player-stats-group">
+                                <Heart size={11} className="vitals-icon hp-icon" strokeWidth={3} />
+                                <div ref={hpBarRef} style={{ flex: 1, display: 'flex', minWidth: 0 }}>
+                                    <ConditionBadge
+                                        status={playerHealthStatus || 'Healthy'}
+                                        percent={normalizeTierStatus(playerHealthStatus, HEALTH_TIERS) 
+                                            ? (HEALTH_MAP[normalizeTierStatus(playerHealthStatus, HEALTH_TIERS)!]?.percent ?? 0)
+                                            : (maxHp > 0 ? (hp / maxHp) * 100 : 0)
+                                        }
+                                        colorClass="hp"
+                                        segments={HEALTH_SEGMENTS}
+                                        tiers={HEALTH_TIERS}
+                                        onClick={triggerNumbers}
+                                        showAlt={showNumbers || isDragging}
+                                        altStatus={isDragging ? `` : `${hp}/${maxHp}`}
+                                        isFighting={inCombat}
+                                        onPointerDown={handleHpPointerDown}
+                                        wimpyRatio={wimpyRatio}
+                                        isDragging={isDragging}
+                                        dragVal={dragVal}
+                                    />
+                                </div>
+                                <Zap size={11} className="vitals-icon mana-icon" strokeWidth={3} />
+                                <ConditionBadge 
+                                    status={mpStatus} 
+                                    percent={manaPercent}
+                                    colorClass="mana" 
+                                    segments={MANA_SEGMENTS}
+                                    tiers={MANA_TIERS}
                                     onClick={triggerNumbers}
-                                    showAlt={showNumbers || isDragging}
-                                    altStatus={isDragging ? `` : `${hp}/${maxHp}`}
+                                    showAlt={showNumbers}
+                                    altStatus={`${mana}/${maxMana}`}
                                     isFighting={inCombat}
-                                    onPointerDown={handleHpPointerDown}
-                                    wimpyRatio={wimpyRatio}
-                                    isDragging={isDragging}
-                                    dragVal={dragVal}
+                                />
+                                <Footprints size={11} className="vitals-icon move-icon" strokeWidth={3} />
+                                <ConditionBadge 
+                                    status={stStatus} 
+                                    percent={movePercent}
+                                    colorClass="move" 
+                                    segments={MOVE_SEGMENTS}
+                                    tiers={MOVE_TIERS}
+                                    onClick={triggerNumbers}
+                                    showAlt={showNumbers}
+                                    altStatus={`${move}/${maxMove}`}
+                                    isFighting={inCombat}
                                 />
                             </div>
-                            <Zap size={11} className="vitals-icon mana-icon" strokeWidth={3} />
-                            <ConditionBadge 
-                                status={mpStatus} 
-                                percent={manaPercent}
-                                colorClass="mana" 
-                                segments={MANA_SEGMENTS}
-                                tiers={MANA_TIERS}
-                                onClick={triggerNumbers}
-                                showAlt={showNumbers}
-                                altStatus={`${mana}/${maxMana}`}
-                                isFighting={inCombat}
-                            />
-                            <Footprints size={11} className="vitals-icon move-icon" strokeWidth={3} />
-                            <ConditionBadge 
-                                status={stStatus} 
-                                percent={movePercent}
-                                colorClass="move" 
-                                segments={MOVE_SEGMENTS}
-                                tiers={MOVE_TIERS}
-                                onClick={triggerNumbers}
-                                showAlt={showNumbers}
-                                altStatus={`${move}/${maxMove}`}
-                                isFighting={inCombat}
-                            />
                         </div>
                     </div>
 

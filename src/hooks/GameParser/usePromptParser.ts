@@ -165,7 +165,6 @@ export function usePromptParser(deps: PromptParserDeps) {
                 if (deps.setSpectateOpponentStatus) deps.setSpectateOpponentStatus(oppStatus);
             } else {
                 setOpponentName(oppName);
-                setOpponentHealthStatus(oppStatus);
             }
         } else if (!isSpectateMode && !isSnoop && !deps.inCombatRef?.current) {
             setOpponentHealthStatus(null);

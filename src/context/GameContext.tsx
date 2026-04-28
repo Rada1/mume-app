@@ -30,6 +30,7 @@ import { useSessionManager } from '../hooks/useSessionManager';
 import { useAmbientController, useAudioEffects } from '../hooks/useAudioSystem';
 import { useSessionRecorder, LogEntryType } from '../hooks/useSessionRecorder';
 import { useSessionReplayer } from '../hooks/useSessionReplayer';
+import { useSpectateBuffer } from '../hooks/useSpectateBuffer';
 import { useSettings } from '../hooks/useSettings';
 import { useAgentObservability } from '../hooks/useAgentObservability';
 import { ansiConvert } from '../utils/ansi';
@@ -209,8 +210,40 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         pendingGmcpCommRef
     });
 
+    // Stable ref to gmcpHandlers so replay onData can dispatch without stale closures.
+    const gmcpHandlersRef = useRef(gmcpHandlers);
+    useEffect(() => { gmcpHandlersRef.current = gmcpHandlers; }, [gmcpHandlers]);
+
+    // Mirrors useTelnet.onGmcp but without server setup calls — routes GMCP from replay
+    // log entries to the same handlers that live data uses (map, lighting, vitals, music).
+    const dispatchReplayGmcp = useCallback((pkg: string, dataStr: string) => {
+        const h = gmcpHandlersRef.current as any;
+        let parsed: any = null;
+        try { parsed = JSON.parse(dataStr); } catch (_) {}
+
+        if (pkg.startsWith('Char.Vitals')) h.onCharVitals?.(parsed);
+        else if (pkg.startsWith('Room.Info')) h.onRoomInfo?.(parsed);
+        else if (pkg.startsWith('Group')) h.onGroupSet?.(parsed);
+        else if (pkg.startsWith('Room.Players')) h.onRoomPlayers?.(parsed);
+        else if (pkg.startsWith('Room.Npcs') || pkg.startsWith('Room.Chars')) h.onRoomNpcs?.(parsed);
+        else if (pkg.startsWith('Room.Items') || pkg.startsWith('Room.Objects')) h.onRoomItems?.(parsed);
+
+        // Generic routing for remaining packages (Char.Ride, Mume.MumeEdit, etc.)
+        const parts = pkg.split('.');
+        const handlerName = `on${parts[0]}${parts[parts.length - 1]}`;
+        if (h[handlerName]) h[handlerName](parsed);
+    }, []);
+
     const replayer = useSessionReplayer(useCallback((type, payload, isPrivacyMode, isSilent = false) => {
-        if (isSilent) return;
+        if (type === 'gmcp') {
+            // Always process GMCP — including during silent rehydration (seek) so that
+            // map position, vitals, and lighting are correct at the seek target.
+            const { pkg, data } = payload as { pkg: string; data: string };
+            dispatchReplayGmcp(pkg, data);
+            return;
+        }
+
+        if (isSilent) return; // Don't add messages during silent rehydration
 
         if (type === 'rx') {
             if (typeof payload === 'object' && payload.text) {
@@ -235,8 +268,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const cmd = typeof payload === 'string' ? payload : String(payload);
             replayMsg.addMessage('user', cmd);
         }
-        // GMCP intentionally skipped — replay is sandboxed; live state is never touched.
-    }, [replayMsg.addMessage]));
+    }, [replayMsg.addMessage, dispatchReplayGmcp]));
 
     // 5. Telnet & Networking
     const telnet = useTelnet({
@@ -280,6 +312,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     }, [s.status]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    const spectateBuffer = useSpectateBuffer();
+
     // --- Always-on spectate recording: auto-start/stop with spectate session ---
     useEffect(() => {
         if (mode.isSpectating) {
@@ -288,6 +322,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             if (s.spectateSession.recorder.isRecording) {
                 s.spectateSession.recorder.stopAndSave();
             }
+            spectateBuffer.clear();
         }
     }, [mode.isSpectating]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -600,9 +635,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         duration: s.userSession.recorder.duration,
         showRecordingIndicator: settingsStore.showRecordingIndicator,
         setShowRecordingIndicator: settingsStore.setShowRecordingIndicator,
-        replayer
+        replayer,
+        spectateBuffer,
         };
-    }, [ui, s.inventoryLines, s.eqLines, s.statsLines, s.scoreLines, s.infoLines, s.practiceLines, s.questLines, s.whoLines, s.whereLines, s.characterName, s.userSession.recorder, settingsStore.showRecordingIndicator, settingsStore.setShowRecordingIndicator, replayer]);
+    }, [ui, s.inventoryLines, s.eqLines, s.statsLines, s.scoreLines, s.infoLines, s.practiceLines, s.questLines, s.whoLines, s.whereLines, s.characterName, s.userSession.recorder, settingsStore.showRecordingIndicator, settingsStore.setShowRecordingIndicator, replayer, spectateBuffer]);
 
     const controller = useCommandController({
         telnet, addMessage, initAudio, navIntervalRef: { current: null }, mapperRef,
@@ -624,7 +660,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         btn, joystick, wasDraggingRef: { current: false }, ui: s.ui as any,
         actions: s.actions, setActions: s.setActions, setActiveDragData: s.setActiveDragData,
         activeDragData: s.activeDragData, practice, heldButton: v.heldButton,
-        heldButtonRef: v.heldButtonRef,
         setHeldButton: v.setHeldButton, parley: s.parley, setParley: s.setParley,
         isTrackpadModifierActive: s.isTrackpadModifierActive, shop,
         keywordOverrides: keywordOverrides.overrides, openKeywordEdit, lastCommandContextRef: { current: null },
@@ -656,6 +691,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const logValue: LogContextType = useMemo(() => ({
         ...activeLog,
+        replayMessages: replayMsg.messages,
         refreshLogHighlights,
         handleLogPointerDown: controller.handleLogPointerDown,
         handleLogPointerUp: controller.handleLogPointerUp,
@@ -682,7 +718,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             };
             return Tokenizer.getInstance().tokenize(rawText, ctx as any, location);
         }
-    }), [activeLog, refreshLogHighlights, controller.handleLogPointerDown, controller.handleLogPointerUp, v.target, s.roomPlayers, s.roomNpcs, v.groupMembers, s.roomItems, s.inventoryLines, s.eqLines, s.discoveredItems, s.inlineCategories, settingsStore.npcColor, settingsStore.playerColor, settingsStore.objectColor, settingsStore.roomColor, btn.buttons, s.selectedObjectIds, s.userSession.game.whoList]);
+    }), [activeLog, replayMsg.messages, refreshLogHighlights, controller.handleLogPointerDown, controller.handleLogPointerUp, v.target, s.roomPlayers, s.roomNpcs, v.groupMembers, s.roomItems, s.inventoryLines, s.eqLines, s.discoveredItems, s.inlineCategories, settingsStore.npcColor, settingsStore.playerColor, settingsStore.objectColor, settingsStore.roomColor, btn.buttons, s.selectedObjectIds, s.userSession.game.whoList]);
 
     const value: GameContextType = useMemo(() => ({
         ...s,
