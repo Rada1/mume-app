@@ -49,6 +49,7 @@ export interface InteractionDeps {
     setActiveDragData: (val: any) => void;
     activeDragData: any;
     heldButton: any;
+    heldButtonRef?: React.MutableRefObject<any>;
     setHeldButton: (val: any) => void;
     parley: import('../types').ParleyState;
     setParley: React.Dispatch<React.SetStateAction<import('../types').ParleyState>>;
@@ -57,7 +58,7 @@ export interface InteractionDeps {
     openKeywordEdit: (context: string, displayText: string) => void;
     lastCommandContextRef: React.MutableRefObject<{ context: string; displayText: string } | null>;
     entities: Record<string, import('../types').GameEntity>;
-    applyOptimisticChange: (change: import('../types').OptimisticChange) => void;
+    applyOptimisticChange?: (change: import('../types').OptimisticChange) => void;
     selectedObjectIds: Set<string>;
     toggleObjectSelection: (id: string, setId?: string, context?: string) => void;
     clearObjectSelection: () => void;

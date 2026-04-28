@@ -16,13 +16,26 @@ const SIDEBAR_TABS = [
     { id: 'equipment', label: 'Gear', Icon: Shield },
 ];
 
-export const DrawerManager: React.FC = () => {
+interface DrawerManagerProps {
+    heldButton: any;
+    heldButtonRef?: React.MutableRefObject<any>;
+    setHeldButton: React.Dispatch<React.SetStateAction<any>>;
+    setCommandPreview: React.Dispatch<React.SetStateAction<string | null>>;
+}
+
+export const DrawerManager: React.FC<DrawerManagerProps> = ({
+    heldButton,
+    heldButtonRef,
+    setHeldButton,
+    setCommandPreview
+}) => {
     const { characterName, viewport, triggerHaptic, gameState, executeCommand } = useGame();
     const {
         ui, setUI, handleTabClick,
         displayInventoryLines, displayEqLines,
         infoLines, questLines, practiceLines,
         whoLines, whereLines,
+        setWhoLines, setWhereLines,
         gearTab, setGearTab, playersTab, setPlayersTab, charTab, setCharTab
     } = useUI();
     const { groupMembers } = useVitals();
@@ -50,7 +63,15 @@ export const DrawerManager: React.FC = () => {
             {!viewport.isMobile && (
                 <div className={`map-drawer-desktop ${ui.mapExpanded ? 'open' : ''}`}>
                     <div className="drawer-content" style={{ flex: 1, padding: 0, position: 'relative', overflow: 'hidden' }}>
-                        <Mapper characterName={characterName || ''} isMobile={viewport.isMobile} isExpanded={true} />
+                        <Mapper
+                            characterName={characterName || ''}
+                            isMobile={viewport.isMobile}
+                            isExpanded={true}
+                            heldButton={heldButton}
+                            heldButtonRef={heldButtonRef}
+                            setHeldButton={setHeldButton}
+                            setCommandPreview={setCommandPreview}
+                        />
                     </div>
                 </div>
             )}
@@ -75,6 +96,8 @@ export const DrawerManager: React.FC = () => {
                     groupMembers={groupMembers}
                     triggerHaptic={triggerHaptic}
                     executeCommand={executeCommand}
+                    setWhoLines={setWhoLines}
+                    setWhereLines={setWhereLines}
                 />
             </DrawerShell>
 
@@ -98,6 +121,8 @@ export const DrawerManager: React.FC = () => {
                     groupMembers={groupMembers}
                     triggerHaptic={triggerHaptic}
                     executeCommand={executeCommand}
+                    setWhoLines={setWhoLines}
+                    setWhereLines={setWhereLines}
                 />
             </DrawerShell>
 
@@ -121,6 +146,8 @@ export const DrawerManager: React.FC = () => {
                     groupMembers={groupMembers}
                     triggerHaptic={triggerHaptic}
                     executeCommand={executeCommand}
+                    setWhoLines={setWhoLines}
+                    setWhereLines={setWhereLines}
                 />
             </DrawerShell>
 

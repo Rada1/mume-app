@@ -150,7 +150,7 @@ export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.Muta
             const baseCommand = cmd.includes('%n') ? cmd.replace(/%n/g, context) : (cmd ? `${cmd} ${context}` : context);
             setHeldButton({ id, baseCommand, modifiers: [], dx: 0, dy: 0, didFire: false, isLogDragging: false, initialX: rect.left + rect.width / 2, initialY: rect.top + rect.height / 2 });
         }
-    }, [initAudio, internalDown, startDrag, handleGlobalUp, viewport.isMobile, setHeldButton]);
+    }, [initAudio, internalDown, startDrag, handleGlobalUp, viewport.isMobile, setHeldButton, heldButton]);
 
     const handleLogPointerUp = useCallback((e: React.PointerEvent) => {
         if (heldButton?.id?.startsWith('log-inline-')) {

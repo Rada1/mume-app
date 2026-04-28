@@ -14,7 +14,7 @@ interface UnifiedViewProps {
     onRefresh?: () => void;
     emptyMessage?: string;
     category?: string;
-    location?: 'inv' | 'worn' | 'room';
+    location?: 'carried' | 'inv' | 'worn' | 'room';
 }
 
 export const UnifiedView: React.FC<UnifiedViewProps> = ({

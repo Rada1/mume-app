@@ -8,10 +8,13 @@ export const useButtonClicks = (deps: InteractionDeps) => {
     const {
         executeCommand, setInput, setTarget, addMessage, triggerHaptic, btn, joystick, target,
         popoverState, setPopoverState, setCommandPreview, wasDraggingRef, viewport, setParley, parley,
-        keywordOverrides, applyOptimisticChange,
+        keywordOverrides,
         handleTabClick, setCharTab,
         playClickSound, isSoundEnabled, initAudio
     } = deps;
+    const applyOptimisticChange = typeof deps.applyOptimisticChange === 'function'
+        ? deps.applyOptimisticChange
+        : () => {};
 
     const handleButtonClick = useCallback((button: CustomButton & { entityId?: string, _skipInteractionFire?: boolean }, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string, direction?: string) => {
         console.log('[useButtonClicks] handleButtonClick:', { 

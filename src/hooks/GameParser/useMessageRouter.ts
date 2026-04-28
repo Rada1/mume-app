@@ -5,6 +5,7 @@
 
 import { useCallback } from 'react';
 import { InlineCategoryConfig, DrawerType } from '../../types';
+import type { GmcpOccupant } from '../../types';
 
 interface MessageRouterDeps {
     capture: import('../../types/capture').CaptureController;
@@ -93,28 +94,24 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         return finalType;
     }, [isSpectateMode]);
 
+    const normalizeRoomObjectName = useCallback((name: string) => {
+        return name
+            .replace(/\x1b\[[0-9;]*m/g, '')
+            .replace(/<\/?[a-zA-Z][a-zA-Z0-9_-]*(?:\s+[^>]*)?>/g, '')
+            .replace(/^(?:a|an|the|some)\s+/i, '')
+            .replace(/\s+/g, ' ')
+            .replace(/[.!?]$/g, '')
+            .trim();
+    }, []);
+
     const detectItemsInRoom = useCallback((textOnly: string, cleanLine: string, isDrawerHiding: boolean) => {
         if (capture.hasSession() || isDrawerHiding) return;
 
         const objects: string[] = [];
-        const colorSequenceMatcher = /\x1b\[[0-9;]*38;5;159[0-9;]*m([^\x1b]+)/g;
+        const objectMatcher = /<object\b[^>]*>(.*?)<\/object>/gis;
         let match;
-        while ((match = colorSequenceMatcher.exec(cleanLine)) !== null) {
-            const name = match[1].trim();
-            if (name.length > 1 && !name.includes(' - ') && !name.includes('Obvious exits')) {
-                objects.push(name);
-            }
-        }
-
-        if (objects.length === 0) {
-            const itemMatch = textOnly.match(/^(?:A|An|The|Some|a|an|the|some)\s+(.+?)\s+(?:is|are)\s+(?:here|mounted here|floating(?: in the air)? here|lying here|resting here|sitting here)\s*[.!]?$/i) ||
-                textOnly.match(/^(?:A|An|The|Some|a|an|the|some)\s+(.+?)\s+stands\s+here\s*[.!]?$/i);
-            if (itemMatch) {
-                const potentialName = itemMatch[1].trim();
-                if (!/^(you|it|they|he|she|to|at|here)$/i.test(potentialName)) {
-                    objects.push(potentialName);
-                }
-            }
+        while ((match = objectMatcher.exec(cleanLine)) !== null) {
+            objects.push(normalizeRoomObjectName(match[1]) || 'object');
         }
 
         const skipNouns = /^(here|to|at|is|are|the|some|you|it|from|with|in|on|by)$/i;
@@ -123,8 +120,9 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
             if (noun && noun.length > 2 && !skipNouns.test(noun)) {
                 setDiscoveredItems(prev => Array.from(new Set([...prev, noun])));
                 setRoomItems(prev => {
+                    const normalizedObjName = normalizeRoomObjectName(objName).toLowerCase();
                     const alreadyExists = prev.some(item => 
-                        (typeof item === 'string' ? item : item.name) === objName
+                        normalizeRoomObjectName(typeof item === 'string' ? item : item.name || item.short || '').toLowerCase() === normalizedObjName
                     );
                     if (alreadyExists) return prev;
                     
@@ -136,7 +134,66 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         });
 
         return objects;
-    }, [capture, extractNoun, setDiscoveredItems, setRoomItems, registerEntity]);
+    }, [capture, extractNoun, normalizeRoomObjectName, setDiscoveredItems, setRoomItems, registerEntity]);
 
-    return { determineVisibility, routeMessage, detectItemsInRoom };
+    const getRoomItemName = useCallback((item: GmcpOccupant) => {
+        return normalizeRoomObjectName(item.name || item.short || item.shortdesc || item.keyword || '');
+    }, [normalizeRoomObjectName]);
+
+    const trackRoomItemAction = useCallback((textOnly: string, cleanLine: string, isDrawerHiding: boolean) => {
+        if (capture.hasSession() || isDrawerHiding) return;
+
+        const objectMatches = Array.from(cleanLine.matchAll(/<object\b[^>]*>(.*?)<\/object>/gis));
+        if (objectMatches.length === 0) return;
+
+        const line = textOnly.trim();
+        if (!line || line.includes(':')) return;
+
+        const dropMatch = line.match(/^(?:You|[A-Z][\w' -]+)\s+(?:drop|drops)\s+/i);
+        if (dropMatch) {
+            objectMatches.forEach((objectMatch, index) => {
+                const objName = normalizeRoomObjectName(objectMatch[1]) || 'object';
+                const noun = extractNoun(objName);
+                if (noun) setDiscoveredItems(prev => Array.from(new Set([...prev, noun])));
+
+                const id = `roomitems:${objName}:${Date.now()}:${index}:${Math.random().toString(36).slice(2, 7)}`;
+                const newItem: GmcpOccupant = { name: objName, short: objName, id };
+                registerEntity(id, objName, 'room', 'inline-obj-room');
+                setRoomItems(prev => [...prev, newItem]);
+            });
+            return;
+        }
+
+        const getMatch = line.match(/^(?:You|[A-Z][\w' -]+)\s+(?:get|gets|take|takes|pick up|picks up)\s+/i);
+        if (!getMatch || /\s+from\s+/i.test(line)) return;
+
+        setRoomItems(prev => {
+            if (prev.length === 0) return prev;
+
+            const next = [...prev];
+            objectMatches.forEach(objectMatch => {
+                if (next.length === 0) return;
+
+                const objName = normalizeRoomObjectName(objectMatch[1]) || 'object';
+                const targetName = objName.toLowerCase();
+                const targetNoun = extractNoun(objName).toLowerCase();
+                const matchIndex = next.findIndex(item => {
+                    const itemName = getRoomItemName(item).toLowerCase();
+                    const itemNoun = extractNoun(itemName).toLowerCase();
+                    return itemName === targetName ||
+                        itemName.includes(targetName) ||
+                        targetName.includes(itemName) ||
+                        (targetNoun.length > 0 && itemNoun === targetNoun);
+                });
+
+                next.splice(matchIndex >= 0 ? matchIndex : next.length - 1, 1);
+            });
+            return next;
+        });
+    }, [
+        capture, extractNoun, getRoomItemName, normalizeRoomObjectName,
+        registerEntity, setDiscoveredItems, setRoomItems
+    ]);
+
+    return { determineVisibility, routeMessage, detectItemsInRoom, trackRoomItemAction };
 };

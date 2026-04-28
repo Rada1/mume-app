@@ -279,7 +279,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         if (!joystickActive || !joystickStartPos.current) return false;
 
         const wasConsumed = isJoystickConsumed || isTargetModifierActive;
-        const initialDir = currentDir;
+        const initialDir = currentDir || lockedDirRef.current;
 
         setJoystickActive(false);
         setIsJoystickConsumed(false);

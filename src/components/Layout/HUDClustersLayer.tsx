@@ -20,6 +20,7 @@ interface HUDClustersLayerProps {
     commandPreview: string | null;
     setCommandPreview: React.Dispatch<React.SetStateAction<string | null>>;
     heldButton: any;
+    heldButtonRef?: React.MutableRefObject<any>;
     setHeldButton: React.Dispatch<React.SetStateAction<any>>;
     btnGlow: { up: boolean, down: boolean };
     setBtnGlow: React.Dispatch<React.SetStateAction<{ up: boolean, down: boolean }>>;
@@ -30,7 +31,7 @@ interface HUDClustersLayerProps {
 }
 
 export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
-    handleDragStart, wasDraggingRef, commandPreview, setCommandPreview, heldButton, setHeldButton, btnGlow, setBtnGlow,
+    handleDragStart, wasDraggingRef, commandPreview, setCommandPreview, heldButton, heldButtonRef, setHeldButton, btnGlow, setBtnGlow,
     input, setInput, handleSend, handleInputSwipe
 }) => {
     const { characterName, isMmapperMode, btn, joystick, mapperRef, triggerHaptic, executeCommand, handleButtonClick, viewport, showControls, showLegacyButtons, gameState, sessionMode } = useGame();
@@ -71,6 +72,7 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
                     isLandscape={isLandscape}
                     wasDraggingRef={wasDraggingRef}
                     heldButton={heldButton}
+                    heldButtonRef={heldButtonRef}
                     setHeldButton={setHeldButton}
                     setCommandPreview={setCommandPreview}
                     input={input}

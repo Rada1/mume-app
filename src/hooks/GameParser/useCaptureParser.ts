@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file useCaptureParser.ts
  * @description Header-driven parser for the Reactive Capture Machine.
  */
@@ -39,6 +39,8 @@ export function useCaptureParser(deps: CaptureParserDeps) {
     // is looping through lines. This avoids stale closures and state timing issues.
     const sessionRef = useRef<CaptureSession | null>(null);
     const pendingFlagsRef = useRef<{ isSilent: boolean, fromDrawer: boolean }>({ isSilent: false, fromDrawer: false });
+    // Buffer for batching entity registration during 'where' captures
+    const pendingWhereNamesRef = useRef<{ id: string; name: string }[]>([]);
 
     const checkTriggers = useCallback((line: string, attachedText?: string): CaptureType | null => {
         const clean = (attachedText || line).trim();
@@ -101,24 +103,46 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         }
     }, [setCaptureSession, captureStage, sessionRef]);
 
+    const decodeXmlEntities = (text: string) => text
+        .replace(/&lt;/gi, '<')
+        .replace(/&gt;/gi, '>')
+        .replace(/&amp;/gi, '&');
+
+    const stripXmlTags = (text: string) => decodeXmlEntities(text)
+        .replace(/<\/?[a-zA-Z][a-zA-Z0-9_-]*(?:\s+[^>]*)?>/g, '');
+
+    const getObjectText = (line: string): string | null => {
+        const decoded = decodeXmlEntities(line);
+        const match = decoded.match(/<object[^>]*>(.*?)<\/object>/i);
+        return match ? stripXmlTags(match[1]).trim() : null;
+    };
+
     const accumulateLine = useCallback((line: string, tokens?: any[], context?: any) => {
         const session = sessionRef.current;
         if (!session) return;
 
-        const cleanLine = line.replace(/\x1b\[[0-9;]*m/g, ''); 
+        const cleanLine = line.replace(/\x1b\[[0-9;]*m/g, '');
+        const headerLine = stripXmlTags(cleanLine);
+        const hasHeaderTag = headerLine !== cleanLine;
         
         let prefix = '';
-        let text = cleanLine;
+        let text = hasHeaderTag ? headerLine : cleanLine;
+        let rawText = line;
         let isHeader = false;
-        let finalTokens = tokens || [];
+        let finalTokens = hasHeaderTag ? [] : (tokens || []);
 
-        const lower = cleanLine.toLowerCase();
+        const lower = text.toLowerCase();
         if (lower.includes('you are using') || lower.includes('you are carrying') || 
             lower.includes('inventory contains') || lower.includes('equipped with') || 
             lower.includes('players online') || lower.includes('players in the world') ||
             lower.includes('player distance') || lower.startsWith('players') ||
-            lower.includes('visible players in your area')) {
+            lower.includes('visible players in your area') || lower.startsWith('distance')) {
             isHeader = true;
+        }
+
+        if (session.type === 'where') {
+            text = stripXmlTags(text);
+            finalTokens = [];
         }
 
         const prefixMatch = cleanLine.match(/^(\s*(?:<|&lt;|\[|\*).*?(?:>|&gt;|\]|\*)\s*)(.*)/i);
@@ -128,29 +152,49 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                 .replace(/&gt;/g, '>')
                 .replace(/&amp;/g, '&');
             text = prefixMatch[2];
+            rawText = line.slice(prefixMatch[1].length);
             
             const tokenizer = Tokenizer.getInstance();
             const locationHint = session.type === 'equipment' ? 'worn' : 'none';
             finalTokens = tokenizer.tokenize(text, context || {}, locationHint);
         }
 
-        // Entity registration for Who/Where names
-        if ((session.type === 'who' || session.type === 'where') && !isHeader) {
+        // Entity registration for Who names (immediate — small lists)
+        if (session.type === 'who' && !isHeader) {
             finalTokens = buildPlayerLineTokens(text, registerEntity) || finalTokens;
         }
 
+        // Entity extraction for Where names (deferred — batched at finalization)
+        if (session.type === 'where' && !isHeader) {
+            const playerTokens = buildPlayerLineTokens(text);
+            if (playerTokens) {
+                finalTokens = playerTokens;
+                // Extract the player name from the entity token for batch registration
+                const entityToken = playerTokens.find((t: any) => t.type === 'entity');
+                if (entityToken) {
+                    pendingWhereNamesRef.current.push({
+                        id: (entityToken as any).entityId,
+                        name: entityToken.content
+                    });
+                }
+            }
+        }
+
+        const objectText = (session.type === 'inventory' || session.type === 'equipment') && !isHeader
+            ? getObjectText(line)
+            : null;
+
         // Entity registration for Items
         if ((session.type === 'inventory' || session.type === 'equipment') && !isHeader) {
-            const itemMatch = line.match(/<object>(.*?)<\/object>/i);
-            if (itemMatch) {
-                const itemName = itemMatch[1];
-                const loc = session.type === 'equipment' ? 'worn' : 'inv';
+            if (objectText) {
+                const itemName = objectText;
+                const loc = session.type === 'equipment' ? 'worn' : 'carried';
                 registerEntity(`item:${itemName.toLowerCase()}`, itemName, loc, session.type === 'equipment' ? 'inline-obj-worn' : 'inline-obj-char');
             } else {
                 // Fallback for plain text items
                 const itemName = text.trim();
                 if (itemName.length > 3) {
-                    const loc = session.type === 'equipment' ? 'worn' : 'inv';
+                    const loc = session.type === 'equipment' ? 'worn' : 'carried';
                     registerEntity(`item:${itemName.toLowerCase()}`, itemName, loc, session.type === 'equipment' ? 'inline-obj-worn' : 'inline-obj-char');
                 }
             }
@@ -159,7 +203,8 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         const newLine: DrawerLine = {
             id: Math.random().toString(36).substr(2, 9),
             text: text.trim(),
-            html: ansiConvert.toHtml(line),
+            rawText,
+            html: ansiConvert.toHtml(hasHeaderTag ? text : line),
             prefix,
             tokens: finalTokens,
             isHeader,
@@ -168,7 +213,15 @@ export function useCaptureParser(deps: CaptureParserDeps) {
 
         // Synchronous update of the ref so it's available for the next line
         session.lines.push(newLine);
-        console.log(`[Capture] Accumulated line for ${session.type}: ${newLine.text.substring(0, 30)}... Total: ${session.lines.length}`);
+        if (session.type === 'where' && session.lines.length > 120) {
+            session.lines = session.lines.slice(0, 120);
+            finalizeSession();
+            return;
+        }
+
+        if (session.type !== 'where') {
+            console.log(`[Capture] Accumulated line for ${session.type}: ${newLine.text.substring(0, 30)}... Total: ${session.lines.length}`);
+        }
     }, [registerEntity, ansiConvert, sessionRef]);
 
     const finalizeSession = useCallback(() => {
@@ -195,6 +248,13 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                     setWhoLines(lines);
                     break;
                 case 'where':
+                    // Batch-register all collected player names at once
+                    if (pendingWhereNamesRef.current.length > 0) {
+                        for (const entry of pendingWhereNamesRef.current) {
+                            registerEntity(entry.id, entry.name, 'none', 'inline-ally');
+                        }
+                        pendingWhereNamesRef.current = [];
+                    }
                     setWhereLines(lines);
                     break;
                 case 'score':

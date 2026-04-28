@@ -35,14 +35,24 @@ export interface VitalsContextType {
         y?: number;
         label?: string;
         baseCommand?: string;
+        [key: string]: unknown;
     } | null;
+    heldButtonRef?: MutableRefObject<{
+        isLogDragging?: boolean;
+        x?: number;
+        y?: number;
+        label?: string;
+        baseCommand?: string;
+        [key: string]: unknown;
+    } | null>;
     setHeldButton: (val: {
         isLogDragging?: boolean;
         x?: number;
         y?: number;
         label?: string;
         baseCommand?: string;
-    } | null) => void;
+        [key: string]: unknown;
+    } | null | ((prev: any) => any)) => void;
     isMendingMode: boolean;
     setIsMendingMode: (val: boolean) => void;
     mendingTarget: string | null;
@@ -76,6 +86,7 @@ export interface VitalsContextType {
 
 export interface LogData {
     messages: Message[];
+    replayMessages: Message[];
     setMessages: Dispatch<SetStateAction<Message[]>>;
     addMessage: (type: MessageType, text: string, extra?: any, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string, html?: string, tokens?: any[] }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, isSystem?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, commSenderTokens?: import('../../types').Token[], commTextTokens?: import('../../types').Token[], providedCombatSide?: 'player' | 'opponent' | 'groupmate', providedIsHitImpact?: boolean, providedIsHitterImpact?: boolean, providedIsSnoop?: boolean, providedIsSnoopInput?: boolean) => void;
     addSystemMessage: (text: string) => void;
@@ -150,16 +161,14 @@ export interface UIContextType {
     questLines: DrawerLine[];
     whoLines: DrawerLine[];
     whereLines: DrawerLine[];
+    setWhoLines: Dispatch<SetStateAction<DrawerLine[]>>;
+    setWhereLines: Dispatch<SetStateAction<DrawerLine[]>>;
     toggleMap: () => void;
     characterName: string | null;
     isRecording: boolean;
     duration: number;
     showRecordingIndicator: boolean;
     setShowRecordingIndicator: (val: boolean) => void;
-    startRecording: (characterName?: string) => void;
-    stopRecording: () => import('../../hooks/useSessionRecorder').SessionLog;
-    stopAndSave: () => void;
-    saveLog: (log: import('../../hooks/useSessionRecorder').SessionLog) => void;
     replayer: {
         log: import('../../types').SessionLog | null;
         state: import('../../hooks/useSessionReplayer').ReplayerState;
@@ -540,10 +549,6 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     // Recorder
     isRecording: boolean;
     duration: number;
-    startRecording: (characterName?: string) => void;
-    stopRecording: () => import('../../hooks/useSessionRecorder').SessionLog;
-    stopAndSave: () => void;
-    saveLog: (log: import('../../hooks/useSessionRecorder').SessionLog) => void;
     replayer: {
         log: import('../../types').SessionLog | null;
         state: import('../../hooks/useSessionReplayer').ReplayerState;

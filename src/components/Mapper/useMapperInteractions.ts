@@ -33,6 +33,7 @@ export interface InteractionDeps {
     joystick: any;
     btn?: any;
     heldButton?: any;
+    heldButtonRef?: React.MutableRefObject<any>;
     setHeldButton?: (val: any) => void;
     target?: string;
     executeCommand: ExecuteCommand;
@@ -425,22 +426,23 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         depsRef.current.triggerHaptic(40);
                     } else if (dragTypeRef.current === 'joystick') {
                         // Priority 2: Standard Joystick Tap/Release
-                        const resultData = joystick.handleJoystickEnd(e as any, (cmd: string) => depsRef.current.executeCommand(cmd, false, false, false, false, { fromUi: true }), triggerHaptic, !!depsRef.current.heldButton);
+                        const activeHeldButton = depsRef.current.heldButtonRef?.current || depsRef.current.heldButton;
+                        const resultData = joystick.handleJoystickEnd(e as any, (cmd: string) => depsRef.current.executeCommand(cmd, false, false, false, false, { fromUi: true }), triggerHaptic, !!activeHeldButton);
                         
                         const isJoyTap = resultData === true || (typeof resultData === 'object' && resultData.isCenterTap);
                         const comboDir = (typeof resultData === 'object') ? resultData.dir : null;
 
                         // --- TRACKPAD COMBO LOGIC (Requirements 4 & 5) ---
-                        if (depsRef.current.heldButton?.dx !== undefined && !comboFiredRef.current) {
-                            const button = depsRef.current.btn?.buttons?.find((b: any) => b.id === depsRef.current.heldButton.id);
+                        if (activeHeldButton?.dx !== undefined && !comboFiredRef.current) {
+                            const button = depsRef.current.btn?.buttons?.find((b: any) => b.id === activeHeldButton.id);
                             if (button) {
                                 const result = getButtonCommand(
                                     button,
-                                    depsRef.current.heldButton.dx,
-                                    depsRef.current.heldButton.dy,
+                                    activeHeldButton.dx,
+                                    activeHeldButton.dy,
                                     undefined,
                                     undefined,
-                                    depsRef.current.heldButton.modifiers,
+                                    activeHeldButton.modifiers,
                                     { currentDir: comboDir, isTargetModifierActive: false },
                                     depsRef.current.target,
                                     isJoyTap
@@ -452,8 +454,8 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                             depsRef.current.setActiveSet(result.cmd);
                                         } else if (['assign', 'menu', 'select-assign', 'select-recipient'].includes(result.actionType || '')) {
                                             const isDial = button.menuDisplay === 'dial';
-                                            const fingerX = (depsRef.current.heldButton.initialX || 0) + (depsRef.current.heldButton.dx || 0);
-                                            const fingerY = (depsRef.current.heldButton.initialY || 0) + (depsRef.current.heldButton.dy || 0);
+                                            const fingerX = (activeHeldButton.initialX || 0) + (activeHeldButton.dx || 0);
+                                            const fingerY = (activeHeldButton.initialY || 0) + (activeHeldButton.dy || 0);
 
                                             let finalContext = result.modifiers || button.label;
                                             if (result.actionType === 'select-assign' && !result.modifiers && result.dir) {

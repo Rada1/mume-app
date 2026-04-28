@@ -84,6 +84,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         ? getRelevantSets(entity, extraSets)
         : Array.from(new Set([
             ...getHierarchyChain(kind, location),
+            popoverState.setId,
             ...dynamicTraits,
             ...extraSets,
             ...(popoverState.category ? [canonicalizeCategoryId(popoverState.category)] : [])

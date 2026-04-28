@@ -21,6 +21,7 @@ interface MapperClusterProps {
     isLandscape?: boolean;
     wasDraggingRef: React.MutableRefObject<boolean>;
     heldButton: any;
+    heldButtonRef?: React.MutableRefObject<any>;
     setHeldButton: React.Dispatch<React.SetStateAction<any>>;
     setCommandPreview: React.Dispatch<React.SetStateAction<string | null>>;
     input: string;
@@ -31,7 +32,7 @@ interface MapperClusterProps {
 
 export const MapperCluster: React.FC<MapperClusterProps> = ({
     uiPositions, isEditMode, handleDragStart, characterName, isMmapperMode, isMobile, mapperRef,
-    dragState, isLandscape, wasDraggingRef, heldButton, setHeldButton, setCommandPreview,
+    dragState, isLandscape, wasDraggingRef, heldButton, heldButtonRef, setHeldButton, setCommandPreview,
     input, setInput, handleSend, handleInputSwipe
 }) => {
     const {
@@ -45,6 +46,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         ui, setPopoverState,
         handleTabClick, toggleMap, displayInventoryLines, displayEqLines,
         whoLines, whereLines, infoLines, questLines, practiceLines,
+        setWhoLines, setWhereLines,
         gearTab, setGearTab, playersTab, setPlayersTab, charTab, setCharTab
     } = useUI() as UIContextType;
     const { getLightingIcon, getWeatherIcon, lighting, weather } = env;
@@ -128,6 +130,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     executeCommand={executeCommand}
                     setCommandPreview={setCommandPreview}
                     heldButton={heldButton}
+                    heldButtonRef={heldButtonRef}
                     setHeldButton={setHeldButton}
                     joystick={joystick}
                     target={target}
@@ -230,6 +233,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                             groupMembers={groupMembers}
                             triggerHaptic={triggerHaptic}
                             executeCommand={executeCommand}
+                            setWhoLines={setWhoLines}
+                            setWhereLines={setWhereLines}
                         />
                     </div>
                 </div>

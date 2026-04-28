@@ -56,8 +56,9 @@ export const useSessionState = (
         maxMana: vStore?.maxMana ?? 0, 
         move: vStore?.move ?? 0, 
         maxMove: vStore?.maxMove ?? 0, 
-        wimpy: vStore?.wimpy ?? 0
-    }), [vStore?.hp, vStore?.maxHp, vStore?.mana, vStore?.maxMana, vStore?.move, vStore?.maxMove, vStore?.wimpy]);
+        wimpy: vStore?.wimpy ?? 0,
+        conditions: (vStore as any)?.conditions ?? {}
+    }), [vStore?.hp, vStore?.maxHp, vStore?.mana, vStore?.maxMana, vStore?.move, vStore?.maxMove, vStore?.wimpy, (vStore as any)?.conditions]);
 
     const playerHealthStatus = vStore?.hpStatus ?? 'healthy';
     const playerPosition = vStore?.position ?? 'standing';
@@ -190,6 +191,15 @@ export const useSessionState = (
     }, [recorder]);
 
     const [pendingMove, setPendingMove] = useState<{ dir: string; timestamp: number } | null>(null);
+    const [heldButton, setHeldButtonState] = useState<any>(null);
+    const heldButtonRef = useRef<any>(null);
+    const setHeldButton = useCallback((valOrFn: any) => {
+        setHeldButtonState((prev: any) => {
+            const next = typeof valOrFn === 'function' ? valOrFn(prev) : valOrFn;
+            heldButtonRef.current = next;
+            return next;
+        });
+    }, []);
 
     const log = useMessageLog(
         { current: inCombat } as any,
@@ -232,7 +242,7 @@ export const useSessionState = (
 
     const vitals = useMemo<VitalsContextType>(() => ({
         stats, setStats, target, setTarget, activePrompt, setActivePrompt: setActivePromptCompat, rumble, setRumble,
-        deathRoomId, setDeathRoomId, heldButton: null, setHeldButton: () => {},
+        deathRoomId, setDeathRoomId, heldButton, setHeldButton, heldButtonRef,
         isMendingMode: false, setIsMendingMode: () => {}, mendingTarget: null, setMendingTarget: () => {},
         bufferName, setBufferName, playerHealthStatus, setPlayerHealthStatus, opponentName, opponentId,
         setOpponentId, opponentHealthStatus, bufferHealthStatus, characterInfo: vStore.characterInfo,
@@ -245,7 +255,7 @@ export const useSessionState = (
         spectateOpponentName: null, spectateOpponentId: null,
         roomName, characterName
     } as VitalsContextType), [
-        stats, target, activePrompt, rumble, deathRoomId, bufferName, playerHealthStatus,
+        stats, target, activePrompt, rumble, deathRoomId, heldButton, setHeldButton, bufferName, playerHealthStatus,
         opponentName, opponentId, opponentHealthStatus, bufferHealthStatus, groupMembers,
         xpHistory, xpEvent, gameTime, roomName, characterName, vStore.characterInfo, setCharacterInfo
     ]);

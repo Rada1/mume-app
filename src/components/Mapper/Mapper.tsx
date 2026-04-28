@@ -31,6 +31,7 @@ interface MapperProps {
     isMmapperMode?: boolean;
     heldButton?: any;
     setHeldButton?: (val: any) => void;
+    heldButtonRef?: React.MutableRefObject<any>;
     setCommandPreview?: (val: string | null) => void;
 }
 
@@ -42,7 +43,7 @@ export interface MapperHandle {
 }
 
 export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
-    const { isMinimized: isMinimizedProp, setIsMinimized, characterName, isMobile: isMobileProp, isExpanded, heldButton, setHeldButton, setCommandPreview } = props;
+    const { isMinimized: isMinimizedProp, setIsMinimized, characterName, isMobile: isMobileProp, isExpanded, heldButton, heldButtonRef, setHeldButton, setCommandPreview } = props;
     const effectiveIsMinimized = isMinimizedProp ?? (isExpanded !== undefined ? !isExpanded : false);
     const [mode, setMode] = useState<'play' | 'edit'>('play');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -137,7 +138,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         preloadedCoordsRef,
         spatialIndexRef: context.spatialIndexRef,
         startWalking, stopWalking,
-        executeCommand, joystick, btn, heldButton, setHeldButton, target,
+        executeCommand, joystick, btn, heldButton, heldButtonRef, setHeldButton, target,
         setIsTrackpadModifierActive,
         setPopoverState,
         setActiveSet: btn.setActiveSet

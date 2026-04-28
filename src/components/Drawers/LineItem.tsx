@@ -6,13 +6,17 @@
 import React from 'react';
 import { DrawerLine, MessageType } from '../../types';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
+import { extractMumeKeyword } from '../../utils/gameUtils';
+import { ansiConvert } from '../../utils/ansi';
+import { useSettingsStore } from '../../stores/useSettingsStore';
+import { COLOR_OBJ } from '../../utils/categorizationUtils';
 import { TokenRenderer } from '../Messages/TokenRenderer';
 
 interface LineItemProps {
     line: DrawerLine;
     fontSize?: string;
     style?: React.CSSProperties;
-    location?: 'inv' | 'worn' | 'room';
+    location?: 'carried' | 'inv' | 'worn' | 'room';
     category?: string;
 }
 
@@ -33,12 +37,14 @@ export const LineItem: React.FC<LineItemProps> = ({
     location,
     category
 }) => {
+    const objectColor = useSettingsStore(s => s.objectColor) || COLOR_OBJ;
     const depth = line.depth || 0;
     const isHeader = !!line.isHeader;
+    const lineContext = line.context || extractMumeKeyword(line.text);
     const tokenMetadata: TokenMetadata = line.isItem
         ? {
             id: line.entityId || line.stableId || line.id,
-            context: line.context,
+            context: lineContext,
             kind: 'object',
             location,
             category,
@@ -68,6 +74,75 @@ export const LineItem: React.FC<LineItemProps> = ({
         ...style
     };
 
+    const renderObjectXmlLine = () => {
+        const raw = line.rawText || line.html || line.text;
+        const objectRegex = /<object[^>]*>(.*?)<\/object>/gi;
+        const parts: React.ReactNode[] = [];
+        let lastIndex = 0;
+        let match: RegExpExecArray | null;
+
+        while ((match = objectRegex.exec(raw)) !== null) {
+            if (match.index > lastIndex) {
+                parts.push(
+                    <span
+                        key={`text-${lastIndex}`}
+                        dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(raw.slice(lastIndex, match.index))) }}
+                    />
+                );
+            }
+
+            const objectName = match[1].replace(/<[^>]*>/g, '').replace(/\x1b\[[0-9;]*m/g, '').trim();
+            const objectContext = line.context || extractMumeKeyword(objectName);
+            parts.push(
+                <span
+                    key={`obj-${match.index}`}
+                    className="inline-btn"
+                    data-id={line.entityId || line.stableId || line.id}
+                    data-cmd={line.cmd || category || 'inline-obj-char'}
+                    data-context={objectContext}
+                    data-kind="object"
+                    data-location={location}
+                    data-category="object"
+                    data-action="menu"
+                    style={{
+                        '--glow-color': objectColor,
+                        color: 'var(--glow-color)'
+                    } as React.CSSProperties}
+                >
+                    {objectName}
+                </span>
+            );
+            lastIndex = objectRegex.lastIndex;
+        }
+
+        if (lastIndex < raw.length) {
+            parts.push(
+                <span
+                    key={`text-${lastIndex}`}
+                    dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(raw.slice(lastIndex))) }}
+                />
+            );
+        }
+
+        return parts;
+    };
+
+    const hasObjectXml = line.isItem && /<object[^>]*>.*?<\/object>/i.test(line.rawText || line.html || line.text);
+
+    if (hasObjectXml) {
+        return (
+            <div style={baseStyle}>
+                <div
+                    className="message-content"
+                    style={{ display: 'block', whiteSpace: 'pre', lineHeight: 'inherit' }}
+                >
+                    {line.prefix && <span style={{ opacity: 0.6 }}>{line.prefix}</span>}
+                    {renderObjectXmlLine()}
+                </div>
+            </div>
+        );
+    }
+
     if (line.tokens && line.tokens.length > 0) {
         return (
             <div style={baseStyle}>
@@ -87,11 +162,33 @@ export const LineItem: React.FC<LineItemProps> = ({
     }
 
     return (
-        <div style={baseStyle}>
-            <div 
-                style={{ display: 'block', whiteSpace: 'pre', lineHeight: 'inherit' }}
-                dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html || line.text) }} 
-            />
-        </div>
-    );
+            <div style={baseStyle}>
+                <div 
+                    className="message-content"
+                    style={{ display: 'block', whiteSpace: 'pre', lineHeight: 'inherit' }}
+                >
+                    {line.prefix && <span style={{ opacity: 0.6 }}>{line.prefix}</span>}
+                    {line.isItem ? (
+                        <span
+                            className="inline-btn"
+                            data-id={line.entityId || line.stableId || line.id}
+                            data-cmd={line.cmd || category || 'inline-obj-char'}
+                            data-context={lineContext}
+                            data-kind="object"
+                            data-location={location}
+                            data-category="object"
+                            data-action="menu"
+                            style={{
+                                '--glow-color': objectColor,
+                                color: 'var(--glow-color)'
+                            } as React.CSSProperties}
+                        >
+                            {line.text}
+                        </span>
+                    ) : (
+                        <span dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html || line.text) }} />
+                    )}
+                </div>
+            </div>
+        );
 };

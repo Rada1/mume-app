@@ -5,25 +5,9 @@
 
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { saveSessionToDb } from '../utils/storage/sessionDb';
+import type { LogEntryType, LogEntry, FlagEntry, FlagKind, SessionLog } from '../types/session';
 
-export type LogEntryType = 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys';
-
-export interface LogEntry {
-  t: number; // timestamp offset from start in ms
-  typ: LogEntryType;
-  d: any; // data
-}
-
-export interface SessionLog {
-  version: number;
-  startTime: string;
-  log: LogEntry[];
-  metadata: {
-    client: string;
-    version: string;
-    character?: string;
-  };
-}
+export type { LogEntryType, LogEntry, FlagEntry, FlagKind, SessionLog };
 
 export const useSessionRecorder = () => {
   const instanceIdRef = useRef(Math.random().toString(36).substring(7));
@@ -33,6 +17,8 @@ export const useSessionRecorder = () => {
   const startTimeRef = useRef<number>(Date.now());
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const recordedCharacterRef = useRef<string | null>(null);
+  const sessionTypeRef = useRef<'user' | 'spectate'>('user');
+  const spectatedCharacterRef = useRef<string | null>(null);
 
   useEffect(() => {
     return () => {
@@ -40,14 +26,15 @@ export const useSessionRecorder = () => {
     };
   }, []);
 
-  const startRecording = useCallback((characterName?: string) => {
+  const startRecording = useCallback((characterName?: string, type: 'user' | 'spectate' = 'user', spectatedCharacter?: string) => {
     setIsRecording(true);
-    entriesRef.current.length = 0; // Clear array without changing reference
+    entriesRef.current.length = 0;
     startTimeRef.current = Date.now();
     recordedCharacterRef.current = characterName || null;
+    sessionTypeRef.current = type;
+    spectatedCharacterRef.current = spectatedCharacter || null;
     setDuration(0);
 
-    // Initial metadata entry
     entriesRef.current.push({
       t: 0,
       typ: 'sys',
@@ -87,7 +74,9 @@ export const useSessionRecorder = () => {
       metadata: {
         character: characterName || recordedCharacterRef.current || undefined,
         client: 'MUME AI Studio',
-        version: '1.0.0'
+        version: '1.0.0',
+        type: sessionTypeRef.current,
+        spectatedCharacter: spectatedCharacterRef.current || undefined,
       }
     };
 

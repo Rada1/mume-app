@@ -73,7 +73,9 @@ interface UnifiedDrawerContentProps {
     practiceLines: DrawerLine[];
     groupMembers: GroupMember[];
     triggerHaptic: (ms: number) => void;
-    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean) => void;
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
+    setWhoLines?: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
+    setWhereLines?: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
 }
 
 const EmptyGroup = () => (
@@ -99,7 +101,9 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
     practiceLines,
     groupMembers,
     triggerHaptic,
-    executeCommand
+    executeCommand,
+    setWhoLines,
+    setWhereLines
 }) => {
     const selectGearTab = (tab: GearTab) => {
         triggerHaptic(10);
@@ -110,8 +114,13 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
     const selectPlayersTab = (tab: PlayersTab) => {
         triggerHaptic(10);
         setPlayersTab(tab);
-        if (tab === 'online') executeCommand('who', true, true);
-        else if (tab === 'nearby') executeCommand('where', true, true);
+        if (tab === 'online') {
+            setWhoLines?.([]);
+            executeCommand('who', true, true, false, true);
+        } else if (tab === 'nearby') {
+            setWhereLines?.([]);
+            executeCommand('where', true, true, false, true);
+        }
     };
 
     const selectCharTab = (tab: CharacterTab) => {
@@ -142,7 +151,7 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
                 ) : (
                     <UnifiedView
                         lines={displayInventoryLines}
-                        location="inv"
+                        location="carried"
                         category="inline-obj-char"
                         emptyMessage="No inventory data. Tap refresh to update."
                         onRefresh={() => { triggerHaptic(15); executeCommand('inv', true, true); }}
@@ -166,7 +175,7 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
                         lines={whoLines}
                         category="inline-player"
                         emptyMessage="No player data. Tap refresh to update."
-                        onRefresh={() => { triggerHaptic(15); executeCommand('who', true, true); }}
+                        onRefresh={() => { triggerHaptic(15); setWhoLines?.([]); executeCommand('who', true, true, false, true); }}
                     />
                 )}
                 {playersTab === 'nearby' && (
@@ -174,7 +183,7 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
                         lines={whereLines}
                         category="inline-player"
                         emptyMessage="No nearby player data. Tap refresh to update."
-                        onRefresh={() => { triggerHaptic(15); executeCommand('where', true, true); }}
+                        onRefresh={() => { triggerHaptic(15); setWhereLines?.([]); executeCommand('where', true, true, false, true); }}
                     />
                 )}
                 {playersTab === 'group' && (

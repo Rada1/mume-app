@@ -65,7 +65,7 @@ const MudClient = () => {
         gameState
     } = useGame();
 
-    const { rumble, setTarget, heldButton, setHeldButton } = useVitals();
+    const { rumble, setTarget, heldButton, heldButtonRef, setHeldButton } = useVitals();
     const { setIsSetManagerOpen, popoverState, setUI, ui, setManagerSelectedSet } = useUI();
     const { messages, addMessage } = useLog();
 
@@ -272,6 +272,7 @@ const MudClient = () => {
                         commandPreview={commandPreview}
                         setCommandPreview={setCommandPreview}
                         heldButton={heldButton}
+                        heldButtonRef={heldButtonRef}
                         setHeldButton={setHeldButton}
                         mumeEditState={mumeEditState}
                         setMumeEditState={setMumeEditState}
@@ -297,7 +298,12 @@ const MudClient = () => {
                     />
                 </ErrorBoundary>
 
-                <DrawerManager />
+                <DrawerManager
+                    heldButton={heldButton}
+                    heldButtonRef={heldButtonRef}
+                    setHeldButton={setHeldButton}
+                    setCommandPreview={setCommandPreview}
+                />
             </div>
 
             {typeof document !== 'undefined' && createPortal(

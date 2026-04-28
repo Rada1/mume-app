@@ -3,6 +3,7 @@ import {
     PopoverState, CustomButton, TeleportTarget, GmcpOccupant, SessionMode, CombatHealthStatus, MessageType, InlineCategoryConfig, GameEntity
 } from '../types';
 import { useMessageLog } from '../hooks/useMessageLog';
+import { useReplayMessages } from '../hooks/useReplayMessages';
 import { useButtons } from '../hooks/useButtons';
 import { useJoystick } from '../hooks/useJoystick';
 import { useButtonEditor } from '../hooks/useButtonEditor';
@@ -149,6 +150,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const { sessionMode, setSessionMode, replayHUDState, setReplayHUDState, isSilentReplay } = session;
 
     // 4. Session & Replayer
+    const replayMsg = useReplayMessages();
     const activeLog = mode.activeView === 'self' ? s.userSession.log : s.spectateSession.log;
     
     // Stable message routing: ensure snoop lines always land in the spectate bucket 
@@ -211,60 +213,30 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (isSilent) return;
 
         if (type === 'rx') {
-            // Replayed text messages
             if (typeof payload === 'object' && payload.text) {
-                // If it's a pre-processed message from useMessageLog.ts
-                routedAddMessage(
-                    payload.type,
-                    payload.text,
-                    payload.extra,
-                    payload.mid,
-                    payload.isRoomName,
-                    payload.precalculated,
-                    payload.shopItem,
-                    payload.practiceSkill,
-                    payload.practiceHeader,
-                    false, // isSystem
-                    payload.replyTarget,
-                    payload.replyCommand,
-                    payload.commSender,
-                    payload.commAction,
-                    payload.commText,
-                    payload.commColor,
-                    payload.providedCombatSide,
-                    payload.providedIsHitImpact,
-                    payload.providedIsHitterImpact,
-                    payload.providedIsSnoop,
-                    payload.providedIsSnoopInput
+                // Pre-processed message — inject directly into sandboxed replay store
+                replayMsg.addMessage(
+                    payload.type, payload.text, payload.extra, payload.mid,
+                    payload.isRoomName, payload.precalculated,
+                    payload.shopItem, payload.practiceSkill, payload.practiceHeader,
+                    false,
+                    payload.replyTarget, payload.replyCommand,
+                    payload.commSender, payload.commAction, payload.commText, payload.commColor,
+                    undefined, undefined,
+                    payload.providedCombatSide, payload.providedIsHitImpact,
+                    payload.providedIsHitterImpact, payload.providedIsSnoop, payload.providedIsSnoopInput
                 );
             } else {
-                // Raw text (older logs)
+                // Raw text (older logs) — add as plain game message, no parser
                 const text = typeof payload === 'string' ? payload : new TextDecoder().decode(new Uint8Array(payload));
-                parserRef.current?.processLine(text);
-            }
-        } else if (type === 'gmcp') {
-            const { pkg, data } = payload;
-            const json = typeof data === 'string' ? data : JSON.stringify(data);
-            
-            // Route through GMCP handlers
-            if (pkg.startsWith('Char.Vitals')) {
-                gmcpHandlers.onCharVitals(JSON.parse(json));
-            } else if (pkg.startsWith('Room.Info')) {
-                gmcpHandlers.onRoomInfo(JSON.parse(json));
-            } else if (pkg.startsWith('Group')) {
-                gmcpHandlers.onGroupSet(JSON.parse(json));
-            } else if (pkg.startsWith('Room.Players')) {
-                gmcpHandlers.onRoomPlayers(JSON.parse(json));
-            } else if (pkg.startsWith('Room.Npcs')) {
-                gmcpHandlers.onRoomNpcs(JSON.parse(json));
-            } else if (pkg.startsWith('Room.Items')) {
-                gmcpHandlers.onRoomItems(JSON.parse(json));
+                replayMsg.addMessage('game', text);
             }
         } else if (type === 'tx') {
             const cmd = typeof payload === 'string' ? payload : String(payload);
-            routedAddMessage('user', cmd);
+            replayMsg.addMessage('user', cmd);
         }
-    }, [gmcpHandlers, routedAddMessage]));
+        // GMCP intentionally skipped — replay is sandboxed; live state is never touched.
+    }, [replayMsg.addMessage]));
 
     // 5. Telnet & Networking
     const telnet = useTelnet({
@@ -296,6 +268,38 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     useEffect(() => {
         telnetRef.current = telnet;
     }, [telnet]);
+
+    // --- Always-on recording: auto-start on connect, auto-save on disconnect ---
+    useEffect(() => {
+        if (s.status === 'connected') {
+            s.userSession.recorder.startRecording(s.characterName || undefined, 'user');
+        } else if (s.status === 'disconnected') {
+            if (s.userSession.recorder.isRecording) {
+                s.userSession.recorder.stopAndSave(s.characterName || undefined);
+            }
+        }
+    }, [s.status]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // --- Always-on spectate recording: auto-start/stop with spectate session ---
+    useEffect(() => {
+        if (mode.isSpectating) {
+            s.spectateSession.recorder.startRecording(s.characterName || undefined, 'spectate', mode.spectateTarget || undefined);
+        } else {
+            if (s.spectateSession.recorder.isRecording) {
+                s.spectateSession.recorder.stopAndSave();
+            }
+        }
+    }, [mode.isSpectating]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // --- Replay session lifecycle: drive sessionMode from replayer.log ---
+    useEffect(() => {
+        if (replayer.log) {
+            setSessionMode('replay');
+        } else {
+            setSessionMode('live');
+            replayMsg.clearMessages();
+        }
+    }, [replayer.log]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // --- State Synchronization ---
     useEffect(() => {
@@ -506,14 +510,19 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const uiValue: UIContextType = useMemo(() => {
         const requestDrawerRefresh = (drawer: DrawerType) => {
             if (drawer === 'equipment') {
-                executeCommandRef.current?.(ui.gearTab === 'worn' ? 'eq' : 'inv', true, true);
+                executeCommandRef.current?.(ui.gearTab === 'worn' ? 'eq' : 'inv', true, true, false, true);
             } else if (drawer === 'players') {
-                if (ui.playersTab === 'online') executeCommandRef.current?.('who', true, true);
-                else if (ui.playersTab === 'nearby') executeCommandRef.current?.('where', true, true);
+                if (ui.playersTab === 'online') {
+                    s.setWhoLines([]);
+                    executeCommandRef.current?.('who', true, true, false, true);
+                } else if (ui.playersTab === 'nearby') {
+                    s.setWhereLines([]);
+                    executeCommandRef.current?.('where', true, true, false, true);
+                }
             } else if (drawer === 'character') {
-                if (ui.charTab === 'info') executeCommandRef.current?.('info', true, true);
-                else if (ui.charTab === 'quests') executeCommandRef.current?.('quest', true, true);
-                else if (ui.charTab === 'skills') executeCommandRef.current?.('practice', true, true);
+                if (ui.charTab === 'info') executeCommandRef.current?.('info', true, true, false, true);
+                else if (ui.charTab === 'quests') executeCommandRef.current?.('quest', true, true, false, true);
+                else if (ui.charTab === 'skills') executeCommandRef.current?.('practice', true, true, false, true);
             }
         };
 
@@ -576,6 +585,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         questLines: s.questLines,
         whoLines: s.whoLines,
         whereLines: s.whereLines,
+        setWhoLines: s.setWhoLines,
+        setWhereLines: s.setWhereLines,
         toggleMap: () => {
             if (viewport.isMobile && ui.drawer !== 'none') {
                 ui.setDrawer('none');
@@ -589,10 +600,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         duration: s.userSession.recorder.duration,
         showRecordingIndicator: settingsStore.showRecordingIndicator,
         setShowRecordingIndicator: settingsStore.setShowRecordingIndicator,
-        startRecording: s.userSession.recorder.startRecording,
-        stopRecording: s.userSession.recorder.stopRecording,
-        stopAndSave: s.userSession.recorder.stopAndSave,
-        saveLog: s.userSession.recorder.saveLog,
         replayer
         };
     }, [ui, s.inventoryLines, s.eqLines, s.statsLines, s.scoreLines, s.infoLines, s.practiceLines, s.questLines, s.whoLines, s.whereLines, s.characterName, s.userSession.recorder, settingsStore.showRecordingIndicator, settingsStore.setShowRecordingIndicator, replayer]);
@@ -617,6 +624,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         btn, joystick, wasDraggingRef: { current: false }, ui: s.ui as any,
         actions: s.actions, setActions: s.setActions, setActiveDragData: s.setActiveDragData,
         activeDragData: s.activeDragData, practice, heldButton: v.heldButton,
+        heldButtonRef: v.heldButtonRef,
         setHeldButton: v.setHeldButton, parley: s.parley, setParley: s.setParley,
         isTrackpadModifierActive: s.isTrackpadModifierActive, shop,
         keywordOverrides: keywordOverrides.overrides, openKeywordEdit, lastCommandContextRef: { current: null },
@@ -729,10 +737,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         handleMmapperModeChange: () => {},
         isRecording: s.userSession.recorder.isRecording,
         duration: s.userSession.recorder.duration,
-        startRecording: s.userSession.recorder.startRecording,
-        stopRecording: s.userSession.recorder.stopRecording,
-        stopAndSave: s.userSession.recorder.stopAndSave,
-        saveLog: s.userSession.recorder.saveLog,
         mapperRef: mapperRef,
         sessionMode,
         setSessionMode

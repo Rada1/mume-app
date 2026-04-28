@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Crosshair, WifiOff, RefreshCw, Circle, Save, X, FileText, User, Map as MapIcon } from 'lucide-react';
+import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Crosshair, RefreshCw, X, FileText, User, Map as MapIcon } from 'lucide-react';
 import { EnvControls } from '../Layout/EnvControls';
 import { RecorderHUD } from '../Layout/HUD/RecorderHUD';
 import { LightingType, WeatherType } from '../../types';
@@ -41,9 +41,8 @@ const Header: React.FC<HeaderProps> = ({
     const isSpectating = mode.isSpectating;
     const { spectateTarget, activeView, setActiveView } = mode;
     const { stats, setStats, target, setTarget } = useVitals();
-    const { 
+    const {
         ui, setUI, setIsSettingsOpen, setIsSetManagerOpen, setIsLibraryOpen, setPopoverState,
-        isRecording, startRecording, stopRecording, stopAndSave, saveLog, characterName,
         replayer
     } = useUI();
 
@@ -350,30 +349,6 @@ const Header: React.FC<HeaderProps> = ({
                                                 {isEditMode ? <Check size={16} color="var(--accent)" /> : <div style={{ width: '16px' }} />}
                                             </div>
                                             <span>{isEditMode ? 'Exit Design Mode' : 'Enter Design Mode'}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="menu-divider" />
-
-                                    <div
-                                        className={`dropdown-item ${isRecording ? 'active' : ''}`}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (isRecording) {
-                                                stopAndSave();
-                                            } else {
-                                                startRecording(characterName || undefined);
-                                            }
-                                            setIsMenuOpen(false);
-                                        }}
-                                    >
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
-                                                {isRecording ? <Save size={16} color="#ff4444" /> : <Circle size={16} color="#ff4444" />}
-                                            </div>
-                                            <span style={{ color: isRecording ? '#ff4444' : 'inherit' }}>
-                                                {isRecording ? 'Stop & Save Recording' : 'Start Session Recording'}
-                                            </span>
                                         </div>
                                     </div>
 

@@ -7,7 +7,7 @@ import { sanitizeGameTarget } from '../../utils/gameUtils';
 export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>, longPressJustFiredRef?: React.MutableRefObject<boolean>) => {
     const {
         executeCommand, setInput, setTarget, triggerHaptic, btn, joystick, target,
-        setPopoverState, popoverState, viewport, ui, heldButton, setHeldButton,
+        setPopoverState, popoverState, viewport, ui, heldButton, heldButtonRef, setHeldButton,
         isTrackpadModifierActive, keywordOverrides, lastCommandContextRef,
         entities, selectedObjectIds, toggleObjectSelection, clearObjectSelection,
         playClickSound, isSoundEnabled, initAudio, setAccountState, accountStageRef
@@ -169,10 +169,12 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
 
         const entityId = targetEl.getAttribute('data-id') || '';
 
-        if (heldButton && !heldButton.didFire && !heldButton.id.startsWith('log-inline-')) {
-            const sourceButton = btn.buttons.find(b => b.id === heldButton.id);
+        const activeHeldButton = heldButtonRef?.current || heldButton;
+
+        if (activeHeldButton && !activeHeldButton.didFire && !activeHeldButton.id.startsWith('log-inline-')) {
+            const sourceButton = btn.buttons.find(b => b.id === activeHeldButton.id);
             if (sourceButton) {
-                const resolved = getButtonCommand(sourceButton, heldButton.dx || 0, heldButton.dy || 0, contextStr, undefined, heldButton.modifiers || [], joystick, target, isLong);
+                const resolved = getButtonCommand(sourceButton, activeHeldButton.dx || 0, activeHeldButton.dy || 0, contextStr, undefined, activeHeldButton.modifiers || [], joystick, target, isLong);
                 if (resolved?.cmd) {
                     lastCommandContextRef.current = { context: rawContextStr, displayText: targetEl.innerText.trim() };
                     executeCommand(resolved.cmd);
@@ -182,7 +184,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 }
             }
 
-            let finalCmd = isLong ? (heldButton.longCommand || heldButton.baseCommand) : heldButton.baseCommand;
+            let finalCmd = isLong ? (activeHeldButton.longCommand || activeHeldButton.baseCommand) : activeHeldButton.baseCommand;
 
             if (finalCmd) {
                 if (contextStr) {

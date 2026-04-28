@@ -19,7 +19,7 @@ export const useLogPointerDown = (
     const {
         executeCommand, triggerHaptic, btn, joystick, target,
         viewport, entities, selectedObjectIds, toggleObjectSelection,
-        heldButton, setHeldButton, lastCommandContextRef, isTrackpadModifierActive,
+        heldButton, heldButtonRef, setHeldButton, lastCommandContextRef, isTrackpadModifierActive,
         keywordOverrides
     } = deps;
 
@@ -34,10 +34,12 @@ export const useLogPointerDown = (
         const contextStr = sanitizeGameTarget(effectiveContextStrDown) || effectiveContextStrDown;
 
         // --- 1. Overlay Button Handling ---
-        if (targetEl && heldButton && !heldButton.didFire && !heldButton.id.startsWith('log-inline-')) {
-            const sourceButton = btn.buttons.find(b => b.id === heldButton.id);
+        const activeHeldButton = heldButtonRef?.current || heldButton;
+
+        if (targetEl && activeHeldButton && !activeHeldButton.didFire && !activeHeldButton.id.startsWith('log-inline-')) {
+            const sourceButton = btn.buttons.find(b => b.id === activeHeldButton.id);
             if (sourceButton) {
-                const resolved = getButtonCommand(sourceButton, heldButton.dx || 0, heldButton.dy || 0, contextStr, undefined, heldButton.modifiers || [], joystick, target, isLong);
+                const resolved = getButtonCommand(sourceButton, activeHeldButton.dx || 0, activeHeldButton.dy || 0, contextStr, undefined, activeHeldButton.modifiers || [], joystick, target, isLong);
                 if (resolved?.cmd) {
                     lastCommandContextRef.current = { context: rawContextStrDown, displayText: label };
                     executeCommand(resolved.cmd);
@@ -47,7 +49,7 @@ export const useLogPointerDown = (
                 }
             }
 
-            let finalCmd = isLong ? (heldButton.longCommand || heldButton.baseCommand) : heldButton.baseCommand;
+            let finalCmd = isLong ? (activeHeldButton.longCommand || activeHeldButton.baseCommand) : activeHeldButton.baseCommand;
             if (finalCmd) {
                 if (contextStr) {
                     finalCmd = finalCmd.includes('%n') ? finalCmd.replace(/%n/g, contextStr) : `${finalCmd} ${contextStr}`;

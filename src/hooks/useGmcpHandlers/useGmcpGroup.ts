@@ -14,6 +14,20 @@ export const useGmcpGroup = ({
 }: UseGmcpGroupProps) => {
     const youIdRef = useRef<number | null>(null);
 
+    const syncWaitingState = useCallback((member: GroupMember) => {
+        if (member.waiting === undefined && member.position === undefined) return;
+
+        const rawPosition = String(member.position || '').toLowerCase();
+        const waiting = member.waiting === true || rawPosition === 'waiting' || rawPosition.includes('waiting');
+        setStats((prev: any) => ({
+            ...prev,
+            conditions: {
+                ...(prev.conditions || {}),
+                waiting
+            }
+        }));
+    }, [setStats]);
+
     const normalizeGroupMember = (raw: any): GroupMember => {
         const id = raw.id !== undefined && raw.id !== null ? Number(raw.id) : raw.id;
 
@@ -36,13 +50,14 @@ export const useGmcpGroup = ({
 
         if (isYou) {
             if (member.id !== undefined) youIdRef.current = Number(member.id);
+            syncWaitingState(member);
             return;
         }
         setGroupMembers(prev => {
             if (prev.find(m => Number(m.id) === Number(member.id))) return prev;
             return [...prev, member];
         });
-    }, [setGroupMembers, characterName]);
+    }, [setGroupMembers, characterName, syncWaitingState]);
 
     const onGroupUpdate = useCallback((data: any) => {
         console.log('[GMCP] onGroupUpdate raw:', JSON.stringify(data));
@@ -54,6 +69,10 @@ export const useGmcpGroup = ({
 
         if (isYou && updates.id !== undefined) {
             youIdRef.current = Number(updates.id);
+        }
+
+        if (isYou) {
+            syncWaitingState(updates);
         }
 
         setGroupMembers(prev => prev.map(m => {
@@ -69,7 +88,7 @@ export const useGmcpGroup = ({
             }
             return m;
         }));
-    }, [setGroupMembers]);
+    }, [setGroupMembers, characterName, syncWaitingState]);
 
 
     const onGroupRemove = useCallback((id: number) => {
@@ -84,6 +103,9 @@ export const useGmcpGroup = ({
         const you = members.find(m => m.type === 'you' || (characterName && m.name && m.name.toLowerCase() === characterName.toLowerCase()));
         if (you && you.id !== undefined) {
             youIdRef.current = Number(you.id);
+            syncWaitingState(you);
+        } else {
+            syncWaitingState({ id: 'you', waiting: false } as GroupMember);
         }
 
         const others = members.filter(m => {
@@ -92,7 +114,7 @@ export const useGmcpGroup = ({
             return true;
         });
         setGroupMembers(others);
-    }, [setGroupMembers, characterName]);
+    }, [setGroupMembers, characterName, syncWaitingState]);
 
     return { onGroupAdd, onGroupUpdate, onGroupRemove, onGroupSet };
 };

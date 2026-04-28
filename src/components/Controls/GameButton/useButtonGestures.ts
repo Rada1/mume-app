@@ -418,11 +418,19 @@ export const useButtonGestures = ({
     const onPointerCancel = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         const el = e.currentTarget as any;
         try { el.releasePointerCapture(e.pointerId); } catch(err) {}
+
+        const isActiveSwipeHold = heldButton?.id === button.id
+            && !heldButton.didFire
+            && (Math.abs(heldButton.dx || 0) > 15 || Math.abs(heldButton.dy || 0) > 15);
         
-        setHeldButton(null);
+        if (!isActiveSwipeHold) {
+            setHeldButton(null);
+        }
         setCommandPreview(null);
         document.documentElement.style.removeProperty('--preview-glow-color');
-        setActiveDir(null);
+        if (!isActiveSwipeHold) {
+            setActiveDir(null);
+        }
         el._wasInCancelZone = false;
         el.style.setProperty('--ray-opacity', '0');
         el.style.setProperty('--cancel-opacity', '0');
@@ -431,7 +439,7 @@ export const useButtonGestures = ({
         el._startY = null;
         el._startTime = null;
         el._maxDist = 0;
-    }, [setHeldButton, setCommandPreview, setActiveDir]);
+    }, [heldButton, button.id, setHeldButton, setCommandPreview, setActiveDir]);
 
     const onClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();

@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import { GmcpRoomInfo, GmcpUpdateExits } from '../../types';
+import { GmcpOccupant, GmcpRoomInfo, GmcpUpdateExits } from '../../types';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
 import { gmcpBus } from '../../events/gmcpBus';
 
@@ -25,6 +25,34 @@ interface UseGmcpRoomProps {
     lastExitsRef: React.MutableRefObject<Record<string, any>>;
     sendGMCP?: (pkg: string, data?: any) => void;
 }
+
+const normalizeRoomObjectName = (name: string) => name
+    .replace(/\x1b\[[0-9;]*m/g, '')
+    .replace(/<\/?[a-zA-Z][a-zA-Z0-9_-]*(?:\s+[^>]*)?>/g, '')
+    .replace(/^(?:a|an|the|some)\s+/i, '')
+    .replace(/\s+/g, ' ')
+    .replace(/[.!?]$/g, '')
+    .trim();
+
+const parseRoomItemsFromDescription = (desc?: string | null): GmcpOccupant[] => {
+    if (!desc) return [];
+
+    const items: GmcpOccupant[] = [];
+    const matcher = /<object\b[^>]*>(.*?)<\/object>/gis;
+    let match: RegExpExecArray | null;
+    while ((match = matcher.exec(desc)) !== null) {
+        const name = normalizeRoomObjectName(match[1]);
+        const label = name || 'object';
+
+        items.push({
+            id: `roomitems:${label}:${items.length}`,
+            name: label,
+            short: label
+        });
+    }
+
+    return items;
+};
 
 export const useGmcpRoom = ({
     mapperRef,
@@ -98,7 +126,7 @@ export const useGmcpRoom = ({
             
             // Clear occupants and items for the new room so that text processing
             // doesn't use stale data from the previous room.
-            setRoomItems?.([]);
+            setRoomItems?.(parseRoomItemsFromDescription(data.desc));
             setRoomChars?.({});
             
             if (playMovementSound) {

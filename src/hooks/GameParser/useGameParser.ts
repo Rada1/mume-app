@@ -271,26 +271,58 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
         if (parseLogGmcp(cleanLine, isSnoop)) return;
 
-        const tokenizer = Tokenizer.getInstance();
-        tokenizer.reset('room');
-        
-        const tokenizerContext = {
-            target: session.vitals.target,
-            buttons: deps.btn?.buttonsRef?.current || [],
-            registeredPlayers: Object.values(deps.entitiesRef.current || {})
-                .filter(e => e.capabilities.includes(EntityCapability.Player))
-                .map(p => p.name),
-            inlineCategories: deps.inlineCategories || [],
-            npcColor: deps.npcColor,
-            playerColor: deps.playerColor,
-            objectColor: deps.objectColor,
-            roomColor: deps.roomColor
-        };
+        // --- Fast Path: Skip heavy tokenization during 'where' capture ---
+        // The capture parser strips all tokens for 'where' lines anyway (useCaptureParser:134-137),
+        // so running the full tokenizer (which rebuilds a growing player-name regex per line)
+        // causes an O(N²) feedback loop that freezes the browser.
+        const activeCapture = capture.getActiveType();
+        const isWhereCapture = !isSnoop && activeCapture === 'where';
 
-        const effectiveTokens = isSnoop ? null : tokens;
-        const derivedTokens = effectiveTokens || tokenizer.tokenize(lineToParse, tokenizerContext);
-        const textOnly = derivedTokens.map((t: any) => t.content).join('');
-        const lower = textOnly.toLowerCase();
+        let tokenizerContext: any;
+        let derivedTokens: any[];
+        let textOnly: string;
+        let lower: string;
+
+        if (isWhereCapture) {
+            // Lightweight path: extract text without full tokenization
+            const stripped = lineToParse.replace(/\x1b\[[0-9;]*m/g, '')
+                .replace(/<\/?[a-zA-Z][a-zA-Z0-9_-]*(?:\s+[^>]*)?\/?>|&lt;|&gt;|&amp;/g, (m: string) => {
+                    if (m === '&lt;') return '<';
+                    if (m === '&gt;') return '>';
+                    if (m === '&amp;') return '&';
+                    return '';
+                });
+            tokenizerContext = {};
+            derivedTokens = [{ type: 'text', content: stripped }];
+            textOnly = stripped;
+            lower = stripped.toLowerCase();
+        } else {
+            const tokenizer = Tokenizer.getInstance();
+            tokenizer.reset('room');
+            
+            tokenizerContext = {
+                target: session.vitals.target,
+                buttons: deps.btn?.buttonsRef?.current || [],
+                registeredPlayers: Object.values(deps.entitiesRef.current || {})
+                    .filter(e => e.capabilities.includes(EntityCapability.Player))
+                    .map(p => p.name),
+                inlineCategories: deps.inlineCategories || [],
+                npcColor: deps.npcColor,
+                playerColor: deps.playerColor,
+                objectColor: deps.objectColor,
+                roomColor: deps.roomColor
+            };
+
+            const locationHint = activeCapture === 'inventory'
+                ? 'carried'
+                : activeCapture === 'equipment'
+                    ? 'worn'
+                    : undefined;
+            const effectiveTokens = isSnoop || locationHint ? null : tokens;
+            derivedTokens = effectiveTokens || tokenizer.tokenize(lineToParse, tokenizerContext, locationHint);
+            textOnly = derivedTokens.map((t: any) => t.content).join('');
+            lower = textOnly.toLowerCase();
+        }
 
         // 1. System/Trigger Processing
         processTriggers(lineToParse);
@@ -330,6 +362,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         // Action Tracking (for manual inventory updates)
         actionTracker.trackAction(lineToParse, textOnly, lower);
         router.detectItemsInRoom(textOnly, lineToParse, false);
+        router.trackRoomItemAction(textOnly, lineToParse, false);
         
         // --- Explicit Capture Bootstrap ---
         // Some MUME list commands do not always start with a stable header. If the
@@ -346,7 +379,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         let finalTokens = derivedTokens;
-        if (!isSnoop && (capture.getActiveType() === 'who' || capture.getActiveType() === 'where')) {
+        // Only build player tokens for 'who' in the main parser.
+        // For 'where', entity registration is handled by useCaptureParser
+        // during finalization to avoid per-line state updates that freeze the UI.
+        if (!isSnoop && activeCapture === 'who') {
             finalTokens = buildPlayerLineTokens(textOnly, registerEntity) || finalTokens;
         }
 
