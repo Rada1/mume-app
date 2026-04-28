@@ -5,7 +5,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Play, Download, Trash2, Calendar, User, FileText, ChevronRight, X, Clock } from 'lucide-react';
-import { getAllSessionsFromDb, deleteSessionFromDb, StoredSession } from '../../utils/storage/sessionDb';
+import { getAllSessionsFromDb, deleteSessionFromDb, StoredSession, deleteLibrary, getStorageUsage } from '../../utils/storage/sessionDb';
 import { useGame, useUI } from '../../context/GameContext';
 
 interface LibraryModalProps {
@@ -18,14 +18,26 @@ export const LibraryModal: React.FC<LibraryModalProps> = ({ isOpen, onClose }) =
     const { replayer } = useUI();
     const [sessions, setSessions] = useState<StoredSession[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [storageInfo, setStorageInfo] = useState<{ usage: string, quota: string } | null>(null);
 
     const loadSessions = async () => {
         setIsLoading(true);
+        setError(null);
         try {
             const data = await getAllSessionsFromDb();
             setSessions(data);
-        } catch (e) {
+            
+            const estimate = await getStorageUsage();
+            if (estimate && estimate.usage !== undefined && estimate.quota !== undefined) {
+                setStorageInfo({
+                    usage: (estimate.usage / (1024 * 1024)).toFixed(1) + 'MB',
+                    quota: (estimate.quota / (1024 * 1024)).toFixed(1) + 'MB'
+                });
+            }
+        } catch (e: any) {
             console.error('[Library] Failed to load sessions:', e);
+            setError(e.message || 'Failed to access local storage library.');
         } finally {
             setIsLoading(false);
         }
@@ -64,6 +76,22 @@ export const LibraryModal: React.FC<LibraryModalProps> = ({ isOpen, onClose }) =
         saveLog(session);
     };
 
+    const handleClearAll = async () => {
+        const msg = error 
+            ? 'Your storage appears to be full or corrupted. Performing a HARD RESET will wipe all local recordings but may fix the issue. Continue?'
+            : 'Are you sure you want to PERMANENTLY DELETE ALL recordings from the local library?';
+            
+        if (!window.confirm(msg)) return;
+        
+        triggerHaptic(50);
+        try {
+            await deleteLibrary();
+            loadSessions();
+        } catch (e: any) {
+            alert('Failed to clear library: ' + e.message);
+        }
+    };
+
     const formatTime = (isoString: string) => {
         const date = new Date(isoString);
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -99,6 +127,26 @@ export const LibraryModal: React.FC<LibraryModalProps> = ({ isOpen, onClose }) =
                 <div className="modal-body">
                     {isLoading ? (
                         <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-dim)' }}>Loading archives...</div>
+                    ) : error ? (
+                        <div style={{ textAlign: 'center', padding: '40px 20px', color: '#f87171' }}>
+                            <Trash2 size={48} style={{ marginBottom: '16px', opacity: 0.5 }} />
+                            <p style={{ fontWeight: 'bold' }}>Storage Error</p>
+                            <p style={{ fontSize: '0.85rem', marginBottom: '20px' }}>{error}</p>
+                            <button 
+                                onClick={handleClearAll}
+                                style={{ 
+                                    background: 'var(--accent)', 
+                                    color: '#000', 
+                                    border: 'none', 
+                                    padding: '8px 16px', 
+                                    borderRadius: '8px', 
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Force Reset Library
+                            </button>
+                        </div>
                     ) : sessions.length === 0 ? (
                         <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--text-dim)' }}>
                             <FileText size={48} style={{ marginBottom: '16px', opacity: 0.2 }} />
@@ -177,6 +225,38 @@ export const LibraryModal: React.FC<LibraryModalProps> = ({ isOpen, onClose }) =
                                 </div>
                             ))}
                         </div>
+                    )}
+                </div>
+
+                <div className="modal-footer" style={{ 
+                    padding: '12px 20px', 
+                    borderTop: '1px solid rgba(255,255,255,0.05)', 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    background: 'rgba(0,0,0,0.2)'
+                }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
+                        {storageInfo && `Usage: ${storageInfo.usage} / ${storageInfo.quota}`}
+                    </div>
+                    {sessions.length > 0 && (
+                        <button 
+                            onClick={handleClearAll}
+                            style={{ 
+                                background: 'none', 
+                                border: '1px solid rgba(248, 113, 113, 0.3)', 
+                                color: '#f87171', 
+                                padding: '4px 10px', 
+                                borderRadius: '6px', 
+                                fontSize: '0.75rem',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px'
+                            }}
+                        >
+                            <Trash2 size={12} /> Clear All
+                        </button>
                     )}
                 </div>
             </div>

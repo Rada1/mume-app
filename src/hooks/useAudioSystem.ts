@@ -87,19 +87,19 @@ export const useAudioEffects = () => {
         }
     }, [isSoundEnabled]);
 
-    const playHitImpactSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('hit-impact', options), [playEffect]);
+    const playHitImpactSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('hit2', options), [playEffect]);
     const playOofSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('oof', options), [playEffect]);
-    const playSlashSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('slash', options), [playEffect]);
-    const playCleaveSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('cleave', options), [playEffect]);
-    const playSmiteSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('smite', options), [playEffect]);
-    const playPierceSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('pierce', { ...options, pitch: (options?.pitch ?? 1.0) * 1.6 }), [playEffect]);
-    const playStabSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('stab', options), [playEffect]);
-    const playArrowHitSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('arrowhit', options), [playEffect]);
     const playKillSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('kill', { ...options, volume: options?.volume || 1.1 }), [playEffect]);
     const playLevelSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('level', { ...options, volume: options?.volume || 1.3 }), [playEffect]);
     const playCommMessageSound = useCallback((options?: { volume?: number }) => playEffect('commbubble', { ...options, volume: options?.volume || 0.9 }), [playEffect]);
     const playBuySellSound = useCallback((options?: { volume?: number }) => playEffect('sellandbuy', { ...options, volume: options?.volume || 1.5 }), [playEffect]);
     const playBashSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('bash', { ...options, volume: options?.volume || 0.75, pitch: options?.pitch ?? (0.9 + Math.random() * 0.2) }), [playEffect]);
+    const playSlashSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('slash', options), [playEffect]);
+    const playCleaveSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('cleave', options), [playEffect]);
+    const playSmiteSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('smite', options), [playEffect]);
+    const playPierceSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('pierce', options), [playEffect]);
+    const playStabSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('stab', options), [playEffect]);
+    const playArrowHitSound = useCallback((options?: { pitch?: number, volume?: number }) => playEffect('arrowhit', options), [playEffect]);
     const playClickSound = useCallback(() => playEffect('click', { volume: 2.0 }), [playEffect]);
 
     const playDoorSound = useCallback((isOpen: boolean) => playEffect('door1', { pitch: isOpen ? 1.0 : 0.8, volume: 1.5 }), [playEffect]);
@@ -141,17 +141,17 @@ export const useAudioEffects = () => {
         playEffect,
         playHitImpactSound,
         playOofSound,
+        playKillSound,
+        playLevelSound,
+        playCommMessageSound,
+        playBuySellSound,
+        playBashSound,
         playSlashSound,
         playCleaveSound,
         playSmiteSound,
         playPierceSound,
         playStabSound,
         playArrowHitSound,
-        playKillSound,
-        playLevelSound,
-        playCommMessageSound,
-        playBuySellSound,
-        playBashSound,
         playClickSound,
         playDoorSound,
         playMovementSound,

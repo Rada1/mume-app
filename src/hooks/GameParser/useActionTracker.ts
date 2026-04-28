@@ -8,8 +8,7 @@ import { DrawerLine, CharacterInfo } from '../../types';
 import { extractNoun as smartExtractNoun } from '../../utils/keywordUtils';
 
 export interface ActionTrackerDeps {
-    isSilentCapture: React.MutableRefObject<number>;
-    isDrawerCapture: React.MutableRefObject<number>;
+    capture: import('../../types/capture').CaptureController;
     setInventoryLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setEqLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setCharacterInfo: (val: CharacterInfo | ((prev: CharacterInfo) => CharacterInfo)) => void;
@@ -19,8 +18,7 @@ export interface ActionTrackerDeps {
 
 export function useActionTracker(deps: ActionTrackerDeps) {
     const {
-        isSilentCapture,
-        isDrawerCapture,
+        capture,
         setInventoryLines,
         setEqLines,
         setCharacterInfo,
@@ -29,7 +27,8 @@ export function useActionTracker(deps: ActionTrackerDeps) {
     } = deps;
 
     const trackAction = useCallback((cleanLine: string, textOnly: string, lower: string) => {
-        if (isSilentCapture.current > 0 || isDrawerCapture.current) return;
+        // Only track if not currently in a capture session (to avoid double-adding)
+        if (capture.hasSession()) return;
         
         const wearMatch = cleanLine.match(/You (wear|put on) (.*?)\./i);
         if (wearMatch) {
@@ -131,7 +130,7 @@ export function useActionTracker(deps: ActionTrackerDeps) {
                 setCharacterInfo(prev => ({ ...prev, gold: Math.max(0, (prev.gold || 0) - amount) }));
             }
         }
-    }, [isSilentCapture, isDrawerCapture, setInventoryLines, setEqLines, setCharacterInfo, extractNoun, ansiConvert]);
+    }, [capture, setInventoryLines, setEqLines, setCharacterInfo, extractNoun, ansiConvert]);
 
     return { trackAction };
 }

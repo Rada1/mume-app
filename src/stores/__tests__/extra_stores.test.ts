@@ -18,11 +18,8 @@ describe('Extra Store and Selector Integration', () => {
             groupMembers: []
         });
         useUIStore.setState({
-            isCharacterOpen: false,
-            isStatsOpen: false,
-            isInventoryOpen: false,
-            isEquipmentOpen: false,
-            isPlayersOpen: false
+            drawer: 'none',
+            isDrawerPeeking: false
         });
         useModeStore.setState({ isSpectating: false });
     });
@@ -53,11 +50,11 @@ describe('Extra Store and Selector Integration', () => {
     describe('UI Store', () => {
         it('should toggle panels', () => {
             const store = useUIStore.getState();
-            store.openCharacter();
-            expect(useUIStore.getState().isCharacterOpen).toBe(true);
+            store.setDrawer('character');
+            expect(useUIStore.getState().drawer).toBe('character');
             
             store.closeAllPanels();
-            expect(useUIStore.getState().isCharacterOpen).toBe(false);
+            expect(useUIStore.getState().drawer).toBe('none');
         });
     });
 

@@ -31,8 +31,10 @@ interface PopoverManagerProps {
     isMendingMode?: boolean;
     setIsMendingMode?: (val: boolean) => void;
     setMendingTarget?: (val: string | null) => void;
-    setIsEquipmentOpen?: (val: boolean) => void;
-    setIsInventoryOpen?: (val: boolean) => void;
+    handleTabClick: (drawer: 'character' | 'players' | 'equipment') => void;
+    setGearTab: (tab: 'worn' | 'inv') => void;
+    setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
+    setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     refreshLogHighlights: () => void;
     practice: any;
     shop: any;
@@ -64,7 +66,7 @@ import { getCategoryForName, getGlowColorForCategory } from '../../utils/categor
 
 export const PopoverManager: React.FC<PopoverManagerProps> = ({
     popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, roomNpcs, roomItems, inventoryLines, eqLines, setSettings, inlineCategories, setInlineCategories, favorites, setFavorites, parley, setParley, whoList,
-    isMendingMode, setIsMendingMode, setMendingTarget, setIsEquipmentOpen, setIsInventoryOpen, refreshLogHighlights, practice, shop, openKeywordEdit,
+    isMendingMode, setIsMendingMode, setMendingTarget, handleTabClick, setGearTab, setPlayersTab, setCharTab, refreshLogHighlights, practice, shop, openKeywordEdit,
     entities, registerEntity, selectedObjectIds, clearObjectSelection, keywordOverrides, accountCharacters, accountState, setAccountState,
     playerColor, npcColor, objectColor, roomColor
 }) => {
@@ -353,8 +355,10 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     isMendingMode={isMendingMode}
                     setIsMendingMode={setIsMendingMode}
                     setMendingTarget={setMendingTarget}
-                    setIsEquipmentOpen={setIsEquipmentOpen}
-                    setIsInventoryOpen={setIsInventoryOpen}
+                    handleTabClick={handleTabClick}
+                    setGearTab={setGearTab}
+                    setPlayersTab={setPlayersTab}
+                    setCharTab={setCharTab}
                     refreshLogHighlights={refreshLogHighlights}
                     triggerHaptic={triggerHaptic}
                     openKeywordEdit={openKeywordEdit}

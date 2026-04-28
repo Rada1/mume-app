@@ -2,6 +2,7 @@
     /* Common variables */
     --accent: #b8860b;
     --accent-rgb: 184, 134, 11;
+    --accent-glow: rgba(var(--accent-rgb), 0.5);
     --map-accent: #fcd34d;
     --font-main: 'Roboto Mono', monospace;
 

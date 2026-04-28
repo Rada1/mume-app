@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { PopoverState } from '../types';
+import { PopoverState, DrawerType } from '../types';
 
 interface MumeEditState {
     isOpen: boolean;
@@ -8,17 +8,8 @@ interface MumeEditState {
     key: string;
 }
 
-export type DrawerType = 'none' | 'stats' | 'character' | 'inventory' | 'equipment' | 'players' | 'session-log' | 'map' | 'settings' | 'library' | 'actions' | 'help' | 'diagnostic';
-
-interface UIState {
-    // Legacy mapping compatibility
-    isCharacterOpen: boolean;
-    isStatsOpen: boolean;
-    isInventoryOpen: boolean;
-    isEquipmentOpen: boolean;
-    isPlayersOpen: boolean;
-    
-    // New structure
+export interface UIState {
+    // Current active drawer
     drawer: DrawerType;
     isDrawerPeeking: boolean;
     mapExpanded: boolean;
@@ -44,13 +35,16 @@ interface UIState {
     keywordFailureBanner: { context: string; displayText: string } | null;
     selectedObjectIds: Set<string>;
     managerSelectedSet: string | null;
+    
+    // Tab States for Drawers
+    gearTab: 'worn' | 'inv';
+    playersTab: 'online' | 'nearby' | 'group';
+    charTab: 'info' | 'quests' | 'skills';
 
     // Actions
-    setIsCharacterOpen: (open: boolean) => void;
-    setIsStatsOpen: (open: boolean) => void;
-    setIsInventoryOpen: (open: boolean) => void;
-    setIsEquipmentOpen: (open: boolean) => void;
-    setIsPlayersOpen: (open: boolean) => void;
+    setGearTab: (tab: 'worn' | 'inv') => void;
+    setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
+    setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     
     setDrawer: (drawer: DrawerType) => void;
     setIsDrawerPeeking: (peeking: boolean) => void;
@@ -71,20 +65,10 @@ interface UIState {
     toggleObjectSelection: (id: string, setId?: string) => void;
     clearObjectSelection: () => void;
     setManagerSelectedSet: (setId: string | null) => void;
+    setIsSetManagerOpen: (open: boolean) => void;
 
-    // Generic Updater for legacy compatibility
+    // Generic Updater
     setUI: (update: Partial<UIState> | ((prev: UIState) => UIState)) => void;
-
-    openCharacter: () => void;
-    closeCharacter: () => void;
-    openStats: () => void;
-    closeStats: () => void;
-    openInventory: () => void;
-    closeInventory: () => void;
-    openEquipment: () => void;
-    closeEquipment: () => void;
-    openPlayers: () => void;
-    closePlayers: () => void;
     closeAllPanels: () => void;
 }
 
@@ -96,12 +80,6 @@ const defaultMumeEditState: MumeEditState = {
 };
 
 export const useUIStore = create<UIState>((set) => ({
-    isCharacterOpen: false,
-    isStatsOpen: false,
-    isInventoryOpen: false,
-    isEquipmentOpen: false,
-    isPlayersOpen: false,
-    
     drawer: 'none',
     isDrawerPeeking: false,
     mapExpanded: typeof window !== 'undefined' ? window.innerWidth >= 1024 : true,
@@ -123,21 +101,38 @@ export const useUIStore = create<UIState>((set) => ({
     keywordFailureBanner: null,
     selectedObjectIds: new Set<string>(),
     managerSelectedSet: null,
-
-    setIsCharacterOpen: (open) => set({ isCharacterOpen: open, drawer: open ? 'character' : 'none' }),
-    setIsStatsOpen: (open) => set({ isStatsOpen: open, drawer: open ? 'stats' : 'none' }),
-    setIsInventoryOpen: (open) => set({ isInventoryOpen: open, drawer: open ? 'inventory' : 'none' }),
-    setIsEquipmentOpen: (open) => set({ isEquipmentOpen: open, drawer: open ? 'equipment' : 'none' }),
-    setIsPlayersOpen: (open) => set({ isPlayersOpen: open, drawer: open ? 'players' : 'none' }),
     
-    setDrawer: (drawer) => set({ 
-        drawer,
-        isCharacterOpen: drawer === 'character',
-        isStatsOpen: drawer === 'stats',
-        isInventoryOpen: drawer === 'inventory',
-        isEquipmentOpen: drawer === 'equipment',
-        isPlayersOpen: drawer === 'players'
-    }),
+    gearTab: 'worn',
+    playersTab: 'online',
+    charTab: 'info',
+
+    setGearTab: (tab) => {
+        set({ gearTab: tab });
+        const game = (window as any).mumeGame;
+        if (game) {
+            if (tab === 'worn' && (!game.displayEqLines || game.displayEqLines.length === 0)) game.executeCommand?.('eq', true, true);
+            else if (tab === 'inv' && (!game.displayInventoryLines || game.displayInventoryLines.length === 0)) game.executeCommand?.('inv', true, true);
+        }
+    },
+    setPlayersTab: (tab) => {
+        set({ playersTab: tab });
+        const game = (window as any).mumeGame;
+        if (game) {
+            if (tab === 'online' && (!game.whoLines || game.whoLines.length === 0)) game.executeCommand?.('who', true, true);
+            else if (tab === 'nearby' && (!game.whereLines || game.whereLines.length === 0)) game.executeCommand?.('where', true, true);
+        }
+    },
+    setCharTab: (tab) => {
+        set({ charTab: tab });
+        const game = (window as any).mumeGame;
+        if (game) {
+            if (tab === 'info' && (!game.infoLines || game.infoLines.length === 0)) game.executeCommand?.('info', true, true);
+            else if (tab === 'quests' && (!game.questLines || game.questLines.length === 0)) game.executeCommand?.('quest', true, true);
+            else if (tab === 'skills' && (!game.practiceLines || game.practiceLines.length === 0)) game.executeCommand?.('practice', true, true);
+        }
+    },
+
+    setDrawer: (drawer) => set({ drawer }),
     setIsDrawerPeeking: (peeking) => set({ isDrawerPeeking: peeking }),
     setMapExpanded: (expanded) => set({ mapExpanded: expanded }),
 
@@ -149,7 +144,7 @@ export const useUIStore = create<UIState>((set) => ({
     setIsSettingsOpen: (open) => set({ isSettingsOpen: open }),
     setIsLibraryOpen: (open) => set({ isLibraryOpen: open }),
     setIsButtonsOpen: (open) => set({ isButtonsOpen: open }),
-    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'buttons' | 'help' | 'traits') => set({ settingsTab: tab }),
+    setSettingsTab: (tab) => set({ settingsTab: tab }),
     addDiagnosticLog: (msg) => set((state) => ({ 
         diagnosticLogs: [msg, ...state.diagnosticLogs].slice(0, 50) 
     })),
@@ -167,37 +162,16 @@ export const useUIStore = create<UIState>((set) => ({
     }),
     clearObjectSelection: () => set({ selectedObjectIds: new Set() }),
     setManagerSelectedSet: (setId) => set({ managerSelectedSet: setId }),
+    setIsSetManagerOpen: (open) => set({ setManagerOpen: open }),
 
-    setUI: (updater) => set((state) => {
-        const next = typeof updater === 'function' ? updater(state) : updater;
-        return { 
-            ...next,
-            isCharacterOpen: next.drawer === 'character',
-            isStatsOpen: next.drawer === 'stats',
-            isInventoryOpen: next.drawer === 'inventory',
-            isEquipmentOpen: next.drawer === 'equipment',
-            isPlayersOpen: next.drawer === 'players'
-        };
-    }),
-
-    openCharacter: () => set({ isCharacterOpen: true, drawer: 'character' }),
-    closeCharacter: () => set({ isCharacterOpen: false, drawer: 'none' }),
-    openStats: () => set({ isStatsOpen: true, drawer: 'stats' }),
-    closeStats: () => set({ isStatsOpen: false, drawer: 'none' }),
-    openInventory: () => set({ isInventoryOpen: true, drawer: 'inventory' }),
-    closeInventory: () => set({ isInventoryOpen: false, drawer: 'none' }),
-    openEquipment: () => set({ isEquipmentOpen: true, drawer: 'equipment' }),
-    closeEquipment: () => set({ isEquipmentOpen: false, drawer: 'none' }),
-    openPlayers: () => set({ isPlayersOpen: true, drawer: 'players' }),
-    closePlayers: () => set({ isPlayersOpen: false, drawer: 'none' }),
+    setUI: (updater) => set((state) => (typeof updater === 'function' ? updater(state) : (updater as any))),
 
     closeAllPanels: () => set({
-        isCharacterOpen: false,
-        isStatsOpen: false,
-        isInventoryOpen: false,
-        isEquipmentOpen: false,
-        isPlayersOpen: false,
-        drawer: 'none'
+        drawer: 'none',
+        isSettingsOpen: false,
+        isLibraryOpen: false,
+        isButtonsOpen: false,
+        setManagerOpen: false
     })
 }));
 

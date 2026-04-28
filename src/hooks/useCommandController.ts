@@ -12,13 +12,7 @@ export interface CommandControllerDeps {
     navIntervalRef: React.MutableRefObject<NodeJS.Timeout | null>;
     mapperRef: React.RefObject<any>;
     teleportTargets: any[];
-    isDrawerCapture: React.MutableRefObject<number>;
-    isSilentCapture: React.MutableRefObject<number>;
     captureStage: React.MutableRefObject<CaptureStage>;
-    isWaitingForStats: React.MutableRefObject<boolean>;
-    isWaitingForEq: React.MutableRefObject<boolean>;
-    isWaitingForInv: React.MutableRefObject<boolean>;
-    isWaitingForInfo: React.MutableRefObject<boolean>;
     setInventoryLines: (val: any) => void;
     setStatsLines: (val: any) => void;
     setInfoLines: (val: any) => void;
@@ -34,15 +28,15 @@ export interface CommandControllerDeps {
     setPendingMove: (val: { dir: string; timestamp: number } | null) => void;
     activePrompt: string;
     finalizeCapture: (targetStage?: CaptureStage) => void;
+    setPendingFlags: (isSilent: boolean, fromDrawer: boolean) => void;
     popoverState: any;
     setPopoverState: (val: any) => void;
-    setIsCharacterOpen: (open: boolean) => void;
-    setIsStatsOpen: (open: boolean) => void;
-    setIsEquipmentOpen: (open: boolean) => void;
-    setIsInventoryOpen: (open: boolean) => void;
-    setIsPlayersOpen: (open: boolean) => void;
+    handleTabClick: (drawer: 'character' | 'players' | 'equipment') => void;
+    setGearTab: (tab: 'worn' | 'inv') => void;
+    setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
+    setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     setIsSettingsOpen: (open: boolean) => void;
-    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'help') => void;
+    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'help' | 'buttons' | 'traits') => void;
     setIsMapExpanded: (open: boolean) => void;
     setUI: React.Dispatch<React.SetStateAction<any>>;
     viewport: any;
@@ -52,7 +46,7 @@ export interface CommandControllerDeps {
     wasDraggingRef: React.RefObject<boolean>;
     ui: {
         mapExpanded: boolean;
-        drawer: 'none' | 'character' | 'equipment' | 'inventory';
+        drawer: 'none' | 'character' | 'equipment' | 'inventory' | 'players' | 'stats' | 'map';
         setManagerOpen: boolean;
         isDrawerPeeking: boolean;
     };
@@ -78,7 +72,6 @@ export interface CommandControllerDeps {
     clearObjectSelection: () => void;
     playClickSound: () => void;
     isSoundEnabled: boolean;
-    manualCancelRef?: React.MutableRefObject<boolean>;
     waiting?: boolean;
     recordEntry?: (type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any, options?: { mask?: boolean }) => void;
     clearLog: () => void;
@@ -113,11 +106,12 @@ export interface CommandControllerDeps {
     setFontFamily: (val: string) => void;
     favorites: string[];
     setFavorites: (val: string[]) => void;
+    nextCommandIsSilent: React.MutableRefObject<boolean>;
 }
 
 
 export function useCommandController(deps: CommandControllerDeps) {
-    const { input, setInput, isNewbieMode, viewport, triggerHaptic, setTarget, setPendingMove, addMessage, manualCancelRef, waiting } = deps;
+    const { input, setInput, isNewbieMode, viewport, triggerHaptic, setTarget, setPendingMove, addMessage, waiting } = deps;
 
     const executor = useCommandExecutor(deps);
     const depsRef = useRef(deps);
@@ -125,14 +119,12 @@ export function useCommandController(deps: CommandControllerDeps) {
 
     const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, isHistorical = false, fromDrawer = false, options?: { shouldFocus?: boolean, fromUi?: boolean }) => {
         const d = depsRef.current;
-        const { viewport, waiting, manualCancelRef, isSoundEnabled, playClickSound, recordEntry, practice, shop, gameState } = d;
+        const { viewport, waiting, isSoundEnabled, playClickSound, recordEntry, practice, shop, nextCommandIsSilent } = d;
 
-        const effectiveSilent = silent;
-
-        // Manual cancel detection
-        if (cmd === '' && waiting && manualCancelRef) {
-            console.log('[Controller] Manual cancel detected (newline while waiting)');
-            manualCancelRef.current = true;
+        const effectiveSilent = silent || nextCommandIsSilent.current;
+        if (nextCommandIsSilent.current) {
+            console.log(`[Controller] Silencing next command: ${cmd}`);
+            nextCommandIsSilent.current = false;
         }
 
         if (!isSystem && !silent) {
@@ -244,7 +236,7 @@ export function useCommandController(deps: CommandControllerDeps) {
     const { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd } = useInteractionHandlers({
         ...deps, executeCommand, input, ui: deps.ui, parley: deps.parley, setParley: deps.setParley,
         isTrackpadModifierActive: deps.isTrackpadModifierActive,
-        setIsPlayersOpen: deps.setIsPlayersOpen,
+        handleTabClick: deps.handleTabClick,
         keywordOverrides: deps.keywordOverrides,
         openKeywordEdit: deps.openKeywordEdit,
         lastCommandContextRef: deps.lastCommandContextRef,

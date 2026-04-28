@@ -30,14 +30,28 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
         <>
             <div style={{ display: 'flex', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden', flexShrink: 0 }}>
                 <button
-                    style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'edit' ? '#89b4fa' : 'transparent', color: mode === 'edit' ? '#11111b' : '#cdd6f4', fontWeight: 'bold', transition: 'all 0.2s' }}
+                    style={{ 
+                        padding: '4px 8px', border: 'none', cursor: 'pointer', 
+                        backgroundColor: mode === 'edit' ? 'var(--accent)' : 'transparent', 
+                        color: mode === 'edit' ? '#000' : '#cdd6f4', 
+                        fontWeight: 'bold', transition: 'all 0.2s',
+                        boxShadow: mode === 'edit' ? '0 0 10px var(--accent-glow)' : 'none',
+                        zIndex: mode === 'edit' ? 1 : 0
+                    }}
                     onClick={(e) => { e.stopPropagation(); setMode('edit'); }}
                     title="Edit Mode"
                 >
                     {showLabels ? 'Edit' : 'E'}
                 </button>
                 <button
-                    style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'play' ? '#a6e3a1' : 'transparent', color: mode === 'play' ? '#11111b' : '#cdd6f4', fontWeight: 'bold', transition: 'all 0.2s' }}
+                    style={{ 
+                        padding: '4px 8px', border: 'none', cursor: 'pointer', 
+                        backgroundColor: mode === 'play' ? 'var(--accent)' : 'transparent', 
+                        color: mode === 'play' ? '#000' : '#cdd6f4', 
+                        fontWeight: 'bold', transition: 'all 0.2s',
+                        boxShadow: mode === 'play' ? '0 0 10px var(--accent-glow)' : 'none',
+                        zIndex: mode === 'play' ? 1 : 0
+                    }}
                     onClick={(e) => { e.stopPropagation(); setMode('play'); }}
                     title="Play Mode"
                 >
@@ -50,8 +64,10 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
             <button
                 style={{
                     padding: '4px 6px', border: 'none', cursor: 'pointer', borderRadius: '4px',
-                    backgroundColor: autoCenter ? '#f9e2af' : 'transparent', color: autoCenter ? '#11111b' : '#cdd6f4',
-                    display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, transition: 'all 0.2s'
+                    backgroundColor: autoCenter ? 'var(--accent)' : 'transparent', 
+                    color: autoCenter ? '#000' : '#cdd6f4',
+                    display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, transition: 'all 0.2s',
+                    boxShadow: autoCenter ? '0 0 10px var(--accent-glow)' : 'none'
                 }}
                 onClick={(e) => { e.stopPropagation(); onCenterClick(); }}
                 title="Center on player"

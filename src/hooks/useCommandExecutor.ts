@@ -32,13 +32,7 @@ export interface ExecutorDeps {
     navIntervalRef: React.MutableRefObject<NodeJS.Timeout | null>;
     mapperRef: React.RefObject<MapperRef>;
     teleportTargets: TeleportTarget[];
-    isDrawerCapture: React.MutableRefObject<number>;
-    isSilentCapture: React.MutableRefObject<number>;
     captureStage: React.MutableRefObject<CaptureStage>;
-    isWaitingForStats: React.MutableRefObject<boolean>;
-    isWaitingForEq: React.MutableRefObject<boolean>;
-    isWaitingForInv: React.MutableRefObject<boolean>;
-    isWaitingForInfo: React.MutableRefObject<boolean>;
     setInventoryLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setStatsLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setInfoLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
@@ -46,12 +40,14 @@ export interface ExecutorDeps {
     setEqLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setTarget: (val: string | null) => void;
     finalizeCapture: (targetStage?: CaptureStage) => void;
+    setPendingFlags: (isSilent: boolean, fromDrawer: boolean) => void;
     target: string | null;
     setPopoverState: (val: any) => void;
     status: 'connected' | 'disconnected' | 'connecting';
-    setIsCharacterOpen: (open: boolean) => void;
-    setIsEquipmentOpen: (open: boolean) => void;
-    setIsInventoryOpen: (open: boolean) => void;
+    handleTabClick: (drawer: 'character' | 'players' | 'equipment') => void;
+    setGearTab: (tab: 'worn' | 'inv') => void;
+    setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
+    setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     setIsSettingsOpen: (open: boolean) => void;
     setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'help') => void;
     actions: GameAction[];
@@ -64,9 +60,9 @@ export interface ExecutorDeps {
 export const useCommandExecutor = (deps: ExecutorDeps) => {
     const {
         telnet, addMessage, initAudio, navIntervalRef, mapperRef, teleportTargets,
-        isDrawerCapture, isSilentCapture, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo,
+        captureStage,
         setInventoryLines, setStatsLines, setScoreLines, setEqLines, setTarget, target,
-        setPopoverState, status, setIsCharacterOpen, setIsEquipmentOpen, setIsInventoryOpen,
+        setPopoverState, status, handleTabClick, setGearTab, setPlayersTab, setCharTab,
         setIsSettingsOpen, setSettingsTab,
         actions, setActions, activePrompt, recordEntry
     } = deps;
@@ -89,7 +85,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
 
     const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, _isHistorical = false, fromDrawer = false) => {
         const d = depsRef.current;
-        const { telnet, addMessage, initAudio, navIntervalRef, mapperRef, teleportTargets, isDrawerCapture, isSilentCapture, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv, isWaitingForInfo, status } = d;
+        const { telnet, addMessage, initAudio, navIntervalRef, status } = d;
 
         initAudio();
         
@@ -118,30 +114,6 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             clearInterval(navIntervalRef.current);
             navIntervalRef.current = null;
             addMessage('system', 'Navigation stopped.');
-        }
-
-        // --- 5. Silent Capture Safety (Keep here as it uses timers/refs) ---
-        if (silent && isSystem) {
-            const timeoutMs = (finalCmd.toLowerCase().startsWith('prac')) ? 15000 : 8000;
-            setTimeout(() => {
-                if (isSilentCapture?.current && isSilentCapture.current > 0) {
-                    console.log(`[Executor] Silent capture safety reset (Count: ${isSilentCapture.current}, Cmd: ${finalCmd})`);
-                    isSilentCapture.current = 0;
-                    if (captureStage?.current !== 'container') {
-                        d.finalizeCapture();
-                    }
-                }
-            }, timeoutMs);
-        }
-
-        // --- 6. Post-Execution Drawer Safety ---
-        if (fromDrawer) {
-            setTimeout(() => {
-                if (isDrawerCapture?.current && isDrawerCapture.current > 0) {
-                    isDrawerCapture.current = 0;
-                    if (captureStage?.current !== 'container') d.finalizeCapture();
-                }
-            }, 8000);
         }
 
         // --- 7. Echo to Log ---

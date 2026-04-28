@@ -3,17 +3,15 @@ import {
     CombatHealthStatus, QuestData, GameEntity, EntityLocation,
     MessageType, GroupMember, AccountState, AccountStage, MumeTime,
     Direction, CustomButton, InlineCategoryConfig, GameState,
-    ExecuteCommand
+    ExecuteCommand, WeatherType, DrawerType, SessionMode
 } from '../../types';
 import { RefObject, MutableRefObject, Dispatch, SetStateAction } from 'react';
+import { CaptureSession } from '../../types/capture';
 
 export interface UseGameParserDeps {
     entities: Record<string, GameEntity>;
-    isInventoryOpen: boolean;
-    isEquipmentOpen: boolean;
-    isCharacterOpen: boolean;
-    isStatsOpen: boolean;
-    isPlayersOpen: boolean;
+    entitiesRef: MutableRefObject<Record<string, GameEntity>>;
+    drawer: DrawerType;
     mapperRef: RefObject<any>;
     btn: any;
     addMessage: (
@@ -42,18 +40,15 @@ export interface UseGameParserDeps {
         providedIsSnoopInput?: boolean
     ) => void;
     addSystemMessage: (msg: string) => void;
+    executeCommandRef: MutableRefObject<ExecuteCommand | null>;
     pendingGmcpCommRef: MutableRefObject<any>;
     lastCommIdBySenderRef: MutableRefObject<Map<string, string>>;
+    lastCommMsgIdRef: MutableRefObject<string | null>;
+    lastCommTimeRef: MutableRefObject<number>;
     
     // Audio
     playHitImpactSound: (options?: { pitch?: number, volume?: number } | string) => void;
     playOofSound: (options?: { pitch?: number, volume?: number }) => void;
-    playSlashSound: (options?: { pitch?: number, volume?: number }) => void;
-    playCleaveSound: (options?: { pitch?: number, volume?: number }) => void;
-    playSmiteSound: (options?: { pitch?: number, volume?: number }) => void;
-    playPierceSound: (options?: { pitch?: number, volume?: number }) => void;
-    playStabSound: (options?: { pitch?: number, volume?: number }) => void;
-    playArrowHitSound: (options?: { pitch?: number, volume?: number }) => void;
     playCommMessageSound: (options?: { volume?: number }) => void;
     playBuySellSound: (options?: { volume?: number }) => void;
     playBashSound: (options?: { pitch?: number, volume?: number }) => void;
@@ -69,7 +64,7 @@ export interface UseGameParserDeps {
     playKillSound: (options?: any) => void;
     playLevelSound: (options?: any) => void;
 
-    sessionMode: string;
+    sessionMode: SessionMode;
     inCombatRef: MutableRefObject<boolean>;
     triggerXpTicker: (xp?: number) => void;
     groupMembers: GroupMember[];
@@ -95,8 +90,6 @@ export interface UseGameParserDeps {
     accountState: AccountState;
     accountStageRef: MutableRefObject<AccountStage>;
     pendingDrawerContainerRef?: MutableRefObject<any>;
-    lastCommMsgIdRef: MutableRefObject<string | null>;
-    lastCommTimeRef: MutableRefObject<number>;
     setDiscoveredItems: Dispatch<SetStateAction<any[]>>;
     roomNameRef: MutableRefObject<string | null>;
     roomDescRef: MutableRefObject<string | null>;
@@ -112,17 +105,16 @@ export interface UseGameParserDeps {
     quests: any;
     setQuests: Dispatch<SetStateAction<any>>;
     captureStage: MutableRefObject<CaptureStage>;
-    isSilentCapture: MutableRefObject<number>;
-    isDrawerCapture: MutableRefObject<number>;
     captureOwnerDrawer: MutableRefObject<any>;
     setIsPasswordMode: (mode: boolean) => void;
     setAccountState: Dispatch<SetStateAction<any>>;
     setGameTime: (time: MumeTime | null) => void;
     setRoomNum: (num: number | null) => void;
     setUserRoomNum: (num: number | null) => void;
-    setWeather: (weather: string) => void;
+    setWeather: (weather: WeatherType) => void;
     setIsFoggy: (foggy: boolean) => void;
     setLightningEnabled: (val: boolean) => void;
+    detectLighting?: (light: number | string) => void;
     
     // Spectate Setters
     setSpectateStats: (stats: any) => void;
@@ -137,6 +129,10 @@ export interface UseGameParserDeps {
     setSpectateRoomDesc: (desc: string | null) => void;
     setSpectateRoomZone: (zone: string | null) => void;
     setSpectateActivePrompt?: (prompt: string | null) => void;
+    setSpectateActivePromptText?: (val: string) => void;
+    setSpectateWeather?: (weather: WeatherType) => void;
+    setSpectateIsFoggy?: (foggy: boolean) => void;
+    setSpectateLightningEnabled?: (val: boolean) => void;
 
     // Drawer Setters
     setInventoryLines: (lines: DrawerLine[]) => void;
@@ -149,35 +145,23 @@ export interface UseGameParserDeps {
     setInfoLines: (lines: DrawerLine[]) => void;
     setQuestLines: (lines: DrawerLine[]) => void;
     setWhoList: (list: string[]) => void;
-    setWhereList: (list: any[]) => void;
+    setWhereList: (list: import('../../types').WhereEntry[]) => void;
 
     // Others
     addDiagnosticLog: (msg: string) => void;
+    isMobile?: boolean;
     isNewbieMode: boolean;
     isSpectateMode: boolean;
-    spectateTarget: string | null;
-    executeCommandRef: MutableRefObject<ExecuteCommand | null>;
-    gameTime: MumeTime | null;
-
-    // Practice / Help handlers (consumed by useDrawerParser)
-    practice?: any;
-    help?: any;
-    practiceHandler?: any;
-    questsHandler?: any;
-    shopHandler?: any;
-    helpHandler?: any;
-    setPopoverState?: (state: any) => void;
-    isMobile?: boolean;
-    finalizeCapture?: (owner?: 'inv' | 'eq' | 'stat' | 'practice' | 'who' | 'where' | 'container' | 'none') => void;
-
+    captureSession: CaptureSession | null;
+    setCaptureSession: Dispatch<SetStateAction<CaptureSession | null>>;
+    executeCommand?: (cmd: string, echo?: boolean, fromMacro?: boolean) => void;
+    setSettingsTab?: (tab: any) => void;
+    setIsSettingsOpen?: (open: boolean) => void;
+    handleTabClick?: (tab: DrawerType) => void;
+    setUI?: (val: any) => void;
+    activePrompt: any;
     characterName: string | null;
     spectateCharacterName: string | null;
-    activePrompt: any;
-    selectedObjectIds: string[];
-
     actionsRef: RefObject<GameAction[]>;
-    isWaitingForInv: MutableRefObject<boolean>;
-    isWaitingForEq: MutableRefObject<boolean>;
-    isWaitingForStats: MutableRefObject<boolean>;
-    isWaitingForInfo: MutableRefObject<boolean>;
+    gameTime: MumeTime | null;
 }

@@ -3,9 +3,9 @@
  * @description Common container for all side drawers.
  */
 
-import React, { ReactNode, useRef } from 'react';
+import React, { ReactNode } from 'react';
 import { X } from 'lucide-react';
-import { useUI } from '../../context/GameContext';
+import { useUI, useGame } from '../../context/GameContext';
 
 interface DrawerShellProps {
     id: string;
@@ -15,9 +15,9 @@ interface DrawerShellProps {
 }
 
 export const DrawerShell: React.FC<DrawerShellProps> = ({ id, side, title, children }) => {
-    const { ui, setUI, triggerHaptic } = useUI();
-    const isOpen = ui.drawer === id || (id === 'inventory' && ui.drawer === 'equipment') || (id === 'equipment' && ui.drawer === 'inventory');
-    const drawerRef = useRef<HTMLDivElement>(null);
+    const { ui, setUI } = useUI();
+    const { triggerHaptic, handleLogClick } = useGame();
+    const isOpen = ui.drawer === id;
 
     if (!isOpen) return null;
 
@@ -39,7 +39,7 @@ export const DrawerShell: React.FC<DrawerShellProps> = ({ id, side, title, child
                     {title || id}
                 </span>
                 {window.innerWidth > 1024 && (
-                    <button 
+                    <button
                         className="drawer-close-btn"
                         onClick={handleClose}
                         style={{
@@ -59,7 +59,7 @@ export const DrawerShell: React.FC<DrawerShellProps> = ({ id, side, title, child
                     </button>
                 )}
             </div>
-            <div className="drawer-content" style={{ flex: 1, overflow: 'hidden' }}>
+            <div className="drawer-content" style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }} onClick={handleLogClick as any}>
                 {children}
             </div>
         </div>

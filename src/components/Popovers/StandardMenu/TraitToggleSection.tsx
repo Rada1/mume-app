@@ -89,6 +89,7 @@ export const TraitToggleSection: React.FC<TraitToggleSectionProps> = ({
             
             return [...categories, {
                 id,
+                kind: 'object',
                 keywords: [keyword],
                 color: '#fff',
                 weight: 10

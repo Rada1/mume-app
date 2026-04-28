@@ -11,9 +11,6 @@ interface LogGmcpParserDeps {
     setSpectateWaiting: (val: boolean) => void;
     setSpectateCharacterName: (name: string | null) => void;
     spectateCharacterName: string | null;
-    setRoomPlayers?: React.Dispatch<React.SetStateAction<any[]>>;
-    setRoomNpcs?: React.Dispatch<React.SetStateAction<any[]>>;
-    setRoomItems?: React.Dispatch<React.SetStateAction<any[]>>;
     setRoomName: (name: string | null) => void;
     setRoomDesc: (desc: string | null) => void;
     setRoomZone: (zone: string | null) => void;
@@ -26,6 +23,10 @@ interface LogGmcpParserDeps {
     detectLighting?: (light: number | string) => void;
     setWeather?: (w: any) => void;
     setIsFoggy?: (f: boolean) => void;
+    setSpectateWeather?: (w: any) => void;
+    setSpectateIsFoggy?: (f: boolean) => void;
+    addMessage?: (...args: any[]) => void;
+    setSpectateStats?: (stats: any) => void;
     isSpectateMode?: boolean;
     sessionMode?: import('../../types').SessionMode;
     playMovementSound?: (isRiding?: boolean) => void;
@@ -98,9 +99,9 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
 
         const {
             setSpectateWaiting,
-            detectLighting, setWeather, setIsFoggy, playDoorSound, setRoomItems,
-            setSpectateCharacterName, setRoomPlayers, setRoomNpcs, spectateCharacterName, characterName,
-            setRoomNum, setUserRoomNum
+            detectLighting, setWeather, setIsFoggy, playDoorSound,
+            setSpectateCharacterName, spectateCharacterName, characterName,
+            setRoomNum, setUserRoomNum, setSpectateWeather, setSpectateIsFoggy
         } = d;
 
         const inSpectate = isSpectateModeRef.current;
@@ -132,13 +133,6 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                 case 'Char.Vitals':
                     gmcpBus.emit('Char.Vitals', data);
 
-                    if (data.position) {
-                        const posLower = data.position.toLowerCase();
-                        if (isSnooped) {
-                            setSpectateWaiting(posLower === 'waiting' || posLower.includes('waiting'));
-                        }
-                    }
-
                     if (data.opponent === null || data.opponent === "") {
                         gmcpBus.emit('Char.Opponent', { data: null, isSnooped });
                     } else if (data.opponent !== undefined) {
@@ -153,14 +147,16 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                         }], { isSnooped }));
                     }
 
-                    if (!isSnooped) {
-                        if (data.light !== undefined && data.light !== null && detectLighting) {
-                            detectLighting(data.light);
-                        }
-                        if (data.weather !== undefined && setWeather) {
-                            setWeather(data.weather);
-                            if (data.fog !== undefined && setIsFoggy) setIsFoggy(!!data.fog);
-                        }
+                    if (data.light !== undefined && data.light !== null && detectLighting && !isSnooped) {
+                        detectLighting(data.light);
+                    }
+                    
+                    const weatherSetter = isSnooped ? setSpectateWeather : setWeather;
+                    const fogSetter = isSnooped ? setSpectateIsFoggy : setIsFoggy;
+                    
+                    if (data.weather !== undefined && weatherSetter) {
+                        weatherSetter(data.weather);
+                        if (data.fog !== undefined && fogSetter) fogSetter(!!data.fog);
                     }
                     break;
 
@@ -184,18 +180,6 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                 }
                 case 'Group.Update': {
                     gmcpBus.emit('Group.Update', data);
-
-                    if (isSnooped && data.waiting !== undefined) {
-                        if (data.id === undefined) break;
-                        const id = Number(data.id);
-                        const isTarget = id === spectateTargetIdRef.current;
-                        if (isTarget) {
-                            setSpectateWaiting(!!data.waiting);
-                        } else if (!spectateTargetIdRef.current) {
-                            spectateTargetIdRef.current = id;
-                            setSpectateWaiting(!!data.waiting);
-                        }
-                    }
                     break;
                 }
                 case 'Group.Remove': {

@@ -37,9 +37,17 @@ export function isButtonValidForEntity(
             ...extraSets
           ]));
 
+    const canonicalButtonSetId = canonicalizeCategoryId(button.setId);
+    const canonicalLegacySetId = legacySetId ? canonicalizeCategoryId(legacySetId) : undefined;
+    const canonicalRelevantSets = relevantSets.map(setId => canonicalizeCategoryId(setId));
+
     // --- STEP 2: Main Set Validation ---
     // If the button set is in our relevant traits, it's valid
-    let isValidSet = relevantSets.includes(button.setId) || button.setId === legacySetId;
+    let isValidSet =
+        relevantSets.includes(button.setId) ||
+        canonicalRelevantSets.includes(canonicalButtonSetId) ||
+        button.setId === legacySetId ||
+        (!!canonicalLegacySetId && canonicalButtonSetId === canonicalLegacySetId);
 
     if (!isValidSet) return false;
 

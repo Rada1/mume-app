@@ -45,26 +45,7 @@ export interface QuestData {
     lastUpdated: number;
 }
 
-export interface DrawerLine {
-    id: string;
-    text: string;
-    html: string;
-    rawText?: string;
-    tokens?: import('./tokens').Token[];
-    isHeader?: boolean;
-    isItem?: boolean;
-    isContainer?: boolean;
-    cmd?: string;
-    context?: string;
-    stableId?: string;
-    depth?: number;
-    prefix?: string;
-    prefixHtml?: string;
-    parentItemId?: string;
-    parentItemNoun?: string;
-    entityId?: string;
-    practiceSkill?: PracticeSkill;
-}
+import type { DrawerLine } from './game';
 
 export type OptimisticChange =
     | { type: 'wear'; item?: DrawerLine; noun?: string; lineId?: string }

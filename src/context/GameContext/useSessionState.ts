@@ -163,6 +163,15 @@ export const useSessionState = (
     const [abilities, setAbilities] = useState<Record<string, number>>({});
     const [characterClass, setCharacterClass] = useState<'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none'>('none');
     const [actions, setActions] = useState<import('../../types').GameAction[]>([]);
+    const [captureSession, setCaptureSessionInternal] = useState<import('../../types/capture').CaptureSession | null>(null);
+    const captureSessionRef = useRef<import('../../types/capture').CaptureSession | null>(null);
+    const setCaptureSession = useCallback((valOrFn: import('../../types/capture').CaptureSession | null | ((prev: import('../../types/capture').CaptureSession | null) => import('../../types/capture').CaptureSession | null)) => {
+        setCaptureSessionInternal(prev => {
+            const next = typeof valOrFn === 'function' ? valOrFn(prev) : valOrFn;
+            captureSessionRef.current = next;
+            return next;
+        });
+    }, []);
     const [mood, setMood] = useState('peaceful');
     const [spellSpeed, setSpellSpeed] = useState('normal');
     const [alertness, setAlertness] = useState('normal');
@@ -215,13 +224,19 @@ export const useSessionState = (
         }
     }, []);
 
+    const setCharacterInfo = useCallback((update: any) => {
+        const current = vStore.characterInfo;
+        const next = typeof update === 'function' ? update(current) : update;
+        (vStore as any).setVitals?.({ characterInfo: { ...current, ...next } });
+    }, [vStore]);
+
     const vitals = useMemo<VitalsContextType>(() => ({
         stats, setStats, target, setTarget, activePrompt, setActivePrompt: setActivePromptCompat, rumble, setRumble,
         deathRoomId, setDeathRoomId, heldButton: null, setHeldButton: () => {},
         isMendingMode: false, setIsMendingMode: () => {}, mendingTarget: null, setMendingTarget: () => {},
         bufferName, setBufferName, playerHealthStatus, setPlayerHealthStatus, opponentName, opponentId,
-        setOpponentId, opponentHealthStatus, bufferHealthStatus, characterInfo: {} as any,
-        setCharacterInfo: () => {}, groupMembers, setGroupMembers, xpHistory, xpEvent, triggerXpTicker,
+        setOpponentId, opponentHealthStatus, bufferHealthStatus, characterInfo: vStore.characterInfo,
+        setCharacterInfo, groupMembers, setGroupMembers, xpHistory, xpEvent, triggerXpTicker,
         gameTime, setGameTime,
         pendingMove: null, setPendingMove: () => {},
         setOpponentHealthStatus, setBufferHealthStatus, setOpponentName,
@@ -232,7 +247,7 @@ export const useSessionState = (
     } as VitalsContextType), [
         stats, target, activePrompt, rumble, deathRoomId, bufferName, playerHealthStatus,
         opponentName, opponentId, opponentHealthStatus, bufferHealthStatus, groupMembers,
-        xpHistory, xpEvent, gameTime, roomName, characterName
+        xpHistory, xpEvent, gameTime, roomName, characterName, vStore.characterInfo, setCharacterInfo
     ]);
 
     return useMemo(() => ({
@@ -281,7 +296,10 @@ export const useSessionState = (
             discoveredItems, setDiscoveredItems,
             gameTime, setGameTime,
             roomNum: rStore?.roomNum ?? 0,
-            setRoomNum: (num: number) => rStore.setRoomInfo({ roomNum: num })
+            setRoomNum: (num: number) => rStore.setRoomInfo({ roomNum: num }),
+            captureSession,
+            captureSessionRef,
+            setCaptureSession
         },
         log: {
             ...log,
@@ -304,6 +322,6 @@ export const useSessionState = (
         level, currentName, setCurrentName, registry, teleportTargets, quests,
         lightningEnabled, rStore.whoList, setWhoList, whereList, setWhereList, log, ui.selectedObjectIds,
         ui.toggleObjectSelection, ui.clearObjectSelection, recorder, discoveredItems,
-        gameTime, setGameTime, rStore.roomNum
+        gameTime, setGameTime, rStore.roomNum, captureSession
     ]);
 };

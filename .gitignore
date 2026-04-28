@@ -9,7 +9,12 @@ lerna-debug.log*
 
 node_modules
 dist
+dev-dist
 dist-ssr
+tmp/
+temp_*.json
+*.crdownload
+*.bak
 *.local
 # Editor directories and files
 .vscode/*

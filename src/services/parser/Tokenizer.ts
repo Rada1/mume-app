@@ -6,12 +6,18 @@
  */
 
 import React from 'react';
-import { Token, EntityToken, AnsiToken, TextToken, InlineCategoryConfig } from '../../types';
+import { Token, EntityToken, AnsiToken, TextToken, InlineCategoryConfig, GmcpOccupant } from '../../types';
 
 export interface TokenizerContext {
     target?: string | null;
     buttons?: any[]; // Custom user highlights
     registeredPlayers?: string[]; // Names of players to highlight in text
+    currentOccupants?: GmcpOccupant[];
+    roomNpcs?: GmcpOccupant[];
+    activeGroupMembers?: unknown[];
+    roomItems?: GmcpOccupant[];
+    discoveredItems?: GmcpOccupant[];
+    selectedObjectIds?: Set<string>;
     inlineCategories?: InlineCategoryConfig[];
     npcColor?: string;
     playerColor?: string;
@@ -43,6 +49,10 @@ export class Tokenizer {
         return this.instance;
     }
 
+    public static tokenize(textRaw: string, context: TokenizerContext, initialLoc?: string): Token[] {
+        return this.getInstance().tokenize(textRaw, context, initialLoc);
+    }
+
     public reset(loc: string = 'room') {
         this.currentLocation = loc;
         this.currentParent = null;
@@ -66,6 +76,7 @@ export class Tokenizer {
             metadata: any;
             content: string;
             style: React.CSSProperties;
+            stack?: string[];
         } | null = null;
         
         // Active tag stack for nested classification
@@ -177,6 +188,29 @@ export class Tokenizer {
             return;
         }
 
+        const occupantTokens = this.tokenizeKnownOccupants(decoded, context, style);
+        if (occupantTokens) {
+            tokens.push(...occupantTokens);
+            return;
+        }
+
+        if (this.isRoomObjectStyle(style)) {
+            tokens.push({
+                type: 'entity',
+                content: decoded,
+                entityId: `auto-item-${decoded.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
+                metadata: {
+                    kind: 'object',
+                    category: 'inline-obj-room',
+                    context: decoded,
+                    location: 'room',
+                    action: 'menu',
+                    style
+                }
+            } as EntityToken);
+            return;
+        }
+
         const players = context?.registeredPlayers || [];
         if (players.length > 0) {
             const validNames = players.filter(n => n.length > 2);
@@ -231,6 +265,76 @@ export class Tokenizer {
         }
 
         this.pushText(decoded, tokens, style);
+    }
+
+    private tokenizeKnownOccupants(
+        decoded: string,
+        context: TokenizerContext | undefined,
+        style: React.CSSProperties
+    ): Token[] | null {
+        const occupants = context?.currentOccupants || [];
+        const validTypes = new Set(['ally', 'enemy', 'neutral', 'npc']);
+        const candidates = occupants
+            .filter(o => o.type && validTypes.has(o.type.toLowerCase()))
+            .flatMap(o => this.getOccupantPatterns(o).map(pattern => ({ occupant: o, pattern })))
+            .sort((a, b) => b.pattern.length - a.pattern.length);
+
+        if (candidates.length === 0) return null;
+
+        const escaped = candidates.map(c => this.escapeRegExp(c.pattern));
+        const pattern = new RegExp(`\\b(${escaped.join('|')})\\b`, 'gi');
+        const out: Token[] = [];
+        let lastIdx = 0;
+        let matched = false;
+        let match;
+
+        while ((match = pattern.exec(decoded)) !== null) {
+            const content = match[1];
+            const candidate = candidates.find(c => c.pattern.toLowerCase() === content.toLowerCase());
+            if (!candidate) continue;
+
+            if (match.index > lastIdx) {
+                this.pushText(decoded.substring(lastIdx, match.index), out, style);
+            }
+
+            const gmcpType = candidate.occupant.type!.toLowerCase();
+            out.push({
+                type: 'entity',
+                content,
+                entityId: String(candidate.occupant.id ?? `auto-${content.toLowerCase().replace(/[^a-z0-9]/g, '-')}`),
+                metadata: {
+                    kind: gmcpType === 'npc' ? 'npc' : 'player',
+                    category: `inline-${gmcpType}`,
+                    context: content,
+                    location: 'room',
+                    action: 'menu',
+                    style
+                }
+            } as EntityToken);
+
+            lastIdx = pattern.lastIndex;
+            matched = true;
+        }
+
+        if (!matched) return null;
+        if (lastIdx < decoded.length) {
+            this.pushText(decoded.substring(lastIdx), out, style);
+        }
+        return out;
+    }
+
+    private getOccupantPatterns(occupant: GmcpOccupant): string[] {
+        return [occupant.name, occupant.short, occupant.keyword]
+            .filter((value): value is string => !!value && value.trim().length > 1)
+            .map(value => value.trim());
+    }
+
+    private escapeRegExp(value: string): string {
+        return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    private isRoomObjectStyle(style: React.CSSProperties): boolean {
+        return String(style.color || '').includes('--ansi-cyan');
     }
 
     private pushText(content: string, tokens: Token[], style: React.CSSProperties) {

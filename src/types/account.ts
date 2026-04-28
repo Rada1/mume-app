@@ -9,6 +9,7 @@ export interface CharacterEntry {
     index?: number;
     name: string;
     race: string;
+    class?: string;
     sublevel?: string;
     level: string | number;
     logon: string;

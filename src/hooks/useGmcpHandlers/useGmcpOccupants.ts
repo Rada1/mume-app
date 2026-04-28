@@ -33,7 +33,7 @@ const parseOccupant = (data: any, characterName: string | null): GmcpOccupant | 
 interface UseGmcpOccupantsProps {
     mapperRef: React.RefObject<MapperRef>;
     setRoomChars?: React.Dispatch<React.SetStateAction<Record<number, GmcpOccupant>>>;
-    setRoomItems: React.Dispatch<React.SetStateAction<GmcpOccupant[]>>;
+    setRoomItems?: React.Dispatch<React.SetStateAction<GmcpOccupant[]>>;
     characterName: string | null;
     registerEntity?: (id: string, name: string, location: import('../../types').EntityLocation, category?: string) => import('../../types').GameEntity;
     setIsRiding?: (val: boolean) => void;
@@ -184,7 +184,7 @@ export const useGmcpOccupants = ({
             return obj;
         });
         console.log(`[GMCP] Resolved ${items.length} room items`);
-        setRoomItems(items);
+        setRoomItems?.(items);
         
         import('../../events/gmcpBus').then(({ gmcpBus }) => {
             gmcpBus.emit('Room.Items', Object.assign(items, { isSnooped: false }));

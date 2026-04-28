@@ -38,8 +38,10 @@ interface StandardMenuProps {
     isMendingMode?: boolean;
     setIsMendingMode?: (val: boolean) => void;
     setMendingTarget?: (val: string | null) => void;
-    setIsEquipmentOpen?: (open: boolean) => void;
-    setIsInventoryOpen?: (open: boolean) => void;
+    handleTabClick: (drawer: 'character' | 'players' | 'equipment') => void;
+    setGearTab: (tab: 'worn' | 'inv') => void;
+    setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
+    setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     refreshLogHighlights?: () => void;
     triggerHaptic?: (ms: number) => void;
     openKeywordEdit?: (context: string, displayText: string) => void;
@@ -62,7 +64,8 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
     const {
         popoverState, buttons, availableSets, setPopoverState, setButtons, handleButtonClick, setTarget, addMessage, favorites,
         setFavorites, keywordOverrides, parley, setParley, whoList, executeCommand, inlineCategories, setInlineCategories,
-        setIsInventoryOpen, refreshLogHighlights, triggerHaptic, openKeywordEdit, roomNpcs,
+        handleTabClick, setGearTab, setPlayersTab, setCharTab,
+        refreshLogHighlights, triggerHaptic, openKeywordEdit, roomNpcs,
         entities, selectedObjectIds, clearObjectSelection, accountState, setAccountState, direction,
         themeColor
     } = props;
@@ -88,6 +91,10 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
 
     const sortedSets = [...relevantSets].sort((a, b) => (TRAIT_WEIGHTS[b] || 0) - (TRAIT_WEIGHTS[a] || 0));
     const isTacticalSet = ['warriorskilllist', 'rangerskilllist', 'clericspelllist', 'thiefskilllist', 'magespelllist', 'doors'].includes(popoverState.setId);
+    const setMatches = (buttonSetId: string, targetSetId: string) => (
+        buttonSetId === targetSetId ||
+        canonicalizeCategoryId(buttonSetId) === canonicalizeCategoryId(targetSetId)
+    );
 
     const toggleFavorite = (e: React.MouseEvent, command: string) => {
         e.stopPropagation();
@@ -120,7 +127,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                 {isInlineMenu ? (
                     sortedSets.map((setId, chainIdx) => {
                         const setIdButtons = buttons.filter(b => {
-                            if (b.setId !== setId || favorites.includes(b.command) || seenCommands.has(b.command)) return false;
+                            if (!setMatches(b.setId, setId) || favorites.includes(b.command) || seenCommands.has(b.command)) return false;
                             const isValid = popoverState.entityId 
                                 ? isButtonValidForEntity(b, popoverState.entityId, kind, location, filterDeps, popoverState.category, popoverState.setId)
                                 : true;
@@ -134,14 +141,14 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                         return (
                             <React.Fragment key={setId}>
                                 {label && <div style={{ padding: '6px 12px 2px', fontSize: '0.6rem', opacity: 0.4, textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, color: 'var(--accent)' }}>{label}</div>}
-                                {setIdButtons.map(b => <PopoverActionButton key={b.id} button={b} depth={chainIdx === 0 ? 0 : 1} isSubButton={chainIdx > 0} {...props} toggleFavorite={toggleFavorite} />)}
+                                {setIdButtons.map(b => <PopoverActionButton key={b.id} button={b} depth={chainIdx === 0 ? 0 : 1} isSubButton={chainIdx > 0} {...props} toggleFavorite={toggleFavorite} handleTabClick={handleTabClick} setGearTab={setGearTab} />)}
                             </React.Fragment>
                         );
                     })
                 ) : (
                     buttons.filter(b => b.setId === popoverState.setId && !favorites.includes(b.command)).map(b => {
                         seenCommands.add(b.command);
-                        return <PopoverActionButton key={b.id} button={b} {...props} toggleFavorite={toggleFavorite} />;
+                        return <PopoverActionButton key={b.id} button={b} {...props} toggleFavorite={toggleFavorite} handleTabClick={handleTabClick} setGearTab={setGearTab} />;
                     })
                 )}
             </>

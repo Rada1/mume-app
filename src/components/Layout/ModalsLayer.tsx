@@ -136,7 +136,11 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         popoverState,
         setPopoverState,
         ui,
-        setUI
+        setUI,
+        handleTabClick,
+        setGearTab,
+        setPlayersTab,
+        setCharTab
     } = useUI();
 
     const popoverRef = React.useRef<HTMLDivElement>(null);
@@ -349,6 +353,10 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 keywordOverrides={keywordOverrides}
                 accountState={accountState}
                 setAccountState={setAccountState}
+                handleTabClick={handleTabClick}
+                setGearTab={setGearTab}
+                setPlayersTab={setPlayersTab}
+                setCharTab={setCharTab}
                 playerColor={playerColor}
                 npcColor={npcColor}
                 objectColor={objectColor}

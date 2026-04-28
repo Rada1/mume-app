@@ -89,7 +89,7 @@ export function useMessageLog(
         messageBufferRef.current = [];
         const nonPrompts = pending.filter(m => m.type !== 'prompt');
         const prompts = pending.filter(m => m.type === 'prompt');
-        const ordered = nonPrompts.length > 0 ? [...nonPrompts, ...prompts] : pending;
+        const ordered: Message[] = nonPrompts.length > 0 ? [...nonPrompts, ...prompts] : pending;
         
         // --- Spectate Spacer Logic ---
         // In spectate mode, we add an empty line (spacer) after each block of text

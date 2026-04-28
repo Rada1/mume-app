@@ -12,7 +12,8 @@
     "sim": "node mume-sim.js",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
-    "test:unit": "vitest run"
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run --config vitest.config.ts"
   },
   "dependencies": {
     "@google/genai": "^1.41.0",

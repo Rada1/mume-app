@@ -9,6 +9,9 @@ export interface AtmosphereParserDeps {
     setWeather: (w: string | null) => void;
     setIsFoggy: (f: boolean) => void;
     setLightningEnabled: (l: boolean) => void;
+    setSpectateWeather?: (w: string | null) => void;
+    setSpectateIsFoggy?: (f: boolean) => void;
+    setSpectateLightningEnabled?: (l: boolean) => void;
     triggerHaptic?: (ms: number) => void;
     playDoorSound?: (isOpen: boolean) => void;
     setPlayerPosition: (pos: string) => void;
@@ -18,32 +21,38 @@ export interface AtmosphereParserDeps {
 
 export function useAtmosphereParser(deps: AtmosphereParserDeps) {
     const {
-        setWeather, setIsFoggy, setLightningEnabled, triggerHaptic,
-        playDoorSound, setPlayerPosition, setSpectatePosition, isSpectateMode
+        setWeather, setIsFoggy, setLightningEnabled, 
+        setSpectateWeather, setSpectateIsFoggy, setSpectateLightningEnabled,
+        triggerHaptic, playDoorSound, setPlayerPosition, setSpectatePosition, isSpectateMode
     } = deps;
 
     const parseAtmosphere = useCallback((lower: string, isSnoop: boolean = false) => {
+        // --- Logic Selection ---
+        const weatherSetter = (isSnoop && setSpectateWeather) ? setSpectateWeather : setWeather;
+        const fogSetter = (isSnoop && setSpectateIsFoggy) ? setSpectateIsFoggy : setIsFoggy;
+        const lightningSetter = (isSnoop && setSpectateLightningEnabled) ? setSpectateLightningEnabled : setLightningEnabled;
+
         // --- Weather & Fog ---
         if (lower.includes('it starts to rain') || lower.includes('is raining')) {
-            setWeather('rain');
+            weatherSetter('rain');
         } else if (lower.includes('starts to snow') || lower.includes('is snowing')) {
-            setWeather('snow');
+            weatherSetter('snow');
         } else if (lower.includes('rain has stopped') || lower.includes('snow stops') || lower.includes('sky clears')) {
-            setWeather(null);
+            weatherSetter(null);
         }
 
         if (lower.includes('thick fog rolls in')) {
-            setIsFoggy(true);
+            fogSetter(true);
         } else if (lower.includes('fog lifts')) {
-            setIsFoggy(false);
+            fogSetter(false);
         }
 
         // --- Lightning ---
         if (lower.includes('white flash illuminates the area')) {
-            setLightningEnabled(true);
+            lightningSetter(true);
             triggerHaptic?.(100);
             // Lightning is usually a transient flash
-            setTimeout(() => setLightningEnabled(false), 500);
+            setTimeout(() => lightningSetter(false), 500);
         }
 
         // --- Environmental Sounds ---

@@ -9,7 +9,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         executeCommand, setInput, setTarget, addMessage, triggerHaptic, btn, joystick, target,
         popoverState, setPopoverState, setCommandPreview, wasDraggingRef, viewport, setParley, parley,
         keywordOverrides, applyOptimisticChange,
-        setIsCharacterOpen,
+        handleTabClick, setCharTab,
         playClickSound, isSoundEnabled, initAudio
     } = deps;
 
@@ -40,7 +40,8 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         
         // --- Redirect Guildmaster Practice to Drawer ---
         if (button.id === 'cat-guildmaster-practice') {
-            setIsCharacterOpen(true, 'practice');
+            handleTabClick('character');
+            setCharTab('skills');
             executeCommand('practice', true, true, true, true);
             return;
         }

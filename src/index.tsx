@@ -17,6 +17,7 @@ import './styles/effects.css';
 
 import { MainContentLayer } from './components/Layout/MainContentLayer';
 import { HUDClustersLayer } from './components/Layout/HUDClustersLayer';
+import { DrawerManager } from './components/Drawers/DrawerManager';
 import { ModalsLayer } from './components/Layout/ModalsLayer';
 import { AtmosphericLayer } from './components/Layout/AtmosphericLayer';
 import ErrorBoundary from './components/Utility/ErrorBoundary';
@@ -299,6 +300,8 @@ const MudClient = () => {
                         handleInputSwipe={handleInputSwipe}
                     />
                 </ErrorBoundary>
+
+                <DrawerManager />
             </div>
 
             {typeof document !== 'undefined' && createPortal(

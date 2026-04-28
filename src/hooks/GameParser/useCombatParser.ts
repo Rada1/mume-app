@@ -25,12 +25,6 @@ export interface CombatParserDeps {
     playLevelSound?: (options?: { pitch?: number, volume?: number }) => void;
     playHitImpactSound?: (options?: { pitch?: number, volume?: number } | string) => void;
     playOofSound?: () => void;
-    playSlashSound?: () => void;
-    playCleaveSound?: () => void;
-    playSmiteSound?: () => void;
-    playPierceSound?: () => void;
-    playStabSound?: () => void;
-    playArrowHitSound?: () => void;
     setInCombat?: (inCombat: boolean, force?: boolean) => void;
     characterName?: string | null;
     addMessage?: (type: any, text: string) => void;
@@ -194,18 +188,19 @@ export function useCombatParser(deps: CombatParserDeps) {
         const match = checkCombatMatch(lower, isSnoop);
         if (match.isMatch) {
             // Play Sounds
-            if (match.isImpact) {
-                const { verb, modifier } = match;
-                if (match.side === 'opponent' && match.isPlayerTarget) {
-                    if (!isSnoop) deps.playOofSound?.();
-                } else if (match.side === 'player' || match.side === 'groupmate') {
-                    if (verb === 'slash') deps.playSlashSound?.();
-                    else if (verb === 'cleave') deps.playCleaveSound?.();
-                    else if (verb === 'smite') deps.playSmiteSound?.();
-                    else if (verb === 'pierce') deps.playPierceSound?.();
-                    else if (verb === 'stab') deps.playStabSound?.();
-                    else if (verb === 'shoot') deps.playArrowHitSound?.();
-                    else deps.playHitImpactSound?.(modifier);
+            // CONSIDERING USER REQUEST: hit sounds only go off when the line contains a <hit>...</hit> tag.
+            // and just use hit-impact.mp3 for all <hit>...</hit> messages
+            // AND damage lines should play oof.mp3
+            const hasHitTag = cleanLine.includes('<hit>');
+            const hasDamageTag = cleanLine.includes('<damage>');
+
+            if (!isSnoop) {
+                if (hasHitTag) {
+                    deps.playHitImpactSound?.(match.modifier);
+                }
+                
+                if (hasDamageTag) {
+                    deps.playOofSound?.();
                 }
             }
 

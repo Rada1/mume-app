@@ -37,6 +37,7 @@ export const sanitizeMumeHtml = (html: string): string => {
     }
 
     const ALLOWED_TAGS = ['span', 'div', 'p', 'br', 'strong', 'em', 'b', 'i', 'code', 'a', 'img', 'h1', 'h2', 'li'];
+    const STRIP_TAGS = ['header', 'object', 'roomname', 'prompt', 'mume', 'ansi'];
     const ALLOWED_ATTRS = [
         'class', 'style', 'href', 'src', 'alt', 'title', 'draggable',
         'data-id', 'data-mid', 'data-cmd', 'data-context', 'data-action',
@@ -46,7 +47,6 @@ export const sanitizeMumeHtml = (html: string): string => {
 
     try {
         const parser = new DOMParser();
-        // Wrap in a div to ensure we have a single root for innerHTML extraction
         const doc = parser.parseFromString(`<div>${html}</div>`, 'text/html');
         const root = doc.body.firstChild;
 
@@ -57,18 +57,29 @@ export const sanitizeMumeHtml = (html: string): string => {
                 const el = node as Element;
                 const tag = el.tagName.toLowerCase();
 
-                // 1. Check if tag is allowed
+                // 1. Check if tag should be stripped (keep children)
+                if (STRIP_TAGS.includes(tag)) {
+                    while (el.firstChild) {
+                        el.parentNode?.insertBefore(el.firstChild, el);
+                    }
+                    const parent = el.parentNode;
+                    el.remove();
+                    // Don't walk anymore on this removed element, but its children are now siblings of current parent
+                    return;
+                }
+
+                // 2. Check if tag is allowed
                 if (!ALLOWED_TAGS.includes(tag)) {
                     // Remove dangerous tags entirely
-                    if (['script', 'style', 'iframe', 'object', 'embed', 'base', 'link', 'meta'].includes(tag)) {
+                    if (['script', 'style', 'iframe', 'base', 'link', 'meta'].includes(tag)) {
                         el.remove();
                         return;
                     }
-                    // For other unknown tags, we could unwrap them, but in this MUD context,
-                    // we'll just keep them but strip all attributes.
+                    // For other unknown tags, keep them but strip attributes
                 }
 
-                // 2. Clean attributes
+                // 3. Clean attributes
+
                 const attrs = el.attributes;
                 for (let i = attrs.length - 1; i >= 0; i--) {
                     const attr = attrs[i];

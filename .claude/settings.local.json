@@ -10,7 +10,8 @@
       "Bash(find '/c/Users/pwetz/Downloads/mume app/src' -type f \\\\\\(-name *.ts -o -name *.tsx \\\\\\))",
       "Bash(git stash *)",
       "Read(//c/c/Users/pwetz/Downloads/mume app/**)",
-      "Bash(npx vitest *)"
+      "Bash(npx vitest *)",
+      "Bash(node -e ' *)"
     ]
   }
 }

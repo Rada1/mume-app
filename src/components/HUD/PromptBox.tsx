@@ -9,7 +9,7 @@ import './PromptBox.css';
 import { GameStats, CharacterInfo, CombatHealthStatus } from '../../types';
 import { useGame } from '../../context/GameContext';
 import XpTicker from '../Combat/XpTicker';
-import { CombatSliderPopout } from '../Drawers/StatsDrawer/CombatSliderPopout';
+import { CombatSliderPopout } from '../Combat/CombatSliderPopout';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
 import { useActiveVitals, useActiveCombat, useActiveCharacter } from '../../stores/useActiveGameState';
 import { useModeStore } from '../../stores/useModeStore';

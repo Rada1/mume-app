@@ -6,6 +6,7 @@ import {
     OptimisticChange,
     SessionLog, ActivePrompt, SessionSlot
 } from '../../types';
+import { CaptureSession, CaptureType, CaptureController } from '../../types/capture';
 import { useSessionRecorder } from '../../hooks/useSessionRecorder';
 import { useButtons } from '../../hooks/useButtons';
 import { useJoystick } from '../../hooks/useJoystick';
@@ -93,35 +94,33 @@ export interface LogContextType extends LogData {
     handleLogPointerUp: (e: React.PointerEvent) => void;
 }
 
-export type DrawerType = 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'session-log' | 'help' | 'map' | 'settings' | 'library' | 'actions' | 'diagnostic';
+export type DrawerType = 'none' | 'equipment' | 'character' | 'players';
 
 export interface UIContextType {
     ui: {
         drawer: DrawerType;
         isDrawerPeeking: boolean;
-        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map' | 'session-log' | 'help';
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;
         isSetMenuOpen: boolean;
         menuView: 'main' | 'availableSets';
-        peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map' | 'help';
-        showMapperToolbar: boolean;
-        characterTab: 'info' | 'practice' | 'quests';
+        peekingDrawer?: DrawerType;
+        peekingSource?: string;
+        showMapperToolbar?: boolean;
+        managerSelectedSet?: string | null;
+        characterTab?: 'info' | 'practice' | 'quests';
     };
     setUI: Dispatch<SetStateAction<{
         drawer: DrawerType;
         isDrawerPeeking: boolean;
-        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map' | 'session-log' | 'help';
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;
         isSetMenuOpen: boolean;
         menuView: 'main' | 'availableSets';
-        peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map' | 'help';
-        showMapperToolbar: boolean;
-        characterTab: 'info' | 'practice' | 'quests';
         managerSelectedSet: string | null;
+        showMapperToolbar?: boolean;
     }>>;
     popoverState: PopoverState | null;
     setPopoverState: (val: PopoverState | null) => void;
@@ -129,21 +128,23 @@ export interface UIContextType {
     setIsSettingsOpen: (val: boolean) => void;
     isLibraryOpen: boolean;
     setIsLibraryOpen: (val: boolean) => void;
-    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'help';
-    setSettingsTab: (val: 'general' | 'sound' | 'actions' | 'buttons' | 'help') => void;
-    setIsStatsOpen: (open: boolean) => void;
-    setIsCharacterOpen: (open: boolean) => void;
-    setIsEquipmentOpen: (open: boolean) => void;
-    setIsInventoryOpen: (open: boolean) => void;
+    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'help' | 'traits';
+    setSettingsTab: (val: 'general' | 'sound' | 'actions' | 'buttons' | 'help' | 'traits') => void;
     setIsMapExpanded: (open: boolean) => void;
     setIsSetManagerOpen: (open: boolean) => void;
-    setIsPlayersOpen: (open: boolean) => void;
     setManagerSelectedSet: (setId: string | null) => void;
-    handleTabClick: (drawer: 'stats' | 'character' | 'inventory' | 'players' | 'equipment') => void;
+    gearTab: 'worn' | 'inv';
+    setGearTab: (tab: 'worn' | 'inv') => void;
+    playersTab: 'online' | 'nearby' | 'group';
+    setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
+    charTab: 'info' | 'quests' | 'skills';
+    setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
+    handleTabClick: (drawer: 'none' | 'character' | 'players' | 'equipment') => void;
     displayInventoryLines: DrawerLine[];
     displayEqLines: DrawerLine[];
     statsLines: DrawerLine[];
     scoreLines: DrawerLine[];
+    playerLines: DrawerLine[];
     infoLines: DrawerLine[];
     practiceLines: DrawerLine[];
     questLines: DrawerLine[];
@@ -205,9 +206,7 @@ export interface SessionContextType {
         setIsRiding: Dispatch<SetStateAction<boolean>>;
         roomPlayers: import('../../types').GmcpOccupant[];
         roomChars?: Record<number, import('../../types').GmcpOccupant>;
-        setRoomPlayers: Dispatch<SetStateAction<import('../../types').GmcpOccupant[]>>;
         roomNpcs: import('../../types').GmcpOccupant[];
-        setRoomNpcs: Dispatch<SetStateAction<import('../../types').GmcpOccupant[]>>;
         roomItems: import('../../types').GmcpOccupant[];
         setRoomItems: Dispatch<SetStateAction<import('../../types').GmcpOccupant[]>>;
         inventoryLines: DrawerLine[];
@@ -263,6 +262,8 @@ export interface SessionContextType {
         setDiscoveredItems: Dispatch<SetStateAction<string[]>>;
         roomNum: number;
         setRoomNum: (num: number) => void;
+        captureSession: CaptureSession | null;
+        setCaptureSession: Dispatch<SetStateAction<CaptureSession | null>>;
     };
     log: LogData;
     recorder: ReturnType<typeof useSessionRecorder>;
@@ -282,6 +283,7 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     inCombat: boolean;
     roomName: string | null;
     roomDesc: string | null;
+    spectateRoomNum?: number | null;
     commandPreview: string | null;
     setCommandPreview: (val: string | null) => void;
     pendingMove: { dir: string; timestamp: number } | null;
@@ -291,13 +293,13 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     ui: {
         drawer: DrawerType;
         isDrawerPeeking: boolean;
-        peekingDrawer: 'none' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players' | 'map' | 'session-log' | 'help' | 'settings';
+        peekingDrawer: DrawerType;
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;
         isSetMenuOpen: boolean;
         menuView: 'main' | 'availableSets';
-        peekingSource: 'none' | 'inventory' | 'equipment' | 'character' | 'stats' | 'players' | 'map' | 'help' | 'settings';
+        peekingSource: DrawerType;
         showMapperToolbar: boolean;
         characterTab: 'info' | 'practice' | 'quests';
     };
@@ -474,10 +476,6 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     handleDragStart: (e: React.DragEvent) => void;
     handleDragEnd: (e: React.DragEvent) => void;
     mapperRef: RefObject<MapperRef>;
-    handleTabClick: (drawer: 'stats' | 'character' | 'inventory' | 'players' | 'equipment') => void;
-    displayInventoryLines: DrawerLine[];
-    displayEqLines: DrawerLine[];
-    toggleMap: () => void;
 
     // Parser State
     applyOptimisticChange: (change: OptimisticChange) => void;
@@ -491,13 +489,11 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     quests: import('../../types').QuestData;
     setQuests: Dispatch<SetStateAction<import('../../types').QuestData>>;
 
-    captureStage: MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'who' | 'where' | 'container' | 'none'>;
-    isDrawerCapture: MutableRefObject<number>;
-    isSilentCapture: MutableRefObject<number>;
-    isWaitingForStats: MutableRefObject<boolean>;
-    isWaitingForEq: MutableRefObject<boolean>;
-    isWaitingForInv: MutableRefObject<boolean>;
-    pendingDrawerContainerRef: MutableRefObject<{ containerId: string; cmd: 'inventorylist' | 'equipmentlist'; afterId: string } | null>;
+    capture: CaptureController;
+
+    captureSession: CaptureSession | null;
+    setCaptureSession: (val: CaptureSession | null) => void;
+    nextCommandIsSilent: MutableRefObject<boolean>;
 
     // Network & Parser Engines
     telnet: ReturnType<typeof import('../../hooks/useTelnet').useTelnet>;

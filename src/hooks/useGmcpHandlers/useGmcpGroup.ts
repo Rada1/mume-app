@@ -36,17 +36,6 @@ export const useGmcpGroup = ({
 
         if (isYou) {
             if (member.id !== undefined) youIdRef.current = Number(member.id);
-            const explicitWaiting = member.waiting !== undefined ? !!member.waiting : undefined;
-            const posWaiting = member.position !== undefined
-                ? member.position.toLowerCase().includes('waiting')
-                : undefined;
-            const effectiveWaiting = explicitWaiting ?? posWaiting;
-            if (effectiveWaiting !== undefined) {
-                setStats((prev: any) => ({
-                    ...prev,
-                    conditions: { ...prev.conditions, waiting: effectiveWaiting }
-                }));
-            }
             return;
         }
         setGroupMembers(prev => {
@@ -59,29 +48,12 @@ export const useGmcpGroup = ({
         console.log('[GMCP] onGroupUpdate raw:', JSON.stringify(data));
         const updates = normalizeGroupMember(data);
 
-        // Handle player waiting state sync.
-        // MUME signals casting via position: "waiting" in Group data; also support an explicit
-        // boolean 'waiting' field if present. Mirror the same logic used in spectate mode.
-        const explicitWaiting = updates.waiting !== undefined ? !!updates.waiting : undefined;
-        const posWaiting = updates.position !== undefined
-            ? updates.position.toLowerCase().includes('waiting')
-            : undefined;
-        const effectiveWaiting = explicitWaiting ?? posWaiting;
+        const isYou = updates.id === youIdRef.current ||
+                      updates.type === 'you' ||
+                      (characterName && updates.name && updates.name.toLowerCase() === characterName.toLowerCase());
 
-        if (effectiveWaiting !== undefined) {
-            console.log(`[GMCP/Group] Member ${updates.id} waiting state: ${effectiveWaiting} (explicit=${explicitWaiting}, pos=${updates.position})`);
-            const isYou = updates.id === youIdRef.current ||
-                          updates.type === 'you' ||
-                          (characterName && updates.name && updates.name.toLowerCase() === characterName.toLowerCase());
-
-            if (isYou) {
-                console.log(`[GMCP] Syncing player waiting state: ${effectiveWaiting} (id:${updates.id})`);
-                if (updates.id !== undefined) youIdRef.current = Number(updates.id);
-                setStats((prev: any) => ({
-                    ...prev,
-                    conditions: { ...prev.conditions, waiting: effectiveWaiting }
-                }));
-            }
+        if (isYou && updates.id !== undefined) {
+            youIdRef.current = Number(updates.id);
         }
 
         setGroupMembers(prev => prev.map(m => {
@@ -110,19 +82,8 @@ export const useGmcpGroup = ({
         const members = Array.isArray(data) ? data.map(normalizeGroupMember) : [];
         
         const you = members.find(m => m.type === 'you' || (characterName && m.name && m.name.toLowerCase() === characterName.toLowerCase()));
-        if (you) {
-            if (you.id !== undefined) youIdRef.current = Number(you.id);
-            const explicitWaiting = you.waiting !== undefined ? !!you.waiting : undefined;
-            const posWaiting = you.position !== undefined
-                ? you.position.toLowerCase().includes('waiting')
-                : undefined;
-            const effectiveWaiting = explicitWaiting ?? posWaiting;
-            if (effectiveWaiting !== undefined) {
-                setStats((prev: any) => ({
-                    ...prev,
-                    conditions: { ...prev.conditions, waiting: effectiveWaiting }
-                }));
-            }
+        if (you && you.id !== undefined) {
+            youIdRef.current = Number(you.id);
         }
 
         const others = members.filter(m => {

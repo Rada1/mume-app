@@ -5,7 +5,7 @@
 
 export type GameState = 'disconnected' | 'account' | 'playing';
 
-export type CaptureStage = 'none' | 'room' | 'stats' | 'inv' | 'eq' | 'practice' | 'score' | 'container' | 'teleport' | 'who' | 'where' | 'help' | 'info' | 'quest' | 'shop' | 'shop-detail' | 'description' | 'whois' | 'stat';
+export type CaptureStage = import('./capture').CaptureType;
 
 export interface RoomNode {
     id: string;
@@ -188,4 +188,25 @@ export interface SpatButton {
     startY?: number;
     targetX?: number;
     targetY?: number;
+}
+
+export interface DrawerLine {
+    id: string;
+    text: string;
+    html: string;
+    rawText?: string;
+    tokens?: Token[];
+    isHeader?: boolean;
+    isItem?: boolean;
+    isContainer?: boolean;
+    cmd?: string;
+    context?: string;
+    stableId?: string;
+    depth?: number;
+    prefix?: string;
+    prefixHtml?: string;
+    parentItemId?: string;
+    parentItemNoun?: string;
+    entityId?: string;
+    practiceSkill?: any;
 }

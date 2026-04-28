@@ -91,6 +91,11 @@ export const extractNoun = (text: string): string => {
     return noun;
 };
 
+export const isItemNoun = (word: string): boolean => {
+    const noun = extractNoun(word);
+    return noun.length > 1 && noun === word.trim().toLowerCase();
+};
+
 /**
  * Sanitizes a target string for game commands.
  */

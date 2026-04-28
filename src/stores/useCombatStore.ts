@@ -15,7 +15,7 @@ export const useCombatStore = create<CombatStore>((set, get) => ({
 gmcpBus.on('Char.Opponent', (data: any) => {
     if (data?.isSnooped) return;
     const store = useCombatStore.getState();
-    const value = data?.isSnooped !== undefined ? data.data : data;
+    const value = data && typeof data === 'object' && 'data' in data ? data.data : data;
     if (typeof value === 'string') {
         const idNum = parseInt(value, 10);
         if (!isNaN(idNum) && idNum > 0) {
@@ -31,7 +31,7 @@ gmcpBus.on('Char.Opponent', (data: any) => {
 gmcpBus.on('Char.Buffer', (data: any) => {
     if (data?.isSnooped) return;
     const store = useCombatStore.getState();
-    const value = data?.isSnooped !== undefined ? data.data : data;
+    const value = data && typeof data === 'object' && 'data' in data ? data.data : data;
     if (typeof value === 'string') {
         store.setBuffer(value, null);
     } else if (value === null) {

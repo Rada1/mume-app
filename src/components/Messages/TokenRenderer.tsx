@@ -122,7 +122,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
 
                     if (!isRoom) {
                         props['data-id'] = propMetadata?.id || e.entityId;
-                        props['data-cmd'] = propMetadata?.cmd || (isAuto ? (e.metadata?.kind || e.content) : e.content);
+                        props['data-cmd'] = propMetadata?.cmd || e.metadata?.category || (isAuto ? (e.metadata?.kind || e.content) : e.content);
                         props['data-context'] = propMetadata?.context || e.metadata?.context || e.content;
                         if (propMetadata?.kind || e.metadata?.kind) props['data-kind'] = propMetadata?.kind || e.metadata?.kind;
                         if (propMetadata?.location || e.metadata?.location) props['data-location'] = propMetadata?.location || e.metadata?.location;

@@ -113,6 +113,7 @@ export const AUDIO_MANIFEST = {
         'commbubble': { path: '/assets/Sounds/SoundEffects/commbubble.mp3' },
         'door1': { path: '/assets/Sounds/SoundEffects/door1.wav' },
         'hit-impact': { path: '/assets/Sounds/SoundEffects/hit-impact.mp3' },
+        'hit2': { path: '/assets/Sounds/SoundEffects/hit2.mp3' },
         'incantations': { path: '/assets/Sounds/SoundEffects/incantations.mp3' },
         'kill': { path: '/assets/Sounds/SoundEffects/kill.wav' },
         'level': { path: '/assets/Sounds/SoundEffects/level.wav' },

@@ -58,6 +58,8 @@
 .modals-layer-wrapper .popover-menu,
 .modals-layer-wrapper .modal,
 .modals-layer-wrapper .floating-card-container,
+.modals-layer-wrapper .desktop-drawer-tabs,
+.modals-layer-wrapper .drawer-backdrop.open,
 .modals-layer-wrapper .standard-menu-popover,
 .modals-layer-wrapper .map-drawer-desktop {
     pointer-events: auto;
@@ -175,7 +177,10 @@
 .sticky-room-header {
     position: relative;
     z-index: var(--z-room-header); /* Lowered to clear HUD clusters and popovers */
-    background: rgba(15, 17, 28, 0.7) !important;
+    background: linear-gradient(rgba(15, 17, 28, 0.7), rgba(15, 17, 28, 0.7)), url('/assets/Pictures/background.png') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     margin: 6px 24px 0 24px;
@@ -219,8 +224,8 @@
 .sticky-room-header .room-desc {
     font-family: var(--font-main);
     /* Scale font so 80 monospace chars fit the container width (minus padding).
-       Monospace char ≈ 0.6em wide → 80 chars = 48em → fontSize = availableWidth / 48 */
-    font-size: var(--dynamic-log-size, 13px);
+       Using divisor of 50 to be conservative (approx 0.625em per char) */
+    font-size: clamp(8px, calc((100cqw - 30px) / 50), 16px) !important;
     font-style: italic;
     color: #e2e8f0;
     max-width: 80ch;
@@ -355,7 +360,7 @@
     }
 
     .sticky-room-header .room-desc {
-        font-size: clamp(7px, calc((100cqw - 20px) / 48), 14px) !important;
+        font-size: clamp(7px, calc((100cqw - 20px) / 50), 14px) !important;
         line-height: 1.25;
         letter-spacing: normal;
     }

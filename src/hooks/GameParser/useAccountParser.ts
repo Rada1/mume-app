@@ -236,8 +236,9 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             trimmedLine.includes('The music of the Ainur') ||
             trimmedLine.includes('Now entering the game') ||
             trimmedLine.includes('MUME III') ||
+            trimmedLine.includes('Reconnecting to') ||
             trimmedLine.includes('Connected to MUME')) {
-            if (addMessage) addMessage('game', `\x1b[33m${line}\x1b[0m`);
+            console.log('[AccountParser] Transitioning to playing state');
             setGameState('playing');
             setAccountState(prev => ({ ...prev, stage: 'none' }));
             setIsPasswordMode(false);

@@ -1,22 +1,14 @@
+/**
+ * @file useMessageRouter.ts
+ * @description Logic for determining message visibility and routing to various UI logs.
+ */
+
 import { useCallback } from 'react';
-import { useRoomStore } from '../../stores/useRoomStore';
-import { CaptureStage, InlineCategoryConfig, GmcpOccupant, EntityLocation, GameEntity } from '../../types';
-import { getCategoryForName } from '../../utils/categorizationUtils';
+import { InlineCategoryConfig, DrawerType } from '../../types';
 
 interface MessageRouterDeps {
-    captureStage: React.MutableRefObject<CaptureStage>;
-    isSilentCapture: React.MutableRefObject<number>;
-    isDrawerCapture: React.MutableRefObject<number>;
-    captureOwnerDrawer: React.MutableRefObject<'none' | 'stat' | 'eq' | 'inv' | 'practice' | 'who' | 'where' | 'container' | 'stats' | 'equipment' | 'inventory' | 'character' | 'players'>;
-    isInventoryOpen: boolean;
-    isEquipmentOpen: boolean;
-    isCharacterOpen: boolean;
-    isStatsOpen: boolean;
-    isPlayersOpen: boolean;
-    isWaitingForInv: React.MutableRefObject<boolean>;
-    isWaitingForEq: React.MutableRefObject<boolean>;
-    isWaitingForStats: React.MutableRefObject<boolean>;
-    isWaitingForInfo: React.MutableRefObject<boolean>;
+    capture: import('../../types/capture').CaptureController;
+    drawer: DrawerType;
     setWhoList: (val: string[] | ((prev: string[]) => string[])) => void;
     setWhereList: (val: any[] | ((prev: any[]) => any[])) => void;
     setRoomItems: React.Dispatch<React.SetStateAction<import('../../types').GmcpOccupant[]>>;
@@ -32,152 +24,81 @@ interface MessageRouterDeps {
 
 export const useMessageRouter = (deps: MessageRouterDeps) => {
     const {
-        captureStage, isSilentCapture, isDrawerCapture, captureOwnerDrawer,
-        isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen,
-        isWaitingForInv, isWaitingForEq, isWaitingForStats, isWaitingForInfo,
-        setWhoList, setWhereList, setRoomItems, registerEntity, setCharacterInfo, setDiscoveredItems, extractNoun, ansiConvert,
-        playerPosition, inlineCategories, isSpectateMode
+        capture,
+        drawer,
+        setWhoList, setWhereList, setRoomItems, registerEntity, setDiscoveredItems, extractNoun,
+        playerPosition, isSpectateMode
     } = deps;
 
     const determineVisibility = useCallback((lower: string, isImportantMessage: boolean, isRoomContent: boolean, isRoomDescription: boolean, isEndPrompt: boolean, isNewbieMode: boolean, cleanLine: string, isRoomWindow?: boolean, isSnoop?: boolean) => {
         // --- Snoop Visibility ---
-        // Snooped data should always be visible in its own log, bypassing user-side suppression
         if (isSnoop) return true;
 
         // --- Sleeping Suppression ---
-        // If the player is sleeping, suppress weather and lighting updates
         if (playerPosition === 'sleeping') {
             const isWeatherOrLighting = /starts to (rain|snow)|it is (raining|snowing|foggy)|rain stops|snow stops|clouds disappear|starts to fog|fog has (thinned|thickened|lifted|dissipated|disappeared)|thick fog covers|disappears into the fog|flash of lightning|lightning illuminates/i.test(lower);
             if (isWeatherOrLighting) return false;
         }
 
         let isDrawerHiding = false;
+        const stage = capture.getActiveType();
+        const fromDrawer = capture.isFromDrawer();
+        const isSilent = capture.isSilent();
 
-        const stage = captureStage.current as any;
-        // Use captureOwnerDrawer (stamped when the capture started) so that
-        // visibility decisions are stable even if the user switches drawers
-        // while a capture is in flight.
-        const owner = captureOwnerDrawer.current;
-        const ownerIsInventory = owner === 'inventory';
-        const ownerIsEquipment = owner === 'equipment';
-        const ownerIsCharacter = owner === 'character';
-        const ownerIsStats = owner === 'stats';
-        const ownerIsPlayers = owner === 'players';
+        // Check if current capture session should hide this line from the main log.
+        if (capture.hasSession()) {
+            const drawerMatchesCapture =
+                ((stage === 'inventory' || stage === 'equipment') && drawer === 'equipment') ||
+                (['stats', 'info', 'quests', 'whois', 'practice'].includes(stage) && drawer === 'character') ||
+                (['who', 'where'].includes(stage) && drawer === 'players');
 
-        if (stage !== 'none') {
-            if (stage === 'inv' && (ownerIsInventory || isInventoryOpen)) isDrawerHiding = true;
-            else if (stage === 'eq' && (ownerIsInventory || ownerIsEquipment || ownerIsCharacter || isInventoryOpen || isEquipmentOpen || isCharacterOpen)) isDrawerHiding = true;
-            else if (stage === 'stat' && (ownerIsStats || ownerIsCharacter || isStatsOpen || isCharacterOpen)) isDrawerHiding = true;
-            else if (['info', 'quest', 'whois'].includes(stage) && (ownerIsCharacter || isCharacterOpen)) isDrawerHiding = true;
-            else if (stage === 'practice' && (ownerIsCharacter || isCharacterOpen || isSilentCapture.current > 0 || isDrawerCapture.current > 0)) isDrawerHiding = true;
-            else if (stage === 'container' && (isDrawerCapture.current > 0 || isSilentCapture.current > 0)) isDrawerHiding = true;
-            else if (['who', 'where'].includes(stage) && (ownerIsPlayers || isPlayersOpen)) isDrawerHiding = true;
-            else if (stage === 'shop' || stage === 'help') isDrawerHiding = true;
-        } else if (isSilentCapture.current > 0 || isDrawerCapture.current > 0) {
-            if (/you are carrying|your inventory contains/i.test(lower) && (ownerIsInventory || isInventoryOpen)) isDrawerHiding = true;
-            if ((/you are (using|equipped with)/i.test(lower) || /ob:|armor:|mood:|str:|exp:|level:/i.test(lower) || /practice sessions left/i.test(lower)) && (ownerIsCharacter || isCharacterOpen)) isDrawerHiding = true;
-            if (/ob:|armor:|mood:|str:|exp:|level:/i.test(lower) && (ownerIsStats || isStatsOpen)) isDrawerHiding = true;
-            if ((lower === 'who' || lower === 'where') && (ownerIsPlayers || isPlayersOpen)) isDrawerHiding = true;
-            if (isEndPrompt) {
-                 if ((ownerIsInventory || ownerIsEquipment || isInventoryOpen || isEquipmentOpen) && (isWaitingForInv.current || isWaitingForEq.current)) isDrawerHiding = true;
-                 if ((ownerIsCharacter || isCharacterOpen) && (isWaitingForStats.current || isWaitingForEq.current || isWaitingForInfo.current || captureStage.current === 'practice' || captureStage.current === 'info' || captureStage.current === 'quest' || captureStage.current === 'shop')) isDrawerHiding = true;
-                 if ((ownerIsStats || isStatsOpen) && isWaitingForStats.current) isDrawerHiding = true;
-                 if ((ownerIsPlayers || isPlayersOpen) && captureStage.current === 'none') isDrawerHiding = true;
-            }
-            // Fallback: if silent commands are in flight (isSilentCapture > 0)
-            // but no capture stage has started, this is likely a stale response
-            // from a previous drawer whose waiting flags were cleared on switch.
-            // Suppress it so it doesn't leak into the log. Important messages
-            // and room content still pass through via the isDrawerHiding check below.
-            if (!isDrawerHiding && isSilentCapture.current > 0 && owner !== 'none') {
-                isDrawerHiding = true;
-            }
+            if (stage === 'equipment' && drawer === 'character') isDrawerHiding = true;
+            else if (drawerMatchesCapture) isDrawerHiding = true;
+            else if (fromDrawer) isDrawerHiding = true;
+            else if (stage === 'practice' && isSilent) isDrawerHiding = true;
+            else if (stage === 'container' && (fromDrawer || isSilent)) isDrawerHiding = true;
+            else if (stage === 'score' || stage === 'help') isDrawerHiding = true;
+            
+            // Safety: if silent capture is active but no specific hiding logic triggered yet
+            if (!isDrawerHiding && isSilent) isDrawerHiding = true;
         }
 
         // --- Final Visibility Calculation ---
-        // 1. If currently capturing for an open drawer, hide unless it's a critical message/room name
         if (isDrawerHiding) {
             return isImportantMessage || isRoomContent;
         }
 
-        // 3. Spacing: Always show truly empty lines to preserve game pacing/formatting
-        // unless we are specifically in a capture mode or hiding drawer content.
-        if (lower === '' && !isDrawerHiding && isSilentCapture.current === 0 && isDrawerCapture.current === 0 && captureStage.current === 'none') {
+        // Spacing: Always show truly empty lines to preserve game pacing
+        if (lower === '' && !capture.hasSession()) {
             return true;
         }
 
-        // 2. Normal visibility: not silent OR it's a special high-priority message
         // Bypassing silence for who/where lists to ensure they appear in the log when manually typed
         const isWhoWhereList = (stage === 'who' || stage === 'where');
         const classicBypass = (!isNewbieMode && isRoomWindow);
-        const isVisibleResult = (isSilentCapture.current === 0) || isWhoWhereList || isImportantMessage || isRoomContent || isRoomDescription || classicBypass;
-        if (!isVisibleResult) console.log(`[MessageRouter] Filtered line: "${cleanLine.substring(0, 30)}..." (silent=${isSilentCapture.current}, important=${isImportantMessage})`);
+        const isVisibleResult = !isSilent || isWhoWhereList || isImportantMessage || isRoomContent || isRoomDescription || classicBypass;
+        
         return isVisibleResult;
-    }, [captureStage, isSilentCapture, isDrawerCapture, isInventoryOpen, isEquipmentOpen, isCharacterOpen, isStatsOpen, isPlayersOpen, isWaitingForInv, isWaitingForEq, isWaitingForStats, isWaitingForInfo, playerPosition]);
+    }, [capture, drawer, playerPosition]);
 
     const routeMessage = useCallback((msgType: string, textOnly: string, lower: string, cleanLine: string, attachedText: string, isMatch: boolean, isSnoop?: boolean) => {
         let finalType = msgType;
-        // Snooped lines should never be captured by the user's current drawer stage
-        const stage = isSnoop ? 'none' : captureStage.current;
-        console.log(`[useMessageRouter] routeMessage: stage=${stage}, isSnoop=${isSnoop}, text="${textOnly.substring(0, 30)}"`);
-
         const trimmed = textOnly.trim();
-        if (stage === 'who' && trimmed !== 'who:' && trimmed.toLowerCase() !== 'allies' && trimmed.toLowerCase() !== 'minions' && trimmed.toLowerCase() !== 'players' && !trimmed.startsWith('---')) finalType = 'who-list';
-        else if (stage === 'where' && !trimmed.startsWith('Player') && !trimmed.startsWith('Who') && !trimmed.startsWith('---')) finalType = 'where-list';
-        else if (stage === 'eq') finalType = 'equipmentlist';
-        else if (stage === 'inv') finalType = 'inventorylist';
-        else if (lower.startsWith('exits:')) finalType = 'room-exits';
-        // In spectate mode, lines starting with >, [, or ( are usually commanded actions from the spectated player
+        
+        if (lower.startsWith('exits:')) finalType = 'room-exits';
         else if (isSpectateMode && isSnoop && (trimmed.startsWith('>') || (trimmed.startsWith('[') && trimmed.endsWith(']')) || (trimmed.startsWith('(') && trimmed.endsWith(')'))) && trimmed.length > 1) finalType = 'snoop-command';
         else if (isMatch && attachedText.length <= 2) finalType = 'prompt';
         else if (lower.startsWith('you go ') || lower.includes(' leaves ') || lower.includes(' arrives from ') || lower.includes(' arrived from ') || lower.includes(' flees ') || lower.includes(' fled ') || lower.includes(' panics') || lower.includes(' attempts') || lower.includes('alas, you cannot go that way') || lower.includes('there is no exit')) finalType = 'move';
 
-        if (finalType === 'who-list') {
-            // MUME names are usually 3-15 chars.
-            // We use a stricter regex that anchors to the start of the line (after possible flags/spaces).
-            const nameMatch = textOnly.match(/^(?:\s*[*<>|\s]|\[.*?\]|<.*?>)*\s*([A-Z\u00C0-\u00DF][a-zA-Z\u00C0-\u00FF]{1,15})/);
-            
-            if (nameMatch && nameMatch[1].length > 1) {
-                const name = nameMatch[1];
-                const lowerName = name.toLowerCase();
-                
-                // Exclude common header words and description words
-                const exclusions = [
-                    'players', 'allies', 'minions', 'enemies', 'neutral', 'unknown', 
-                    'total', 'online', 'matches', 'showing', 'who', 'where',
-                    'garden', 'ainur', 'little', 'the', 'room', 'exits',
-                    'north', 'south', 'east', 'west', 'up', 'down',
-                    'you', 'are', 'standing', 'resting', 'sleeping', 'sitting',
-                    'fighting', 'incapacitated', 'mortally', 'dead',
-                    'this', 'that', 'there', 'here', 'some', 'a', 'an'
-                ];
-
-                if (!exclusions.includes(lowerName)) {
-                    // IMPORTANT: Do NOT trim() here, as leading spaces are used for alignment
-                    const htmlDisplay = ansiConvert.toHtml(cleanLine);
-                    setWhoList(prev => [...prev, `${htmlDisplay}|${name}`]);
-                }
-            }
-        } else if (finalType === 'where-list') {
-            const parts = textOnly.trim().split(/\s{2,}/);
-            const name = parts[0]?.trim().replace(/^-\s*/, '');
-            if (name && /^[A-Z\u00C0-\u00DF]/.test(name) && name.length > 1) setWhereList(prev => [...prev, { name, room: parts.slice(1).join(' ').replace(/^-\s*/, '').trim() || '' }]);
-        } else if (stage === 'whois') setCharacterInfo((prev: any) => ({ ...prev, whois: (prev.whois || '') + textOnly + '\n' }));
-
         return finalType;
-    }, [captureStage, setWhoList, setWhereList, setCharacterInfo, ansiConvert, isSpectateMode]);
+    }, [isSpectateMode]);
 
     const detectItemsInRoom = useCallback((textOnly: string, cleanLine: string, isDrawerHiding: boolean) => {
-        if (captureStage.current !== 'none' || isDrawerHiding) return;
+        if (capture.hasSession() || isDrawerHiding) return;
 
-        // --- MUME Specific Signal Identification (&355 / ANSI Color 159) ---
-        // Look for \x1b[38;5;159m sequences which precede objects
         const objects: string[] = [];
-        const objectMatchRe = /\x1b\[38(?:;5;159|;5;159;1|;1;38;5;159|;5;159;[0-9]+|;[0-9]+;38;5;159)m([^\x1b]+)/g;
-        // Simpler regex to catch variations of SGR sequences containing 38;5;159
-        // Example: \x1b[1;38;5;159m
-        let match;
         const colorSequenceMatcher = /\x1b\[[0-9;]*38;5;159[0-9;]*m([^\x1b]+)/g;
+        let match;
         while ((match = colorSequenceMatcher.exec(cleanLine)) !== null) {
             const name = match[1].trim();
             if (name.length > 1 && !name.includes(' - ') && !name.includes('Obvious exits')) {
@@ -185,47 +106,36 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
             }
         }
 
-        // --- Generic Fallback (e.g. A carrot is here) ---
         if (objects.length === 0) {
-            // Refined regex to ensure the object name itself isn't just a filler word
             const itemMatch = textOnly.match(/^(?:A|An|The|Some|a|an|the|some)\s+(.+?)\s+(?:is|are)\s+here\s*[.!]?$/i);
             if (itemMatch) {
                 const potentialName = itemMatch[1].trim();
-                // Avoid matching "You are here" (if snoop prefix missed) or "It is here"
                 if (!/^(you|it|they|he|she|to|at|here)$/i.test(potentialName)) {
                     objects.push(potentialName);
                 }
             }
         }
 
-        // --- Add Identified Objects to Tracker ---
         const skipNouns = /^(here|to|at|is|are|the|some|you|it|from|with|in|on|by)$/i;
         objects.forEach(objName => {
             const noun = extractNoun(objName);
             if (noun && noun.length > 2 && !skipNouns.test(noun)) {
-                // Add to discovered items for highlighter
                 setDiscoveredItems(prev => Array.from(new Set([...prev, noun])));
-                
-                // Add to roomItems for tracking
                 setRoomItems(prev => {
                     const alreadyExists = prev.some(item => 
-                        (typeof item === 'string' ? item : item.name) === objName || 
-                        (typeof item === 'object' && item.name === objName)
+                        (typeof item === 'string' ? item : item.name) === objName
                     );
                     if (alreadyExists) return prev;
                     
                     const newItem = { name: objName, short: objName, id: `roomitems:${objName}` };
-                    // Ensure it is registered so clicking the tag works with accurate theme and buttons
-                    const specCat = getCategoryForName(objName, deps.inlineCategories);
-                    registerEntity(`roomitems:${objName}`, objName, 'room', specCat || 'inline-obj-room');
-                    
+                    registerEntity(`roomitems:${objName}`, objName, 'room', 'inline-obj-room');
                     return [...prev, newItem];
                 });
             }
         });
 
         return objects;
-    }, [captureStage, extractNoun, setDiscoveredItems, setRoomItems, registerEntity]);
+    }, [capture, extractNoun, setDiscoveredItems, setRoomItems, registerEntity]);
 
     return { determineVisibility, routeMessage, detectItemsInRoom };
 };

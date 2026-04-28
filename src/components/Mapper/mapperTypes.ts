@@ -62,6 +62,7 @@ export interface MapperRef {
     stableRoomIdRef: React.MutableRefObject<string | null>;
     stableRoomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
+    serverIdIndexRef?: React.MutableRefObject<Record<string, string>>;
 }
 
 export interface MapperProps {

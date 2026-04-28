@@ -32,8 +32,6 @@ export const useGmcpRoom = ({
     setRoomDesc,
     setRoomZone,
     setRoomExits,
-    setRoomPlayers,
-    setRoomNpcs,
     setRoomItems,
     setRoomChars,
     setDiscoveredItems,
@@ -110,7 +108,7 @@ export const useGmcpRoom = ({
                 playMovementSound(isRiding);
             }
         }
-    }, [mapperRef, setCurrentTerrain, setRoomName, setRoomDesc, setRoomExits, setRoomZone, setRoomPlayers, setRoomNpcs, setRoomItems, setRoomChars, setDiscoveredItems, playMovementSound, isSpectateMode, detectLighting, isRidingRef, playerPositionRef, lastRoomChangeTimeRef, lastRoomNumRef, lastExitsRef, roomDescRef, sendGMCP]);
+    }, [mapperRef, setCurrentTerrain, setRoomName, setRoomDesc, setRoomExits, setRoomZone, setRoomItems, setRoomChars, setDiscoveredItems, playMovementSound, isSpectateMode, detectLighting, isRidingRef, playerPositionRef, lastRoomChangeTimeRef, lastRoomNumRef, lastExitsRef, roomDescRef, sendGMCP]);
 
     const onRoomUpdateExits = useCallback((data: GmcpUpdateExits) => {
         if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-gmcp-room-exits', { detail: data }));

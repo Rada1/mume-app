@@ -16,6 +16,7 @@ export type EntityKind =
     | 'npc' 
     | 'player' 
     | 'object' 
+    | 'room'
     | 'exit' 
     | 'control'  // UI/meta-elements like account buttons or quests
     | 'none';
@@ -63,6 +64,7 @@ export interface GameEntity {
     originalId?: string; // If it's a proxy from GMCP Room.Occupants
     name: string;
     category?: string;
+    kind?: EntityKind;
     level?: number;
     noun: string;
     location: EntityLocation;

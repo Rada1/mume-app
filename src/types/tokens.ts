@@ -30,6 +30,7 @@ export interface EntityToken extends BaseToken {
         menuDisplay?: string;
         extraClasses?: string[];
         style?: React.CSSProperties;
+        glowColor?: string;
     };
 }
 

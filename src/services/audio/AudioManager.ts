@@ -448,8 +448,8 @@ export class AudioManager {
 
     public async playIncantation() {
         if (!this._isSoundEnabled || !this.audioCtx) return;
-        if (this.activeAmbients.has('incantation')) return;
-
+        
+        // No longer preventing multiple incantations; let them overlap if they happen fast
         const config = AUDIO_MANIFEST.effects['incantations'];
         const buffer = await this.loadBuffer(config.path);
         if (!buffer) return;
@@ -457,7 +457,7 @@ export class AudioManager {
         const ctx = this.audioCtx;
         const source = ctx.createBufferSource();
         source.buffer = buffer;
-        source.loop = true;
+        source.loop = false; // No looping
         source.playbackRate.value = 1.5 + (Math.random() * 0.1 - 0.05);
 
         const filter = ctx.createBiquadFilter();
@@ -466,22 +466,22 @@ export class AudioManager {
 
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(this.getEffectiveVolume(0.7, true), ctx.currentTime + 0.3);
+        gain.gain.linearRampToValueAtTime(this.getEffectiveVolume(0.7, true), ctx.currentTime + 0.1);
 
         source.connect(filter);
         filter.connect(gain);
         gain.connect(ctx.destination);
         source.start(0);
 
-        this.activeAmbients.set('incantation', {
-            source, gain, filter, url: config.path, key: 'incantations', pauseOffset: 0, startTime: ctx.currentTime
-        });
+        // We don't need to track it as an active ambient anymore if it's one-shot
+        // but keeping the stopIncantation compatibility for now if needed.
+        // Actually, better to just let it finish.
     }
 
     public stopIncantation(playExplosion: boolean = false) {
+        if (playExplosion) this.playEffect('magicexplosion', { volume: 1.5 });
         const active = this.activeAmbients.get('incantation');
         if (active) {
-            if (playExplosion) this.playEffect('magicexplosion', { volume: 1.5 });
             this.fadeOutAndStop(active.source, active.gain, active.filter, 0.1);
             this.activeAmbients.delete('incantation');
         }

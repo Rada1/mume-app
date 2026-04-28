@@ -136,3 +136,5 @@ export interface CustomButton {
     duration?: number;
     mid?: string;
 }
+
+export type DrawerType = 'none' | 'character' | 'players' | 'equipment';

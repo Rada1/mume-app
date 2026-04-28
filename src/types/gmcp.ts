@@ -150,13 +150,13 @@ export interface GroupMember {
     room?: string;
     position?: string;
     fighting?: boolean;
+    waiting?: boolean;
     bashed?: boolean;
     poison?: boolean;
     wound?: boolean;
     blind?: boolean;
     snared?: boolean;
     slept?: boolean;
-    waiting?: boolean;
     sanctuary?: boolean;
     hungry?: boolean;
     thirsty?: boolean;

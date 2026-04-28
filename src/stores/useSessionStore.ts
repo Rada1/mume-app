@@ -26,24 +26,6 @@ interface SessionState {
     replayHUDState: ReplayHUDState;
     isSilentReplay: boolean;
     
-    // Callback functions for replayer injection
-    roomInfoFn?: (data: any) => void;
-    roomExitsFn?: (data: any) => void;
-    charVitalsFn?: (data: any) => void;
-    roomPlayersFn?: (data: any) => void;
-    roomNpcsFn?: (data: any) => void;
-    roomItemsFn?: (data: any) => void;
-    addPlayerFn?: (data: any) => void;
-    addNpcFn?: (data: any) => void;
-    removePlayerFn?: (data: any) => void;
-    removeNpcFn?: (data: any) => void;
-    opponentChangeFn?: (name: string | null) => void;
-    commFn?: (sender: string, chan: string, msg: string) => void;
-    groupAddFn?: (data: any) => void;
-    groupUpdateFn?: (data: any) => void;
-    groupRemoveFn?: (id: number) => void;
-    groupSetFn?: (data: any[]) => void;
-
     // Replayer Controls
     isPlaying: boolean;
     currentTime: number;
@@ -67,23 +49,6 @@ interface SessionState {
     setTrimRange: (range: [number | null, number | null]) => void;
     setReplayerState: (state: Partial<Pick<SessionState, 'isPlaying' | 'currentTime' | 'duration' | 'playbackSpeed' | 'currentIndex' | 'searchResults' | 'trimRange'>>) => void;
     
-    // Setter actions for functions
-    setRoomInfoFn: (fn: (data: any) => void) => void;
-    setRoomExitsFn: (fn: (data: any) => void) => void;
-    setCharVitalsFn: (fn: (data: any) => void) => void;
-    setRoomPlayersFn: (fn: (data: any) => void) => void;
-    setRoomNpcsFn: (fn: (data: any) => void) => void;
-    setRoomItemsFn: (fn: (data: any) => void) => void;
-    setAddPlayerFn: (fn: (data: any) => void) => void;
-    setAddNpcFn: (fn: (data: any) => void) => void;
-    setRemovePlayerFn: (fn: (data: any) => void) => void;
-    setRemoveNpcFn: (fn: (data: any) => void) => void;
-    setOpponentChangeFn: (fn: (name: string | null) => void) => void;
-    setCommFn: (fn: (sender: string, chan: string, msg: string) => void) => void;
-    setGroupAddFn: (fn: (data: any) => void) => void;
-    setGroupUpdateFn: (fn: (data: any) => void) => void;
-    setGroupRemoveFn: (fn: (id: number) => void) => void;
-    setGroupSetFn: (fn: (data: any[]) => void) => void;
 }
 
 const initialReplayHUDState: ReplayHUDState = {
@@ -129,20 +94,4 @@ export const useSessionStore = create<SessionState>((set) => ({
     setTrimRange: (trimRange) => set({ trimRange }),
     setReplayerState: (state) => set((prev) => ({ ...prev, ...state })),
 
-    setRoomInfoFn: (roomInfoFn) => set({ roomInfoFn }),
-    setRoomExitsFn: (roomExitsFn) => set({ roomExitsFn }),
-    setCharVitalsFn: (charVitalsFn) => set({ charVitalsFn }),
-    setRoomPlayersFn: (roomPlayersFn) => set({ roomPlayersFn }),
-    setRoomNpcsFn: (roomNpcsFn) => set({ roomNpcsFn }),
-    setRoomItemsFn: (roomItemsFn) => set({ roomItemsFn }),
-    setAddPlayerFn: (addPlayerFn) => set({ addPlayerFn }),
-    setAddNpcFn: (addNpcFn) => set({ addNpcFn }),
-    setRemovePlayerFn: (removePlayerFn) => set({ removePlayerFn }),
-    setRemoveNpcFn: (removeNpcFn) => set({ removeNpcFn }),
-    setOpponentChangeFn: (opponentChangeFn) => set({ opponentChangeFn }),
-    setCommFn: (commFn) => set({ commFn }),
-    setGroupAddFn: (groupAddFn) => set({ groupAddFn }),
-    setGroupUpdateFn: (groupUpdateFn) => set({ groupUpdateFn }),
-    setGroupRemoveFn: (groupRemoveFn) => set({ groupRemoveFn }),
-    setGroupSetFn: (groupSetFn) => set({ groupSetFn }),
 }));

@@ -125,6 +125,7 @@ export const useEntityRegistry = () => {
 
     return {
         entities,
+        entitiesRef,
         setEntities,
         registerEntity,
         getEntity,

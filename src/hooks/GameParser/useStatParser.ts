@@ -4,7 +4,7 @@
  */
 
 import { useCallback } from 'react';
-import { GameStats, CharacterInfo, CaptureStage } from '../../types';
+import { GameStats, CharacterInfo } from '../../types';
 
 export interface StatParserDeps {
     setMood: (val: string) => void;
@@ -12,7 +12,7 @@ export interface StatParserDeps {
     setCharacterInfo: (val: CharacterInfo | ((prev: CharacterInfo) => CharacterInfo)) => void;
     inCombatRef: React.RefObject<boolean>;
     executeCommandRef: React.RefObject<(cmd: string, ...args: any[]) => void>;
-    captureStage: React.MutableRefObject<CaptureStage>;
+    capture: import('../../types/capture').CaptureController;
 }
 
 export function useStatParser(deps: StatParserDeps) {
@@ -22,7 +22,7 @@ export function useStatParser(deps: StatParserDeps) {
         setCharacterInfo,
         inCombatRef,
         executeCommandRef,
-        captureStage
+        capture
     } = deps;
 
     const parseGlobalStatus = useCallback((content: string, contentLower: string) => {
@@ -41,7 +41,7 @@ export function useStatParser(deps: StatParserDeps) {
                     setMood(moodValue.toLowerCase());
                     const isMoodChange = /your mood is now/i.test(content);
                     if (isMoodChange && inCombatRef.current && executeCommandRef.current) {
-                        setTimeout(() => executeCommandRef.current?.('stat', true, true, true, true), 100);
+                        setTimeout(() => (executeCommandRef.current as any)?.('stat', true, true, true, true), 100);
                     }
                 }
 
@@ -57,7 +57,7 @@ export function useStatParser(deps: StatParserDeps) {
             }
         }
 
-        // --- NEW REBUILT GOLD PARSER ---
+        // --- GOLD PARSER ---
         const trimmed = content.trim();
         const isRawNumeric = /^\d+$/.test(trimmed);
         const hasGoldKeywords = contentLower.includes('gold') || contentLower.includes('silver') || contentLower.includes('copper') ||
@@ -65,10 +65,8 @@ export function useStatParser(deps: StatParserDeps) {
         
         if (hasGoldKeywords || isRawNumeric) {
             if (isRawNumeric) {
-                // If the output is a raw number (e.g. "114"), per user instruction this is Gold (1g = 240c)
                 const g = parseInt(trimmed);
                 const total = g * 240;
-                console.log(`[GoldParser] REBUILT (Raw): Detected ${g} gold (${total} total copper) from line: "${trimmed}"`);
                 setCharacterInfo(prev => ({ ...prev, gold: total }));
                 return true;
             }
@@ -83,8 +81,6 @@ export function useStatParser(deps: StatParserDeps) {
                 const s = silverM ? parseInt(silverM[1]) : 0;
                 const c = copperM ? parseInt(copperM[1]) : 0;
                 const total = (g * 240) + (s * 12) + c;
-                
-                console.log(`[GoldParser] REBUILT (Keywords): Detected ${g}g, ${s}s, ${c}c (Total: ${total}) from line: "${content.trim()}"`);
                 setCharacterInfo(prev => ({ ...prev, gold: total }));
                 return true;
             }
@@ -93,10 +89,7 @@ export function useStatParser(deps: StatParserDeps) {
         return false;
     }, [setMood, setStats, setCharacterInfo, inCombatRef, executeCommandRef]);
 
-    const parseDetailedScore = useCallback((textOnly: string, lower: string) => {
-        // Matches both "87(98) hits, 46(130) mana and 120(140) moves."
-        // and "87/98 hits, 46/130 mana and 120(140) moves."
-        // The regex handles (max) or /max formats.
+    const parseDetailedScore = useCallback((textOnly: string, _lower: string) => {
         const verboseRegex = /(\d+)[\/\(](\d+)[\)]?\s+hits(?:,?\s+(\d+)[\/\(](\d+)[\)]?\s+mana)?,?\s+and\s+(\d+)[\/\(](\d+)[\)]?\s+moves/i;
         const match = textOnly.match(verboseRegex);
         
@@ -108,8 +101,6 @@ export function useStatParser(deps: StatParserDeps) {
             const maxMana = hasMana ? parseInt(match[4]) : undefined;
             const move = parseInt(match[5]);
             const maxMove = parseInt(match[6]);
-
-            console.log(`[StatParser] Detailed Score Match: hp=${hp}/${maxHp}, mana=${mana}/${maxMana}, move=${move}/${maxMove}`);
 
             setStats(prev => ({
                 ...prev,
@@ -124,7 +115,6 @@ export function useStatParser(deps: StatParserDeps) {
         }
         return false;
     }, [setStats]);
-
 
     return { parseGlobalStatus, parseDetailedScore };
 }

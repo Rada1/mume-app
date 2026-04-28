@@ -1,16 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Mapper } from '../../Mapper/Mapper';
 import { LineCluster } from './LineCluster';
 import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { GameContextType, UIContextType } from '../../../context/GameContext/types';
-import { useMapper } from '../../../context/useMapper';
-import { CloudFog, Map as MapIcon, User, Shield, Users, BarChart2, UtensilsCrossed, Droplets } from 'lucide-react';
+import { CloudFog, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplets } from 'lucide-react';
 import InputArea from '../../Controls/InputArea';
-import { GutterShell } from '../../Drawers/GutterShell';
-import { StatsView } from '../../Drawers/Views/StatsView';
-import { CharacterView } from '../../Drawers/Views/CharacterView';
-import { PlayersView } from '../../Drawers/Views/PlayersView';
-import { InventoryView } from '../../Drawers/Views/InventoryView';
+import { UnifiedDrawerContent } from '../../Drawers/UnifiedDrawerContent';
 import CombatStatsPanel from '../../Combat/CombatStatsPanel';
 import { UiPositions, SwipeDirection } from '../../../types';
 
@@ -40,24 +35,20 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     input, setInput, handleSend, handleInputSwipe
 }) => {
     const {
-        triggerHaptic, showControls, viewport, btn, handleButtonClick, executeCommand, joystick,
+        triggerHaptic, viewport, btn, handleButtonClick, executeCommand, joystick,
         spatButtons, setSpatButtons, parley, setParley, whoList,
-        statsLines, scoreLines,
-        pendingDrawerContainerRef, inlineCategories, entities, keywordOverrides,
-        env, isFoggy, gameState, currentTerrain,
-        mood, setMood, spellSpeed, setSpellSpeed, alertness, setAlertness
+        inlineCategories, env, isFoggy, gameState, currentTerrain,
     } = useGame() as GameContextType;
-    const { target, activePrompt, stats } = useVitals();
-    const { 
-        ui, setUI, setPopoverState, isLibraryOpen, setIsLibraryOpen,
-        handleTabClick, toggleMap, displayInventoryLines, displayEqLines 
+    const { target, activePrompt, stats, groupMembers } = useVitals();
+    const {
+        ui, setPopoverState,
+        handleTabClick, toggleMap, displayInventoryLines, displayEqLines,
+        whoLines, whereLines, infoLines, questLines, practiceLines,
+        gearTab, setGearTab, playersTab, setPlayersTab, charTab, setCharTab
     } = useUI() as UIContextType;
     const { getLightingIcon, getWeatherIcon, lighting, weather } = env;
-    const isExpanded = ui.mapExpanded || ui.peekingDrawer === 'map';
+    const isExpanded = ui.mapExpanded;
     const { isKeyboardOpen } = viewport;
-
-    const [activeSlider, setActiveSlider] = React.useState<string | null>(null);
-    const [activeButtonRect, setActiveButtonRect] = React.useState<DOMRect | null>(null);
 
     // Mobile DOCKED (Gutter) Mode
     const isReplaying = (useGame() as GameContextType).sessionMode === 'replay';
@@ -67,7 +58,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         return null;
     }
 
-    const isShown = (ui.mapExpanded || ui.peekingDrawer === 'map') && ui.drawer === 'none';
+    const isShown = ui.mapExpanded && ui.drawer === 'none';
     
     return (
         <div
@@ -95,7 +86,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     onSwipe={handleInputSwipe}
                     isMobile={isMobile}
                     isKeyboardOpen={viewport.isKeyboardOpen}
-                    commandPreview={null} // Keep it clean in the gutter
+                    commandPreview={null}
                     spatButtons={spatButtons}
                     setActiveSet={btn.setActiveSet}
                     executeCommand={executeCommand}
@@ -138,7 +129,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 />
             </div>
 
-            {/* Map Area — uses same gutter-panel-card class as drawer panels */}
+            {/* Map Area */}
             <div
                 className="mobile-mapper-touch-surface gutter-panel-card"
                 style={{
@@ -149,7 +140,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     position: 'relative'
                 }}
             >
-                {/* Environmental Status Icons — modified to include player vitals (hunger/thirst) */}
                 {(lighting !== 'none' || weather !== 'none' || isFoggy || stats.conditions?.hungry || stats.conditions?.thirsty) && (
                     <div className="map-status-overlay" style={{
                         position: 'absolute',
@@ -166,7 +156,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         {getWeatherIcon()}
                         {isFoggy && <CloudFog size={16} style={{ opacity: 0.6 }} />}
                         
-                        {/* Hunger Indicator */}
                         {stats.conditions?.hungry && (
                             <UtensilsCrossed 
                                 size={16} 
@@ -175,7 +164,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                             />
                         )}
                         
-                        {/* Thirst Indicator */}
                         {stats.conditions?.thirsty && (
                             <Droplets 
                                 size={16} 
@@ -186,11 +174,9 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     </div>
                 )}
 
-                {/* Combat Stats Panel Overlay for Portrait Mobile */}
                 <div className="mobile-mapper-combat-overlay">
                     <CombatStatsPanel />
                 </div>
-
 
                 <Mapper
                     ref={mapperRef}
@@ -200,7 +186,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     isMobile={true}
                     isExpanded={isExpanded}
                     setIsMinimized={(min) => {
-                        setUI(prev => ({ ...prev, mapExpanded: !min }));
+                        handleTabClick('none' as any);
                     }}
                     heldButton={heldButton}
                     setHeldButton={setHeldButton}
@@ -208,58 +194,36 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 />
             </div>
 
-            {/* Drawer Area - shown when a utility drawer tab is active */}
+            {/* Drawer Area */}
             {!isShown && ui.drawer !== 'none' && (
-                <div className="gutter-drawer-container gutter-panel-card">
-                    <GutterShell activeTabId={ui.drawer}>
-                        {ui.drawer === 'stats' && (
-                            <StatsView
-                                statsLines={statsLines}
-                                scoreLines={scoreLines}
-                                executeCommand={executeCommand}
-                                mood={mood} setMood={setMood}
-                                spellSpeed={spellSpeed} setSpellSpeed={setSpellSpeed}
-                                alertness={alertness} setAlertness={setAlertness}
-                                triggerHaptic={triggerHaptic}
-                                activeSlider={activeSlider} setActiveSlider={setActiveSlider}
-                                activeButtonRect={activeButtonRect} setActiveButtonRect={setActiveButtonRect}
-                            />
-                        )}
-                        {ui.drawer === 'character' && (
-                            <CharacterView isOpen={true} onClose={() => setUI(prev => ({ ...prev, drawer: 'map' }))} executeCommand={executeCommand} />
-                        )}
-                        {ui.drawer === 'players' && (
-                            <PlayersView isOpen={true} onClose={() => setUI(prev => ({ ...prev, drawer: 'map' }))} executeCommand={executeCommand} />
-                        )}
-                        {(ui.drawer === 'inventory' || ui.drawer === 'equipment') && (
-                            <InventoryView
-                                isOpen={true}
-                                onClose={() => setUI(prev => ({ ...prev, drawer: 'map' }))}
-                                inventoryLines={displayInventoryLines}
-                                eqLines={displayEqLines}
-                                handleButtonClick={handleButtonClick}
-                                triggerHaptic={triggerHaptic}
-                                executeCommand={executeCommand}
-                                pendingDrawerContainerRef={pendingDrawerContainerRef}
-                                inlineCategories={inlineCategories}
-                                entities={entities}
-                                keywordOverrides={keywordOverrides}
-                            />
-                        )}
-                    </GutterShell>
+                <div className="gutter-drawer-container gutter-panel-card" style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div className="gutter-drawer-content" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+                        <UnifiedDrawerContent
+                            drawer={ui.drawer}
+                            gearTab={gearTab}
+                            setGearTab={setGearTab}
+                            playersTab={playersTab}
+                            setPlayersTab={setPlayersTab}
+                            charTab={charTab}
+                            setCharTab={setCharTab}
+                            displayInventoryLines={displayInventoryLines}
+                            displayEqLines={displayEqLines}
+                            whoLines={whoLines}
+                            whereLines={whereLines}
+                            infoLines={infoLines}
+                            questLines={questLines}
+                            practiceLines={practiceLines}
+                            groupMembers={groupMembers}
+                            triggerHaptic={triggerHaptic}
+                            executeCommand={executeCommand}
+                        />
+                    </div>
                 </div>
             )}
 
-            {/* Unified Tab Bar for both orientations - Now at the bottom */}
+            {/* Bottom Tab Bar */}
             {!isKeyboardOpen && gameState !== 'disconnected' && (
                 <div className="portrait-tab-bar">
-                    <div
-                        className={`desktop-edge-tab right ${ui.drawer === 'stats' ? 'active' : ''}`}
-                        onClick={() => { triggerHaptic(15); handleTabClick('stats'); }}
-                    >
-                        <BarChart2 className="tab-icon" />
-                        <span className="tab-text">Stats</span>
-                    </div>
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'character' ? 'active' : ''}`}
                         onClick={() => { triggerHaptic(15); handleTabClick('character'); }}
@@ -275,7 +239,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         <span className="tab-text">Players</span>
                     </div>
                     <div
-                        className={`desktop-edge-tab right ${ui.drawer === 'equipment' || ui.drawer === 'inventory' ? 'active' : ''}`}
+                        className={`desktop-edge-tab right ${ui.drawer === 'equipment' ? 'active' : ''}`}
                         onClick={() => { triggerHaptic(15); handleTabClick('equipment'); }}
                     >
                         <Shield className="tab-icon" />

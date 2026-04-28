@@ -30,23 +30,18 @@ export interface InteractionDeps {
     wasDraggingRef: React.RefObject<boolean>;
     viewport: any;
     setIsMapExpanded: (val: boolean) => void;
-    setIsCharacterOpen: (val: boolean, tab?: 'info' | 'practice' | 'quests') => void;
-    setIsEquipmentOpen: (val: boolean) => void;
-    setIsInventoryOpen: (val: boolean) => void;
-    setIsSettingsOpen: (val: boolean) => void;
-    setIsStatsOpen: (val: boolean) => void;
-    setIsPlayersOpen: (val: boolean) => void;
+    handleTabClick: (drawer: any) => void;
+    setGearTab: (tab: 'worn' | 'inv') => void;
+    setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
+    setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     setSettingsTab: (val: any) => void;
     setInventoryLines: (val: any) => void;
     setEqLines: (val: any) => void;
     setStatsLines: (val: any) => void;
-    isWaitingForStats: React.MutableRefObject<boolean>;
-    isWaitingForEq: React.MutableRefObject<boolean>;
-    isWaitingForInv: React.MutableRefObject<boolean>;
     captureStage: React.MutableRefObject<CaptureStage>;
     ui: {
         mapExpanded: boolean;
-        drawer: 'none' | 'character' | 'equipment' | 'inventory';
+        drawer: 'none' | 'character' | 'equipment' | 'inventory' | 'players' | 'stats' | 'map';
         setManagerOpen: boolean;
         isDrawerPeeking: boolean;
     };

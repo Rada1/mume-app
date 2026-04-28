@@ -17,7 +17,8 @@ interface PopoverActionButtonProps {
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean, fromUi?: boolean }) => void;
     addMessage: (type: MessageType, content: string) => void;
     triggerHaptic?: (ms: number) => void;
-    setIsInventoryOpen?: (open: boolean) => void;
+    handleTabClick: (drawer: 'character' | 'players' | 'equipment') => void;
+    setGearTab: (tab: 'worn' | 'inv') => void;
     selectedObjectIds: Set<string>;
     clearObjectSelection: () => void;
     entities: Record<string, GameEntity>;
@@ -26,7 +27,7 @@ interface PopoverActionButtonProps {
 }
 
 export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
-    button, depth = 0, isSubButton = false, favorites, toggleFavorite, popoverState, setPopoverState, setButtons, handleButtonClick, executeCommand, addMessage, triggerHaptic, setIsInventoryOpen, selectedObjectIds, clearObjectSelection, entities, keywordOverrides, direction
+    button, depth = 0, isSubButton = false, favorites, toggleFavorite, popoverState, setPopoverState, setButtons, handleButtonClick, executeCommand, addMessage, triggerHaptic, handleTabClick, setGearTab, selectedObjectIds, clearObjectSelection, entities, keywordOverrides, direction
 }) => {
     const isFav = favorites.includes(button.command);
     
@@ -52,7 +53,8 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
         } else if (button.label === 'Browse Shop...') {
             setPopoverState({ ...popoverState, type: 'shop-search' });
         } else if (button.command === 'shop-mend') {
-            setIsInventoryOpen?.(true);
+            handleTabClick('equipment');
+            setGearTab('inv');
             setPopoverState(null);
         } else {
             // MULTI-ACTION LOGIC

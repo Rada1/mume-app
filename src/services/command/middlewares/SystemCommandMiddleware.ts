@@ -9,8 +9,7 @@ import { useModeStore } from '../../../stores/useModeStore';
 
 export const SystemCommandMiddleware: CommandMiddleware = (cmd, context) => {
     const { 
-        setTarget, setSettingsTab, setIsSettingsOpen, setIsCharacterOpen, 
-        setIsEquipmentOpen, setIsInventoryOpen, addMessage 
+        setTarget, setSettingsTab, setIsSettingsOpen, handleTabClick, addMessage, setUI
     } = context;
     const lowerCmd = cmd.toLowerCase().trim();
 
@@ -52,9 +51,7 @@ export const SystemCommandMiddleware: CommandMiddleware = (cmd, context) => {
     }
 
     if (lowerCmd === 'closeall') {
-        setIsCharacterOpen(false); 
-        setIsEquipmentOpen(false); 
-        setIsInventoryOpen(false);
+        setUI({ drawer: 'none' });
         return null; // Handled
     }
 

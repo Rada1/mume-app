@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 
 export const ReplayHUD: React.FC = () => {
-    const { replayer, setUI } = useUI();
+    const { replayer, setIsLibraryOpen } = useUI();
     const { state, play, pause, seek, setSpeed, setPrivacyMode, loadLog, startExport, exportAsText, stopExport, setIsVisible, performSearch, setTrimRange } = replayer;
     const [isHovered, setIsHovered] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -104,7 +104,7 @@ export const ReplayHUD: React.FC = () => {
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
                     <button 
-                        onClick={() => setUI(s => ({ ...s, drawer: s.drawer === 'session-log' ? 'none' : 'session-log' }))}
+                        onClick={() => setIsLibraryOpen(true)}
                         style={{ 
                             background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', 
                             color: '#fff', padding: '4px 8px', borderRadius: '6px', cursor: 'pointer',

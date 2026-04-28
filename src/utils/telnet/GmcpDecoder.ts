@@ -186,7 +186,7 @@ export class GmcpDecoder {
             }) || members[0]; // Fallback to first if only one
 
             if (playerMember && typeof playerMember === 'object') {
-                const conditionsToTrack = ['bashed', 'waiting', 'poison', 'slept', 'wound', 'snared', 'hungry', 'thirsty', 'sanctuary'];
+                const conditionsToTrack = ['bashed', 'poison', 'slept', 'wound', 'snared', 'hungry', 'thirsty', 'sanctuary'];
                 const conditions: Record<string, boolean> = {};
                 let foundAny = false;
 

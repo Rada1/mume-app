@@ -68,23 +68,31 @@ export const useMapPersistence = ({
         if (!allowPersistence) return;
 
         const saveFullData = () => {
-            localStorage.setItem(storageKey, JSON.stringify(rooms));
-            localStorage.setItem(markerStorageKey, JSON.stringify(markers));
-            localStorage.setItem('mume_mapper_explored', JSON.stringify(Array.from(exploredVnums)));
-            localStorage.setItem('mume_mapper_explored_markers', JSON.stringify(Array.from(exploredMarkers)));
-            localStorage.setItem('mume_mapper_unveil', String(unveilMap));
+            try {
+                localStorage.setItem(storageKey, JSON.stringify(rooms));
+                localStorage.setItem(markerStorageKey, JSON.stringify(markers));
+                localStorage.setItem('mume_mapper_explored', JSON.stringify(Array.from(exploredVnums)));
+                localStorage.setItem('mume_mapper_explored_markers', JSON.stringify(Array.from(exploredMarkers)));
+                localStorage.setItem('mume_mapper_unveil', String(unveilMap));
+            } catch (e) {
+                console.warn('[MapperPersistence] Failed to save full map data (likely storage full):', e);
+            }
         };
 
         const savePosData = () => {
-            const posData = JSON.stringify({
-                roomId: currentRoomId,
-                camX: cameraRef?.current?.x,
-                camY: cameraRef?.current?.y,
-                zoom: cameraRef?.current?.zoom
-            });
-            localStorage.setItem(posStorageKey, posData);
-            // Save to a global key for auto-loading before character login
-            localStorage.setItem('mume_mapper_last_pos_global', posData);
+            try {
+                const posData = JSON.stringify({
+                    roomId: currentRoomId,
+                    camX: cameraRef?.current?.x,
+                    camY: cameraRef?.current?.y,
+                    zoom: cameraRef?.current?.zoom
+                });
+                localStorage.setItem(posStorageKey, posData);
+                // Save to a global key for auto-loading before character login
+                localStorage.setItem('mume_mapper_last_pos_global', posData);
+            } catch (e) {
+                // Ignore position save failures
+            }
         };
 
         // Debounce full data save (2s) - this is the expensive one

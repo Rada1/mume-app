@@ -16,6 +16,16 @@ interface LineItemProps {
     category?: string;
 }
 
+interface TokenMetadata {
+    id?: string;
+    context?: string;
+    kind?: string;
+    location?: string;
+    category?: string;
+    cmd?: string;
+    action?: string;
+}
+
 export const LineItem: React.FC<LineItemProps> = ({ 
     line, 
     fontSize, 
@@ -25,6 +35,20 @@ export const LineItem: React.FC<LineItemProps> = ({
 }) => {
     const depth = line.depth || 0;
     const isHeader = !!line.isHeader;
+    const tokenMetadata: TokenMetadata = line.isItem
+        ? {
+            id: line.entityId || line.stableId || line.id,
+            context: line.context,
+            kind: 'object',
+            location,
+            category,
+            cmd: line.cmd,
+            action: 'menu'
+        }
+        : {
+            context: line.context,
+            cmd: line.cmd
+        };
     
     const baseStyle: React.CSSProperties = {
         background: isHeader ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.6)',
@@ -55,13 +79,7 @@ export const LineItem: React.FC<LineItemProps> = ({
                     <TokenRenderer 
                         tokens={line.tokens} 
                         type={line.isItem ? 'inventory' as MessageType : 'room' as MessageType}
-                        metadata={{
-                            id: line.id,
-                            context: line.context,
-                            kind: line.isItem ? 'object' : 'text',
-                            location,
-                            category
-                        }}
+                        metadata={tokenMetadata}
                     />
                 </div>
             </div>

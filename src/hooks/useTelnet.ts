@@ -142,19 +142,21 @@ export function useTelnet(config: TelnetConfig) {
                 }
             }
 
-            if (line !== lastProcessedPromptRef.current) {
+            const isNewPrompt = line !== lastProcessedPromptRef.current;
+            if (isNewPrompt) {
                 lastProcessedPromptRef.current = line;
                 console.log(`[useTelnet] handlePromptDetected (queued) for: "${displayPrompt.substring(0, 30)}"`);
                 configRef.current.setPrompt(displayPrompt);
-                
-                // Queue the raw line as an object so the parser still sees the tags if needed
-                processedLines.push({ line, isPrompt: true });
-                
+
                 const cleanLine = displayPrompt.replace(/\x1b\[[0-9;]*m/g, '').trim();
                 if (configRef.current.handlers.detectLighting) {
                     configRef.current.handlers.detectLighting(cleanLine);
                 }
             }
+
+            // Queue every prompt so parser-driven capture sessions finalize even when
+            // the visible prompt text is identical to the previous prompt.
+            processedLines.push({ line, isPrompt: true });
         };
 
         // Splits a physical line that contains an XML <prompt>...</prompt> tag
@@ -264,11 +266,8 @@ export function useTelnet(config: TelnetConfig) {
                             
                             return {
                                 target: vitalsStore.target,
-                                currentOccupants: [
-                                    ...(roomStore.players || []),
-                                    ...(roomStore.npcs || [])
-                                ],
-                                roomNpcs: roomStore.npcs || [],
+                                currentOccupants: Object.values(roomStore.chars || {}),
+                                roomNpcs: Object.values(roomStore.chars || {}).filter((c: any) => c.type === 'npc'),
                                 activeGroupMembers: combatStore.groupMembers || [],
                                 roomItems: roomStore.items || [],
                                 discoveredItems: [],

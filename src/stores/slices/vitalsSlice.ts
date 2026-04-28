@@ -17,6 +17,7 @@ export interface CharacterInfo {
     subrace: string;
     subclass: string;
     class: string;
+    gold: number;
     description?: string;
     whois?: string;
 }
@@ -95,7 +96,8 @@ export const initialVitalsState = {
         race: '',
         subrace: '',
         subclass: '',
-        class: ''
+        class: '',
+        gold: 0
     },
     target: null,
     activePrompt: null,

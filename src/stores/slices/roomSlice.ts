@@ -4,7 +4,7 @@
  * This slice is used by both the main useRoomStore and the useSpectateRoomStore.
  */
 
-import { GmcpRoomInfo, GmcpUpdateExits, GmcpOccupant } from '../../types';
+import { GmcpRoomInfo, GmcpUpdateExits, GmcpOccupant, WhereEntry } from '../../types';
 import { normalizeOccupantType } from '../../services/classification/normalizeOccupantType';
 
 export interface RoomState {
@@ -18,16 +18,16 @@ export interface RoomState {
     items: GmcpOccupant[];
     roomNum: number;
     whoList: string[];
-    whereList: any[];
+    whereList: WhereEntry[];
 
     applyRoomInfo: (data: GmcpRoomInfo) => void;
-    applyExitsUpdate: (data: GmcpUpdateExits) => void;
+    applyExitsUpdate: (data: GmcpUpdateExits | any) => void;
     addChar: (data: any) => void;
     updateChar: (data: any) => void;
     removeChar: (data: any) => void;
     setChars: (chars: Record<number, GmcpOccupant> | ((prev: Record<number, GmcpOccupant>) => Record<number, GmcpOccupant>)) => void;
     setWhoList: (list: string[] | ((prev: string[]) => string[])) => void;
-    setWhereList: (list: any[] | ((prev: any[]) => any[])) => void;
+    setWhereList: (list: WhereEntry[] | ((prev: WhereEntry[]) => WhereEntry[])) => void;
     setRoomInfo: (info: Partial<{ roomName: string; roomDesc: string; roomZone: string; terrain: string; roomNum: number }>) => void;
     setRoomName: (name: string | null | ((prev: string) => string)) => void;
     setRoomDesc: (desc: string | null | ((prev: string) => string)) => void;
@@ -41,7 +41,7 @@ export interface RoomState {
     applyItemsUpdate: (data: GmcpOccupant[]) => void;
 }
 
-export const initialRoomState = {
+export const initialRoomState: Pick<RoomState, 'roomName' | 'roomDesc' | 'roomZone' | 'terrain' | 'exits' | 'rawExits' | 'chars' | 'items' | 'roomNum' | 'whoList' | 'whereList'> = {
     roomName: '',
     roomDesc: '',
     roomZone: '',
@@ -109,33 +109,9 @@ const parseOccupant = (data: any): GmcpOccupant | null => {
 };
 
 /**
- * Filter utility to remove an occupant by ID (stringified for safety).
- */
-const filterOccupant = (list: GmcpOccupant[], parsedToRemove: GmcpOccupant) => {
-    const removeId = String(parsedToRemove.id);
-    return list.filter(p => String(p.id) !== removeId);
-};
-
-/**
- * Upsert utility to update an existing entity in the list or append it.
- */
-const upsertOccupant = (list: GmcpOccupant[], entity: GmcpOccupant): GmcpOccupant[] => {
-    const entityId = String(entity.id);
-    const index = list.findIndex(e => String(e.id) === entityId);
-    
-    if (index !== -1) {
-        const newList = [...list];
-        newList[index] = { ...newList[index], ...entity };
-        return newList;
-    }
-    
-    return [...list, entity];
-};
-
-/**
  * Creates the room actions for a Zustand store.
  */
-export const createRoomActions = (set: any, get: any) => ({
+export const createRoomActions = (set: (fn: (state: RoomState) => any) => void, get: () => RoomState) => ({
     applyRoomInfo: (data: GmcpRoomInfo) => {
         set((state: RoomState) => {
             const incomingId = data.num ?? data.vnum ?? data.id;
@@ -159,10 +135,11 @@ export const createRoomActions = (set: any, get: any) => ({
 
     applyExitsUpdate: (data: GmcpUpdateExits | any) => {
         const exitsData = data.exits || data;
-        set({
+        set((state) => ({
+            ...state,
             exits: Object.keys(exitsData),
             rawExits: exitsData
-        });
+        }));
     },
 
     addChar: (data: any) => {
@@ -235,16 +212,17 @@ export const createRoomActions = (set: any, get: any) => ({
 
     setChars: (chars: Record<number, GmcpOccupant> | ((prev: Record<number, GmcpOccupant>) => Record<number, GmcpOccupant>)) =>
         set((state: RoomState) => ({ chars: typeof chars === 'function' ? chars(state.chars) : chars })),
+
     setItems: (items: GmcpOccupant[] | ((prev: GmcpOccupant[]) => GmcpOccupant[])) =>
         set((state: RoomState) => ({ items: typeof items === 'function' ? items(state.items) : (Array.isArray(items) ? items : state.items) })),
     
     applyItemsUpdate: (data: GmcpOccupant[]) => {
-        set({ items: Array.isArray(data) ? data : [] });
+        set((state: RoomState) => ({ ...state, items: Array.isArray(data) ? data : [] }));
     },
 
     setWhoList: (whoList: string[] | ((prev: string[]) => string[])) => 
         set((state: RoomState) => ({ whoList: typeof whoList === 'function' ? whoList(state.whoList) : whoList })),
 
-    setWhereList: (whereList: any[] | ((prev: any[]) => any[])) => 
+    setWhereList: (whereList: WhereEntry[] | ((prev: WhereEntry[]) => WhereEntry[])) => 
         set((state: RoomState) => ({ whereList: typeof whereList === 'function' ? whereList(state.whereList) : whereList })),
 });

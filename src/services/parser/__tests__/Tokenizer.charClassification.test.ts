@@ -136,7 +136,7 @@ describe('Tokenizer — char inline button assignment (GMCP source-of-truth cont
                 (t): t is EntityToken => t.type === 'entity' && t.metadata?.kind === 'object'
             );
             expect(ent).toBeDefined();
-            expect(ent?.metadata?.category).toMatch(/^obj-/);
+            expect(ent?.metadata?.category).toBe('inline-obj-room');
         });
     });
 });

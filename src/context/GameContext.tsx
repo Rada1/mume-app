@@ -124,26 +124,16 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const lastCommIdBySenderRef = useRef(new Map<string, string>());
     const lastCommMsgIdRef = useRef<string | null>(null);
     const lastCommTimeRef = useRef(0);
-    const isWaitingForInv = useRef(false);
-    const isWaitingForEq = useRef(false);
-    const isWaitingForStats = useRef(false);
-    const isWaitingForInfo = useRef(false);
     const isSoundEnabledRef = useRef(true);
     const soundTriggersRef = useRef<any[]>([]);
-    const captureStage = useRef<'none' | 'inv' | 'eq' | 'stat' | 'practice' | 'who' | 'where' | 'container'>('none');
-    const isSilentCapture = useRef(0);
-    const isDrawerCapture = useRef(0);
-    const captureOwnerDrawer = useRef<'none' | 'inv' | 'eq' | 'stat' | 'practice' | 'who' | 'where' | 'container'>('none');
+    const captureStage = useRef<any>('none');
+    const captureOwnerDrawer = useRef<any>('none');
+    const nextCommandIsSilent = useRef(false);
 
     const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.isImmersionMode, s.fontFamily, s.isTimestampEnabled, s.isNewbieMode);
     const mode = useModeStore();
     const session = useSessionStore();
-    const { 
-        sessionMode, setSessionMode, replayHUDState, setReplayHUDState, isSilentReplay,
-        setRoomInfoFn, setRoomExitsFn, setCharVitalsFn, setRoomPlayersFn, setRoomNpcsFn,
-        setRoomItemsFn, setAddPlayerFn, setAddNpcFn, setRemovePlayerFn, setRemoveNpcFn,
-        setOpponentChangeFn, setCommFn, setGroupAddFn, setGroupUpdateFn, setGroupRemoveFn, setGroupSetFn
-    } = session;
+    const { sessionMode, setSessionMode, replayHUDState, setReplayHUDState, isSilentReplay } = session;
 
     // 4. Session & Replayer
     const activeLog = mode.activeView === 'self' ? s.userSession.log : s.spectateSession.log;
@@ -152,13 +142,18 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // regardless of which view is currently active. This prevents "leaking" snoop 
     // data into the main log or losing our own tells while viewing the target.
     const routedAddMessage = React.useCallback((type: MessageType, text: string, extra?: any, mid?: string, isRoomName?: boolean, precalculated?: any, shopItem?: any, practiceSkill?: any, practiceHeader?: any, isSystem?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, commSenderTokens?: any, commTextTokens?: any, providedCombatSide?: any, providedIsHitImpact?: boolean, providedIsHitterImpact?: boolean, providedIsSnoop?: boolean, providedIsSnoopInput?: boolean) => {
+        // Silencing logic for OOC captures
+        if (s.userSession.game.silenceUntilPrompt && !providedIsSnoop) {
+            return;
+        }
+
         const args = [type, text, extra, mid, isRoomName, precalculated, shopItem, practiceSkill, practiceHeader, isSystem, replyTarget, replyCommand, commSender, commAction, commText, commColor, commSenderTokens, commTextTokens, providedCombatSide, providedIsHitImpact, providedIsHitterImpact, providedIsSnoop, providedIsSnoopInput] as const;
         if (type === 'snoop' || type === 'snoop-command' || type === 'snoop-vitals' || providedIsSnoop) {
             (s.spectateSession.log.addMessage as any)(...args);
         } else {
             (s.userSession.log.addMessage as any)(...args);
         }
-    }, [s.userSession.log, s.spectateSession.log]);
+    }, [s.userSession.log, s.spectateSession.log, s.userSession.game.silenceUntilPrompt]);
 
     const { messages, setMessages, addSystemMessage, flushMessages, clearLog } = activeLog;
     const addMessage = routedAddMessage; // Use the router for the parser
@@ -373,26 +368,16 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         lastCommIdBySenderRef,
         lastCommMsgIdRef,
         lastCommTimeRef,
-        isWaitingForInv: isWaitingForInv as any,
-        isWaitingForEq: isWaitingForEq as any,
-        isWaitingForStats: isWaitingForStats as any,
-        isWaitingForInfo: isWaitingForInfo as any,
         isSoundEnabledRef,
         soundTriggersRef,
-        captureStage: captureStage as any,
-        isSilentCapture,
-        isDrawerCapture,
-        captureOwnerDrawer: captureOwnerDrawer as any,
+        captureStage,
+        captureOwnerDrawer,
         accountStageRef: s.accountStageRef,
         actionsRef: s.actionsRef,
 
         // UI/Visibility
         isNewbieMode: s.isNewbieMode,
-        isInventoryOpen: s.drawer === 'inventory',
-        isEquipmentOpen: s.drawer === 'equipment',
-        isCharacterOpen: s.drawer === 'character',
-        isStatsOpen: s.drawer === 'stats',
-        isPlayersOpen: s.drawer === 'players',
+        drawer: ui.drawer,
 
         // Session/Game Data
         gameState: s.gameState as any,
@@ -448,6 +433,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setSpectateRoomDesc: s.setSpectateRoomDesc,
         setSpectateRoomZone: s.setSpectateRoomZone,
         setSpectateActivePrompt: s.setSpectateActivePrompt,
+        setSpectateWeather: s.spectateSession.game.setWeather,
+        setSpectateIsFoggy: s.spectateSession.game.setIsFoggy,
+        setSpectateLightningEnabled: s.spectateSession.game.setLightningEnabled,
         // Drawer Setters
         setInventoryLines: s.setInventoryLines,
         setEqLines: s.setEqLines,
@@ -458,13 +446,20 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setScoreLines: s.setScoreLines,
         setInfoLines: s.setInfoLines,
         setQuestLines: s.setQuestLines,
-        setWhoList: s.setWhoList,
-        setWhereList: s.setWhereList,
+        setWhoList: s.active.game.setWhoList,
+        setWhereList: s.active.game.setWhereList,
+        
+        captureSession: s.active.game.captureSession,
+        setCaptureSession: s.active.game.setCaptureSession,
+        captureSessionRef: s.active.game.captureSessionRef,
+        silenceUntilPrompt: s.active.game.silenceUntilPrompt,
+        setSilenceUntilPrompt: s.userSession.game.setSilenceUntilPrompt,
 
         // Others
         addDiagnosticLog: ui.addDiagnosticLog,
         registerEntity: s.registry.registerEntity,
         entities: s.registry.entities,
+        entitiesRef: s.registry.entitiesRef,
         ansiConvert,
         btn,
         quests: s.quests,
@@ -494,20 +489,117 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isPasswordMode: s.isPasswordMode
     });
 
+    const executeCommandRef = useRef<any>(null);
+
+    const uiValue: UIContextType = useMemo(() => {
+        const requestDrawerRefresh = (drawer: DrawerType) => {
+            if (drawer === 'equipment') {
+                executeCommandRef.current?.(ui.gearTab === 'worn' ? 'eq' : 'inv', true, true);
+            } else if (drawer === 'players') {
+                if (ui.playersTab === 'online') executeCommandRef.current?.('who', true, true);
+                else if (ui.playersTab === 'nearby') executeCommandRef.current?.('where', true, true);
+            } else if (drawer === 'character') {
+                if (ui.charTab === 'info') executeCommandRef.current?.('info', true, true);
+                else if (ui.charTab === 'quests') executeCommandRef.current?.('quest', true, true);
+                else if (ui.charTab === 'skills') executeCommandRef.current?.('practice', true, true);
+            }
+        };
+
+        return {
+            ui: {
+            drawer: ui.drawer,
+            isDrawerPeeking: ui.isDrawerPeeking,
+            peekingDrawer: ui.isDrawerPeeking ? (ui.drawer as any) : 'none',
+            setManagerOpen: ui.setManagerOpen,
+            mapExpanded: ui.mapExpanded,
+            isMenuOpen: ui.isMenuOpen,
+            isSetMenuOpen: ui.isSetMenuOpen,
+            menuView: ui.menuView,
+            peekingSource: 'none' as any,
+            showMapperToolbar: false,
+            characterTab: ui.characterTab,
+            managerSelectedSet: ui.managerSelectedSet,
+        },
+        setUI: ui.setUI as any,
+        popoverState: ui.popoverState,
+        setPopoverState: ui.setPopoverState,
+        isSettingsOpen: ui.isSettingsOpen,
+        setIsSettingsOpen: ui.setIsSettingsOpen,
+        isLibraryOpen: ui.isLibraryOpen,
+        setIsLibraryOpen: ui.setIsLibraryOpen,
+        settingsTab: ui.settingsTab,
+        setSettingsTab: ui.setSettingsTab,
+        setIsMapExpanded: ui.setMapExpanded,
+        setIsSetManagerOpen: (open: boolean) => ui.setUI({ setManagerOpen: open }),
+        setManagerSelectedSet: ui.setManagerSelectedSet,
+        gearTab: ui.gearTab,
+        setGearTab: ui.setGearTab,
+        playersTab: ui.playersTab,
+        setPlayersTab: ui.setPlayersTab,
+        charTab: ui.charTab,
+        setCharTab: ui.setCharTab,
+        handleTabClick: (drawer: 'none' | 'character' | 'players' | 'equipment') => {
+            if (drawer === 'none') {
+                ui.setDrawer('none');
+                return;
+            }
+            if (ui.drawer === drawer) {
+                requestDrawerRefresh(drawer);
+                return;
+            }
+
+            ui.setDrawer(drawer);
+            requestDrawerRefresh(drawer);
+            if (viewport.isMobile) {
+                ui.setMapExpanded(false);
+            }
+        },
+        displayInventoryLines: s.inventoryLines,
+        displayEqLines: s.eqLines,
+        statsLines: s.statsLines,
+        scoreLines: s.scoreLines,
+        playerLines: [...s.whoLines, ...s.whereLines],
+        infoLines: s.infoLines,
+        practiceLines: s.practiceLines,
+        questLines: s.questLines,
+        whoLines: s.whoLines,
+        whereLines: s.whereLines,
+        toggleMap: () => {
+            if (viewport.isMobile && ui.drawer !== 'none') {
+                ui.setDrawer('none');
+                ui.setMapExpanded(true);
+            } else {
+                ui.setMapExpanded(!ui.mapExpanded);
+            }
+        },
+        characterName: s.characterName,
+        isRecording: s.userSession.recorder.isRecording,
+        duration: s.userSession.recorder.duration,
+        showRecordingIndicator: settingsStore.showRecordingIndicator,
+        setShowRecordingIndicator: settingsStore.setShowRecordingIndicator,
+        startRecording: s.userSession.recorder.startRecording,
+        stopRecording: s.userSession.recorder.stopRecording,
+        stopAndSave: s.userSession.recorder.stopAndSave,
+        saveLog: s.userSession.recorder.saveLog,
+        replayer
+        };
+    }, [ui, s.inventoryLines, s.eqLines, s.statsLines, s.scoreLines, s.infoLines, s.practiceLines, s.questLines, s.whoLines, s.whereLines, s.characterName, s.userSession.recorder, settingsStore.showRecordingIndicator, settingsStore.setShowRecordingIndicator, replayer]);
+
     const controller = useCommandController({
         telnet, addMessage, initAudio, navIntervalRef: { current: null }, mapperRef: { current: null },
-        teleportTargets: settingsStore.teleportTargets, help, isDrawerCapture: { current: 0 },
-        isSilentCapture: { current: 0 }, captureStage: { current: 'none' } as any,
-        isWaitingForStats: { current: false } as any, isWaitingForEq: { current: false } as any,
-        isWaitingForInv: { current: false } as any, isWaitingForInfo: { current: false } as any,
+        teleportTargets: settingsStore.teleportTargets, help, 
+        captureStage,
         setInventoryLines: s.setInventoryLines, setStatsLines: s.setStatsLines,
         setInfoLines: s.setInfoLines, setScoreLines: s.setScoreLines, setEqLines: s.setEqLines,
         setCommandPreview: s.setCommandPreview, input: s.input, setInput: s.setInput, isNewbieMode: s.isNewbieMode,
         status: s.status, target: v.target, setTarget: v.setTarget, setPendingMove: v.setPendingMove,
         activePrompt: v.activePrompt?.text || '', finalizeCapture: parser.finalizeCapture, popoverState: s.popoverState,
-        setPopoverState: s.setPopoverState, setIsCharacterOpen: s.setIsCharacterOpen,
-        setIsStatsOpen: s.setIsStatsOpen, setIsEquipmentOpen: s.setIsEquipmentOpen,
-        setIsInventoryOpen: s.setIsInventoryOpen, setIsPlayersOpen: s.setIsPlayersOpen,
+        setPendingFlags: parser.setPendingFlags,
+        setPopoverState: s.setPopoverState,
+        handleTabClick: uiValue.handleTabClick,
+        setGearTab: uiValue.setGearTab,
+        setPlayersTab: uiValue.setPlayersTab,
+        setCharTab: uiValue.setCharTab,
         setIsSettingsOpen: ui.setIsSettingsOpen, setSettingsTab: ui.setSettingsTab,
         setIsMapExpanded: s.setIsMapExpanded, setUI: s.setUI as any, viewport, triggerHaptic,
         btn, joystick, wasDraggingRef: { current: false }, ui: s.ui as any,
@@ -534,83 +626,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         fontFamily: settingsStore.fontFamily, setFontFamily: settingsStore.setFontFamily,
         favorites: settingsStore.favorites, setFavorites: settingsStore.setFavorites,
         accountState: s.accountState, setAccountState: s.setAccountState,
-        accountStageRef: s.accountStageRef, clearLog
+        accountStageRef: s.accountStageRef, clearLog,
+        nextCommandIsSilent
     });
 
-    const uiValue: UIContextType = useMemo(() => ({
-        ui: {
-            drawer: ui.drawer,
-            isDrawerPeeking: ui.isDrawerPeeking,
-            peekingDrawer: ui.isDrawerPeeking ? (ui.drawer as any) : 'none',
-            setManagerOpen: ui.setManagerOpen,
-            mapExpanded: ui.mapExpanded,
-            isMenuOpen: ui.isMenuOpen,
-            isSetMenuOpen: ui.isSetMenuOpen,
-            menuView: ui.menuView,
-            peekingSource: 'none' as any,
-            showMapperToolbar: false,
-            characterTab: ui.characterTab,
-            managerSelectedSet: ui.managerSelectedSet,
-        },
-        setUI: ui.setUI as any,
-        popoverState: ui.popoverState,
-        setPopoverState: ui.setPopoverState,
-        isSettingsOpen: ui.isSettingsOpen,
-        setIsSettingsOpen: ui.setIsSettingsOpen,
-        isLibraryOpen: ui.isLibraryOpen,
-        setIsLibraryOpen: ui.setIsLibraryOpen,
-        settingsTab: ui.settingsTab,
-        setSettingsTab: ui.setSettingsTab,
-        setIsStatsOpen: ui.setIsStatsOpen,
-        setIsCharacterOpen: ui.setIsCharacterOpen,
-        setIsEquipmentOpen: ui.setIsEquipmentOpen,
-        setIsInventoryOpen: ui.setIsInventoryOpen,
-        setIsMapExpanded: ui.setMapExpanded,
-        setIsSetManagerOpen: (open: boolean) => ui.setUI({ setManagerOpen: open }),
-        setIsPlayersOpen: ui.setIsPlayersOpen,
-        setManagerSelectedSet: ui.setManagerSelectedSet,
-        handleTabClick: (drawer: any) => {
-            ui.setDrawer(drawer);
-            if (drawer !== 'none') {
-                // Only close map automatically if we're on mobile to save space
-                if (viewport.isMobile) {
-                    ui.setMapExpanded(false);
-                }
-                // Trigger fresh data capture for the drawer
-                if (drawer === 'inventory') controller.executeCommand('inv', true, true, false, false, { fromUi: true });
-                else if (drawer === 'equipment') controller.executeCommand('eq', true, true, false, false, { fromUi: true });
-                else if (drawer === 'stats' || drawer === 'character') controller.executeCommand('stat', true, true, false, false, { fromUi: true });
-                else if (drawer === 'players') controller.executeCommand('who', true, true, false, false, { fromUi: true });
-            }
-        },
-        displayInventoryLines: s.inventoryLines,
-        displayEqLines: s.eqLines,
-        statsLines: s.statsLines,
-        scoreLines: s.scoreLines,
-        infoLines: s.infoLines,
-        practiceLines: s.practiceLines,
-        questLines: s.questLines,
-        whoLines: s.whoLines,
-        whereLines: s.whereLines,
-        toggleMap: () => {
-            if (viewport.isMobile && ui.drawer !== 'none') {
-                ui.setDrawer('none');
-                ui.setMapExpanded(true);
-            } else {
-                ui.setMapExpanded(!ui.mapExpanded);
-            }
-        },
-        characterName: s.characterName,
-        isRecording: s.userSession.recorder.isRecording,
-        duration: s.userSession.recorder.duration,
-        showRecordingIndicator: settingsStore.showRecordingIndicator,
-        setShowRecordingIndicator: settingsStore.setShowRecordingIndicator,
-        startRecording: s.userSession.recorder.startRecording,
-        stopRecording: s.userSession.recorder.stopRecording,
-        stopAndSave: s.userSession.recorder.stopAndSave,
-        saveLog: s.userSession.recorder.saveLog,
-        replayer
-    }), [ui, s.inventoryLines, s.eqLines, s.statsLines, s.scoreLines, s.infoLines, s.practiceLines, s.questLines, s.whoLines, s.whereLines, s.characterName, s.userSession.recorder, settingsStore.showRecordingIndicator, settingsStore.setShowRecordingIndicator, replayer]);
+    useEffect(() => {
+        executeCommandRef.current = controller.executeCommand;
+    }, [controller.executeCommand]);
 
     const logValue: LogContextType = useMemo(() => ({
         ...activeLog,

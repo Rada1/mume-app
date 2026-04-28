@@ -7,18 +7,19 @@ import { useCallback } from 'react';
 import { CombatHealthStatus, CaptureStage, GameStats } from '../../types';
 
 export interface PromptParserDeps {
-    captureStage: React.MutableRefObject<CaptureStage>;
+    capture: import('../../types/capture').CaptureController;
+    finalizeCapture?: (targetStage?: CaptureStage) => void;
     setPlayerHealthStatus: (val: CombatHealthStatus | null) => void;
     setOpponentHealthStatus: (val: CombatHealthStatus | null) => void;
     setOpponentName: (val: string | null) => void;
     setBufferHealthStatus: (val: CombatHealthStatus | null) => void;
     setBufferName: (val: string | null) => void;
-    finalizeCapture: (targetStage?: CaptureStage) => void;
     isSpectateMode?: boolean;
     setStats: (stats: GameStats | ((prev: GameStats) => GameStats)) => void;
     setSpectateStats: (stats: GameStats | ((prev: GameStats) => GameStats)) => void;
     setSpectateOpponentName?: (val: string | null) => void;
     setSpectateOpponentStatus?: (val: CombatHealthStatus | null) => void;
+    captureStage?: React.MutableRefObject<CaptureStage>;
 }
 
 const HEALTH_MAP: Record<string, CombatHealthStatus> = {
@@ -35,13 +36,12 @@ const HEALTH_MAP: Record<string, CombatHealthStatus> = {
 
 export function usePromptParser(deps: PromptParserDeps) {
     const {
-        captureStage,
+        capture,
         setPlayerHealthStatus,
         setOpponentHealthStatus,
         setOpponentName,
         setBufferHealthStatus,
         setBufferName,
-        finalizeCapture,
         isSpectateMode,
         setSpectateStats
     } = deps;
@@ -67,8 +67,9 @@ export function usePromptParser(deps: PromptParserDeps) {
         const promptPart = textPMatch[0];
         const attachedText = textOnly.slice(promptPart.length).trim();
         
-        if (captureStage.current !== 'none' && !attachedText) {
-            finalizeCapture();
+        // Finalize reactive capture session on prompt if no attached text
+        if (capture.hasSession() && !attachedText) {
+            capture.finalizeSession();
         }
 
         // --- Combat Health Extraction ---
@@ -174,7 +175,7 @@ export function usePromptParser(deps: PromptParserDeps) {
             setBufferHealthStatus(null);
         }
 
-        const isEndPrompt = (!!textPMatch && !attachedText && !['practice', 'who', 'shop', 'where', 'quest', 'stat', 'info', 'whois', 'description'].includes(captureStage.current as any)) || 
+        const isEndPrompt = (!!textPMatch && !attachedText && !['practice', 'who', 'shop', 'where', 'quest', 'stat', 'info', 'whois', 'description'].includes(capture.getActiveType() as any)) || 
             (/^((?:(?:\[.*?\]|[\w\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-\s]|\([^)]+\))\s*)*[\]\)\>])\s*$/.test(textOnly)) ||
             (textOnly.includes('HP:') && textOnly.includes('MA:'));
 
@@ -213,8 +214,8 @@ export function usePromptParser(deps: PromptParserDeps) {
 
         return { isMatch: true, promptPart, attachedText, isEndPrompt, isGameplayPrompt };
     }, [
-        captureStage, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName, 
-        setBufferHealthStatus, setBufferName, finalizeCapture,
+        capture, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName, 
+        setBufferHealthStatus, setBufferName,
         isSpectateMode, setSpectateStats, deps
     ]);
 

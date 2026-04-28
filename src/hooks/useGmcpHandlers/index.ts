@@ -161,6 +161,8 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
         onRoomInfo,
         onRoomUpdateExits,
         onRoomChars,
+        onRoomPlayers: onRoomChars,
+        onRoomNpcs: onRoomChars,
         onRoomItems,
         onAddChar,
         onUpdateChar,
@@ -190,8 +192,6 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
             props.setCharacterName(null);
             props.setGroupMembers([]);
             if (props.setRoomChars) props.setRoomChars({});
-            if (props.setRoomPlayers) props.setRoomPlayers([]);
-            if (props.setRoomNpcs) props.setRoomNpcs([]);
             if (props.setRoomItems) props.setRoomItems([]);
             props.setWhoList([]);
             props.setWhereList([]);

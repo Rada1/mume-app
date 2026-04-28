@@ -3,7 +3,7 @@ import { InteractionDeps } from '../useInteractionHandlers';
 export const useGestures = (deps: InteractionDeps) => {
     const {
         executeCommand, triggerHaptic, ui,
-        setIsMapExpanded, setIsCharacterOpen, setIsStatsOpen, setIsEquipmentOpen, setIsInventoryOpen, setIsPlayersOpen
+        setIsMapExpanded, handleTabClick, setGearTab, setCharTab
     } = deps;
 
     const handleInputSwipe = (dir: string) => {
@@ -12,11 +12,14 @@ export const useGestures = (deps: InteractionDeps) => {
         else if (dir === 'se') {
             executeCommand('who', true, true, true, true);
             setTimeout(() => executeCommand('where', true, true, true, true), 150);
-            setIsPlayersOpen(true);
+            handleTabClick('players');
         } else if (dir === 'ne') {
-            setIsStatsOpen(true);
+            // Stats is now part of character info
+            handleTabClick('character');
+            setCharTab('info');
         } else if (dir === 'nw') {
-            setIsEquipmentOpen(true);
+            handleTabClick('equipment');
+            setGearTab('worn');
         } else if (dir === 'down') {
             if (ui.mapExpanded) {
                 setIsMapExpanded(false);
@@ -27,22 +30,24 @@ export const useGestures = (deps: InteractionDeps) => {
                 setTimeout(() => executeCommand('info %m', true, true, true, true), 200);
                 setTimeout(() => executeCommand('quest', true, true, true, true), 300);
                 setTimeout(() => executeCommand('practice', true, true, true, true), 400);
-                setIsCharacterOpen(true);
+                handleTabClick('character');
             }
         } else if (dir === 'sw') {
             executeCommand('inv', true, true, true, true);
             setTimeout(() => executeCommand('eq', true, true, true, true), 150);
-            setIsInventoryOpen(true);
+            handleTabClick('equipment');
+            setGearTab('inv');
         } else if (dir === 'right') {
             console.log('[Gestures] Triggering STAT sequence (stat, score, info %m)');
             executeCommand('stat', true, true, true, true);
             setTimeout(() => executeCommand('score', true, true, true, true), 100);
             setTimeout(() => executeCommand('info %m', true, true, true, true), 200);
-            setIsStatsOpen(true);
+            handleTabClick('character');
+            setCharTab('info');
         } else if (dir === 'left') {
             executeCommand('inv', true, true, true, true);
             setTimeout(() => executeCommand('eq', true, true, true, true), 150);
-            setIsEquipmentOpen(true);
+            handleTabClick('equipment');
         }
     };
 
