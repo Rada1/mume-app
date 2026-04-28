@@ -399,6 +399,11 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
         const finalType = router.routeMessage(msgType, textOnly, lower, lineToParse, textOnly, isEndPrompt, isSnoop) as MessageType;
 
+        // Suppress response lines from silent capture sessions (e.g. drawer auto-commands like eq/who)
+        if (!isSnoop && capture.hasSession() && capture.isSilent()) {
+            isVisible = false;
+        }
+
         if (isVisible) {
             const mid = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
             const ansiHtml = deps.ansiConvert.toHtml(lineToParse);

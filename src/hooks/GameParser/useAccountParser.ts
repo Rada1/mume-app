@@ -58,6 +58,33 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             isSilentListingRef.current = true;
         }
 
+        // Fire login setup commands regardless of current game state (handles reconnects too)
+        if (trimmedLine.includes('Welcome to the land of Middle-earth')) {
+            console.log('[AccountParser] Login detected via welcome line');
+            setGameState('playing');
+            setAccountState(prev => ({ ...prev, stage: 'none' }));
+            setIsPasswordMode(false);
+            gmcpBus.emit('Session.Start', { characterName: 'Player' });
+            setTimeout(() => {
+                if (executeCommandRef.current) {
+                    executeCommandRef.current('change xml on', true, true, true, true);
+                    executeCommandRef.current('change page off', true, true, true, true);
+                    setTimeout(() => executeCommandRef.current?.('stat', true, true, true, true), 100);
+                    setTimeout(() => executeCommandRef.current?.('score', true, true, true, true), 200);
+                    setTimeout(() => executeCommandRef.current?.('info %m', true, true, true, true), 300);
+                    setTimeout(() => executeCommandRef.current?.('time', true, true, true, true), 400);
+                    setTimeout(() => executeCommandRef.current?.('info', true, true, true, true), 500);
+                    setTimeout(() => executeCommandRef.current?.('eq', true, true, true, true), 600);
+                    setTimeout(() => executeCommandRef.current?.('inv', true, true, true, true), 700);
+                    setTimeout(() => executeCommandRef.current?.('practice', true, true, true, true), 800);
+                    setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 900);
+                    setTimeout(() => executeCommandRef.current?.('who', true, true, true, true), 1000);
+                    setTimeout(() => executeCommandRef.current?.('where', true, true, true, true), 1100);
+                }
+            }, 1000);
+            return false;
+        }
+
         // During gameplay, skip all account parsing except detecting return to Account>
         if ((gameStateRef.current as string) === 'playing') {
             if (trimmedLine === 'Account>') {
@@ -228,43 +255,6 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             setGameState('account');
             setAccountState(prev => ({ ...prev, stage: 'character-select' }));
             setIsPasswordMode(false);
-            return false;
-        }
-
-        // 5. Detect Successful Login
-        if (trimmedLine.includes('Welcome to MUME') || 
-            trimmedLine.includes('The music of the Ainur') ||
-            trimmedLine.includes('Now entering the game') ||
-            trimmedLine.includes('MUME III') ||
-            trimmedLine.includes('Reconnecting to') ||
-            trimmedLine.includes('Connected to MUME')) {
-            console.log('[AccountParser] Transitioning to playing state');
-            setGameState('playing');
-            setAccountState(prev => ({ ...prev, stage: 'none' }));
-            setIsPasswordMode(false);
-            
-            // Emit Session.Start for DVR
-            gmcpBus.emit('Session.Start', { characterName: 'Player' }); // Default if name not captured yet
-
-            setTimeout(() => {
-                if (executeCommandRef.current) {
-                    // Force XML mode on for the new simplified tokenizer
-                    executeCommandRef.current('change xml on', true, true, true, true);
-                    
-                    setTimeout(() => executeCommandRef.current?.('stat', true, true, true, true), 100);
-                    setTimeout(() => executeCommandRef.current?.('score', true, true, true, true), 200);
-                    setTimeout(() => executeCommandRef.current?.('info %m', true, true, true, true), 300);
-                    setTimeout(() => executeCommandRef.current?.('time', true, true, true, true), 400);
-                    setTimeout(() => executeCommandRef.current?.('info', true, true, true, true), 500);
-                    setTimeout(() => executeCommandRef.current?.('eq', true, true, true, true), 600);
-                    setTimeout(() => executeCommandRef.current?.('inv', true, true, true, true), 700);
-                    setTimeout(() => executeCommandRef.current?.('practice', true, true, true, true), 800);
-                    setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 900);
-                    setTimeout(() => executeCommandRef.current?.('who', true, true, true, true), 1000);
-                    setTimeout(() => executeCommandRef.current?.('where', true, true, true, true), 1100);
-                }
-            }, 1000);
-
             return false;
         }
 

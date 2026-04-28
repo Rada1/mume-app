@@ -106,7 +106,7 @@
     flex-shrink: 0;                /* Prevent squashing in flex containers */
     word-wrap: break-word;
     white-space: pre-wrap;
-    padding: 0 6px;
+    padding: 0;
     margin: 0;                     /* Removed -1px to prevent overlap */
     min-height: 0;                 /* Dense terminal logic */
     background: transparent;       /* Standard game text is now high-contrast transparent */
@@ -190,7 +190,6 @@
     background: transparent !important;
     border: none !important;
     margin: 0 !important;
-    padding: 0 !important;
     border-radius: 0;
     display: flex !important;
     flex-direction: column;
