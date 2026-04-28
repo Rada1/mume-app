@@ -207,7 +207,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         setSpectateStats: deps.setSpectateStats,
         captureStage: deps.captureStage,
         setSpectateOpponentName: deps.setSpectateOpponentName,
-        setSpectateOpponentStatus: deps.setSpectateOpponentStatus
+        setSpectateOpponentStatus: deps.setSpectateOpponentStatus,
+        inCombatRef: deps.inCombatRef
     });
 
     const account = useAccountParser({
@@ -328,6 +329,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
         // Action Tracking (for manual inventory updates)
         actionTracker.trackAction(lineToParse, textOnly, lower);
+        router.detectItemsInRoom(textOnly, lineToParse, false);
         
         // --- Explicit Capture Bootstrap ---
         // Some MUME list commands do not always start with a stable header. If the
@@ -337,7 +339,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             !isSnoop &&
             !promptInfo.isMatch &&
             !capture.hasSession() &&
-            ['who', 'where', 'equipment', 'inventory', 'practice', 'quests', 'info'].includes(expectedCaptureType)
+            ['who', 'where'].includes(expectedCaptureType)
         );
         if (canStartExpectedCapture) {
             capture.startSession(expectedCaptureType);

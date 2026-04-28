@@ -5,6 +5,18 @@ import { occupantAnims, getOccupantKey } from '../../components/Mapper/occupantA
 import { getCategoryForName } from '../../utils/categorizationUtils';
 import { normalizeOccupantType } from '../../services/classification/normalizeOccupantType';
 
+const getRoomCharKey = (id: string | number): number => {
+    const numericId = Number(id);
+    if (Number.isFinite(numericId)) return numericId;
+
+    const idString = String(id);
+    let hash = 0;
+    for (let i = 0; i < idString.length; i++) {
+        hash = ((hash << 5) - hash + idString.charCodeAt(i)) | 0;
+    }
+    return hash || -1;
+};
+
 const parseOccupant = (data: any, characterName: string | null): GmcpOccupant | null => {
     if (!data) return null;
     let obj: GmcpOccupant;
@@ -61,28 +73,49 @@ export const useGmcpOccupants = ({
             return;
         }
 
-        const newChars: Record<number, GmcpOccupant> = {};
+        const parsedChars: Record<number, GmcpOccupant> = {};
 
         rawList.forEach(p => {
             const obj = parseOccupant(p, characterName);
             if (!obj || obj.id === undefined) return;
-
-            const isNpc = obj.type === 'npc';
-            if (setIsRiding && isNpc) {
-                const shortStr = (obj.short || obj.shortdesc || obj.name || '').toLowerCase();
-                if (shortStr.includes('ridden by you')) setIsRiding(true);
-            }
-
-            newChars[Number(obj.id)] = obj;
-
-            if (registerEntity) {
-                const entityId = `roomchars:${obj.id}`;
-                registerEntity(entityId, obj.name || String(obj.id), 'room', obj.type);
-            }
+            parsedChars[getRoomCharKey(obj.id)] = obj;
         });
 
-        console.log(`[GMCP] Resolved ${Object.keys(newChars).length} Room.Chars`);
-        if (setRoomChars) setRoomChars(newChars);
+        const mergeChars = (prev: Record<number, GmcpOccupant>) => {
+            const prevCount = Object.keys(prev).length;
+            const parsedValues = Object.values(parsedChars);
+            const looksLikePartialCombatUpdate = parsedValues.some(obj =>
+                obj.hp !== undefined ||
+                obj.maxhp !== undefined ||
+                obj.status !== undefined ||
+                (!obj.name && !obj.short && !obj.shortdesc && !obj.keyword) ||
+                !obj.type
+            );
+            const shouldPreserveExisting = prevCount > Object.keys(parsedChars).length || looksLikePartialCombatUpdate;
+            const newChars: Record<number, GmcpOccupant> = shouldPreserveExisting ? { ...prev } : {};
+
+            Object.entries(parsedChars).forEach(([key, obj]) => {
+                const id = Number(key);
+                const merged = { ...(prev[id] || {}), ...obj };
+                newChars[id] = merged;
+
+                const isNpc = merged.type === 'npc';
+                if (setIsRiding && isNpc) {
+                    const shortStr = (merged.short || merged.shortdesc || merged.name || '').toLowerCase();
+                    if (shortStr.includes('ridden by you')) setIsRiding(true);
+                }
+
+                if (registerEntity) {
+                    const entityId = `roomchars:${merged.id}`;
+                    registerEntity(entityId, merged.name || String(merged.id), 'room', merged.type);
+                }
+            });
+
+            return newChars;
+        };
+
+        console.log(`[GMCP] Resolved ${Object.keys(parsedChars).length} Room.Chars`);
+        if (setRoomChars) setRoomChars(prev => mergeChars(prev));
         mapperRef.current?.triggerRender?.();
 
         import('../../events/gmcpBus').then(({ gmcpBus }) => {
@@ -103,7 +136,7 @@ export const useGmcpOccupants = ({
             mapperRef.current?.triggerRender?.();
         }
 
-        if (setRoomChars) setRoomChars(prev => ({ ...prev, [Number(obj.id)]: obj }));
+        if (setRoomChars) setRoomChars(prev => ({ ...prev, [getRoomCharKey(obj.id)]: obj }));
 
         if (registerEntity) {
             const entityId = `roomchars:${obj.id}`;
@@ -121,7 +154,7 @@ export const useGmcpOccupants = ({
         if (!obj || obj.id === undefined) return;
 
         if (setRoomChars) setRoomChars(prev => {
-            const id = Number(obj.id);
+            const id = getRoomCharKey(obj.id);
             const existing = prev[id];
             if (existing) {
                 return { ...prev, [id]: { ...existing, ...obj } };
@@ -150,7 +183,7 @@ export const useGmcpOccupants = ({
 
         if (setRoomChars) setRoomChars(prev => {
             const next = { ...prev };
-            delete next[Number(id)];
+            delete next[getRoomCharKey(id)];
             return next;
         });
 

@@ -1,6 +1,7 @@
 import React, { useCallback, useRef } from 'react';
 import { GmcpRoomInfo, GmcpUpdateExits } from '../../types';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
+import { gmcpBus } from '../../events/gmcpBus';
 
 interface UseGmcpRoomProps {
     mapperRef: React.RefObject<MapperRef>;
@@ -79,9 +80,7 @@ export const useGmcpRoom = ({
         if (zone) setRoomZone(zone);
 
         // --- Store Sync ---
-        import('../../events/gmcpBus').then(({ gmcpBus }) => {
-            gmcpBus.emit('Room.Info', { ...data, zone, isSnooped: false });
-        });
+        gmcpBus.emit('Room.Info', { ...data, zone, isSnooped: false });
 
         // Drive lighting from GMCP Room Info
         const light = data.light ?? data.l;
@@ -114,9 +113,7 @@ export const useGmcpRoom = ({
         if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-gmcp-room-exits', { detail: data }));
         
         // --- Store Sync ---
-        import('../../events/gmcpBus').then(({ gmcpBus }) => {
-            gmcpBus.emit('Room.UpdateExits', { ...data, isSnooped: false });
-        });
+        gmcpBus.emit('Room.UpdateExits', { ...data, isSnooped: false });
 
         if (data.exits) {
             console.log('[GMCP] Room.UpdateExits:', data.exits);

@@ -96,7 +96,7 @@ export const useGmcpVitals = ({
             const oppId = data.opponent;
             setOpponentId(oppId);
             const oppName = getCharNameFromId(oppId);
-            setOpponentName(oppName);
+            if (oppName || !oppId) setOpponentName(oppName);
             if (!oppName && !oppId) setOpponentHealthStatus(null);
             
             // --- Store Sync ---
@@ -157,7 +157,9 @@ export const useGmcpVitals = ({
             if (!status) return;
 
             // Prioritize ID match for opponent
-            if (opponentId && char.id === opponentId) {
+            if (opponentId && String(char.id) === String(opponentId)) {
+                const name = char.name || char.short || char.keyword;
+                if (name) setOpponentName(name);
                 setOpponentHealthStatus(status);
             } else if (opponentName && !opponentId) {
                 // Fallback to name match if no ID yet (only if no direct ID match exists)

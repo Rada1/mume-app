@@ -22,6 +22,7 @@ export interface CombatState {
     applyGroupRemove: (id: string | number) => void;
     applyGroupAdd: (member: GroupMember) => void;
     applyGroupSet: (members: GroupMember[]) => void;
+    setOpponentId: (id: string | number | null) => void;
     setOpponentName: (name: string | null | ((prev: string | null) => string | null)) => void;
     setOpponentHealthStatus: (status: CombatHealthStatus | null | ((prev: CombatHealthStatus | null) => CombatHealthStatus | null)) => void;
     setOpponentStatus: (status: CombatHealthStatus | null | ((prev: CombatHealthStatus | null) => CombatHealthStatus | null)) => void;
@@ -50,6 +51,11 @@ export const createCombatActions = (set: any, get: any) => ({
         set({ opponentId: id, opponentName: name, opponentHealthStatus: status });
     },
 
+    setOpponentId: (id: string | number | null) => {
+        const numericId = id === null ? null : Number(id);
+        set({ opponentId: Number.isFinite(numericId) ? numericId : null });
+    },
+
     setBuffer: (name: string | null, status: CombatHealthStatus | null) => {
         set({ bufferName: name, bufferHealthStatus: status });
     },
@@ -58,6 +64,7 @@ export const createCombatActions = (set: any, get: any) => ({
         if (!Array.isArray(data)) return;
 
         const { opponentId, opponentName, bufferName } = get();
+        let newOpponentName: string | null = null;
         let newOpponentHealth: CombatHealthStatus | null = null;
         let newBufferHealth: CombatHealthStatus | null = null;
         
@@ -66,7 +73,8 @@ export const createCombatActions = (set: any, get: any) => ({
             if (!status) return;
 
             // Prioritize ID match for opponent
-            if (opponentId && char.id === opponentId) {
+            if (opponentId && String(char.id) === String(opponentId)) {
+                newOpponentName = char.name || char.short || char.keyword || newOpponentName;
                 newOpponentHealth = status;
             } else if (opponentName && !opponentId) {
                 // Fallback to name match if no ID yet (only if no direct ID match exists)
@@ -87,6 +95,7 @@ export const createCombatActions = (set: any, get: any) => ({
         
         if (newOpponentHealth || newBufferHealth) {
             set((state: CombatState) => ({
+                opponentName: newOpponentName || state.opponentName,
                 opponentHealthStatus: newOpponentHealth || state.opponentHealthStatus,
                 bufferHealthStatus: newBufferHealth || state.bufferHealthStatus
             }));

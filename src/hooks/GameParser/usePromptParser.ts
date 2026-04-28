@@ -20,6 +20,7 @@ export interface PromptParserDeps {
     setSpectateOpponentName?: (val: string | null) => void;
     setSpectateOpponentStatus?: (val: CombatHealthStatus | null) => void;
     captureStage?: React.MutableRefObject<CaptureStage>;
+    inCombatRef?: React.MutableRefObject<boolean>;
 }
 
 const HEALTH_MAP: Record<string, CombatHealthStatus> = {
@@ -93,11 +94,15 @@ export function usePromptParser(deps: PromptParserDeps) {
         // (see useGmcpGroup.ts). Do NOT derive it from the prompt — the prompt arrives on every
         // tick and would immediately race with and override the GMCP 'true', breaking both the
         // cancel-button visibility and the audio stop mechanism.
+        const hasAttachedCombatStatus = /:\s*(healthy|fine|hurt|wounded|bad|awful|stunned|dying|bleeding)\b/i.test(attachedText);
+        const combatStatusSource = hasAttachedCombatStatus ? attachedText : promptPart;
+
 // --- Combat Health Extraction (Opponents and Tanks/Buffers) ---
         // This is moved up so we can use the 'pairs' detection to verify hasFighting
-        const combatantsPart = promptPart
+        const combatantsPart = combatStatusSource
             .replace(/\b(?:HP|MA|MV|SP|Move|Mana)\s*:\s*\w+/gi, '') // Remove vital statuses
             .replace(/^[\*\)\!\(\[\]oO\.f%\~+WU:=O\#\?\s\-]+/, '') // Remove leading prompt symbols
+            .replace(/^.*\]\s+(?=[^:]+:\s*\w+\s*$)/, '')
             .replace(/>$/, '');
 
         const pairs: {name: string, status: CombatHealthStatus | null, isParen: boolean}[] = [];
@@ -162,7 +167,7 @@ export function usePromptParser(deps: PromptParserDeps) {
                 setOpponentName(oppName);
                 setOpponentHealthStatus(oppStatus);
             }
-        } else if (!isSpectateMode && !isSnoop) {
+        } else if (!isSpectateMode && !isSnoop && !deps.inCombatRef?.current) {
             setOpponentHealthStatus(null);
             setOpponentName(null);
         }

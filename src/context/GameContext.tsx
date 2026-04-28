@@ -182,7 +182,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setOpponentHealthStatus: s.userSession.vitals.setOpponentHealthStatus,
         setBufferHealthStatus: s.userSession.vitals.setBufferHealthStatus, setOpponentName: s.userSession.vitals.setOpponentName,
         setCharacterInfo: s.userSession.vitals.setCharacterInfo, characterInfo: s.userSession.vitals.characterInfo, opponentName: s.userSession.vitals.opponentName,
-        bufferName: s.userSession.vitals.bufferName, roomPlayers: s.userSession.game.roomPlayers, roomNpcs: s.userSession.game.roomNpcs, setGroupMembers: s.userSession.vitals.setGroupMembers,
+        bufferName: s.userSession.vitals.bufferName, roomChars: s.userSession.game.roomChars, roomPlayers: s.userSession.game.roomPlayers, roomNpcs: s.userSession.game.roomNpcs, setGroupMembers: s.userSession.vitals.setGroupMembers,
         setMumeEditState: s.setMumeEditState, setWhoList: s.userSession.game.setWhoList, setWhereList: s.userSession.game.setWhereList,
         opponentId: s.userSession.vitals.opponentId, setOpponentId: s.userSession.vitals.setOpponentId,
         detectLighting: env.detectLighting,

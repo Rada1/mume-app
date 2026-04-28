@@ -66,7 +66,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
 
     const {
         triggerHaptic, executeCommand, theme, btn, joystick,
-        setIsTrackpadModifierActive, lighting, roomPlayers, roomNpcs, roomItems, inlineCategories, isFoggy, isImmersionMode
+        setIsTrackpadModifierActive, lighting, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, isFoggy, isImmersionMode
     } = useGame();
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
     const { addMessage } = useLog();
@@ -90,6 +90,26 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const { handleCenterOnPlayer } = useMapperPlayerTracking(currentRoomId, rooms, autoCenter, setAutoCenter, cameraRef, canvasRef, playerPosRef, playerTrailRef, lastRoomIdRef, triggerRender, setViewZ, preloadedCoordsRef);
     const { walkTargetId, walkPath, startWalking, stopWalking } = useSmartWalk(currentRoomId, rooms, executeCommand, preloadedCoordsRef, addMessage);
     const { handleExportMap, handleImportMap, handleImportMMapper } = useMapperExportImport(rooms, setRooms, markers, setMarkers, characterName, addMessage, context);
+
+    const roomEntitySignature = useMemo(() => {
+        const summarize = (items: import('../../types').GmcpOccupant[] = []) => items
+            .map(item => `${item.id ?? ''}:${item.name ?? item.short ?? item.keyword ?? ''}:${item.type ?? ''}`)
+            .join('|');
+        const summarizeChars = (chars: Record<number, import('../../types').GmcpOccupant> = {}) => Object.values(chars)
+            .map(item => `${item.id ?? ''}:${item.name ?? item.short ?? item.keyword ?? ''}:${item.type ?? ''}:${item.pc ?? ''}:${item.status ?? ''}:${item.hp ?? ''}`)
+            .join('|');
+
+        return [
+            summarizeChars(roomChars),
+            summarize(roomPlayers),
+            summarize(roomNpcs),
+            summarize(roomItems)
+        ].join('::');
+    }, [roomChars, roomPlayers, roomNpcs, roomItems]);
+
+    useEffect(() => {
+        triggerRender();
+    }, [roomEntitySignature, triggerRender]);
 
     const controllerOptions = useMemo(() => ({
         onRecenter: handleCenterOnPlayer,
@@ -197,6 +217,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 baseMapExitsRef={context.baseMapExitsRef}
                 groupMembers={groupMembers}
                 serverIdIndexRef={context.serverIdIndexRef}
+                roomChars={roomChars}
                 roomPlayers={roomPlayers}
                 roomNpcs={roomNpcs}
                 roomItems={roomItems}

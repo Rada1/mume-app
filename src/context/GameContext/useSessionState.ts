@@ -322,6 +322,6 @@ export const useSessionState = (
         level, currentName, setCurrentName, registry, teleportTargets, quests,
         lightningEnabled, rStore.whoList, setWhoList, whereList, setWhereList, log, ui.selectedObjectIds,
         ui.toggleObjectSelection, ui.clearObjectSelection, recorder, discoveredItems,
-        gameTime, setGameTime, rStore.roomNum, captureSession
+        gameTime, setGameTime, rStore.roomNum, rStore.chars, captureSession
     ]);
 };

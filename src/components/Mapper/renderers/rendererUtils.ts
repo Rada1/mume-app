@@ -21,6 +21,7 @@ export interface RenderContext {
     roomNpcs?: import('../../../types').GmcpOccupant[];
     roomPlayers?: import('../../../types').GmcpOccupant[];
     roomItems?: import('../../../types').GmcpOccupant[];
+    roomChars?: Record<number, import('../../../types').GmcpOccupant>;
     centerOverride?: { x: number, y: number, z: number };
     inlineCategories?: import('../../../types').InlineCategoryConfig[];
     playerColor?: string;

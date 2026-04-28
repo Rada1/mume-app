@@ -194,23 +194,6 @@ export class Tokenizer {
             return;
         }
 
-        if (this.isRoomObjectStyle(style)) {
-            tokens.push({
-                type: 'entity',
-                content: decoded,
-                entityId: `auto-item-${decoded.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
-                metadata: {
-                    kind: 'object',
-                    category: 'inline-obj-room',
-                    context: decoded,
-                    location: 'room',
-                    action: 'menu',
-                    style
-                }
-            } as EntityToken);
-            return;
-        }
-
         const players = context?.registeredPlayers || [];
         if (players.length > 0) {
             const validNames = players.filter(n => n.length > 2);
@@ -333,10 +316,6 @@ export class Tokenizer {
         return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
-    private isRoomObjectStyle(style: React.CSSProperties): boolean {
-        return String(style.color || '').includes('--ansi-cyan');
-    }
-
     private pushText(content: string, tokens: Token[], style: React.CSSProperties) {
         if (!content) return;
         if (Object.keys(style).length > 0) {
@@ -433,7 +412,7 @@ export class Tokenizer {
             return fullStack.includes('player') ? 'player' : 'npc';
         }
         if (fullStack.includes('player')) return 'player';
-        if (fullStack.includes('object') || fullStack.includes('item')) return 'object';
+        if (fullStack.includes('object')) return 'object';
         if (fullStack.includes('room') || fullStack.includes('name')) return 'room';
         if (fullStack.includes('exit')) return 'exit';
         

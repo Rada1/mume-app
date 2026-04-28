@@ -124,10 +124,10 @@ describe('Tokenizer — char inline button assignment (GMCP source-of-truth cont
         });
     });
 
-    describe('Static buttons and items still work', () => {
-        it('still highlights cyan-colored text as an inline item (items have no GMCP type)', () => {
-            // \x1b[36m = ANSI cyan. Items legitimately rely on color promotion
-            // because GMCP doesn't tag them with a `type` field.
+    describe('XML object tags', () => {
+        it('does NOT promote cyan-colored text to an inline item without an object tag', () => {
+            // \x1b[36m = ANSI cyan. Combat hit text can share visual colors,
+            // so color alone must not create object buttons.
             const tokens = Tokenizer.tokenize(
                 'You see \x1b[36ma rusty sword\x1b[0m on the ground.',
                 makeContext([])
@@ -135,8 +135,25 @@ describe('Tokenizer — char inline button assignment (GMCP source-of-truth cont
             const ent = tokens.find(
                 (t): t is EntityToken => t.type === 'entity' && t.metadata?.kind === 'object'
             );
+            expect(ent).toBeUndefined();
+        });
+
+        it('emits inline object buttons for explicit object tags', () => {
+            const tokens = Tokenizer.tokenize(
+                'You see <object>a rusty sword</object> on the ground.',
+                makeContext([])
+            );
+            const ent = findEntityFor(tokens, 'a rusty sword');
             expect(ent).toBeDefined();
             expect(ent?.metadata?.category).toBe('inline-obj-room');
+        });
+
+        it('does NOT emit object buttons for hit tags', () => {
+            const tokens = Tokenizer.tokenize(
+                'You <hit>cleave hard</hit> at the orc.',
+                makeContext([])
+            );
+            expect(tokens.find(t => t.type === 'entity')).toBeUndefined();
         });
     });
 });

@@ -106,31 +106,9 @@ export const useUIStore = create<UIState>((set) => ({
     playersTab: 'online',
     charTab: 'info',
 
-    setGearTab: (tab) => {
-        set({ gearTab: tab });
-        const game = (window as any).mumeGame;
-        if (game) {
-            if (tab === 'worn' && (!game.displayEqLines || game.displayEqLines.length === 0)) game.executeCommand?.('eq', true, true);
-            else if (tab === 'inv' && (!game.displayInventoryLines || game.displayInventoryLines.length === 0)) game.executeCommand?.('inv', true, true);
-        }
-    },
-    setPlayersTab: (tab) => {
-        set({ playersTab: tab });
-        const game = (window as any).mumeGame;
-        if (game) {
-            if (tab === 'online' && (!game.whoLines || game.whoLines.length === 0)) game.executeCommand?.('who', true, true);
-            else if (tab === 'nearby' && (!game.whereLines || game.whereLines.length === 0)) game.executeCommand?.('where', true, true);
-        }
-    },
-    setCharTab: (tab) => {
-        set({ charTab: tab });
-        const game = (window as any).mumeGame;
-        if (game) {
-            if (tab === 'info' && (!game.infoLines || game.infoLines.length === 0)) game.executeCommand?.('info', true, true);
-            else if (tab === 'quests' && (!game.questLines || game.questLines.length === 0)) game.executeCommand?.('quest', true, true);
-            else if (tab === 'skills' && (!game.practiceLines || game.practiceLines.length === 0)) game.executeCommand?.('practice', true, true);
-        }
-    },
+    setGearTab: (tab) => set({ gearTab: tab }),
+    setPlayersTab: (tab) => set({ playersTab: tab }),
+    setCharTab: (tab) => set({ charTab: tab }),
 
     setDrawer: (drawer) => set({ drawer }),
     setIsDrawerPeeking: (peeking) => set({ isDrawerPeeking: peeking }),

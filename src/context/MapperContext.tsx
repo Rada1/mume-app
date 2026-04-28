@@ -234,9 +234,23 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const onPush    = (e: any) => pushPendingMove(e.detail);
         const onConfirm = (e: any) => handleMoveConfirmed(e);
         const onFail    = ()       => handleMoveFailure();
-        const onPre     = (e: any) => { 
-            preMoveRef.current = { dir: e.detail.dir, targetId: e.detail.targetId, time: Date.now() }; 
-            triggerRender(); 
+        const onPre     = (e: any) => {
+            const { dir, targetId } = e.detail;
+            preMoveRef.current = { dir, targetId, time: Date.now() };
+
+            // Populate clientPredictionsRef with target room coords for the dotted-line preview
+            const targetRoom = roomsRef.current[targetId];
+            if (targetRoom) {
+                clientPredictionsRef.current = [{ toId: targetId, toX: targetRoom.x, toY: targetRoom.y, toZ: targetRoom.z }];
+            } else {
+                const rawVnum = targetId.startsWith('m_') ? targetId.substring(2) : targetId;
+                const coords = preloadedCoordsRef.current[rawVnum];
+                if (coords) {
+                    clientPredictionsRef.current = [{ toId: targetId, toX: coords[0], toY: coords[1], toZ: coords[2] }];
+                }
+            }
+
+            triggerRender();
         };
 
         window.addEventListener('mume-gmcp-room-info', onInfo);
@@ -245,7 +259,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         window.addEventListener('mume-mapper-push-move', onPush);
         window.addEventListener('mume-mapper-move-confirmed', onConfirm);
         window.addEventListener('mume-mapper-move-failed', onFail);
-        window.addEventListener('mume-mapper-pre-move', onPre);
+        window.addEventListener('mume-mapper-push-pre-move', onPre);
 
         return () => {
             window.removeEventListener('mume-gmcp-room-info', onInfo);
@@ -254,7 +268,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             window.removeEventListener('mume-mapper-push-move', onPush);
             window.removeEventListener('mume-mapper-move-confirmed', onConfirm);
             window.removeEventListener('mume-mapper-move-failed', onFail);
-            window.removeEventListener('mume-mapper-pre-move', onPre);
+            window.removeEventListener('mume-mapper-push-pre-move', onPre);
         };
     }, [masterHandlers, pushPendingMove, handleMoveConfirmed, handleMoveFailure, triggerRender]);
 

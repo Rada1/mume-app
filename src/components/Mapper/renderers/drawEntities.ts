@@ -3,6 +3,56 @@ import { GRID_SIZE, DIRS } from '../mapperUtils';
 import { getMemberColor } from '../../../utils/groupUtils';
 import { COLOR_NPC, COLOR_PLAYER, COLOR_OBJ } from '../../../utils/categorizationUtils';
 import { occupantAnims, OCCUPANT_ANIM_DURATION, getOccupantKey } from '../occupantAnimStore';
+import { classifyOccupant } from '../../../services/classification/classifyOccupant';
+import type { GmcpOccupant } from '../../../types';
+
+type RoomAnchor = { x: number, y: number, z: number };
+type RoomLike = { x: number, y: number, z?: number, gmcpId?: string | number };
+type OccupantDot = { name: string, color: string, id?: string | number };
+type OccupantDisplayKind = 'player' | 'npc' | 'self';
+
+const getRawRoomId = (id: string) => id.startsWith('m_') ? id.substring(2) : id;
+
+const resolveActiveRoomAnchor = (
+    rCtx: RenderContext,
+    playerPosRef: React.MutableRefObject<RoomAnchor | null>
+): RoomAnchor | null => {
+    if (rCtx.centerOverride) return rCtx.centerOverride;
+    if (playerPosRef.current) return playerPosRef.current;
+    if (!rCtx.activeId) return null;
+
+    const rawId = getRawRoomId(rCtx.activeId);
+    const localId = rCtx.serverIdIndexRef?.current?.[rawId];
+    const room = rCtx.allRooms[rCtx.activeId] ||
+        rCtx.allRooms[`m_${rawId}`] ||
+        (localId ? rCtx.allRooms[`m_${localId}`] || rCtx.allRooms[localId] : undefined) ||
+        Object.values(rCtx.allRooms).find((candidate: RoomLike) => String(candidate.gmcpId) === rawId);
+
+    if (room) return { x: room.x, y: room.y, z: room.z || 0 };
+
+    const preloadedRoom = rCtx.preloaded[rawId] || (localId ? rCtx.preloaded[localId] : undefined);
+    return preloadedRoom ? { x: preloadedRoom[0], y: preloadedRoom[1], z: preloadedRoom[2] || 0 } : null;
+};
+
+const getOccupantName = (occupant: GmcpOccupant | string): string | undefined => (
+    typeof occupant === 'string'
+        ? occupant
+        : occupant.name || occupant.short || occupant.shortdesc || occupant.keyword || occupant.desc
+);
+
+const getDisplayKind = (occupant: GmcpOccupant, characterName: string | null): OccupantDisplayKind => {
+    const name = getOccupantName(occupant);
+    if (characterName && name?.toLowerCase() === characterName.toLowerCase()) return 'self';
+
+    const type = typeof occupant.type === 'string' ? occupant.type.toLowerCase() : '';
+    if (type === 'you' || type === 'self') return 'self';
+    if (occupant.pc === true || occupant.pc === 1) return 'player';
+    if (['ally', 'neutral', 'player', 'pc'].includes(type)) return 'player';
+    if (occupant.pc === false || occupant.pc === 0) return 'npc';
+    if (['npc', 'mob', 'mobile', 'enemy', 'shopkeeper', 'dealer', 'merchant', 'innkeeper', 'mount', 'guildmaster', 'trainer', 'guard'].includes(type)) return 'npc';
+
+    return classifyOccupant(occupant)?.kind || 'npc';
+};
 
 
 export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: number, gY2: number) => {
@@ -22,18 +72,19 @@ export const drawRoomOccupants = (
     playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>,
     characterName: string | null = null
 ) => {
-    const { ctx, currentZ, now, roomPlayers, roomNpcs, roomItems, groupMembers, camera, playerColor, npcColor, objectColor, opponentId, opponentName, triggerRender, centerOverride } = rCtx;
-    
-    // Prioritize centerOverride (for MiniMap/specific highlights) over the global playerPosRef
-    const anchor = centerOverride || playerPosRef.current;
+    const { ctx, currentZ, now, roomChars, roomPlayers, roomNpcs, roomItems, groupMembers, camera, playerColor, npcColor, objectColor, opponentId, opponentName, triggerRender } = rCtx;
+
+    // Resolve through live rooms, server-id mappings, and preloaded rooms so the
+    // current-room dots survive when the player position ref has not caught up.
+    const anchor = resolveActiveRoomAnchor(rCtx, playerPosRef);
     if (!anchor || Math.abs(anchor.z - currentZ) >= 1.0) return;
 
     const px = anchor.x * GRID_SIZE + GRID_SIZE / 2;
     const py = anchor.y * GRID_SIZE + GRID_SIZE / 2;
 
     // 1. Partition occupants into Group (inner) and Others (outer)
-    const groupOccupants: { name: string, color: string, id?: string | number }[] = [];
-    const otherOccupants: { name: string, color: string, id?: string | number }[] = [];
+    const groupOccupants: OccupantDot[] = [];
+    const otherOccupants: OccupantDot[] = [];
 
     const isNameInGroup = (name: string) => {
         if (!name || !groupMembers) return -1;
@@ -44,8 +95,16 @@ export const drawRoomOccupants = (
         });
     };
 
-    (roomPlayers || []).forEach(p => {
-        const name = typeof p === 'string' ? p : p.name;
+    const charList = Object.values(roomChars || {});
+    const players = charList.length > 0
+        ? charList.filter(char => getDisplayKind(char, characterName) === 'player')
+        : (roomPlayers || []);
+    const npcs = charList.length > 0
+        ? charList.filter(char => getDisplayKind(char, characterName) === 'npc')
+        : (roomNpcs || []);
+
+    players.forEach(p => {
+        const name = getOccupantName(p);
         if (!name) return;
         
         // Exclude the player themselves (they are the center orb)
@@ -59,8 +118,8 @@ export const drawRoomOccupants = (
         }
     });
 
-    (roomNpcs || []).forEach(n => {
-        const name = typeof n === 'string' ? n : n.name;
+    npcs.forEach(n => {
+        const name = getOccupantName(n);
         if (!name) return;
         
         const gIdx = isNameInGroup(name);
@@ -94,19 +153,20 @@ export const drawRoomOccupants = (
     const INNER_RADIUS = 9.0 / zoomFactor;
     const pulse = (Math.sin(now / 400) + 1) / 2;
 
+    const dotRadius = Math.max(2.25, 3.15 / Math.sqrt(camera.zoom));
     const drawDot = (orbX: number, orbY: number, color: string, alpha: number) => {
         ctx.save();
         ctx.globalAlpha = alpha;
         ctx.fillStyle = color;
-        ctx.shadowBlur = 4 + pulse * 4;
+        ctx.shadowBlur = 5 / camera.zoom;
         ctx.shadowColor = color;
         ctx.beginPath();
-        ctx.arc(orbX, orbY, 3, 0, Math.PI * 2);
+        ctx.arc(orbX, orbY, dotRadius, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
     };
 
-    const drawRing = (occupants: any[], radius: number) => {
+    const drawRing = (occupants: OccupantDot[], radius: number) => {
         const count = occupants.length;
         occupants.forEach((occ, index) => {
             const angle = (index / count) * Math.PI * 2;
@@ -163,8 +223,8 @@ export const drawRoomOccupants = (
 
     // 4.5 Draw room items as squares in a line at the bottom
     if (roomItems && roomItems.length > 0) {
-        const itemSize = 4 / zoomFactor;
-        const itemGap = 2;
+        const itemSize = 4 / camera.zoom;
+        const itemGap = 2 / camera.zoom;
         const totalWidth = roomItems.length * (itemSize + itemGap) - itemGap;
         let startX = px - totalWidth / 2;
         const itemY = py + (GRID_SIZE / 2) - 6;
@@ -217,10 +277,9 @@ export const drawEntities = (
     playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>,
     characterName: string | null
 ) => {
-    const { ctx, currentZ, activeId, allRooms, preloaded, centerOverride } = rCtx;
+    const { ctx, currentZ, activeId, allRooms, preloaded } = rCtx;
     
-    // Prioritize centerOverride for anchoring
-    const anchor = centerOverride || playerPosRef.current;
+    const anchor = resolveActiveRoomAnchor(rCtx, playerPosRef);
     const trail = playerTrailRef.current;
 
     // 1. Player Trail — teardrop streak that retracts tail-first toward the player

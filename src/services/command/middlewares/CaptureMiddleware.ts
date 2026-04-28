@@ -23,11 +23,6 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
     if (captureStage) {
         if (lowerCmd === 'where') captureStage.current = 'where';
         else if (lowerCmd === 'who') captureStage.current = 'who';
-        else if (lowerCmd === 'eq' || lowerCmd === 'equipment') captureStage.current = 'equipment';
-        else if (lowerCmd === 'inv' || lowerCmd === 'inventory') captureStage.current = 'inventory';
-        else if (lowerCmd === 'practice') captureStage.current = 'practice';
-        else if (lowerCmd === 'quest') captureStage.current = 'quests';
-        else if (lowerCmd === 'info') captureStage.current = 'info';
     }
 
     // 2. Specialized Logic (Containers & Manual Cleanup)

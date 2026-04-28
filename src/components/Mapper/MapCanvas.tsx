@@ -45,6 +45,7 @@ interface MapCanvasProps {
     clientPredictionsRef?: React.MutableRefObject<Array<{ toId: string, toX: number, toY: number, toZ: number }>>;
     groupMembers?: import('../../types').GroupMember[];
     serverIdIndexRef?: React.MutableRefObject<Record<string, string>>;
+    roomChars?: Record<number, import('../../types').GmcpOccupant>;
     roomPlayers?: import('../../types').GmcpOccupant[];
     roomNpcs?: import('../../types').GmcpOccupant[];
     roomItems?: import('../../types').GmcpOccupant[];
@@ -70,7 +71,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
-        roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, objectColor,
+        roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, objectColor,
         opponentName, opponentId, deathRoomId
     } = props;
 
@@ -81,7 +82,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
-        roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, objectColor,
+        roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, objectColor,
         opponentName, opponentId, deathRoomId
     });
 

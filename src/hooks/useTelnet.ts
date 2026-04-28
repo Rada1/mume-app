@@ -48,6 +48,7 @@ export function useTelnet(config: TelnetConfig) {
     const configRef = React.useRef(config);
     const bufferRef = React.useRef("");
     const lastProcessedPromptRef = React.useRef("");
+    const lastQueuedPromptRef = React.useRef<{ key: string, time: number } | null>(null);
     const pendingTextLines = React.useRef<(string | { line: string, isPrompt: boolean })[]>([]);
     const processingTimeout = React.useRef<any>(null);
 
@@ -62,13 +63,11 @@ export function useTelnet(config: TelnetConfig) {
             onCharVitals: (val) => configRef.current.handlers.onCharVitals?.(val),
             onRoomInfo: (val) => configRef.current.handlers.onRoomInfo?.(val),
             onRoomUpdateExits: (val) => configRef.current.handlers.onRoomUpdateExits?.(val),
-            onRoomPlayers: (val) => configRef.current.handlers.onRoomPlayers?.(val),
-            onRoomNpcs: (val) => configRef.current.handlers.onRoomNpcs?.(val),
+            onRoomChars: (val) => configRef.current.handlers.onRoomChars?.(val),
             onRoomItems: (val) => configRef.current.handlers.onRoomItems?.(val),
-            onAddPlayer: (val) => configRef.current.handlers.onAddPlayer?.(val),
-            onAddNpc: (val) => configRef.current.handlers.onAddNpc?.(val),
-            onRemovePlayer: (val) => configRef.current.handlers.onRemovePlayer?.(val),
-            onRemoveNpc: (val) => configRef.current.handlers.onRemoveNpc?.(val),
+            onAddChar: (val) => configRef.current.handlers.onAddChar?.(val),
+            onUpdateChar: (val) => configRef.current.handlers.onUpdateChar?.(val),
+            onRemoveChar: (val) => configRef.current.handlers.onRemoveChar?.(val),
             onCharNameChange: (val) => configRef.current.onCharNameChange?.(val),
             onPositionChange: (val) => configRef.current.onPositionChange?.(val),
             onGroupSet: (val) => configRef.current.handlers.onGroupSet?.(val),
@@ -120,31 +119,40 @@ export function useTelnet(config: TelnetConfig) {
 
             // Basic MUME prompt heuristics for non-XML or legacy prompts
             return (clean.endsWith('>') ||
-                clean.toLowerCase().includes('return: continue') ||
-                clean.toLowerCase().endsWith('password:') ||
-                clean.toLowerCase().includes('by what name'));
+                clean.toLowerCase().includes('return: continue'));
         };
+
+        const isAccountLoginQuestion = (line: string) => {
+            const clean = line.replace(/\x1b\[[0-9;]*m/g, '').trim().toLowerCase();
+            return clean.includes('by what name do you wish') ||
+                clean.includes('account password:') ||
+                clean === 'password:';
+        };
+
+        const decodePromptText = (line: string) => line
+            .replace(/<prompt[^>]*>|<\/prompt>/gi, '')
+            .replace(/<\/?[a-zA-Z][a-zA-Z0-9_-]*(?:\s+[^>]*)?>/g, '')
+            .replace(/&gt;/gi, '>')
+            .replace(/&lt;/gi, '<')
+            .replace(/&amp;/gi, '&')
+            .trim();
 
         const handlePromptDetected = (line: string) => {
             let displayPrompt = line;
-            if (line.includes('<prompt')) {
-                // Strip XML tags and decode entities for the UI display
-                displayPrompt = line
-                    .replace(/<prompt[^>]*>|<\/prompt>/g, '')
-                    .replace(/&gt;/gi, '>')
-                    .replace(/&lt;/gi, '<')
-                    .replace(/&amp;/gi, '&')
-                    .trim();
-                
-                // Remove trailing > delimiter if present for a cleaner HUD look
-                if (displayPrompt.endsWith('>')) {
-                    displayPrompt = displayPrompt.substring(0, displayPrompt.length - 1).trim();
-                }
+            if (line.includes('<')) {
+                // Strip XML tags and decode entities for the UI display/log prompt.
+                displayPrompt = decodePromptText(line);
             }
 
-            const isNewPrompt = line !== lastProcessedPromptRef.current;
+            // Remove trailing > delimiter if present for a cleaner HUD look
+            if (displayPrompt.endsWith('>')) {
+                displayPrompt = displayPrompt.substring(0, displayPrompt.length - 1).trim();
+            }
+
+            const promptKey = displayPrompt.replace(/\s+/g, ' ').trim();
+            const isNewPrompt = promptKey !== lastProcessedPromptRef.current;
             if (isNewPrompt) {
-                lastProcessedPromptRef.current = line;
+                lastProcessedPromptRef.current = promptKey;
                 console.log(`[useTelnet] handlePromptDetected (queued) for: "${displayPrompt.substring(0, 30)}"`);
                 configRef.current.setPrompt(displayPrompt);
 
@@ -154,9 +162,16 @@ export function useTelnet(config: TelnetConfig) {
                 }
             }
 
-            // Queue every prompt so parser-driven capture sessions finalize even when
-            // the visible prompt text is identical to the previous prompt.
-            processedLines.push({ line, isPrompt: true });
+            // Queue normalized prompt text so XML-only variants don't render as
+            // duplicate prompts. Repeated prompts outside the same network burst still
+            // flow through so parser-driven capture sessions can finalize.
+            const now = Date.now();
+            const lastQueued = lastQueuedPromptRef.current;
+            const isBurstDuplicate = !!lastQueued && lastQueued.key === promptKey && now - lastQueued.time < 250;
+            if (!isBurstDuplicate) {
+                lastQueuedPromptRef.current = { key: promptKey, time: now };
+                processedLines.push({ line: displayPrompt, isPrompt: true });
+            }
         };
 
         // Splits a physical line that contains an XML <prompt>...</prompt> tag
@@ -193,7 +208,7 @@ export function useTelnet(config: TelnetConfig) {
             // Priority 2: Legacy MUME prompt at end of line
             // Stricter check: must look like a real prompt (vitals, account prompt, or standalone >)
             // This prevents matching the > at the end of XML tags.
-            const legacyPromptMatch = !xmlSplit ? line.match(/^(.*?)((?:!\[.*?\]\s*>|(?:\d+H\s+\d+M\s+\d+V\s+>)|(?:^> )|(?:Password:)|(?:By what name.*?\?))\s*)$/) : null;
+            const legacyPromptMatch = !xmlSplit ? line.match(/^(.*?)((?:!\[.*?\]\s*>|(?:\d+H\s+\d+M\s+\d+V\s+>)|(?:^> ))\s*)$/) : null;
 
             if (xmlSplit) {
                 if (xmlSplit.preText.length > 0) processedLines.push(xmlSplit.preText);
@@ -206,7 +221,7 @@ export function useTelnet(config: TelnetConfig) {
                 handlePromptDetected(promptPart);
             } else if (isPrompt(line)) {
                 handlePromptDetected(line);
-            } else if (line.length > 0) {
+            } else {
                 processedLines.push(line);
             }
         }
@@ -218,9 +233,12 @@ export function useTelnet(config: TelnetConfig) {
             bufferRef.current = lastLine;
         } else {
             const xmlSplitLast = splitXmlPrompt(lastLine);
-            const legacyPromptMatch = !xmlSplitLast ? lastLine.match(/^(.*?)((?:!\[.*?\]\s*>|(?:\d+H\s+\d+M\s+\d+V\s+>)|(?:^> )|(?:Password:)|(?:By what name.*?\?))\s*)$/) : null;
+            const legacyPromptMatch = !xmlSplitLast ? lastLine.match(/^(.*?)((?:!\[.*?\]\s*>|(?:\d+H\s+\d+M\s+\d+V\s+>)|(?:^> ))\s*)$/) : null;
 
-            if (xmlSplitLast) {
+            if (isAccountLoginQuestion(lastLine)) {
+                processedLines.push(lastLine);
+                bufferRef.current = '';
+            } else if (xmlSplitLast) {
                 if (xmlSplitLast.preText.length > 0) processedLines.push(xmlSplitLast.preText);
                 handlePromptDetected(xmlSplitLast.promptPart);
                 // postText after the prompt may still be a partial line — keep it buffered so

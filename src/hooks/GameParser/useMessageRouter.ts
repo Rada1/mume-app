@@ -107,7 +107,8 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         }
 
         if (objects.length === 0) {
-            const itemMatch = textOnly.match(/^(?:A|An|The|Some|a|an|the|some)\s+(.+?)\s+(?:is|are)\s+here\s*[.!]?$/i);
+            const itemMatch = textOnly.match(/^(?:A|An|The|Some|a|an|the|some)\s+(.+?)\s+(?:is|are)\s+(?:here|mounted here|floating(?: in the air)? here|lying here|resting here|sitting here)\s*[.!]?$/i) ||
+                textOnly.match(/^(?:A|An|The|Some|a|an|the|some)\s+(.+?)\s+stands\s+here\s*[.!]?$/i);
             if (itemMatch) {
                 const potentialName = itemMatch[1].trim();
                 if (!/^(you|it|they|he|she|to|at|here)$/i.test(potentialName)) {

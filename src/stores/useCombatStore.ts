@@ -19,10 +19,15 @@ gmcpBus.on('Char.Opponent', (data: any) => {
     if (typeof value === 'string') {
         const idNum = parseInt(value, 10);
         if (!isNaN(idNum) && idNum > 0) {
-            store.setOpponent(idNum, null, null);
+            store.setOpponentId(idNum);
+            if (data?.name) store.setOpponentName(data.name);
         } else {
-            store.setOpponent(null, value, null);
+            store.setOpponentId(null);
+            store.setOpponentName(value);
         }
+    } else if (typeof value === 'number' && value > 0) {
+        store.setOpponentId(value);
+        if (data?.name) store.setOpponentName(data.name);
     } else if (value === null) {
         store.setOpponent(null, null, null);
     }
