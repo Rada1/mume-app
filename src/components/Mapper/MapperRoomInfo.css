@@ -1,0 +1,93 @@
+.mapper-room-info-container {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 100px);
+    max-width: 420px;
+    z-index: 20;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    transition: opacity 0.3s ease;
+}
+
+.mri-content {
+    background: linear-gradient(rgba(15, 17, 28, 0.7), rgba(15, 17, 28, 0.85));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 6px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.mri-name {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.mri-name .message-content {
+    display: inline-block;
+}
+
+.mri-desc {
+    font-family: var(--font-main);
+    font-size: 0.65rem;
+    font-style: italic;
+    color: #cbd5e1;
+    line-height: 1.3;
+    max-height: 8em; /* Increased to show more lines */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 6; /* Allow up to 6 lines on desktop */
+    -webkit-box-orient: vertical;
+    opacity: 0.85;
+    letter-spacing: -0.01em;
+}
+
+/* Terrain-specific accent borders */
+.mapper-room-info-container.terrain-forest .mri-content { border-color: rgba(34, 197, 94, 0.3); }
+.mapper-room-info-container.terrain-water .mri-content { border-color: rgba(56, 189, 248, 0.3); }
+.mapper-room-info-container.terrain-field .mri-content { border-color: rgba(253, 224, 71, 0.3); }
+.mapper-room-info-container.terrain-mountain .mri-content { border-color: rgba(226, 232, 240, 0.2); }
+
+/* Mobile-specific overrides for even smaller text and tighter width */
+@media (max-width: 600px) {
+    .mapper-room-info-container {
+        width: 94%; 
+        top: 6px; /* Anchor to top now */
+        bottom: auto;
+    }
+    
+    .mri-content {
+        padding: 4px 10px;
+        border-radius: 8px;
+        gap: 0;
+        /* Bottom border instead of top for header look */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .mri-name { 
+        font-size: 0.65rem; 
+        line-height: 1.1;
+        margin-bottom: 1px;
+    }
+    
+    .mri-desc { 
+        font-size: 0.55rem; 
+        line-height: 1.1;
+        -webkit-line-clamp: 3;
+        max-height: 3.4em;
+        opacity: 0.9;
+    }
+}

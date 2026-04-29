@@ -7,6 +7,7 @@ import { CloudFog, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplet
 import InputArea from '../../Controls/InputArea';
 import { UnifiedDrawerContent } from '../../Drawers/UnifiedDrawerContent';
 import CombatStatsPanel from '../../Combat/CombatStatsPanel';
+import { MapperRoomInfo } from '../../Mapper/MapperRoomInfo';
 import { UiPositions, SwipeDirection } from '../../../types';
 
 interface MapperClusterProps {
@@ -73,76 +74,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 gap: '0'
             }}
         >
-            {/* Command Bar at the TOP of the gutter */}
-            <div
-                className="mobile-gutter-input-wrapper"
-                style={{
-                    position: 'relative',
-                    zIndex: 1,
-                    padding: '12px 0 0 0',
-                    flexShrink: 0,
-                    marginBottom: (isShown || ui.drawer !== 'none') ? '4px' : '0'
-                }}
-            >
-                <InputArea
-                    input={input}
-                    setInput={setInput}
-                    onSend={handleSend}
-                    onSwipe={handleInputSwipe}
-                    isMobile={isMobile}
-                    isKeyboardOpen={viewport.isKeyboardOpen}
-                    commandPreview={null}
-                    spatButtons={spatButtons}
-                    setActiveSet={btn.setActiveSet}
-                    executeCommand={executeCommand}
-                    setSpatButtons={setSpatButtons}
-                    setPopoverState={setPopoverState}
-                    parley={parley}
-                    setParley={setParley}
-                    whoList={whoList}
-                    gameState={gameState}
-                    terrain={currentTerrain}
-                />
-            </div>
-            
-            {/* Persistent Tactical Buttons for Mobile Portrait */}
-            <div
-                className="mobile-tactical-buttons-persistent"
-                style={{
-                    position: 'relative',
-                    zIndex: 20,
-                    overflow: 'visible'
-                }}
-            >
-                <LineCluster
-                    isEditMode={isEditMode}
-                    handleDragStart={handleDragStart}
-                    buttons={btn.buttons}
-                    selectedButtonIds={btn.selectedButtonIds}
-                    dragState={dragState}
-                    handleButtonClick={handleButtonClick}
-                    wasDraggingRef={wasDraggingRef}
-                    triggerHaptic={triggerHaptic}
-                    setPopoverState={setPopoverState}
-                    setEditingButtonId={btn.setEditingButtonId}
-                    setSelectedIds={btn.setSelectedIds}
-                    activePrompt={activePrompt}
-                    executeCommand={executeCommand}
-                    setCommandPreview={setCommandPreview}
-                    heldButton={heldButton}
-                    heldButtonRef={heldButtonRef}
-                    setHeldButton={setHeldButton}
-                    joystick={joystick}
-                    target={target}
-                    isGridEnabled={btn.isGridEnabled}
-                    gridSize={btn.gridSize}
-                    setActiveSet={btn.setActiveSet}
-                    setButtons={btn.setButtons}
-                    isMobile={isMobile}
-                />
-            </div>
-
-            {/* Map Area */}
+            {/* Map Area at the TOP */}
             <div
                 className="mobile-mapper-touch-surface gutter-panel-card"
                 style={{
@@ -150,7 +82,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     pointerEvents: isShown ? 'auto' : 'none',
                     opacity: isShown ? 1 : 0,
                     touchAction: 'none',
-                    position: 'relative'
+                    position: 'relative',
+                    flex: isShown ? 1 : 'none'
                 }}
             >
                 {(lighting !== 'none' || weather !== 'none' || isFoggy || stats.conditions?.hungry || stats.conditions?.thirsty) && (
@@ -186,6 +119,60 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         )}
                     </div>
                 )}
+                
+                {/* Header Group: Room Info + Tactical Buttons */}
+                <div style={{
+                    position: 'absolute',
+                    top: '0',
+                    left: '0',
+                    right: '0',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    zIndex: 2800,
+                    pointerEvents: 'none'
+                }}>
+                    <MapperRoomInfo />
+                    
+                    {/* Persistent Tactical Buttons - now below the room card */}
+                    <div
+                        className="mobile-tactical-buttons-persistent"
+                        style={{
+                            position: 'relative',
+                            marginTop: '68px', // Increased space from room card
+                            zIndex: 20,
+                            overflow: 'visible',
+                            pointerEvents: 'auto'
+                        }}
+                    >
+                        <LineCluster
+                            isEditMode={isEditMode}
+                            handleDragStart={handleDragStart}
+                            buttons={btn.buttons}
+                            selectedButtonIds={btn.selectedButtonIds}
+                            dragState={dragState}
+                            handleButtonClick={handleButtonClick}
+                            wasDraggingRef={wasDraggingRef}
+                            triggerHaptic={triggerHaptic}
+                            setPopoverState={setPopoverState}
+                            setEditingButtonId={btn.setEditingButtonId}
+                            setSelectedIds={btn.setSelectedIds}
+                            activePrompt={activePrompt}
+                            executeCommand={executeCommand}
+                            setCommandPreview={setCommandPreview}
+                            heldButton={heldButton}
+                            heldButtonRef={heldButtonRef}
+                            setHeldButton={setHeldButton}
+                            joystick={joystick}
+                            target={target}
+                            isGridEnabled={btn.isGridEnabled}
+                            gridSize={btn.gridSize}
+                            setActiveSet={btn.setActiveSet}
+                            setButtons={btn.setButtons}
+                            isMobile={isMobile}
+                        />
+                    </div>
+                </div>
 
                 <div className="mobile-mapper-combat-overlay">
                     <CombatStatsPanel />
@@ -209,7 +196,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
 
             {/* Drawer Area */}
             {!isShown && ui.drawer !== 'none' && (
-                <div className="gutter-drawer-container gutter-panel-card" style={{ display: 'flex', flexDirection: 'column' }}>
+                <div className="gutter-drawer-container gutter-panel-card" style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <div
                         className="gutter-drawer-content"
                         style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}
@@ -239,6 +226,38 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     </div>
                 </div>
             )}
+
+            {/* Command Bar at the BOTTOM of the gutter */}
+            <div
+                className="mobile-gutter-input-wrapper"
+                style={{
+                    position: 'relative',
+                    zIndex: 1,
+                    padding: '8px 0 0 0',
+                    flexShrink: 0,
+                    marginBottom: '16px' // Moved up a touch
+                }}
+            >
+                <InputArea
+                    input={input}
+                    setInput={setInput}
+                    onSend={handleSend}
+                    onSwipe={handleInputSwipe}
+                    isMobile={isMobile}
+                    isKeyboardOpen={viewport.isKeyboardOpen}
+                    commandPreview={null}
+                    spatButtons={spatButtons}
+                    setActiveSet={btn.setActiveSet}
+                    executeCommand={executeCommand}
+                    setSpatButtons={setSpatButtons}
+                    setPopoverState={setPopoverState}
+                    parley={parley}
+                    setParley={setParley}
+                    whoList={whoList}
+                    gameState={gameState}
+                    terrain={currentTerrain}
+                />
+            </div>
 
             {/* Bottom Tab Bar */}
             {!isKeyboardOpen && gameState !== 'disconnected' && (

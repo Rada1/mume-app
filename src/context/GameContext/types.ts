@@ -144,6 +144,7 @@ export interface UIContextType {
     setIsMapExpanded: (open: boolean) => void;
     setIsSetManagerOpen: (open: boolean) => void;
     setManagerSelectedSet: (setId: string | null) => void;
+    setShowMapperToolbar: (show: boolean) => void;
     gearTab: 'worn' | 'inv';
     setGearTab: (tab: 'worn' | 'inv') => void;
     playersTab: 'online' | 'nearby' | 'group';

@@ -57,6 +57,7 @@ interface SettingsState {
     // Mapper Context Settings
     allowMapPersistence: boolean;
     unveilMap: boolean;
+    showMapperToolbar: boolean;
     
     // Actions
     setConnectionUrl: (val: string) => void;
@@ -97,6 +98,7 @@ interface SettingsState {
     setMusicVolume: (val: number) => void;
     setAllowMapPersistence: (val: boolean) => void;
     setUnveilMap: (val: boolean) => void;
+    setShowMapperToolbar: (val: boolean) => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -145,6 +147,7 @@ export const useSettingsStore = create<SettingsState>()(
 
             allowMapPersistence: true,
             unveilMap: false,
+            showMapperToolbar: false,
 
             // Setters
             setConnectionUrl: (connectionUrl) => set({ connectionUrl }),
@@ -189,6 +192,7 @@ export const useSettingsStore = create<SettingsState>()(
             setMusicVolume: (musicVolume) => set({ musicVolume }),
             setAllowMapPersistence: (allowMapPersistence) => set({ allowMapPersistence }),
             setUnveilMap: (unveilMap) => set({ unveilMap }),
+            setShowMapperToolbar: (showMapperToolbar) => set({ showMapperToolbar }),
         }),
         {
             name: 'mume-settings-storage',

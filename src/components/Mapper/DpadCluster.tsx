@@ -15,7 +15,7 @@ export const DpadCluster: React.FC<DpadClusterProps> = ({
     heldButton, setHeldButton
 }) => {
     const {
-        executeCommand, triggerHaptic, joystick, btn, isTrackpadModifierActive
+        executeCommand, triggerHaptic, joystick, btn, isTrackpadModifierActive, playClickSound
     } = useGame();
     const { target } = useVitals();
     
@@ -40,6 +40,7 @@ export const DpadCluster: React.FC<DpadClusterProps> = ({
                 const result = getButtonCommand(button, heldButton.dx || 0, heldButton.dy || 0, undefined, undefined, heldButton.modifiers, { currentDir: dir, isTargetModifierActive: !!joystick.isTargetModifierActive }, target, true);
                 if (result) {
                     executeCommand(result.cmd, false, false, false, false, { fromUi: true });
+                    if (playClickSound) playClickSound();
                     setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
                     triggerHaptic(60);
                 }

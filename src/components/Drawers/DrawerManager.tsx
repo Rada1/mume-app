@@ -8,6 +8,7 @@ import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { DrawerShell } from './DrawerShell';
 import { UnifiedDrawerContent } from './UnifiedDrawerContent';
 import { Mapper } from '../Mapper/Mapper';
+import { MapperRoomInfo } from '../Mapper/MapperRoomInfo';
 import { User, Shield, Users, Map as MapIcon } from 'lucide-react';
 
 const SIDEBAR_TABS = [
@@ -63,6 +64,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             {!viewport.isMobile && (
                 <div className={`map-drawer-desktop ${ui.mapExpanded ? 'open' : ''}`}>
                     <div className="drawer-content" style={{ flex: 1, padding: 0, position: 'relative', overflow: 'hidden' }}>
+                        <MapperRoomInfo />
                         <Mapper
                             characterName={characterName || ''}
                             isMobile={viewport.isMobile}

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { GmcpCharVitals, GmcpCharInfo, CombatHealthStatus } from '../../types';
 
 interface UseGmcpVitalsProps {
@@ -10,6 +10,8 @@ interface UseGmcpVitalsProps {
     setOpponentName: (name: string | null) => void;
     setBufferName: (name: string | null) => void;
     setPlayerPosition: (pos: string) => void;
+    setMood?: (val: string) => void;
+    sendCommand?: (cmd: string) => void;
     setCurrentWeather: (weather: import('../../types').WeatherType) => void;
     setIsFoggy: (isFoggy: boolean) => void;
     setCharacterInfo: React.Dispatch<React.SetStateAction<import('../../types').CharacterInfo>>;
@@ -33,6 +35,8 @@ export const useGmcpVitals = ({
     setOpponentName,
     setBufferName,
     setPlayerPosition,
+    setMood,
+    sendCommand,
     setCurrentWeather,
     setIsFoggy,
     setCharacterInfo,
@@ -46,8 +50,20 @@ export const useGmcpVitals = ({
     opponentId,
     bufferName
 }: UseGmcpVitalsProps) => {
+    const lastMoodRef = useRef<string | null>(null);
 
     const onCharVitals = useCallback((data: GmcpCharVitals) => {
+        if (data.mood && !isSpectateMode) {
+            const nextMood = data.mood.toLowerCase();
+            const previousMood = lastMoodRef.current;
+            lastMoodRef.current = nextMood;
+            setMood?.(nextMood);
+
+            if (previousMood !== null && previousMood !== nextMood) {
+                sendCommand?.('info %O %D %k %A');
+            }
+        }
+
         if (data.terrain) {
             if (typeof window !== 'undefined') {
                 window.dispatchEvent(new CustomEvent('mume-mapper-terrain', { detail: data.terrain }));
@@ -128,7 +144,7 @@ export const useGmcpVitals = ({
         import('../../events/gmcpBus').then(({ gmcpBus }) => {
             gmcpBus.emit('Char.Vitals', { ...data, isSnooped: false });
         });
-    }, [setCurrentTerrain, setCurrentWeather, setIsFoggy, setPlayerHealthStatus, setOpponentId, setOpponentName, setOpponentHealthStatus, setBufferName, setBufferHealthStatus, setPlayerPosition, findStatus, getCharNameFromId, isSpectateMode, detectLighting, playerPositionRef, setInCombat]);
+    }, [setCurrentTerrain, setCurrentWeather, setIsFoggy, setPlayerHealthStatus, setOpponentId, setOpponentName, setOpponentHealthStatus, setBufferName, setBufferHealthStatus, setPlayerPosition, setMood, sendCommand, findStatus, getCharNameFromId, isSpectateMode, detectLighting, playerPositionRef, setInCombat]);
 
     const onCharInfo = useCallback((data: GmcpCharInfo) => {
         console.log('[GMCP] CharInfo:', data);

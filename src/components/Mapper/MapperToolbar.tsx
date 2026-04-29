@@ -97,9 +97,9 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
         </>
     );
 
-    if (isPortrait) {
-        if (!ui.showMapperToolbar) return null;
+    if (!ui.showMapperToolbar) return null;
 
+    if (isPortrait) {
         return (
             <div 
                 className="mapper-minimal-settings"

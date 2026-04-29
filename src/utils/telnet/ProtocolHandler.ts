@@ -11,6 +11,27 @@ export interface ProtocolOptions {
     onEchoChange?: (visible: boolean) => void;
 }
 
+const GMCP_SUPPORTS = [
+    "Core 1",
+    "Char 1",
+    "Char.Vitals 1",
+    "Char.Ride 1",
+    "Group 1",
+    "Room 1",
+    "Room.Info 1",
+    "Room.UpdateExits 1",
+    "Room.Chars 1",
+    "Room.Chars.Set 1",
+    "Room.Chars.Add 1",
+    "Room.Chars.Update 1",
+    "Room.Chars.Remove 1",
+    "Room.Items 1",
+    "Char.Items 1",
+    "Comm.Channel 1",
+    "External.Room 1",
+    "MUME.Client 1"
+];
+
 export class ProtocolHandler {
     private state: TelnetState = 'DATA';
     private negotiationCmd: number = 0;
@@ -96,7 +117,7 @@ export class ProtocolHandler {
                 const sysText = 'GMCP negotiated. Requesting data...';
                 console.log('[GMCP] Handshake: Sending Core.Hello and Core.Supports.Set');
                 this.options.sendGMCP('Core.Hello', { client: "Mume AI Studio", version: "1.0.0" });
-                this.options.sendGMCP('Core.Supports.Set', ["Core 1", "Char 1", "Char.Vitals 1", "Char.Ride 1", "Group 1", "Room 1", "Room.Info 1", "Room.UpdateExits 1", "Room.Players 1", "Room.NPCs 1", "Room.Chars 1", "Room.Items 1", "Char.Items 1", "Comm 1", "External.Room 1", "Mume.Client 1"]);
+                this.options.sendGMCP('Core.Supports.Set', GMCP_SUPPORTS);
             }
         } else if (cmd === DO && option === TELNET_NAWS) {
             this.options.sendBytes([IAC, WILL, TELNET_NAWS]);

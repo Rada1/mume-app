@@ -43,6 +43,35 @@ export const initialCombatState = {
 
 // --- Logic Section ---
 
+const getGroupMemberKey = (member: Partial<GroupMember>) => {
+    if (member.id !== undefined && member.id !== null) return String(member.id);
+    if (member.name) return member.name.toLowerCase();
+    return null;
+};
+
+const mergeGroupMember = (existing: GroupMember, update: Partial<GroupMember>) => {
+    const merged = { ...existing, ...update };
+    if (update.mapid === undefined && existing.mapid !== undefined) merged.mapid = existing.mapid;
+    if (update.fighting === undefined && existing.fighting !== undefined) merged.fighting = existing.fighting;
+    if (update.name === undefined && existing.name !== undefined) merged.name = existing.name;
+    if (update.hp === undefined && existing.hp !== undefined) merged.hp = existing.hp;
+    return merged;
+};
+
+const upsertGroupMember = (members: GroupMember[], update: GroupMember) => {
+    const updateKey = getGroupMemberKey(update);
+    if (!updateKey) return members;
+
+    let found = false;
+    const next = members.map(member => {
+        if (getGroupMemberKey(member) !== updateKey) return member;
+        found = true;
+        return mergeGroupMember(member, update);
+    });
+
+    return found ? next : [...next, update];
+};
+
 /**
  * Creates the combat actions for a Zustand store.
  */
@@ -104,7 +133,7 @@ export const createCombatActions = (set: any, get: any) => ({
 
     applyGroupUpdate: (update: any) => {
         set((state: CombatState) => ({
-            groupMembers: state.groupMembers.map(m => String(m.id) === String(update.id) ? { ...m, ...update } : m)
+            groupMembers: upsertGroupMember(state.groupMembers, update)
         }));
     },
 
@@ -116,11 +145,18 @@ export const createCombatActions = (set: any, get: any) => ({
 
     applyGroupAdd: (member: GroupMember) => {
         set((state: CombatState) => ({
-            groupMembers: [...state.groupMembers, member]
+            groupMembers: upsertGroupMember(state.groupMembers, member)
         }));
     },
 
     applyGroupSet: (members: GroupMember[]) => {
+        if (!Array.isArray(members)) {
+            set((state: CombatState) => ({
+                groupMembers: upsertGroupMember(state.groupMembers, members)
+            }));
+            return;
+        }
+
         set({ groupMembers: members });
     },
 

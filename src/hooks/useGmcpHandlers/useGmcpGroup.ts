@@ -28,6 +28,12 @@ export const useGmcpGroup = ({
         }));
     }, [setStats]);
 
+    const getMemberKey = (member: Partial<GroupMember>) => {
+        if (member.id !== undefined && member.id !== null) return String(member.id);
+        if (member.name) return member.name.toLowerCase();
+        return null;
+    };
+
     const normalizeGroupMember = (raw: any): GroupMember => {
         const id = raw.id !== undefined && raw.id !== null ? Number(raw.id) : raw.id;
 
@@ -43,52 +49,57 @@ export const useGmcpGroup = ({
         return { ...raw, id, mapid: (mapid !== undefined && !isNaN(mapid)) ? mapid : undefined };
     };
 
-    const onGroupAdd = useCallback((data: GroupMember) => {
-        console.log('[GMCP] onGroupAdd raw:', JSON.stringify(data));
-        const member = normalizeGroupMember(data);
-        const isYou = member.type === 'you' || (characterName && member.name && member.name.toLowerCase() === characterName.toLowerCase());
+    const isSelfMember = useCallback((member: GroupMember) => {
+        return member.id === youIdRef.current ||
+               member.type === 'you' ||
+               (characterName && member.name && member.name.toLowerCase() === characterName.toLowerCase());
+    }, [characterName]);
+
+    const mergeGroupMember = useCallback((member: GroupMember, source: string) => {
+        const isYou = isSelfMember(member);
+
+        if (isYou && member.id !== undefined) {
+            youIdRef.current = Number(member.id);
+        }
 
         if (isYou) {
-            if (member.id !== undefined) youIdRef.current = Number(member.id);
             syncWaitingState(member);
             return;
         }
+
+        const memberKey = getMemberKey(member);
+        if (!memberKey) return;
+
         setGroupMembers(prev => {
-            if (prev.find(m => Number(m.id) === Number(member.id))) return prev;
-            return [...prev, member];
+            const existingIndex = prev.findIndex(existing => getMemberKey(existing) === memberKey);
+            if (existingIndex === -1) {
+                console.log(`[GMCP] ${source} created group member:`, JSON.stringify(member));
+                return [...prev, member];
+            }
+
+            return prev.map((existing, index) => {
+                if (index !== existingIndex) return existing;
+                const merged = { ...existing, ...member };
+                if (member.mapid === undefined && existing.mapid !== undefined) merged.mapid = existing.mapid;
+                if (member.fighting === undefined && existing.fighting !== undefined) merged.fighting = existing.fighting;
+                if (member.name === undefined && existing.name !== undefined) merged.name = existing.name;
+                if (member.hp === undefined && existing.hp !== undefined) merged.hp = existing.hp;
+                return merged;
+            });
         });
-    }, [setGroupMembers, characterName, syncWaitingState]);
+    }, [isSelfMember, setGroupMembers, syncWaitingState]);
+
+    const onGroupAdd = useCallback((data: GroupMember) => {
+        console.log('[GMCP] onGroupAdd raw:', JSON.stringify(data));
+        const member = normalizeGroupMember(data);
+        mergeGroupMember(member, 'Group.Add');
+    }, [mergeGroupMember]);
 
     const onGroupUpdate = useCallback((data: any) => {
         console.log('[GMCP] onGroupUpdate raw:', JSON.stringify(data));
         const updates = normalizeGroupMember(data);
-
-        const isYou = updates.id === youIdRef.current ||
-                      updates.type === 'you' ||
-                      (characterName && updates.name && updates.name.toLowerCase() === characterName.toLowerCase());
-
-        if (isYou && updates.id !== undefined) {
-            youIdRef.current = Number(updates.id);
-        }
-
-        if (isYou) {
-            syncWaitingState(updates);
-        }
-
-        setGroupMembers(prev => prev.map(m => {
-            if (String(m.id) === String(updates.id)) {
-                const merged = { ...m, ...updates };
-                if (updates.mapid === undefined && m.mapid !== undefined) {
-                    merged.mapid = m.mapid;
-                }
-                if (updates.fighting === undefined && m.fighting !== undefined) {
-                    merged.fighting = m.fighting;
-                }
-                return merged;
-            }
-            return m;
-        }));
-    }, [setGroupMembers, characterName, syncWaitingState]);
+        mergeGroupMember(updates, 'Group.Update');
+    }, [mergeGroupMember]);
 
 
     const onGroupRemove = useCallback((id: number) => {
@@ -98,9 +109,15 @@ export const useGmcpGroup = ({
 
     const onGroupSet = useCallback((data: GroupMember[]) => {
         console.log('[GMCP] onGroupSet raw:', JSON.stringify(data));
+        if (!Array.isArray(data)) {
+            const member = normalizeGroupMember(data);
+            mergeGroupMember(member, 'Group.Set object');
+            return;
+        }
+
         const members = Array.isArray(data) ? data.map(normalizeGroupMember) : [];
         
-        const you = members.find(m => m.type === 'you' || (characterName && m.name && m.name.toLowerCase() === characterName.toLowerCase()));
+        const you = members.find(isSelfMember);
         if (you && you.id !== undefined) {
             youIdRef.current = Number(you.id);
             syncWaitingState(you);
@@ -108,13 +125,9 @@ export const useGmcpGroup = ({
             syncWaitingState({ id: 'you', waiting: false } as GroupMember);
         }
 
-        const others = members.filter(m => {
-            if (m.type === 'you') return false;
-            if (characterName && m.name && m.name.toLowerCase() === characterName.toLowerCase()) return false;
-            return true;
-        });
+        const others = members.filter(m => !isSelfMember(m));
         setGroupMembers(others);
-    }, [setGroupMembers, characterName, syncWaitingState]);
+    }, [setGroupMembers, isSelfMember, syncWaitingState, mergeGroupMember]);
 
     return { onGroupAdd, onGroupUpdate, onGroupRemove, onGroupSet };
 };

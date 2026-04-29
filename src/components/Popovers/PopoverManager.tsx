@@ -62,7 +62,7 @@ import { ContainerSelectPopover } from './ContainerSelectPopover';
 import { FloatingGroupCard } from '../HUD/FloatingGroupCard';
 import { HelpCard } from '../Utility/HelpCard';
 import { getHierarchyChain } from '../../utils/buttonHierarchyUtils';
-import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
+import { canonicalizeCategoryId, getCategoryForName, getGlowColorForCategory, resolveKindAndLocation } from '../../utils/categorizationUtils';
 
 export const PopoverManager: React.FC<PopoverManagerProps> = ({
     popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, roomNpcs, roomItems, inventoryLines, eqLines, setSettings, inlineCategories, setInlineCategories, favorites, setFavorites, parley, setParley, whoList,
@@ -242,7 +242,15 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
 
     if (popoverState.menuDisplay === 'dial') {
         const detectedCatId = popoverState.category || (popoverState.context ? getCategoryForName(popoverState.context, inlineCategories || []) : null);
-        const setIdsChain = getHierarchyChain(popoverState.setId, detectedCatId);
+        const { kind, location } = resolveKindAndLocation(popoverState.kind, popoverState.location, popoverState.setId);
+        const categorySet = detectedCatId ? canonicalizeCategoryId(detectedCatId) : null;
+        const categoryConfig = categorySet ? (inlineCategories || []).find(cat => cat.id === categorySet) : null;
+        const setIdsChain = Array.from(new Set([
+            ...getHierarchyChain(kind, location),
+            popoverState.setId,
+            categorySet,
+            categoryConfig?.buttonSetId
+        ].filter(Boolean) as string[]));
         
         return (
             <DialMenu

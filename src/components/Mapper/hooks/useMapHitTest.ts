@@ -1,6 +1,9 @@
 import { useCallback } from 'react';
 import { MapperRoom, MapperMarker } from '../mapperTypes';
 import { GRID_SIZE, getGateState } from '../mapperUtils';
+import { getMapOccupantTargets, MapOccupantTarget } from '../occupantTargets';
+import { COLOR_NPC, COLOR_PLAYER } from '../../../utils/categorizationUtils';
+import type { GmcpOccupant, GroupMember, InlineCategoryConfig } from '../../../types';
 
 interface UseMapHitTestProps {
     roomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
@@ -11,10 +14,20 @@ interface UseMapHitTestProps {
     viewZ: number | null;
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
     preloadedCoordsRef: React.MutableRefObject<Record<string, any[]>>;
+    roomCharsRef?: React.MutableRefObject<Record<number, GmcpOccupant>>;
+    roomPlayersRef?: React.MutableRefObject<GmcpOccupant[]>;
+    roomNpcsRef?: React.MutableRefObject<GmcpOccupant[]>;
+    groupMembersRef?: React.MutableRefObject<GroupMember[]>;
+    inlineCategoriesRef?: React.MutableRefObject<InlineCategoryConfig[]>;
+    characterNameRef?: React.MutableRefObject<string | null>;
+    playerColorRef?: React.MutableRefObject<string | undefined>;
+    npcColorRef?: React.MutableRefObject<string | undefined>;
 }
 
 export const useMapHitTest = ({
-    roomsRef, markersRef, currentRoomIdRef, cameraRef, canvasRef, viewZ, spatialIndexRef, preloadedCoordsRef
+    roomsRef, markersRef, currentRoomIdRef, cameraRef, canvasRef, viewZ, spatialIndexRef, preloadedCoordsRef,
+    roomCharsRef, roomPlayersRef, roomNpcsRef, groupMembersRef, inlineCategoriesRef,
+    characterNameRef, playerColorRef, npcColorRef
 }: UseMapHitTestProps) => {
 
     const screenToWorld = useCallback((sx: number, sy: number) => {
@@ -217,5 +230,48 @@ export const useMapHitTest = ({
 
     }, [roomsRef, preloadedCoordsRef, getRoomAt]);
 
-    return { screenToWorld, getRoomAt, getMarkerAt, getExitAt };
+    const getOccupantAt = useCallback((wx: number, wy: number): MapOccupantTarget | null => {
+        const currentRoomId = currentRoomIdRef.current;
+        if (!currentRoomId) return null;
+
+        const rawId = currentRoomId.replace(/^m_/, '');
+        const room = roomsRef.current[currentRoomId] || roomsRef.current[`m_${rawId}`];
+        const preloadedRoom = preloadedCoordsRef.current?.[rawId];
+        const anchor = room
+            ? { x: room.x, y: room.y, z: room.z || 0 }
+            : preloadedRoom
+                ? { x: preloadedRoom[0], y: preloadedRoom[1], z: preloadedRoom[2] || 0 }
+                : null;
+
+        if (!anchor) return null;
+        const currentZ = viewZ !== null ? viewZ : anchor.z;
+        if (Math.abs(anchor.z - currentZ) >= 1.0) return null;
+
+        const targets = getMapOccupantTargets({
+            anchor,
+            cameraZoom: cameraRef.current.zoom,
+            roomChars: roomCharsRef?.current || {},
+            roomPlayers: roomPlayersRef?.current || [],
+            roomNpcs: roomNpcsRef?.current || [],
+            groupMembers: groupMembersRef?.current || [],
+            characterName: characterNameRef?.current || null,
+            inlineCategories: inlineCategoriesRef?.current || [],
+            playerColor: playerColorRef?.current || COLOR_PLAYER,
+            npcColor: npcColorRef?.current || COLOR_NPC
+        });
+
+        const hitRadius = Math.max(12 / cameraRef.current.zoom, 8);
+        for (let i = targets.length - 1; i >= 0; i--) {
+            const target = targets[i];
+            const dist = Math.hypot(target.x - wx, target.y - wy);
+            if (dist <= Math.max(hitRadius, target.radius + 6 / cameraRef.current.zoom)) return target;
+        }
+        return null;
+    }, [
+        cameraRef, characterNameRef, currentRoomIdRef, groupMembersRef, inlineCategoriesRef,
+        npcColorRef, playerColorRef, preloadedCoordsRef, roomCharsRef, roomNpcsRef,
+        roomPlayersRef, roomsRef, viewZ
+    ]);
+
+    return { screenToWorld, getRoomAt, getMarkerAt, getExitAt, getOccupantAt };
 };

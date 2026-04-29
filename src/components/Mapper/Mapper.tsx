@@ -64,7 +64,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const lastRoomIdRef = useRef<string | null>(null);
 
     const {
-        triggerHaptic, executeCommand, theme, btn, joystick,
+        triggerHaptic, executeCommand, theme, btn, joystick, playClickSound,
         setIsTrackpadModifierActive, lighting, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, isFoggy, isImmersionMode
     } = useGame();
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
@@ -97,14 +97,18 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         const summarizeChars = (chars: Record<number, import('../../types').GmcpOccupant> = {}) => Object.values(chars)
             .map(item => `${item.id ?? ''}:${item.name ?? item.short ?? item.keyword ?? ''}:${item.type ?? ''}:${item.pc ?? ''}:${item.status ?? ''}:${item.hp ?? ''}`)
             .join('|');
+        const summarizeGroup = (items: import('../../types').GroupMember[] = []) => items
+            .map(item => `${item.id ?? ''}:${item.name ?? item.label ?? ''}:${item.type ?? ''}:${item.mapid ?? ''}:${item.room ?? ''}`)
+            .join('|');
 
         return [
             summarizeChars(roomChars),
             summarize(roomPlayers),
             summarize(roomNpcs),
-            summarize(roomItems)
+            summarize(roomItems),
+            summarizeGroup(groupMembers)
         ].join('::');
-    }, [roomChars, roomPlayers, roomNpcs, roomItems]);
+    }, [roomChars, roomPlayers, roomNpcs, roomItems, groupMembers]);
 
     useEffect(() => {
         triggerRender();
@@ -141,7 +145,16 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         executeCommand, joystick, btn, heldButton, heldButtonRef, setHeldButton, target,
         setIsTrackpadModifierActive,
         setPopoverState,
-        setActiveSet: btn.setActiveSet
+        setActiveSet: btn.setActiveSet,
+        playClickSound,
+        characterName: characterName ?? null,
+        roomChars,
+        roomPlayers,
+        roomNpcs,
+        groupMembers,
+        inlineCategories,
+        playerColor,
+        npcColor
     });
 
     // We still keep the context menu local to the instance for better UX (each window has its own context menu)

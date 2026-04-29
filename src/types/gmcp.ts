@@ -36,6 +36,7 @@ export interface GmcpCharVitals {
     stamina?: number;
     maxstamina?: number;
     position?: string;
+    mood?: string;
     opponent?: string | null;
     'opponent-hits'?: string;
     'opponent-hp'?: string;

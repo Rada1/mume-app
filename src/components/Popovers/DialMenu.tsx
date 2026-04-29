@@ -45,9 +45,15 @@ export const DialMenu: React.FC<DialMenuProps> = ({
     const activeIndexRef = useRef<number | null>(null);
     const lastHapticIndex = useRef<number | null>(null);
 
+    const executeButton = useCallback((button: CustomButton, e: PointerEvent | React.PointerEvent) => {
+        onExecute(button, e as PointerEvent);
+        const isMenu = ['nav', 'menu', 'select-assign', 'select-recipient', 'select-container', 'assign', 'teleport-manage'].includes(button.actionType || '') || button.label === 'Look In';
+        if (!isMenu) onClose();
+    }, [onExecute, onClose]);
+
     // Dynamic Layout Calculation - Always centering now
     const layout = useMemo(() => {
-        const radius = 130; // Slightly larger for center display
+        const radius = 96;
         const arcLength = 360;
         const startAngle = -90; // Start from top
 
@@ -109,12 +115,11 @@ export const DialMenu: React.FC<DialMenuProps> = ({
 
         const handleGlobalUp = (e: PointerEvent) => {
             if (e.cancelable) e.preventDefault();
+            const target = e.target instanceof Element ? e.target : null;
+            if (target?.closest('.dial-item')) return;
+
             if (activeIndexRef.current !== null && menuButtons[activeIndexRef.current]) {
-                const btn = menuButtons[activeIndexRef.current];
-                onExecute(btn, e);
-                // Only close if it's NOT a menu-opening action
-                const isMenu = ['nav', 'menu', 'select-assign', 'select-recipient', 'select-container', 'assign', 'teleport-manage'].includes(btn.actionType || '') || btn.label === 'Look In';
-                if (!isMenu) onClose();
+                executeButton(menuButtons[activeIndexRef.current], e);
             } else {
                 onClose();
             }
@@ -127,7 +132,7 @@ export const DialMenu: React.FC<DialMenuProps> = ({
             window.removeEventListener('pointermove', handleGlobalMove, true);
             window.removeEventListener('pointerup', handleGlobalUp, true);
         };
-    }, [initialX, initialY, menuButtons, onClose, onExecute, triggerHaptic, layout]);
+    }, [initialX, initialY, menuButtons, onClose, executeButton, triggerHaptic, layout]);
 
     if (!menuButtons || menuButtons.length === 0) {
         return (
@@ -200,6 +205,18 @@ export const DialMenu: React.FC<DialMenuProps> = ({
                             <div
                                 key={button.id}
                                 className={`dial-item ${activeIndex === i ? 'active' : ''}`}
+                                onPointerDown={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setActiveIndex(i);
+                                    activeIndexRef.current = i;
+                                    triggerHaptic(10);
+                                }}
+                                onPointerUp={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    executeButton(button, e);
+                                }}
                                 style={{
                                     transform: `translate(-50%, -50%) translate(${item.x}px, ${item.y}px)`,
                                     '--accent': button.style.borderColor || button.style.backgroundColor || themeColor || 'var(--set-accent, var(--accent))'

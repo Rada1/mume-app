@@ -181,11 +181,6 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         if (status === 'connected') telnet.sendCommand(finalCmd);
         else if (!silent) addMessage('error', 'Not connected.');
 
-        // --- 10. Post-Execution Refreshes ---
-        if (!silent && status === 'connected' && /^(ch\w*\s+)?mood\b/i.test(moveCmd)) {
-            setTimeout(() => executeCommand('info %O %D %k %A', true, true, false, false), 1000);
-        }
-
     }, [registry]);
 
     return { executeCommand };

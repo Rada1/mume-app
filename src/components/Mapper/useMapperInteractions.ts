@@ -5,6 +5,7 @@ import { MapperRoom, MapperMarker } from './mapperTypes';
 import { GRID_SIZE, DRAG_SENSITIVITY, ZOOM_SENSITIVITY } from './mapperUtils';
 import { useMapHitTest } from './hooks/useMapHitTest';
 import { getButtonCommand } from '../../utils/buttonUtils';
+import type { GmcpOccupant, GroupMember, InlineCategoryConfig } from '../../types';
 
 export interface InteractionDeps {
     canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -47,16 +48,42 @@ export interface InteractionDeps {
     setIsTrackpadModifierActive?: (val: boolean) => void;
     setPopoverState: (val: any) => void;
     setActiveSet: (setId: string) => void;
+    playClickSound?: () => void;
+    characterName?: string | null;
+    roomChars?: Record<number, GmcpOccupant>;
+    roomPlayers?: GmcpOccupant[];
+    roomNpcs?: GmcpOccupant[];
+    groupMembers?: GroupMember[];
+    inlineCategories?: InlineCategoryConfig[];
+    playerColor?: string;
+    npcColor?: string;
 }
 
 export const useMapperInteractions = (deps: InteractionDeps) => {
     const { canvasRef, cameraRef, triggerRender, rooms, markers, setRooms, setMarkers, setViewZ, onRoomClick } = deps;
+    const roomCharsRef = useRef(deps.roomChars || {});
+    const roomPlayersRef = useRef(deps.roomPlayers || []);
+    const roomNpcsRef = useRef(deps.roomNpcs || []);
+    const groupMembersRef = useRef(deps.groupMembers || []);
+    const inlineCategoriesRef = useRef(deps.inlineCategories || []);
+    const characterNameRef = useRef(deps.characterName || null);
+    const playerColorRef = useRef(deps.playerColor);
+    const npcColorRef = useRef(deps.npcColor);
+
     const hitTest = useMapHitTest({
         canvasRef, cameraRef, roomsRef: { current: rooms } as any, markersRef: { current: markers } as any,
         currentRoomIdRef: { current: deps.currentRoomId } as any,
         viewZ: deps.viewZ,
         spatialIndexRef: deps.spatialIndexRef,
-        preloadedCoordsRef: deps.preloadedCoordsRef
+        preloadedCoordsRef: deps.preloadedCoordsRef,
+        roomCharsRef,
+        roomPlayersRef,
+        roomNpcsRef,
+        groupMembersRef,
+        inlineCategoriesRef,
+        characterNameRef,
+        playerColorRef,
+        npcColorRef
     });
     const hitTestRef = useRef(hitTest);
     useEffect(() => { hitTestRef.current = hitTest; }, [hitTest]);
@@ -90,6 +117,15 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
 
     const currentRoomIdRef = useRef(deps.currentRoomId);
     useEffect(() => { currentRoomIdRef.current = deps.currentRoomId; }, [deps.currentRoomId]);
+
+    useEffect(() => { roomCharsRef.current = deps.roomChars || {}; }, [deps.roomChars]);
+    useEffect(() => { roomPlayersRef.current = deps.roomPlayers || []; }, [deps.roomPlayers]);
+    useEffect(() => { roomNpcsRef.current = deps.roomNpcs || []; }, [deps.roomNpcs]);
+    useEffect(() => { groupMembersRef.current = deps.groupMembers || []; }, [deps.groupMembers]);
+    useEffect(() => { inlineCategoriesRef.current = deps.inlineCategories || []; }, [deps.inlineCategories]);
+    useEffect(() => { characterNameRef.current = deps.characterName || null; }, [deps.characterName]);
+    useEffect(() => { playerColorRef.current = deps.playerColor; }, [deps.playerColor]);
+    useEffect(() => { npcColorRef.current = deps.npcColor; }, [deps.npcColor]);
 
     const onWheel = useCallback((e: WheelEvent) => {
         // IGNORE zoom if a window drag is in progress
@@ -362,9 +398,9 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     stopWalking();
                 }
 
-                if (dragTypeRef.current === 'joystick' || dragTypeRef.current === 'room') {
+                if (dragTypeRef.current === 'joystick' || dragTypeRef.current === 'room' || dragTypeRef.current === 'pan') {
                     const isTap = !hasDraggedRef.current;
-                    const { screenToWorld, getRoomAt, getExitAt } = hitTestRef.current;
+                    const { screenToWorld, getRoomAt, getExitAt, getOccupantAt } = hitTestRef.current;
                     const world = screenToWorld(e.clientX, e.clientY);
 
                     // Priority 1: Check for Exit/Door Click (on ANY tap)
@@ -422,9 +458,39 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         } else {
                             // Short Tap -> Open or Close
                             depsRef.current.executeCommand(`${finalAction} exit ${finalDirName}`, false, false, false, false, { fromUi: true });
+                            depsRef.current.playClickSound?.();
                         }
                         depsRef.current.triggerHaptic(40);
-                    } else if (dragTypeRef.current === 'joystick') {
+                    } else {
+                        const occupantHit = isTap ? getOccupantAt?.(world.x, world.y) : null;
+                        if (occupantHit) {
+                            if (dragTypeRef.current === 'joystick' && depsRef.current.joystick?.handleJoystickCancel) {
+                                depsRef.current.joystick.handleJoystickCancel(e as any);
+                            }
+
+                            const entityId = occupantHit.id !== undefined
+                                ? `roomchars:${occupantHit.id}`
+                                : `map-${occupantHit.kind}:${occupantHit.name.toLowerCase()}`;
+
+                            depsRef.current.setPopoverState({
+                                x: e.clientX,
+                                y: e.clientY,
+                                setId: occupantHit.category,
+                                kind: occupantHit.kind,
+                                location: 'room',
+                                category: occupantHit.category,
+                                context: occupantHit.name,
+                                entityId,
+                                menuDisplay: 'dial',
+                                accentColor: occupantHit.color
+                            });
+                            depsRef.current.playClickSound?.();
+                            depsRef.current.triggerHaptic(40);
+                            return;
+                        }
+                    }
+
+                    if (!exitHit && dragTypeRef.current === 'joystick') {
                         // Priority 2: Standard Joystick Tap/Release
                         const activeHeldButton = depsRef.current.heldButtonRef?.current || depsRef.current.heldButton;
                         const resultData = joystick.handleJoystickEnd(e as any, (cmd: string) => depsRef.current.executeCommand(cmd, false, false, false, false, { fromUi: true }), triggerHaptic, !!activeHeldButton);
@@ -477,9 +543,11 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                             });
                                         } else {
                                             depsRef.current.executeCommand(result.cmd, false, false, false, false, { fromUi: true });
+                                            depsRef.current.playClickSound?.();
                                         }
                                     } else if (comboDir) {
                                         depsRef.current.executeCommand(result.cmd, false, false, false, false, { fromUi: true });
+                                        depsRef.current.playClickSound?.();
                                     }
                                     depsRef.current.setHeldButton?.((prev: any) => prev ? { ...prev, didFire: true } : null);
                                     comboFiredRef.current = true;
@@ -487,10 +555,13 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                 }
                             }
                         }
-                    } else if (isTap && !wasLongPress) {
+                    } else if (!exitHit && isTap && !wasLongPress) {
                         // Priority 3: Standard Room Info
                         const clickedRoomId = getRoomAt(world.x, world.y);
-                        if (clickedRoomId) setInfoRoomId(clickedRoomId);
+                        if (clickedRoomId) {
+                            setInfoRoomId(clickedRoomId);
+                            depsRef.current.playClickSound?.();
+                        }
                     }
                 } else if (dragTypeRef.current === 'marquee' && marqueeStart && marqueeEnd) {
                     const { screenToWorld } = hitTestRef.current;

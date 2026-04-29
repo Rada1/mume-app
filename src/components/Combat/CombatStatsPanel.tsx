@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useVitals, useGame } from '../../context/GameContext';
+import { useGame } from '../../context/GameContext';
 import { useModeStore } from '../../stores/useModeStore';
 import './CombatStatsPanel.css';
 
@@ -12,12 +12,7 @@ const MOODS = [
     { abbr: 'ber', label: 'BER', full: 'berserk' },
 ];
 
-const StatRow: React.FC<{ label: string; value: string }> = ({ label, value }) => (
-    <div className="csp-row">
-        <span className="csp-label">{label}</span>
-        <span className="csp-value">{value}</span>
-    </div>
-);
+
 
 const SPEEDS = [
     { label: 'SLOW', val: 'slow' },
@@ -32,7 +27,6 @@ const ALERTS = [
 ];
 
 const CombatStatsPanel: React.FC = () => {
-    const { stats } = useVitals();
     const { inCombat, mood, spellSpeed, alertness, executeCommand, viewport, btn } = useGame();
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const { isMobile } = viewport;
@@ -41,8 +35,6 @@ const CombatStatsPanel: React.FC = () => {
     const [openMenu, setOpenMenu] = useState<'mood' | 'speed' | 'alert' | null>(null);
     const [hoveredOption, setHoveredOption] = useState<string | null>(null);
     const isDraggingRef = useRef(false);
-
-    const fmt = (v: number | undefined) => v !== undefined ? `${v}%` : '—';
     
     // Formatting current values
     const moodAbbr = mood ? mood.slice(0, 4).toUpperCase() : '—';
@@ -110,13 +102,7 @@ const CombatStatsPanel: React.FC = () => {
     return (
         <div className={`combat-stats-panel${isVisible ? ' active' : ''}`}>
             <div className="csp-l-container">
-                {/* Horizontal Stat Bar (Long part of L) */}
-                <div className="csp-stats-bar">
-                    <StatRow label="OB"  value={fmt(stats.ob)} />
-                    <StatRow label="DB"  value={fmt(stats.db)} />
-                    <StatRow label="PB"  value={fmt(stats.pb)} />
-                    <StatRow label="ARM" value={fmt(stats.armour)} />
-                </div>
+
 
                 {/* Vertical Control Column (Short part of L) */}
                 <div className="csp-controls-column">

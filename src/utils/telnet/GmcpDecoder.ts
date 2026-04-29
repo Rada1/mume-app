@@ -55,11 +55,11 @@ export class GmcpDecoder {
         } else if (pkgLower === 'room.chars.set' || pkgLower === 'room.chars.list' || pkgLower === 'room.chars' || pkgLower === 'room.players' || pkgLower === 'room.npcs' || pkgLower === 'mume.client.chars') {
             this.handleSimpleJson(json, handlers.onRoomChars);
             this.handleRoomCharsCombat(json);
-        } else if (pkgLower === 'room.chars.add' || pkgLower === 'room.char.add' || pkgLower === 'room.addplayer' || pkgLower === 'room.addnpc' || pkgLower === 'room.addchar') {
+        } else if (pkgLower === 'room.chars.add' || pkgLower === 'room.char.add' || pkgLower === 'room.players.add' || pkgLower === 'room.npcs.add' || pkgLower === 'room.addplayer' || pkgLower === 'room.addnpc' || pkgLower === 'room.addchar') {
             this.handleSimpleJson(json, handlers.onAddChar);
-        } else if (pkgLower === 'room.chars.update' || pkgLower === 'room.char.update') {
+        } else if (pkgLower === 'room.chars.update' || pkgLower === 'room.char.update' || pkgLower === 'room.players.update' || pkgLower === 'room.npcs.update') {
             this.handleSimpleJson(json, handlers.onUpdateChar);
-        } else if (pkgLower === 'room.chars.remove' || pkgLower === 'room.char.remove' || pkgLower === 'room.removeplayer' || pkgLower === 'room.removenpc' || pkgLower === 'room.removechar') {
+        } else if (pkgLower === 'room.chars.remove' || pkgLower === 'room.char.remove' || pkgLower === 'room.players.remove' || pkgLower === 'room.npcs.remove' || pkgLower === 'room.removeplayer' || pkgLower === 'room.removenpc' || pkgLower === 'room.removechar') {
             this.handleSimpleJson(json, handlers.onRemoveChar);
         } else if (pkgLower.startsWith('room.items') || pkgLower.startsWith('room.objects') || pkgLower === 'char.items' || pkgLower === 'char.inv' || pkgLower === 'room.items.list' || pkgLower === 'char.items.list' || pkgLower === 'room.items.set' || pkgLower === 'mume.client.inventory' || pkgLower === 'mume.client.equipment' || pkgLower === 'mume.client.roomitems') {
             this.handleRoomItems(json);

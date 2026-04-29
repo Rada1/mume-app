@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback } from 'react';
 import { GmcpOccupant, GmcpRoomInfo, GmcpUpdateExits } from '../../types';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
 import { gmcpBus } from '../../events/gmcpBus';
@@ -73,10 +73,8 @@ export const useGmcpRoom = ({
     playerPositionRef,
     lastRoomChangeTimeRef,
     lastRoomNumRef,
-    lastExitsRef,
-    sendGMCP
+    lastExitsRef
 }: UseGmcpRoomProps) => {
-
     const onRoomInfo = useCallback((data: GmcpRoomInfo) => {
         if (typeof window !== 'undefined') {
             window.dispatchEvent(new CustomEvent('mume-gmcp-room-info', { detail: data }));
@@ -90,6 +88,20 @@ export const useGmcpRoom = ({
         const roomNum = data.num || data.id || data.vnum;
         const roomChanged = roomNum !== undefined && roomNum !== lastRoomNumRef.current;
         lastRoomNumRef.current = roomNum ?? null;
+
+        if (roomChanged) {
+            console.groupCollapsed(`[GMCP Room.Entry] ${data.name || '(unnamed room)'} #${roomNum ?? '?'}`);
+            console.log('Room.Info raw:', data);
+            console.log('Room.Info summary:', {
+                roomNum,
+                name: data.name,
+                zone: data.zone || data.area,
+                terrain: data.terrain || data.environment,
+                exits: data.exits ? Object.keys(data.exits) : []
+            });
+            console.log('Occupant GMCP watch: waiting for server-pushed Room.Chars/Add/Update/Remove packets.');
+            console.groupEnd();
+        }
 
         const terrain = data.terrain || data.environment;
         if (terrain) setCurrentTerrain(terrain);
@@ -129,13 +141,13 @@ export const useGmcpRoom = ({
             setRoomItems?.(parseRoomItemsFromDescription(data.desc));
             setRoomChars?.({});
             
-            if (playMovementSound) {
-                // Determine riding status: if spectating, we can check Room.Chars or fallback.
-                const isRiding = isRidingRef?.current || playerPositionRef.current === 'riding' || playerPositionRef.current === 'mounted';
-                playMovementSound(isRiding);
-            }
+            // if (playMovementSound) {
+            //     // Determine riding status: if spectating, we can check Room.Chars or fallback.
+            //     const isRiding = isRidingRef?.current || playerPositionRef.current === 'riding' || playerPositionRef.current === 'mounted';
+            //     playMovementSound(isRiding);
+            // }
         }
-    }, [mapperRef, setCurrentTerrain, setRoomName, setRoomDesc, setRoomExits, setRoomZone, setRoomItems, setRoomChars, setDiscoveredItems, playMovementSound, isSpectateMode, detectLighting, isRidingRef, playerPositionRef, lastRoomChangeTimeRef, lastRoomNumRef, lastExitsRef, roomDescRef, sendGMCP]);
+    }, [mapperRef, setCurrentTerrain, setRoomName, setRoomDesc, setRoomExits, setRoomZone, setRoomItems, setRoomChars, setDiscoveredItems, playMovementSound, isSpectateMode, detectLighting, isRidingRef, playerPositionRef, lastRoomChangeTimeRef, lastRoomNumRef, lastExitsRef, roomDescRef]);
 
     const onRoomUpdateExits = useCallback((data: GmcpUpdateExits) => {
         if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-gmcp-room-exits', { detail: data }));

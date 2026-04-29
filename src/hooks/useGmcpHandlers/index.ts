@@ -24,6 +24,7 @@ interface GmcpHandlersProps {
     setCharacterName: (name: string | null) => void;
     setRoomName: (name: string | null) => void;
     setPlayerPosition: (pos: string) => void;
+    setMood?: (val: string) => void;
     setRoomDesc: (desc: string | null) => void;
     setRoomExits: (exits: string[]) => void;
     setRoomZone: (zone: string | null) => void;
@@ -61,6 +62,7 @@ interface GmcpHandlersProps {
     isSpectateMode?: boolean;
     inlineCategories: import('../../types').InlineCategoryConfig[];
     sendGMCP?: (pkg: string, data?: any) => void;
+    sendCommand?: (cmd: string) => void;
     pendingGmcpCommRef?: React.MutableRefObject<{ sender: string; chan: string; msg?: string } | null>;
 }
 

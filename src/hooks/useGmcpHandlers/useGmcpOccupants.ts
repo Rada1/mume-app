@@ -17,6 +17,24 @@ const getRoomCharKey = (id: string | number): number => {
     return hash || -1;
 };
 
+const knownRoomChars = new Map<string, GmcpOccupant>();
+
+const rememberOccupant = (occupant: GmcpOccupant) => {
+    if (occupant.id === undefined) return;
+    const key = String(occupant.id);
+    knownRoomChars.set(key, { ...(knownRoomChars.get(key) || {}), ...occupant });
+};
+
+const hydrateOccupant = (occupant: GmcpOccupant): GmcpOccupant => {
+    if (occupant.id === undefined) return occupant;
+    const cached = knownRoomChars.get(String(occupant.id));
+    const hydrated = cached ? { ...cached, ...occupant } : occupant;
+    if (!hydrated.name) {
+        hydrated.name = hydrated.short || hydrated.shortdesc || hydrated.keyword || hydrated.desc;
+    }
+    return hydrated;
+};
+
 const parseOccupant = (data: any, characterName: string | null): GmcpOccupant | null => {
     if (!data) return null;
     let obj: GmcpOccupant;
@@ -30,16 +48,27 @@ const parseOccupant = (data: any, characterName: string | null): GmcpOccupant | 
             obj.name = data.name || data.keyword || data.short || data.shortdesc;
         }
     }
-    if (!obj.id) return null;
-    if (characterName && obj.name && obj.name.toLowerCase() === characterName.toLowerCase()) return null;
-
     // Normalize MUME's `pc` flag into the canonical `type` field so the
     // classifier (strict on `type`) sees a usable value for NPCs that arrive
     // with only `pc: 0` and no explicit type.
     const normalizedType = normalizeOccupantType(data);
     if (normalizedType) obj.type = normalizedType;
 
-    return obj;
+    if (!obj.id) return null;
+    const hydrated = hydrateOccupant(obj);
+    if (characterName && hydrated.name && hydrated.name.toLowerCase() === characterName.toLowerCase()) return null;
+
+    rememberOccupant(hydrated);
+    return hydrated;
+};
+
+const parseOccupants = (data: any, characterName: string | null): GmcpOccupant[] => {
+    const rawList = Array.isArray(data)
+        ? data
+        : (data?.chars || data?.char || data?.members || data?.list || data?.npcs || data?.players || [data]);
+    return rawList
+        .map((entry: any) => parseOccupant(entry, characterName))
+        .filter((entry: GmcpOccupant | null): entry is GmcpOccupant => !!entry && entry.id !== undefined);
 };
 
 interface UseGmcpOccupantsProps {
@@ -65,21 +94,21 @@ export const useGmcpOccupants = ({
 }: UseGmcpOccupantsProps) => {
 
     const onRoomChars = useCallback((data: any) => {
-        console.log(`[GMCP] Ingesting Room.Chars list:`, data);
-        let rawList = Array.isArray(data) ? data : (data.chars || data.char || data.members || data.list || []);
+        console.groupCollapsed('[GMCP Room.Chars] full-set payload');
+        console.log('raw:', data);
+        let rawList = Array.isArray(data)
+            ? data
+            : (data.chars || data.char || data.members || data.list || data.npcs || data.players || [data]);
         if (rawList && !Array.isArray(rawList)) rawList = [rawList];
         if (!Array.isArray(rawList)) {
             console.warn(`[GMCP] Failed to parse Room.Chars list - rawList is not an array:`, rawList);
             return;
         }
 
-        const parsedChars: Record<number, GmcpOccupant> = {};
-
-        rawList.forEach(p => {
-            const obj = parseOccupant(p, characterName);
-            if (!obj || obj.id === undefined) return;
-            parsedChars[getRoomCharKey(obj.id)] = obj;
-        });
+        const parsedChars = parseOccupants(rawList, characterName).reduce<Record<number, GmcpOccupant>>((acc, obj) => {
+            acc[getRoomCharKey(obj.id!)] = obj;
+            return acc;
+        }, {});
 
         const mergeChars = (prev: Record<number, GmcpOccupant>) => {
             const prevCount = Object.keys(prev).length;
@@ -98,6 +127,7 @@ export const useGmcpOccupants = ({
                 const id = Number(key);
                 const merged = { ...(prev[id] || {}), ...obj };
                 newChars[id] = merged;
+                rememberOccupant(merged);
 
                 const isNpc = merged.type === 'npc';
                 if (setIsRiding && isNpc) {
@@ -114,7 +144,9 @@ export const useGmcpOccupants = ({
             return newChars;
         };
 
-        console.log(`[GMCP] Resolved ${Object.keys(parsedChars).length} Room.Chars`);
+        console.log('parsed:', Object.values(parsedChars));
+        console.log(`resolved count: ${Object.keys(parsedChars).length}`);
+        console.groupEnd();
         if (setRoomChars) setRoomChars(prev => mergeChars(prev));
         mapperRef.current?.triggerRender?.();
 
@@ -124,50 +156,71 @@ export const useGmcpOccupants = ({
     }, [setRoomChars, setIsRiding, characterName, registerEntity, mapperRef]);
 
     const onAddChar = useCallback((data: any) => {
-        if (!data) return;
-        const obj = parseOccupant(data, characterName);
-        if (!obj || obj.id === undefined) return;
+        console.groupCollapsed('[GMCP Room.Chars.Add] payload');
+        console.log('raw:', data);
+        const occupants = parseOccupants(data, characterName);
+        console.log('parsed:', occupants);
+        console.groupEnd();
+        if (occupants.length === 0) return;
 
-        const isNpc = obj.type === 'npc';
+        occupants.forEach(obj => {
+            const isNpc = obj.type === 'npc' || obj.type === 'mount';
+            const dir = (obj as { dir?: string }).dir;
+            if (dir && (Date.now() - lastRoomChangeTimeRef.current) > 300) {
+                const key = getOccupantKey(obj.id, obj.name);
+                occupantAnims.set(key, { dir: String(dir).toLowerCase(), type: 'enter', startTime: Date.now(), name: obj.name || String(obj.id), id: String(obj.id), isPlayer: !isNpc });
+            }
+            if (registerEntity) {
+                registerEntity(`roomchars:${obj.id}`, obj.name || String(obj.id), 'room', obj.type);
+            }
+        });
 
-        if (data?.dir && (Date.now() - lastRoomChangeTimeRef.current) > 300) {
-            const key = getOccupantKey(obj.id, obj.name);
-            occupantAnims.set(key, { dir: String(data.dir).toLowerCase(), type: 'enter', startTime: Date.now(), name: obj.name || String(obj.id), id: String(obj.id), isPlayer: !isNpc });
-            mapperRef.current?.triggerRender?.();
-        }
-
-        if (setRoomChars) setRoomChars(prev => ({ ...prev, [getRoomCharKey(obj.id)]: obj }));
-
-        if (registerEntity) {
-            const entityId = `roomchars:${obj.id}`;
-            registerEntity(entityId, obj.name || String(obj.id), 'room', obj.type);
-        }
+        setRoomChars?.(prev => {
+            const next = { ...prev };
+            occupants.forEach(obj => {
+                const id = getRoomCharKey(obj.id!);
+                const merged = { ...(next[id] || {}), ...obj };
+                rememberOccupant(merged);
+                next[id] = merged;
+            });
+            return next;
+        });
+        mapperRef.current?.triggerRender?.();
 
         import('../../events/gmcpBus').then(({ gmcpBus }) => {
-            gmcpBus.emit('Room.AddChar', { ...obj, isSnooped: false });
+            occupants.forEach(obj => gmcpBus.emit('Room.AddChar', { ...obj, isSnooped: false }));
         });
     }, [setRoomChars, characterName, registerEntity, lastRoomChangeTimeRef, mapperRef]);
 
     const onUpdateChar = useCallback((data: any) => {
-        if (!data) return;
-        const obj = parseOccupant(data, characterName);
-        if (!obj || obj.id === undefined) return;
+        console.groupCollapsed('[GMCP Room.Chars.Update] payload');
+        console.log('raw:', data);
+        const occupants = parseOccupants(data, characterName);
+        console.log('parsed:', occupants);
+        console.groupEnd();
+        if (occupants.length === 0) return;
 
         if (setRoomChars) setRoomChars(prev => {
-            const id = getRoomCharKey(obj.id);
-            const existing = prev[id];
-            if (existing) {
-                return { ...prev, [id]: { ...existing, ...obj } };
-            }
-            return { ...prev, [id]: obj };
+            const next = { ...prev };
+            occupants.forEach(obj => {
+                const id = getRoomCharKey(obj.id!);
+                const merged = { ...(next[id] || {}), ...obj };
+                rememberOccupant(merged);
+                next[id] = merged;
+            });
+            return next;
         });
+        mapperRef.current?.triggerRender?.();
 
         import('../../events/gmcpBus').then(({ gmcpBus }) => {
-            gmcpBus.emit('Room.UpdateChar', { ...obj, isSnooped: false });
+            occupants.forEach(obj => gmcpBus.emit('Room.UpdateChar', { ...obj, isSnooped: false }));
         });
-    }, [setRoomChars, characterName]);
+    }, [setRoomChars, characterName, mapperRef]);
 
     const onRemoveChar = useCallback((data: any) => {
+        console.groupCollapsed('[GMCP Room.Chars.Remove] payload');
+        console.log('raw:', data);
+        console.groupEnd();
         if (!data) return;
         const id = (data && typeof data === 'object') ? data.id : data;
         if (id === undefined || id === null) return;

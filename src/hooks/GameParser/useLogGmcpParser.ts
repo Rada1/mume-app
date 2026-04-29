@@ -230,12 +230,11 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                         if (incomingId !== null && incomingId !== lastSpectateRoomIdRef.current) {
                             lastSpectateRoomIdRef.current = incomingId;
                             const isRiding = spectatePositionRef.current === 'riding' || spectatePositionRef.current?.includes('riding');
-                            d.playMovementSound?.(isRiding);
+                            // d.playMovementSound?.(isRiding);
                         }
                     } else if (setUserRoomNum) {
                         if (incomingId !== null) setUserRoomNum(incomingId);
                     }
-                    
                     // Send to MapperContext
                     if (typeof window !== 'undefined') {
                         window.dispatchEvent(new CustomEvent('mume-gmcp-room-info', { detail: { ...data, spectating: isSnooped } }));
@@ -322,9 +321,13 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
 
                 case 'Room.Chars.Add':
                 case 'Room.Char.Add':
+                case 'Room.Players.Add':
+                case 'Room.Npcs.Add':
                 case 'Room.AddChar':
                 case 'Room.Chars.Update':
                 case 'Room.UpdateChar':
+                case 'Room.Players.Update':
+                case 'Room.Npcs.Update':
                 case 'Room.Chars.Set':
                 case 'Room.Chars.List':
                 case 'Room.Chars':
@@ -385,8 +388,7 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                                 if (isSnooped) setSpectateWaiting(posLower === 'waiting' || posLower.includes('waiting'));
                             }
 
-                            if (isPc) gmcpBus.emit('Room.AddPlayer', { ...c, isSnooped });
-                            else gmcpBus.emit('Room.AddNpc', { ...c, isSnooped });
+                            gmcpBus.emit(nsLower.endsWith('.update') ? 'Room.UpdateChar' : 'Room.AddChar', { ...c, isSnooped });
                         });
                     }
                     break;
@@ -398,13 +400,14 @@ export function useLogGmcpParser(deps: LogGmcpParserDeps) {
                 }
                 case 'room.chars.remove':
                 case 'room.char.remove':
+                case 'room.players.remove':
+                case 'room.npcs.remove':
                 case 'room.removeplayer':
                 case 'room.removenpc':
                 case 'room.removechar': {
                     const id = typeof data === 'object' ? (data.id || data.name || data.short) : data;
                     if (id) {
-                        gmcpBus.emit('Room.RemovePlayer', { id, isSnooped });
-                        gmcpBus.emit('Room.RemoveNpc', { id, isSnooped });
+                        gmcpBus.emit('Room.RemoveChar', { id, isSnooped });
                     }
                     break;
                 }

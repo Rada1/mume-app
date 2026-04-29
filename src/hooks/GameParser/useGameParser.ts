@@ -356,7 +356,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         if (account.parseAccountLine(textOnly, isPromptResolved)) return;
-        if (stat.parseCompactCombatInfo(textOnly)) msgType = 'info' as any;
+        if (stat.parseCompactCombatInfo(textOnly)) return;
         if (stat.parseGlobalStatus(textOnly, lower)) msgType = 'info' as any;
         if (stat.parseDetailedScore(textOnly, lower)) msgType = 'info' as any;
 

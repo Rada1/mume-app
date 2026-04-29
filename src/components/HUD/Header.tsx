@@ -43,7 +43,7 @@ const Header: React.FC<HeaderProps> = ({
     const { stats, setStats, target, setTarget } = useVitals();
     const {
         ui, setUI, setIsSettingsOpen, setIsSetManagerOpen, setIsLibraryOpen, setPopoverState,
-        replayer
+        setShowMapperToolbar, replayer
     } = useUI();
 
     const handleWimpyChange = (val: number) => {
@@ -465,7 +465,7 @@ const Header: React.FC<HeaderProps> = ({
                                         className={`dropdown-item ${ui.showMapperToolbar ? 'active' : ''}`}
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            setUI(prev => ({ ...prev, showMapperToolbar: !prev.showMapperToolbar }));
+                                            setShowMapperToolbar(!ui.showMapperToolbar);
                                         }}
                                     >
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>

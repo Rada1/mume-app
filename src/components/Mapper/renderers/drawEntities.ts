@@ -3,14 +3,10 @@ import { GRID_SIZE, DIRS } from '../mapperUtils';
 import { getMemberColor } from '../../../utils/groupUtils';
 import { COLOR_NPC, COLOR_PLAYER, COLOR_OBJ } from '../../../utils/categorizationUtils';
 import { occupantAnims, OCCUPANT_ANIM_DURATION, getOccupantKey } from '../occupantAnimStore';
-import { classifyOccupant } from '../../../services/classification/classifyOccupant';
-import type { GmcpOccupant } from '../../../types';
+import { getMapOccupantTargets } from '../occupantTargets';
 
 type RoomAnchor = { x: number, y: number, z: number };
 type RoomLike = { x: number, y: number, z?: number, gmcpId?: string | number };
-type OccupantDot = { name: string, color: string, id?: string | number };
-type OccupantDisplayKind = 'player' | 'npc' | 'self';
-
 const getRawRoomId = (id: string) => id.startsWith('m_') ? id.substring(2) : id;
 
 const resolveActiveRoomAnchor = (
@@ -33,27 +29,6 @@ const resolveActiveRoomAnchor = (
     const preloadedRoom = rCtx.preloaded[rawId] || (localId ? rCtx.preloaded[localId] : undefined);
     return preloadedRoom ? { x: preloadedRoom[0], y: preloadedRoom[1], z: preloadedRoom[2] || 0 } : null;
 };
-
-const getOccupantName = (occupant: GmcpOccupant | string): string | undefined => (
-    typeof occupant === 'string'
-        ? occupant
-        : occupant.name || occupant.short || occupant.shortdesc || occupant.keyword || occupant.desc
-);
-
-const getDisplayKind = (occupant: GmcpOccupant, characterName: string | null): OccupantDisplayKind => {
-    const name = getOccupantName(occupant);
-    if (characterName && name?.toLowerCase() === characterName.toLowerCase()) return 'self';
-
-    const type = typeof occupant.type === 'string' ? occupant.type.toLowerCase() : '';
-    if (type === 'you' || type === 'self') return 'self';
-    if (occupant.pc === true || occupant.pc === 1) return 'player';
-    if (['ally', 'neutral', 'player', 'pc'].includes(type)) return 'player';
-    if (occupant.pc === false || occupant.pc === 0) return 'npc';
-    if (['npc', 'mob', 'mobile', 'enemy', 'shopkeeper', 'dealer', 'merchant', 'innkeeper', 'mount', 'guildmaster', 'trainer', 'guard'].includes(type)) return 'npc';
-
-    return classifyOccupant(occupant)?.kind || 'npc';
-};
-
 
 export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: number, gY2: number) => {
     return; // Gridlines disabled for a cleaner look
@@ -82,53 +57,21 @@ export const drawRoomOccupants = (
     const px = anchor.x * GRID_SIZE + GRID_SIZE / 2;
     const py = anchor.y * GRID_SIZE + GRID_SIZE / 2;
 
-    // 1. Partition occupants into Group (inner) and Others (outer)
-    const groupOccupants: OccupantDot[] = [];
-    const otherOccupants: OccupantDot[] = [];
-
-    const isNameInGroup = (name: string) => {
-        if (!name || !groupMembers) return -1;
-        const lower = name.toLowerCase();
-        return groupMembers.findIndex(m => {
-            const mName = m.name?.toLowerCase();
-            return mName === lower || lower.startsWith(mName + ' ') || lower.endsWith(' ' + mName);
-        });
-    };
-
-    const charList = Object.values(roomChars || {});
-    const players = charList.length > 0
-        ? charList.filter(char => getDisplayKind(char, characterName) === 'player')
-        : (roomPlayers || []);
-    const npcs = charList.length > 0
-        ? charList.filter(char => getDisplayKind(char, characterName) === 'npc')
-        : (roomNpcs || []);
-
-    players.forEach(p => {
-        const name = getOccupantName(p);
-        if (!name) return;
-        
-        // Exclude the player themselves (they are the center orb)
-        if (characterName && name.toLowerCase() === characterName.toLowerCase()) return;
-        
-        const gIdx = isNameInGroup(name);
-        if (gIdx !== -1) {
-            groupOccupants.push({ name, color: getMemberColor(gIdx).core, id: typeof p === 'string' ? undefined : p.id });
-        } else {
-            otherOccupants.push({ name, color: playerColor || 'rgba(125, 211, 252, 1)', id: typeof p === 'string' ? undefined : p.id });
-        }
+    const occupantTargets = getMapOccupantTargets({
+        anchor,
+        cameraZoom: camera.zoom,
+        roomChars,
+        roomPlayers,
+        roomNpcs,
+        groupMembers,
+        characterName,
+        inlineCategories: rCtx.inlineCategories,
+        playerColor: playerColor || 'rgba(125, 211, 252, 1)',
+        npcColor: npcColor || COLOR_NPC
     });
 
-    npcs.forEach(n => {
-        const name = getOccupantName(n);
-        if (!name) return;
-        
-        const gIdx = isNameInGroup(name);
-        if (gIdx !== -1) {
-            groupOccupants.push({ name, color: getMemberColor(gIdx).core, id: typeof n === 'string' ? undefined : n.id });
-        } else {
-            otherOccupants.push({ name, color: npcColor || COLOR_NPC, id: typeof n === 'string' ? undefined : n.id });
-        }
-    });
+    const otherOccupants = occupantTargets.filter(target => target.ring === 'outer');
+    const groupOccupants = occupantTargets.filter(target => target.ring === 'inner');
 
     // 3. Clean expired anim entries; collect exit-animating occupants
     const exitAnims: { key: string }[] = [];
@@ -138,7 +81,7 @@ export const drawRoomOccupants = (
             continue;
         }
         if (anim.type === 'exit') {
-            const stillPresent = [...groupOccupants, ...otherOccupants].some(o =>
+            const stillPresent = occupantTargets.some(o =>
                 getOccupantKey(o.id, o.name) === key ||
                 ('name:' + o.name.toLowerCase()) === key
             );
@@ -149,11 +92,8 @@ export const drawRoomOccupants = (
     }
 
     const zoomFactor = (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
-    const OUTER_RADIUS = 18.0 / zoomFactor;
-    const INNER_RADIUS = 9.0 / zoomFactor;
     const pulse = (Math.sin(now / 400) + 1) / 2;
 
-    const dotRadius = Math.max(2.25, 3.15 / Math.sqrt(camera.zoom));
     const drawDot = (orbX: number, orbY: number, color: string, alpha: number) => {
         ctx.save();
         ctx.globalAlpha = alpha;
@@ -161,20 +101,17 @@ export const drawRoomOccupants = (
         ctx.shadowBlur = 5 / camera.zoom;
         ctx.shadowColor = color;
         ctx.beginPath();
-        ctx.arc(orbX, orbY, dotRadius, 0, Math.PI * 2);
+        ctx.arc(orbX, orbY, Math.max(2.25, 3.15 / Math.sqrt(camera.zoom)), 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
     };
 
-    const drawRing = (occupants: OccupantDot[], radius: number) => {
-        const count = occupants.length;
-        occupants.forEach((occ, index) => {
-            const angle = (index / count) * Math.PI * 2;
-            const petalX = px + Math.cos(angle) * radius;
-            const petalY = py + Math.sin(angle) * radius;
-
+    const drawRing = (occupants: typeof occupantTargets) => {
+        occupants.forEach(occ => {
+            const petalX = occ.x;
+            const petalY = occ.y;
             const key = getOccupantKey(occ.id, occ.name);
-            const pos = { dx: petalX - px, dy: petalY - py, isPlayer: (occ.color || '').includes('125, 211, 252') };
+            const pos = { dx: petalX - px, dy: petalY - py, isPlayer: occ.kind === 'player' };
             lastPetalPositions.set(key, pos);
             lastPetalPositions.set('name:' + occ.name.toLowerCase(), pos);
 
@@ -218,8 +155,8 @@ export const drawRoomOccupants = (
     };
 
     // 4. Draw Rings
-    drawRing(otherOccupants, OUTER_RADIUS);
-    drawRing(groupOccupants, INNER_RADIUS);
+    drawRing(otherOccupants);
+    drawRing(groupOccupants);
 
     // 4.5 Draw room items as squares in a line at the bottom
     if (roomItems && roomItems.length > 0) {

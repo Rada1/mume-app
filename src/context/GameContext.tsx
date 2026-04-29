@@ -181,6 +181,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             telnetRef.current.sendGMCP(pkg, data);
         }
     }, []);
+    const sendCommandProxy = useCallback((cmd: string) => {
+        telnetRef.current?.sendCommand(cmd);
+    }, []);
 
     const gmcpHandlers = useGmcpHandlers({
         mapperRef: mapperRef, roomDescRef: s.userSession.game.roomDescRef,
@@ -194,6 +197,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setRoomDesc: s.userSession.game.setRoomDesc,
         setRoomZone: s.userSession.game.setRoomZone,
         setRoomExits: s.userSession.game.setRoomExits, setDiscoveredItems: s.userSession.game.setDiscoveredItems,
+        setMood: s.setMood,
         setBufferName: s.userSession.vitals.setBufferName, setPlayerHealthStatus: s.userSession.vitals.setPlayerHealthStatus,
         setOpponentHealthStatus: s.userSession.vitals.setOpponentHealthStatus,
         setBufferHealthStatus: s.userSession.vitals.setBufferHealthStatus, setOpponentName: s.userSession.vitals.setOpponentName,
@@ -207,6 +211,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playerPositionRef: s.userSession.game.playerPositionRef, setIsRiding: s.userSession.game.setIsRiding, isRidingRef: s.userSession.game.isRidingRef, isSpectateMode: s.isSpectateMode, inlineCategories: s.inlineCategories,
         registerEntity: s.registry.registerEntity,
         sendGMCP: sendGMCPProxy,
+        sendCommand: sendCommandProxy,
         pendingGmcpCommRef
     });
 
@@ -220,18 +225,57 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const h = gmcpHandlersRef.current as any;
         let parsed: any = null;
         try { parsed = JSON.parse(dataStr); } catch (_) {}
+        const pkgLower = pkg.toLowerCase();
+        const isRoomCharsFullSet = [
+            'room.chars',
+            'room.chars.set',
+            'room.chars.list',
+            'room.players',
+            'room.npcs',
+            'mume.client.chars'
+        ].includes(pkgLower);
+        const isRoomCharAdd = [
+            'room.chars.add',
+            'room.char.add',
+            'room.players.add',
+            'room.npcs.add',
+            'room.addplayer',
+            'room.addnpc',
+            'room.addchar'
+        ].includes(pkgLower);
+        const isRoomCharUpdate = [
+            'room.chars.update',
+            'room.char.update',
+            'room.players.update',
+            'room.npcs.update'
+        ].includes(pkgLower);
+        const isRoomCharRemove = [
+            'room.chars.remove',
+            'room.char.remove',
+            'room.players.remove',
+            'room.npcs.remove',
+            'room.removeplayer',
+            'room.removenpc',
+            'room.removechar'
+        ].includes(pkgLower);
 
         if (pkg.startsWith('Char.Vitals')) h.onCharVitals?.(parsed);
         else if (pkg.startsWith('Room.Info')) h.onRoomInfo?.(parsed);
-        else if (pkg.startsWith('Group')) h.onGroupSet?.(parsed);
-        else if (pkg.startsWith('Room.Players')) h.onRoomPlayers?.(parsed);
-        else if (pkg.startsWith('Room.Npcs') || pkg.startsWith('Room.Chars')) h.onRoomNpcs?.(parsed);
+        else if (pkgLower === 'group.set' || pkgLower === 'group') h.onGroupSet?.(parsed);
+        else if (pkgLower === 'group.add') h.onGroupAdd?.(parsed);
+        else if (pkgLower === 'group.update') h.onGroupUpdate?.(parsed);
+        else if (pkgLower === 'group.remove') h.onGroupRemove?.(parsed);
+        else if (isRoomCharAdd) h.onAddChar?.(parsed);
+        else if (isRoomCharUpdate) h.onUpdateChar?.(parsed);
+        else if (isRoomCharRemove) h.onRemoveChar?.(parsed);
+        else if (pkg.startsWith('Room.Players') && isRoomCharsFullSet) h.onRoomPlayers?.(parsed);
+        else if (isRoomCharsFullSet) h.onRoomNpcs?.(parsed);
         else if (pkg.startsWith('Room.Items') || pkg.startsWith('Room.Objects')) h.onRoomItems?.(parsed);
 
         // Generic routing for remaining packages (Char.Ride, Mume.MumeEdit, etc.)
         const parts = pkg.split('.');
         const handlerName = `on${parts[0]}${parts[parts.length - 1]}`;
-        if (h[handlerName]) h[handlerName](parsed);
+        if (!pkgLower.startsWith('group.') && h[handlerName]) h[handlerName](parsed);
     }, []);
 
     const replayer = useSessionReplayer(useCallback((type, payload, isPrivacyMode, isSilent = false) => {
@@ -359,7 +403,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     useEffect(() => {
         btn.setAddMessage(addMessage);
     }, [btn, addMessage]);
-    const joystick = useJoystick(triggerHaptic, s.roomExits);
+    const joystick = useJoystick(triggerHaptic, s.roomExits, playClickSound);
     const editor = useButtonEditor(btn);
     const help = useHelpHandler();
     const practice = usePracticeHandler(s.setAbilities);
@@ -572,7 +616,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             isSetMenuOpen: ui.isSetMenuOpen,
             menuView: ui.menuView,
             peekingSource: 'none' as any,
-            showMapperToolbar: false,
+            showMapperToolbar: settingsStore.showMapperToolbar,
             characterTab: ui.characterTab,
             managerSelectedSet: ui.managerSelectedSet,
         },
@@ -588,6 +632,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsMapExpanded: ui.setMapExpanded,
         setIsSetManagerOpen: (open: boolean) => ui.setUI({ setManagerOpen: open }),
         setManagerSelectedSet: ui.setManagerSelectedSet,
+        setShowMapperToolbar: settingsStore.setShowMapperToolbar,
         gearTab: ui.gearTab,
         setGearTab: ui.setGearTab,
         playersTab: ui.playersTab,
@@ -638,7 +683,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         replayer,
         spectateBuffer,
         };
-    }, [ui, s.inventoryLines, s.eqLines, s.statsLines, s.scoreLines, s.infoLines, s.practiceLines, s.questLines, s.whoLines, s.whereLines, s.characterName, s.userSession.recorder, settingsStore.showRecordingIndicator, settingsStore.setShowRecordingIndicator, replayer, spectateBuffer]);
+    }, [ui, s.inventoryLines, s.eqLines, s.statsLines, s.scoreLines, s.infoLines, s.practiceLines, s.questLines, s.whoLines, s.whereLines, s.characterName, s.userSession.recorder, settingsStore.showRecordingIndicator, settingsStore.setShowRecordingIndicator, settingsStore.showMapperToolbar, settingsStore.setShowMapperToolbar, replayer, spectateBuffer]);
 
     const controller = useCommandController({
         telnet, addMessage, initAudio, navIntervalRef: { current: null }, mapperRef,

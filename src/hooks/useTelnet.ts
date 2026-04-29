@@ -95,9 +95,10 @@ export function useTelnet(config: TelnetConfig) {
     const sendGameEntrySetup = React.useCallback((source: string) => {
         if (hasSentGameEntrySetupRef.current) return;
         hasSentGameEntrySetupRef.current = true;
-        console.log(`[Telnet] Sending game-entry setup from ${source}: change xml on, change page off`);
+        console.log(`[Telnet] Sending game-entry setup from ${source}: change xml on, change page off, info %O %D %k %A`);
         sendBytes(new TextEncoder().encode('change xml on\n'));
         sendBytes(new TextEncoder().encode('change page off\n'));
+        sendBytes(new TextEncoder().encode('info %O %D %k %A\n'));
     }, [sendBytes]);
 
     const processText = (text: string) => {
@@ -321,6 +322,39 @@ export function useTelnet(config: TelnetConfig) {
         const { handlers } = configRef.current;
         let parsed = null;
         try { parsed = JSON.parse(data); } catch(e) {}
+        const pkgLower = pkg.toLowerCase();
+        const isRoomCharsFullSet = [
+            'room.chars',
+            'room.chars.set',
+            'room.chars.list',
+            'room.players',
+            'room.npcs',
+            'mume.client.chars'
+        ].includes(pkgLower);
+        const isRoomCharAdd = [
+            'room.chars.add',
+            'room.char.add',
+            'room.players.add',
+            'room.npcs.add',
+            'room.addplayer',
+            'room.addnpc',
+            'room.addchar'
+        ].includes(pkgLower);
+        const isRoomCharUpdate = [
+            'room.chars.update',
+            'room.char.update',
+            'room.players.update',
+            'room.npcs.update'
+        ].includes(pkgLower);
+        const isRoomCharRemove = [
+            'room.chars.remove',
+            'room.char.remove',
+            'room.players.remove',
+            'room.npcs.remove',
+            'room.removeplayer',
+            'room.removenpc',
+            'room.removechar'
+        ].includes(pkgLower);
 
         // 1. Explicitly mapped handlers
         if (pkg.startsWith('Room.Info') || pkg.startsWith('Char.Name') || pkg.startsWith('Char.Vitals')) {
@@ -331,11 +365,23 @@ export function useTelnet(config: TelnetConfig) {
             if (handlers.onCharVitals) handlers.onCharVitals(parsed);
         } else if (pkg.startsWith('Room.Info')) {
             if (handlers.onRoomInfo) handlers.onRoomInfo(parsed);
-        } else if (pkg.startsWith('Group')) {
-            if (handlers.onGroupSet) handlers.onGroupSet(parsed);
-        } else if (pkg.startsWith('Room.Players')) {
+        } else if (pkgLower === 'group.set' || pkgLower === 'group') {
+            handlers.onGroupSet?.(parsed);
+        } else if (pkgLower === 'group.add') {
+            handlers.onGroupAdd?.(parsed);
+        } else if (pkgLower === 'group.update') {
+            handlers.onGroupUpdate?.(parsed);
+        } else if (pkgLower === 'group.remove') {
+            handlers.onGroupRemove?.(parsed);
+        } else if (isRoomCharAdd) {
+            handlers.onAddChar?.(parsed);
+        } else if (isRoomCharUpdate) {
+            handlers.onUpdateChar?.(parsed);
+        } else if (isRoomCharRemove) {
+            handlers.onRemoveChar?.(parsed);
+        } else if (pkg.startsWith('Room.Players') && isRoomCharsFullSet) {
             if (handlers.onRoomPlayers) handlers.onRoomPlayers(parsed);
-        } else if (pkg.startsWith('Room.Npcs') || pkg.startsWith('Room.Chars')) {
+        } else if (isRoomCharsFullSet) {
             if (handlers.onRoomNpcs) handlers.onRoomNpcs(parsed);
         } else if (pkg.startsWith('Room.Items') || pkg.startsWith('Room.Objects')) {
             if (handlers.onRoomItems) handlers.onRoomItems(parsed);
@@ -346,7 +392,8 @@ export function useTelnet(config: TelnetConfig) {
         const parts = pkg.split('.');
         const lastPart = parts[parts.length - 1];
         const handlerName = `on${parts[0]}${lastPart}`; // e.g. onCharRide
-        if ((handlers as any)[handlerName]) {
+        const alreadyRoutedGroup = pkgLower.startsWith('group.');
+        if (!alreadyRoutedGroup && (handlers as any)[handlerName]) {
             (handlers as any)[handlerName](parsed);
         }
     }, [sendGameEntrySetup]);
@@ -359,6 +406,9 @@ export function useTelnet(config: TelnetConfig) {
             let splitIdx = raw.search(/[\s\{\[]/);
             const pkg = splitIdx > -1 ? raw.substring(0, splitIdx).trim() : raw;
             const json = splitIdx > -1 ? raw.substring(splitIdx).trim() : '';
+            if (pkg.toLowerCase().startsWith('room.chars')) {
+                console.log('[GMCP RAW Room.Chars]', raw);
+            }
             
             if (configRef.current.recordEntry) {
                 configRef.current.recordEntry('gmcp', { pkg, data: json });

@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Direction, ExecuteCommand } from '../types';
 
 
-export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits: string[] = []) => {
+export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits: string[] = [], playClickSound?: () => void) => {
     const [joystickActive, setJoystickActive] = useState(false);
     const [currentDir, setCurrentDir] = useState<Direction | null>(null);
     const [isJoystickConsumed, setIsJoystickConsumed] = useState(false);
@@ -68,6 +68,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
                 lastSentDirRef.current = currentLockedDir;
                 setIsJoystickConsumed(true);
                 triggerHaptic(10);
+                if (playClickSound) playClickSound();
 
 
 
@@ -312,6 +313,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
             // Tap to Look
             if (displacement < 20 && dist < 20) {
                 executeCommand('look', false, false, false, false, { fromUi: true });
+                if (playClickSound) playClickSound();
                 // Removed release haptic for lookout/tap
                 return true;
             }
@@ -324,6 +326,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
             if (dist >= threshold && initialDir) {
                 executeCommand(dirMap[initialDir] || initialDir, false, false, false, false, { fromUi: true });
                 lastSentDirRef.current = initialDir;
+                if (playClickSound) playClickSound();
 
                 
                 // Removed release haptic for move
