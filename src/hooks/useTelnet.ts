@@ -210,6 +210,8 @@ export function useTelnet(config: TelnetConfig) {
         };
 
         const splitSnoopXmlBlocks = (line: string): string[] => {
+            if (line.length === 0) return [''];
+
             const out: string[] = [];
             let rest = line;
 
@@ -251,8 +253,6 @@ export function useTelnet(config: TelnetConfig) {
         for (const rawLine of rawLines) {
             const lineSegments = splitSnoopXmlBlocks(rawLine);
             for (const line of lineSegments) {
-                if (!line.trim()) continue;
-
                 const cleanForSnoopSegment = line.replace(/\x1b\[[0-9;]*m/g, '').trim();
                 if (/^(?:&|mp;)[A-Z](?: |$)/.test(cleanForSnoopSegment)) {
                     processedLines.push(line);

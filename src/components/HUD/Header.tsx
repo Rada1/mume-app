@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Crosshair, RefreshCw, X, FileText, User, Map as MapIcon } from 'lucide-react';
 import { EnvControls } from '../Layout/EnvControls';
-import { RecorderHUD } from '../Layout/HUD/RecorderHUD';
 import { LightingType, WeatherType } from '../../types';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useModeStore } from '../../stores/useModeStore';
@@ -144,7 +143,6 @@ const Header: React.FC<HeaderProps> = ({
         <header className={`header ${viewport.isMobile ? 'mobile-header' : ''}`} style={{ flexWrap: 'nowrap', gap: 6 }}>
             {/* Middle: Status Indicators (Flexible/Clipped) */}
             <EnvControls getLightingIcon={getLightingIcon} getWeatherIcon={getWeatherIcon} isLandscape={isLandscape} />
-            <RecorderHUD />
 
             {/* Theater Mode Banner */}
             {replayer.state.isVisible && replayer.log && (

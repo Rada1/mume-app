@@ -45,7 +45,9 @@ export interface GmcpCharVitals {
     'health-string'?: string;
     buff?: string | null;
     weather?: string | null;
+    w?: string | null;
     fog?: string | null;
+    f?: string | null;
     light?: string | null;
     terrain?: string | null;
     move_status?: string;
@@ -72,6 +74,8 @@ export interface GmcpRoomInfo {
     zone?: string;
     terrain?: string | null;
     environment?: string | null;
+    weather?: string | null;
+    w?: string | null;
     light?: string | number | null;
     l?: string | number | null;
     sundeath?: boolean;

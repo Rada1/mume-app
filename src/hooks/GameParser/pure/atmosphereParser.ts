@@ -1,17 +1,15 @@
+/**
+ * @file atmosphereParser.ts
+ * @description Emits non-weather atmosphere events from text lines.
+ */
+
 import { ParserContext, ParsedEvent, ParsedEventResult } from './types';
 
 export function atmosphereParser(lower: string, context: ParserContext, isSnoop?: boolean): ParsedEventResult {
     const events: ParsedEvent[] = [];
 
-    if (lower.includes("starts to rain") || lower.includes("it is raining")) {
-        events.push({ type: 'atmosphere_weather', data: { weather: lower.includes("heavily") ? 'heavy-rain' : 'rain' } });
-    }
-    if (lower.includes("starts to snow") || lower.includes("it is snowing")) {
-        events.push({ type: 'atmosphere_weather', data: { weather: 'snow' } });
-    }
-    if (lower.includes("rain stops") || lower.includes("snow stops") || lower.includes("clouds disappear")) {
-        events.push({ type: 'atmosphere_weather', data: { weather: 'none' } });
-    }
+    // --- Logic Section ---
+    // Weather visuals are driven by GMCP only; text weather lines remain display text.
 
     if (lower.includes("starts to fog") || lower.includes("it is foggy") || lower.includes("fog has thickened") || lower.includes("thick fog covers") || lower.includes("disappears into the fog") || (lower.includes("fog") && lower.includes("thickens"))) {
         events.push({ type: 'atmosphere_fog', data: { isFoggy: true } });

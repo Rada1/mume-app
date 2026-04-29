@@ -1,5 +1,6 @@
 import { GameStats, WeatherType, GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant, GmcpExitInfo, GmcpUpdateExits, GmcpRoomNpcs, GmcpCharInfo } from '../../types';
 import { isGmcpCharVitals, isGmcpRoomInfo, isGmcpRoomPlayers, isGmcpRoomItems, isGmcpExitInfoMap } from '../../utils/gmcpValidation';
+import { normalizeGmcpWeather } from '../weatherUtils';
 
 export interface GmcpHandlers {
     setStats: React.Dispatch<React.SetStateAction<GameStats>>;
@@ -317,11 +318,8 @@ export class GmcpDecoder {
 
         const weatherVal = getField(['weather', 'w']);
         if (weatherVal !== undefined && typeof this.handlers.setWeather === 'function') {
-            const w = String(weatherVal);
-            if (w === '~') this.handlers.setWeather('cloud');
-            else if (w === "'" || w === '"') this.handlers.setWeather('rain');
-            else if (w === '*') this.handlers.setWeather('heavy-rain');
-            else if (w === ' ' || w === null || w === '') this.handlers.setWeather((prev: WeatherType) => ['cloud', 'rain', 'heavy-rain', 'snow'].includes(prev) ? 'none' : prev);
+            const weather = normalizeGmcpWeather(weatherVal);
+            if (weather) this.handlers.setWeather(weather);
         }
 
         const fogVal = getField(['fog', 'f']); 
@@ -352,6 +350,9 @@ export class GmcpDecoder {
             if (isGmcpRoomInfo(data)) {
                 if (this.handlers.onRoomInfo) this.handlers.onRoomInfo(data);
                 
+                const weather = normalizeGmcpWeather(data.weather ?? data.w);
+                if (weather) this.handlers.setWeather(weather);
+
                 // Track lighting from room info
                 const light = data.light !== undefined ? data.light : (data.l !== undefined ? data.l : undefined);
                 if (light !== undefined && light !== null) {

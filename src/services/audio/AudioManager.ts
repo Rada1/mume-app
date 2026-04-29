@@ -16,6 +16,8 @@ export interface AmbientOptions {
     isDay?: boolean;
 }
 
+type AmbientType = 'terrain' | 'weather' | 'zone' | 'drum' | 'incantation' | 'heartbeat' | 'breath';
+
 interface ActiveAmbient {
     source: AudioBufferSourceNode;
     gain: GainNode;
@@ -35,7 +37,7 @@ export class AudioManager {
     private bufferCache: Map<string, AudioBuffer> = new Map();
     private loadingState: Map<string, Promise<AudioBuffer | null>> = new Map();
 
-    private activeAmbients: Map<'terrain' | 'weather' | 'zone' | 'drum' | 'incantation' | 'heartbeat' | 'breath', ActiveAmbient> = new Map();
+    private activeAmbients: Map<AmbientType, ActiveAmbient> = new Map();
     private _isSoundEnabled: boolean = true;
     private silenceTimeout: NodeJS.Timeout | null = null;
     private zoneEndedListeners: Set<(key: string) => void> = new Set();
@@ -145,6 +147,17 @@ export class AudioManager {
         return baseVolume * master * subVolume;
     }
 
+    private normalizeTerrainKey(key: string): string {
+        const normalized = key.trim().toUpperCase().replace(/[-\s]+/g, '_');
+        if (normalized === 'INDOORS' || normalized === 'INSIDE' || normalized === 'BUILDING') return 'CITY';
+        if (normalized === 'CITY' || normalized === 'TOWN') return 'CITY';
+        if (normalized === 'CAVERN') return 'CAVE';
+        if (normalized === 'SHALLOW') return 'SHALLOWS';
+        if (normalized === 'WATER' || normalized === 'RIVER') return 'WATER';
+        if (normalized === 'ROAD' || normalized === 'BRUSH') return 'FIELD';
+        return normalized;
+    }
+
     private updateActiveVolumes() {
         if (!this.audioCtx) return;
         const now = this.audioCtx.currentTime;
@@ -233,9 +246,10 @@ export class AudioManager {
         let isLoop = true;
 
         if (type === 'terrain') {
-            let config = (AUDIO_MANIFEST.ambient as any).terrains[key];
+            const terrainKey = this.normalizeTerrainKey(key);
+            let config = (AUDIO_MANIFEST.ambient as any).terrains[terrainKey];
             if (!config) {
-                const foundKey = Object.keys((AUDIO_MANIFEST.ambient as any).terrains).find(k => key.includes(k));
+                const foundKey = Object.keys((AUDIO_MANIFEST.ambient as any).terrains).find(k => terrainKey.includes(k));
                 if (foundKey) config = (AUDIO_MANIFEST.ambient as any).terrains[foundKey];
             }
 
@@ -243,7 +257,7 @@ export class AudioManager {
                 urlToPlay = config.url;
                 targetVolume = config.volume;
 
-                if (key.includes('FIELD') || key.includes('ROAD') || key.includes('BRUSH')) {
+                if (terrainKey === 'FIELD') {
                     if (isDay) {
                         urlToPlay = '/assets/Sounds/TerrainSounds/dayfield.wav';
                     } else {
@@ -317,6 +331,7 @@ export class AudioManager {
     private crossFadeAmbient(type: 'terrain' | 'weather' | 'zone' | 'drum' | 'incantation', urlToPlay: string, key: string, buffer: AudioBuffer, targetVolume: number, isLoop: boolean, filterFreq?: number) {
         if (!this.audioCtx) return;
         const ctx = this.audioCtx;
+        const isMusic = type === 'zone' || type === 'drum' || type === 'incantation';
 
         const fadeTime = 2.0;
 
@@ -348,7 +363,7 @@ export class AudioManager {
 
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(this.getEffectiveVolume(targetVolume, true), ctx.currentTime + fadeTime);
+        gain.gain.linearRampToValueAtTime(this.getEffectiveVolume(targetVolume, isMusic), ctx.currentTime + fadeTime);
 
         lastNode.connect(gain);
         gain.connect(ctx.destination);
@@ -381,7 +396,7 @@ export class AudioManager {
             pauseOffset: startOffset % buffer.duration,
             startTime: ctx.currentTime,
             baseVolume: targetVolume,
-            isMusic: true
+            isMusic
         });
     }
 

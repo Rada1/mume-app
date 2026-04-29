@@ -27,7 +27,6 @@ export const useGameProviderState = (audioTriggers?: {
         isBloomEnabled, setIsBloomEnabled, isTimestampEnabled, setIsTimestampEnabled,
         fontFamily, setFontFamily,
         connectionUrl, setConnectionUrl,
-        showRecordingIndicator, setShowRecordingIndicator
     } = settings;
 
     // Registry

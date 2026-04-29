@@ -47,6 +47,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                             style={{ opacity: (weather === 'cloud' || weather === 'rain' || weather === 'heavy-rain') ? 1 : 0 }}
                         />
                         {(weather === 'rain' || weather === 'heavy-rain') && <Rain heavy={weather === 'heavy-rain'} />}
+                        {weather === 'snow' && <div className="weather-layer weather-snow" />}
                     </>
                 )}
                 {/* Fog renders regardless of immersion mode — it's a gameplay-relevant state */}

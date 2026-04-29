@@ -165,14 +165,24 @@ const MessageItem = React.memo(({
                     {timestampEl}
                     {msg.isCombat && inCombat ? (
                         <div className="combat-bubble">
-                            <div className="message-content">
+                            <div className="message-content hit-sheen-container">
                                 <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
+                                {msg.isHitImpact && (
+                                    <div className="hit-sheen-overlay" aria-hidden="true">
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ) : (
                         <>
-                            <div className="message-content">
+                            <div className="message-content hit-sheen-container">
                                 <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} />
+                                {msg.isHitImpact && (
+                                    <div className="hit-sheen-overlay" aria-hidden="true">
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} />
+                                    </div>
+                                )}
                                 {msg.isRoomName && msg.tokens && msg.html?.includes('room-desc-line') && (
                                     <div 
                                         className="room-description-merged" 

@@ -39,8 +39,6 @@ interface UseSettingsInput {
     setDisableSmoothScroll?: (val: boolean) => void;
     isImmersionMode?: boolean;
     setIsImmersionMode?: (val: boolean) => void;
-    showRecordingIndicator?: boolean;
-    setShowRecordingIndicator?: (val: boolean) => void;
     showOrganicTerrain?: boolean;
     setShowOrganicTerrain?: (val: boolean) => void;
     inlineCategories?: any[];

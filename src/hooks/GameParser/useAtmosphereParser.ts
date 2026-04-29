@@ -21,26 +21,18 @@ export interface AtmosphereParserDeps {
 
 export function useAtmosphereParser(deps: AtmosphereParserDeps) {
     const {
-        setWeather, setIsFoggy, setLightningEnabled, 
-        setSpectateWeather, setSpectateIsFoggy, setSpectateLightningEnabled,
+        setIsFoggy, setLightningEnabled, 
+        setSpectateIsFoggy, setSpectateLightningEnabled,
         triggerHaptic, playDoorSound, setPlayerPosition, setSpectatePosition, isSpectateMode
     } = deps;
 
     const parseAtmosphere = useCallback((lower: string, isSnoop: boolean = false) => {
         // --- Logic Selection ---
-        const weatherSetter = (isSnoop && setSpectateWeather) ? setSpectateWeather : setWeather;
         const fogSetter = (isSnoop && setSpectateIsFoggy) ? setSpectateIsFoggy : setIsFoggy;
         const lightningSetter = (isSnoop && setSpectateLightningEnabled) ? setSpectateLightningEnabled : setLightningEnabled;
 
-        // --- Weather & Fog ---
-        if (lower.includes('it starts to rain') || lower.includes('is raining')) {
-            weatherSetter('rain');
-        } else if (lower.includes('starts to snow') || lower.includes('is snowing')) {
-            weatherSetter('snow');
-        } else if (lower.includes('rain has stopped') || lower.includes('snow stops') || lower.includes('sky clears')) {
-            weatherSetter(null);
-        }
-
+        // --- Fog ---
+        // Weather visuals are driven by GMCP only; text weather lines are log text.
         if (lower.includes('thick fog rolls in')) {
             fogSetter(true);
         } else if (lower.includes('fog lifts')) {
@@ -76,7 +68,7 @@ export function useAtmosphereParser(deps: AtmosphereParserDeps) {
         } else if (lower.includes('you go to sleep') || lower.includes('is now sleeping')) {
             posSetter('sleeping');
         }
-    }, [setWeather, setIsFoggy, setLightningEnabled, triggerHaptic, playDoorSound, setPlayerPosition, setSpectatePosition, isSpectateMode]);
+    }, [setIsFoggy, setLightningEnabled, triggerHaptic, playDoorSound, setPlayerPosition, setSpectatePosition, isSpectateMode]);
 
     return { parseAtmosphere };
 }

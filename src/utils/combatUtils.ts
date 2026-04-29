@@ -1,4 +1,23 @@
+/**
+ * @file combatUtils.ts
+ * @description Shared combat parsing and combatant-name normalization helpers.
+ */
+
 import { CombatHealthStatus } from '../types';
+
+// --- Logic Section ---
+
+/**
+ * Normalizes MUME combatant labels so prompt text and GMCP names can match.
+ */
+export const normalizeCombatantName = (name: string | null | undefined): string => {
+    if (!name) return '';
+
+    return name
+        .replace(/\s*\([^)]{1,12}\)\s*$/, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+};
 
 /**
  * Parses health status from a given string.

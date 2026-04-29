@@ -102,8 +102,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setIsTimestampEnabled,
         isNewbieMode,
         setIsNewbieMode,
-        showRecordingIndicator,
-        setShowRecordingIndicator,
         parley,
         setParley,
         whoList,
@@ -225,8 +223,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setIsTimestampEnabled={setIsTimestampEnabled}
                     isNewbieMode={isNewbieMode}
                     setIsNewbieMode={setIsNewbieMode}
-                    showRecordingIndicator={showRecordingIndicator}
-                    setShowRecordingIndicator={setShowRecordingIndicator}
                     objectColor={objectColor}
                     setObjectColor={setObjectColor}
                     fontFamily={fontFamily}

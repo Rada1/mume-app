@@ -60,8 +60,6 @@ interface SettingsModalProps {
     setFontFamily: (val: string) => void;
     isNewbieMode: boolean;
     setIsNewbieMode: (val: boolean) => void;
-    showRecordingIndicator?: boolean;
-    setShowRecordingIndicator?: (val: boolean) => void;
     autoSaveSessions?: boolean;
     setAutoSaveSessions?: (val: boolean) => void;
     showSpectatePromptInLog?: boolean;
@@ -92,7 +90,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     roomColor, setRoomColor,
     isBloomEnabled, setIsBloomEnabled,
     isTimestampEnabled, setIsTimestampEnabled, fontFamily, setFontFamily,
-    isNewbieMode, setIsNewbieMode, showRecordingIndicator, setShowRecordingIndicator,
+    isNewbieMode, setIsNewbieMode,
     autoSaveSessions, setAutoSaveSessions, showSpectatePromptInLog, setShowSpectatePromptInLog,
     isEditMode, setIsEditMode, isGridEnabled, setIsGridEnabled, createButton,
     setIsSetManagerOpen, showLegacyButtons, setShowLegacyButtons,
@@ -176,8 +174,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setDisableSmoothScroll={setDisableSmoothScroll}
                                 isImmersionMode={isImmersionMode}
                                 setIsImmersionMode={setIsImmersionMode}
-                                showRecordingIndicator={showRecordingIndicator}
-                                setShowRecordingIndicator={setShowRecordingIndicator}
                                 isHighlighterEnabled={isHighlighterEnabled}
                                 setIsHighlighterEnabled={setIsHighlighterEnabled}
                                 objectColor={objectColor}

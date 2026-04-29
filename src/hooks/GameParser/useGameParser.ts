@@ -6,7 +6,7 @@
 
 import React, { useCallback, useRef, useMemo, useEffect } from 'react';
 import { gmcpBus } from '../../events/gmcpBus';
-import { EntityCapability, MessageType } from '../../types';
+import { DrawerLine, EntityCapability, MessageType } from '../../types';
 import { useQuestsHandler } from '../useQuestsHandler';
 import { useEntityRegistry } from '../useEntityRegistry';
 import { useCaptureParser } from './useCaptureParser';
@@ -77,6 +77,37 @@ const isPromptBoundaryLine = (text: string): boolean => {
         /^[!*[(][^\r\n]{0,24}\bHP:\w+/i.test(clean) ||
         /^[^\r\n]{0,48}>\s*$/.test(clean)
     );
+};
+
+const stripInlineMarkup = (text: string): string => text
+    .replace(/\x1b\[[0-9;]*m/g, '')
+    .replace(/<\/?[a-zA-Z][a-zA-Z0-9_-]*(?:\s+[^>]*)?\/?>|&lt;|&gt;|&amp;/g, (match: string) => {
+        if (match === '&lt;') return '<';
+        if (match === '&gt;') return '>';
+        if (match === '&amp;') return '&';
+        return '';
+    });
+
+const isWhereTableLine = (text: string): boolean => {
+    const clean = stripInlineMarkup(text).trim();
+    if (!clean) return false;
+    if (/^player\s+distance\s+direction\s+room$/i.test(clean)) return true;
+    if (/^-{5,}$/.test(clean)) return true;
+    if (/^no-?one\s+(?:is\s+)?(?:nearby|around|visible)/i.test(clean)) return true;
+    return /^[A-Z\u00C0-\u00DE][\w\u00C0-\u00FF'`-]{1,20}\s{2,}.+/.test(clean);
+};
+
+const createWhereLine = (rawText: string, ansiConvert: any): DrawerLine => {
+    const text = stripInlineMarkup(rawText).trimEnd();
+    return {
+        id: `where-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        text: text.trim(),
+        rawText,
+        html: ansiConvert.toHtml(text),
+        tokens: [{ type: 'text', content: text }],
+        isHeader: /^player\s+distance\s+direction\s+room$/i.test(text.trim()) || /^-{5,}$/.test(text.trim()),
+        isItem: false
+    };
 };
 
 const normalizeStageToCaptureType = (stage: unknown) => {
@@ -157,6 +188,13 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     const { setQuests } = deps;
     const { finalizeQuests } = useQuestsHandler(setQuests, deps.quests.activeQuests);
     const { registerEntity, extractNoun } = useEntityRegistry();
+    const nearbyCaptureRef = useRef<{ active: boolean; lines: DrawerLine[] }>({ active: false, lines: [] });
+    const finalizeNearbyCapture = useCallback(() => {
+        if (!nearbyCaptureRef.current.active) return;
+        setWhereLines([...nearbyCaptureRef.current.lines]);
+        nearbyCaptureRef.current = { active: false, lines: [] };
+        if (deps.captureStage.current === 'where') deps.captureStage.current = 'none' as any;
+    }, [setWhereLines, deps.captureStage]);
     
     // 3. The Reactive Capture Machine (The only capture system left)
     const capture = useCaptureParser({
@@ -167,7 +205,6 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         setStatsLines: sessionSetStatsLines,
         setPracticeLines: sessionSetPracticeLines,
         setWhoLines,
-        setWhereLines,
         setScoreLines: sessionSetScoreLines,
         setInfoLines,
         setQuestLines,
@@ -411,7 +448,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         // so running the full tokenizer (which rebuilds a growing player-name regex per line)
         // causes an O(N²) feedback loop that freezes the browser.
         const activeCapture = capture.getActiveType();
-        const isWhereCapture = !isSnoop && activeCapture === 'where';
+        const expectedCaptureBeforeTokenize = normalizeStageToCaptureType(deps.captureStage.current) as any;
+        const isWhereCapture = !isSnoop && (activeCapture === 'where' || expectedCaptureBeforeTokenize === 'where');
 
         let tokenizerContext: any;
         let derivedTokens: any[];
@@ -420,13 +458,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
         if (isWhereCapture) {
             // Lightweight path: extract text without full tokenization
-            const stripped = lineToParse.replace(/\x1b\[[0-9;]*m/g, '')
-                .replace(/<\/?[a-zA-Z][a-zA-Z0-9_-]*(?:\s+[^>]*)?\/?>|&lt;|&gt;|&amp;/g, (m: string) => {
-                    if (m === '&lt;') return '<';
-                    if (m === '&gt;') return '>';
-                    if (m === '&amp;') return '&';
-                    return '';
-                });
+            const stripped = stripInlineMarkup(lineToParse);
             tokenizerContext = {};
             derivedTokens = [{ type: 'text', content: stripped }];
             textOnly = stripped;
@@ -490,6 +522,31 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             }
         }
 
+        const expectedCaptureType = normalizeStageToCaptureType(deps.captureStage.current) as any;
+        const isCaptureBoundary = isPromptResolved || promptInfo.isMatch || isPromptBoundaryLine(textOnly);
+
+        // Nearby is intentionally separate from the generic capture machine.
+        // It records only the tiny `where` table and never touches entity
+        // registration, account parsing, TokenRenderer data, or CaptureSession.
+        if (!isSnoop && (nearbyCaptureRef.current.active || expectedCaptureType === 'where')) {
+            if (isCaptureBoundary) {
+                finalizeNearbyCapture();
+            } else if (isWhereTableLine(textOnly)) {
+                if (!nearbyCaptureRef.current.active) {
+                    nearbyCaptureRef.current = { active: true, lines: [] };
+                }
+                nearbyCaptureRef.current.lines.push(createWhereLine(lineToParse, deps.ansiConvert));
+                if (nearbyCaptureRef.current.lines.length >= 40) {
+                    finalizeNearbyCapture();
+                }
+                return;
+            } else if (nearbyCaptureRef.current.active) {
+                finalizeNearbyCapture();
+            } else if (expectedCaptureType === 'where') {
+                deps.captureStage.current = 'none' as any;
+            }
+        }
+
         if (account.parseAccountLine(textOnly, isPromptResolved)) return;
         if (stat.parseCompactCombatInfo(textOnly)) return;
         if (stat.parseGlobalStatus(textOnly, lower)) msgType = 'info' as any;
@@ -504,7 +561,6 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         // Prompt lines end list-style captures and should never be stored as
         // drawer content. A new drawer header can also arrive before the previous
         // capture sees a prompt, so switch sessions at the header boundary.
-        const isCaptureBoundary = isPromptResolved || promptInfo.isMatch || isPromptBoundaryLine(textOnly);
         let skipCaptureAccumulation = isCaptureBoundary;
         if (!isSnoop && isCaptureBoundary && capture.hasSession()) {
             capture.finalizeSession();
@@ -517,11 +573,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             capture.finalizeSession();
         }
 
-        const expectedCaptureType = normalizeStageToCaptureType(deps.captureStage.current) as any;
         if (
             !isSnoop &&
             capture.hasSession() &&
-            ['who', 'where', 'equipment', 'inventory'].includes(expectedCaptureType) &&
+            ['who', 'equipment', 'inventory'].includes(expectedCaptureType) &&
             expectedCaptureType !== capture.getActiveType()
         ) {
             capture.finalizeSession();
@@ -535,16 +590,15 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             !isCaptureBoundary &&
             !capture.hasSession() &&
             !incomingCaptureType &&
-            ['who', 'where'].includes(expectedCaptureType)
+            expectedCaptureType === 'who'
         );
         if (canStartExpectedCapture) {
             capture.startSession(expectedCaptureType);
         }
 
         let finalTokens = derivedTokens;
-        // Only build player tokens for 'who' in the main parser.
-        // For 'where', entity registration is handled by useCaptureParser
-        // during finalization to avoid per-line state updates that freeze the UI.
+        // Only build player tokens for 'who' in the main parser. Nearby/where
+        // uses the dedicated plain-table capture above.
         if (!isSnoop && activeCapture === 'who') {
             finalTokens = buildPlayerLineTokens(textOnly, registerEntity) || finalTokens;
         }
@@ -607,6 +661,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 return freshTokenizer.tokenize(text, tokenizerContext);
             };
             
+            const hasHitTag = lineToParse.includes('<hit>');
             deps.addMessage(
                 finalType, textOnly, undefined, mid, false, 
                 { textOnly, lower, html: messageObj.html, tokens: messageObj.tokens },
@@ -614,7 +669,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 commResult.replyTarget, commResult.replyCommand, commResult.commSender, commResult.commAction, commResult.commText, commResult.commColor,
                 commResult.commSender ? tokenizeFresh(commResult.commSender) : undefined,
                 commResult.commText ? tokenizeFresh(commResult.commText) : undefined,
-                undefined, undefined, undefined, isSnoop
+                undefined, hasHitTag, undefined, isSnoop
             );
         }
 
@@ -622,7 +677,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
     }, [
         processTriggers, router, combat, room, account, stat, atmosphere, time, parseLogGmcp, actionTracker,
-        deps.addMessage, deps.isNewbieMode, session.game, deps.groupMembers, deps.inlineCategories, deps.btn, session.vitals.target, deps.captureStage, deps.ansiConvert, capture
+        deps.addMessage, deps.isNewbieMode, session.game, deps.groupMembers, deps.inlineCategories, deps.btn, session.vitals.target, deps.captureStage, deps.ansiConvert, capture, finalizeNearbyCapture
     ]);
 
     return useMemo(() => ({

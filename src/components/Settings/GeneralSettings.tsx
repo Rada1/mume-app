@@ -29,8 +29,6 @@ interface GeneralSettingsProps {
     setDisableSmoothScroll: (val: boolean) => void;
     isImmersionMode: boolean;
     setIsImmersionMode: (val: boolean) => void;
-    showRecordingIndicator: boolean;
-    setShowRecordingIndicator: (val: boolean) => void;
     isHighlighterEnabled: boolean;
     setIsHighlighterEnabled: (val: boolean) => void;
     objectColor: string;
@@ -83,8 +81,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setDisableSmoothScroll,
     isImmersionMode,
     setIsImmersionMode,
-    showRecordingIndicator,
-    setShowRecordingIndicator,
     isHighlighterEnabled,
     setIsHighlighterEnabled,
     objectColor,
@@ -538,31 +534,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             <span style={{ fontSize: '0.65rem', background: '#ec4899', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>LAB</span>
                         </div>
                     </div>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
-                    <div style={{ flex: '1 1 200px' }}>
-                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Recording Indicator</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-                            Show the "REC" indicator at the top of the screen when recording.
-                        </div>
-                    </div>
-                    <button
-                        className={`setting-toggle ${showRecordingIndicator ? 'active' : ''}`}
-                        onClick={() => setShowRecordingIndicator(!showRecordingIndicator)}
-                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: showRecordingIndicator ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
-                    >
-                        <div style={{
-                            width: '20px',
-                            height: '20px',
-                            background: '#fff',
-                            borderRadius: '50%',
-                            position: 'absolute',
-                            top: '2px',
-                            left: showRecordingIndicator ? '22px' : '2px',
-                            transition: 'all 0.3s'
-                        }} />
-                    </button>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>

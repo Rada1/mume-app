@@ -2,10 +2,12 @@ import React, { useCallback } from 'react';
 import { GmcpOccupant, GmcpRoomInfo, GmcpUpdateExits } from '../../types';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
 import { gmcpBus } from '../../events/gmcpBus';
+import { normalizeGmcpWeather } from '../../utils/weatherUtils';
 
 interface UseGmcpRoomProps {
     mapperRef: React.RefObject<MapperRef>;
     setCurrentTerrain: (terrain: string) => void;
+    setWeather: (weather: import('../../types').WeatherType) => void;
     setRoomName: (name: string | null) => void;
     setRoomDesc: (desc: string | null) => void;
     setRoomZone: (zone: string | null) => void;
@@ -57,6 +59,7 @@ const parseRoomItemsFromDescription = (desc?: string | null): GmcpOccupant[] => 
 export const useGmcpRoom = ({
     mapperRef,
     setCurrentTerrain,
+    setWeather,
     setRoomName,
     setRoomDesc,
     setRoomZone,
@@ -105,6 +108,10 @@ export const useGmcpRoom = ({
 
         const terrain = data.terrain || data.environment;
         if (terrain) setCurrentTerrain(terrain);
+
+        const weather = normalizeGmcpWeather(data.weather ?? data.w);
+        if (weather) setWeather(weather);
+
         if (data.name) setRoomName(data.name);
         if (data.desc !== undefined && setRoomDesc) setRoomDesc(data.desc);
         if (roomDescRef) (roomDescRef as { current: string }).current = data.desc || '';
@@ -147,7 +154,7 @@ export const useGmcpRoom = ({
             //     playMovementSound(isRiding);
             // }
         }
-    }, [mapperRef, setCurrentTerrain, setRoomName, setRoomDesc, setRoomExits, setRoomZone, setRoomItems, setRoomChars, setDiscoveredItems, playMovementSound, isSpectateMode, detectLighting, isRidingRef, playerPositionRef, lastRoomChangeTimeRef, lastRoomNumRef, lastExitsRef, roomDescRef]);
+    }, [mapperRef, setCurrentTerrain, setWeather, setRoomName, setRoomDesc, setRoomExits, setRoomZone, setRoomItems, setRoomChars, setDiscoveredItems, playMovementSound, isSpectateMode, detectLighting, isRidingRef, playerPositionRef, lastRoomChangeTimeRef, lastRoomNumRef, lastExitsRef, roomDescRef]);
 
     const onRoomUpdateExits = useCallback((data: GmcpUpdateExits) => {
         if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-gmcp-room-exits', { detail: data }));

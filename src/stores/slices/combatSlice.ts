@@ -5,7 +5,7 @@
  */
 
 import { CombatHealthStatus, GroupMember } from '../../types';
-import { findStatus } from '../../utils/combatUtils';
+import { findStatus, normalizeCombatantName } from '../../utils/combatUtils';
 
 export interface CombatState {
     opponentId: number | null;
@@ -77,7 +77,7 @@ const upsertGroupMember = (members: GroupMember[], update: GroupMember) => {
  */
 export const createCombatActions = (set: any, get: any) => ({
     setOpponent: (id: number | null, name: string | null, status: CombatHealthStatus | null) => {
-        set({ opponentId: id, opponentName: name, opponentHealthStatus: status });
+        set({ opponentId: id, opponentName: name ? normalizeCombatantName(name) : name, opponentHealthStatus: status });
     },
 
     setOpponentId: (id: string | number | null) => {
@@ -86,7 +86,7 @@ export const createCombatActions = (set: any, get: any) => ({
     },
 
     setBuffer: (name: string | null, status: CombatHealthStatus | null) => {
-        set({ bufferName: name, bufferHealthStatus: status });
+        set({ bufferName: name ? normalizeCombatantName(name) : name, bufferHealthStatus: status });
     },
 
     applyRoomCharsCombat: (data: any[]) => {
@@ -103,20 +103,20 @@ export const createCombatActions = (set: any, get: any) => ({
 
             // Prioritize ID match for opponent
             if (opponentId && String(char.id) === String(opponentId)) {
-                newOpponentName = char.name || char.short || char.keyword || newOpponentName;
+                newOpponentName = normalizeCombatantName(char.name || char.short || char.keyword) || newOpponentName;
                 newOpponentHealth = status;
             } else if (opponentName && !opponentId) {
                 // Fallback to name match if no ID yet (only if no direct ID match exists)
-                const name = char.name || char.short || char.keyword;
-                if (name && (name.toLowerCase() === opponentName.toLowerCase())) {
+                const name = normalizeCombatantName(char.name || char.short || char.keyword);
+                if (name && (name.toLowerCase() === normalizeCombatantName(opponentName).toLowerCase())) {
                     newOpponentHealth = status;
                 }
             }
 
             // Buffer match
             if (bufferName) {
-                 const name = char.name || char.short || char.keyword;
-                 if (name && (name.toLowerCase() === bufferName.toLowerCase())) {
+                 const name = normalizeCombatantName(char.name || char.short || char.keyword);
+                 if (name && (name.toLowerCase() === normalizeCombatantName(bufferName).toLowerCase())) {
                     newBufferHealth = status;
                  }
             }
@@ -160,8 +160,11 @@ export const createCombatActions = (set: any, get: any) => ({
         set({ groupMembers: members });
     },
 
-    setOpponentName: (opponentName: string | null | ((prev: string | null) => string | null)) => 
-        set((state: CombatState) => ({ opponentName: typeof opponentName === 'function' ? opponentName(state.opponentName) : opponentName })),
+    setOpponentName: (opponentName: string | null | ((prev: string | null) => string | null)) =>
+        set((state: CombatState) => {
+            const next = typeof opponentName === 'function' ? opponentName(state.opponentName) : opponentName;
+            return { opponentName: next ? normalizeCombatantName(next) : next };
+        }),
 
     setOpponentHealthStatus: (status: CombatHealthStatus | null | ((prev: CombatHealthStatus | null) => CombatHealthStatus | null)) => 
         set((state: CombatState) => ({ opponentHealthStatus: typeof status === 'function' ? status(state.opponentHealthStatus) : status })),
@@ -169,8 +172,11 @@ export const createCombatActions = (set: any, get: any) => ({
     setOpponentStatus: (status: CombatHealthStatus | null | ((prev: CombatHealthStatus | null) => CombatHealthStatus | null)) => 
         set((state: CombatState) => ({ opponentHealthStatus: typeof status === 'function' ? status(state.opponentHealthStatus) : status })),
 
-    setBufferName: (bufferName: string | null | ((prev: string | null) => string | null)) => 
-        set((state: CombatState) => ({ bufferName: typeof bufferName === 'function' ? bufferName(state.bufferName) : bufferName })),
+    setBufferName: (bufferName: string | null | ((prev: string | null) => string | null)) =>
+        set((state: CombatState) => {
+            const next = typeof bufferName === 'function' ? bufferName(state.bufferName) : bufferName;
+            return { bufferName: next ? normalizeCombatantName(next) : next };
+        }),
 
     setBufferHealthStatus: (status: CombatHealthStatus | null | ((prev: CombatHealthStatus | null) => CombatHealthStatus | null)) => 
         set((state: CombatState) => ({ bufferHealthStatus: typeof status === 'function' ? status(state.bufferHealthStatus) : status })),

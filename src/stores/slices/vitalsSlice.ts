@@ -5,6 +5,7 @@
  */
 
 import { GmcpCharVitals, CombatHealthStatus, WeatherType, GmcpCharInfo, LightingType } from '../../types';
+import { normalizeGmcpWeather } from '../../utils/weatherUtils';
 
 export interface CharacterInfo {
     name: string | null;
@@ -46,6 +47,7 @@ export interface VitalsState {
     target: string | null;
     activePrompt: any;
     wimpy: number;
+    conditions?: Record<string, boolean>;
     gmcpVitals: {
         hp: number;
         maxHp: number;
@@ -110,6 +112,7 @@ export const initialVitalsState = {
     target: null,
     activePrompt: null,
     wimpy: 0,
+    conditions: {},
     gmcpVitals: {
         hp: 100,
         maxHp: 100,
@@ -211,12 +214,16 @@ export const createVitalsActions = (set: any, get: any) => ({
             }
 
             if (data.position) {
+                const rawPosition = String(data.position).toLowerCase();
+                const isWaiting = rawPosition === 'waiting' || rawPosition.includes('waiting');
+                updates.conditions = { ...((state as any).conditions || {}), waiting: isWaiting };
+
                 // Don't let 'standing' stomp 'riding' because MUME often says 'standing' while mounted.
                 const isCurrentlyRiding = state.position === 'riding' || state.position === 'mounted';
                 if (!(data.position === 'standing' && isCurrentlyRiding)) {
-                    updates.position = data.position;
+                    updates.position = rawPosition;
                     // Sync combat state from position
-                    updates.inCombat = data.position === 'fighting';
+                    updates.inCombat = rawPosition === 'fighting';
                 }
             }
 
@@ -248,15 +255,8 @@ export const createVitalsActions = (set: any, get: any) => ({
             }
 
             if (data.weather !== undefined) {
-                if (data.weather === null || data.weather === 'clear') {
-                    updates.weather = 'clear';
-                } else if (data.weather.includes('rain')) {
-                    updates.weather = data.weather.includes('heavy') ? 'heavy-rain' : 'rain';
-                } else if (data.weather.includes('snow')) {
-                    updates.weather = 'snow';
-                } else if (data.weather.includes('cloud')) {
-                    updates.weather = 'cloud';
-                }
+                const weather = normalizeGmcpWeather(data.weather);
+                if (weather) updates.weather = weather;
             }
 
             if (data.fog !== undefined) {
@@ -319,9 +319,16 @@ export const createVitalsActions = (set: any, get: any) => ({
     setPosition: (pos: string | ((prev: string) => string)) => {
         set((state: VitalsState) => {
             const nextPos = typeof pos === 'function' ? pos(state.position) : pos;
+            const rawPosition = String(nextPos).toLowerCase();
             const isCurrentlyRiding = state.position === 'riding' || state.position === 'mounted';
-            if (nextPos === 'standing' && isCurrentlyRiding) return state;
-            return { ...state, position: nextPos, inCombat: nextPos === 'fighting' };
+            if (rawPosition === 'standing' && isCurrentlyRiding) return state;
+            const waiting = rawPosition === 'waiting' || rawPosition.includes('waiting');
+            return {
+                ...state,
+                position: rawPosition,
+                inCombat: rawPosition === 'fighting',
+                conditions: { ...((state as any).conditions || {}), waiting }
+            };
         });
     },
 

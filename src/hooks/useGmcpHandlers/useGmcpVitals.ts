@@ -1,5 +1,7 @@
 import { useCallback, useRef } from 'react';
 import { GmcpCharVitals, GmcpCharInfo, CombatHealthStatus } from '../../types';
+import { normalizeCombatantName } from '../../utils/combatUtils';
+import { normalizeGmcpWeather } from '../../utils/weatherUtils';
 
 interface UseGmcpVitalsProps {
     setCurrentTerrain: (terrain: string) => void;
@@ -127,11 +129,8 @@ export const useGmcpVitals = ({
         }
 
         if (data.weather !== undefined) {
-            // MUME sends weather as a string or null
-            if (data.weather === null || data.weather === 'clear') setCurrentWeather('clear');
-            else if (data.weather.includes('rain')) setCurrentWeather(data.weather.includes('heavy') ? 'heavy-rain' : 'rain');
-            else if (data.weather.includes('snow')) setCurrentWeather('snow');
-            else if (data.weather.includes('cloud')) setCurrentWeather('cloud');
+            const weather = normalizeGmcpWeather(data.weather);
+            if (weather) setCurrentWeather(weather);
         }
 
         if (data.fog !== undefined) {
@@ -179,21 +178,21 @@ export const useGmcpVitals = ({
 
             // Prioritize ID match for opponent
             if (opponentId && String(char.id) === String(opponentId)) {
-                const name = char.name || char.short || char.keyword;
+                const name = normalizeCombatantName(char.name || char.short || char.keyword);
                 if (name) setOpponentName(name);
                 setOpponentHealthStatus(status);
             } else if (opponentName && !opponentId) {
                 // Fallback to name match if no ID yet (only if no direct ID match exists)
-                const name = char.name || char.short || char.keyword;
-                if (name && (name.toLowerCase() === opponentName.toLowerCase())) {
+                const name = normalizeCombatantName(char.name || char.short || char.keyword);
+                if (name && (name.toLowerCase() === normalizeCombatantName(opponentName).toLowerCase())) {
                     setOpponentHealthStatus(status);
                 }
             }
 
             // Buffer match
             if (bufferName) {
-                 const name = char.name || char.short || char.keyword;
-                 if (name && (name.toLowerCase() === bufferName.toLowerCase())) {
+                 const name = normalizeCombatantName(char.name || char.short || char.keyword);
+                 if (name && (name.toLowerCase() === normalizeCombatantName(bufferName).toLowerCase())) {
                     setBufferHealthStatus(status);
                  }
             }

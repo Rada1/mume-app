@@ -168,8 +168,7 @@ export interface UIContextType {
     characterName: string | null;
     isRecording: boolean;
     duration: number;
-    showRecordingIndicator: boolean;
-    setShowRecordingIndicator: (val: boolean) => void;
+    duration: number;
     replayer: {
         log: import('../../types').SessionLog | null;
         state: import('../../hooks/useSessionReplayer').ReplayerState;
@@ -357,8 +356,8 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     setDisableSmoothScroll: (val: boolean) => void;
     isImmersionMode: boolean;
     setIsImmersionMode: (val: boolean) => void;
-    showRecordingIndicator: boolean;
-    setShowRecordingIndicator: (val: boolean) => void;
+    isImmersionMode: boolean;
+    setIsImmersionMode: (val: boolean) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
     isSpectateMode: boolean;

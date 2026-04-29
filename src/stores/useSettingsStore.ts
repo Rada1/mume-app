@@ -33,7 +33,6 @@ interface SettingsState {
     disableSmoothScroll: boolean;
     isImmersionMode: boolean;
     isTimestampEnabled: boolean;
-    showRecordingIndicator: boolean;
     showDebugEchoes: boolean;
     showLegacyButtons: boolean;
     showSpectatePromptInLog: boolean;
@@ -78,7 +77,6 @@ interface SettingsState {
     setNpcColor: (val: string) => void;
     setRoomColor: (val: string) => void;
     setIsTimestampEnabled: (val: boolean) => void;
-    setShowRecordingIndicator: (val: boolean) => void;
     setShowDebugEchoes: (val: boolean) => void;
     setShowLegacyButtons: (val: boolean) => void;
     setShowSpectatePromptInLog: (val: boolean) => void;
@@ -125,7 +123,6 @@ export const useSettingsStore = create<SettingsState>()(
             disableSmoothScroll: false,
             isImmersionMode: true,
             isTimestampEnabled: false,
-            showRecordingIndicator: true,
             showDebugEchoes: false,
             showLegacyButtons: false,
             showSpectatePromptInLog: true,
@@ -168,7 +165,6 @@ export const useSettingsStore = create<SettingsState>()(
             setDisableSmoothScroll: (disableSmoothScroll) => set({ disableSmoothScroll }),
             setIsImmersionMode: (isImmersionMode) => set({ isImmersionMode }),
             setIsTimestampEnabled: (isTimestampEnabled) => set({ isTimestampEnabled }),
-            setShowRecordingIndicator: (showRecordingIndicator) => set({ showRecordingIndicator }),
             setShowDebugEchoes: (showDebugEchoes) => set({ showDebugEchoes }),
             setShowLegacyButtons: (showLegacyButtons) => set({ showLegacyButtons }),
             setShowSpectatePromptInLog: (showSpectatePromptInLog) => set({ showSpectatePromptInLog }),

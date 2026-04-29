@@ -45,11 +45,8 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
             addMessage('system', `${isExecute ? 'Executed and assigned' : 'Assigned'} '${button.label}'${dir ? ` to swipe ${dir}` : ''}.`);
         } else if (button.label === 'Look In') {
             const target = sanitizeGameTarget(popoverState.context || '');
-            executeCommand(`look in ${target}`, true, true);
-            setPopoverState((prev: any) => {
-                if (!prev) return null;
-                return { ...prev, type: 'container', containerItems: [] };
-            });
+            executeCommand(`look in ${target}`, false, false);
+            setPopoverState(null);
         } else if (button.label === 'Browse Shop...') {
             setPopoverState({ ...popoverState, type: 'shop-search' });
         } else if (button.command === 'shop-mend') {

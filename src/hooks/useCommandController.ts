@@ -98,8 +98,6 @@ export interface CommandControllerDeps {
     setIsTimestampEnabled: (val: boolean) => void;
     disableSmoothScroll: boolean;
     setDisableSmoothScroll: (val: boolean) => void;
-    showRecordingIndicator: boolean;
-    setShowRecordingIndicator: (val: boolean) => void;
     uiMode: import('../types').UiMode;
     setUiMode: (val: import('../types').UiMode) => void;
     fontFamily: string;

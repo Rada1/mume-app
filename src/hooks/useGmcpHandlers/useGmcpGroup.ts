@@ -9,24 +9,9 @@ interface UseGmcpGroupProps {
 
 export const useGmcpGroup = ({
     setGroupMembers,
-    setStats,
     characterName
 }: UseGmcpGroupProps) => {
     const youIdRef = useRef<number | null>(null);
-
-    const syncWaitingState = useCallback((member: GroupMember) => {
-        if (member.waiting === undefined && member.position === undefined) return;
-
-        const rawPosition = String(member.position || '').toLowerCase();
-        const waiting = member.waiting === true || rawPosition === 'waiting' || rawPosition.includes('waiting');
-        setStats((prev: any) => ({
-            ...prev,
-            conditions: {
-                ...(prev.conditions || {}),
-                waiting
-            }
-        }));
-    }, [setStats]);
 
     const getMemberKey = (member: Partial<GroupMember>) => {
         if (member.id !== undefined && member.id !== null) return String(member.id);
@@ -63,7 +48,8 @@ export const useGmcpGroup = ({
         }
 
         if (isYou) {
-            syncWaitingState(member);
+            // The command-bar waiting/cancel state belongs to the controlled
+            // character's Char.Vitals position, not potentially stale Group data.
             return;
         }
 
@@ -87,7 +73,7 @@ export const useGmcpGroup = ({
                 return merged;
             });
         });
-    }, [isSelfMember, setGroupMembers, syncWaitingState]);
+    }, [isSelfMember, setGroupMembers]);
 
     const onGroupAdd = useCallback((data: GroupMember) => {
         console.log('[GMCP] onGroupAdd raw:', JSON.stringify(data));
@@ -120,14 +106,11 @@ export const useGmcpGroup = ({
         const you = members.find(isSelfMember);
         if (you && you.id !== undefined) {
             youIdRef.current = Number(you.id);
-            syncWaitingState(you);
-        } else {
-            syncWaitingState({ id: 'you', waiting: false } as GroupMember);
         }
 
         const others = members.filter(m => !isSelfMember(m));
         setGroupMembers(others);
-    }, [setGroupMembers, isSelfMember, syncWaitingState, mergeGroupMember]);
+    }, [setGroupMembers, isSelfMember, mergeGroupMember]);
 
     return { onGroupAdd, onGroupUpdate, onGroupRemove, onGroupSet };
 };

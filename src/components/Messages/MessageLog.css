@@ -989,6 +989,69 @@
     transition: all 0.2s ease;
 }
 
+/* Fix: Align inline buttons at the start of a line with the rest of the log text */
+.message-content > .inline-btn:first-child,
+.message.is-room-name .inline-btn:first-child {
+    padding-left: 0 !important;
+    margin-left: -1px !important;
+}
+
+/* --- Hit Sheen Animation (High-Fidelity) --- */
+.hit-sheen-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.hit-sheen-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+    
+    /* Make the overlay text transparent so it only acts as a mask for its background */
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+    
+    /* Create a narrow "flashlight" glint (matching the 'Thinking' reference) */
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.9) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 150px 100%;
+    background-repeat: no-repeat;
+    
+    /* Clip that background to the text tokens inside */
+    -webkit-background-clip: text;
+    background-clip: text;
+    
+    /* Animate the glint moving deliberately across the text */
+    animation: sheen-sweep 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    
+    /* Focused glint glow */
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.6));
+}
+
+/* Ensure tokens inside the overlay are also transparent to allow the background-clip to work */
+.hit-sheen-overlay * {
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
+@keyframes sheen-sweep {
+    0% { background-position: -150px 0; }
+    100% { background-position: calc(100% + 150px) 0; }
+}
+
+
 /* Default base for spans that aren't also bubbles or buttons */
 span.inline-btn {
     background-color: transparent !important;

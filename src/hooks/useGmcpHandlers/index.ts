@@ -11,6 +11,7 @@ import { useGmcpRoom } from './useGmcpRoom';
 import { useGmcpVitals } from './useGmcpVitals';
 import { useGmcpOccupants } from './useGmcpOccupants';
 import { useGmcpGroup } from './useGmcpGroup';
+import { normalizeCombatantName } from '../../utils/combatUtils';
 
 interface GmcpHandlersProps {
     mapperRef: React.RefObject<MapperRef>;
@@ -84,12 +85,13 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
     const getCharNameFromId = useCallback((id: string | null | undefined): string | null => {
         if (!id) return null;
         const idString = String(id);
+        const normalizedId = normalizeCombatantName(idString).toLowerCase();
         const match = Object.values(props.roomChars || {}).find(p =>
             String(p.id) === idString ||
-            p.name?.toLowerCase() === idString.toLowerCase() ||
-            p.keyword?.toLowerCase() === idString.toLowerCase()
+            normalizeCombatantName(p.name).toLowerCase() === normalizedId ||
+            normalizeCombatantName(p.keyword).toLowerCase() === normalizedId
         );
-        return match?.name || match?.short || match?.keyword || idString;
+        return normalizeCombatantName(match?.name || match?.short || match?.keyword || idString);
     }, [props.roomChars]);
 
     React.useEffect(() => {

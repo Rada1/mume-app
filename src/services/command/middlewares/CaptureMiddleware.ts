@@ -8,7 +8,7 @@ import { CommandMiddleware } from '../types';
 
 export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isSystem, fromDrawer }) => {
     const {
-        captureStage, setStatsLines, setInfoLines, setScoreLines, setPopoverState, finalizeCapture,
+        captureStage, setStatsLines, setInfoLines, setScoreLines, finalizeCapture,
         setPendingFlags
     } = context;
     const lowerCmd = cmd.toLowerCase().trim();
@@ -23,14 +23,6 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
     if (captureStage) {
         if (lowerCmd === 'where') captureStage.current = 'where';
         else if (lowerCmd === 'who') captureStage.current = 'who';
-    }
-
-    // 2. Specialized Logic (Containers & Manual Cleanup)
-    if (lowerCmd.startsWith('look in ')) {
-        if (captureStage) captureStage.current = 'quests'; // Temporary stage for look in
-        if (!silent && setPopoverState) {
-            setPopoverState((prev: any) => prev ? { ...prev, type: 'container', containerItems: [] } : prev);
-        }
     }
 
     if (!isSystem && !fromDrawer) {

@@ -8,6 +8,7 @@ export function isGmcpCharVitals(data: any): data is GmcpCharVitals {
         keys.some(k => ['mana', 'sp', 'spirit', 's', 'm', 'maxmana', 'maxsp', 'maxspirit', 'S', 'M'].includes(k)) ||
         keys.some(k => ['move', 'mv', 'mp', 'moves', 'v', 'maxmove', 'maxmv', 'maxmp', 'V'].includes(k)) ||
         keys.some(k => ['light', 'l'].includes(k)) ||
+        keys.some(k => ['weather', 'w', 'fog', 'f'].includes(k)) ||
         keys.some(k => ['terrain', 'environment'].includes(k)) ||
         keys.some(k => ['position', 'pos', 'p'].includes(k)) ||
         keys.some(k => ['opponent', 'opp', 'o'].includes(k))
@@ -22,6 +23,8 @@ export function isGmcpRoomInfo(data: any): data is GmcpRoomInfo {
         'name' in data ||
         'terrain' in data ||
         'environment' in data ||
+        'weather' in data ||
+        'w' in data ||
         'light' in data ||
         'l' in data
     );

@@ -18,7 +18,6 @@ export interface CaptureParserDeps {
     setStatsLines: (lines: DrawerLine[]) => void;
     setPracticeLines: (lines: DrawerLine[]) => void;
     setWhoLines: (lines: DrawerLine[]) => void;
-    setWhereLines: (lines: DrawerLine[]) => void;
     setScoreLines: (lines: DrawerLine[]) => void;
     setInfoLines: (lines: DrawerLine[]) => void;
     setQuestLines: (lines: DrawerLine[]) => void;
@@ -31,7 +30,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
     const {
         setCaptureSession,
         setInventoryLines, setEqLines, setStatsLines, setPracticeLines,
-        setWhoLines, setWhereLines, setScoreLines, setInfoLines, setQuestLines, registerEntity,
+        setWhoLines, setScoreLines, setInfoLines, setQuestLines, registerEntity,
         ansiConvert, captureStage
     } = deps;
     
@@ -39,8 +38,6 @@ export function useCaptureParser(deps: CaptureParserDeps) {
     // is looping through lines. This avoids stale closures and state timing issues.
     const sessionRef = useRef<CaptureSession | null>(null);
     const pendingFlagsRef = useRef<{ isSilent: boolean, fromDrawer: boolean }>({ isSilent: false, fromDrawer: false });
-    // Buffer for batching entity registration during 'where' captures
-    const pendingWhereNamesRef = useRef<{ id: string; name: string }[]>([]);
 
     const checkTriggers = useCallback((line: string, attachedText?: string): CaptureType | null => {
         const clean = (attachedText || line).trim();
@@ -50,7 +47,6 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         if (lower.includes('you are using:') || lower.includes('you are using ...') || lower.includes('you are using\x1b')) type = 'equipment';
         else if (lower.includes('you are equipped with:')) type = 'equipment';
         else if (lower.startsWith('players in the world:') || lower.startsWith('players online') || lower.startsWith('allies online') || lower.startsWith('minions online') || clean === 'Players') type = 'who';
-        else if (lower.startsWith('visible players in your area:') || lower.startsWith('player distance') || lower.startsWith('who    location')) type = 'where';
         else if (clean === 'Players' && lower.includes('ob:') && lower.includes('db:')) type = 'equipment'; 
         else if (lower.includes('you are carrying:') || lower.includes('you are carrying ...') || lower.includes('you are carrying\x1b')) type = 'inventory';
         else if (lower.includes('your inventory contains:')) type = 'inventory';
@@ -92,7 +88,6 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             'inventory': 'inv',
             'equipment': 'eq',
             'who': 'who',
-            'where': 'where',
             'stats': 'stat',
             'practice': 'practice',
             'info': 'info',
@@ -140,11 +135,6 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             isHeader = true;
         }
 
-        if (session.type === 'where') {
-            text = stripXmlTags(text);
-            finalTokens = [];
-        }
-
         const prefixMatch = cleanLine.match(/^(\s*(?:<|&lt;|\[|\*).*?(?:>|&gt;|\]|\*)\s*)(.*)/i);
         if (prefixMatch && !isHeader) {
             prefix = prefixMatch[1]
@@ -165,21 +155,6 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         }
 
         // Entity extraction for Where names (deferred — batched at finalization)
-        if (session.type === 'where' && !isHeader) {
-            const playerTokens = buildPlayerLineTokens(text);
-            if (playerTokens) {
-                finalTokens = playerTokens;
-                // Extract the player name from the entity token for batch registration
-                const entityToken = playerTokens.find((t: any) => t.type === 'entity');
-                if (entityToken) {
-                    pendingWhereNamesRef.current.push({
-                        id: (entityToken as any).entityId,
-                        name: entityToken.content
-                    });
-                }
-            }
-        }
-
         const objectText = (session.type === 'inventory' || session.type === 'equipment') && !isHeader
             ? getObjectText(line)
             : null;
@@ -204,7 +179,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             id: Math.random().toString(36).substr(2, 9),
             text: text.trim(),
             rawText,
-            html: ansiConvert.toHtml(hasHeaderTag ? text : line),
+            html: ansiConvert.toHtml(stripXmlTags(line)),
             prefix,
             tokens: finalTokens,
             isHeader,
@@ -213,15 +188,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
 
         // Synchronous update of the ref so it's available for the next line
         session.lines.push(newLine);
-        if (session.type === 'where' && session.lines.length > 120) {
-            session.lines = session.lines.slice(0, 120);
-            finalizeSession();
-            return;
-        }
-
-        if (session.type !== 'where') {
-            console.log(`[Capture] Accumulated line for ${session.type}: ${newLine.text.substring(0, 30)}... Total: ${session.lines.length}`);
-        }
+        console.log(`[Capture] Accumulated line for ${session.type}: ${newLine.text.substring(0, 30)}... Total: ${session.lines.length}`);
     }, [registerEntity, ansiConvert, sessionRef]);
 
     const finalizeSession = useCallback(() => {
@@ -247,16 +214,6 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                 case 'who':
                     setWhoLines(lines);
                     break;
-                case 'where':
-                    // Batch-register all collected player names at once
-                    if (pendingWhereNamesRef.current.length > 0) {
-                        for (const entry of pendingWhereNamesRef.current) {
-                            registerEntity(entry.id, entry.name, 'none', 'inline-ally');
-                        }
-                        pendingWhereNamesRef.current = [];
-                    }
-                    setWhereLines(lines);
-                    break;
                 case 'score':
                     setScoreLines(lines);
                     break;
@@ -277,7 +234,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         sessionRef.current = null;
         setCaptureSession(null);
         captureStage.current = 'none';
-    }, [setInventoryLines, setEqLines, setStatsLines, setWhoLines, setWhereLines, setScoreLines, setInfoLines, setPracticeLines, setQuestLines, setCaptureSession, captureStage]);
+    }, [setInventoryLines, setEqLines, setStatsLines, setWhoLines, setScoreLines, setInfoLines, setPracticeLines, setQuestLines, setCaptureSession, captureStage]);
 
     const hasSession = useCallback(() => sessionRef.current !== null, [sessionRef]);
     const isSilent = useCallback(() => sessionRef.current?.isSilent || false, [sessionRef]);

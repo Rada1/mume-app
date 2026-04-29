@@ -6,7 +6,8 @@
 import React from 'react';
 import { DrawerLine, GroupMember } from '../../types';
 import { DrawerType } from '../../context/GameContext/types';
-import { MemberRow } from './MemberRow';
+import { GroupTableView } from './GroupTableView';
+import { NearbyWhereView } from './NearbyWhereView';
 import { UnifiedView } from './Views/UnifiedView';
 
 type GearTab = 'worn' | 'inv';
@@ -78,12 +79,6 @@ interface UnifiedDrawerContentProps {
     setWhereLines?: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
 }
 
-const EmptyGroup = () => (
-    <div style={{ padding: '40px 20px', textAlign: 'center', color: 'rgba(255,255,255,0.3)', fontStyle: 'italic', fontSize: '0.9rem' }}>
-        No group members.
-    </div>
-);
-
 export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
     drawer,
     gearTab,
@@ -105,6 +100,16 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
     setWhoLines,
     setWhereLines
 }) => {
+    const lastNearbyRefreshRef = React.useRef(0);
+
+    const refreshNearby = () => {
+        const now = Date.now();
+        if (now - lastNearbyRefreshRef.current < 1000) return;
+        lastNearbyRefreshRef.current = now;
+        setWhereLines?.([]);
+        executeCommand('where', true, true, false, true);
+    };
+
     const selectGearTab = (tab: GearTab) => {
         triggerHaptic(10);
         setGearTab(tab);
@@ -118,8 +123,7 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
             setWhoLines?.([]);
             executeCommand('who', true, true, false, true);
         } else if (tab === 'nearby') {
-            setWhereLines?.([]);
-            executeCommand('where', true, true, false, true);
+            refreshNearby();
         }
     };
 
@@ -179,21 +183,16 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
                     />
                 )}
                 {playersTab === 'nearby' && (
-                    <UnifiedView
+                    <NearbyWhereView
                         lines={whereLines}
-                        category="inline-player"
-                        emptyMessage="No nearby player data. Tap refresh to update."
-                        onRefresh={() => { triggerHaptic(15); setWhereLines?.([]); executeCommand('where', true, true, false, true); }}
+                        onRefresh={() => {
+                            triggerHaptic(15);
+                            refreshNearby();
+                        }}
                     />
                 )}
                 {playersTab === 'group' && (
-                    <div style={{ flex: 1, overflowY: 'auto', padding: '8px' }}>
-                        {groupMembers.length > 0
-                            ? groupMembers.map((member, idx) => (
-                                <MemberRow key={member.name || String(idx)} member={member} index={idx} />
-                            ))
-                            : <EmptyGroup />}
-                    </div>
+                    <GroupTableView members={groupMembers} />
                 )}
             </>
         );

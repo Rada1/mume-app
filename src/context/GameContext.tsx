@@ -646,7 +646,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 if (ui.playersTab === 'online') {
                     s.setWhoLines([]);
                     executeCommandRef.current?.('who', true, true, false, true);
-                } else if (ui.playersTab === 'nearby') {
+                } else if (ui.playersTab === 'nearby' && s.whereLines.length === 0) {
                     s.setWhereLines([]);
                     executeCommandRef.current?.('where', true, true, false, true);
                 }
@@ -730,12 +730,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         characterName: s.characterName,
         isRecording: s.userSession.recorder.isRecording,
         duration: s.userSession.recorder.duration,
-        showRecordingIndicator: settingsStore.showRecordingIndicator,
-        setShowRecordingIndicator: settingsStore.setShowRecordingIndicator,
         replayer,
         spectateBuffer,
         };
-    }, [ui, s.inventoryLines, s.eqLines, s.statsLines, s.scoreLines, s.infoLines, s.practiceLines, s.questLines, s.whoLines, s.whereLines, s.characterName, s.userSession.recorder, settingsStore.showRecordingIndicator, settingsStore.setShowRecordingIndicator, settingsStore.showMapperToolbar, settingsStore.setShowMapperToolbar, replayer, spectateBuffer]);
+    }, [ui, s.inventoryLines, s.eqLines, s.statsLines, s.scoreLines, s.infoLines, s.practiceLines, s.questLines, s.whoLines, s.whereLines, s.characterName, s.userSession.recorder, settingsStore.showMapperToolbar, settingsStore.setShowMapperToolbar, replayer, spectateBuffer]);
 
     const controller = useCommandController({
         telnet, addMessage, initAudio, navIntervalRef: { current: null }, mapperRef,
@@ -772,7 +770,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isHighlighterEnabled: true, setIsHighlighterEnabled: (v) => {}, // Placeholder
         isTimestampEnabled: settingsStore.isTimestampEnabled, setIsTimestampEnabled: settingsStore.setIsTimestampEnabled,
         disableSmoothScroll: settingsStore.disableSmoothScroll, setDisableSmoothScroll: settingsStore.setDisableSmoothScroll,
-        showRecordingIndicator: settingsStore.showRecordingIndicator, setShowRecordingIndicator: settingsStore.setShowRecordingIndicator,
         showLegacyButtons: false, setShowLegacyButtons: (v) => {}, // Placeholder
         uiMode: settingsStore.uiMode, setUiMode: settingsStore.setUiMode,
         fontFamily: settingsStore.fontFamily, setFontFamily: settingsStore.setFontFamily,
