@@ -26,7 +26,6 @@ interface MessageRouterDeps {
 export const useMessageRouter = (deps: MessageRouterDeps) => {
     const {
         capture,
-        drawer,
         setWhoList, setWhereList, setRoomItems, registerEntity, setDiscoveredItems, extractNoun,
         playerPosition, isSpectateMode
     } = deps;
@@ -47,15 +46,10 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         const isSilent = capture.isSilent();
 
         // Check if current capture session should hide this line from the main log.
+        // Drawer visibility alone must not suppress manual commands typed while a
+        // drawer is open; only drawer-origin or otherwise silent captures are hidden.
         if (capture.hasSession()) {
-            const drawerMatchesCapture =
-                ((stage === 'inventory' || stage === 'equipment') && drawer === 'equipment') ||
-                (['stats', 'info', 'quests', 'whois', 'practice'].includes(stage) && drawer === 'character') ||
-                (['who', 'where'].includes(stage) && drawer === 'players');
-
-            if (stage === 'equipment' && drawer === 'character') isDrawerHiding = true;
-            else if (drawerMatchesCapture) isDrawerHiding = true;
-            else if (fromDrawer) isDrawerHiding = true;
+            if (fromDrawer) isDrawerHiding = true;
             else if (stage === 'practice' && isSilent) isDrawerHiding = true;
             else if (stage === 'container' && (fromDrawer || isSilent)) isDrawerHiding = true;
             else if (stage === 'score' || stage === 'help') isDrawerHiding = true;
@@ -80,14 +74,14 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         const isVisibleResult = !isSilent || isWhoWhereList || isImportantMessage || isRoomContent || isRoomDescription || classicBypass;
         
         return isVisibleResult;
-    }, [capture, drawer, playerPosition]);
+    }, [capture, playerPosition]);
 
     const routeMessage = useCallback((msgType: string, textOnly: string, lower: string, cleanLine: string, attachedText: string, isMatch: boolean, isSnoop?: boolean) => {
         let finalType = msgType;
         const trimmed = textOnly.trim();
         
         if (lower.startsWith('exits:')) finalType = 'room-exits';
-        else if (isSpectateMode && isSnoop && (trimmed.startsWith('>') || (trimmed.startsWith('[') && trimmed.endsWith(']')) || (trimmed.startsWith('(') && trimmed.endsWith(')'))) && trimmed.length > 1) finalType = 'snoop-command';
+        else if (isSpectateMode && isSnoop && trimmed.startsWith('>') && trimmed.length > 1) finalType = 'snoop-command';
         else if (isMatch && attachedText.length <= 2) finalType = 'prompt';
         else if (lower.startsWith('you go ') || lower.includes(' leaves ') || lower.includes(' arrives from ') || lower.includes(' arrived from ') || lower.includes(' flees ') || lower.includes(' fled ') || lower.includes(' panics') || lower.includes(' attempts') || lower.includes('alas, you cannot go that way') || lower.includes('there is no exit')) finalType = 'move';
 

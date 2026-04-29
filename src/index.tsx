@@ -298,13 +298,14 @@ const MudClient = () => {
                     />
                 </ErrorBoundary>
 
-                <DrawerManager
-                    heldButton={heldButton}
-                    heldButtonRef={heldButtonRef}
-                    setHeldButton={setHeldButton}
-                    setCommandPreview={setCommandPreview}
-                />
             </div>
+
+            <DrawerManager
+                heldButton={heldButton}
+                heldButtonRef={heldButtonRef}
+                setHeldButton={setHeldButton}
+                setCommandPreview={setCommandPreview}
+            />
 
             {typeof document !== 'undefined' && createPortal(
                 <ErrorBoundary name="Modals & Dialogs">

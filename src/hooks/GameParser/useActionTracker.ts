@@ -16,6 +16,68 @@ export interface ActionTrackerDeps {
     ansiConvert: { toHtml: (ansi: string) => string };
 }
 
+const inferWearSlot = (itemText: string): string => {
+    const lower = itemText.toLowerCase();
+    if (/\b(shield|buckler)\b/.test(lower)) return '<worn as shield>';
+    if (/\b(helmet|helm|hat|cap|crown|hood|circlet|coif)\b/.test(lower)) return '<worn on head>';
+    if (/\b(glove|gloves|gauntlet|gauntlets)\b/.test(lower)) return '<worn on hands>';
+    if (/\b(boot|boots|shoe|shoes|sandal|sandals)\b/.test(lower)) return '<worn on feet>';
+    if (/\b(trouser|trousers|pants|leggings|greaves|hose)\b/.test(lower)) return '<worn on legs>';
+    if (/\b(sleeve|sleeves|bracer|bracers|vambrace|vambraces)\b/.test(lower)) return '<worn on arms>';
+    if (/\b(belt|sash|girdle|scabbard|knife|flask|lantern|pan|stone)\b/.test(lower)) return '<worn on belt>';
+    if (/\b(quiver|pack|backpack|satchel|cloak|cape)\b/.test(lower)) return '<worn across back>';
+    if (/\b(ring|band)\b/.test(lower)) return '<worn on finger>';
+    if (/\b(necklace|amulet|pendant|collar|torc)\b/.test(lower)) return '<worn around neck>';
+    if (/\b(breastplate|armour|armor|mail|chainmail|hauberk|robe|shirt|tunic|vest|jerkin|fur)\b/.test(lower)) return '<worn on body>';
+    return '<worn on body>';
+};
+
+const stripResultTail = (itemText: string): string => itemText
+    .replace(/\s*,\s*(?:ready|prepared|poised|held|gripped)\b.*$/i, '')
+    .replace(/\s+on your\b.*$/i, '')
+    .replace(/[.!]+$/g, '')
+    .trim();
+
+const addEquipmentLine = (
+    item: DrawerLine,
+    slotPrefix: string,
+    setEqLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>
+) => {
+    setEqLines(prev => {
+        const itemContext = item.context || smartExtractNoun(item.text);
+        const alreadyExists = prev.some(line =>
+            line.isItem &&
+            (line.context === itemContext || line.text.toLowerCase() === item.text.toLowerCase())
+        );
+        if (alreadyExists) return prev;
+
+        return [...prev, {
+            ...item,
+            id: Math.random().toString(36).substring(7),
+            cmd: 'equipmentlist',
+            prefix: slotPrefix,
+            isItem: true,
+            context: itemContext
+        }];
+    });
+};
+
+const createItemLine = (
+    itemText: string,
+    slotPrefix: string,
+    extractNoun: (text: string) => string,
+    ansiConvert: { toHtml: (ansi: string) => string }
+): DrawerLine => ({
+    id: Math.random().toString(36).substring(7),
+    text: itemText,
+    html: ansiConvert.toHtml(itemText),
+    rawText: `${slotPrefix} ${itemText}`,
+    isItem: true,
+    cmd: 'equipmentlist',
+    context: extractNoun(itemText),
+    prefix: slotPrefix
+});
+
 export function useActionTracker(deps: ActionTrackerDeps) {
     const {
         capture,
@@ -30,15 +92,32 @@ export function useActionTracker(deps: ActionTrackerDeps) {
         // Only track if not currently in a capture session (to avoid double-adding)
         if (capture.hasSession()) return;
         
-        const wearMatch = cleanLine.match(/You (wear|put on) (.*?)\./i);
-        if (wearMatch) {
-            const itemNoun = extractNoun(wearMatch[2]);
+        const moveToEquipment = (itemText: string, slotPrefix: string) => {
+            const normalizedItem = stripResultTail(itemText);
+            const itemNoun = extractNoun(normalizedItem);
+
             setInventoryLines(prev => {
                 const idx = prev.findIndex(l => l.isItem && (l.context === itemNoun || l.text.toLowerCase().includes(itemNoun)));
-                if (idx === -1) return prev;
-                const item = prev[idx]; setEqLines(eq => [...eq, { ...item, cmd: 'equipmentlist' }]);
+                if (idx === -1) {
+                    addEquipmentLine(
+                        createItemLine(normalizedItem, slotPrefix, extractNoun, ansiConvert),
+                        slotPrefix,
+                        setEqLines
+                    );
+                    return prev;
+                }
+
+                const item = prev[idx];
+                addEquipmentLine(item, slotPrefix, setEqLines);
                 return prev.filter((_, i) => i !== idx);
-            }); return;
+            });
+        };
+
+        const wearMatch = textOnly.match(/^You (?:wear|put on) (.*?)\.$/i);
+        if (wearMatch) {
+            const itemText = stripResultTail(wearMatch[1]);
+            moveToEquipment(itemText, inferWearSlot(itemText));
+            return;
         }
         
         const removeMatch = cleanLine.match(/You (remove|stop using) (.*?)\./i);
@@ -98,15 +177,10 @@ export function useActionTracker(deps: ActionTrackerDeps) {
             }); return;
         }
         
-        const wieldMatch = cleanLine.match(/You (wield|hold) (.*?)\./i);
+        const wieldMatch = textOnly.match(/^You (?:\w+\s+)*(?:wield|hold) (.*?)(?:, .*)?\.$/i);
         if (wieldMatch) {
-            const itemNoun = extractNoun(wieldMatch[2]);
-            setInventoryLines(prev => {
-                const idx = prev.findIndex(l => l.isItem && (l.context === itemNoun || l.text.toLowerCase().includes(itemNoun)));
-                if (idx === -1) return prev;
-                const item = prev[idx]; setEqLines(eq => [...eq, { ...item, cmd: 'equipmentlist' }]);
-                return prev.filter((_, i) => i !== idx);
-            }); return;
+            moveToEquipment(wieldMatch[1], '<wielded>');
+            return;
         }
         
         const consumeMatch = cleanLine.match(/You (eat|quaff|drink) (.*?)\./i);

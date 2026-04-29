@@ -103,7 +103,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         isSoundEnabled, setIsSoundEnabled,
         theme, setTheme,
         actions, setActions,
-        status
+        status,
+        viewport
     } = useGame();
 
     const { setIsSettingsOpen, settingsTab, setSettingsTab } = useUI();
@@ -195,6 +196,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setIsNewbieMode={setIsNewbieMode}
                                 fontFamily={fontFamily}
                                 setFontFamily={setFontFamily}
+                                logFontSize={viewport.logFontSize}
+                                setLogFontSize={viewport.setLogFontSize}
                                 autoSaveSessions={autoSaveSessions}
                                 setAutoSaveSessions={setAutoSaveSessions}
                                 showSpectatePromptInLog={showSpectatePromptInLog}

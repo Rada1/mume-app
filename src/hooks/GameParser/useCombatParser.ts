@@ -194,14 +194,12 @@ export function useCombatParser(deps: CombatParserDeps) {
             const hasHitTag = cleanLine.includes('<hit>');
             const hasDamageTag = cleanLine.includes('<damage>');
 
-            if (!isSnoop) {
-                if (hasHitTag) {
-                    deps.playHitImpactSound?.(match.modifier);
-                }
-                
-                if (hasDamageTag) {
-                    deps.playOofSound?.();
-                }
+            if (hasHitTag) {
+                deps.playHitImpactSound?.(match.modifier);
+            }
+
+            if (hasDamageTag) {
+                deps.playOofSound?.();
             }
 
             // Visual FX

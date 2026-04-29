@@ -28,6 +28,106 @@ import { Tokenizer } from '../../services/parser/Tokenizer';
 import { useActionTracker } from './useActionTracker';
 import { buildPlayerLineTokens } from './playerLineTokens';
 
+const decodeTextEntities = (text: string) => text
+    .replace(/&gt;/gi, '>')
+    .replace(/&lt;/gi, '<')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&apos;/gi, "'");
+
+const extractXmlRoomTitle = (line: string): string | null => {
+    if (!/<\/?name\b/i.test(line)) return null;
+
+    const nameMatch = line.match(/<name\b[^>]*>(.*?)<\/name>/i);
+    const rawTitle = nameMatch?.[1]?.trim();
+    if (!rawTitle) return null;
+
+    return decodeTextEntities(rawTitle.replace(/<[^>]+>/g, '')).trim() || null;
+};
+
+const extractXmlTagText = (line: string, tagName: string): string | null => {
+    const tagPattern = new RegExp(`<${tagName}\\b[^>]*>(.*?)<\\/${tagName}>`, 'i');
+    const rawText = line.match(tagPattern)?.[1]?.trim();
+    if (!rawText) return null;
+
+    return decodeTextEntities(rawText.replace(/<[^>]+>/g, '')).trim() || null;
+};
+
+const extractXmlRoomInfo = (line: string): { num: number; area?: string; terrain?: string } | null => {
+    if (!/<room\b/i.test(line)) return null;
+    const roomAttrs = line.match(/<room\b([^>]*)/i)?.[1];
+    if (!roomAttrs) return null;
+    const idStr = roomAttrs.match(/\bid=["']?(\d+)["']?/i)?.[1];
+    if (!idStr) return null;
+    const num = parseInt(idStr, 10);
+    if (isNaN(num)) return null;
+    const area = roomAttrs.match(/\barea=["']([^"']*)["']/i)?.[1];
+    const terrain = roomAttrs.match(/\bterrain=["']?(\w+)["']?/i)?.[1];
+    return { num, area, terrain };
+};
+
+const stripAnsiCodes = (text: string) => text.replace(/\x1b\[[0-9;]*m/g, '');
+
+const isPromptBoundaryLine = (text: string): boolean => {
+    const clean = stripAnsiCodes(text).trim();
+    if (!clean) return false;
+
+    return (
+        /(?:^|[\s\[\]!(*>])(?:HP|MA|MV|SP):\w+/i.test(clean) ||
+        /^[!*[(][^\r\n]{0,24}\bHP:\w+/i.test(clean) ||
+        /^[^\r\n]{0,48}>\s*$/.test(clean)
+    );
+};
+
+const normalizeStageToCaptureType = (stage: unknown) => {
+    const normalized = String(stage || 'none').toLowerCase();
+    if (normalized === 'eq') return 'equipment';
+    if (normalized === 'inv') return 'inventory';
+    if (normalized === 'stat' || normalized === 'status') return 'stats';
+    if (normalized === 'quest') return 'quests';
+    if (normalized === 'sc') return 'score';
+    return normalized;
+};
+
+const addSnoopedPlainLine = (
+    addMessage: UseGameParserDeps['addMessage'],
+    ansiConvert: UseGameParserDeps['ansiConvert'],
+    text: string,
+    html?: string
+) => {
+    const textOnly = stripAnsiCodes(text);
+    const mid = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    addMessage(
+        'game',
+        text,
+        undefined,
+        mid,
+        false,
+        {
+            textOnly,
+            lower: textOnly.toLowerCase(),
+            html: html || ansiConvert.toHtml(text)
+        },
+        undefined,
+        undefined,
+        undefined,
+        false,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        true
+    );
+    gmcpBus.emit('Game.Text', { type: 'game', text: textOnly });
+};
+
 export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     // 1. Session Destructuring
     const { setStats, setTarget, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName, setBufferHealthStatus, setBufferName, setCharacterInfo } = session.vitals as any;
@@ -267,6 +367,41 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if (snoopMatch) {
             isSnoop = true;
             lineToParse = cleanLine.replace(snoopRegex, '$1');
+            if (lineToParse.includes('<prompt')) {
+                lineToParse = lineToParse
+                    .replace(/<prompt[^>]*>|<\/prompt>/g, '')
+                    .replace(/&gt;/gi, '>')
+                    .replace(/&lt;/gi, '<')
+                    .replace(/&amp;/gi, '&')
+                    .trim();
+            }
+        }
+
+        const snoopedRoomInfo = isSnoop ? extractXmlRoomInfo(lineToParse) : null;
+        if (snoopedRoomInfo) {
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('mume-gmcp-room-info', {
+                    detail: { ...snoopedRoomInfo, spectating: true }
+                }));
+            }
+            gmcpBus.emit('Room.Info', { ...snoopedRoomInfo, spectating: true } as any);
+        }
+
+        const snoopedRoomTitle = isSnoop ? extractXmlRoomTitle(lineToParse) : null;
+        if (snoopedRoomTitle) {
+            addSnoopedPlainLine(deps.addMessage, deps.ansiConvert, snoopedRoomTitle);
+            return;
+        }
+
+        const snoopedMagicText = isSnoop ? extractXmlTagText(lineToParse, 'magic') : null;
+        if (snoopedMagicText) {
+            addSnoopedPlainLine(
+                deps.addMessage,
+                deps.ansiConvert,
+                snoopedMagicText,
+                `<span style="color: var(--ansi-magenta)">${deps.ansiConvert.toHtml(snoopedMagicText)}</span>`
+            );
+            return;
         }
 
         if (parseLogGmcp(cleanLine, isSnoop)) return;
@@ -341,7 +476,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         const combatType = combat.parseCombatLine(textOnly, lineToParse, isSnoop);
         if (combatType) msgType = combatType;
 
-        const roomType = room.parseRoomLine(textOnly, lineToParse, isSnoop);
+        const roomType = isSnoop ? null : room.parseRoomLine(textOnly, lineToParse, isSnoop);
         if (roomType) msgType = roomType;
 
         const commResult = comm.parseComm(lineToParse, textOnly, lower);
@@ -365,14 +500,41 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         router.detectItemsInRoom(textOnly, lineToParse, false);
         router.trackRoomItemAction(textOnly, lineToParse, false);
         
+        // --- Capture Boundary Handling ---
+        // Prompt lines end list-style captures and should never be stored as
+        // drawer content. A new drawer header can also arrive before the previous
+        // capture sees a prompt, so switch sessions at the header boundary.
+        const isCaptureBoundary = isPromptResolved || promptInfo.isMatch || isPromptBoundaryLine(textOnly);
+        let skipCaptureAccumulation = isCaptureBoundary;
+        if (!isSnoop && isCaptureBoundary && capture.hasSession()) {
+            capture.finalizeSession();
+        }
+
+        const incomingCaptureType = !isSnoop && !isCaptureBoundary
+            ? capture.checkTriggers(textOnly, (promptInfo as any).attachedText)
+            : null;
+        if (incomingCaptureType && capture.hasSession() && incomingCaptureType !== capture.getActiveType()) {
+            capture.finalizeSession();
+        }
+
+        const expectedCaptureType = normalizeStageToCaptureType(deps.captureStage.current) as any;
+        if (
+            !isSnoop &&
+            capture.hasSession() &&
+            ['who', 'where', 'equipment', 'inventory'].includes(expectedCaptureType) &&
+            expectedCaptureType !== capture.getActiveType()
+        ) {
+            capture.finalizeSession();
+        }
+
         // --- Explicit Capture Bootstrap ---
         // Some MUME list commands do not always start with a stable header. If the
         // command middleware marked an expected capture type, begin on first output.
-        const expectedCaptureType = deps.captureStage.current as any;
         const canStartExpectedCapture = (
             !isSnoop &&
-            !promptInfo.isMatch &&
+            !isCaptureBoundary &&
             !capture.hasSession() &&
+            !incomingCaptureType &&
             ['who', 'where'].includes(expectedCaptureType)
         );
         if (canStartExpectedCapture) {
@@ -388,32 +550,22 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         // 3.5 Capture Buffer Population
-        // CRITICAL: Accumulate BEFORE finalization if a prompt is detected
-        // to ensure attached data lines are saved.
-        if (capture.hasSession() && !isSnoop) {
+        if (capture.hasSession() && !isSnoop && !skipCaptureAccumulation) {
             capture.accumulateLine(lineToParse, finalTokens, tokenizerContext);
         }
 
         // 5. Reactive Capture Machine Logic
         if (!isSnoop) {
-            // 5.1 Finalize previous session on prompt AFTER accumulation
-            if (promptInfo.isMatch && capture.hasSession()) {
-                capture.finalizeSession();
-            }
-
             // 5.2 Trigger new session
-            const triggeredType = !capture.hasSession()
-                ? capture.checkTriggers(textOnly, promptInfo.isMatch ? (promptInfo as any).attachedText : undefined)
-                : null;
-            if (triggeredType) {
-                capture.startSession(triggeredType as any);
+            if (incomingCaptureType && !capture.hasSession()) {
+                capture.startSession(incomingCaptureType as any);
                 // Accumulate the header line immediately
                 capture.accumulateLine(lineToParse, finalTokens, tokenizerContext);
             }
         }
         
         // 6. Prompt UI Finalization
-        if (promptInfo.isMatch) {
+        if (isPromptResolved || promptInfo.isMatch) {
             msgType = 'prompt' as any;
             if (isSnoop && deps.setSpectateActivePrompt) {
                 deps.setSpectateActivePrompt(lineToParse);
@@ -432,6 +584,13 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         const finalType = router.routeMessage(msgType, textOnly, lower, lineToParse, textOnly, isEndPrompt, isSnoop) as MessageType;
+
+        if (finalType === 'snoop-command') {
+            const stripped = textOnly.replace(/^>\s*/, '');
+            textOnly = stripped;
+            lower = stripped.toLowerCase();
+            lineToParse = lineToParse.replace(/^((?:\x1b\[[0-9;]*m|\s)*)>\s*/, '$1');
+        }
 
         // Suppress response lines from silent capture sessions (e.g. drawer auto-commands like eq/who)
         if (!isSnoop && capture.hasSession() && capture.isSilent()) {

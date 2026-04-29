@@ -28,6 +28,7 @@ const GMCP_SUPPORTS = [
     "Room.Items 1",
     "Char.Items 1",
     "Comm.Channel 1",
+    "Comm.Channel.List 1",
     "External.Room 1",
     "MUME.Client 1"
 ];

@@ -12,7 +12,14 @@
       "Read(//c/c/Users/pwetz/Downloads/mume app/**)",
       "Bash(npx vitest *)",
       "Bash(node -e ' *)",
-      "Bash(grep -E \"\\\\.\\(ts|tsx\\)$\")"
+      "Bash(grep -E \"\\\\.\\(ts|tsx\\)$\")",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 -)",
+      "Bash(git -C \"c:/Users/pwetz/Downloads/mume app\" log --oneline -20)",
+      "Bash(git -C \"c:/Users/pwetz/Downloads/mume app\" log --all --oneline --grep=\"snoop\\\\|spectate\\\\|empty\\\\|blank\\\\|separator\")",
+      "Bash(git -C \"c:/Users/pwetz/Downloads/mume app\" show ee62ac5 --stat)",
+      "Bash(git -C \"c:/Users/pwetz/Downloads/mume app\" log --all --oneline -30)",
+      "Bash(xargs -I{} sh -c 'echo \"=== {} ===\"; git -C \"c:/Users/pwetz/Downloads/mume app\" show {} -- \"*.ts\" \"*.tsx\" 2>/dev/null | grep -n \"empty\\\\|blank\\\\|separator\\\\|snoop.*push\\\\|addMessage.*\\\\\"\\\\\"\\\\|processedLines.*push.*'\\\\''\\\\|push.*'\\\\''\"')"
     ]
   }
 }

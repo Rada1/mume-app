@@ -85,6 +85,8 @@ export class GmcpDecoder {
             this.handleGroup(json);
         } else if (pkgLower.startsWith('group.')) {
             this.handleGroup(json);
+        } else if (pkgLower === 'comm.channel.list') {
+            this.handleCommChannelList(json);
         } else if (pkgLower === 'comm.channel' || pkgLower === 'comm.channel.text') {
             this.handleCommChannel(json);
         } else if (pkgLower.startsWith('mume.client.')) {
@@ -119,6 +121,17 @@ export class GmcpDecoder {
             }
         } catch (e) {
             console.error('[GMCP] Parse error in Comm.Channel:', e, json);
+        }
+    }
+
+    private handleCommChannelList(json: string) {
+        try {
+            const channels = JSON.parse(json);
+            if (Array.isArray(channels)) {
+                console.log('[GMCP] Comm.Channel.List:', channels.map(channel => channel?.name || channel?.command).filter(Boolean));
+            }
+        } catch (e) {
+            console.error('[GMCP] Parse error in Comm.Channel.List:', e, json);
         }
     }
 

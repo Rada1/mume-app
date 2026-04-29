@@ -71,6 +71,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 padding: '0',
                 display: 'flex',
                 flexDirection: 'column',
+                justifyContent: 'flex-end',
                 gap: '0'
             }}
         >

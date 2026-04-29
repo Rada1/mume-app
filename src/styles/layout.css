@@ -164,7 +164,7 @@
 @media (min-width: 1024px) and (max-width: 1850px) {
     body.map-drawer-open .app-content-shaker {
         /* 420px drawer + 20px left offset + 12px gap */
-        padding-left: calc(420px + 20px + 12px);
+        padding-left: calc(var(--drawer-width) + var(--drawer-margin) + var(--drawer-gap));
     }
 }
 
@@ -172,7 +172,7 @@
 @media (min-width: 1024px) and (max-width: 1850px) {
     body.utility-drawer-open .app-content-shaker {
         /* 420px drawer + 20px right offset + 12px gap (mirrors map-drawer padding-left) */
-        padding-right: calc(420px + 20px + 12px);
+        padding-right: calc(var(--drawer-width) + var(--drawer-margin) + var(--drawer-gap));
     }
 }
 

@@ -24,6 +24,8 @@ interface ActiveAmbient {
     key: string;
     pauseOffset: number;
     startTime: number;
+    baseVolume: number;
+    isMusic: boolean;
 }
 
 export class AudioManager {
@@ -56,6 +58,7 @@ export class AudioManager {
             this.isSoundEnabled = state.isSoundEnabled;
             this.atmosphereState.masterVolume = state.masterVolume;
             this.atmosphereState.musicVolume = state.musicVolume;
+            this.updateActiveVolumes();
         });
 
         // Initialize volumes
@@ -140,6 +143,22 @@ export class AudioManager {
         const master = settings.masterVolume;
         const subVolume = isMusic ? settings.musicVolume : settings.sfxVolume;
         return baseVolume * master * subVolume;
+    }
+
+    private updateActiveVolumes() {
+        if (!this.audioCtx) return;
+        const now = this.audioCtx.currentTime;
+        this.activeAmbients.forEach(active => {
+            const gain = active.gain.gain;
+            const target = this.getEffectiveVolume(active.baseVolume, active.isMusic);
+            try {
+                gain.cancelScheduledValues(now);
+                gain.setValueAtTime(gain.value, now);
+                gain.linearRampToValueAtTime(target, now + 0.08);
+            } catch (err) {
+                gain.value = target;
+            }
+        });
     }
 
     public async playEffect(key: string, options?: PlayOptions) {
@@ -273,6 +292,7 @@ export class AudioManager {
         if (active && active.url === urlToPlay) {
             // Already playing this, just update volume/filter if zone
             if (type === 'zone') {
+                 active.baseVolume = targetVolume;
                  if (active.filter) {
                      const f = active.filter.frequency;
                      f.cancelScheduledValues(this.audioCtx.currentTime);
@@ -353,7 +373,15 @@ export class AudioManager {
         source.start(0, startOffset % buffer.duration);
 
         this.activeAmbients.set(type, {
-            source, gain, filter, url: urlToPlay, key, pauseOffset: startOffset % buffer.duration, startTime: ctx.currentTime
+            source,
+            gain,
+            filter,
+            url: urlToPlay,
+            key,
+            pauseOffset: startOffset % buffer.duration,
+            startTime: ctx.currentTime,
+            baseVolume: targetVolume,
+            isMusic: true
         });
     }
 
@@ -439,7 +467,15 @@ export class AudioManager {
 
             dSource.start(0, startOffset);
             this.activeAmbients.set('drum', {
-                source: dSource, gain: dGain, filter: dFilter, url: drumUrl, key: 'drumLoop', pauseOffset: 0, startTime: ctx.currentTime
+                source: dSource,
+                gain: dGain,
+                filter: dFilter,
+                url: drumUrl,
+                key: 'drumLoop',
+                pauseOffset: 0,
+                startTime: ctx.currentTime,
+                baseVolume: 0.03,
+                isMusic: true
             });
         } else {
             this.stopAmbient('drum');

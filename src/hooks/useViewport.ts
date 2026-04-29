@@ -168,12 +168,23 @@ export function useViewport(
 
     // logFontSize is a MULTIPLIER on top of the precision-calculated 80-column base size.
     // 1.0 = exactly 80 columns; > 1.0 = zoomed in; < 1.0 = zoomed out.
-    // We intentionally do NOT restore from localStorage so every session starts at 80 cols.
-    const [logFontSize, setLogFontSize] = useState(1.0);
+    const [logFontSize, setLogFontSize] = useState(() => {
+        const saved = localStorage.getItem('logFontSizeMultiplier');
+        const v = saved ? parseFloat(saved) : 1.0;
+        return isNaN(v) ? 1.0 : Math.min(2.5, Math.max(0.5, v));
+    });
     const [logFontSizePx, setLogFontSizePx] = useState(16);
 
+    const setLogFontSizeAndPersist = useCallback((v: number | ((prev: number) => number)) => {
+        setLogFontSize(prev => {
+            const next = typeof v === 'function' ? v(prev) : v;
+            const clamped = Math.min(2.5, Math.max(0.5, next));
+            localStorage.setItem('logFontSizeMultiplier', String(clamped));
+            return clamped;
+        });
+    }, []);
+
     const touchDistRef = useRef<number | null>(null);
-    const lastUpdateRef = useRef<number>(0);
 
     useEffect(() => {
         if (!isMobile) return;
@@ -200,10 +211,7 @@ export function useViewport(
                 const ratio = distContext / touchDistRef.current;
                 touchDistRef.current = distContext;
 
-                setLogFontSize(prev => {
-                    const next = prev * ratio;
-                    return Math.min(2.5, Math.max(0.5, next));
-                });
+                setLogFontSizeAndPersist(prev => prev * ratio);
             }
         };
 
@@ -263,11 +271,8 @@ export function useViewport(
             const safetyBuffer = 0; 
             const usableWidth = Math.max(0, width - totalPadding - safetyBuffer); 
 
-            // Calculate font size for perfect 80-column fit
-            // We target the exact targetCols to maximize width coverage.
-            // Using 0.58 as a precision multiplier for Space Mono / Roboto Mono
-            const charWidthMultiplier = 0.58;
-            let calculatedFontSize = usableWidth / (targetCols * charWidthMultiplier);
+            // Calculate font size for perfect 80-column fit using the actual measured ratio.
+            let calculatedFontSize = usableWidth / (targetCols * charWidthRatio);
 
             // Apply user zoom multiplier
             calculatedFontSize *= logFontSize;
@@ -446,6 +451,7 @@ export function useViewport(
         updateHeight,
         logFontSize,
         logFontSizePx,
-        resetLogFontSize: () => setLogFontSize(1.0)
-    }), [isMobile, isLandscape, isKeyboardOpen, columns, rows, scrollToBottom, updateHeight, logFontSize, logFontSizePx]);
+        setLogFontSize: setLogFontSizeAndPersist,
+        resetLogFontSize: () => setLogFontSizeAndPersist(1.0)
+    }), [isMobile, isLandscape, isKeyboardOpen, columns, rows, scrollToBottom, updateHeight, logFontSize, logFontSizePx, setLogFontSizeAndPersist]);
 }

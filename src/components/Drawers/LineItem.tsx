@@ -106,7 +106,8 @@ export const LineItem: React.FC<LineItemProps> = ({
                     data-action="menu"
                     style={{
                         '--glow-color': objectColor,
-                        color: 'var(--glow-color)'
+                        color: 'var(--glow-color)',
+                        fontWeight: 800
                     } as React.CSSProperties}
                 >
                     {objectName}
@@ -155,6 +156,7 @@ export const LineItem: React.FC<LineItemProps> = ({
                         tokens={line.tokens} 
                         type={line.isItem ? 'inventory' as MessageType : 'room' as MessageType}
                         metadata={tokenMetadata}
+                        forceBoldEntities
                     />
                 </div>
             </div>
@@ -180,7 +182,8 @@ export const LineItem: React.FC<LineItemProps> = ({
                             data-action="menu"
                             style={{
                                 '--glow-color': objectColor,
-                                color: 'var(--glow-color)'
+                                color: 'var(--glow-color)',
+                                fontWeight: 800
                             } as React.CSSProperties}
                         >
                             {line.text}

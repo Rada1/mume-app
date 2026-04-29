@@ -31,6 +31,7 @@ export const LiveBufferHUD: React.FC = () => {
 
     const handleDragPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         if ((e.target as HTMLElement).closest('button, input')) return;
+        if (scrubberRef.current?.contains(e.target as Node)) return;
         e.currentTarget.setPointerCapture(e.pointerId);
         const rect = containerRef.current?.getBoundingClientRect();
         if (!rect) return;

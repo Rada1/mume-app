@@ -53,6 +53,7 @@ export function useTelnet(config: TelnetConfig) {
     const processingTimeout = React.useRef<any>(null);
     const hasSentGameEntrySetupRef = React.useRef(false);
 
+    const snoopBlockRef = React.useRef<{ symbol: string; type: string } | null>(null);
     const gmcpDecoder = React.useRef<GmcpDecoder | null>(null);
     if (!gmcpDecoder.current) {
         gmcpDecoder.current = new GmcpDecoder({
@@ -200,7 +201,64 @@ export function useTelnet(config: TelnetConfig) {
             };
         };
 
-        for (const line of rawLines) {
+        const normalizeSnoopLine = (value: string, symbol: string) => {
+            const normalizedSymbol = symbol.replace(/^&amp;/i, '&');
+            const normalizedLine = value.replace(/^((?:\x1b\[[0-9;]*m|\s)*)&amp;([A-Z]) /, '$1&$2 ');
+            const cleanLine = normalizedLine.replace(/\x1b\[[0-9;]*m/g, '').trim();
+            if (/^(?:&|mp;)[A-Z](?: |$)/.test(cleanLine)) return normalizedLine;
+            return `${normalizedSymbol} ${normalizedLine}`;
+        };
+
+        const splitSnoopXmlBlocks = (line: string): string[] => {
+            const out: string[] = [];
+            let rest = line;
+
+            while (rest.length > 0) {
+                if (snoopBlockRef.current) {
+                    const closeIdx = rest.indexOf('</snoop>');
+                    const chunk = closeIdx === -1 ? rest : rest.substring(0, closeIdx);
+                    const normalized = normalizeSnoopLine(chunk, snoopBlockRef.current.symbol);
+                    if (normalized.trim()) out.push(normalized);
+                    if (closeIdx === -1) return out;
+                    snoopBlockRef.current = null;
+                    rest = rest.substring(closeIdx + '</snoop>'.length);
+                    continue;
+                }
+
+                const openIdx = rest.indexOf('<snoop');
+                if (openIdx === -1) {
+                    if (rest.length > 0) out.push(rest);
+                    return out;
+                }
+
+                if (openIdx > 0) out.push(rest.substring(0, openIdx));
+                rest = rest.substring(openIdx);
+
+                const openMatch = rest.match(/^<snoop\s+symbol=([^;>\s]+)(?:;type=([^>\s]*))?>/);
+                if (!openMatch) {
+                    out.push(rest);
+                    return out;
+                }
+
+                const symbol = openMatch[1];
+                snoopBlockRef.current = { symbol, type: openMatch[2] || '' };
+                rest = rest.substring(openMatch[0].length);
+            }
+
+            return out;
+        };
+
+        for (const rawLine of rawLines) {
+            const lineSegments = splitSnoopXmlBlocks(rawLine);
+            for (const line of lineSegments) {
+                if (!line.trim()) continue;
+
+                const cleanForSnoopSegment = line.replace(/\x1b\[[0-9;]*m/g, '').trim();
+                if (/^(?:&|mp;)[A-Z](?: |$)/.test(cleanForSnoopSegment)) {
+                    processedLines.push(line);
+                    continue;
+                }
+
             // Snooped lines (prefixed with &E, &F, etc.) must bypass ALL prompt detection.
             // splitXmlPrompt runs before snoop detection, so a snooped line like
             // "&E <prompt>&gt;north</prompt>" would have its <prompt> tag extracted and
@@ -234,12 +292,13 @@ export function useTelnet(config: TelnetConfig) {
             } else {
                 processedLines.push(line);
             }
+            }
         }
 
         // Handle text remaining in buffer (the part after the last newline)
         // Snooped partial lines stay buffered for the next chunk — no prompt detection needed.
         const lastLineClean = lastLine.replace(/\x1b\[[0-9;]*m/g, '').trim();
-        if (/^(?:&|mp;)[A-Z] /.test(lastLineClean)) {
+        if (snoopBlockRef.current || /^<snoop[\s>]/.test(lastLineClean) || /^(?:&|mp;)[A-Z] /.test(lastLineClean)) {
             bufferRef.current = lastLine;
         } else {
             const xmlSplitLast = splitXmlPrompt(lastLine);

@@ -22,6 +22,7 @@ export interface TokenRendererProps {
     tokens?: Token[];
     fallbackHtml?: string;
     type?: MessageType;
+    forceBoldEntities?: boolean;
     metadata?: {
         id?: string;
         context?: string;
@@ -37,6 +38,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
     tokens, 
     fallbackHtml,
     type,
+    forceBoldEntities = false,
     metadata: propMetadata
 }) => {
     const { target } = useVitals();
@@ -171,7 +173,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                         style.color = 'var(--glow-color)';
                     }
 
-                    if (isRoom) {
+                    if (forceBoldEntities || isRoom) {
                         style.fontWeight = 'bold'; // Still make room names stand out as headers
                     }
 

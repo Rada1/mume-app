@@ -21,6 +21,12 @@
     --z-drawer-tabs: 9500;
     --z-popover-dial: 50000;
     --z-modals-layer: 100000;
+
+    /* Layout Dimensions */
+    --log-max-width: 800px;
+    --drawer-width: 420px;
+    --drawer-margin: 20px;
+    --drawer-gap: 20px;
 }
 
 /* Mobile Bottom Gutter */
@@ -37,6 +43,7 @@
     overflow: visible; 
     display: flex;
     flex-direction: column;
+    justify-content: flex-end; /* Anchors buttons at the bottom so they don't jump when gutter expands */
     pointer-events: none; /* Let clicks pass through to the log if not on a child */
     border-top: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 20px 20px 0 0;

@@ -87,33 +87,8 @@ export function useMessageLog(
         }
 
         messageBufferRef.current = [];
-        const nonPrompts = pending.filter(m => m.type !== 'prompt');
-        const prompts = pending.filter(m => m.type === 'prompt');
-        const ordered: Message[] = nonPrompts.length > 0 ? [...nonPrompts, ...prompts] : pending;
+        const ordered: Message[] = pending;
         
-        // --- Spectate Spacer Logic ---
-        // In spectate mode, we add an empty line (spacer) after each block of text
-        // (usually ending with a prompt) to improve readability in the target view.
-        if (isSpectateSession && ordered.length > 0) {
-            const lastMsg = ordered[ordered.length - 1];
-            // Only add a spacer if the batch is significant (contains more than just a prompt or is a room update)
-            const isSignificant = ordered.some(m => m.type !== 'prompt' || m.isRoomName);
-            
-            if (isSignificant) {
-                const spacer: Message = {
-                    id: `spacer-${currentBatchId}-${Date.now()}`,
-                    type: 'game',
-                    textRaw: '',
-                    html: '<div class="log-spacer"></div>',
-                    timestamp: Date.now(),
-                    isEmpty: true,
-                    isSpacer: true,
-                    batchId: currentBatchId
-                };
-                ordered.push(spacer);
-            }
-        }
-
         if (ordered.length > 0) ordered[ordered.length - 1] = { ...ordered[ordered.length - 1], isBatchEnd: true };
         // Register all flushed mids before committing to state so deduplication
         // is current even before the next render cycle.
@@ -180,7 +155,7 @@ export function useMessageLog(
 
         // Only suppress the line if it exactly matches the authoritative GMCP room name.
         // We no longer use ANSI color heuristics — those caused too many false positives.
-        const isActuallyRoomName = !isCombat && !isComm && type !== 'room-description' && type !== 'prompt' && (
+        const isActuallyRoomName = !providedIsSnoop && !isCombat && !isComm && type !== 'room-description' && type !== 'prompt' && (
             isRoomName === true ||
             (curRoom && !replyCommand && (
                 currentTextOnly === curRoom ||
@@ -190,7 +165,7 @@ export function useMessageLog(
             ))
         );
 
-        if (currentTextLower === 'you are hungry.' || currentTextLower === 'you are thirsty.') {
+        if (!providedIsSnoop && (currentTextLower === 'you are hungry.' || currentTextLower === 'you are thirsty.')) {
             return;
         }
 
@@ -399,10 +374,7 @@ export function useMessageLog(
                 clearTimeout(flushTimeoutRef.current);
                 flushTimeoutRef.current = null;
             }
-            const buffered = messageBufferRef.current.splice(0);
-            const nonPrompts = buffered.filter(m => m.type !== 'prompt');
-            const prompts = buffered.filter(m => m.type === 'prompt');
-            const drained = nonPrompts.length > 0 ? [...nonPrompts, ...prompts] : buffered;
+            const drained = messageBufferRef.current.splice(0);
 
             // Deduplicate: if an ID is provided, ensure it's not already in the log
             if (mid) {

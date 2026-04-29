@@ -172,10 +172,14 @@
     background: transparent !important;
     border-left: none !important;
     border-radius: 0 !important;
-    padding: 0 6px !important;
+    padding: 0 !important;
     margin: 0 !important;
     box-shadow: none !important;
     line-height: 1.4 !important;
+}
+
+.message.prompt.is-snoop {
+    margin-top: 1em !important;
 }
 
 .message.is-room-block:not(.is-room-name) {
@@ -775,15 +779,14 @@
 
 .message.prompt {
     background: transparent !important; /* Excluded from backgrounder */
-    margin: 0 !important;
+    margin: 1px 0 2px !important;
     color: var(--text-primary);
     font-weight: bold;
     opacity: 1;
-    line-height: 1.0 !important;
-    padding-top: 1px !important;
-    padding-bottom: 1px !important;
+    line-height: 1.25 !important;
+    padding: 2px 0 !important;
     box-shadow: none !important;
-    min-height: 0 !important;
+    min-height: 1.25em !important;
 }
 
 .message.prompt.msg-latest {

@@ -31,6 +31,7 @@ import { useAmbientController, useAudioEffects } from '../hooks/useAudioSystem';
 import { useSessionRecorder, LogEntryType } from '../hooks/useSessionRecorder';
 import { useSessionReplayer } from '../hooks/useSessionReplayer';
 import { useSpectateBuffer } from '../hooks/useSpectateBuffer';
+import { useSpectateBufferSync } from '../hooks/useSpectateBufferSync';
 import { useSettings } from '../hooks/useSettings';
 import { useAgentObservability } from '../hooks/useAgentObservability';
 import { ansiConvert } from '../utils/ansi';
@@ -358,6 +359,57 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const spectateBuffer = useSpectateBuffer();
 
+    // --- DVR: sync vitals/weather/audio state with buffer position ---
+    const { recordHit, recordOof } = useSpectateBufferSync({
+        isSpectating: mode.isSpectating,
+        displayCutoff: spectateBuffer.displayCutoff,
+        isLive: spectateBuffer.isLive,
+        isPlaying: spectateBuffer.isPlaying,
+        playHitImpactSound,
+        playOofSound,
+    });
+
+    // Wrapped sound functions that also record to the spectate audio timeline
+    const playHitImpactSoundSpectate = useCallback((modifier?: any) => {
+        playHitImpactSound(modifier);
+        if (mode.isSpectating) recordHit(modifier);
+    }, [playHitImpactSound, mode.isSpectating, recordHit]);
+
+    const playOofSoundSpectate = useCallback(() => {
+        playOofSound();
+        if (mode.isSpectating) recordOof();
+    }, [playOofSound, mode.isSpectating, recordOof]);
+
+    // --- DVR: track GMCP room-info snapshots so seeking replays the correct map state ---
+    const spectateRoomSnapshotsRef = useRef<Array<{ timestamp: number; detail: any }>>([]);
+
+    useEffect(() => {
+        if (!mode.isSpectating) {
+            spectateRoomSnapshotsRef.current = [];
+            return;
+        }
+        const handler = (e: Event) => {
+            const detail = (e as CustomEvent).detail;
+            if (!detail?.spectating) return;
+            spectateRoomSnapshotsRef.current.push({ timestamp: Date.now(), detail });
+        };
+        window.addEventListener('mume-gmcp-room-info', handler);
+        return () => window.removeEventListener('mume-gmcp-room-info', handler);
+    }, [mode.isSpectating]);
+
+    useEffect(() => {
+        if (spectateBuffer.isLive) return;
+        const cutoff = spectateBuffer.displayCutoff;
+        const snapshots = spectateRoomSnapshotsRef.current;
+        let best: { timestamp: number; detail: any } | null = null;
+        for (const snap of snapshots) {
+            if (snap.timestamp <= cutoff) best = snap;
+        }
+        if (best) {
+            window.dispatchEvent(new CustomEvent('mume-gmcp-room-info', { detail: best.detail }));
+        }
+    }, [spectateBuffer.isLive, spectateBuffer.displayCutoff]);
+
     // --- Always-on spectate recording: auto-start/stop with spectate session ---
     useEffect(() => {
         if (mode.isSpectating) {
@@ -433,8 +485,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         // Audio/Visual
         playEffect,
-        playHitImpactSound,
-        playOofSound,
+        playHitImpactSound: playHitImpactSoundSpectate,
+        playOofSound: playOofSoundSpectate,
         playKillSound,
         playLevelSound,
         playSlashSound,
