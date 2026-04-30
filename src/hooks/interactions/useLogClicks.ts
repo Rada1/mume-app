@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { InteractionDeps } from '../useInteractionHandlers';
 import { EntityCapability } from '../../types';
 import { getButtonCommand } from '../../utils/buttonUtils';
-import { sanitizeGameTarget } from '../../utils/gameUtils';
+import { formatNpcKeywordTarget, sanitizeGameTarget } from '../../utils/gameUtils';
 
 export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>, longPressJustFiredRef?: React.MutableRefObject<boolean>) => {
     const {
@@ -165,7 +165,8 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         const menuDisplay = targetEl.getAttribute('data-menu-display') as 'dial' | 'list' || undefined;
         const rawContextStr = context || targetEl.innerText.trim();
         const effectiveContextStr = rawContextStr && keywordOverridesRef.current[rawContextStr] ? keywordOverridesRef.current[rawContextStr] : rawContextStr;
-        const contextStr = sanitizeGameTarget(effectiveContextStr) || effectiveContextStr;
+        const isNpcContext = kind === 'npc' || category?.startsWith('inline-npc') || cmd?.startsWith('npc');
+        const contextStr = (isNpcContext ? formatNpcKeywordTarget(effectiveContextStr) : sanitizeGameTarget(effectiveContextStr)) || effectiveContextStr;
 
         const entityId = targetEl.getAttribute('data-id') || '';
 
@@ -258,11 +259,11 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
 
         } else if ((action === 'command' || action === 'preload') && cmd) {
             let finalCmd = cmd;
-            if (context) {
+            if (contextStr) {
                 if (finalCmd.includes('%n') || finalCmd.includes('$1')) {
-                    finalCmd = finalCmd.replace(/%n/g, context).replace(/\$1/g, context);
+                    finalCmd = finalCmd.replace(/%n/g, contextStr).replace(/\$1/g, contextStr);
                 } else {
-                    finalCmd = `${finalCmd} ${context}`;
+                    finalCmd = `${finalCmd} ${contextStr}`;
                 }
             }
 
@@ -294,7 +295,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             }
             triggerHaptic(40);
         } else if (cmd === 'target' && context) {
-            setTarget(context);
+            setTarget(contextStr);
             triggerHaptic(30);
         }
 

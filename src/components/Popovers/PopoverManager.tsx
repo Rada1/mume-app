@@ -62,7 +62,13 @@ import { ContainerSelectPopover } from './ContainerSelectPopover';
 import { FloatingGroupCard } from '../HUD/FloatingGroupCard';
 import { HelpCard } from '../Utility/HelpCard';
 import { getHierarchyChain } from '../../utils/buttonHierarchyUtils';
-import { canonicalizeCategoryId, getCategoryForName, getGlowColorForCategory, resolveKindAndLocation } from '../../utils/categorizationUtils';
+import { canonicalizeCategoryId, getCategoryForName, getGlowColorForCategory, resolveKindAndLocation, getButtonSetIdForCategory, getTraitConfigsForName } from '../../utils/categorizationUtils';
+
+const formatDialCategoryLabel = (kind?: string, category?: string | null, setId?: string): string => {
+    if (kind && kind !== 'none') return kind.toUpperCase();
+    const source = category || setId || '';
+    return source.replace(/^inline-/, '').replace(/-/g, ' ').toUpperCase();
+};
 
 export const PopoverManager: React.FC<PopoverManagerProps> = ({
     popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, roomNpcs, roomItems, inventoryLines, eqLines, setSettings, inlineCategories, setInlineCategories, favorites, setFavorites, parley, setParley, whoList,
@@ -245,11 +251,14 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         const { kind, location } = resolveKindAndLocation(popoverState.kind, popoverState.location, popoverState.setId);
         const categorySet = detectedCatId ? canonicalizeCategoryId(detectedCatId) : null;
         const categoryConfig = categorySet ? (inlineCategories || []).find(cat => cat.id === categorySet) : null;
+        const traitConfigs = popoverState.context ? getTraitConfigsForName(popoverState.context, inlineCategories || []) : [];
+        const traitSets = traitConfigs.flatMap(trait => [trait.id, getButtonSetIdForCategory(trait)].filter(Boolean) as string[]);
         const setIdsChain = Array.from(new Set([
             ...getHierarchyChain(kind, location),
             popoverState.setId,
             categorySet,
-            categoryConfig?.buttonSetId
+            getButtonSetIdForCategory(categoryConfig),
+            ...traitSets
         ].filter(Boolean) as string[]));
         
         return (
@@ -278,6 +287,24 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                 triggerHaptic={triggerHaptic}
                 themeColor={themeColor}
                 instruction={popoverState.executeAndAssign ? 'fire and remap' : 'select to fire'}
+                targetName={popoverState.context}
+                categoryLabel={formatDialCategoryLabel(kind, categorySet, popoverState.setId)}
+                onHelp={popoverState.context ? () => {
+                    triggerHaptic?.(20);
+                    executeCommand(`help ${popoverState.context}`, false);
+                    setPopoverState(null);
+                } : undefined}
+                onTag={() => {
+                    triggerHaptic?.(20);
+                    setPopoverState({
+                        ...popoverState,
+                        menuDisplay: 'list',
+                        type: 'menu',
+                        initialPointerX: undefined,
+                        initialPointerY: undefined,
+                        isChoosingCategory: true
+                    });
+                }}
             />
         );
     }

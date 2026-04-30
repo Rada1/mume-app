@@ -5,9 +5,10 @@
 
 import React from 'react';
 import { CustomButton, MessageType, PopoverState, InlineCategoryConfig, GameEntity, ParleyState, GmcpOccupant, CharacterEntry } from '../../types';
-import { DEFAULT_INLINE_CATEGORIES, canonicalizeCategoryId, resolveKindAndLocation, getTraitsForName, getTraitConfigsForName } from '../../utils/categorizationUtils';
+import { DEFAULT_INLINE_CATEGORIES, canonicalizeCategoryId, resolveKindAndLocation, getTraitsForName, getTraitConfigsForName, getButtonSetIdForCategory } from '../../utils/categorizationUtils';
 import { getHierarchyChain, getRelevantSets, TRAIT_WEIGHTS, SET_DISPLAY_LABELS } from '../../utils/buttonHierarchyUtils';
 import { isButtonValidForEntity } from '../../utils/actionUtils';
+import { formatNpcKeywordTarget } from '../../utils/gameUtils';
 import { CircleHelp } from 'lucide-react';
 
 // --- Sub-components ---
@@ -60,6 +61,14 @@ interface StandardMenuProps {
 
 const NPC_SUBCATEGORIES = ['npc-mount', 'npc-shopkeeper', 'npc-innkeeper', 'npc-guildmaster'];
 
+const formatTraitLabel = (id: string): string => (
+    canonicalizeCategoryId(id)
+        .replace(/^inline-/, '')
+        .replace(/^object-/, '')
+        .replace(/-/g, ' ')
+        .toUpperCase()
+);
+
 export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
     const {
         popoverState, buttons, availableSets, setPopoverState, setButtons, handleButtonClick, setTarget, addMessage, favorites,
@@ -70,17 +79,21 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         themeColor
     } = props;
 
-    const [isChoosingCategory, setIsChoosingCategory] = React.useState(false);
+    const [isChoosingCategory, setIsChoosingCategory] = React.useState(!!popoverState.isChoosingCategory);
+    React.useEffect(() => {
+        setIsChoosingCategory(!!popoverState.isChoosingCategory);
+    }, [popoverState.isChoosingCategory, popoverState.context, popoverState.setId]);
     const safeSetId = popoverState.setId ?? '';
     const isSetManager = safeSetId === 'setmanager';
     
     const traitConfigs = popoverState.context ? getTraitConfigsForName(popoverState.context, inlineCategories || []) : [];
     const dynamicTraits = traitConfigs.map(c => c.id);
-    const extraSets = traitConfigs.map(c => c.buttonSetId).filter(Boolean) as string[];
+    const extraSets = traitConfigs.map(getButtonSetIdForCategory).filter(Boolean) as string[];
     const { kind, location } = resolveKindAndLocation(popoverState.kind, popoverState.location, safeSetId);
 
     // Build actual hierarchy chain
     const entity = popoverState.entityId ? entities[popoverState.entityId] : null;
+    const shouldUseEntityFilter = !!(popoverState.entityId && entity);
     const relevantSets = entity 
         ? getRelevantSets(entity, extraSets)
         : Array.from(new Set([
@@ -92,7 +105,38 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
           ]));
 
     const sortedSets = [...relevantSets].sort((a, b) => (TRAIT_WEIGHTS[b] || 0) - (TRAIT_WEIGHTS[a] || 0));
+    const sectionDefs = React.useMemo(() => {
+        const sections: Array<{ setId: string; label: string; weight: number }> = [];
+        const seen = new Set<string>();
+
+        traitConfigs.forEach(trait => {
+            const setId = getButtonSetIdForCategory(trait);
+            if (!setId) return;
+            const canonicalSetId = canonicalizeCategoryId(setId);
+            if (seen.has(canonicalSetId)) return;
+            seen.add(canonicalSetId);
+            sections.push({
+                setId,
+                label: formatTraitLabel(trait.id),
+                weight: TRAIT_WEIGHTS[canonicalSetId] || 0
+            });
+        });
+
+        sortedSets.forEach(setId => {
+            const canonicalSetId = canonicalizeCategoryId(setId);
+            if (seen.has(canonicalSetId)) return;
+            seen.add(canonicalSetId);
+            sections.push({
+                setId,
+                label: SET_DISPLAY_LABELS[setId as keyof typeof SET_DISPLAY_LABELS] || formatTraitLabel(setId),
+                weight: TRAIT_WEIGHTS[canonicalSetId] || 0
+            });
+        });
+
+        return sections.sort((a, b) => b.weight - a.weight);
+    }, [sortedSets, traitConfigs]);
     const isTacticalSet = ['warriorskilllist', 'rangerskilllist', 'clericspelllist', 'thiefskilllist', 'magespelllist', 'doors'].includes(safeSetId);
+    const targetContext = kind === 'npc' ? (formatNpcKeywordTarget(popoverState.context) || popoverState.context || null) : (popoverState.context || null);
     const setMatches = (buttonSetId: string, targetSetId: string) => (
         buttonSetId === targetSetId ||
         canonicalizeCategoryId(buttonSetId) === canonicalizeCategoryId(targetSetId)
@@ -109,8 +153,8 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         const filterDeps = { buttons, inlineCategories: inlineCategories || [], roomNpcs, entities };
         
         const favoritedButtons = buttons.filter(b => {
-            const isValid = popoverState.entityId 
-                ? isButtonValidForEntity(b, popoverState.entityId, kind, location, filterDeps, popoverState.category, safeSetId)
+            const isValid = shouldUseEntityFilter
+                ? isButtonValidForEntity(b, popoverState.entityId!, kind, location, filterDeps, popoverState.category, safeSetId)
                 : true;
             if (!isValid) return false;
             return (relevantSets.includes(b.setId) || (NPC_SUBCATEGORIES.includes(safeSetId) && b.setId === 'npc')) && favorites.includes(b.command);
@@ -127,23 +171,22 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                 )}
 
                 {isInlineMenu ? (
-                    sortedSets.map((setId, chainIdx) => {
+                    sectionDefs.map((section) => {
                         const setIdButtons = buttons.filter(b => {
-                            if (!setMatches(b.setId, setId) || favorites.includes(b.command) || seenCommands.has(b.command)) return false;
-                            const isValid = popoverState.entityId 
-                                ? isButtonValidForEntity(b, popoverState.entityId, kind, location, filterDeps, popoverState.category, safeSetId)
+                            if (!setMatches(b.setId, section.setId) || favorites.includes(b.command) || seenCommands.has(b.command)) return false;
+                            const isValid = shouldUseEntityFilter
+                                ? isButtonValidForEntity(b, popoverState.entityId!, kind, location, filterDeps, popoverState.category, safeSetId)
                                 : true;
                             if (isValid) seenCommands.add(b.command);
                             return isValid;
                         });
 
                         if (setIdButtons.length === 0) return null;
-                        const label = SET_DISPLAY_LABELS[setId as keyof typeof SET_DISPLAY_LABELS] || (setId.startsWith('inline-') ? setId.replace('inline-', '').toUpperCase().replace(/-/g, ' ') : null);
                         
                         return (
-                            <React.Fragment key={setId}>
-                                {label && <div style={{ padding: '6px 12px 2px', fontSize: '0.6rem', opacity: 0.4, textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, color: 'var(--accent)' }}>{label}</div>}
-                                {setIdButtons.map(b => <PopoverActionButton key={b.id} button={b} depth={chainIdx === 0 ? 0 : 1} isSubButton={chainIdx > 0} {...props} toggleFavorite={toggleFavorite} handleTabClick={handleTabClick} setGearTab={setGearTab} />)}
+                            <React.Fragment key={section.setId}>
+                                {section.label && <div style={{ padding: '6px 12px 2px', fontSize: '0.6rem', opacity: 0.4, textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, color: 'var(--accent)' }}>{section.label}</div>}
+                                {setIdButtons.map(b => <PopoverActionButton key={b.id} button={b} {...props} toggleFavorite={toggleFavorite} handleTabClick={handleTabClick} setGearTab={setGearTab} />)}
                             </React.Fragment>
                         );
                     })
@@ -190,7 +233,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
             )}
 
             {isTargetable && !isChoosingCategory && (
-                <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} onClick={() => { triggerHaptic?.(20); setTarget(popoverState.context || null); setPopoverState(null); }} style={{ '--set-accent': themeColor || popoverState.accentColor || 'var(--accent)' } as any}>Set as Target</div>
+                <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} onClick={() => { triggerHaptic?.(20); setTarget(targetContext); setPopoverState(null); }} style={{ '--set-accent': themeColor || popoverState.accentColor || 'var(--accent)' } as any}>Set as Target</div>
             )}
 
             {isSetManager ? (

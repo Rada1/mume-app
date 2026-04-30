@@ -1,6 +1,6 @@
 import React from 'react';
 import { InlineCategoryConfig, PopoverState, MessageType } from '../../../types';
-import { DEFAULT_INLINE_CATEGORIES } from '../../../utils/categorizationUtils';
+import { DEFAULT_INLINE_CATEGORIES, getButtonSetIdForCategory } from '../../../utils/categorizationUtils';
 import { useUI, useGame } from '../../../context/GameContext';
 import { Settings } from 'lucide-react';
 
@@ -136,12 +136,12 @@ export const TraitToggleSection: React.FC<TraitToggleSectionProps> = ({
                                 {cat.id.replace('object-', '').replace('npc-', '').replace('inline-', '').toUpperCase()}
                             </span>
                             
-                            {cat.buttonSetId && (
+                            {getButtonSetIdForCategory(cat) && (
                                 <div 
                                     className="edit-set-shortcut"
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        setManagerSelectedSet(cat.buttonSetId!);
+                                        setManagerSelectedSet(getButtonSetIdForCategory(cat)!);
                                         setIsSetManagerOpen(true);
                                         setPopoverState(null);
                                         triggerHaptic?.(50);

@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { InteractionDeps } from '../useInteractionHandlers';
 import { CustomButton } from '../../types';
-import { sanitizeGameTarget } from '../../utils/gameUtils';
+import { formatNpcKeywordTarget, sanitizeGameTarget } from '../../utils/gameUtils';
 import { triggerRingAnimation, getPressedColor } from './pointerUtils';
 
 export const useButtonClicks = (deps: InteractionDeps) => {
@@ -76,8 +76,9 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         }
 
         const effectiveContext = (context && keywordOverrides[context]) ? keywordOverrides[context] : context;
+        const isNpcContext = popoverState?.kind === 'npc' || popoverState?.category?.startsWith('inline-npc') || popoverState?.setId?.startsWith('npc');
         console.log('[useButtonClicks] context resolution:', { context, effectiveContext, keywordOverride: context ? keywordOverrides[context] : undefined });
-        let finalContext = sanitizeGameTarget(effectiveContext) || effectiveContext || '';
+        let finalContext = (isNpcContext ? formatNpcKeywordTarget(effectiveContext) : sanitizeGameTarget(effectiveContext)) || effectiveContext || '';
         console.log('[useButtonClicks] finalContext:', finalContext);
         let detectedParent = parentNoun;
 

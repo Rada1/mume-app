@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { CustomButton } from '../../types';
+import { canonicalizeCategoryId } from '../../utils/categorizationUtils';
+import { CircleHelp } from 'lucide-react';
 
 interface DialMenuProps {
     setId: string | string[];
@@ -11,6 +13,10 @@ interface DialMenuProps {
     triggerHaptic: (ms: number) => void;
     themeColor?: string;
     instruction?: string;
+    targetName?: string;
+    categoryLabel?: string;
+    onHelp?: () => void;
+    onTag?: () => void;
 }
 
 export const DialMenu: React.FC<DialMenuProps> = ({
@@ -22,7 +28,11 @@ export const DialMenu: React.FC<DialMenuProps> = ({
     onExecute,
     triggerHaptic,
     themeColor,
-    instruction
+    instruction,
+    targetName,
+    categoryLabel,
+    onHelp,
+    onTag
 }) => {
     const menuButtons = useMemo(() => {
         const ids = Array.isArray(setId) ? setId : [setId];
@@ -31,7 +41,11 @@ export const DialMenu: React.FC<DialMenuProps> = ({
 
         // Distribute buttons into buckets by setId to preserve chain order
         ids.forEach(id => {
-            const setButtons = buttons.filter(b => b.setId === id && b.isVisible !== false);
+            const canonicalId = canonicalizeCategoryId(id);
+            const setButtons = buttons.filter(b => (
+                (b.setId === id || canonicalizeCategoryId(b.setId) === canonicalId) &&
+                b.isVisible !== false
+            ));
             setButtons.forEach(b => {
                 if (!seenCommands.has(b.command)) {
                     seenCommands.add(b.command);
@@ -70,14 +84,35 @@ export const DialMenu: React.FC<DialMenuProps> = ({
         return { items, startAngle, arcLength };
     }, [menuButtons]);
 
+    const getIndexFromPointer = useCallback((e: PointerEvent | React.PointerEvent): number | null => {
+        const dx = e.clientX - initialX;
+        const dy = e.clientY - initialY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 20 || layout.items.length === 0) return null;
+
+        let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+        if (angle < 0) angle += 360;
+
+        let bestIndex: number | null = null;
+        let minDiff = Infinity;
+        layout.items.forEach((item, i) => {
+            let diff = Math.abs(angle - item.angle);
+            if (diff > 180) diff = 360 - diff;
+            if (diff < minDiff) {
+                minDiff = diff;
+                bestIndex = i;
+            }
+        });
+
+        return bestIndex;
+    }, [initialX, initialY, layout]);
+
     useEffect(() => {
         const handleGlobalMove = (e: PointerEvent) => {
             if (e.cancelable) e.preventDefault();
-            const dx = e.clientX - initialX;
-            const dy = e.clientY - initialY;
-            const dist = Math.sqrt(dx * dx + dy * dy);
+            const bestIndex = getIndexFromPointer(e);
 
-            if (dist < 20) {
+            if (bestIndex === null) {
                 if (activeIndexRef.current !== null) {
                     setActiveIndex(null);
                     activeIndexRef.current = null;
@@ -86,27 +121,10 @@ export const DialMenu: React.FC<DialMenuProps> = ({
                 return;
             }
 
-            let angle = Math.atan2(dy, dx) * 180 / Math.PI;
-            if (angle < 0) angle += 360;
-
-            let bestIndex: number | null = null;
-            let minDiff = Infinity;
-
-            if (layout.items.length > 0) {
-                layout.items.forEach((item, i) => {
-                    let diff = Math.abs(angle - item.angle);
-                    if (diff > 180) diff = 360 - diff;
-                    if (diff < minDiff) {
-                        minDiff = diff;
-                        bestIndex = i;
-                    }
-                });
-            }
-
             if (bestIndex !== activeIndexRef.current) {
                 setActiveIndex(bestIndex);
                 activeIndexRef.current = bestIndex;
-                if (bestIndex !== null && lastHapticIndex.current !== bestIndex) {
+                if (lastHapticIndex.current !== bestIndex) {
                     triggerHaptic(10);
                     lastHapticIndex.current = bestIndex;
                 }
@@ -116,10 +134,12 @@ export const DialMenu: React.FC<DialMenuProps> = ({
         const handleGlobalUp = (e: PointerEvent) => {
             if (e.cancelable) e.preventDefault();
             const target = e.target instanceof Element ? e.target : null;
-            if (target?.closest('.dial-item')) return;
+            if (target?.closest('.dial-menu-header-action')) return;
 
-            if (activeIndexRef.current !== null && menuButtons[activeIndexRef.current]) {
-                executeButton(menuButtons[activeIndexRef.current], e);
+            const releaseIndex = getIndexFromPointer(e);
+            const indexToExecute = releaseIndex ?? activeIndexRef.current;
+            if (indexToExecute !== null && menuButtons[indexToExecute]) {
+                executeButton(menuButtons[indexToExecute], e);
             } else {
                 onClose();
             }
@@ -132,7 +152,7 @@ export const DialMenu: React.FC<DialMenuProps> = ({
             window.removeEventListener('pointermove', handleGlobalMove, true);
             window.removeEventListener('pointerup', handleGlobalUp, true);
         };
-    }, [initialX, initialY, menuButtons, onClose, executeButton, triggerHaptic, layout]);
+    }, [menuButtons, onClose, executeButton, triggerHaptic, getIndexFromPointer]);
 
     if (!menuButtons || menuButtons.length === 0) {
         return (
@@ -169,10 +189,59 @@ export const DialMenu: React.FC<DialMenuProps> = ({
                 position: 'fixed',
                 top: (initialY !== undefined && !isNaN(initialY)) ? `${initialY}px` : '50%',
                 left: (initialX !== undefined && !isNaN(initialX)) ? `${initialX}px` : '50%',
-                transform: 'translate(-50%, -50%)'
+                transform: 'translate(-50%, -50%)',
+                '--accent': themeColor || 'var(--set-accent, var(--accent))'
             } as any}>
+                {(targetName || categoryLabel) && (
+                    <div
+                        className="dial-menu-header"
+                        onPointerDown={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }}
+                        onPointerUp={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }}
+                    >
+                        <div className="dial-menu-header-copy">
+                            {targetName && <div className="dial-menu-title">{targetName}</div>}
+                            <div className="dial-menu-subtitle">
+                                {categoryLabel && <span>{categoryLabel}</span>}
+                                <span>{instruction || 'select to fire'}</span>
+                            </div>
+                        </div>
+                        <div className="dial-menu-header-actions">
+                            {targetName && onHelp && (
+                                <button
+                                    type="button"
+                                    className="dial-menu-header-action"
+                                    title={`Help for ${targetName}`}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onHelp();
+                                    }}
+                                >
+                                    <CircleHelp size={14} />
+                                </button>
+                            )}
+                            {onTag && (
+                                <button
+                                    type="button"
+                                    className="dial-menu-header-action dial-menu-tag-action"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onTag();
+                                    }}
+                                >
+                                    TAG
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
                 <div className="dial-selection-center" style={{
-                    '--accent': (activeIndex !== null && menuButtons[activeIndex]) ? (menuButtons[activeIndex].style.borderColor || menuButtons[activeIndex].style.backgroundColor || themeColor || 'var(--set-accent, var(--accent))') : 'var(--border-color, rgba(255,255,255,0.2))',
+                    '--accent': themeColor || 'var(--set-accent, var(--accent))',
                     width: '120px',
                     height: '120px',
                     position: 'absolute',
@@ -182,14 +251,8 @@ export const DialMenu: React.FC<DialMenuProps> = ({
                 } as any}>
                     {activeIndex !== null && menuButtons[activeIndex] ? (
                         <div className="dial-center-highlight">
-                            <div className="dial-center-icon">
-                                {menuButtons[activeIndex].icon ? (
-                                    <img src={menuButtons[activeIndex].icon} style={{ maxWidth: '70%', maxHeight: '70%', objectFit: 'contain', transform: `scale(${menuButtons[activeIndex].style.iconScale || 1})` }} alt="" />
-                                ) : (
-                                    menuButtons[activeIndex].label.length <= 3 ? menuButtons[activeIndex].label : menuButtons[activeIndex].label.substring(0, 2)
-                                )}
-                            </div>
                             <div className="dial-center-label">{menuButtons[activeIndex].label}</div>
+                            {targetName && <div className="dial-center-target">{targetName}</div>}
                         </div>
                     ) : (
                         <div className="dial-center-placeholder">
@@ -212,23 +275,11 @@ export const DialMenu: React.FC<DialMenuProps> = ({
                                     activeIndexRef.current = i;
                                     triggerHaptic(10);
                                 }}
-                                onPointerUp={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    executeButton(button, e);
-                                }}
                                 style={{
                                     transform: `translate(-50%, -50%) translate(${item.x}px, ${item.y}px)`,
-                                    '--accent': button.style.borderColor || button.style.backgroundColor || themeColor || 'var(--set-accent, var(--accent))'
+                                    '--accent': themeColor || 'var(--set-accent, var(--accent))'
                                 } as any}
                             >
-                                <div className="dial-item-icon">
-                                    {button.icon ? (
-                                        <img src={button.icon} style={{ maxWidth: '75%', maxHeight: '75%', objectFit: 'contain', transform: `scale(${button.style.iconScale || 1})` }} alt="" />
-                                    ) : (
-                                        button.label.length <= 3 ? button.label : button.label.substring(0, 2)
-                                    )}
-                                </div>
                                 <div className="dial-item-label">{button.label}</div>
                             </div>
                         );

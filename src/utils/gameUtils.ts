@@ -4,10 +4,10 @@
  */
 
 import { GameEntity } from '../types';
-import { extractMumeKeyword, extractColorTaggedKeyword, extractNoun, sanitizeGameTarget } from './keywordUtils';
+import { extractMumeKeyword, extractColorTaggedKeyword, extractNoun, sanitizeGameTarget, formatNpcKeywordTarget } from './keywordUtils';
 
 // Re-export for backward compatibility
-export { extractMumeKeyword, extractColorTaggedKeyword, extractNoun, sanitizeGameTarget };
+export { extractMumeKeyword, extractColorTaggedKeyword, extractNoun, sanitizeGameTarget, formatNpcKeywordTarget };
 
 /**
  * Simplifies a long description into a core noun phrase.

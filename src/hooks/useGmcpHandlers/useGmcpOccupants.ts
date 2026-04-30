@@ -120,7 +120,8 @@ export const useGmcpOccupants = ({
                 (!obj.name && !obj.short && !obj.shortdesc && !obj.keyword) ||
                 !obj.type
             );
-            const shouldPreserveExisting = prevCount > Object.keys(parsedChars).length || looksLikePartialCombatUpdate;
+            const parsedCount = Object.keys(parsedChars).length;
+            const shouldPreserveExisting = parsedCount > 0 && (prevCount > parsedCount || looksLikePartialCombatUpdate);
             const newChars: Record<number, GmcpOccupant> = shouldPreserveExisting ? { ...prev } : {};
 
             Object.entries(parsedChars).forEach(([key, obj]) => {
@@ -239,6 +240,7 @@ export const useGmcpOccupants = ({
             delete next[getRoomCharKey(id)];
             return next;
         });
+        mapperRef.current?.triggerRender?.();
 
         import('../../events/gmcpBus').then(({ gmcpBus }) => {
             gmcpBus.emit('Room.RemoveChar', { id, isSnooped: false });

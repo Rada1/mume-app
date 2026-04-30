@@ -161,6 +161,24 @@ export function getCategoryType(category: string | null, customCategories?: Inli
 }
 
 /**
+ * Resolves the button-set/menu ID associated with a trait.
+ * Falls back to the canonical trait ID so built-in traits like `food`
+ * automatically target `inline-food` even if no explicit buttonSetId was saved.
+ */
+export function getButtonSetIdForCategory(category: InlineCategoryConfig | string | null | undefined): string | null {
+    if (!category) return null;
+    const canonicalId = typeof category === 'string'
+        ? canonicalizeCategoryId(category)
+        : canonicalizeCategoryId(category.id);
+
+    // Generic player traits still use the shared inline-ally action set.
+    if (canonicalId === 'inline-player') return 'inline-ally';
+
+    if (typeof category === 'string') return canonicalId;
+    return category.buttonSetId || canonicalId;
+}
+
+/**
  * Gets a glow color based on the category name, enforcing inheritance.
  */
 export function getGlowColorForCategory(

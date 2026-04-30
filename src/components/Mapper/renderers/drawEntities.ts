@@ -1,3 +1,6 @@
+/**
+ * @file Draws player, NPC, object, and trail entities on the mapper canvas.
+ */
 import { RenderContext, getSeed } from './rendererUtils';
 import { GRID_SIZE, DIRS } from '../mapperUtils';
 import { getMemberColor } from '../../../utils/groupUtils';
@@ -28,6 +31,22 @@ const resolveActiveRoomAnchor = (
 
     const preloadedRoom = rCtx.preloaded[rawId] || (localId ? rCtx.preloaded[localId] : undefined);
     return preloadedRoom ? { x: preloadedRoom[0], y: preloadedRoom[1], z: preloadedRoom[2] || 0 } : null;
+};
+
+const getOccupantInitial = (name?: string) => {
+    const cleanName = name?.trim().replace(/^(a|an|the)\s+/i, '');
+    return cleanName ? cleanName.charAt(0).toUpperCase() : '';
+};
+
+const getMarkerTextColor = (color: string) => {
+    const rgbMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+    if (!rgbMatch) return 'rgba(6, 8, 14, 0.92)';
+
+    const r = Number(rgbMatch[1]);
+    const g = Number(rgbMatch[2]);
+    const b = Number(rgbMatch[3]);
+    const luminance = (0.2126 * r) + (0.7152 * g) + (0.0722 * b);
+    return luminance > 130 ? 'rgba(6, 8, 14, 0.92)' : 'rgba(248, 250, 252, 0.95)';
 };
 
 export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: number, gY2: number) => {
@@ -94,15 +113,31 @@ export const drawRoomOccupants = (
     const zoomFactor = (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
     const pulse = (Math.sin(now / 400) + 1) / 2;
 
-    const drawDot = (orbX: number, orbY: number, color: string, alpha: number) => {
+    const drawDot = (orbX: number, orbY: number, color: string, alpha: number, name?: string) => {
+        const radius = Math.max(3.15 / Math.sqrt(camera.zoom), 6.5 / camera.zoom);
+        const initial = getOccupantInitial(name);
+
         ctx.save();
         ctx.globalAlpha = alpha;
         ctx.fillStyle = color;
         ctx.shadowBlur = 5 / camera.zoom;
         ctx.shadowColor = color;
         ctx.beginPath();
-        ctx.arc(orbX, orbY, Math.max(2.25, 3.15 / Math.sqrt(camera.zoom)), 0, Math.PI * 2);
+        ctx.arc(orbX, orbY, radius, 0, Math.PI * 2);
         ctx.fill();
+
+        ctx.shadowBlur = 0;
+        ctx.lineWidth = Math.max(0.75, 1.2 / camera.zoom);
+        ctx.strokeStyle = 'rgba(5, 7, 13, 0.82)';
+        ctx.stroke();
+
+        if (initial) {
+            ctx.font = `700 ${Math.max(8 / camera.zoom, radius * 1.05)}px monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = getMarkerTextColor(color);
+            ctx.fillText(initial, orbX, orbY + (0.35 / camera.zoom));
+        }
         ctx.restore();
     };
 
@@ -130,7 +165,7 @@ export const drawRoomOccupants = (
                 if (t < 1.0) triggerRender?.();
             }
 
-            drawDot(orbX, orbY, occ.color, alpha);
+            drawDot(orbX, orbY, occ.color, alpha, occ.name);
 
             // Opponent tether
             let isOpponent = false;
@@ -203,7 +238,7 @@ export const drawRoomOccupants = (
         const orbX = startX + (targetX - startX) * eased;
         const orbY = startY + (targetY - startY) * eased;
         const alpha = 0.85 * (1 - t);
-        drawDot(orbX, orbY, color, alpha);
+        drawDot(orbX, orbY, color, alpha, anim.name);
         triggerRender?.();
     }
 };

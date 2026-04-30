@@ -1,9 +1,13 @@
+/**
+ * @file classifyOccupant.ts
+ * @description Canonical GMCP Room.Chars category mapping for inline and map occupants.
+ */
+
 import {
     COLOR_ALLY,
     COLOR_ENEMY,
     COLOR_NEUTRAL,
     COLOR_NPC,
-    getCategoryForName,
 } from '../../utils/categorizationUtils';
 import type { GmcpOccupant } from '../../types';
 
@@ -86,21 +90,7 @@ export function classifyOccupant(
     const rawType = (occ as { type?: unknown }).type;
     if (typeof rawType !== 'string' || rawType.length === 0) return null;
 
-    let category = TYPE_MAP[rawType.toLowerCase()];
-
-    // If it's a generic NPC, try to refine based on keywords in name or shortdesc
-    if (category === 'inline-npc' || !category) {
-        const nameText = (occ.name || occ.shortdesc || '').toLowerCase();
-        const refined = getCategoryForName(nameText);
-        // Only accept if it's an inline-npc related category
-        if (refined && refined.startsWith('inline-')) {
-            // Check if it's one of our valid CharCategory types
-            const validSubcats = ['inline-shopkeeper', 'inline-innkeeper', 'inline-mounts', 'inline-guildmaster', 'inline-trainer', 'inline-guard'];
-            if (validSubcats.includes(refined)) {
-                category = refined as CharCategory;
-            }
-        }
-    }
+    const category = TYPE_MAP[rawType.toLowerCase()];
 
     if (!category) return null;
 

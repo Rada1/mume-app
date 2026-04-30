@@ -1,5 +1,5 @@
 import { CustomButton, InlineCategoryConfig, GameEntity, EntityCapability, GmcpOccupant } from '../types';
-import { getCategoryForName, canonicalizeCategoryId, resolveKindAndLocation, getTraitConfigsForName } from './categorizationUtils';
+import { getCategoryForName, canonicalizeCategoryId, resolveKindAndLocation, getTraitConfigsForName, getButtonSetIdForCategory } from './categorizationUtils';
 import { getHierarchyChain, getRelevantSets } from './buttonHierarchyUtils';
 
 export interface ActionFilterDeps {
@@ -28,7 +28,7 @@ export function isButtonValidForEntity(
     // --- STEP 1: Determine Relevant Sets (The "Trait-Based" way) ---
     // We combine the base kind/location with the entity's detected capabilities
     const traitConfigs = entity?.name ? getTraitConfigsForName(entity.name, inlineCategories || []) : [];
-    const extraSets = traitConfigs.map(c => c.buttonSetId).filter(Boolean) as string[];
+    const extraSets = traitConfigs.map(getButtonSetIdForCategory).filter(Boolean) as string[];
 
     const relevantSets = entity 
         ? getRelevantSets(entity, extraSets)

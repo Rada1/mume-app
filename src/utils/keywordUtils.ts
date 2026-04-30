@@ -129,6 +129,11 @@ export const sanitizeGameTarget = (target: string | null | undefined): string | 
     return clean.replace(/\s+/g, ' ');
 };
 
+export const formatNpcKeywordTarget = (target: string | null | undefined): string | null => {
+    const clean = sanitizeGameTarget(target);
+    return clean ? clean.replace(/\s+/g, '-').toLowerCase() : null;
+};
+
 /**
  * Unified "Data-Driven" keyword resolver.
  * Priority: 
