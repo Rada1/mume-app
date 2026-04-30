@@ -170,6 +170,24 @@ const Header: React.FC<HeaderProps> = ({
                 </div>
             )}
 
+            {/* Snoop Target Banner */}
+            {isSpectating && spectateTarget && (
+                <div style={{
+                    display: 'flex', alignItems: 'center', gap: 5,
+                    padding: '3px 10px', borderRadius: 6,
+                    background: 'rgba(139,92,246,0.12)',
+                    border: '1px solid rgba(139,92,246,0.5)',
+                    color: '#a78bfa',
+                    fontWeight: 700, fontSize: 11, letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    flexShrink: 0,
+                    userSelect: 'none',
+                }}>
+                    <Eye size={11} />
+                    {spectateTarget}
+                </div>
+            )}
+
             {/* View Switcher for Spectate Mode */}
             {isSpectating && (
                 <div className="view-switcher premium-glass">

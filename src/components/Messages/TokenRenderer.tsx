@@ -2,7 +2,7 @@ import React from 'react';
 import { Token, EntityToken, AnsiToken } from '../../types';
 import { useVitals } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
-import { COLOR_PLAYER, COLOR_NPC, COLOR_OBJ, COLOR_ROOM } from '../../utils/categorizationUtils';
+import { COLOR_PLAYER, COLOR_NPC, COLOR_OBJ, COLOR_ROOM, COLOR_ENEMY } from '../../utils/categorizationUtils';
 import { extractMumeKeyword } from '../../utils/gameUtils';
 
 import { MessageType } from '../../types';
@@ -159,6 +159,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                     
                     let categoryColor = null;
                     if (kind === 'player') categoryColor = settings.playerColor || COLOR_PLAYER;
+                    else if (kind === 'enemy') categoryColor = settings.enemyColor || COLOR_ENEMY;
                     else if (kind === 'npc') categoryColor = settings.npcColor || COLOR_NPC;
                     else if (kind === 'object') categoryColor = settings.objectColor || COLOR_OBJ;
                     else if (kind === 'room') categoryColor = settings.roomColor || COLOR_ROOM;
@@ -173,8 +174,8 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                         style.color = 'var(--glow-color)';
                     }
 
-                    if (forceBoldEntities || isRoom) {
-                        style.fontWeight = 'bold'; // Still make room names stand out as headers
+                    if (forceBoldEntities || isRoom || kind === 'enemy') {
+                        style.fontWeight = 'bold';
                     }
 
                     return (

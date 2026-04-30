@@ -202,7 +202,9 @@ export function useTelnet(config: TelnetConfig) {
         };
 
         const normalizeSnoopLine = (value: string, symbol: string) => {
-            const normalizedSymbol = symbol.replace(/^&amp;/i, '&');
+            // MUME sends symbol=L (bare letter), &L, or &amp;L — normalize all to &X format
+            const rawLetter = symbol.replace(/^&amp;/i, '').replace(/^&/, '').trim().charAt(0).toUpperCase();
+            const normalizedSymbol = rawLetter ? `&${rawLetter}` : '&?';
             const normalizedLine = value.replace(/^((?:\x1b\[[0-9;]*m|\s)*)&amp;([A-Z]) /, '$1&$2 ');
             const cleanLine = normalizedLine.replace(/\x1b\[[0-9;]*m/g, '').trim();
             if (/^(?:&|mp;)[A-Z](?: |$)/.test(cleanLine)) return normalizedLine;

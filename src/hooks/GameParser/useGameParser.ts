@@ -417,7 +417,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         const snoopedRoomInfo = isSnoop ? extractXmlRoomInfo(lineToParse) : null;
         if (snoopedRoomInfo) {
             if (typeof window !== 'undefined') {
-                window.dispatchEvent(new CustomEvent('mume-gmcp-room-info', {
+                window.dispatchEvent(new CustomEvent('mume-spectate-room-update', {
                     detail: { ...snoopedRoomInfo, spectating: true }
                 }));
             }
@@ -644,6 +644,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             textOnly = stripped;
             lower = stripped.toLowerCase();
             lineToParse = lineToParse.replace(/^((?:\x1b\[[0-9;]*m|\s)*)>\s*/, '$1');
+            // Only play click when actively watching the spectated player's view
+            if (!deps.isSpectateMode || deps.activeView === 'target') {
+                deps.playClickSound?.();
+            }
         }
 
         // Suppress response lines from silent capture sessions (e.g. drawer auto-commands like eq/who)

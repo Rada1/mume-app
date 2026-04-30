@@ -24,21 +24,16 @@ export const SystemCommandMiddleware: CommandMiddleware = (cmd, context) => {
         }
     }
 
-    // Snoop Handling (Client sync)
-    if (lowerCmd.startsWith('/snoop')) {
-        const parts = lowerCmd.split(/\s+/);
-        if (parts.length > 1) {
-            // Check for options like -prompt -gmcp
-            const target = parts.find(p => !p.startsWith('-') && p !== '/snoop');
-            if (target) {
-                useModeStore.getState().startSpectate(target);
-            } else if (parts.length === 1 || (parts.length === 2 && parts[1] === '/snoop')) {
-                // Just /snoop might mean stop
-                useModeStore.getState().stopSpectate();
-            }
+    // Snoop Handling (Client sync) — both /snoop and bare snoop commands
+    const snoopMatch = lowerCmd.match(/^(?:\/snoop|snoop)(?:\s+(.+))?$/);
+    if (snoopMatch) {
+        const argStr = snoopMatch[1] || '';
+        const nameParts = argStr.split(/\s+/).filter(p => !p.startsWith('-') && p.length > 0);
+        const snoopTarget = nameParts[0] || null;
+        if (snoopTarget) {
+            useModeStore.getState().startSpectate(snoopTarget);
         } else {
-            // Bare /snoop usually stops or shows status
-            // We'll let it fall through to server, but we might want to stop if it clears snoop
+            useModeStore.getState().stopSpectate();
         }
     }
 

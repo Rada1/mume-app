@@ -92,6 +92,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setPlayerColor,
         npcColor,
         setNpcColor,
+        enemyColor,
+        setEnemyColor,
         roomColor,
         setRoomColor,
         isBloomEnabled,
@@ -233,6 +235,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setPlayerColor={setPlayerColor}
                     npcColor={npcColor}
                     setNpcColor={setNpcColor}
+                    enemyColor={enemyColor}
+                    setEnemyColor={setEnemyColor}
                     roomColor={roomColor}
                     setRoomColor={setRoomColor}
                     isEditMode={btn.isEditMode}

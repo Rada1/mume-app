@@ -37,6 +37,8 @@ interface GeneralSettingsProps {
     setPlayerColor: (val: string) => void;
     npcColor: string;
     setNpcColor: (val: string) => void;
+    enemyColor: string;
+    setEnemyColor: (val: string) => void;
     roomColor: string;
     setRoomColor: (val: string) => void;
     isBloomEnabled: boolean;
@@ -89,6 +91,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setPlayerColor,
     npcColor,
     setNpcColor,
+    enemyColor,
+    setEnemyColor,
     roomColor,
     setRoomColor,
     isBloomEnabled,
@@ -716,6 +720,13 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                         <input type="color" value={npcColor} onChange={(e) => setNpcColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                         <div>
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>NPCs</div>
+                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Inline menus & logs</div>
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <input type="color" value={enemyColor} onChange={(e) => setEnemyColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
+                        <div>
+                            <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Enemies</div>
                             <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Inline menus & logs</div>
                         </div>
                     </div>

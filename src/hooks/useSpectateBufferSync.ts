@@ -28,7 +28,7 @@ interface StateSnapshot {
 
 interface AudioEvent {
     timestamp: number;
-    type: 'hit' | 'oof';
+    type: 'hit' | 'oof' | 'click';
     modifier?: any;
 }
 
@@ -39,6 +39,7 @@ export function useSpectateBufferSync({
     isPlaying,
     playHitImpactSound,
     playOofSound,
+    playClickSound,
 }: {
     isSpectating: boolean;
     displayCutoff: number;
@@ -46,6 +47,7 @@ export function useSpectateBufferSync({
     isPlaying: boolean;
     playHitImpactSound: (modifier?: any) => void;
     playOofSound: () => void;
+    playClickSound: () => void;
 }) {
     const stateTimelineRef = useRef<StateSnapshot[]>([]);
     const audioEventsRef = useRef<AudioEvent[]>([]);
@@ -130,7 +132,8 @@ export function useSpectateBufferSync({
             );
             toPlay.slice(0, 3).forEach(evt => {
                 if (evt.type === 'hit') playHitImpactSound(evt.modifier);
-                else playOofSound();
+                else if (evt.type === 'oof') playOofSound();
+                else if (evt.type === 'click') playClickSound();
             });
         }
     }, [displayCutoff, isLive, isPlaying, playHitImpactSound, playOofSound]);
@@ -143,5 +146,9 @@ export function useSpectateBufferSync({
         audioEventsRef.current.push({ timestamp: Date.now(), type: 'oof' });
     }, []);
 
-    return { recordHit, recordOof };
+    const recordClick = useCallback(() => {
+        audioEventsRef.current.push({ timestamp: Date.now(), type: 'click' });
+    }, []);
+
+    return { recordHit, recordOof, recordClick };
 }

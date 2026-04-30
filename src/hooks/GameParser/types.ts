@@ -63,6 +63,7 @@ export interface UseGameParserDeps {
     playRandomSound?: (buffers: any[]) => void;
     playKillSound: (options?: any) => void;
     playLevelSound: (options?: any) => void;
+    playClickSound: () => void;
 
     sessionMode: SessionMode;
     inCombatRef: MutableRefObject<boolean>;
@@ -152,6 +153,7 @@ export interface UseGameParserDeps {
     isMobile?: boolean;
     isNewbieMode: boolean;
     isSpectateMode: boolean;
+    activeView?: 'self' | 'target';
     captureSession: CaptureSession | null;
     setCaptureSession: Dispatch<SetStateAction<CaptureSession | null>>;
     executeCommand?: (cmd: string, echo?: boolean, fromMacro?: boolean) => void;

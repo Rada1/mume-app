@@ -27,7 +27,7 @@ export interface TokenizerContext {
 
 export class Tokenizer {
     private static readonly KNOWN_XML_TAGS = new Set([
-        'room', 'name', 'description', 'character', 'player', 'object', 'header', 
+        'room', 'name', 'description', 'character', 'player', 'object', 'header', 'enemy',
         'exit', 'prompt', 'movement', 'magic', 'para', 'item', 'terrain', 'exits',
         'weather', 'achievement', 'gratuitous', 'move_in', 'move_out', 'social',
         'emote', 'narrate', 'pray', 'say', 'shout', 'song', 'tell', 'yell',
@@ -335,6 +335,7 @@ export class Tokenizer {
 
         let category = 'none';
         if (kind === 'player') category = 'inline-player';
+        else if (kind === 'enemy') category = 'inline-enemy';
         else if (kind === 'npc') category = 'inline-npc';
         else if (kind === 'object') {
             if (this.currentLocation === 'carried') category = 'inline-obj-char';
@@ -407,7 +408,8 @@ export class Tokenizer {
     private determineKind(tag: string, stack: string[]): any {
         const lowerTag = tag.toLowerCase();
         const fullStack = [...stack.map(s => s.toLowerCase()), lowerTag];
-        
+
+        if (fullStack.includes('enemy')) return 'enemy';
         if (fullStack.includes('character')) {
             return fullStack.includes('player') ? 'player' : 'npc';
         }
@@ -415,7 +417,7 @@ export class Tokenizer {
         if (fullStack.includes('object')) return 'object';
         if (fullStack.includes('room') || fullStack.includes('name')) return 'room';
         if (fullStack.includes('exit')) return 'exit';
-        
+
         return 'none';
     }
 

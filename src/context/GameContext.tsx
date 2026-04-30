@@ -12,6 +12,7 @@ import { useEnvironment } from '../hooks/useEnvironment';
 import { useTelnet } from '../hooks/useTelnet';
 import { ProtocolHandler } from '../utils/telnet/ProtocolHandler';
 import { GmcpDecoder } from '../utils/telnet/GmcpDecoder';
+import { gmcpBus } from '../events/gmcpBus';
 import { useGameParser } from '../hooks/GameParser/useGameParser';
 import { UseGameParserDeps } from '../hooks/GameParser/types';
 import { useCommandController } from '../hooks/useCommandController';
@@ -360,25 +361,41 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const spectateBuffer = useSpectateBuffer();
 
     // --- DVR: sync vitals/weather/audio state with buffer position ---
-    const { recordHit, recordOof } = useSpectateBufferSync({
+    const { recordHit, recordOof, recordClick } = useSpectateBufferSync({
         isSpectating: mode.isSpectating,
         displayCutoff: spectateBuffer.displayCutoff,
         isLive: spectateBuffer.isLive,
         isPlaying: spectateBuffer.isPlaying,
         playHitImpactSound,
         playOofSound,
+        playClickSound,
     });
 
-    // Wrapped sound functions that also record to the spectate audio timeline
+    // Wrapped sound functions: record to the spectate audio timeline AND suppress live
+    // playback when scrubbing the buffer (the buffer-replay loop will handle audio).
     const playHitImpactSoundSpectate = useCallback((modifier?: any) => {
+        if (mode.isSpectating) {
+            recordHit(modifier);
+            if (!spectateBuffer.isLive) return;
+        }
         playHitImpactSound(modifier);
-        if (mode.isSpectating) recordHit(modifier);
-    }, [playHitImpactSound, mode.isSpectating, recordHit]);
+    }, [playHitImpactSound, mode.isSpectating, recordHit, spectateBuffer.isLive]);
 
     const playOofSoundSpectate = useCallback(() => {
+        if (mode.isSpectating) {
+            recordOof();
+            if (!spectateBuffer.isLive) return;
+        }
         playOofSound();
-        if (mode.isSpectating) recordOof();
-    }, [playOofSound, mode.isSpectating, recordOof]);
+    }, [playOofSound, mode.isSpectating, recordOof, spectateBuffer.isLive]);
+
+    const playClickSoundSpectate = useCallback(() => {
+        if (mode.isSpectating) {
+            recordClick();
+            if (!spectateBuffer.isLive) return;
+        }
+        playClickSound();
+    }, [playClickSound, mode.isSpectating, recordClick, spectateBuffer.isLive]);
 
     // --- DVR: track GMCP room-info snapshots so seeking replays the correct map state ---
     const spectateRoomSnapshotsRef = useRef<Array<{ timestamp: number; detail: any }>>([]);
@@ -390,12 +407,15 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
         const handler = (e: Event) => {
             const detail = (e as CustomEvent).detail;
-            if (!detail?.spectating) return;
             spectateRoomSnapshotsRef.current.push({ timestamp: Date.now(), detail });
+            // Only forward to mapper when watching live; buffer restore handles the non-live case
+            if (spectateBuffer.isLive) {
+                window.dispatchEvent(new CustomEvent('mume-gmcp-room-info', { detail }));
+            }
         };
-        window.addEventListener('mume-gmcp-room-info', handler);
-        return () => window.removeEventListener('mume-gmcp-room-info', handler);
-    }, [mode.isSpectating]);
+        window.addEventListener('mume-spectate-room-update', handler);
+        return () => window.removeEventListener('mume-spectate-room-update', handler);
+    }, [mode.isSpectating, spectateBuffer.isLive]);
 
     useEffect(() => {
         if (spectateBuffer.isLive) return;
@@ -420,6 +440,25 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             }
             spectateBuffer.clear();
         }
+    }, [mode.isSpectating]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // --- Record snooped GMCP events into spectate session log for replay ---
+    // Room.Info and Room.UpdateExits arrive as text lines (via parseLogGmcp), never as
+    // structured GMCP entries, so they would be absent from the log and the map/music
+    // would not update during replay. Subscribe here and persist them as 'gmcp' entries
+    // so that dispatchReplayGmcp can route them to onRoomInfo / onRoomUpdateExits.
+    useEffect(() => {
+        if (!mode.isSpectating) return;
+        const unsubs = (['Room.Info', 'Room.UpdateExits'] as const).map(event =>
+            gmcpBus.on(event, (data: any) => {
+                if (!data.isSnooped) return;
+                s.spectateSession.recorder.recordEntry('gmcp', {
+                    pkg: event,
+                    data: JSON.stringify(data)
+                });
+            })
+        );
+        return () => unsubs.forEach(u => u());
     }, [mode.isSpectating]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // --- Replay session lifecycle: drive sessionMode from replayer.log ---
@@ -489,6 +528,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playOofSound: playOofSoundSpectate,
         playKillSound,
         playLevelSound,
+        playClickSound: playClickSoundSpectate,
         playSlashSound,
         playCleaveSound,
         playSmiteSound,
@@ -534,6 +574,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         groupMembers: v.groupMembers,
         activeGroupMembers: v.groupMembers,
         isSpectateMode: s.isSpectateMode,
+        activeView: mode.activeView,
         spectateTarget: s.spectateTarget,
         spectateRoomName: s.spectateRoomName,
         spectateRoomDesc: s.spectateRoomDesc,
@@ -613,7 +654,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         shop: shop,
         practice: practice,
         help: help
-    }), [s, v, ui, settingsStore, addMessage, addSystemMessage, playHitImpactSound, playOofSound, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, shop, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
+    }), [s, v, ui, settingsStore, mode, addMessage, addSystemMessage, playHitImpactSound, playOofSound, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, shop, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
 
 
     const parser = useGameParser(deps, s.userSession);
