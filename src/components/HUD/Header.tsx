@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Crosshair, RefreshCw, X, FileText, User, Map as MapIcon } from 'lucide-react';
-import { EnvControls } from '../Layout/EnvControls';
 import { LightingType, WeatherType } from '../../types';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { formatCompactNumber } from '../../utils/gameUtils';
@@ -15,9 +14,6 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({
-    isLandscape,
-    getLightingIcon,
-    getWeatherIcon,
     onResetMap
 }) => {
     const {
@@ -174,8 +170,8 @@ const Header: React.FC<HeaderProps> = ({
                     </div>
             </div>
 
-            {/* Middle: Status Indicators (Flexible/Clipped) */}
-            <EnvControls getLightingIcon={getLightingIcon} getWeatherIcon={getWeatherIcon} isLandscape={isLandscape} />
+            {/* Middle: Flexible spacer */}
+            <div style={{ flex: 1 }} />
 
             {/* Theater Mode Banner */}
             {replayer.state.isVisible && replayer.log && (

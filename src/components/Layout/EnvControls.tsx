@@ -6,9 +6,10 @@ interface EnvControlsProps {
     getLightingIcon: () => React.ReactNode;
     getWeatherIcon: () => React.ReactNode;
     isLandscape?: boolean;
+    showEnv?: boolean;
 }
 
-export const EnvControls: React.FC<EnvControlsProps> = ({ getLightingIcon, getWeatherIcon, isLandscape }) => {
+export const EnvControls: React.FC<EnvControlsProps> = ({ getLightingIcon, getWeatherIcon, isLandscape, showEnv = false }) => {
     const { lighting, weather, isFoggy, teleportTargets, viewport, gameTime, gameState } = useGame();
     const { target, setTarget } = useVitals();
     const { setPopoverState } = useUI();
@@ -26,7 +27,7 @@ export const EnvControls: React.FC<EnvControlsProps> = ({ getLightingIcon, getWe
 
     return (
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', flex: 1, minWidth: 0, justifyContent: 'center' }}>
-            {((lighting !== 'none' || weather !== 'none' || isFoggy) && (gameState === 'playing' || !viewport.isMobile)) && (
+            {(showEnv && (lighting !== 'none' || weather !== 'none' || isFoggy) && (gameState === 'playing' || !viewport.isMobile)) && (
                 <div
                     className="status-indicator"
                     style={{ color: 'var(--text-primary)', gap: 4, padding: '4px 6px' }}

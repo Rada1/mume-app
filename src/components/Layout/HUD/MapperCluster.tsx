@@ -3,7 +3,8 @@ import { Mapper } from '../../Mapper/Mapper';
 import { LineCluster } from './LineCluster';
 import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { GameContextType, UIContextType } from '../../../context/GameContext/types';
-import { CloudFog, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplets, Activity } from 'lucide-react';
+import { CloudFog, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplets, Activity, Clock } from 'lucide-react';
+import { useMumeTime } from '../../../hooks/useMumeTime';
 import InputArea from '../../Controls/InputArea';
 import { UnifiedDrawerContent } from '../../Drawers/UnifiedDrawerContent';
 import CombatStatsPanel from '../../Combat/CombatStatsPanel';
@@ -40,9 +41,10 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         triggerHaptic, viewport, btn, handleButtonClick, executeCommand, joystick,
         handleLogClick,
         spatButtons, setSpatButtons, parley, setParley, whoList,
-        inlineCategories, env, isFoggy, gameState, currentTerrain,
+        inlineCategories, env, isFoggy, gameState, currentTerrain, gameTime
     } = useGame() as GameContextType;
     const { target, activePrompt, stats, groupMembers } = useVitals();
+    const currentTime = useMumeTime(gameTime);
     const {
         ui, setPopoverState,
         handleTabClick, toggleMap, displayInventoryLines, displayEqLines,
@@ -88,39 +90,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     zIndex: 0
                 }}
             >
-                {(lighting !== 'none' || weather !== 'none' || isFoggy || stats.conditions?.hungry || stats.conditions?.thirsty) && (
-                    <div className="map-status-overlay" style={{
-                        position: 'absolute',
-                        top: '12px',
-                        left: '12px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '8px',
-                        zIndex: 2700,
-                        pointerEvents: 'none',
-                        color: 'var(--text-faded)'
-                    }}>
-                        {getLightingIcon()}
-                        {getWeatherIcon()}
-                        {isFoggy && <CloudFog size={16} style={{ opacity: 0.6 }} />}
-                        
-                        {stats.conditions?.hungry && (
-                            <UtensilsCrossed 
-                                size={16} 
-                                className="status-icon-pulse" 
-                                style={{ color: '#fbbf24', opacity: 0.9 }} 
-                            />
-                        )}
-                        
-                        {stats.conditions?.thirsty && (
-                            <Droplets 
-                                size={16} 
-                                className="status-icon-pulse" 
-                                style={{ color: '#60a5fa', opacity: 0.9 }} 
-                            />
-                        )}
-                    </div>
-                )}
                 
                 {/* Header Group: Room Info + Tactical Buttons */}
                 <div style={{
@@ -240,6 +209,54 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     marginBottom: '16px' 
                 }}
             >
+                {/* Mobile Portrait Env Indicator - Bottom Left above command bar */}
+                {(lighting !== 'none' || weather !== 'none' || isFoggy || stats.conditions?.hungry || stats.conditions?.thirsty || currentTime) && (
+                    <div className="mobile-portrait-env-indicator" style={{
+                        position: 'absolute',
+                        bottom: 'calc(100% + 4px)',
+                        left: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        padding: '2px 6px',
+                        background: 'rgba(0, 0, 0, 0.4)',
+                        backdropFilter: 'blur(4px)',
+                        borderRadius: '4px',
+                        border: '1px solid rgba(255, 255, 255, 0.05)',
+                        zIndex: 2,
+                        pointerEvents: 'none',
+                        color: 'var(--text-faded)',
+                        transform: 'scale(0.9)',
+                        transformOrigin: 'bottom left'
+                    }}>
+                        {currentTime && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', marginRight: '2px', borderRight: '1px solid rgba(255,255,255,0.1)', paddingRight: '4px' }}>
+                                <Clock size={11} style={{ opacity: 0.7 }} />
+                                <span style={{ fontSize: '0.55rem', fontWeight: 800 }}>
+                                    {currentTime.hour === 0 ? '12' : (currentTime.hour > 12 ? currentTime.hour - 12 : currentTime.hour)}
+                                    :{currentTime.minute < 10 ? `0${currentTime.minute}` : currentTime.minute}
+                                    {currentTime.hour >= 12 ? ' PM' : ' AM'}
+                                </span>
+                            </div>
+                        )}
+                        {stats.conditions?.hungry && (
+                            <UtensilsCrossed size={12} style={{ color: '#fbbf24' }} />
+                        )}
+                        {stats.conditions?.thirsty && (
+                            <Droplets size={12} style={{ color: '#60a5fa' }} />
+                        )}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px', transform: 'scale(0.85)' }}>
+                            {getLightingIcon()}
+                            {getWeatherIcon()}
+                            {isFoggy && <CloudFog size={12} style={{ opacity: 0.6 }} />}
+                        </div>
+                        <span style={{ fontSize: '0.55rem', fontWeight: 600, letterSpacing: '0.01em', textTransform: 'uppercase', opacity: 0.8 }}>
+                            {lighting && lighting !== 'none' ? lighting : ''}
+                            {weather && weather !== 'none' && weather !== 'clear' ? ` | ${weather.replace('-', ' ')}` : ''}
+                        </span>
+                    </div>
+                )}
+
                 <InputArea
                     input={input}
                     setInput={setInput}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useGame, useLog } from '../../context/GameContext';
+import { useGame, useLog, useVitals } from '../../context/GameContext';
 import { TokenRenderer } from '../Messages/TokenRenderer';
+import { UtensilsCrossed, Droplets } from 'lucide-react';
 import './MapperRoomInfo.css';
 
 /**
@@ -9,12 +10,16 @@ import './MapperRoomInfo.css';
  */
 
 export const MapperRoomInfo: React.FC = () => {
-    const { roomName, roomDesc, currentTerrain, triggerHaptic } = useGame();
+    const { roomName, roomDesc, currentTerrain, triggerHaptic, env, isFoggy, viewport } = useGame();
+    const { stats } = useVitals();
     const [isExpanded, setIsExpanded] = useState(false);
     const log = useLog();
     const processMessageTokens = log?.processMessageTokens;
 
     if (!roomName) return null;
+
+    const { getLightingIcon, getWeatherIcon, lighting, weather } = env;
+    const isMobilePortrait = viewport.isMobile && !viewport.isLandscape;
 
     const handleToggle = (e: React.MouseEvent) => {
         e.stopPropagation();

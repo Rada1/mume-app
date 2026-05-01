@@ -9,8 +9,9 @@ import { DrawerShell } from './DrawerShell';
 import { UnifiedDrawerContent } from './UnifiedDrawerContent';
 import { Mapper } from '../Mapper/Mapper';
 import { MapperRoomInfo } from '../Mapper/MapperRoomInfo';
+import { useMumeTime } from '../../hooks/useMumeTime';
 import { LineCluster } from '../Layout/HUD/LineCluster';
-import { User, Shield, Users, Map as MapIcon, Activity } from 'lucide-react';
+import { User, Shield, Users, Map as MapIcon, Activity, UtensilsCrossed, Droplets, CloudFog } from 'lucide-react';
 import { StatusDrawer } from './StatusDrawer';
 
 const SIDEBAR_TABS = [
@@ -35,8 +36,9 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 }) => {
     const { 
         characterName, viewport, triggerHaptic, gameState, executeCommand,
-        btn, joystick, handleButtonClick, editor
+        btn, joystick, handleButtonClick, editor, env, isFoggy, gameTime
     } = useGame();
+    const currentTime = useMumeTime(gameTime);
     const {
         ui, setUI, handleTabClick,
         setPopoverState,
@@ -47,7 +49,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         setWhoLines, setWhereLines,
         gearTab, setGearTab, playersTab, setPlayersTab, charTab, setCharTab
     } = useUI();
-    const { groupMembers, target, activePrompt } = useVitals();
+    const { groupMembers, target, activePrompt, stats } = useVitals();
 
     // Body classes for desktop layout
     React.useEffect(() => {
@@ -114,6 +116,53 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                             setHeldButton={setHeldButton}
                             setCommandPreview={setCommandPreview}
                         />
+
+                        {/* Desktop Env Indicator - Bottom Right corner of map drawer */}
+                        {(env.lighting !== 'none' || env.weather !== 'none' || isFoggy || stats.conditions?.hungry || stats.conditions?.thirsty || currentTime) && (
+                            <div className="desktop-env-indicator" style={{
+                                position: 'absolute',
+                                bottom: '16px',
+                                right: '16px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                padding: '6px 12px',
+                                background: 'rgba(0, 0, 0, 0.4)',
+                                backdropFilter: 'blur(8px)',
+                                borderRadius: '8px',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                zIndex: 2800,
+                                pointerEvents: 'none',
+                                color: 'var(--text-faded)',
+                                textShadow: '0 1px 4px rgba(0,0,0,0.5)'
+                            }}>
+                                {currentTime && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginRight: '4px', borderRight: '1px solid rgba(255,255,255,0.1)', paddingRight: '8px' }}>
+                                        <Clock size={14} style={{ opacity: 0.8 }} />
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 800 }}>
+                                            {currentTime.hour === 0 ? '12' : (currentTime.hour > 12 ? currentTime.hour - 12 : currentTime.hour)}
+                                            :{currentTime.minute < 10 ? `0${currentTime.minute}` : currentTime.minute}
+                                            {currentTime.hour >= 12 ? ' PM' : ' AM'}
+                                        </span>
+                                    </div>
+                                )}
+                                {stats.conditions?.hungry && (
+                                    <UtensilsCrossed size={14} style={{ color: '#fbbf24' }} />
+                                )}
+                                {stats.conditions?.thirsty && (
+                                    <Droplets size={14} style={{ color: '#60a5fa' }} />
+                                )}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    {env.getLightingIcon()}
+                                    {env.getWeatherIcon()}
+                                    {isFoggy && <CloudFog size={14} style={{ opacity: 0.8 }} />}
+                                </div>
+                                <span style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.03em', textTransform: 'uppercase' }}>
+                                    {env.lighting && env.lighting !== 'none' ? env.lighting : ''}
+                                    {env.weather && env.weather !== 'none' && env.weather !== 'clear' ? ` | ${env.weather.replace('-', ' ')}` : ''}
+                                </span>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
