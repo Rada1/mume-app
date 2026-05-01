@@ -9,7 +9,8 @@ export const AtmosphericLayer: React.FC = () => {
         isFoggy,
         inCombat,
         lightningEnabled,
-        isImmersionMode
+        isImmersionMode,
+        viewport
     } = useGame();
 
     return (
@@ -19,6 +20,7 @@ export const AtmosphericLayer: React.FC = () => {
             isFoggy={isFoggy}
             lightning={lightningEnabled}
             isImmersionMode={isImmersionMode}
+            isMobile={viewport.isMobile}
         />
     );
 };

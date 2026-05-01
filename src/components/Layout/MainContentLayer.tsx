@@ -9,6 +9,7 @@ import PromptBox from '../HUD/PromptBox';
 import { ansiConvert } from '../../utils/ansi';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
 import { TokenRenderer } from '../Messages/TokenRenderer';
+import { Embers } from '../Atmosphere/Embers';
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -167,7 +168,8 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             />
 
             <div className="message-log-wrapper" style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative', gap: '8px' }}>
-                <div className="message-log-container" ref={logContainerRef} style={{ flex: 1 }}>
+                <div className="message-log-container" ref={logContainerRef} style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+                    {isMobile && <Embers />}
                     {isNewbieMode && roomName && (
                         <div className={`sticky-room-header terrain-${String(currentTerrain || 'field').toLowerCase()}`} key="newbie-room-header">
                             <div className="room-info-text">

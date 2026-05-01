@@ -1,4 +1,4 @@
-import { CloudFog, Swords, Clock } from 'lucide-react';
+import { CloudFog, Clock } from 'lucide-react';
 import { useGame, useVitals, useUI } from '../../context/GameContext';
 import { useMumeTime } from '../../hooks/useMumeTime';
 
@@ -9,7 +9,7 @@ interface EnvControlsProps {
 }
 
 export const EnvControls: React.FC<EnvControlsProps> = ({ getLightingIcon, getWeatherIcon, isLandscape }) => {
-    const { lighting, weather, isFoggy, inCombat, teleportTargets, viewport, gameTime, gameState } = useGame();
+    const { lighting, weather, isFoggy, teleportTargets, viewport, gameTime, gameState } = useGame();
     const { target, setTarget } = useVitals();
     const { setPopoverState } = useUI();
     const currentTime = useMumeTime(gameTime);
@@ -25,7 +25,7 @@ export const EnvControls: React.FC<EnvControlsProps> = ({ getLightingIcon, getWe
     };
 
     return (
-        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flex: 1, minWidth: 0, justifyContent: 'flex-start' }}>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flex: 1, minWidth: 0, justifyContent: 'center' }}>
             {((lighting !== 'none' || weather !== 'none' || isFoggy) && (gameState === 'playing' || !viewport.isMobile)) && (
                 <div
                     className="status-indicator"
@@ -58,16 +58,7 @@ export const EnvControls: React.FC<EnvControlsProps> = ({ getLightingIcon, getWe
                     </span>
                 </div>
             )}
-            {inCombat && (
-                <div
-                    className="status-indicator"
-                    style={{ color: 'var(--ansi-red, #ef4444)', gap: 4, padding: '4px 6px', animation: 'combat-pulse 2s ease-in-out infinite' }}
-                    title="In Combat"
-                >
-                    <Swords size={12} />
-                    {!viewport.isMobile && <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>COMBAT</span>}
-                </div>
-            )}
+
         </div>
     );
 };

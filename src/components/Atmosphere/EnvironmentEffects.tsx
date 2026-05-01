@@ -9,6 +9,7 @@ interface EnvironmentEffectsProps {
     isFoggy: boolean;
     lightning: boolean;
     isImmersionMode: boolean;
+    isMobile: boolean;
 }
 
 export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
@@ -16,7 +17,8 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     weather,
     isFoggy,
     lightning,
-    isImmersionMode
+    isImmersionMode,
+    isMobile
 }) => {
     return (
         <>
@@ -49,7 +51,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         />
                         {(weather === 'rain' || weather === 'heavy-rain') && <Rain heavy={weather === 'heavy-rain'} />}
                         {weather === 'snow' && <div className="weather-layer weather-snow" />}
-                        <Embers count={lighting === 'artificial' ? 25 : 12} />
+                        {!isMobile && <Embers count={lighting === 'artificial' ? 60 : 30} />}
                     </>
                 )}
                 {/* Fog renders regardless of immersion mode — it's a gameplay-relevant state */}

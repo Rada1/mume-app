@@ -9,6 +9,7 @@ import { DrawerType } from '../../context/GameContext/types';
 import { GroupTableView } from './GroupTableView';
 import { NearbyWhereView } from './NearbyWhereView';
 import { UnifiedView } from './Views/UnifiedView';
+import { StatusDrawer } from './StatusDrawer';
 
 type GearTab = 'worn' | 'inv';
 type PlayersTab = 'online' | 'nearby' | 'group';
@@ -134,6 +135,11 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
         else if (tab === 'quests') executeCommand('quest', true, true);
         else if (tab === 'skills') executeCommand('practice', true, true);
     };
+
+    // --- Status Section ---
+    if (drawer === 'status') {
+        return <StatusDrawer />;
+    }
 
     // --- Gear Section ---
     if (drawer === 'equipment') {

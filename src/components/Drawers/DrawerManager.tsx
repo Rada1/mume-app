@@ -10,12 +10,14 @@ import { UnifiedDrawerContent } from './UnifiedDrawerContent';
 import { Mapper } from '../Mapper/Mapper';
 import { MapperRoomInfo } from '../Mapper/MapperRoomInfo';
 import { LineCluster } from '../Layout/HUD/LineCluster';
-import { User, Shield, Users, Map as MapIcon } from 'lucide-react';
+import { User, Shield, Users, Map as MapIcon, Activity } from 'lucide-react';
+import { StatusDrawer } from './StatusDrawer';
 
 const SIDEBAR_TABS = [
-    { id: 'character', label: 'Char', Icon: User },
+    { id: 'status',    label: 'Status',  Icon: Activity },
+    { id: 'character', label: 'Char',    Icon: User },
     { id: 'players',   label: 'Players', Icon: Users },
-    { id: 'equipment', label: 'Gear', Icon: Shield },
+    { id: 'equipment', label: 'Gear',    Icon: Shield },
 ];
 
 interface DrawerManagerProps {
@@ -115,6 +117,11 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                     </div>
                 </div>
             )}
+
+            {/* Status Drawer */}
+            <DrawerShell id="status" side="right" title="Status">
+                <StatusDrawer />
+            </DrawerShell>
 
             {/* Gear Drawer */}
             <DrawerShell id="equipment" side="right" title="Gear">

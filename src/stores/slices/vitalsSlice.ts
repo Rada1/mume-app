@@ -9,11 +9,14 @@ import { normalizeGmcpWeather } from '../../utils/weatherUtils';
 
 export interface CharacterInfo {
     name: string | null;
+    fullname: string | null;
     level: number;
     xp: number;
     xpMax: number;
+    tnl: number;
     tp: number;
     tpMax: number;
+    tpnl: number;
     race: string;
     subrace: string;
     subclass: string;
@@ -48,6 +51,15 @@ export interface VitalsState {
     activePrompt: any;
     wimpy: number;
     conditions?: Record<string, boolean>;
+    carrying: string | null;
+    isRidden: boolean;
+    climb: string | null;
+    sneak: string | null;
+    isHidden: boolean;
+    isSwimming: boolean;
+    mountMoves: string | null;
+    spellEffort: string | null;
+    alertness: string | null;
     gmcpVitals: {
         hp: number;
         maxHp: number;
@@ -98,11 +110,14 @@ export const initialVitalsState = {
     isFoggy: false,
     characterInfo: {
         name: null,
+        fullname: null,
         level: 0,
         xp: 0,
         xpMax: 0,
+        tnl: 0,
         tp: 0,
         tpMax: 0,
+        tpnl: 0,
         race: '',
         subrace: '',
         subclass: '',
@@ -113,6 +128,15 @@ export const initialVitalsState = {
     activePrompt: null,
     wimpy: 0,
     conditions: {},
+    carrying: null,
+    isRidden: false,
+    climb: null,
+    sneak: null,
+    isHidden: false,
+    isSwimming: false,
+    mountMoves: null,
+    spellEffort: null,
+    alertness: null,
     gmcpVitals: {
         hp: 100,
         maxHp: 100,
@@ -184,7 +208,7 @@ export const createVitalsActions = (set: any, get: any) => ({
             if (data.stamina !== undefined) updates.move = data.stamina;
             if (data.maxstamina !== undefined) updates.maxMove = data.maxstamina;
 
-            // --- XP Sync ---
+            // --- XP Sync from Vitals ---
             if (data.xp !== undefined || data.xp_max !== undefined || data['next-level-xp'] !== undefined) {
                 const charInfo = { ...state.characterInfo };
                 if (data.xp !== undefined) charInfo.xp = Number(data.xp);
@@ -272,7 +296,17 @@ export const createVitalsActions = (set: any, get: any) => ({
                 updates.isFoggy = data.fog === 'on' || data.fog === 'thick' || data.fog === 'yes' || !!data.fog;
             }
 
-            return { 
+            if (data.carrying !== undefined) (updates as any).carrying = data.carrying ?? null;
+            if (data.ridden !== undefined) (updates as any).isRidden = !!data.ridden;
+            if (data.climb !== undefined) (updates as any).climb = data.climb ?? null;
+            if (data.sneak !== undefined) (updates as any).sneak = data.sneak ?? null;
+            if (data.hidden !== undefined) (updates as any).isHidden = !!data.hidden;
+            if (data.swim !== undefined) (updates as any).isSwimming = !!data.swim;
+            if (data['mount-moves'] !== undefined) (updates as any).mountMoves = data['mount-moves'] ?? null;
+            if (data['spell-effort'] !== undefined) (updates as any).spellEffort = data['spell-effort'] ?? null;
+            if (data.alertness !== undefined) (updates as any).alertness = data.alertness ?? null;
+
+            return {
                 ...state, 
                 ...updates,
                 gmcpVitals: {
@@ -295,18 +329,30 @@ export const createVitalsActions = (set: any, get: any) => ({
             ...state,
             characterInfo: {
                 ...state.characterInfo,
-                name: data.name ?? data.fullname ?? state.characterInfo.name,
+                name: data.name ?? state.characterInfo.name,
+                fullname: data.fullname ?? state.characterInfo.fullname,
                 level: data.level !== undefined ? Number(data.level) : state.characterInfo.level,
                 xp: data.xp !== undefined ? Number(data.xp) : state.characterInfo.xp,
                 xpMax: data.xp_max !== undefined ? Number(data.xp_max) : (data['next-level-xp'] !== undefined ? Number(data['next-level-xp']) : state.characterInfo.xpMax),
+                tnl: data.tnl !== undefined ? Number(data.tnl) : state.characterInfo.tnl,
                 tp: data.tp !== undefined ? Number(data.tp) : state.characterInfo.tp,
                 tpMax: data.tp_max !== undefined ? Number(data.tp_max) : (data['next-level-tp'] !== undefined ? Number(data['next-level-tp']) : state.characterInfo.tpMax),
+                tpnl: data.tpnl !== undefined ? Number(data.tpnl) : state.characterInfo.tpnl,
                 race: data.race ?? state.characterInfo.race,
                 subrace: data.subrace ?? state.characterInfo.subrace,
                 subclass: data.subclass ?? state.characterInfo.subclass,
                 class: data.class ?? state.characterInfo.class,
                 description: data.description ?? state.characterInfo.description,
                 whois: data.whois ?? state.characterInfo.whois
+            }
+        }));
+    },
+    setCharacterInfo: (info: Partial<CharacterInfo>) => {
+        set((state: VitalsState) => ({
+            ...state,
+            characterInfo: {
+                ...state.characterInfo,
+                ...info
             }
         }));
     },

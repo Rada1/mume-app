@@ -106,8 +106,10 @@ export interface CharacterInfo {
     level: number;
     xp: number;
     xpMax: number;
+    tnl: number;
     tp: number;
     tpMax: number;
+    tpnl: number;
     race: string;
     subrace: string;
     subclass: string;

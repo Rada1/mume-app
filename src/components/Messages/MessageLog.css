@@ -119,7 +119,7 @@
     transform: none !important;
 
     /* Hover effect: Subtle dark shadow for depth against the background */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 .message.shop-item {
@@ -256,14 +256,13 @@
     filter: opacity(0.25);
 }
 
-/* Pop keywords and interactive elements to full brightness even when dimmed */
 .message-content .inline-btn,
 .message-content b,
 .message-content strong,
 .message-content .keyword-highlight,
 .message-content .pc-highlighter,
 .message-content .npc-highlighter {
-    filter: opacity(1) brightness(1.3);
+    filter: opacity(1) brightness(1.15);
 }
 
 /* Objects already have their 'boost' baked into the CSS variable to match drawers */
@@ -286,7 +285,7 @@
 .message-content span {
     opacity: 1;
     /* Universal hovering depth for all text segments */
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.45);
 }
 
 .keyword-highlight,
@@ -297,7 +296,7 @@
     font-weight: bold !important;
     pointer-events: auto !important;
     /* Light casting effect: Minimal glow that matches the element's color */
-    text-shadow: 0 0 3px var(--glow-color, rgba(255, 255, 255, 0.05)), 1px 1px 2px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 0 2px var(--glow-color, rgba(255, 255, 255, 0.05)), 1px 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* Category-based color mappings */

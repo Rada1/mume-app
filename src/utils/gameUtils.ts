@@ -217,3 +217,18 @@ export const parsePriceToCopper = (priceStr: string): number => {
     });
     return totalCopper;
 };
+/**
+ * Formats a number to a compact string (e.g. 1500 -> 1.5k, 1200000 -> 1.2M)
+ */
+export const formatCompactNumber = (n: number | undefined | null): string => {
+    if (n === undefined || n === null) return '0';
+    if (n >= 1000000) {
+        const val = n / 1000000;
+        return val % 1 === 0 ? val.toFixed(0) + 'M' : val.toFixed(1) + 'M';
+    }
+    if (n >= 1000) {
+        const val = n / 1000;
+        return val % 1 === 0 ? val.toFixed(0) + 'k' : val.toFixed(1) + 'k';
+    }
+    return n.toString();
+};

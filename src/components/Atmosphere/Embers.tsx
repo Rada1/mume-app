@@ -16,10 +16,17 @@ interface EmbersProps {
  * Creates glowing, floating particles that drift in random directions.
  * Speed is dynamically linked to message activity in the game.
  */
-export const Embers: React.FC<EmbersProps> = ({ count = 25 }) => {
-    const { messageActivity } = useGame();
+export const Embers: React.FC<EmbersProps> = ({ count }) => {
+    const { messageActivity, isImmersionMode, env } = useGame();
+    const { lighting } = env;
+    
+    // Use prop count or determine from lighting
+    const emberCount = count ?? (lighting === 'artificial' ? 25 : 12);
+    
     const activityMultiplier = 1 + (messageActivity * 4); // 1x to 5x speed
     const containerRef = React.useRef<HTMLDivElement>(null);
+
+    if (!isImmersionMode) return null;
 
     React.useEffect(() => {
         if (!containerRef.current) return;
@@ -32,7 +39,7 @@ export const Embers: React.FC<EmbersProps> = ({ count = 25 }) => {
     }, [activityMultiplier]);
 
     const embers = useMemo(() => {
-        return Array.from({ length: count }).map((_, i) => ({
+        return Array.from({ length: emberCount }).map((_, i) => ({
             id: i,
             startX: `${Math.random() * 100}%`,
             startY: `${Math.random() * 100}%`,

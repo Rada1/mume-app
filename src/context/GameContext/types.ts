@@ -104,7 +104,7 @@ export interface LogContextType extends LogData {
     handleLogPointerUp: (e: React.PointerEvent) => void;
 }
 
-export type DrawerType = 'none' | 'equipment' | 'character' | 'players';
+export type DrawerType = 'none' | 'equipment' | 'character' | 'players' | 'status';
 
 export interface UIContextType {
     ui: {
@@ -150,7 +150,7 @@ export interface UIContextType {
     setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
     charTab: 'info' | 'quests' | 'skills';
     setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
-    handleTabClick: (drawer: 'none' | 'character' | 'players' | 'equipment') => void;
+    handleTabClick: (drawer: 'none' | 'character' | 'players' | 'equipment' | 'status') => void;
     displayInventoryLines: DrawerLine[];
     displayEqLines: DrawerLine[];
     statsLines: DrawerLine[];

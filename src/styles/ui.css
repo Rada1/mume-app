@@ -23,7 +23,9 @@
     z-index: var(--z-header); 
     pointer-events: none;
     margin-bottom: 0 !important;
-    padding: env(safe-area-inset-top, 0px) 12px 6px 12px !important;
+    padding: calc(env(safe-area-inset-top, 0px) + 4px) 12px 4px 12px !important;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
 }
 
 .mobile-header>* {
@@ -38,7 +40,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
     letter-spacing: 2px;
     text-transform: uppercase;
     opacity: 0.9;
@@ -127,7 +129,7 @@
     backdrop-filter: blur(12px) saturate(1.2);
     -webkit-backdrop-filter: blur(12px) saturate(1.2);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    padding: 6px 10px;
+    padding: 2px 10px;
     border-radius: 8px;
     margin-right: 4px;
     font-size: 0.8rem;
@@ -411,4 +413,120 @@
 .map-drawer-desktop *::-webkit-scrollbar-thumb:hover,
 .floating-card-container *::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.2);
-}
+}
+
+/* --- Player Status HUD in Header --- */
+.player-status-hud {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 2px 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    flex-shrink: 0; /* CRITICAL: Prevent HUD from disappearing on narrow screens */
+    pointer-events: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    user-select: none;
+    max-width: 220px;
+}
+
+.player-status-hud:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.player-status-hud:active {
+    transform: scale(0.98);
+}
+
+.player-identity {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+}
+
+.player-name {
+    font-family: 'Space Mono', monospace;
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: var(--text-primary, #ffffff);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.1;
+}
+
+.player-level {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--ansi-green, #4ade80);
+    opacity: 0.9;
+    letter-spacing: 0.3px;
+    line-height: 1;
+}
+
+.player-stats-mini {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.player-status-hud .stat-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 2px 6px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    min-width: 42px;
+    transition: all 0.2s ease;
+}
+
+.player-status-hud .stat-pill .pill-label {
+    font-size: 0.5rem;
+    font-weight: 900;
+    color: var(--text-dim, #94a3b8);
+    opacity: 0.6;
+    line-height: 1;
+    margin-bottom: 1px;
+    text-transform: uppercase;
+}
+
+.player-status-hud .stat-pill .pill-value {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #f8fafc;
+    line-height: 1;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.player-status-hud .stat-pill.xp .pill-value {
+    color: var(--ansi-green, #4ade80);
+    text-shadow: 0 0 8px rgba(74, 222, 128, 0.3);
+}
+
+.player-status-hud .stat-pill.tp .pill-value {
+    color: var(--ansi-green, #4ade80);
+    text-shadow: 0 0 8px rgba(74, 222, 128, 0.3);
+}
+
+@media (max-width: 480px) {
+    .player-status-hud {
+        gap: 6px;
+        padding: 3px 8px;
+        max-width: none;
+    }
+    .player-name {
+        font-size: 0.75rem;
+    }
+}
+

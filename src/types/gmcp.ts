@@ -56,6 +56,17 @@ export interface GmcpCharVitals {
     xp?: number;
     xp_max?: number;
     'next-level-xp'?: number;
+    alertness?: string | null;
+    'spell-effort'?: string | null;
+    carrying?: string | null;
+    ridden?: boolean | null;
+    ride?: boolean | null;
+    climb?: string | null;
+    sneak?: string | null;
+    hidden?: boolean | null;
+    swim?: boolean | null;
+    'mount-moves'?: string | null;
+    'buffer-hits'?: string | null;
     isSnooped?: boolean;
 }
 
@@ -121,9 +132,11 @@ export interface GmcpCharInfo {
     level?: number;
     xp?: number;
     xp_max?: number;
+    tnl?: number;
     'next-level-xp'?: number;
     tp?: number;
     tp_max?: number;
+    tpnl?: number;
     'next-level-tp'?: number;
     race?: string;
     subrace?: string;

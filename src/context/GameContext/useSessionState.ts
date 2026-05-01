@@ -263,7 +263,7 @@ export const useSessionState = (
     const setCharacterInfo = useCallback((update: any) => {
         const current = vStore.characterInfo;
         const next = typeof update === 'function' ? update(current) : update;
-        (vStore as any).setVitals?.({ characterInfo: { ...current, ...next } });
+        vStore.setCharacterInfo(next);
     }, [vStore]);
 
     const vitals = useMemo<VitalsContextType>(() => ({

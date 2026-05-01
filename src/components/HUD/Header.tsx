@@ -4,6 +4,7 @@ import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDo
 import { EnvControls } from '../Layout/EnvControls';
 import { LightingType, WeatherType } from '../../types';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
+import { formatCompactNumber } from '../../utils/gameUtils';
 import { useModeStore } from '../../stores/useModeStore';
 
 interface HeaderProps {
@@ -23,7 +24,6 @@ const Header: React.FC<HeaderProps> = ({
         lighting,
         weather,
         isFoggy,
-        inCombat,
         btn,
         teleportTargets,
         showControls,
@@ -39,11 +39,17 @@ const Header: React.FC<HeaderProps> = ({
     const mode = useModeStore();
     const isSpectating = mode.isSpectating;
     const { spectateTarget, activeView, setActiveView } = mode;
-    const { stats, setStats, target, setTarget } = useVitals();
+    const { stats, setStats, target, setTarget, characterInfo } = useVitals();
     const {
         ui, setUI, setIsSettingsOpen, setIsSetManagerOpen, setIsLibraryOpen, setPopoverState,
         setShowMapperToolbar, replayer
     } = useUI();
+
+    useEffect(() => {
+        if (characterInfo.name) {
+            console.log('[Header] Character Info detected:', characterInfo);
+        }
+    }, [characterInfo]);
 
     const handleWimpyChange = (val: number) => {
         triggerHaptic(10);
@@ -140,7 +146,34 @@ const Header: React.FC<HeaderProps> = ({
     }, [ui.isMenuOpen]);
 
     return (
-        <header className={`header ${viewport.isMobile ? 'mobile-header' : ''}`} style={{ flexWrap: 'nowrap', gap: 6 }}>
+        <header 
+            className={`header ${viewport.isMobile ? 'mobile-header' : ''}`} 
+            style={{ 
+                display: 'grid', 
+                gridTemplateColumns: viewport.isMobile ? 'auto 1fr auto' : 'minmax(180px, auto) 1fr auto',
+                alignItems: 'center', 
+                gap: 8,
+                paddingRight: viewport.isMobile ? '8px' : '12px'
+            }}
+        >
+            {/* Left: Player Status HUD */}
+            <div className="player-status-hud" onClick={() => setUI(prev => ({ ...prev, drawer: 'character' }))}>
+                <div className="player-identity">
+                    <span className="player-name">{characterInfo.name || (status === 'connected' ? '...' : 'MUME')}</span>
+                    <span className="player-level">{characterInfo.level > 0 ? `Lv.${characterInfo.level}` : ''}</span>
+                </div>
+                    <div className="player-stats-mini">
+                        <div className="stat-pill xp">
+                            <span className="pill-label">TNL</span>
+                            <span className="pill-value">{formatCompactNumber(characterInfo.tnl)}</span>
+                        </div>
+                        <div className="stat-pill tp">
+                            <span className="pill-label">TPNL</span>
+                            <span className="pill-value">{formatCompactNumber(characterInfo.tpnl)}</span>
+                        </div>
+                    </div>
+            </div>
+
             {/* Middle: Status Indicators (Flexible/Clipped) */}
             <EnvControls getLightingIcon={getLightingIcon} getWeatherIcon={getWeatherIcon} isLandscape={isLandscape} />
 
@@ -239,7 +272,7 @@ const Header: React.FC<HeaderProps> = ({
                         border: target ? '1px solid var(--map-accent)' : '1px solid var(--border-color)',
                         maxWidth: viewport.isMobile ? '80px' : 'none',
                         overflow: 'hidden',
-                        height: '32px',
+                        height: '28px',
                         display: 'flex',
                         alignItems: 'center'
                     }}
@@ -261,7 +294,7 @@ const Header: React.FC<HeaderProps> = ({
                             cursor: 'pointer',
                             opacity: 1,
                             border: '1px solid var(--accent)',
-                            height: '32px',
+                            height: '28px',
                             display: 'flex',
                             alignItems: 'center'
                         }}

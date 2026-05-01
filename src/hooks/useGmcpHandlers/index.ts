@@ -184,6 +184,8 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
         onRemoveChar,
         onCharNameChange,
         onCharInfo,
+        onCharStatusVars: onCharInfo,
+        onCharStatus: onCharInfo,
         onBufferChange: (name: string | null) => props.setBufferName(name),
         onCharVitals,
         onComm,

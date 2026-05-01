@@ -3,7 +3,7 @@ import { Mapper } from '../../Mapper/Mapper';
 import { LineCluster } from './LineCluster';
 import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { GameContextType, UIContextType } from '../../../context/GameContext/types';
-import { CloudFog, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplets } from 'lucide-react';
+import { CloudFog, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplets, Activity } from 'lucide-react';
 import InputArea from '../../Controls/InputArea';
 import { UnifiedDrawerContent } from '../../Drawers/UnifiedDrawerContent';
 import CombatStatsPanel from '../../Combat/CombatStatsPanel';
@@ -264,6 +264,13 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
             {/* Bottom Tab Bar */}
             {!isKeyboardOpen && gameState !== 'disconnected' && (
                 <div className="portrait-tab-bar">
+                    <div
+                        className={`desktop-edge-tab right ${ui.drawer === 'status' ? 'active' : ''}`}
+                        onClick={() => { triggerHaptic(15); handleTabClick('status'); }}
+                    >
+                        <Activity className="tab-icon" />
+                        <span className="tab-text">Status</span>
+                    </div>
                     <div
                         className={`desktop-edge-tab right ${ui.drawer === 'character' ? 'active' : ''}`}
                         onClick={() => { triggerHaptic(15); handleTabClick('character'); }}

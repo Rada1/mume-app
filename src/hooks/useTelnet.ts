@@ -76,6 +76,7 @@ export function useTelnet(config: TelnetConfig) {
             onGroupUpdate: (val) => configRef.current.handlers.onGroupUpdate?.(val),
             onGroupAdd: (val) => configRef.current.handlers.onGroupAdd?.(val),
             onGroupRemove: (val) => configRef.current.handlers.onGroupRemove?.(val),
+            onCharInfo: (val) => configRef.current.handlers.onCharInfo?.(val),
             onCharRide: (val) => configRef.current.handlers.onCharRide?.(val),
             onComm: (s, c, m) => configRef.current.handlers.onComm?.(s, c, m),
         } as any);
