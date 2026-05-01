@@ -6,7 +6,7 @@
 import React from 'react';
 import { Plus, Settings, Tag, Trash2 } from 'lucide-react';
 import { InlineCategoryConfig } from '../../types';
-import { DEFAULT_INLINE_CATEGORIES } from '../../utils/categorizationUtils';
+import { DEFAULT_INLINE_CATEGORIES, getButtonSetIdForCategory } from '../../utils/categorizationUtils';
 import { useButtonStore } from '../../stores/useButtonStore';
 import { CATEGORY_BUTTON_MAP } from '../../constants/buttons/inline';
 import { useUI } from '../../context/GameContext';
@@ -120,6 +120,7 @@ const TraitSettings: React.FC<TraitSettingsProps> = ({ inlineCategories: rawCate
                 {visibleTraits.map(trait => {
                     const isDefaultTrait = defaultIds.has(trait.id);
                     const hasCustomOverride = inlineCategories.some(c => c.id === trait.id);
+                    const resolvedSetId = getButtonSetIdForCategory(trait);
 
                     return (
                         <div
@@ -169,15 +170,15 @@ const TraitSettings: React.FC<TraitSettingsProps> = ({ inlineCategories: rawCate
                                             borderRadius: '4px'
                                         }}
                                     >
-                                        <option value="">None (Default)</option>
+                                        <option value="">Default ({resolvedSetId || 'none'})</option>
                                         {availableSetIds.map(setId => (
                                             <option key={setId} value={setId}>{setId}</option>
                                         ))}
                                     </select>
-                                    {trait.buttonSetId && (
+                                    {resolvedSetId && (
                                         <button
                                             onClick={() => {
-                                                setManagerSelectedSet(trait.buttonSetId!);
+                                                setManagerSelectedSet(resolvedSetId);
                                                 setIsSetManagerOpen(true);
                                                 setIsSettingsOpen(false);
                                             }}

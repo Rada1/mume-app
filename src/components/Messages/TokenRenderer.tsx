@@ -158,7 +158,8 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                     const kind = propMetadata?.kind || e.metadata?.kind;
                     
                     let categoryColor = null;
-                    if (kind === 'player' || kind === 'ally') categoryColor = settings.playerColor || COLOR_PLAYER;
+                    if (kind === 'target') categoryColor = settings.targetColor || '#facc15';
+                    else if (kind === 'player' || kind === 'ally') categoryColor = settings.playerColor || COLOR_PLAYER;
                     else if (kind === 'enemy') categoryColor = settings.enemyColor || COLOR_ENEMY;
                     else if (kind === 'neutral') categoryColor = settings.neutralColor || COLOR_NEUTRAL;
                     else if (kind === 'npc') categoryColor = settings.npcColor || COLOR_NPC;

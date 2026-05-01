@@ -111,7 +111,7 @@
    not below the content layer, so it doesn't overlap the input area. */
 @media (max-width: 1024px) and (orientation: portrait) {
     .content-layer {
-        padding: 0 !important;
+        padding: calc(env(safe-area-inset-top, 0px) + 42px) 0 0 0 !important;
         padding-bottom: var(--mobile-gutter-height) !important;
         transition: none !important;
         box-sizing: border-box !important;

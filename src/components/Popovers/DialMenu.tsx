@@ -67,7 +67,7 @@ export const DialMenu: React.FC<DialMenuProps> = ({
 
     // Dynamic Layout Calculation - Always centering now
     const layout = useMemo(() => {
-        const radius = 96;
+        const radius = 76;
         const arcLength = 360;
         const startAngle = -90; // Start from top
 
@@ -242,8 +242,8 @@ export const DialMenu: React.FC<DialMenuProps> = ({
                 )}
                 <div className="dial-selection-center" style={{
                     '--accent': themeColor || 'var(--set-accent, var(--accent))',
-                    width: '120px',
-                    height: '120px',
+                    width: '84px',
+                    height: '84px',
                     position: 'absolute',
                     top: '50%',
                     left: '50%',
@@ -257,7 +257,7 @@ export const DialMenu: React.FC<DialMenuProps> = ({
                     ) : (
                         <div className="dial-center-placeholder">
                             <div className="dial-center-icon" style={{ opacity: 0.3, background: 'var(--input-bg, rgba(255,255,255,0.1))', color: 'var(--text-primary, #fff)', boxShadow: 'none' }}>...</div>
-                            <div style={{ fontSize: '0.62rem', opacity: 0.7, textTransform: 'uppercase', fontWeight: 800, marginTop: '4px', maxWidth: '100px', lineHeight: 1.1 }}>{instruction || 'Select'}</div>
+                            <div style={{ fontSize: '0.62rem', opacity: 0.7, textTransform: 'uppercase', fontWeight: 800, marginTop: '4px', maxWidth: '70px', lineHeight: 1.1 }}>{instruction || 'Select'}</div>
                         </div>
                     )}
                 </div>

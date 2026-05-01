@@ -12,7 +12,7 @@
 }
 
 .mobile-header {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0,0,0,0.1) 60%, transparent 100%) !important;
+    background: #0d0d0d !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.05)) !important;

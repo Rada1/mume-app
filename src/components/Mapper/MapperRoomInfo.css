@@ -25,6 +25,13 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    pointer-events: auto; /* Enable tapping on the card */
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mapper-room-info-container.expanded .mri-content {
+    background: rgba(15, 15, 15, 0.6); /* Slightly darker when expanded */
 }
 
 .mri-name {
@@ -52,6 +59,15 @@
     -webkit-box-orient: vertical;
     opacity: 0.85;
     letter-spacing: -0.01em;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+
+.mapper-room-info-container.expanded .mri-desc {
+    max-height: 1000px; /* Allow expansion to full height */
+    -webkit-line-clamp: unset;
+    display: block; /* Break flexbox-clamp for full text */
+    opacity: 1;
+    overflow-y: auto;
 }
 
 /* Terrain-specific accent colors — borders removed as requested */
@@ -59,9 +75,13 @@
 /* Mobile-specific overrides for even smaller text and tighter width */
 @media (max-width: 600px) {
     .mapper-room-info-container {
-        width: 94%; 
-        top: 10px; /* Increased to sit within the 20px radius top curve */
-        bottom: auto;
+        position: relative;
+        width: 100%;
+        top: 0;
+        left: 0;
+        transform: none;
+        padding: 10px 10px 0 10px;
+        box-sizing: border-box;
     }
     
     .mri-content {
@@ -83,5 +103,13 @@
         -webkit-line-clamp: 3;
         max-height: 3.4em;
         opacity: 0.9;
+        transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .mapper-room-info-container.expanded .mri-desc {
+        max-height: 50vh; /* Don't cover more than half the screen on mobile */
+        -webkit-line-clamp: unset;
+        display: block;
+        overflow-y: auto;
     }
 }

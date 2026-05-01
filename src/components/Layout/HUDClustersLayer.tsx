@@ -142,11 +142,11 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
 
             {btn.isEditMode && (
                 <>
-                    <div className="grid-toggle-fab" onClick={(e) => { e.stopPropagation(); btn.setIsGridEnabled(!btn.isGridEnabled); }} title="Toggle Grid" style={{ zIndex: 2000 }}>
+                    <div className="grid-toggle-fab" onClick={(e) => { e.stopPropagation(); btn.setIsGridEnabled(!btn.isGridEnabled); }} title="Toggle Grid" style={{ zIndex: 7500 }}>
                         <Grid size={24} color={btn.isGridEnabled ? 'var(--accent)' : '#fff'} />
                     </div>
-                    <div className="add-btn-fab" onClick={(e) => { e.stopPropagation(); btn.createButton(); }} style={{ zIndex: 2000 }}><Plus size={32} /></div>
-                    <div className="exit-design-mode-fab" onClick={() => btn.setIsEditMode(false)} title="Exit Design Mode" style={{ zIndex: 2000 }}><X size={32} /></div>
+                    <div className="add-btn-fab" onClick={(e) => { e.stopPropagation(); btn.createButton(); }} style={{ zIndex: 7500 }}><Plus size={32} /></div>
+                    <div className="exit-design-mode-fab" onClick={() => btn.setIsEditMode(false)} title="Exit Design Mode" style={{ zIndex: 7500 }}> <X size={32} /></div>
                 </>
             )}
 

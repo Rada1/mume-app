@@ -15,6 +15,7 @@ const COLOR_DEFAULTS = {
     player: '#89CFF0',
     npc: 'rgba(253, 224, 71, 0.95)',
     object: 'rgba(251, 146, 60, 0.95)',
+    target: '#facc15',
     room: '#22c55e',
 };
 
@@ -65,7 +66,7 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
     createButton,
     setIsSetManagerOpen
 }) => {
-    const { playerColor, setPlayerColor, npcColor, setNpcColor, objectColor, setObjectColor, roomColor, setRoomColor } = useSettingsStore();
+    const { playerColor, setPlayerColor, npcColor, setNpcColor, objectColor, setObjectColor, targetColor, setTargetColor, roomColor, setRoomColor } = useSettingsStore();
 
     return (
         <div className="settings-section">
@@ -173,6 +174,12 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
                     color={objectColor}
                     onChange={setObjectColor}
                     onReset={() => setObjectColor(COLOR_DEFAULTS.object)}
+                />
+                <ColorRow
+                    label="Target"
+                    color={targetColor}
+                    onChange={setTargetColor}
+                    onReset={() => setTargetColor(COLOR_DEFAULTS.target)}
                 />
                 <ColorRow
                     label="Room"

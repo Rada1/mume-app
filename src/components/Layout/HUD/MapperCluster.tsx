@@ -141,7 +141,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         className="mobile-tactical-buttons-persistent"
                         style={{
                             position: 'relative',
-                            marginTop: '68px', // Increased space from room card
+                            marginTop: '10px', // Now pushes down naturally relative to room card
                             zIndex: 20,
                             overflow: 'visible',
                             pointerEvents: 'auto'
@@ -237,7 +237,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     zIndex: 1,
                     padding: '8px 0 0 0',
                     flexShrink: 0,
-                    marginBottom: '16px' // Moved up a touch
+                    marginBottom: '16px' 
                 }}
             >
                 <InputArea

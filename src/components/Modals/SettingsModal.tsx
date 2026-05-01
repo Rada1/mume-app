@@ -54,6 +54,8 @@ interface SettingsModalProps {
     setEnemyColor: (val: string) => void;
     neutralColor: string;
     setNeutralColor: (val: string) => void;
+    targetColor: string;
+    setTargetColor: (val: string) => void;
     roomColor: string;
     setRoomColor: (val: string) => void;
     isBloomEnabled: boolean;
@@ -91,7 +93,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     disableSmoothScroll, setDisableSmoothScroll, isImmersionMode, setIsImmersionMode,
     isHighlighterEnabled, setIsHighlighterEnabled, objectColor, setObjectColor,
     playerColor, setPlayerColor, npcColor, setNpcColor,
-    enemyColor, setEnemyColor, neutralColor, setNeutralColor, roomColor, setRoomColor,
+    enemyColor, setEnemyColor, neutralColor, setNeutralColor, targetColor, setTargetColor, roomColor, setRoomColor,
     isBloomEnabled, setIsBloomEnabled,
     isTimestampEnabled, setIsTimestampEnabled, fontFamily, setFontFamily,
     isNewbieMode, setIsNewbieMode,
@@ -190,6 +192,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setEnemyColor={setEnemyColor}
                                 neutralColor={neutralColor}
                                 setNeutralColor={setNeutralColor}
+                                targetColor={targetColor}
+                                setTargetColor={setTargetColor}
                                 roomColor={roomColor}
                                 setRoomColor={setRoomColor}
                                 isBloomEnabled={isBloomEnabled}
@@ -206,6 +210,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setAutoSaveSessions={setAutoSaveSessions}
                                 showSpectatePromptInLog={showSpectatePromptInLog}
                                 setShowSpectatePromptInLog={setShowSpectatePromptInLog}
+                                inlineCategories={inlineCategories}
+                                setInlineCategories={setInlineCategories}
                             />
                             <DataManagement
                                 exportSettings={exportSettings}

@@ -2,6 +2,8 @@ import React from 'react';
 import { Wifi, WifiOff, Upload } from 'lucide-react';
 import { DEFAULT_BG } from '../../constants';
 import { useModeStore } from '../../stores/useModeStore';
+import { InlineCategoryConfig } from '../../types';
+import CategoryTraitCards from './CategoryTraitCards';
 
 interface GeneralSettingsProps {
     connectionUrl: string;
@@ -41,6 +43,8 @@ interface GeneralSettingsProps {
     setEnemyColor: (val: string) => void;
     neutralColor: string;
     setNeutralColor: (val: string) => void;
+    targetColor: string;
+    setTargetColor: (val: string) => void;
     roomColor: string;
     setRoomColor: (val: string) => void;
     isBloomEnabled: boolean;
@@ -57,6 +61,8 @@ interface GeneralSettingsProps {
     setAutoSaveSessions: (val: boolean) => void;
     showSpectatePromptInLog: boolean;
     setShowSpectatePromptInLog: (val: boolean) => void;
+    inlineCategories: InlineCategoryConfig[];
+    setInlineCategories: (val: InlineCategoryConfig[] | ((prev: InlineCategoryConfig[]) => InlineCategoryConfig[])) => void;
 }
 
 const GeneralSettings: React.FC<GeneralSettingsProps> = ({
@@ -97,6 +103,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setEnemyColor,
     neutralColor,
     setNeutralColor,
+    targetColor,
+    setTargetColor,
     roomColor,
     setRoomColor,
     isBloomEnabled,
@@ -112,7 +120,9 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     autoSaveSessions,
     setAutoSaveSessions,
     showSpectatePromptInLog,
-    setShowSpectatePromptInLog
+    setShowSpectatePromptInLog,
+    inlineCategories,
+    setInlineCategories
 }) => {
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const setIsSpectateMode = useModeStore(s => s.setIsSpectating);
@@ -718,6 +728,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                         <div>
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Ally</div>
                             <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Inline menus & logs</div>
+                            <CategoryTraitCards categoryId="inline-ally" kind="player" inlineCategories={inlineCategories} setInlineCategories={setInlineCategories} />
                         </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -725,6 +736,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                         <div>
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Enemy</div>
                             <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Inline menus & logs</div>
+                            <CategoryTraitCards categoryId="inline-enemy" kind="player" inlineCategories={inlineCategories} setInlineCategories={setInlineCategories} />
                         </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -732,6 +744,15 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                         <div>
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Neutral</div>
                             <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Inline menus & logs</div>
+                            <CategoryTraitCards categoryId="inline-neutral" kind="player" inlineCategories={inlineCategories} setInlineCategories={setInlineCategories} />
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <input type="color" value={targetColor} onChange={(e) => setTargetColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
+                        <div>
+                            <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Target</div>
+                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Double-click menu</div>
+                            <CategoryTraitCards categoryId="target" kind="none" inlineCategories={inlineCategories} setInlineCategories={setInlineCategories} />
                         </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -739,6 +760,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                         <div>
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>NPCs</div>
                             <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Inline menus & logs</div>
+                            <CategoryTraitCards categoryId="npc" kind="npc" inlineCategories={inlineCategories} setInlineCategories={setInlineCategories} />
                         </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -746,6 +768,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                         <div>
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Objects</div>
                             <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Highlights & menus</div>
+                            <CategoryTraitCards categoryId="object" kind="object" inlineCategories={inlineCategories} setInlineCategories={setInlineCategories} />
                         </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -753,6 +776,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                         <div>
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Room Items</div>
                             <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Static items & names</div>
+                            <CategoryTraitCards categoryId="room" kind="room" inlineCategories={inlineCategories} setInlineCategories={setInlineCategories} />
                         </div>
                     </div>
                 </div>

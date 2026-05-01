@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useGame, useLog } from '../../context/GameContext';
 import { TokenRenderer } from '../Messages/TokenRenderer';
 import './MapperRoomInfo.css';
@@ -9,11 +9,18 @@ import './MapperRoomInfo.css';
  */
 
 export const MapperRoomInfo: React.FC = () => {
-    const { roomName, roomDesc, currentTerrain } = useGame();
+    const { roomName, roomDesc, currentTerrain, triggerHaptic } = useGame();
+    const [isExpanded, setIsExpanded] = useState(false);
     const log = useLog();
     const processMessageTokens = log?.processMessageTokens;
 
     if (!roomName) return null;
+
+    const handleToggle = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        triggerHaptic?.(10);
+        setIsExpanded(!isExpanded);
+    };
 
     // --- Logic Section: Tokenization ---
     // We use the same colors as the main room card (Green for name)
@@ -21,8 +28,8 @@ export const MapperRoomInfo: React.FC = () => {
     const descTokens = (processMessageTokens && roomDesc) ? processMessageTokens(`\x1b[0m${roomDesc}`) : [];
 
     return (
-        <div className={`mapper-room-info-container terrain-${String(currentTerrain || 'field').toLowerCase()}`}>
-            <div className="mri-content">
+        <div className={`mapper-room-info-container terrain-${String(currentTerrain || 'field').toLowerCase()} ${isExpanded ? 'expanded' : ''}`}>
+            <div className="mri-content" onClick={handleToggle}>
                 <div className="mri-name">
                     {nameTokens.length > 0 ? (
                         <TokenRenderer tokens={nameTokens} />
