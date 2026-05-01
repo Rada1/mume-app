@@ -11,7 +11,7 @@ export const COLOR_PLAYER = '#89CFF0';
 export const COLOR_OBJ = 'rgba(251, 146, 60, 0.95)';   // Vibrant Orange (#fb923c)
 export const COLOR_ALLY = '#22c55e';
 export const COLOR_ENEMY = '#ef4444';
-export const COLOR_NEUTRAL = '#94a3b8';
+export const COLOR_NEUTRAL = '#eab308';
 export const COLOR_ROOM = '#22c55e';
 
 
@@ -55,12 +55,10 @@ export const canonicalizeCategoryId = (id: string): string => {
 };
 
 export const DEFAULT_INLINE_CATEGORIES: InlineCategoryConfig[] = [
-    // --- PLAYERS (typed per MUME GMCP Room.Chars: ally / enemy / neutral) ---
-    // No keyword fallback for chars — classification comes from GMCP `type` only.
-    { id: 'inline-player', kind: 'player', keywords: [], color: COLOR_PLAYER },
-    { id: 'inline-ally', kind: 'player', keywords: [], color: COLOR_ALLY },
-    { id: 'inline-enemy', kind: 'player', keywords: [], color: COLOR_ENEMY },
-    { id: 'inline-neutral', kind: 'player', keywords: [], color: COLOR_NEUTRAL },
+    // --- GMCP-DRIVEN PLAYER CATEGORIES (hidden from trait UI — set by GMCP type field) ---
+    { id: 'inline-ally', kind: 'player', keywords: [], color: COLOR_ALLY, isGmcpCategory: true },
+    { id: 'inline-enemy', kind: 'player', keywords: [], color: COLOR_ENEMY, isGmcpCategory: true },
+    { id: 'inline-neutral', kind: 'player', keywords: [], color: COLOR_NEUTRAL, isGmcpCategory: true },
 
     // --- OBJECTS ---
     { id: 'inline-corpses', kind: 'object', keywords: ['corpse'], color: COLOR_OBJ },
@@ -84,7 +82,7 @@ export const DEFAULT_INLINE_CATEGORIES: InlineCategoryConfig[] = [
     { id: 'inline-shopkeeper', kind: 'npc', keywords: ['shopkeeper', 'dealer', 'keeper', 'merchant', 'weaponsmith', 'armourer', 'smith', 'trader', 'grocer', 'librarian', 'provisioner', 'alchemist', 'herbalist', 'tailor', 'blacksmith', 'vendor', 'cobbler', 'peddler'], color: COLOR_NPC },
     { id: 'inline-mounts', kind: 'npc', keywords: ['horse', 'pony', 'steed', 'donkey', 'mule', 'warg'], color: COLOR_NPC },
     { id: 'inline-guildmaster', kind: 'npc', keywords: ['guildmaster', 'teacher', 'master', 'trainer', 'huor'], color: COLOR_NPC },
-    { id: 'inline-npc', kind: 'npc', keywords: ['orc', 'troll', 'goblin', 'warg', 'bandit', 'wraith', 'spirit', 'undead', 'zombie', 'skeleton', 'shaman', 'assassin', 'mercenary'], color: COLOR_NPC },
+    { id: 'inline-npc', kind: 'npc', keywords: [], color: COLOR_NPC, isGmcpCategory: true },
 
     // --- FALLBACK ---
     { id: 'inline-object', kind: 'object', keywords: [], color: COLOR_OBJ }
@@ -230,7 +228,9 @@ export const resolveKindAndLocation = (kind?: string | null, location?: string |
     if (cmd === 'inline-obj-worn' || cmd === 'obj-worn' || cmd === 'equipmentlist') return { kind: 'object', location: 'worn' };
     if (cmd === 'inline-obj-shop') return { kind: 'object', location: 'shop' };
     if (cmd === 'inlinenpc' || cmd === 'roomnpcs' || cmd === 'inline-npc') return { kind: 'npc', location: 'room' };
-    if (cmd === 'inlineplayer' || cmd === 'inline-player') return { kind: 'player', location: 'room' };
+    if (cmd === 'inlineplayer' || cmd === 'inline-player' || cmd === 'inline-ally') return { kind: 'ally', location: 'room' };
+    if (cmd === 'inline-enemy') return { kind: 'enemy', location: 'room' };
+    if (cmd === 'inline-neutral') return { kind: 'neutral', location: 'room' };
     if (cmd === 'roomname' || cmd === 'room-name' || cmd === 'exits') return { kind: 'room', location: 'room' };
 
     // Default catch-all

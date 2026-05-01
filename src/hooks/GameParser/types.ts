@@ -98,6 +98,7 @@ export interface UseGameParserDeps {
     spectateRoomDesc: string;
     setIsSpectateMode: (val: boolean) => void;
     shop: any;
+    practiceHandler?: ReturnType<typeof import('../usePracticeHandler').usePracticeHandler>;
     gameState: GameState;
     setGameState: Dispatch<SetStateAction<GameState>>;
     ansiConvert: any;

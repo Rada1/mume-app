@@ -4,6 +4,7 @@ import { MapperRef } from '../../components/Mapper/mapperTypes';
 import { occupantAnims, getOccupantKey } from '../../components/Mapper/occupantAnimStore';
 import { getCategoryForName } from '../../utils/categorizationUtils';
 import { normalizeOccupantType } from '../../services/classification/normalizeOccupantType';
+import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
 
 const getRoomCharKey = (id: string | number): number => {
     const numericId = Number(id);
@@ -38,8 +39,9 @@ const hydrateOccupant = (occupant: GmcpOccupant): GmcpOccupant => {
 const parseOccupant = (data: any, characterName: string | null): GmcpOccupant | null => {
     if (!data) return null;
     let obj: GmcpOccupant;
+    const normalizedType = normalizeOccupantType(data);
     if (typeof data === 'string' || typeof data === 'number') {
-        obj = { id: String(data), name: String(data), keyword: String(data), short: String(data) };
+        obj = { id: String(data), name: String(data), short: String(data) };
     } else {
         obj = { ...data };
         obj.id = data.id !== undefined ? String(data.id) : (data.name || data.keyword || data.short || data.shortdesc);
@@ -48,11 +50,13 @@ const parseOccupant = (data: any, characterName: string | null): GmcpOccupant | 
             obj.name = data.name || data.keyword || data.short || data.shortdesc;
         }
     }
+    if (normalizedType) obj.type = normalizedType;
+    if (obj.name || obj.keyword || obj.short || obj.shortdesc) {
+        obj.keyword = getOccupantCommandKeyword(obj, String(obj.id || ''));
+    }
     // Normalize MUME's `pc` flag into the canonical `type` field so the
     // classifier (strict on `type`) sees a usable value for NPCs that arrive
     // with only `pc: 0` and no explicit type.
-    const normalizedType = normalizeOccupantType(data);
-    if (normalizedType) obj.type = normalizedType;
 
     if (!obj.id) return null;
     const hydrated = hydrateOccupant(obj);

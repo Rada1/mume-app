@@ -102,6 +102,12 @@ export const isItemNoun = (word: string): boolean => {
 export const sanitizeGameTarget = (target: string | null | undefined): string | null => {
     if (target === null || target === undefined) return null;
     let clean = target.trim();
+
+    // Inline GMCP character targets are already command-shaped, including
+    // ordinal prefixes and enemy markers such as 2.*orc*.
+    if (/^\d+\.[\w'*.-]+(?:-[\w'*.-]+)*$/.test(clean) || /^(?:\d+\.)?\*[^*]+\*$/.test(clean)) {
+        return clean;
+    }
     
     // Rule: any corpse object should eliminate all the -s and just use corpse as the target.
     if (clean.toLowerCase().startsWith('corpse-')) {

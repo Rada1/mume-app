@@ -29,6 +29,7 @@ export interface InlineCategoryConfig {
     color?: string;              // optional; defaults to kind's color
     categoryType?: EntityKind | 'account' | 'target' | 'quest' | 'none'; // legacy support
     buttonSetId?: string;        // The button set (menu) to display for this trait
+    isGmcpCategory?: boolean;    // if true, driven by GMCP type field — hidden from the trait UI
 }
 
 export enum EntityCapability {

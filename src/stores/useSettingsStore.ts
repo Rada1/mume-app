@@ -28,6 +28,7 @@ interface SettingsState {
     playerColor: string;
     npcColor: string;
     enemyColor: string;
+    neutralColor: string;
     roomColor: string;
     
     // UI Behavior
@@ -77,6 +78,7 @@ interface SettingsState {
     setPlayerColor: (val: string) => void;
     setNpcColor: (val: string) => void;
     setEnemyColor: (val: string) => void;
+    setNeutralColor: (val: string) => void;
     setRoomColor: (val: string) => void;
     setIsTimestampEnabled: (val: boolean) => void;
     setShowDebugEchoes: (val: boolean) => void;
@@ -121,6 +123,7 @@ export const useSettingsStore = create<SettingsState>()(
             playerColor: '#89CFF0',
             npcColor: 'rgba(253, 224, 71, 0.95)',
             enemyColor: '#ef4444',
+            neutralColor: '#eab308',
             roomColor: '#22c55e',
             
             disableSmoothScroll: false,
@@ -165,6 +168,7 @@ export const useSettingsStore = create<SettingsState>()(
             setPlayerColor: (playerColor) => set({ playerColor }),
             setNpcColor: (npcColor) => set({ npcColor }),
             setEnemyColor: (enemyColor) => set({ enemyColor }),
+            setNeutralColor: (neutralColor) => set({ neutralColor }),
             setRoomColor: (roomColor) => set({ roomColor }),
             setDisableSmoothScroll: (disableSmoothScroll) => set({ disableSmoothScroll }),
             setIsImmersionMode: (isImmersionMode) => set({ isImmersionMode }),

@@ -89,7 +89,7 @@
     cursor: pointer;
     letter-spacing: 0.5px;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 0 10px rgba(239, 68, 68, 0.1);
+    box-shadow: 0 0 3px rgba(239, 68, 68, 0.1);
     animation: reconnect-pulse 2s infinite ease-in-out;
     pointer-events: auto;
 }
@@ -97,7 +97,7 @@
 .reconnect-btn:hover {
     background: rgba(239, 68, 68, 0.3);
     border-color: rgba(239, 68, 68, 0.5);
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.15);
     transform: translateY(-1px);
 }
 
@@ -123,9 +123,9 @@
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    background: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(12px) saturate(1.8);
-    -webkit-backdrop-filter: blur(12px) saturate(1.8);
+    background: rgba(15, 15, 15, 0.85);
+    backdrop-filter: blur(12px) saturate(1.2);
+    -webkit-backdrop-filter: blur(12px) saturate(1.2);
     border: 1px solid rgba(255, 255, 255, 0.15);
     padding: 6px 10px;
     border-radius: 8px;
@@ -155,26 +155,36 @@
     transition: all 0.3s ease-in-out;
 }
 
-/* Parley Indicators */
+/* Parley Pill — wraps the toggle button + indicators together */
+.parley-pill {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+    padding: 2px;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.parley-pill.parley-pill-active {
+    padding-right: 6px;
+    animation: slideInLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Legacy container — no longer rendered but kept for any stray references */
 .parley-indicator-container {
     display: flex;
     align-items: center;
-    gap: 6px;
-    margin-right: 8px;
-    padding: 4px 6px;
-    background: rgba(15, 23, 42, 0.65);
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    animation: slideInLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    gap: 4px;
 }
 
 .parley-indicator {
     font-size: 0.75rem;
     font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 4px;
+    padding: 3px 10px;
+    border-radius: 999px;
     cursor: pointer;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -203,23 +213,24 @@
 }
 
 .parley-clear-btn {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     color: var(--text-dim);
     font-size: 14px;
     cursor: pointer;
     transition: all 0.2s ease;
-    border: none;
     padding: 0;
 }
 
 .parley-clear-btn:hover {
     background: rgba(239, 68, 68, 0.4);
+    border-color: rgba(239, 68, 68, 0.5);
     color: white;
 }
 
@@ -357,3 +368,47 @@
     color: #000;
     transform: scale(0.9);
 }
+
+/* --- Theme-Consistent Scrollbars (Frosted Glass) --- */
+
+/* For Webkit browsers (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Firefox Support */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+
+/* Specific Drawer Adjustments to ensure visibility against dark blur */
+.log-card-drawer *::-webkit-scrollbar-thumb,
+.map-drawer-desktop *::-webkit-scrollbar-thumb,
+.floating-card-container *::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.log-card-drawer *::-webkit-scrollbar-thumb:hover,
+.map-drawer-desktop *::-webkit-scrollbar-thumb:hover,
+.floating-card-container *::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}

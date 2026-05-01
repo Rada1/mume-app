@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { CustomButton } from '../types';
+import { CustomButton, PracticeData } from '../types';
 import { MAGE_SPELLS, CLERIC_SPELLS, WARRIOR_SKILLS, RANGER_SKILLS, THIEF_SKILLS, CLASS_MAPPINGS } from '../utils/spellLists';
 import { getCategoryForName } from '../utils/categorizationUtils';
 
@@ -12,11 +12,13 @@ export const useButtonLogic = (deps: {
     isEditMode: boolean,
     isSmartPopulateEnabled?: boolean,
     target: string | null,
-    inlineCategories: import('../types').InlineCategoryConfig[]
+    inlineCategories: import('../types').InlineCategoryConfig[],
+    practiceData?: PracticeData | null
 }) => {
     const { 
         rawButtons, activeSet, abilities, characterClass, characterName, 
-        isEditMode, isSmartPopulateEnabled = true, target = null, inlineCategories = [] 
+        isEditMode, isSmartPopulateEnabled = true, target = null, inlineCategories = [],
+        practiceData = null
     } = deps;
 
     return useMemo(() => {
@@ -39,12 +41,16 @@ export const useButtonLogic = (deps: {
                 };
                 const classKey = buttonToClass[b.id];
                 if (classKey && b.hideIfUnknown) {
-                    // Force hidden on connect screen (no characterName)
                     if (!characterName) return false;
-                    
+
+                    const practicedClassSkill = practiceData?.skills.some(skill =>
+                        skill.skillClass?.toLowerCase() === classKey && skill.proficiency > 0
+                    );
+
+                    if (practiceData) return practicedClassSkill === true;
+
                     const skills = CLASS_MAPPINGS[classKey] || [];
-                    const knownCount = skills.filter(s => (safeAbilities[s.toLowerCase()] || 0) > 0).length;
-                    if (knownCount === 0) return false;
+                    return skills.some(s => (safeAbilities[s.toLowerCase()] || 0) > 0);
                 }
                 return true;
             }
@@ -169,5 +175,5 @@ export const useButtonLogic = (deps: {
         // We just return what we have.
 
         return [...filtered, ...allGenerated];
-    }, [rawButtons, activeSet, abilities, characterClass, characterName, isEditMode, isSmartPopulateEnabled, target]);
+    }, [rawButtons, activeSet, abilities, characterClass, characterName, isEditMode, isSmartPopulateEnabled, target, practiceData]);
 };

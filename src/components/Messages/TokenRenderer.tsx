@@ -2,7 +2,7 @@ import React from 'react';
 import { Token, EntityToken, AnsiToken } from '../../types';
 import { useVitals } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
-import { COLOR_PLAYER, COLOR_NPC, COLOR_OBJ, COLOR_ROOM, COLOR_ENEMY } from '../../utils/categorizationUtils';
+import { COLOR_PLAYER, COLOR_NPC, COLOR_OBJ, COLOR_ROOM, COLOR_ENEMY, COLOR_NEUTRAL } from '../../utils/categorizationUtils';
 import { extractMumeKeyword } from '../../utils/gameUtils';
 
 import { MessageType } from '../../types';
@@ -129,7 +129,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                     const e = token as EntityToken;
                     const isAuto = e.metadata?.extraClasses?.includes('auto-occupant');
                     const extraClasses = [...(e.metadata?.extraClasses || [])];
-                    const defaultContext = extractMumeKeyword(e.metadata?.context || e.content);
+                    const defaultContext = e.metadata?.context || extractMumeKeyword(e.content);
                     
                     if (isTargetMatch) {
                         extraClasses.push('is-target');
@@ -158,8 +158,9 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                     const kind = propMetadata?.kind || e.metadata?.kind;
                     
                     let categoryColor = null;
-                    if (kind === 'player') categoryColor = settings.playerColor || COLOR_PLAYER;
+                    if (kind === 'player' || kind === 'ally') categoryColor = settings.playerColor || COLOR_PLAYER;
                     else if (kind === 'enemy') categoryColor = settings.enemyColor || COLOR_ENEMY;
+                    else if (kind === 'neutral') categoryColor = settings.neutralColor || COLOR_NEUTRAL;
                     else if (kind === 'npc') categoryColor = settings.npcColor || COLOR_NPC;
                     else if (kind === 'object') categoryColor = settings.objectColor || COLOR_OBJ;
                     else if (kind === 'room') categoryColor = settings.roomColor || COLOR_ROOM;

@@ -65,9 +65,12 @@ import { getHierarchyChain } from '../../utils/buttonHierarchyUtils';
 import { canonicalizeCategoryId, getCategoryForName, getGlowColorForCategory, resolveKindAndLocation, getButtonSetIdForCategory, getTraitConfigsForName } from '../../utils/categorizationUtils';
 
 const formatDialCategoryLabel = (kind?: string, category?: string | null, setId?: string): string => {
-    if (kind && kind !== 'none') return kind.toUpperCase();
-    const source = category || setId || '';
-    return source.replace(/^inline-/, '').replace(/-/g, ' ').toUpperCase();
+    // Prefer the canonical category over the raw kind so we show "ALLY"/"ENEMY"/"NEUTRAL"
+    // instead of the legacy "PLAYER" label, and pick up custom traits when present.
+    const source = (category || setId || kind || '').replace(/^inline-/, '');
+    if (!source || source === 'none') return '';
+    if (source === 'player') return 'ALLY';
+    return source.replace(/-/g, ' ').toUpperCase();
 };
 
 export const PopoverManager: React.FC<PopoverManagerProps> = ({

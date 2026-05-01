@@ -53,6 +53,9 @@ export interface GmcpCharVitals {
     move_status?: string;
     stamina_status?: string;
     wimpy?: number;
+    xp?: number;
+    xp_max?: number;
+    'next-level-xp'?: number;
     isSnooped?: boolean;
 }
 
@@ -103,6 +106,9 @@ export interface GmcpOccupant {
     hp?: number;
     maxhp?: number;
     status?: string;
+    fighting?: string | number | null;
+    labels?: string[];
+    flags?: string[];
 }
 
 export interface GmcpRoomPlayers extends Array<string | GmcpOccupant> {}

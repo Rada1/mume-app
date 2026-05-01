@@ -9,6 +9,7 @@ import { DrawerShell } from './DrawerShell';
 import { UnifiedDrawerContent } from './UnifiedDrawerContent';
 import { Mapper } from '../Mapper/Mapper';
 import { MapperRoomInfo } from '../Mapper/MapperRoomInfo';
+import { LineCluster } from '../Layout/HUD/LineCluster';
 import { User, Shield, Users, Map as MapIcon } from 'lucide-react';
 
 const SIDEBAR_TABS = [
@@ -30,16 +31,21 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     setHeldButton,
     setCommandPreview
 }) => {
-    const { characterName, viewport, triggerHaptic, gameState, executeCommand } = useGame();
+    const { 
+        characterName, viewport, triggerHaptic, gameState, executeCommand,
+        btn, joystick, handleButtonClick, editor
+    } = useGame();
     const {
         ui, setUI, handleTabClick,
+        setPopoverState,
         displayInventoryLines, displayEqLines,
+
         infoLines, questLines, practiceLines,
         whoLines, whereLines,
         setWhoLines, setWhereLines,
         gearTab, setGearTab, playersTab, setPlayersTab, charTab, setCharTab
     } = useUI();
-    const { groupMembers } = useVitals();
+    const { groupMembers, target, activePrompt } = useVitals();
 
     // Body classes for desktop layout
     React.useEffect(() => {
@@ -63,8 +69,40 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 
             {!viewport.isMobile && (
                 <div className={`map-drawer-desktop ${ui.mapExpanded ? 'open' : ''}`}>
-                    <div className="drawer-content" style={{ flex: 1, padding: 0, position: 'relative', overflow: 'hidden' }}>
-                        <MapperRoomInfo />
+                    <div className="drawer-content" style={{ flex: 1, padding: 0, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                        <div className="mapper-header-desktop">
+                            <MapperRoomInfo />
+                            
+                            {/* Persistent Tactical Buttons - now horizontal under the room card on desktop */}
+                            <div className="desktop-tactical-buttons-persistent">
+                                <LineCluster
+                                    isEditMode={btn.isEditMode}
+                                    handleDragStart={editor.handleDragStart as any}
+                                    buttons={btn.buttons}
+                                    selectedButtonIds={btn.selectedButtonIds}
+                                    dragState={btn.dragState}
+                                    handleButtonClick={handleButtonClick}
+                                    wasDraggingRef={editor.wasDraggingRef as any}
+                                    triggerHaptic={triggerHaptic}
+                                    setPopoverState={setPopoverState}
+                                    setEditingButtonId={btn.setEditingButtonId}
+                                    setSelectedIds={btn.setSelectedIds}
+                                    activePrompt={activePrompt}
+                                    executeCommand={executeCommand}
+                                    setCommandPreview={setCommandPreview}
+                                    heldButton={heldButton}
+                                    setHeldButton={setHeldButton}
+                                    joystick={joystick}
+                                    target={target}
+                                    isGridEnabled={btn.isGridEnabled}
+                                    gridSize={btn.gridSize}
+                                    setActiveSet={btn.setActiveSet}
+                                    setButtons={btn.setButtons}
+                                    isMobile={viewport.isMobile}
+                                />
+                            </div>
+                        </div>
+
                         <Mapper
                             characterName={characterName || ''}
                             isMobile={viewport.isMobile}

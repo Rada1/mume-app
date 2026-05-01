@@ -482,7 +482,6 @@ const PromptBox: FC<PromptBoxProps> = ({
 
                     {/* Center Anchor */}
                     <div className="vitals-center-anchor" style={{ position: 'relative' }}>
-                        <div className="hud-visibility-indicator">HUD</div>
                         <XpTicker isLandscape={viewport.isLandscape} align="center" />
                         <button 
                             className={`pos-combat-square-btn ${inCombat ? 'is-fighting' : ''} ${activeSlider === 'pos' ? 'active' : ''}`}

@@ -96,8 +96,10 @@
 }
 
 .message-log::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background-clip: padding-box;
 }
 
 .message {
@@ -115,6 +117,9 @@
 
     transition: none !important;
     transform: none !important;
+
+    /* Hover effect: Subtle dark shadow for depth against the background */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .message.shop-item {
@@ -280,22 +285,19 @@
 /* Standard text occupies full brightness by default */
 .message-content span {
     opacity: 1;
-}
-
-/* Force category color or inheritance in nested contexts */
-.message-content .inline-btn,
-.message-content .keyword-highlight,
-.message-content b,
-.message-content strong {
-    color: var(--glow-color, inherit);
+    /* Universal hovering depth for all text segments */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
 }
 
 .keyword-highlight,
 .inline-btn,
 .pc-highlighter,
-.npc-highlighter {
+.npc-highlighter,
+.message-content span[style*="color"] {
     font-weight: bold !important;
     pointer-events: auto !important;
+    /* Light casting effect: Minimal glow that matches the element's color */
+    text-shadow: 0 0 3px var(--glow-color, rgba(255, 255, 255, 0.05)), 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 /* Category-based color mappings */
@@ -315,7 +317,7 @@
     margin: 0 -1px;
     font-weight: bold !important;
     color: #fff !important;
-    box-shadow: 0 0 15px rgba(250, 204, 21, 0.2);
+    box-shadow: 0 0 4px rgba(250, 204, 21, 0.12);
     animation: target-pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1;
 }
@@ -891,6 +893,37 @@
     align-self: center;
 }
 
+.cmd-prompt-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border: none;
+    border-radius: 999px;
+    color: var(--accent);
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.cmd-prompt-btn:hover {
+    background: rgba(var(--accent-rgb), 0.15);
+}
+
+.cmd-prompt-btn:active {
+    transform: scale(0.88);
+}
+
+.cmd-prompt-btn.parley-active {
+    color: #22c55e;
+}
+
 .input-field {
     flex: 1;
     background: transparent;
@@ -1012,6 +1045,7 @@
     pointer-events: none;
     z-index: 5;
     overflow: visible; /* Essential for the wide bloom to be visible */
+    opacity: 0;
     
     /* Make the overlay text transparent so it only acts as a mask for its background */
     color: transparent !important;
@@ -1024,7 +1058,7 @@
         rgba(255, 255, 255, 1) 50%,
         rgba(255, 255, 255, 0) 100%
     );
-    background-size: 350px 100%;
+    background-size: 300px 100%;
     background-repeat: no-repeat;
     
     /* Clip that background to the text tokens inside */
@@ -1032,13 +1066,13 @@
     background-clip: text;
     
     /* Animate the glint moving across the text with higher energy */
-    animation: sheen-sweep 1.0s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation: sheen-sweep 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     
-    /* Triple-layered "Ultra-Bloom" effect */
+    /* Triple-layered "Ultra-Bloom" effect (slightly reduced) */
     filter: 
-        drop-shadow(0 0 8px white) 
-        drop-shadow(0 0 20px rgba(255, 255, 255, 0.8))
-        drop-shadow(0 0 40px rgba(255, 255, 255, 0.4));
+        drop-shadow(0 0 6px white) 
+        drop-shadow(0 0 15px rgba(255, 255, 255, 0.7))
+        drop-shadow(0 0 30px rgba(255, 255, 255, 0.3));
 }
 
 /* Ensure tokens inside the overlay are also transparent to allow the background-clip to work */
@@ -1051,8 +1085,10 @@
 }
 
 @keyframes sheen-sweep {
-    0% { background-position: -350px 0; }
-    100% { background-position: calc(100% + 350px) 0; }
+    0% { background-position: -300px 0; opacity: 0; }
+    15% { opacity: 1; }
+    25% { opacity: 1; }
+    100% { background-position: calc(100% + 300px) 0; opacity: 0; }
 }
 
 
@@ -1068,7 +1104,7 @@ span.inline-btn {
     background: rgba(255, 255, 255, 0.05) !important;
     border-radius: 4px;
     padding: 0 3px !important;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
 }
 
 .inline-btn:hover,
@@ -1082,9 +1118,9 @@ span.inline-btn {
     transform: scale(0.9) translateY(1px);
     filter: brightness(1.5) contrast(1.1);
     background-color: rgba(255, 255, 255, 0.3) !important;
-    box-shadow: 0 0 20px var(--glow-color, var(--accent)),
-        inset 0 0 5px rgba(255, 255, 255, 0.3);
-    text-shadow: 0 0 12px var(--glow-color, var(--accent));
+    box-shadow: 0 0 12px var(--glow-color, var(--accent)),
+        inset 0 0 4px rgba(255, 255, 255, 0.3);
+    text-shadow: 0 0 8px var(--glow-color, var(--accent));
     transition: transform 0.04s cubic-bezier(0.2, 0, 0.2, 1),
         filter 0.04s ease-out,
         box-shadow 0.04s ease-out;
@@ -1624,6 +1660,7 @@ span.inline-btn {
 
 .scrubber-slider {
     -webkit-appearance: none;
+    appearance: none;
     width: 100%;
     height: 6px;
     background: rgba(255, 255, 255, 0.1);

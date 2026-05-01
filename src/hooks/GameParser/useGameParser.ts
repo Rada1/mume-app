@@ -205,9 +205,11 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         setStatsLines: sessionSetStatsLines,
         setPracticeLines: sessionSetPracticeLines,
         setWhoLines,
+        setWhoList: session.game.setWhoList,
         setScoreLines: sessionSetScoreLines,
         setInfoLines,
         setQuestLines,
+        practiceHandler: deps.practiceHandler,
         registerEntity,
         ansiConvert: deps.ansiConvert,
         captureStage: deps.captureStage
@@ -278,6 +280,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         setCharacterInfo,
         setOpponentHealthStatus,
         setOpponentName,
+        triggerXpTicker: deps.triggerXpTicker,
         setSpectateInCombat: deps.setSpectateInCombat,
         setSpectateOpponentName: deps.setSpectateOpponentName,
         setSpectateOpponentStatus: deps.setSpectateOpponentStatus

@@ -6,6 +6,7 @@
 
 import { GmcpRoomInfo, GmcpUpdateExits, GmcpOccupant, WhereEntry } from '../../types';
 import { normalizeOccupantType } from '../../services/classification/normalizeOccupantType';
+import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
 
 export interface RoomState {
     roomName: string;
@@ -69,6 +70,7 @@ const parseOccupant = (data: any): GmcpOccupant | null => {
         return {
             id: data, // Fallback ID
             name: data,
+            keyword: getOccupantCommandKeyword({ name: data }),
             short: data
         };
     }
@@ -91,7 +93,12 @@ const parseOccupant = (data: any): GmcpOccupant | null => {
         // invisible to classifyOccupant and never get inline buttons.
         const normalizedType = normalizeOccupantType(data);
         if (normalizedType) parsed.type = normalizedType;
+        if (data.name || data.keyword || data.short || data.shortdesc) {
+            parsed.keyword = getOccupantCommandKeyword({ ...data, type: normalizedType || data.type }, id);
+        }
         if (data.pc !== undefined) parsed.pc = data.pc;
+        if (Array.isArray(data.labels)) parsed.labels = data.labels;
+        if (Array.isArray(data.flags)) parsed.flags = data.flags;
 
         return parsed as GmcpOccupant;
     }

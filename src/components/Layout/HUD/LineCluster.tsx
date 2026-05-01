@@ -46,7 +46,7 @@ export const LineCluster: React.FC<LineClusterProps> = ({
     // Sort them to ensure consistent layout if needed, but for now we'll just use the order they come in
     // or we can sort by ID if we want a specific order (e.g. tactical-ranger, tactical-cleric, etc.)
     const sortedButtons = [...tacticalButtons].sort((a, b) => {
-        const order = ['tactical-ranger', 'tactical-cleric', 'tactical-thief', 'tactical-warrior', 'tactical-action', 'tactical-doors'];
+        const order = ['tactical-ranger', 'tactical-cleric', 'tactical-thief', 'tactical-warrior', 'tactical-mage', 'tactical-action', 'tactical-doors'];
         return order.indexOf(a.id) - order.indexOf(b.id);
     });
 

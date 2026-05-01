@@ -70,7 +70,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
     const { addMessage } = useLog();
     const { setPopoverState } = useUI();
-    const { playerColor, npcColor, objectColor } = useSettingsStore();
+    const { playerColor, npcColor, enemyColor, objectColor } = useSettingsStore();
     const isDarkMode = theme === 'dark';
 
     // Use shared state from MapperContext
@@ -230,6 +230,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 inlineCategories={inlineCategories}
                 playerColor={playerColor}
                 npcColor={npcColor}
+                enemyColor={enemyColor}
                 objectColor={objectColor}
                 opponentName={opponentName}
                 opponentId={opponentId}

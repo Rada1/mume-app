@@ -83,8 +83,9 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     pointerEvents: isShown ? 'auto' : 'none',
                     opacity: isShown ? 1 : 0,
                     touchAction: 'none',
-                    position: 'relative',
-                    flex: isShown ? 1 : 'none'
+                    position: 'absolute',
+                    inset: '0',
+                    zIndex: 0
                 }}
             >
                 {(lighting !== 'none' || weather !== 'none' || isFoggy || stats.conditions?.hungry || stats.conditions?.thirsty) && (

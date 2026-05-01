@@ -13,12 +13,12 @@
 }
 
 .mri-content {
-    background: linear-gradient(rgba(15, 17, 28, 0.7), rgba(15, 17, 28, 0.85));
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(15, 15, 15, 0.35);
+    backdrop-filter: blur(24px) saturate(1.2);
+    -webkit-backdrop-filter: blur(24px) saturate(1.2);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     padding: 6px 20px 16px; /* Increased bottom padding for better spacing */
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-card);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     text-align: center;
     width: 100%;
@@ -54,27 +54,21 @@
     letter-spacing: -0.01em;
 }
 
-/* Terrain-specific accent borders */
-.mapper-room-info-container.terrain-forest .mri-content { border-color: rgba(34, 197, 94, 0.3); }
-.mapper-room-info-container.terrain-water .mri-content { border-color: rgba(56, 189, 248, 0.3); }
-.mapper-room-info-container.terrain-field .mri-content { border-color: rgba(253, 224, 71, 0.3); }
-.mapper-room-info-container.terrain-mountain .mri-content { border-color: rgba(226, 232, 240, 0.2); }
+/* Terrain-specific accent colors — borders removed as requested */
 
 /* Mobile-specific overrides for even smaller text and tighter width */
 @media (max-width: 600px) {
     .mapper-room-info-container {
         width: 94%; 
-        top: 6px; /* Anchor to top now */
+        top: 10px; /* Increased to sit within the 20px radius top curve */
         bottom: auto;
     }
     
     .mri-content {
         padding: 4px 10px;
-        border-radius: 8px;
+        border-radius: var(--radius-card);
         gap: 0;
-        /* Bottom border instead of top for header look */
-        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        /* Bottom border instead of top for header look — borders removed as requested */
     }
 
     .mri-name { 

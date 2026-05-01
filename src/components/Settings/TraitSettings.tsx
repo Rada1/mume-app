@@ -26,11 +26,13 @@ const TraitSettings: React.FC<TraitSettingsProps> = ({ inlineCategories: rawCate
     const defaultIds = React.useMemo(() => new Set(DEFAULT_INLINE_CATEGORIES.map(c => c.id)), []);
     const visibleTraits = React.useMemo(() => {
         const customById = new Map(inlineCategories.map(c => [c.id, c]));
-        const mergedDefaults = DEFAULT_INLINE_CATEGORIES.map(defaultTrait => ({
-            ...defaultTrait,
-            ...(customById.get(defaultTrait.id) || {})
-        }));
-        const customOnly = inlineCategories.filter(c => !defaultIds.has(c.id));
+        const mergedDefaults = DEFAULT_INLINE_CATEGORIES
+            .filter(d => !d.isGmcpCategory)
+            .map(defaultTrait => ({
+                ...defaultTrait,
+                ...(customById.get(defaultTrait.id) || {})
+            }));
+        const customOnly = inlineCategories.filter(c => !defaultIds.has(c.id) && !c.isGmcpCategory);
         return [...mergedDefaults, ...customOnly];
     }, [defaultIds, inlineCategories]);
 

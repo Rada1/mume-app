@@ -165,13 +165,16 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             return;
         }
 
+        // Bump activity for atmospheric effects
+        s.bumpActivity();
+
         const args = [type, text, extra, mid, isRoomName, precalculated, shopItem, practiceSkill, practiceHeader, isSystem, replyTarget, replyCommand, commSender, commAction, commText, commColor, commSenderTokens, commTextTokens, providedCombatSide, providedIsHitImpact, providedIsHitterImpact, providedIsSnoop, providedIsSnoopInput] as const;
         if (type === 'snoop' || type === 'snoop-command' || type === 'snoop-vitals' || providedIsSnoop) {
             (s.spectateSession.log.addMessage as any)(...args);
         } else {
             (s.userSession.log.addMessage as any)(...args);
         }
-    }, [s.userSession.log, s.spectateSession.log, s.userSession.game.silenceUntilPrompt]);
+    }, [s.userSession.log, s.spectateSession.log, s.userSession.game.silenceUntilPrompt, s.bumpActivity]);
 
     const { messages, setMessages, addSystemMessage, flushMessages, clearLog } = activeLog;
     const addMessage = routedAddMessage; // Use the router for the parser
@@ -490,14 +493,21 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // 6. Final Controller & Parser
     const { spatButtons, setSpatButtons, triggerSpitManual } = useSpatButtons(messages, useRef<HTMLDivElement>(null), triggerHaptic);
-    const btn = useButtons({ abilities: s.abilities, characterClass: s.characterClass, characterName: s.characterName, target: v.target, inlineCategories: s.inlineCategories });
+    const practice = usePracticeHandler(s.setAbilities);
+    const btn = useButtons({
+        abilities: s.abilities,
+        characterClass: s.characterClass,
+        characterName: s.characterName,
+        target: v.target,
+        inlineCategories: s.inlineCategories,
+        practiceData: practice.practiceData
+    });
     useEffect(() => {
         btn.setAddMessage(addMessage);
     }, [btn, addMessage]);
     const joystick = useJoystick(triggerHaptic, s.roomExits, playClickSound);
     const editor = useButtonEditor(btn);
     const help = useHelpHandler();
-    const practice = usePracticeHandler(s.setAbilities);
     const shop = useShopHandler();
     const quests = useQuestsHandler(s.setQuests, s.quests.activeQuests);
     const keywordOverrides = useKeywordOverrides();

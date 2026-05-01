@@ -479,7 +479,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                 kind: occupantHit.kind,
                                 location: 'room',
                                 category: occupantHit.category,
-                                context: occupantHit.name,
+                                context: occupantHit.commandTarget || occupantHit.name,
                                 entityId,
                                 menuDisplay: 'dial',
                                 accentColor: occupantHit.color

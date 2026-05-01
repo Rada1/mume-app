@@ -6,11 +6,11 @@
  * We apply this as a filter to the main content to avoid blurring everything.
  */
 .bloom-enabled {
-  filter: brightness(1.2) contrast(1.2);
+  filter: brightness(1.05) contrast(1.05);
 }
 
 .light-mode.bloom-enabled {
-  filter: brightness(1.0) contrast(1.05); /* Avoid washing out in light mode */
+  filter: brightness(1.0) contrast(1.02); /* Avoid washing out in light mode */
 }
 
 .bloom-enabled .hud-cluster,
@@ -21,7 +21,7 @@
 .bloom-enabled .btn-secondary,
 .bloom-enabled .account-screen-overlay,
 .bloom-enabled .account-view {
-  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.15));
 }
 
 /* Darker glows for light mode to maintain readability */
@@ -33,6 +33,5 @@
 .light-mode.bloom-enabled .btn-secondary,
 .light-mode.bloom-enabled .account-screen-overlay,
 .light-mode.bloom-enabled .account-view {
-  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.15));
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.1));
 }
-

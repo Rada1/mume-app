@@ -36,17 +36,16 @@
     left: 0;
     right: 0;
     height: var(--mobile-gutter-height);
-    background: rgb(10, 13, 21);
+    background: transparent;
     z-index: var(--z-hud-interactive);
     touch-action: none;
     transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
-    overflow: visible; 
+    overflow: hidden; 
     display: flex;
     flex-direction: column;
     justify-content: flex-end; /* Anchors buttons at the bottom so they don't jump when gutter expands */
     pointer-events: none; /* Let clicks pass through to the log if not on a child */
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 20px 20px 0 0;
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
 }
 
 .modals-layer-wrapper {
@@ -94,9 +93,8 @@
 
 @media (max-width: 1024px) {
     .mobile-bottom-gutter {
-        border-top: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 20px 20px 0 0;
-        overflow: visible;
+        border-radius: var(--radius-card) var(--radius-card) 0 0;
+        overflow: hidden;
         transition: none !important;
     }
 
@@ -148,7 +146,7 @@
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
-    padding: 0 12px 15px 12px !important; /* Tightened from 20px to 12px for a closer fit */
+    padding: 0 12px 4px 12px !important; /* Reduced from 15px to 4px for alignment with drawers */
     max-width: none !important;
     position: relative; /* anchor for .mobile-parley-toggle */
     display: flex !important;
@@ -184,16 +182,13 @@
 .sticky-room-header {
     position: relative;
     z-index: var(--z-room-header); /* Lowered to clear HUD clusters and popovers */
-    background: linear-gradient(rgba(15, 17, 28, 0.7), rgba(15, 17, 28, 0.7)), url('/assets/Pictures/background.png') !important;
-    background-size: cover !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: rgba(15, 15, 15, 0.35) !important;
+    backdrop-filter: blur(24px) saturate(1.2) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(1.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
     margin: 6px 24px 0 24px;
     padding: 8px 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    border-radius: var(--radius-card);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
     display: flex;
     justify-content: space-between;
@@ -440,7 +435,7 @@
     display: flex;
     align-items: center;
     background: var(--input-bg);
-    border-radius: 24px; 
+    border-radius: 28px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     box-sizing: border-box;
@@ -452,7 +447,7 @@
     background: rgb(35, 35, 40) !important;
     border: none !important;
     box-shadow: none !important;
-    border-radius: 18px; 
+    border-radius: var(--radius-card);
     margin: 0 12px;
     padding: 0 15px;
     min-height: 44px;
@@ -492,9 +487,9 @@
 .msg-repeat-btn {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 8px;
-    width: 38px;
-    height: 38px;
+    border-radius: 999px;
+    width: 34px;
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -527,9 +522,9 @@
 .msg-cancel-btn {
     background: rgba(239, 68, 68, 0.1);
     border: 1px solid rgba(239, 68, 68, 0.3);
-    border-radius: 8px;
-    width: 38px;
-    height: 38px;
+    border-radius: 999px;
+    width: 34px;
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;

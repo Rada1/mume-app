@@ -29,6 +29,8 @@ export class PipelineOrchestrator {
     ) {
         // Retrieve the freshest possible TokenizerContext from the stores
         const context = contextBuilder();
+        const tokenizer = Tokenizer.getInstance();
+        tokenizer.resetOccupantMatches();
 
         // Iterate over the text lines in this chunk and process them
         // using the single, synchronized context
@@ -36,9 +38,8 @@ export class PipelineOrchestrator {
              const textRaw = typeof entry === 'string' ? entry : entry.line;
              const isPrompt = typeof entry === 'string' ? false : entry.isPrompt;
              
-             const tokenizer = Tokenizer.getInstance();
              tokenizer.reset('room');
-             const tokens = tokenizer.tokenize(textRaw, context);
+             const tokens = tokenizer.tokenize(textRaw, context, undefined, true);
              if (isPrompt) {
                  (tokens as any).isPrompt = true;
              }

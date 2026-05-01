@@ -18,9 +18,14 @@ export interface CaptureParserDeps {
     setStatsLines: (lines: DrawerLine[]) => void;
     setPracticeLines: (lines: DrawerLine[]) => void;
     setWhoLines: (lines: DrawerLine[]) => void;
+    setWhoList: (list: string[]) => void;
     setScoreLines: (lines: DrawerLine[]) => void;
     setInfoLines: (lines: DrawerLine[]) => void;
     setQuestLines: (lines: DrawerLine[]) => void;
+    practiceHandler?: {
+        parsePracticeLine: (text: string) => unknown;
+        finalizePractice: () => void;
+    };
     registerEntity: (id: string, name: string, location: any, category?: string) => void;
     ansiConvert: any;
     captureStage: React.MutableRefObject<string>;
@@ -30,7 +35,8 @@ export function useCaptureParser(deps: CaptureParserDeps) {
     const {
         setCaptureSession,
         setInventoryLines, setEqLines, setStatsLines, setPracticeLines,
-        setWhoLines, setScoreLines, setInfoLines, setQuestLines, registerEntity,
+        setWhoLines, setWhoList, setScoreLines, setInfoLines, setQuestLines, registerEntity,
+        practiceHandler,
         ansiConvert, captureStage
     } = deps;
     
@@ -213,6 +219,12 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                     break;
                 case 'who':
                     setWhoLines(lines);
+                    setWhoList(
+                        lines
+                            .filter(l => !l.isHeader && l.text.trim().length > 0)
+                            .map(l => l.text.trim().split(/\s+/)[0])
+                            .filter(name => /^[A-Z][a-zA-ZÀ-ÿ'-]{1,19}$/.test(name))
+                    );
                     break;
                 case 'score':
                     setScoreLines(lines);
@@ -221,6 +233,8 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                     setInfoLines(lines);
                     break;
                 case 'practice':
+                    lines.forEach(line => practiceHandler?.parsePracticeLine(line.text));
+                    practiceHandler?.finalizePractice();
                     setPracticeLines(lines);
                     break;
                 case 'quests':
@@ -234,7 +248,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         sessionRef.current = null;
         setCaptureSession(null);
         captureStage.current = 'none';
-    }, [setInventoryLines, setEqLines, setStatsLines, setWhoLines, setScoreLines, setInfoLines, setPracticeLines, setQuestLines, setCaptureSession, captureStage]);
+    }, [setInventoryLines, setEqLines, setStatsLines, setWhoLines, setWhoList, setScoreLines, setInfoLines, setPracticeLines, setQuestLines, setCaptureSession, captureStage, practiceHandler]);
 
     const hasSession = useCallback(() => sessionRef.current !== null, [sessionRef]);
     const isSilent = useCallback(() => sessionRef.current?.isSilent || false, [sessionRef]);

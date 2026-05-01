@@ -122,9 +122,12 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
             });
         });
 
+        const allCatConfigs = [...DEFAULT_INLINE_CATEGORIES, ...(inlineCategories || [])];
         sortedSets.forEach(setId => {
             const canonicalSetId = canonicalizeCategoryId(setId);
             if (seen.has(canonicalSetId)) return;
+            const catConfig = allCatConfigs.find(c => c.id === canonicalSetId);
+            if (catConfig?.isGmcpCategory) return;
             seen.add(canonicalSetId);
             sections.push({
                 setId,
@@ -136,7 +139,8 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         return sections.sort((a, b) => b.weight - a.weight);
     }, [sortedSets, traitConfigs]);
     const isTacticalSet = ['warriorskilllist', 'rangerskilllist', 'clericspelllist', 'thiefskilllist', 'magespelllist', 'doors'].includes(safeSetId);
-    const targetContext = kind === 'npc' ? (formatNpcKeywordTarget(popoverState.context) || popoverState.context || null) : (popoverState.context || null);
+    const isCharacterKind = ['npc', 'enemy', 'neutral', 'ally', 'player'].includes(kind);
+    const targetContext = isCharacterKind ? (formatNpcKeywordTarget(popoverState.context) || popoverState.context || null) : (popoverState.context || null);
     const setMatches = (buttonSetId: string, targetSetId: string) => (
         buttonSetId === targetSetId ||
         canonicalizeCategoryId(buttonSetId) === canonicalizeCategoryId(targetSetId)
@@ -208,19 +212,25 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         return <CharacterSelectSection accountState={accountState} setAccountState={setAccountState} executeCommand={executeCommand} handleCharacterClick={(char) => { triggerHaptic?.(20); executeCommand(`play ${char.name}`); setPopoverState(null); }} />;
     }
 
-    const isInlineMenu = ['object', 'npc', 'player'].includes(kind) || ['inventorylist', 'equipmentlist', 'roomitems', 'roomnpcs', 'selection'].includes(safeSetId) || safeSetId.startsWith('object') || safeSetId.startsWith('npc');
-    const isTargetable = !isTacticalSet && (['selection', 'inventorylist', 'equipmentlist', 'npc', 'player', 'object-corpse'].includes(safeSetId) || ['player', 'npc'].includes(kind) || (kind === 'object' && location === 'room') || NPC_SUBCATEGORIES.includes(safeSetId) || relevantSets.includes(safeSetId));
+    const isInlineMenu = ['object', 'npc', 'player', 'ally', 'enemy', 'neutral'].includes(kind) || ['inventorylist', 'equipmentlist', 'roomitems', 'roomnpcs', 'selection'].includes(safeSetId) || safeSetId.startsWith('object') || safeSetId.startsWith('npc');
+    const isTargetable = !isTacticalSet && (['selection', 'inventorylist', 'equipmentlist', 'npc', 'player', 'object-corpse'].includes(safeSetId) || ['player', 'ally', 'npc', 'enemy', 'neutral'].includes(kind) || (kind === 'object' && location === 'room') || NPC_SUBCATEGORIES.includes(safeSetId) || relevantSets.includes(safeSetId));
+    const headerContext = isCharacterKind ? targetContext : popoverState.context;
+    const categoryLabel = isSetManager ? '' : (() => {
+        const source = safeSetId.replace(/^inline-/, '');
+        if (source === 'player') return 'Ally';
+        return source.replace(/-/g, ' ').split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    })();
 
     return (
         <div style={{ '--accent': themeColor || 'var(--accent)', '--set-accent': themeColor || 'var(--accent)' } as any}>
             <div className="popover-header" onPointerDown={(e) => { e.stopPropagation(); }} style={{ cursor: !isSetManager ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))', marginBottom: '4px', paddingBottom: '4px', color: 'var(--accent)', fontWeight: 'bold' }} onClick={() => { triggerHaptic?.(20); if (!isSetManager) setPopoverState({ ...popoverState, setId: 'setmanager' }); }}>
                 <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                     <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {isSetManager ? 'Main Menu' : ((selectedObjectIds?.size || 0) > 1 ? `${selectedObjectIds!.size} Items Selected` : (popoverState.context ? popoverState.context : (popoverState.direction ? `${safeSetId.toUpperCase()} (${popoverState.direction.toUpperCase()})` : safeSetId.replace(/^inline-?/, '').toUpperCase())))}
+                        {isSetManager ? 'Main Menu' : ((selectedObjectIds?.size || 0) > 1 ? `${selectedObjectIds!.size} Items Selected` : (headerContext ? headerContext : (popoverState.direction ? `${safeSetId.toUpperCase()} (${popoverState.direction.toUpperCase()})` : safeSetId.replace(/^inline-?/, '').toUpperCase())))}
                     </span>
-                    <span style={{ fontSize: '0.6rem', opacity: 0.6, fontWeight: 'normal', marginTop: '1px' }}>{popoverState.executeAndAssign ? 'select action to fire and remap button' : 'select action to fire'}</span>
+                    <span style={{ fontSize: '0.6rem', opacity: 0.6, fontWeight: 'normal', marginTop: '1px' }}>{popoverState.executeAndAssign ? 'select action to fire and remap button' : categoryLabel}</span>
                 </div>
-                {!isSetManager && (kind === 'object' || kind === 'npc' || kind === 'player') && (
+                {!isSetManager && (kind === 'object' || kind === 'npc' || kind === 'player' || kind === 'ally' || kind === 'enemy' || kind === 'neutral') && (
                     <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
                         {popoverState.context && <div title={`Help for ${popoverState.context}`} onClick={(e) => { e.stopPropagation(); triggerHaptic?.(20); executeCommand(`help ${popoverState.context}`, false, false, false, false, { fromUi: true }); setPopoverState(null); }} style={{ padding: '4px', color: 'var(--accent)', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', transition: 'all 0.2s ease' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}><CircleHelp size={16} /></div>}
                         <div onClick={(e) => { e.stopPropagation(); setIsChoosingCategory(!isChoosingCategory); }} style={{ padding: '4px 8px', fontSize: '0.65rem', background: isChoosingCategory ? 'var(--accent)' : 'rgba(255,255,255,0.1)', color: isChoosingCategory ? '#000' : 'var(--accent)', borderRadius: '4px', cursor: 'pointer', height: '24px', display: 'flex', alignItems: 'center' }}>TAG</div>

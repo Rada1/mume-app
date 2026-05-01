@@ -31,6 +31,8 @@ export interface EntityToken extends BaseToken {
         extraClasses?: string[];
         style?: React.CSSProperties;
         glowColor?: string;
+        occupantId?: string | number;
+        targetIndex?: number;
     };
 }
 

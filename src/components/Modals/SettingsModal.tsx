@@ -52,6 +52,8 @@ interface SettingsModalProps {
     setNpcColor: (val: string) => void;
     enemyColor: string;
     setEnemyColor: (val: string) => void;
+    neutralColor: string;
+    setNeutralColor: (val: string) => void;
     roomColor: string;
     setRoomColor: (val: string) => void;
     isBloomEnabled: boolean;
@@ -89,7 +91,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     disableSmoothScroll, setDisableSmoothScroll, isImmersionMode, setIsImmersionMode,
     isHighlighterEnabled, setIsHighlighterEnabled, objectColor, setObjectColor,
     playerColor, setPlayerColor, npcColor, setNpcColor,
-    enemyColor, setEnemyColor, roomColor, setRoomColor,
+    enemyColor, setEnemyColor, neutralColor, setNeutralColor, roomColor, setRoomColor,
     isBloomEnabled, setIsBloomEnabled,
     isTimestampEnabled, setIsTimestampEnabled, fontFamily, setFontFamily,
     isNewbieMode, setIsNewbieMode,
@@ -186,6 +188,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setNpcColor={setNpcColor}
                                 enemyColor={enemyColor}
                                 setEnemyColor={setEnemyColor}
+                                neutralColor={neutralColor}
+                                setNeutralColor={setNeutralColor}
                                 roomColor={roomColor}
                                 setRoomColor={setRoomColor}
                                 isBloomEnabled={isBloomEnabled}

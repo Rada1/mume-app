@@ -7,6 +7,7 @@
 
 import React from 'react';
 import { Token, EntityToken, AnsiToken, TextToken, InlineCategoryConfig, GmcpOccupant } from '../../types';
+import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
 
 export interface TokenizerContext {
     target?: string | null;
@@ -39,6 +40,7 @@ export class Tokenizer {
     private currentLocation: string = 'room';
     private currentParent: string | null = null;
     private currentStyle: React.CSSProperties = {};
+    private occupantMatchCounts: Record<string, number> = {};
 
     private static instance: Tokenizer | null = null;
 
@@ -59,13 +61,20 @@ export class Tokenizer {
         this.currentStyle = {};
     }
 
+    public resetOccupantMatches() {
+        this.occupantMatchCounts = {};
+    }
+
     /**
      * Main entry point for tokenizing game output.
      * Parses mixed ANSI and XML tags into a unified AST.
      */
-    public tokenize(textRaw: string, context: TokenizerContext, initialLoc?: string): Token[] {
+    public tokenize(textRaw: string, context: TokenizerContext, initialLoc?: string, preserveOccupantMatches: boolean = false): Token[] {
         if (initialLoc) {
             this.currentLocation = initialLoc;
+        }
+        if (!preserveOccupantMatches) {
+            this.resetOccupantMatches();
         }
         const tokens: Token[] = [];
         
@@ -198,7 +207,7 @@ export class Tokenizer {
         if (players.length > 0) {
             const validNames = players.filter(n => n.length > 2);
             if (validNames.length > 0) {
-                const namePattern = `(${validNames.join('|')})`;
+                const namePattern = `(${validNames.map(n => this.escapeRegExp(n)).join('|')})`;
                 const nameRegex = new RegExp(namePattern, 'g');
                 
                 let lastIdx = 0;
@@ -265,33 +274,37 @@ export class Tokenizer {
         if (candidates.length === 0) return null;
 
         const escaped = candidates.map(c => this.escapeRegExp(c.pattern));
-        const pattern = new RegExp(`\\b(${escaped.join('|')})\\b`, 'gi');
+        const pattern = new RegExp(`(^|[^a-zA-Z0-9\\u00C0-\\u00FF])(${escaped.join('|')})(?=$|[^a-zA-Z0-9\\u00C0-\\u00FF])`, 'gi');
         const out: Token[] = [];
         let lastIdx = 0;
         let matched = false;
         let match;
 
         while ((match = pattern.exec(decoded)) !== null) {
-            const content = match[1];
-            const candidate = candidates.find(c => c.pattern.toLowerCase() === content.toLowerCase());
+            const boundary = match[1] || '';
+            const content = match[2];
+            const startIdx = match.index + boundary.length;
+            const candidate = this.resolveOccupantCandidate(candidates, content, occupants);
             if (!candidate) continue;
 
-            if (match.index > lastIdx) {
-                this.pushText(decoded.substring(lastIdx, match.index), out, style);
+            if (startIdx > lastIdx) {
+                this.pushText(decoded.substring(lastIdx, startIdx), out, style);
             }
 
             const gmcpType = candidate.occupant.type!.toLowerCase();
+            const commandTarget = this.getOccupantCommandTarget(candidate.occupant, content, occupants);
             out.push({
                 type: 'entity',
                 content,
                 entityId: String(candidate.occupant.id ?? `auto-${content.toLowerCase().replace(/[^a-z0-9]/g, '-')}`),
                 metadata: {
-                    kind: gmcpType === 'npc' ? 'npc' : 'player',
+                    kind: gmcpType === 'npc' ? 'npc' : gmcpType === 'enemy' ? 'enemy' : gmcpType === 'neutral' ? 'neutral' : gmcpType === 'ally' ? 'ally' : 'player',
                     category: `inline-${gmcpType}`,
-                    context: content,
+                    context: commandTarget,
                     location: 'room',
                     action: 'menu',
-                    style
+                    style,
+                    occupantId: candidate.occupant.id
                 }
             } as EntityToken);
 
@@ -312,6 +325,62 @@ export class Tokenizer {
             .map(value => value.trim());
     }
 
+    private getBaseCommandKeyword(occupant: GmcpOccupant, fallback: string): string {
+        return getOccupantCommandKeyword(occupant, fallback);
+    }
+
+    private getMatchingOccupants(occupants: GmcpOccupant[], target: GmcpOccupant, fallback: string): GmcpOccupant[] {
+        const base = this.getBaseCommandKeyword(target, fallback);
+        return occupants.filter(occupant => this.getBaseCommandKeyword(occupant, fallback) === base);
+    }
+
+    private getOccupantCommandTarget(occupant: GmcpOccupant, fallback: string, occupants: GmcpOccupant[]): string {
+        const base = this.getBaseCommandKeyword(occupant, fallback);
+        const matching = this.getMatchingOccupants(occupants, occupant, fallback);
+        const index = matching.findIndex(entry => String(entry.id) === String(occupant.id));
+        return matching.length > 1 && index >= 0 ? `${index + 1}.${base}` : base;
+    }
+
+    private resolveOccupantCandidate(
+        candidates: Array<{ occupant: GmcpOccupant; pattern: string }>,
+        content: string,
+        occupants: GmcpOccupant[]
+    ): { occupant: GmcpOccupant; pattern: string } | undefined {
+        const exact = candidates.filter(c => c.pattern.toLowerCase() === content.toLowerCase());
+        if (exact.length === 0) return undefined;
+
+        const base = this.getBaseCommandKeyword(exact[0].occupant, content);
+        const sameTarget = occupants.filter(occupant => this.getBaseCommandKeyword(occupant, content) === base);
+        const used = this.occupantMatchCounts[base] || 0;
+        const occupant = sameTarget[used] || sameTarget[sameTarget.length - 1] || exact[0].occupant;
+        this.occupantMatchCounts[base] = used + 1;
+        return exact.find(c => String(c.occupant.id) === String(occupant.id)) || { occupant, pattern: content };
+    }
+
+    private stripOccupantMarkers(value: string): string {
+        return value.trim().replace(/^[\*\-]+|[\*\-]+$/g, '').trim().toLowerCase();
+    }
+
+    private resolveXmlOccupant(xmlId: string | null, content: string, occupants: GmcpOccupant[]): GmcpOccupant | undefined {
+        if (xmlId) return occupants.find(o => String(o.id) === xmlId);
+
+        const lowerContent = this.stripOccupantMarkers(content);
+        const matches = occupants.filter(occupant => {
+            const names = [occupant.name, occupant.short, occupant.keyword]
+                .filter((value): value is string => !!value)
+                .map(value => this.stripOccupantMarkers(value).replace(/-/g, ' '));
+            return names.some(name => lowerContent.includes(name) || name.includes(lowerContent));
+        });
+        if (matches.length === 0) return undefined;
+
+        const base = this.getBaseCommandKeyword(matches[0], content);
+        const sameTarget = occupants.filter(occupant => this.getBaseCommandKeyword(occupant, content) === base);
+        const used = this.occupantMatchCounts[base] || 0;
+        const occupant = sameTarget[used] || sameTarget[sameTarget.length - 1] || matches[0];
+        this.occupantMatchCounts[base] = used + 1;
+        return occupant;
+    }
+
     private escapeRegExp(value: string): string {
         return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
@@ -330,7 +399,7 @@ export class Tokenizer {
     }
 
     private emitEntity(activeEntity: any, tokens: Token[], context: TokenizerContext) {
-        const { kind, metadata, content } = activeEntity;
+        let { kind, metadata, content } = activeEntity;
         if (!content.trim()) return;
 
         let category = 'none';
@@ -346,7 +415,24 @@ export class Tokenizer {
         else if (kind === 'exit') category = 'exit';
 
         if (metadata.type) {
-            category = `inline-${metadata.type.toLowerCase()}`;
+            const t = metadata.type.toLowerCase();
+            category = `inline-${t}`;
+            if (t === 'enemy' || t === 'ally' || t === 'neutral' || t === 'npc') {
+                kind = t;
+            }
+        }
+
+        // Text-marker fallback when no explicit type attribute is present:
+        // *name* → enemy, -name- → neutral. MUME often wraps the desc this way.
+        if (!metadata.type && (kind === 'npc' || kind === 'player' || kind === 'ally')) {
+            const trimmed = content.trim();
+            if (/^\*.+\*$/.test(trimmed)) {
+                kind = 'enemy';
+                category = 'inline-enemy';
+            } else if (/^-.+-$/.test(trimmed)) {
+                kind = 'neutral';
+                category = 'inline-neutral';
+            }
         }
 
         // --- Room Context Override ---
@@ -373,19 +459,38 @@ export class Tokenizer {
             }
         }
 
+        // For character entities, resolve the command keyword from GMCP occupant data.
+        // MUME's XML may tag a race/title word (e.g. "Noldo") rather than the actual
+        // character name ("Elletestmage"). The GMCP name is the canonical keyword.
+        let resolvedContext = content;
+        let resolvedEntityId = metadata.id || `auto-${content.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+        const isCharacterKind = kind === 'player' || kind === 'npc' || kind === 'ally' || kind === 'enemy' || kind === 'neutral';
+        if (isCharacterKind && context.currentOccupants?.length) {
+            // Resolve GMCP occupant using ID first (unambiguous), then GMCP name.
+            // MUME XML tags may carry an id attribute that maps directly to Room.Chars id.
+            // If not, match by name: GMCP name is a substring of (or equal to) the XML content.
+            const xmlId = metadata.id != null ? String(metadata.id) : null;
+            const matched = this.resolveXmlOccupant(xmlId, content, context.currentOccupants);
+            if (matched) {
+                resolvedContext = this.getOccupantCommandTarget(matched, content, context.currentOccupants);
+                resolvedEntityId = String(matched.id ?? resolvedEntityId);
+            }
+        }
+
         tokens.push({
             type: 'entity',
             content,
-            entityId: metadata.id || `auto-${content.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
+            entityId: resolvedEntityId,
             metadata: {
                 kind,
                 category,
-                context: content,
+                context: resolvedContext,
                 location: this.currentLocation,
                 parent: this.currentParent,
                 action: 'menu',
                 style: activeEntity.style,
                 glowColor,
+                occupantId: resolvedEntityId,
                 ...metadata
             }
         } as EntityToken);

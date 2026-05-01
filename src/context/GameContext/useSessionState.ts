@@ -159,11 +159,29 @@ export const useSessionState = (
     const [rumble, setRumble] = useState(false);
     const [deathRoomId, setDeathRoomId] = useState<string | null>(null);
     const [gameTime, setGameTime] = useState<import('../../types').MumeTime | null>(null);
+
     const [xpHistory, _setXpHistory] = useState({ old: 0, new: 0 });
     const [xpEvent, _setXpEvent] = useState(0);
-    const triggerXpTicker = () => {};
+    const triggerXpTicker = useCallback((xp?: number) => {
+        if (xp !== undefined) {
+            _setXpHistory(prev => {
+                if (prev.new === xp) return prev;
+                return { old: prev.new, new: xp };
+            });
+        }
+        _setXpEvent(prev => prev + 1);
+    }, []);
+
+    // Sync XP changes from the store (GMCP) to the ticker state
+    useEffect(() => {
+        const currentXp = vStore.characterInfo.xp;
+        if (currentXp !== undefined && currentXp !== xpHistory.new) {
+            triggerXpTicker(currentXp);
+        }
+    }, [vStore.characterInfo.xp, xpHistory.new, triggerXpTicker]);
 
     useEffect(() => { roomNameRef.current = roomName; }, [roomName]);
+
     useEffect(() => { roomDescRefInternal.current = roomDesc; }, [roomDesc]);
     useEffect(() => {
         if (roomDescRef) (roomDescRef as any).current = roomDesc;

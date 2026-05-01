@@ -94,6 +94,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setNpcColor,
         enemyColor,
         setEnemyColor,
+        neutralColor,
+        setNeutralColor,
         roomColor,
         setRoomColor,
         isBloomEnabled,
@@ -237,6 +239,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setNpcColor={setNpcColor}
                     enemyColor={enemyColor}
                     setEnemyColor={setEnemyColor}
+                    neutralColor={neutralColor}
+                    setNeutralColor={setNeutralColor}
                     roomColor={roomColor}
                     setRoomColor={setRoomColor}
                     isEditMode={btn.isEditMode}
@@ -363,7 +367,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 roomColor={roomColor}
             />
 
-            <DrawerManager />
+
 
 
             {keywordEditState && (

@@ -76,7 +76,9 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         }
 
         const effectiveContext = (context && keywordOverrides[context]) ? keywordOverrides[context] : context;
-        const isNpcContext = popoverState?.kind === 'npc' || popoverState?.category?.startsWith('inline-npc') || popoverState?.setId?.startsWith('npc');
+        const isNpcContext = ['npc', 'enemy', 'neutral', 'ally', 'player'].includes(popoverState?.kind || '') ||
+            ['inline-npc', 'inline-enemy', 'inline-neutral', 'inline-ally'].some(prefix => popoverState?.category?.startsWith(prefix)) ||
+            !!popoverState?.setId?.startsWith('npc');
         console.log('[useButtonClicks] context resolution:', { context, effectiveContext, keywordOverride: context ? keywordOverrides[context] : undefined });
         let finalContext = (isNpcContext ? formatNpcKeywordTarget(effectiveContext) : sanitizeGameTarget(effectiveContext)) || effectiveContext || '';
         console.log('[useButtonClicks] finalContext:', finalContext);

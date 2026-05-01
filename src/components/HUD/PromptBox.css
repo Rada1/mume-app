@@ -18,17 +18,19 @@
 }
 
 .prompt-box-content {
-    background: rgba(10, 13, 21, 0.4) !important;
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
-    border-radius: 8px 8px 0 0;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-top: none !important;
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+
     padding: 6px 12px 2px 12px;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2) !important;
+    box-shadow: none !important;
     position: relative;
+
     overflow: visible;
     min-height: 44px;
 }
@@ -244,7 +246,7 @@
     background-color: currentColor;
     border-radius: 1px;
     z-index: 2;
-    box-shadow: 0 0 10px currentColor; /* Outer glow for the block */
+    box-shadow: 0 0 4px currentColor; /* Outer glow for the block */
 }
 
 .status-bar-ghost {
@@ -256,10 +258,10 @@
     z-index: 1;
 }
 
-.hp .status-bar-ghost { background-color: #ff0000 !important; box-shadow: 0 0 12px rgba(255, 0, 0, 0.8); }
-.mana .status-bar-ghost { background-color: #bf40ff !important; box-shadow: 0 0 12px rgba(191, 64, 255, 0.8); }
-.move .status-bar-ghost { background-color: #22ff55 !important; box-shadow: 0 0 12px rgba(34, 255, 85, 0.8); }
-.opponent .status-bar-ghost { background-color: #ff0000 !important; box-shadow: 0 0 12px rgba(255, 0, 0, 0.8); }
+.hp .status-bar-ghost { background-color: #ff0000 !important; box-shadow: 0 0 5px rgba(255, 0, 0, 0.4); }
+.mana .status-bar-ghost { background-color: #bf40ff !important; box-shadow: 0 0 5px rgba(191, 64, 255, 0.4); }
+.move .status-bar-ghost { background-color: #22ff55 !important; box-shadow: 0 0 5px rgba(34, 255, 85, 0.4); }
+.opponent .status-bar-ghost { background-color: #ff0000 !important; box-shadow: 0 0 5px rgba(255, 0, 0, 0.4); }
 
 .hp .status-bar-fill { color: #ff8080; }
 .hp .status-bar-segment { border-color: rgba(255, 128, 128, 0.5); }
@@ -497,5 +499,16 @@
     }
     .opp-bars {
         width: 80px;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 10px) skewX(-20deg);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0) skewX(-20deg);
     }
 }

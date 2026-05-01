@@ -165,8 +165,10 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         const menuDisplay = targetEl.getAttribute('data-menu-display') as 'dial' | 'list' || undefined;
         const rawContextStr = context || targetEl.innerText.trim();
         const effectiveContextStr = rawContextStr && keywordOverridesRef.current[rawContextStr] ? keywordOverridesRef.current[rawContextStr] : rawContextStr;
-        const isNpcContext = kind === 'npc' || category?.startsWith('inline-npc') || cmd?.startsWith('npc');
-        const contextStr = (isNpcContext ? formatNpcKeywordTarget(effectiveContextStr) : sanitizeGameTarget(effectiveContextStr)) || effectiveContextStr;
+        const isCharacterContext = ['npc', 'enemy', 'neutral', 'ally', 'player'].includes(kind || '') ||
+            ['inline-npc', 'inline-enemy', 'inline-neutral', 'inline-ally'].some(prefix => category?.startsWith(prefix)) ||
+            !!cmd?.startsWith('npc');
+        const contextStr = (isCharacterContext ? formatNpcKeywordTarget(effectiveContextStr) : sanitizeGameTarget(effectiveContextStr)) || effectiveContextStr;
 
         const entityId = targetEl.getAttribute('data-id') || '';
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { LightingType, WeatherType } from '../../types';
 import Rain from './Rain';
+import { Embers } from './Embers';
 
 interface EnvironmentEffectsProps {
     lighting: LightingType;
@@ -48,6 +49,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         />
                         {(weather === 'rain' || weather === 'heavy-rain') && <Rain heavy={weather === 'heavy-rain'} />}
                         {weather === 'snow' && <div className="weather-layer weather-snow" />}
+                        <Embers count={lighting === 'artificial' ? 25 : 12} />
                     </>
                 )}
                 {/* Fog renders regardless of immersion mode — it's a gameplay-relevant state */}

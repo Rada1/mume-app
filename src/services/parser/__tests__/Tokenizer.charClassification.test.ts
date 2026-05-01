@@ -27,7 +27,7 @@ describe('Tokenizer — char inline button assignment (GMCP source-of-truth cont
             );
             const ent = findEntityFor(tokens, 'Frodo');
             expect(ent?.metadata?.category).toBe('inline-ally');
-            expect(ent?.metadata?.kind).toBe('player');
+            expect(ent?.metadata?.kind).toBe('ally');
         });
 
         it('emits inline-enemy for type=enemy', () => {
@@ -37,7 +37,8 @@ describe('Tokenizer — char inline button assignment (GMCP source-of-truth cont
             );
             const ent = findEntityFor(tokens, 'Sauron');
             expect(ent?.metadata?.category).toBe('inline-enemy');
-            expect(ent?.metadata?.kind).toBe('player');
+            expect(ent?.metadata?.kind).toBe('enemy');
+            expect(ent?.metadata?.context).toBe('*Sauron*');
         });
 
         it('emits inline-neutral for type=neutral', () => {
@@ -47,7 +48,8 @@ describe('Tokenizer — char inline button assignment (GMCP source-of-truth cont
             );
             const ent = findEntityFor(tokens, 'Gollum');
             expect(ent?.metadata?.category).toBe('inline-neutral');
-            expect(ent?.metadata?.kind).toBe('player');
+            expect(ent?.metadata?.kind).toBe('neutral');
+            expect(ent?.metadata?.context).toBe('-Gollum-');
         });
 
         it('emits inline-npc for type=npc', () => {
@@ -121,6 +123,75 @@ describe('Tokenizer — char inline button assignment (GMCP source-of-truth cont
                 t => t.type === 'entity' && t.content.trim() === 'man'
             );
             expect(standaloneMan).toBeUndefined();
+        });
+    });
+
+    describe('GMCP command target resolution', () => {
+        it('keeps GMCP enemy markers instead of injecting new ones', () => {
+            const tokens = Tokenizer.tokenize(
+                '*orc* snarls.',
+                makeContext([{ id: '9', name: '*orc*', keyword: '*orc*', type: 'enemy' }])
+            );
+            const ent = findEntityFor(tokens, '*orc*');
+            expect(ent?.entityId).toBe('9');
+            expect(ent?.metadata?.context).toBe('*orc*');
+        });
+
+        it('targets enemy and neutral command keywords by capitalized name inside markers', () => {
+            const tokens = Tokenizer.tokenize(
+                '*an Orc* stands with -Brolg the dreadful Orc-.',
+                makeContext([
+                    { id: '20', name: '*an Orc*', type: 'enemy' },
+                    { id: '21', name: '-Brolg the dreadful Orc-', type: 'neutral' }
+                ])
+            );
+            const entities = tokens.filter((t): t is EntityToken => t.type === 'entity');
+            expect(entities.map(e => e.metadata?.context)).toEqual(['*Orc*', '-Brolg-']);
+        });
+
+        it('assigns duplicate occupants by GMCP id and ordinal keyword', () => {
+            const tokens = Tokenizer.tokenize(
+                'pack horse waits beside pack horse.',
+                makeContext([
+                    { id: '10', name: 'pack horse', keyword: 'pack-horse', type: 'npc' },
+                    { id: '11', name: 'pack horse', keyword: 'pack-horse', type: 'npc' }
+                ])
+            );
+            const entities = tokens.filter((t): t is EntityToken => t.type === 'entity');
+            expect(entities.map(e => e.entityId)).toEqual(['10', '11']);
+            expect(entities.map(e => e.metadata?.context)).toEqual(['1.pack-horse', '2.pack-horse']);
+        });
+
+        it('assigns XML-tagged duplicate occupants by occurrence too', () => {
+            const tokens = Tokenizer.tokenize(
+                'A <character>pack horse</character> waits beside a <character>pack horse</character>.',
+                makeContext([
+                    { id: '10', name: 'pack horse', keyword: 'pack-horse', type: 'npc' },
+                    { id: '11', name: 'pack horse', keyword: 'pack-horse', type: 'npc' }
+                ])
+            );
+            const entities = tokens.filter((t): t is EntityToken => t.type === 'entity');
+            expect(entities.map(e => e.entityId)).toEqual(['10', '11']);
+            expect(entities.map(e => e.metadata?.context)).toEqual(['1.pack-horse', '2.pack-horse']);
+        });
+
+        it('can preserve duplicate occupant assignment across room-description lines', () => {
+            const tokenizer = Tokenizer.getInstance();
+            const context = makeContext([
+                { id: '10', name: 'pack horse', keyword: 'pack-horse', type: 'npc' },
+                { id: '11', name: 'pack horse', keyword: 'pack-horse', type: 'npc' }
+            ]);
+
+            tokenizer.resetOccupantMatches();
+            tokenizer.reset('room');
+            const first = tokenizer.tokenize('A <character>pack horse</character> is standing here.', context, undefined, true);
+            tokenizer.reset('room');
+            const second = tokenizer.tokenize('A <character>pack horse</character> is standing here.', context, undefined, true);
+
+            const firstEntity = first.find((t): t is EntityToken => t.type === 'entity');
+            const secondEntity = second.find((t): t is EntityToken => t.type === 'entity');
+            expect(firstEntity?.metadata?.context).toBe('1.pack-horse');
+            expect(secondEntity?.metadata?.context).toBe('2.pack-horse');
         });
     });
 

@@ -52,7 +52,6 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             return accountStageRef.current === 'stat-editing';
         }
 
-        console.log(`[AccountParser] parseAccountLine: line="${cleanLine.substring(0, 30)}", isPrompt=${isPrompt}, gameState=${gameStateRef.current}`);
 
         // Sync silent listing ref with state
         if (accountState.isGathering) {

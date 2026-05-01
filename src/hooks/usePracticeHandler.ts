@@ -59,6 +59,26 @@ export function usePracticeHandler(
         if (isPracticeActiveRef.current) {
             // MUME output columns: [Skill Name]  [Sessions]  [Knowledge]  [Difficulty]  [Class]
             const parts = text.trim().split(/\s{2,}/).filter(p => p.length > 0);
+            const knowledgeMap: Record<string, string> = {
+                'awful': '15%', 'bad': '30%', 'poor': '45%', 'average': '60%', 'fair': '70%', 'good': '80%', 'very good': '90%', 'excellent': '98%', 'superb': '100%',
+            };
+
+            const compactMatch = text.trim().match(/^(.+?)\s+(very good|awful|bad|poor|average|fair|good|excellent|superb|\d+%)\s+(.+?)\s+(ranger|warrior|mage|cleric|thief|none)(?:\s+.*)?$/i);
+            if (compactMatch && parts.length < 2) {
+                const [, name, knowledgeStr, difficulty, rawClass] = compactMatch;
+                const isExplicitNone = rawClass.toLowerCase() === 'none';
+                const skillClass = isExplicitNone ? 'Ranger' : rawClass.charAt(0).toUpperCase() + rawClass.slice(1).toLowerCase();
+                const mappedPercentage = knowledgeMap[knowledgeStr.toLowerCase()];
+                const proficiency = mappedPercentage ? parseInt(mappedPercentage) : (parseInt(knowledgeStr) || 0);
+
+                const skill: PracticeSkill = {
+                    name: name.trim(), sessions: '', knowledge: knowledgeStr, proficiency, difficulty: difficulty.trim(), advice: '', skillClass
+                };
+
+                parsedSkillsRef.current.push(skill);
+                console.log(`[PracticeHandler] Parsed compact skill: "${skill.name}" | Knowledge: ${skill.knowledge} | Class: ${skill.skillClass}`);
+                return skill;
+            }
 
             if (parts.length >= 2) {
                 const name = parts[0].trim();
@@ -80,10 +100,6 @@ export function usePracticeHandler(
 
                 // Multi-word values (e.g. "Easy to improve") are advice, not a class name
                 if (!skillClass || isExplicitNone || skillClass.includes(' ')) skillClass = 'Ranger';
-
-                const knowledgeMap: Record<string, string> = {
-                    'awful': '15%', 'bad': '30%', 'poor': '45%', 'average': '60%', 'fair': '70%', 'good': '80%', 'very good': '90%', 'excellent': '98%', 'superb': '100%',
-                };
 
                 const mappedPercentage = knowledgeMap[knowledgeStr.toLowerCase()];
                 // Keep percentage if numeric, otherwise keep word

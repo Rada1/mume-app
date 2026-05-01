@@ -14,9 +14,6 @@ import { useButtonEditor } from '../../hooks/useButtonEditor';
 import { useViewport } from '../../hooks/useViewport';
 import { useEnvironment } from '../../hooks/useEnvironment';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
- 
-
-
 
 export interface VitalsContextType {
     stats: GameStats;
@@ -96,6 +93,8 @@ export interface LogData {
     toggleObjectSelection: (id: string, setId?: string, context?: string) => void;
     clearObjectSelection: () => void;
     lastCommIdBySenderRef?: React.MutableRefObject<Map<string, string>>;
+    messageActivity: number;
+    bumpActivity: () => void;
 }
 
 export interface LogContextType extends LogData {
@@ -167,7 +166,6 @@ export interface UIContextType {
     toggleMap: () => void;
     characterName: string | null;
     isRecording: boolean;
-    duration: number;
     duration: number;
     replayer: {
         log: import('../../types').SessionLog | null;
@@ -354,8 +352,6 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     setUiMode: (val: import('../../types').UiMode) => void;
     disableSmoothScroll: boolean;
     setDisableSmoothScroll: (val: boolean) => void;
-    isImmersionMode: boolean;
-    setIsImmersionMode: (val: boolean) => void;
     isImmersionMode: boolean;
     setIsImmersionMode: (val: boolean) => void;
     isBloomEnabled: boolean;
@@ -577,4 +573,6 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     accountStageRef: MutableRefObject<import('../../types').AccountStage>;
     gameTime: import('../../types').MumeTime | null;
     setGameTime: Dispatch<SetStateAction<import('../../types').MumeTime | null>>;
+    messageActivity: number;
+    bumpActivity: () => void;
 }

@@ -192,68 +192,44 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     />
                 </div>
 
-                {!isMobile && (
-                    <div className={`line-cluster-container desktop-inline ${!showControls && !btn.isEditMode ? 'hud-hidden' : ''}`}>
-                        <LineCluster
-                            isEditMode={btn.isEditMode}
-                            handleDragStart={handleDragStart as any}
-                            buttons={btn.buttons}
-                            selectedButtonIds={btn.selectedButtonIds}
-                            dragState={btn.dragState}
-                            handleButtonClick={handleButtonClick}
-                            wasDraggingRef={wasDraggingRef as any}
-                            triggerHaptic={triggerHaptic}
-                            setPopoverState={setPopoverState}
-                            setEditingButtonId={btn.setEditingButtonId}
-                            setSelectedIds={btn.setSelectedIds}
-                            activePrompt={activePrompt}
-                            executeCommand={executeCommand}
-                            setCommandPreview={setCommandPreview}
-                            heldButton={heldButton}
-                            setHeldButton={setHeldButton}
-                            joystick={joystick}
-                            target={target}
-                            isGridEnabled={btn.isGridEnabled}
-                            gridSize={btn.gridSize}
-                            setActiveSet={btn.setActiveSet}
-                            setButtons={btn.setButtons}
-                            isMobile={isMobile}
-                        />
-                    </div>
-                )}
+
+                {/* Tactical LineCluster is now in DrawerManager (under the map) on desktop */}
+
 
                 {/* Mobile portrait LineCluster is rendered inside MapperCluster (near the map gutter) */}
             </div>
 
-            <PromptBox
-                processMessageHtml={processMessageHtml}
-                processMessageTokens={processMessageTokens}
-                onWimpyChange={!isSpectateMode ? handleWimpyChange : undefined}
-            />
-
-            {/* Render InputArea only on desktop, landscape mobile, or during account phase 
-                This prevents the duplicate command bar in portrait mobile play mode. */}
-            {((gameState === 'account' && (isLandscape || !isMobile)) || (!isMobile && !(viewport as any).isForcePortrait) || isLandscape) && (
-                <InputArea
-                    input={input}
-                    setInput={setInput}
-                    onSend={handleSend}
-                    onSwipe={handleInputSwipe}
-                    isMobile={isMobile}
-                    isKeyboardOpen={viewport.isKeyboardOpen}
-                    commandPreview={commandPreview}
-                    terrain={currentTerrain}
-                    spatButtons={spatButtons}
-                    setActiveSet={btn.setActiveSet}
-                    executeCommand={executeCommand}
-                    setSpatButtons={setSpatButtons}
-                    setPopoverState={setPopoverState}
-                    parley={parley}
-                    setParley={setParley}
-                    whoList={whoList}
-                    gameState={gameState}
+            <div className="control-card-wrapper">
+                <PromptBox
+                    processMessageHtml={processMessageHtml}
+                    processMessageTokens={processMessageTokens}
+                    onWimpyChange={!isSpectateMode ? handleWimpyChange : undefined}
                 />
-            )}
+
+                {/* Render InputArea only on desktop, landscape mobile, or during account phase 
+                    This prevents the duplicate command bar in portrait mobile play mode. */}
+                {((gameState === 'account' && (isLandscape || !isMobile)) || (!isMobile && !(viewport as any).isForcePortrait) || isLandscape) && (
+                    <InputArea
+                        input={input}
+                        setInput={setInput}
+                        onSend={handleSend}
+                        onSwipe={handleInputSwipe}
+                        isMobile={isMobile}
+                        isKeyboardOpen={viewport.isKeyboardOpen}
+                        commandPreview={commandPreview}
+                        terrain={currentTerrain}
+                        spatButtons={spatButtons}
+                        setActiveSet={btn.setActiveSet}
+                        executeCommand={executeCommand}
+                        setSpatButtons={setSpatButtons}
+                        setPopoverState={setPopoverState}
+                        parley={parley}
+                        setParley={setParley}
+                        whoList={whoList}
+                        gameState={gameState}
+                    />
+                )}
+            </div>
         </div>
     );
 };

@@ -28,6 +28,8 @@ export interface RenderContext {
     inlineCategories?: import('../../../types').InlineCategoryConfig[];
     playerColor?: string;
     npcColor?: string;
+    enemyColor?: string;
+    neutralColor?: string;
     objectColor?: string;
     opponentName?: string | null;
     opponentId?: string | null;

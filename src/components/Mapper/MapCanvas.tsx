@@ -53,6 +53,7 @@ interface MapCanvasProps {
     inlineCategories?: import('../../types').InlineCategoryConfig[];
     playerColor?: string;
     npcColor?: string;
+    enemyColor?: string;
     objectColor?: string;
     opponentName?: string | null;
     opponentId?: string | null;
@@ -72,7 +73,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
-        roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, objectColor,
+        roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor,
         opponentName, opponentId, deathRoomId
     } = props;
 
@@ -83,7 +84,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
-        roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, objectColor,
+        roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor,
         opponentName, opponentId, deathRoomId
     });
 

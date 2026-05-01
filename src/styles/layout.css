@@ -54,8 +54,8 @@
     width: 100%;
     z-index: 5000;
     overflow: visible; /* Show tactical buttons on the right */
-    padding: 10px;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    padding: var(--drawer-margin) 10px;
+    padding-bottom: calc(var(--drawer-margin) + env(safe-area-inset-bottom, 0px));
     box-sizing: border-box;
     pointer-events: none;
     transition: padding-bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -301,7 +301,7 @@
     border: 1px solid rgba(255, 255, 255, 0.15);
     color: var(--text-primary);
     padding: 8px 14px;
-    border-radius: 20px;
+    border-radius: var(--radius-card);
     font-size: 0.7rem;
     font-weight: 800;
     letter-spacing: 0.05em;
@@ -400,3 +400,77 @@
     100% { box-shadow: 0 0 8px rgba(255,180,0,0.25); border-color: rgba(255,180,0,0.5); }
 }
 
+/* --- Control Card (Frosted Glass) --- */
+.control-card-wrapper {
+    display: flex;
+    flex-direction: column;
+    background: rgba(15, 15, 15, 0.35);
+    backdrop-filter: blur(24px) saturate(1.2);
+    -webkit-backdrop-filter: blur(24px) saturate(1.2);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-card);
+    padding: 0;
+    margin-top: 12px;
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    width: 100%;
+    box-sizing: border-box;
+    pointer-events: auto;
+    z-index: var(--z-hud-interactive);
+    overflow: hidden; /* Keep blur within rounded corners */
+}
+
+.control-card-wrapper .prompt-box-container {
+    margin-bottom: 0 !important;
+}
+
+.control-card-wrapper .prompt-box-content {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.control-card-wrapper .input-area {
+    margin-top: 0 !important;
+    background: transparent !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* On mobile portrait, we apply a refined, balanced floating card styling */
+@media (max-width: 1024px) and (orientation: portrait) {
+    .control-card-wrapper {
+        background: rgba(15, 15, 15, 0.45) !important;
+        backdrop-filter: blur(24px) saturate(1.2) !important;
+        -webkit-backdrop-filter: blur(24px) saturate(1.2) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        border-radius: var(--radius-card) !important;
+        padding: 0 !important;
+        width: 97% !important; /* Maximized width while keeping a tiny floating gap */
+        margin: 6px auto 6px auto !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+        overflow: hidden;
+    }
+    
+    .control-card-wrapper .input-area {
+        border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+        padding: 0 10px 4px 10px !important;
+    }
+}
+
+.in-combat .control-card-wrapper {
+    background: rgba(25, 15, 15, 0.55); /* Neutralized combat tint to match embers/dark theme */
+    border-color: rgba(239, 68, 68, 0.3) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 15px rgba(239, 68, 68, 0.1) !important;
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+    .in-combat .control-card-wrapper {
+        background: rgba(25, 15, 15, 0.65) !important; /* Slightly darker in combat on mobile */
+        border-color: rgba(239, 68, 68, 0.45) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7), 0 0 15px rgba(239, 68, 68, 0.15) !important;
+    }
+}

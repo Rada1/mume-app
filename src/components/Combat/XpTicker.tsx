@@ -9,6 +9,7 @@ interface XpTickerProps {
 const XpTicker: React.FC<XpTickerProps> = ({ isLandscape, align = 'center' }) => {
     const { xpHistory, xpEvent } = useVitals();
     
+
     const [isVisible, setIsVisible] = useState(false);
     const [displayDelta, setDisplayDelta] = useState(0);
     const [isBumping, setIsBumping] = useState(false);
@@ -18,35 +19,42 @@ const XpTicker: React.FC<XpTickerProps> = ({ isLandscape, align = 'center' }) =>
     const sessionActiveRef = useRef<boolean>(false);
     
     const totalAccumulatedRef = useRef<number>(0);
-    const lastProcessedXpRef = useRef<number>(xpHistory.new);
+    const lastTotalXpRef = useRef<number>(xpHistory.new);
     const currentDisplayRef = useRef<number>(0);
 
-    // Initialize lastProcessedXpRef on mount or when it first becomes non-zero
+    // Track the absolute total to detect jumps
     useEffect(() => {
-        if (xpHistory.new > 0 && lastProcessedXpRef.current === 0) {
-            lastProcessedXpRef.current = xpHistory.new;
-        }
-    }, [xpHistory.new]);
-
-    useEffect(() => {
-        // Calculate the jump in total XP since the last time we processed an update
-        const jump = xpHistory.new - lastProcessedXpRef.current;
-
-        // XP decreased (death penalty) — reset baseline so future kills register correctly
-        if (jump < 0) {
-            lastProcessedXpRef.current = xpHistory.new;
+        // Initialization: if we were at 0 and now have a real value, 
+        // just set the baseline without showing a jump.
+        if (lastTotalXpRef.current === 0 && xpHistory.new > 0) {
+            lastTotalXpRef.current = xpHistory.new;
             return;
         }
 
-        // If we have no jump and this isn't an explicit xpEvent, ignore
-        // If we have no jump and no session is active, ignore (avoids showing +0 on idle)
-        if (jump === 0 && (!xpEvent || !sessionActiveRef.current)) {
+        const jump = xpHistory.new - lastTotalXpRef.current;
+        lastTotalXpRef.current = xpHistory.new;
+
+
+        // If no positive change in total XP, do nothing
+        if (jump <= 0) {
             return;
         }
 
-        // Update tracking
+
+        // Show the ticker
+        setIsVisible(true);
+        
         if (jump > 0) {
-            lastProcessedXpRef.current = xpHistory.new;
+            setIsBumping(true);
+            setTimeout(() => setIsBumping(false), 300);
+            
+            // Accumulate for this "session" of kills
+            if (!sessionActiveRef.current) {
+                sessionActiveRef.current = true;
+                totalAccumulatedRef.current = jump;
+            } else {
+                totalAccumulatedRef.current += jump;
+            }
         }
 
         // Reset hide timeout
@@ -55,40 +63,21 @@ const XpTicker: React.FC<XpTickerProps> = ({ isLandscape, align = 'center' }) =>
             hideTimeoutRef.current = null;
         }
 
-        // Visual triggers
-        setIsVisible(true);
-        if (jump > 0) {
-            setIsBumping(true);
-            setTimeout(() => setIsBumping(false), 300);
-        }
-
-        // Update session total
-        if (!sessionActiveRef.current) {
-            sessionActiveRef.current = true;
-            totalAccumulatedRef.current = Math.max(0, jump);
-        } else {
-            totalAccumulatedRef.current += Math.max(0, jump);
-        }
-
         // Start/Update counting animation
         startAnimation(currentDisplayRef.current, totalAccumulatedRef.current);
 
-    }, [xpHistory, xpEvent]);
+    }, [xpHistory.new, xpEvent]);
 
     const startAnimation = (from: number, to: number) => {
         if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
         
         const startTime = performance.now();
         const jumpSize = Math.abs(to - from);
-        
-        // Dynamic duration: snappy for small jumps, slightly longer for big ones
         const duration = Math.min(700, 200 + Math.pow(jumpSize, 0.45) * 15);
 
         const animate = (time: number) => {
             const elapsed = time - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            
-            // Smooth deceleration
             const easeProgress = 1 - Math.pow(1 - progress, 3);
             
             const current = Math.floor(from + (to - from) * easeProgress);
@@ -111,14 +100,15 @@ const XpTicker: React.FC<XpTickerProps> = ({ isLandscape, align = 'center' }) =>
         hideTimeoutRef.current = setTimeout(() => {
             setIsVisible(false);
             sessionActiveRef.current = false;
-            // Wait for fade out animation before resetting numbers
+            // Clear refs after fade out
             setTimeout(() => {
                 totalAccumulatedRef.current = 0;
                 currentDisplayRef.current = 0;
                 setDisplayDelta(0);
             }, 500);
-        }, 6000); // 6 seconds of idle time
+        }, 6000);
     };
+
 
     useEffect(() => {
         return () => {

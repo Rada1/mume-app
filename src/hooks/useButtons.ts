@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { CustomButton, ButtonSetSettings } from '../types';
+import { CustomButton, ButtonSetSettings, PracticeData } from '../types';
 import { DEFAULT_BUTTONS, DEFAULT_UI_POSITIONS, DEFAULT_SET_SETTINGS } from '../constants/buttons';
 import MASTER_SETTINGS from '../constants/mastersettings.json';
 import { useButtonPersistence } from './useButtonPersistence';
@@ -12,9 +12,10 @@ export const useButtons = (deps: {
     characterClass: string,
     characterName: string | null,
     target: string | null,
-    inlineCategories: import('../types').InlineCategoryConfig[]
+    inlineCategories: import('../types').InlineCategoryConfig[],
+    practiceData?: PracticeData | null
 }) => {
-    const { abilities, characterClass, characterName, target, inlineCategories } = deps;
+    const { abilities, characterClass, characterName, target, inlineCategories, practiceData = null } = deps;
     const [activeSet, setActiveSet] = useState('main');
     const [isEditMode, setIsEditMode] = useState(false);
     const [editingButtonId, setEditingButtonId] = useState<string | null>(null);
@@ -53,7 +54,8 @@ export const useButtons = (deps: {
         isEditMode,
         isSmartPopulateEnabled,
         target,
-        inlineCategories
+        inlineCategories,
+        practiceData
     });
     const { resetToDefaults } = useButtonPersistence(rawButtons, setRawButtons, uiPositions, setUiPositions);
 

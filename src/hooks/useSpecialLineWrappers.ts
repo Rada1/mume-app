@@ -137,10 +137,10 @@ export const useSpecialLineWrappers = (
                 id: buttonId,
                 mid,
                 cmd: name,
-                kind: 'player',
+                kind: 'ally',
                 location: 'room',
                 context: name,
-                category: 'player',
+                category: 'inline-ally',
                 action: 'menu',
                 selected: isSelected,
                 draggable: true,
@@ -200,10 +200,10 @@ export const useSpecialLineWrappers = (
                         id: buttonId,
                         mid,
                         cmd: nameCandidate,
-                        kind: 'player',
+                        kind: 'ally',
                         location: 'room',
                         context: nameCandidate,
-                        category: 'player',
+                        category: 'inline-ally',
                         action: 'menu',
                         selected: isSelected,
                         draggable: true,
@@ -225,7 +225,8 @@ export const useSpecialLineWrappers = (
             if (subject) {
                 const subjectLower = subject.toLowerCase();
                 const isNpcSubject = /^(a|an|the|some)\s/i.test(subject);
-                const kind = isNpcSubject ? 'npc' : 'player';
+                const kind = isNpcSubject ? 'npc' : 'ally';
+                const category = isNpcSubject ? 'inline-npc' : 'inline-ally';
                 const buttonId = isNpcSubject ? `auto-npc-${subject}` : `auto-${subject}`;
                 const isSelected = isObjectSelected(selectedObjectIds, buttonId, kind);
                 
@@ -243,7 +244,7 @@ export const useSpecialLineWrappers = (
                         kind: kind,
                         location: 'room',
                         context: subject,
-                        category: kind,
+                        category: category,
                         action: 'menu',
                         selected: isSelected,
                         draggable: true,

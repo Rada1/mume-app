@@ -7,6 +7,7 @@ import { getMemberColor } from '../../../utils/groupUtils';
 import { COLOR_NPC, COLOR_PLAYER, COLOR_OBJ } from '../../../utils/categorizationUtils';
 import { occupantAnims, OCCUPANT_ANIM_DURATION, getOccupantKey } from '../occupantAnimStore';
 import { getMapOccupantTargets } from '../occupantTargets';
+import { isOpponentOccupant } from '../mapperOpponentUtils';
 
 type RoomAnchor = { x: number, y: number, z: number };
 type RoomLike = { x: number, y: number, z?: number, gmcpId?: string | number };
@@ -66,7 +67,7 @@ export const drawRoomOccupants = (
     playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>,
     characterName: string | null = null
 ) => {
-    const { ctx, currentZ, now, roomChars, roomPlayers, roomNpcs, roomItems, groupMembers, camera, playerColor, npcColor, objectColor, opponentId, opponentName, triggerRender } = rCtx;
+    const { ctx, currentZ, now, roomChars, roomPlayers, roomNpcs, roomItems, groupMembers, camera, playerColor, npcColor, enemyColor, neutralColor, objectColor, opponentId, opponentName, triggerRender } = rCtx;
 
     // Resolve through live rooms, server-id mappings, and preloaded rooms so the
     // current-room dots survive when the player position ref has not caught up.
@@ -86,11 +87,14 @@ export const drawRoomOccupants = (
         characterName,
         inlineCategories: rCtx.inlineCategories,
         playerColor: playerColor || 'rgba(125, 211, 252, 1)',
-        npcColor: npcColor || COLOR_NPC
+        npcColor: npcColor || COLOR_NPC,
+        enemyColor: enemyColor || '#ef4444',
+        neutralColor: neutralColor || '#eab308'
     });
 
     const otherOccupants = occupantTargets.filter(target => target.ring === 'outer');
     const groupOccupants = occupantTargets.filter(target => target.ring === 'inner');
+    const allOccupants = [...otherOccupants, ...groupOccupants];
 
     // 3. Clean expired anim entries; collect exit-animating occupants
     const exitAnims: { key: string }[] = [];
@@ -113,32 +117,29 @@ export const drawRoomOccupants = (
     const zoomFactor = (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
     const pulse = (Math.sin(now / 400) + 1) / 2;
 
-    const drawDot = (orbX: number, orbY: number, color: string, alpha: number, name?: string) => {
-        const radius = Math.max(3.15 / Math.sqrt(camera.zoom), 6.5 / camera.zoom);
+    const drawDot = (orbX: number, orbY: number, color: string, alpha: number, name?: string, radius = GRID_SIZE * 0.09) => {
         const initial = getOccupantInitial(name);
 
         ctx.save();
         ctx.globalAlpha = alpha;
         ctx.fillStyle = color;
-        ctx.shadowBlur = 5 / camera.zoom;
+        ctx.shadowBlur = radius * 1.2;
         ctx.shadowColor = color;
         ctx.beginPath();
         ctx.arc(orbX, orbY, radius, 0, Math.PI * 2);
         ctx.fill();
-
-        ctx.shadowBlur = 0;
-        ctx.lineWidth = Math.max(0.75, 1.2 / camera.zoom);
-        ctx.strokeStyle = 'rgba(5, 7, 13, 0.82)';
-        ctx.stroke();
+        ctx.restore();
 
         if (initial) {
-            ctx.font = `700 ${Math.max(8 / camera.zoom, radius * 1.05)}px monospace`;
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.font = `700 ${radius * 1.4}px monospace`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = getMarkerTextColor(color);
-            ctx.fillText(initial, orbX, orbY + (0.35 / camera.zoom));
+            ctx.fillText(initial, orbX, orbY);
+            ctx.restore();
         }
-        ctx.restore();
     };
 
     const drawRing = (occupants: typeof occupantTargets) => {
@@ -165,16 +166,11 @@ export const drawRoomOccupants = (
                 if (t < 1.0) triggerRender?.();
             }
 
-            drawDot(orbX, orbY, occ.color, alpha, occ.name);
+            drawDot(orbX, orbY, occ.color, alpha, occ.name, occ.radius);
 
-            // Opponent tether
-            let isOpponent = false;
-            if (opponentId != null && occ.id != null) {
-                isOpponent = String(opponentId) === String(occ.id);
-            } else if (opponentName) {
-                const ol = opponentName.toLowerCase(), nl = occ.name.toLowerCase();
-                isOpponent = ol === nl || ol.includes(nl) || nl.includes(ol);
-            }
+            // Opponent tether. Name fallback is allowed only when it resolves to
+            // exactly one visible occupant; duplicate names require GMCP ID.
+            const isOpponent = isOpponentOccupant(occ, allOccupants, opponentId, opponentName);
             if (isOpponent) {
                 ctx.save();
                 ctx.beginPath();
@@ -192,6 +188,27 @@ export const drawRoomOccupants = (
     // 4. Draw Rings
     drawRing(otherOccupants);
     drawRing(groupOccupants);
+
+    // 4.1 Draw NPC-vs-NPC combat tethers using GMCP fighting IDs
+    const drawnPairs = new Set<string>();
+    allOccupants.forEach(occ => {
+        if (occ.fighting == null || occ.fighting === 'you' || occ.fighting === 'Someone') return;
+        if (occ.id == null) return;
+        const target = allOccupants.find(t => t.id != null && String(t.id) === String(occ.fighting));
+        if (!target) return;
+        const pairKey = [String(occ.id), String(target.id)].sort().join('-');
+        if (drawnPairs.has(pairKey)) return;
+        drawnPairs.add(pairKey);
+        ctx.save();
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(239, 68, 68, 0.6)';
+        ctx.lineWidth = 1.5 / (camera.zoom || 1);
+        ctx.setLineDash([3, 3]);
+        ctx.moveTo(occ.x, occ.y);
+        ctx.lineTo(target.x, target.y);
+        ctx.stroke();
+        ctx.restore();
+    });
 
     // 4.5 Draw room items as squares in a line at the bottom
     if (roomItems && roomItems.length > 0) {

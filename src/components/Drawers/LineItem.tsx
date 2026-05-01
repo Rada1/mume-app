@@ -57,7 +57,7 @@ export const LineItem: React.FC<LineItemProps> = ({
         };
     
     const baseStyle: React.CSSProperties = {
-        background: isHeader ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.6)',
+        background: isHeader ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
         borderRadius: '4px',
         margin: '0.5px 0',
         padding: '1px 10px',

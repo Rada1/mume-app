@@ -160,15 +160,22 @@ export function useCombatParser(deps: CombatParserDeps) {
 
     const handleXpTicker = useCallback((lower: string, isSnoop: boolean = false) => {
         const xpTextMatch = lower.match(/you receive (\d+) experience/i);
+
         if (xpTextMatch) {
             const delta = parseInt(xpTextMatch[1], 10);
-            if (delta > 0 && !isSnoop) setCharacterInfo(prev => ({ ...prev, xp: prev.xp + delta }));
-            triggerXpTicker?.();
+            if (delta > 0 && !isSnoop) {
+                setCharacterInfo(prev => ({ 
+                    ...prev, 
+                    xp: prev.xp + delta 
+                }));
+            }
             return true;
         } else if (/you receive your share of experience/i.test(lower)) {
-            triggerXpTicker?.();
+            // Share of experience doesn't give a delta, but it will eventually trigger 
+            // a GMCP update which our session state effect will catch.
             return true;
-        } else if (/you gain a level!/i.test(lower)) {
+        }
+ else if (/you gain a level!/i.test(lower)) {
             if (!isSnoop) playLevelSound?.();
             return true;
         }

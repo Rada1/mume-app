@@ -53,6 +53,26 @@ export const useGameProviderState = (audioTriggers?: {
     const accountStageRef = useRef<import('../../types').AccountStage>('none');
     React.useEffect(() => { accountStageRef.current = accountState.stage; }, [accountState.stage]);
 
+    // --- Activity State ---
+    const [messageActivity, setMessageActivity] = useState(0);
+    const activityRef = useRef(0);
+
+    // Activity Decay Loop
+    React.useEffect(() => {
+        const interval = setInterval(() => {
+            if (activityRef.current > 0) {
+                activityRef.current = Math.max(0, activityRef.current - 0.05);
+                setMessageActivity(activityRef.current);
+            }
+        }, 100);
+        return () => clearInterval(interval);
+    }, []);
+
+    const bumpActivity = useCallback(() => {
+        activityRef.current = Math.min(1, activityRef.current + 0.2);
+        setMessageActivity(activityRef.current);
+    }, []);
+
     // --- Global Refs ---
     const roomDescRef = useRef<string | null>(null);
     const isAccountModeRef = useRef(false);
@@ -160,7 +180,9 @@ export const useGameProviderState = (audioTriggers?: {
         spectateQueue: mode.spectateQueue,
         setSpectateQueue: mode.setSpectateQueue,
         lastSnoopStartTime: mode.lastSnoopStartTime,
-        setLastSnoopStartTime: mode.setLastSnoopStartTime
+        setLastSnoopStartTime: mode.setLastSnoopStartTime,
+        messageActivity,
+        bumpActivity
     } as any;
 
     return { vitals, game };

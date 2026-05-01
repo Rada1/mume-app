@@ -184,6 +184,15 @@ export const createVitalsActions = (set: any, get: any) => ({
             if (data.stamina !== undefined) updates.move = data.stamina;
             if (data.maxstamina !== undefined) updates.maxMove = data.maxstamina;
 
+            // --- XP Sync ---
+            if (data.xp !== undefined || data.xp_max !== undefined || data['next-level-xp'] !== undefined) {
+                const charInfo = { ...state.characterInfo };
+                if (data.xp !== undefined) charInfo.xp = Number(data.xp);
+                if (data.xp_max !== undefined) charInfo.xpMax = Number(data.xp_max);
+                else if (data['next-level-xp'] !== undefined) charInfo.xpMax = Number(data['next-level-xp']);
+                updates.characterInfo = charInfo;
+            }
+
             if (data.terrain !== undefined && data.terrain !== null) {
                 updates.currentTerrain = data.terrain;
                 if (typeof window !== 'undefined') {

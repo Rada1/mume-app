@@ -49,6 +49,35 @@ gmcpBus.on('Room.Chars.Combat', (data: any) => {
     useCombatStore.getState().applyRoomCharsCombat(data);
 });
 
+// Use Room.Chars fighting field to pinpoint the exact opponent by GMCP ID.
+// fighting: "you" means that specific character is attacking the player.
+// This disambiguates identical-named NPCs (e.g. 3 pack horses, only one fighting).
+
+const applyFightingYou = (char: any) => {
+    if (!char || char.fighting !== 'you' || char.id == null) return;
+    const store = useCombatStore.getState();
+    store.setOpponentId(char.id);
+    if (char.name) store.setOpponentName(char.name);
+};
+
+// Full Room.Chars.Set — scan all chars
+gmcpBus.on('Room.Chars', (data: any) => {
+    if (data?.isSnooped) return;
+    const rawList = Array.isArray(data) ? data : (data?.chars || data?.char || data?.list || []);
+    if (Array.isArray(rawList)) rawList.forEach(applyFightingYou);
+});
+
+// Per-occupant Add/Update — fires when an NPC enters the room or changes state
+gmcpBus.on('Room.AddChar', (data: any) => {
+    if (data?.isSnooped) return;
+    applyFightingYou(data);
+});
+
+gmcpBus.on('Room.UpdateChar', (data: any) => {
+    if (data?.isSnooped) return;
+    applyFightingYou(data);
+});
+
 gmcpBus.on('Group.Set', (data: any) => {
     if (data.isSnooped) return;
     useCombatStore.getState().applyGroupSet(data);

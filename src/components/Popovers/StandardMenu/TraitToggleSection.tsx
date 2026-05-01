@@ -28,7 +28,8 @@ export const TraitToggleSection: React.FC<TraitToggleSectionProps> = ({
     const [newTraitName, setNewTraitName] = React.useState('');
 
     const allPotentialCats = [...DEFAULT_INLINE_CATEGORIES, ...(Array.isArray(inlineCategories) ? inlineCategories : [])]
-        .filter((cat, i, self) => self.findIndex(c => c.id === cat.id) === i);
+        .filter((cat, i, self) => self.findIndex(c => c.id === cat.id) === i)
+        .filter(cat => !cat.isGmcpCategory);
 
     const handleToggle = (cat: InlineCategoryConfig) => {
         if (!popoverState.context) return;

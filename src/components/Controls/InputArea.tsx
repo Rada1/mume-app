@@ -184,14 +184,19 @@ const InputArea: React.FC<InputAreaProps> = ({
         if (isSoundEnabled) playClickSound?.();
         triggerHaptic(20);
         const rect = e.currentTarget.getBoundingClientRect();
-        setPopoverState({
-            x: rect.left + rect.width / 2,
-            y: rect.top,
-            type: 'select-parley-target',
-            setId: 'parley-targets',
-            context: 'Select Target',
-            menuDisplay: 'list'
-        });
+        const x = rect.left + rect.width / 2;
+        const y = rect.top;
+        executeCommand('who', true, true, false, false);
+        setTimeout(() => {
+            setPopoverState({
+                x,
+                y,
+                type: 'select-parley-target',
+                setId: 'parley-targets',
+                context: 'Select Target',
+                menuDisplay: 'list'
+            });
+        }, 600);
     };
 
     const TARGETLESS_COMMANDS = ['say', 'narrate', 'shout', 'yell', 'sing'];
@@ -203,6 +208,18 @@ const InputArea: React.FC<InputAreaProps> = ({
         setParley({ ...parley, active: false });
     };
 
+    const handleParleyToggle = () => {
+        initAudio?.();
+        if (isSoundEnabled) playClickSound?.();
+        triggerHaptic(20);
+        if (parley.active) {
+            setParley({ ...parley, active: false });
+        } else {
+            setParley(prev => ({ ...prev, active: true }));
+            requestAnimationFrame(() => inputRef.current?.focus());
+        }
+    };
+
 
     // Hide spat buttons in portrait mode when map is expanded
     const shouldShowSpat = viewport.isLandscape || !ui.mapExpanded;
@@ -211,49 +228,54 @@ const InputArea: React.FC<InputAreaProps> = ({
         <div className={`input-area ${terrainClass} input-container`}>
             <div className="input-main-container">
                 <form className="input-form" onSubmit={onSend}>
-                    <span className="cmd-prompt">{'>'}</span>
-                    
-                    {parley.active && (() => {
+                    {(() => {
                         const isTargetless = TARGETLESS_COMMANDS.includes(parley.command);
-                        
                         const PARLEY_COLORS: Record<string, string> = {
-                            tell: '#22c55e',    // green
-                            whisper: '#22c55e', // also green often
-                            say: '#06b6d4',     // cyan
-                            yell: '#a855f7',    // purple
-                            shout: '#ef4444',   // red often? User didn't ask but good to have
-                            narrate: '#eab308', // yellow
-                            sing: '#f472b6'     // pink?
+                            tell: '#22c55e',
+                            whisper: '#22c55e',
+                            say: '#06b6d4',
+                            yell: '#a855f7',
+                            shout: '#ef4444',
+                            narrate: '#eab308',
+                            sing: '#f472b6'
                         };
                         const commandColor = PARLEY_COLORS[parley.command.toLowerCase()] || 'inherit';
 
                         return (
-                            <div className="parley-indicator-container">
-                                <div 
-                                    className="parley-indicator parley-command" 
-                                    onClick={handleParleyCommandClick}
-                                    style={{ color: commandColor, borderColor: commandColor !== 'inherit' ? commandColor : undefined }}
-                                >
-                                    {parley.command}
-                                </div>
-                                <div
-                                    className="parley-indicator parley-target"
-                                    onClick={handleParleyTargetClick}
-                                    title={isTargetless ? 'This command has no target' : undefined}
-                                >
-                                    {isTargetless ? '' : (parley.target ?? '')}
-                                </div>
-                                <button 
+                            <div className={`parley-pill${parley.active ? ' parley-pill-active' : ''}`}>
+                                <button
                                     type="button"
-                                    className="parley-clear-btn" 
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        handleParleyClear();
-                                    }}
+                                    className={`cmd-prompt-btn${parley.active ? ' parley-active' : ''}`}
+                                    onPointerDown={(e) => e.stopPropagation()}
+                                    onClick={handleParleyToggle}
+                                    title={parley.active ? 'Exit parley mode' : 'Enter parley mode'}
                                 >
-                                    ×
+                                    {parley.active ? <MessageCircle size={16} /> : '>'}
                                 </button>
+
+                                {parley.active && (<>
+                                    <div
+                                        className="parley-indicator parley-command"
+                                        onClick={handleParleyCommandClick}
+                                        style={{ color: commandColor, borderColor: commandColor !== 'inherit' ? commandColor : undefined }}
+                                    >
+                                        {parley.command}
+                                    </div>
+                                    <div
+                                        className="parley-indicator parley-target"
+                                        onClick={handleParleyTargetClick}
+                                        title={isTargetless ? 'This command has no target' : undefined}
+                                    >
+                                        {isTargetless ? '' : (parley.target ?? '')}
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="parley-clear-btn"
+                                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleParleyClear(); }}
+                                    >
+                                        ×
+                                    </button>
+                                </>)}
                             </div>
                         );
                     })()}
@@ -359,20 +381,6 @@ const InputArea: React.FC<InputAreaProps> = ({
                 )}
                 </div>
 
-                {isMobile && isKeyboardOpen && !parley.active && (
-                    <button
-                        type="button"
-                        className="mobile-parley-toggle"
-                        onPointerDown={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setParley(prev => ({ ...prev, active: true }));
-                            requestAnimationFrame(() => inputRef.current?.focus());
-                        }}
-                    >
-                        <MessageCircle size={18} />
-                    </button>
-                )}
             </div>
         );
 };
