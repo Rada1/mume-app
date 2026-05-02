@@ -85,7 +85,8 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         let detectedParent = parentNoun;
 
         // If no explicit parentNoun, try to detect it from the context (e.g. food.2.backpack or 2.boots.backpack)
-        if (!detectedParent && finalContext && finalContext.includes('.')) {
+        const isIndexedTarget = /^\d+\.[\w'*.-]+/.test(finalContext);
+        if (!isNpcContext && !isIndexedTarget && !detectedParent && finalContext && finalContext.includes('.')) {
             const parts = finalContext.split('.');
             // If it ends with a known container noun (e.g. .backpack), that's the parent.
             const lastPart = parts[parts.length - 1];
@@ -109,7 +110,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         else if (cmd.includes('%n') && target) {
             cmd = cmd.replace(/%n/g, target);
         }
-        if (parentNoun) { cmd = cmd.includes('%p') ? cmd.replace(/%p/g, parentNoun) : cmd; }
+        if (detectedParent) { cmd = cmd.includes('%p') ? cmd.replace(/%p/g, detectedParent) : cmd; }
         
         // Direction resolution with fallback
         const isDirection = (s: string) => ['n','s','e','w','u','d','north','south','east','west','up','down','ne','nw','se','sw'].includes(s.toLowerCase());

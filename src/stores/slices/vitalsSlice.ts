@@ -208,12 +208,13 @@ export const createVitalsActions = (set: any, get: any) => ({
             if (data.stamina !== undefined) updates.move = data.stamina;
             if (data.maxstamina !== undefined) updates.maxMove = data.maxstamina;
 
-            // --- XP Sync from Vitals ---
-            if (data.xp !== undefined || data.xp_max !== undefined || data['next-level-xp'] !== undefined) {
+            // --- XP/TP Sync from Vitals ---
+            if (data.xp !== undefined || data.xp_max !== undefined || data['next-level-xp'] !== undefined || data['next-level-tp'] !== undefined) {
                 const charInfo = { ...state.characterInfo };
                 if (data.xp !== undefined) charInfo.xp = Number(data.xp);
                 if (data.xp_max !== undefined) charInfo.xpMax = Number(data.xp_max);
-                else if (data['next-level-xp'] !== undefined) charInfo.xpMax = Number(data['next-level-xp']);
+                if (data['next-level-xp'] !== undefined) charInfo.tnl = Number(data['next-level-xp']);
+                if (data['next-level-tp'] !== undefined) charInfo.tpnl = Number(data['next-level-tp']);
                 updates.characterInfo = charInfo;
             }
 
@@ -333,11 +334,11 @@ export const createVitalsActions = (set: any, get: any) => ({
                 fullname: data.fullname ?? state.characterInfo.fullname,
                 level: data.level !== undefined ? Number(data.level) : state.characterInfo.level,
                 xp: data.xp !== undefined ? Number(data.xp) : state.characterInfo.xp,
-                xpMax: data.xp_max !== undefined ? Number(data.xp_max) : (data['next-level-xp'] !== undefined ? Number(data['next-level-xp']) : state.characterInfo.xpMax),
-                tnl: data.tnl !== undefined ? Number(data.tnl) : state.characterInfo.tnl,
+                xpMax: data.xp_max !== undefined ? Number(data.xp_max) : state.characterInfo.xpMax,
+                tnl: data.tnl !== undefined ? Number(data.tnl) : (data['next-level-xp'] !== undefined ? Number(data['next-level-xp']) : state.characterInfo.tnl),
                 tp: data.tp !== undefined ? Number(data.tp) : state.characterInfo.tp,
-                tpMax: data.tp_max !== undefined ? Number(data.tp_max) : (data['next-level-tp'] !== undefined ? Number(data['next-level-tp']) : state.characterInfo.tpMax),
-                tpnl: data.tpnl !== undefined ? Number(data.tpnl) : state.characterInfo.tpnl,
+                tpMax: data.tp_max !== undefined ? Number(data.tp_max) : state.characterInfo.tpMax,
+                tpnl: data.tpnl !== undefined ? Number(data.tpnl) : (data['next-level-tp'] !== undefined ? Number(data['next-level-tp']) : state.characterInfo.tpnl),
                 race: data.race ?? state.characterInfo.race,
                 subrace: data.subrace ?? state.characterInfo.subrace,
                 subclass: data.subclass ?? state.characterInfo.subclass,
