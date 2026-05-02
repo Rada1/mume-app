@@ -36,6 +36,15 @@
     /* SLIGHTLY stronger sky-blue wash near the top, fading to a very faint ambient tint below */
 }
 
+.is-mobile:not(.is-landscape) .lighting-state-sun .overlay-layer {
+    /* Diagonal gradient for portrait mobile to emphasize darkness in the bottom-left corner */
+    background: linear-gradient(225deg, 
+        rgba(100, 180, 255, 0.18) 0%, 
+        rgba(150, 210, 255, 0.06) 40%, 
+        rgba(0, 5, 20, 0.08) 100%
+    );
+}
+
 .storm-overlay-layer {
     position: absolute;
     inset: 0;
@@ -59,6 +68,15 @@
         rgba(20, 30, 60, 0.02) 100%
     );
     /* Enhanced silvery night wash */
+}
+
+.is-mobile:not(.is-landscape) .lighting-state-moon .overlay-layer {
+    /* Diagonal gradient for portrait mobile to emphasize darkness in the bottom-left corner */
+    background: linear-gradient(225deg, 
+        rgba(150, 170, 255, 0.06) 0%, 
+        rgba(130, 140, 170, 0.03) 45%,
+        rgba(10, 15, 30, 0.1) 100%
+    );
 }
 
 .lighting-state-artificial .overlay-layer {
@@ -144,10 +162,10 @@
 }
 
 .is-mobile .lighting-sun .lighting-inner {
-    /* WEAKENED sun origin for mobile with blue sky accent */
+    /* WEAKENED sun origin for mobile with blue sky accent - Narrowed to keep bottom-left darker */
     background: 
         radial-gradient(circle at 95% -10%, rgba(0, 160, 255, 0.12) 0%, transparent 60%),
-        radial-gradient(ellipse 160% 130% at 92% -30%,
+        radial-gradient(ellipse 110% 150% at 92% -30%,
             rgba(255, 255, 252, 0.52) 0%,
             rgba(255, 252, 230, 0.2) 36%,
             transparent 80%);
