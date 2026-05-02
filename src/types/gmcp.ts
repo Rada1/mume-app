@@ -36,6 +36,10 @@ export interface GmcpCharVitals {
     stamina?: number;
     maxstamina?: number;
     position?: string;
+    waiting?: boolean;
+    status?: string | null;
+    state?: string | null;
+    conditions?: Record<string, boolean> | string[] | string | null;
     mood?: string;
     opponent?: string | null;
     'opponent-hits'?: string;

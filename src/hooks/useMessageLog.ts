@@ -129,6 +129,7 @@ export function useMessageLog(
         commTextTokens?: import('../types').Token[],
         providedCombatSide?: 'player' | 'opponent' | 'groupmate',
         providedIsHitImpact?: boolean,
+        providedIsDamageImpact?: boolean,
         providedIsHitterImpact?: boolean,
         providedIsSnoop?: boolean,
         providedIsSnoopInput?: boolean
@@ -349,6 +350,7 @@ export function useMessageLog(
             commSenderTokens,
             commTextTokens,
             isHitImpact: providedIsHitImpact,
+            isDamageImpact: providedIsDamageImpact,
             isHitterImpact: providedIsHitterImpact,
             isSnoop: providedIsSnoop,
             isSnoopInput: providedIsSnoopInput

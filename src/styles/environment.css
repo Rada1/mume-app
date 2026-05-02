@@ -29,11 +29,11 @@
 
 .lighting-state-sun .overlay-layer {
     background: linear-gradient(to bottom, 
-        rgba(135, 206, 250, 0.12) 0%, 
-        rgba(176, 226, 255, 0.06) 40%, 
+        rgba(100, 180, 255, 0.18) 0%, 
+        rgba(150, 210, 255, 0.08) 35%, 
         rgba(0, 5, 20, 0.02) 100%
     );
-    /* SUBTLE sky-blue wash near the top, fading to a very faint ambient tint below */
+    /* SLIGHTLY stronger sky-blue wash near the top, fading to a very faint ambient tint below */
 }
 
 .storm-overlay-layer {
@@ -53,8 +53,12 @@
 }
 
 .lighting-state-moon .overlay-layer {
-    background: rgba(130, 140, 170, 0.03);
-    /* Subtle silvery night wash */
+    background: linear-gradient(to bottom, 
+        rgba(150, 170, 255, 0.05) 0%, 
+        rgba(130, 140, 170, 0.03) 40%,
+        rgba(20, 30, 60, 0.02) 100%
+    );
+    /* Enhanced silvery night wash */
 }
 
 .lighting-state-artificial .overlay-layer {
@@ -121,7 +125,7 @@
 }
 
 .lighting-moon {
-    filter: saturate(0.95) contrast(1.08) brightness(1.08);
+    filter: saturate(1.15) contrast(1.15) brightness(1.1);
 }
 
 .lighting-inner {
@@ -130,25 +134,29 @@
 }
 
 .lighting-sun .lighting-inner {
-    /* WEAKENED sun origin to minimize interference with log readability */
-    background: radial-gradient(ellipse 90% 160% at 92% -30%,
+    /* WEAKENED sun origin with a LIGHT BLUE SKY glow in the top right */
+    background: 
+        radial-gradient(circle at 95% -10%, rgba(0, 160, 255, 0.15) 0%, transparent 65%),
+        radial-gradient(ellipse 90% 160% at 92% -30%,
             rgba(255, 255, 252, 0.52) 0%,
             rgba(255, 252, 230, 0.2) 40%,
             transparent 82%);
 }
 
 .is-mobile .lighting-sun .lighting-inner {
-    /* WEAKENED sun origin for mobile */
-    background: radial-gradient(ellipse 160% 130% at 92% -30%,
+    /* WEAKENED sun origin for mobile with blue sky accent */
+    background: 
+        radial-gradient(circle at 95% -10%, rgba(0, 160, 255, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 160% 130% at 92% -30%,
             rgba(255, 255, 252, 0.52) 0%,
             rgba(255, 252, 230, 0.2) 36%,
             transparent 80%);
 }
 
 .lighting-moon .lighting-inner {
-    background: radial-gradient(circle at 50% 15%, rgba(210, 230, 255, 0.11), rgba(210, 230, 255, 0.03) 35%, transparent 80%),
-        radial-gradient(circle at 50% 55%, rgba(170, 190, 255, 0.05), transparent 62%),
-        linear-gradient(to bottom, rgba(140, 160, 230, 0.03), transparent);
+    background: radial-gradient(circle at 50% 15%, rgba(220, 240, 255, 0.22), rgba(180, 200, 255, 0.08) 35%, transparent 80%),
+        radial-gradient(circle at 50% 55%, rgba(150, 180, 255, 0.12), transparent 62%),
+        linear-gradient(to bottom, rgba(130, 150, 255, 0.06), transparent);
 }
 
 .lighting-artificial .lighting-inner {
@@ -237,6 +245,42 @@
 .weather-cloud.storm-clouds::after {
     filter: blur(2px) brightness(0.4) grayscale(0.9) contrast(2);
     opacity: 0.9;
+    transition: filter 0.05s ease-out;
+}
+
+.weather-cloud.lightning-active::after {
+    filter: blur(2px) brightness(4) grayscale(0.5) contrast(1.5);
+    transition: filter 0.05s ease-out;
+}
+
+.weather-cloud.lightning-active::before {
+    /* Use a radial gradient centered at the random X position */
+    background: radial-gradient(circle at var(--lightning-x) 50%, rgba(200, 210, 255, 0.8) 0%, transparent 60%);
+    mix-blend-mode: color-dodge;
+}
+
+.lightning-glow-drop {
+    position: absolute;
+    top: 25dvh;
+    left: 0;
+    right: 0;
+    height: 60dvh;
+    /* Glow emanates from the strike point */
+    background: radial-gradient(ellipse at var(--lightning-x) 0%, 
+        rgba(255, 255, 255, 0.18) 0%, 
+        rgba(255, 255, 255, 0.06) 40%,
+        transparent 80%
+    );
+    z-index: 1; /* Below the clouds and rain */
+    pointer-events: none;
+    mix-blend-mode: soft-light;
+    animation: lightning-glow-fade 0.3s ease-out forwards;
+}
+
+@keyframes lightning-glow-fade {
+    0% { opacity: 0; transform: translateY(-10px); }
+    10% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
 }
 
 .fog-layer {
@@ -284,11 +328,13 @@
 
 
 .lightning-layer {
-    background: rgba(255, 255, 255, 0.12);
-    mix-blend-mode: soft-light;
-    z-index: 10; /* Internal to .front (4500) */
+    background: rgba(255, 255, 255, 0.25);
+    mix-blend-mode: overlay;
+    z-index: 2; /* Move BEHIND weather-cloud (z-index: 4) */
     opacity: 0;
-    transition: opacity 0.05s ease-out;
+    transition: opacity 0.04s ease-out;
+    height: 40dvh; /* Focus lightning on the sky/cloud area */
+    top: 0;
 }
 
 

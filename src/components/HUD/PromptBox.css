@@ -121,7 +121,14 @@
     line-height: 1;
     color: rgba(255, 255, 255, 0.88);
     text-transform: uppercase;
-    pointer-events: none;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.prompt-combat-stats-line:hover {
+    color: #fff;
+    text-shadow: 0 0 8px rgba(74, 222, 128, 0.3);
 }
 
 .prompt-combat-stat {

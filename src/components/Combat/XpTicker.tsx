@@ -3,10 +3,11 @@ import { useVitals } from '../../context/GameContext';
 
 interface XpTickerProps {
     isLandscape?: boolean;
-    align?: 'center' | 'right';
+    align?: 'center' | 'right' | 'left';
+    variant?: 'floating' | 'header';
 }
 
-const XpTicker: React.FC<XpTickerProps> = ({ isLandscape, align = 'center' }) => {
+const XpTicker: React.FC<XpTickerProps> = ({ isLandscape, align = 'center', variant = 'floating' }) => {
     const { xpHistory, xpEvent } = useVitals();
     
 
@@ -119,42 +120,77 @@ const XpTicker: React.FC<XpTickerProps> = ({ isLandscape, align = 'center' }) =>
 
     if (!isVisible) return null;
 
+    const isHeader = variant === 'header';
+
+    const containerStyle: React.CSSProperties = isHeader ? {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '4px',
+        animation: 'fadeInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+        transform: `scale(${isBumping ? 1.05 : 1})`,
+        transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        pointerEvents: 'none'
+    } : {
+        position: 'absolute',
+        top: isLandscape ? '-42px' : '-48px',
+        left: align === 'center' ? '50%' : align === 'left' ? '10px' : 'auto',
+        right: align === 'right' ? '10px' : 'auto',
+        transform: `${align === 'center' ? 'translateX(-50%)' : 'none'} scale(${isBumping ? 1.15 : 1})`,
+        transformOrigin: align === 'right' ? 'right center' : align === 'left' ? 'left center' : 'center center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: align === 'center' ? 'center' : align === 'left' ? 'flex-start' : 'flex-end',
+        gap: '2px',
+        zIndex: 50,
+        pointerEvents: 'none',
+        transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        animation: 'fadeInUp 0.3s ease-out'
+    };
+
+    const cardStyle: React.CSSProperties = isHeader ? {
+        backgroundColor: isLandscape ? 'rgba(34, 197, 94, 0.1)' : 'rgba(0, 0, 0, 0.5)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+        border: isLandscape ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(255, 255, 255, 0.15)',
+        borderRadius: '6px',
+        padding: isLandscape ? '4px 10px' : '4px 8px',
+        color: '#4ade80',
+        fontWeight: '800',
+        fontSize: isLandscape ? '0.75rem' : '0.75rem',
+        fontVariantNumeric: 'tabular-nums',
+        boxShadow: isBumping 
+            ? '0 0 15px rgba(74, 222, 128, 0.2), 0 4px 12px rgba(0, 0, 0, 0.2)' 
+            : '0 4px 12px rgba(0, 0, 0, 0.1)',
+        whiteSpace: 'nowrap',
+        transition: 'all 0.2s ease',
+        display: 'flex',
+        alignItems: 'center',
+        gap: isLandscape ? '4px' : '4px',
+        letterSpacing: '0.5px'
+    } : {
+        backgroundColor: 'rgba(15, 23, 42, 0.85)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+        border: isBumping ? '1px solid #22ff55' : '1px solid rgba(255, 255, 255, 0.12)',
+        borderRadius: '2px',
+        padding: '2px 8px',
+        color: '#22ff55', 
+        fontWeight: '900',
+        fontSize: isLandscape ? '0.8rem' : '0.9rem',
+        fontVariantNumeric: 'tabular-nums',
+        transform: 'skewX(-20deg)',
+        boxShadow: isBumping 
+            ? '0 0 15px rgba(34, 255, 85, 0.4), 0 4px 12px rgba(0, 0, 0, 0.5)' 
+            : '0 4px 12px rgba(0, 0, 0, 0.5), 0 0 10px rgba(34, 255, 85, 0.1)',
+        whiteSpace: 'nowrap',
+        transition: 'all 0.2s ease'
+    };
+
     return (
-        <div style={{
-            position: 'absolute',
-            top: isLandscape ? '-42px' : '-48px',
-            left: align === 'center' ? '50%' : 'auto',
-            right: align === 'right' ? '10px' : 'auto',
-            transform: `${align === 'center' ? 'translateX(-50%)' : 'none'} scale(${isBumping ? 1.15 : 1})`,
-            transformOrigin: align === 'right' ? 'right center' : 'center center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: align === 'center' ? 'center' : 'flex-end',
-            gap: '2px',
-            zIndex: 50,
-            pointerEvents: 'none',
-            transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-            animation: 'fadeInUp 0.3s ease-out'
-        }}>
-            <div style={{
-                backgroundColor: 'rgba(15, 23, 42, 0.85)',
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-                border: isBumping ? '1px solid #22ff55' : '1px solid rgba(255, 255, 255, 0.12)',
-                borderRadius: '2px',
-                padding: '2px 8px',
-                color: '#22ff55', 
-                fontWeight: '900',
-                fontSize: isLandscape ? '0.8rem' : '0.9rem',
-                fontVariantNumeric: 'tabular-nums',
-                transform: 'skewX(-20deg)',
-                boxShadow: isBumping 
-                    ? '0 0 15px rgba(34, 255, 85, 0.4), 0 4px 12px rgba(0, 0, 0, 0.5)' 
-                    : '0 4px 12px rgba(0, 0, 0, 0.5), 0 0 10px rgba(34, 255, 85, 0.1)',
-                whiteSpace: 'nowrap',
-                transition: 'all 0.2s ease'
-            }}>
-                <div style={{ transform: 'skewX(20deg)' }}>
+        <div style={containerStyle}>
+            <div style={cardStyle}>
+                <div style={isHeader ? {} : { transform: 'skewX(20deg)' }}>
+                    {isHeader && isLandscape && <span style={{ opacity: 0.7, fontSize: '0.65rem' }}>GAIN</span>}
                     +{displayDelta.toLocaleString()} XP
                 </div>
             </div>

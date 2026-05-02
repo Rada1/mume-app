@@ -79,16 +79,16 @@ const MessageItem = React.memo(({
     const isOldBatchDim = latestBatchId !== undefined && (msg.batchId === undefined || msg.batchId < latestBatchId);
     
     // local state to handle the cleanup of the hit sheen animation
-    const [sheenActive, setSheenActive] = React.useState(!!msg.isHitImpact);
+    const [sheenActive, setSheenActive] = React.useState(!!(msg.isHitImpact || msg.isDamageImpact));
 
     React.useEffect(() => {
-        if (msg.isHitImpact) {
+        if (msg.isHitImpact || msg.isDamageImpact) {
             const timer = setTimeout(() => {
                 setSheenActive(false);
             }, 2000);
             return () => clearTimeout(timer);
         }
-    }, [msg.isHitImpact]);
+    }, [msg.isHitImpact, msg.isDamageImpact]);
 
     const triggerParley = useCallback((e: React.MouseEvent) => {
         if (!setParley || !triggerHaptic || !playClickSound) return;
@@ -184,6 +184,11 @@ const MessageItem = React.memo(({
                                         <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
                                     </div>
                                 )}
+                                {msg.isDamageImpact && sheenActive && (
+                                    <div className="damage-sheen-overlay" aria-hidden="true">
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ) : (
@@ -192,6 +197,11 @@ const MessageItem = React.memo(({
                                 <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} />
                                 {msg.isHitImpact && sheenActive && (
                                     <div className="hit-sheen-overlay" aria-hidden="true">
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} />
+                                    </div>
+                                )}
+                                {msg.isDamageImpact && sheenActive && (
+                                    <div className="damage-sheen-overlay" aria-hidden="true">
                                         <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} />
                                     </div>
                                 )}

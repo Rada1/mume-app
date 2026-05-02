@@ -338,7 +338,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                     <button type="submit" style={{ display: 'none' }}>Send</button>
                 </form>
 
-                    {gameState === 'playing' && (
+                    {(gameState === 'playing' || gameState === 'account') && (
                         <div className="input-actions-container">
                             {shouldShowSpat && (
                                 <SpatButtons

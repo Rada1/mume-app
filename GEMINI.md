@@ -29,7 +29,7 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 ### 🏗️ UI & Layout
 - **Main App Shell:** `src/index.tsx`
 - **Core Layout Layers:** `src/components/Layout/` (Atmospheric, HUDClusters, MainContent, Modals)
-- **HUD Components:** `src/components/Layout/HUD/` (MapperCluster, StatsCluster, LineCluster, GroupDrawer)
+- **HUD Components:** `src/components/Layout/HUD/` (MapperCluster, StatsCluster, LineCluster, GroupDrawer, Interactive Header with manual target input)
 - **Side Drawers (Inventory, Equipment, Stats):** `src/components/Drawers/`
 - **Inline Button Popovers:** `src/components/Popovers/StandardMenuPopover.tsx`
 - **Mapper Component:** `src/components/Mapper/` (and `src/mapper/renderer.ts`)

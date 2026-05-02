@@ -53,6 +53,14 @@ describe('MUME Store Integration Tests', () => {
             gmcpBus.emit('Char.Vitals', { position: 'standing', opponent: null });
             expect(useVitalsStore.getState().inCombat).toBe(false);
         });
+
+        it('should update waiting condition from GMCP vitals', () => {
+            gmcpBus.emit('Char.Vitals', { waiting: true });
+            expect(useVitalsStore.getState().conditions?.waiting).toBe(true);
+
+            gmcpBus.emit('Char.Vitals', { position: 'standing' });
+            expect(useVitalsStore.getState().conditions?.waiting).toBe(false);
+        });
     });
 
     describe.skip('Room Store Integration', () => {

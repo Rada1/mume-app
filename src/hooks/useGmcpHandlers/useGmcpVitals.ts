@@ -133,6 +133,7 @@ export const useGmcpVitals = ({
             if (weather) setCurrentWeather(weather);
         }
 
+
         if (data.fog !== undefined) {
             setIsFoggy(data.fog === 'on' || data.fog === 'thick' || data.fog === 'yes' || !!data.fog);
         }
@@ -147,23 +148,30 @@ export const useGmcpVitals = ({
 
     const onCharInfo = useCallback((data: GmcpCharInfo) => {
         console.log('[GMCP] CharInfo:', data);
-        setCharacterInfo(prev => ({
-            ...prev,
-            name: data.name ?? data.fullname ?? prev.name,
-            level: data.level !== undefined ? Number(data.level) : prev.level,
-            xp: data.xp !== undefined ? Number(data.xp) : prev.xp,
-            xpMax: data.xp_max !== undefined ? Number(data.xp_max) : prev.xpMax,
-            tnl: data.tnl !== undefined ? Number(data.tnl) : (data['next-level-xp'] !== undefined ? Number(data['next-level-xp']) : prev.tnl),
-            tp: data.tp !== undefined ? Number(data.tp) : prev.tp,
-            tpMax: data.tp_max !== undefined ? Number(data.tp_max) : prev.tpMax,
-            tpnl: data.tpnl !== undefined ? Number(data.tpnl) : (data['next-level-tp'] !== undefined ? Number(data['next-level-tp']) : prev.tpnl),
-            race: data.race ?? prev.race,
-            subrace: data.subrace ?? prev.subrace,
-            subclass: data.subclass ?? prev.subclass,
-            class: data.class ?? prev.class,
-            description: data.description ?? prev.description,
-            whois: data.whois ?? prev.whois
-        }));
+        setCharacterInfo(prev => {
+            const xp = data.xp !== undefined ? Number(data.xp) : prev.xp;
+            const xpMax = data.xp_max !== undefined ? Number(data.xp_max) : (data['next-level-xp'] !== undefined ? Number(data['next-level-xp']) : prev.xpMax);
+            const tp = data.tp !== undefined ? Number(data.tp) : prev.tp;
+            const tpMax = data.tp_max !== undefined ? Number(data.tp_max) : (data['next-level-tp'] !== undefined ? Number(data['next-level-tp']) : prev.tpMax);
+
+            return {
+                ...prev,
+                name: data.name ?? data.fullname ?? prev.name,
+                level: data.level !== undefined ? Number(data.level) : prev.level,
+                xp,
+                xpMax,
+                tp,
+                tpMax,
+                tnl: Math.max(0, xpMax - xp),
+                tpnl: Math.max(0, tpMax - tp),
+                race: data.race ?? prev.race,
+                subrace: data.subrace ?? prev.subrace,
+                subclass: data.subclass ?? prev.subclass,
+                class: data.class ?? prev.class,
+                description: data.description ?? prev.description,
+                whois: data.whois ?? prev.whois
+            };
+        });
 
         // --- Store Sync ---
         import('../../events/gmcpBus').then(({ gmcpBus }) => {

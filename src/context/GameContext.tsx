@@ -812,7 +812,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         entities: s.entities, applyOptimisticChange: s.applyOptimisticChange,
         selectedObjectIds: s.selectedObjectIds, toggleObjectSelection: s.toggleObjectSelection,
         clearObjectSelection: s.clearObjectSelection, playClickSound, isSoundEnabled: s.isSoundEnabled,
-        waiting: false, recordEntry: s.userSession.recorder.recordEntry, gameState: s.gameState, isPasswordMode: s.isPasswordMode,
+        waiting: !!v.stats?.conditions?.waiting, recordEntry: s.userSession.recorder.recordEntry, gameState: s.gameState, isPasswordMode: s.isPasswordMode,
         sessionMode, replayer, isSpectateMode: s.isSpectateMode, setIsSpectateMode: mode.setIsSpectating,
         showSpectatePromptInLog: settingsStore.showSpectatePromptInLog,
         setShowSpectatePromptInLog: settingsStore.setShowSpectatePromptInLog,

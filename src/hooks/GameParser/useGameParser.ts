@@ -669,6 +669,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             };
             
             const hasHitTag = lineToParse.includes('<hit>');
+            const hasDamageTag = lineToParse.includes('<damage>');
             deps.addMessage(
                 finalType, textOnly, undefined, mid, false, 
                 { textOnly, lower, html: messageObj.html, tokens: messageObj.tokens },
@@ -676,7 +677,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                 commResult.replyTarget, commResult.replyCommand, commResult.commSender, commResult.commAction, commResult.commText, commResult.commColor,
                 commResult.commSender ? tokenizeFresh(commResult.commSender) : undefined,
                 commResult.commText ? tokenizeFresh(commResult.commText) : undefined,
-                undefined, hasHitTag, undefined, isSnoop
+                undefined, hasHitTag, hasDamageTag, undefined, isSnoop
             );
         }
 

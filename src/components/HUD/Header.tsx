@@ -5,6 +5,7 @@ import { LightingType, WeatherType } from '../../types';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { formatCompactNumber } from '../../utils/gameUtils';
 import { useModeStore } from '../../stores/useModeStore';
+import XpTicker from '../Combat/XpTicker';
 
 interface HeaderProps {
     isLandscape?: boolean;
@@ -40,6 +41,17 @@ const Header: React.FC<HeaderProps> = ({
         ui, setUI, setIsSettingsOpen, setIsSetManagerOpen, setIsLibraryOpen, setPopoverState,
         setShowMapperToolbar, replayer
     } = useUI();
+
+    const [isEnteringTarget, setIsEnteringTarget] = useState(false);
+    const [manualTargetInput, setManualTargetInput] = useState('');
+    const targetInputRef = useRef<HTMLInputElement>(null);
+
+    // Auto-focus the input when it appears
+    useEffect(() => {
+        if (isEnteringTarget && targetInputRef.current) {
+            targetInputRef.current.focus();
+        }
+    }, [isEnteringTarget]);
 
     useEffect(() => {
         if (characterInfo.name) {
@@ -153,11 +165,12 @@ const Header: React.FC<HeaderProps> = ({
             }}
         >
             {/* Left: Player Status HUD */}
-            <div className="player-status-hud" onClick={() => setUI(prev => ({ ...prev, drawer: 'character' }))}>
-                <div className="player-identity">
-                    <span className="player-name">{characterInfo.name || (status === 'connected' ? '...' : 'MUME')}</span>
-                    <span className="player-level">{characterInfo.level > 0 ? `Lv.${characterInfo.level}` : ''}</span>
-                </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'visible', position: 'relative' }}>
+                <div className="player-status-hud" onClick={() => setUI(prev => ({ ...prev, drawer: 'character' }))}>
+                    <div className="player-identity">
+                        <span className="player-name">{characterInfo.name || (status === 'connected' ? '...' : 'MUME')}</span>
+                        <span className="player-level">{characterInfo.level > 0 ? `Lv.${characterInfo.level}` : ''}</span>
+                    </div>
                     <div className="player-stats-mini">
                         <div className="stat-pill xp">
                             <span className="pill-label">TNL</span>
@@ -168,6 +181,17 @@ const Header: React.FC<HeaderProps> = ({
                             <span className="pill-value">{formatCompactNumber(characterInfo.tpnl)}</span>
                         </div>
                     </div>
+                </div>
+                <div style={{ 
+                    position: viewport.isMobile && !viewport.isLandscape ? 'absolute' : 'relative',
+                    left: viewport.isMobile && !viewport.isLandscape ? 'calc(100% + 8px)' : 'auto',
+                    top: viewport.isMobile && !viewport.isLandscape ? '50%' : 'auto',
+                    transform: viewport.isMobile && !viewport.isLandscape ? 'translateY(-50%)' : 'none',
+                    zIndex: 9999,
+                    pointerEvents: 'none'
+                }}>
+                    <XpTicker variant="header" isLandscape={viewport.isLandscape} />
+                </div>
             </div>
 
             {/* Middle: Flexible spacer */}
@@ -259,26 +283,85 @@ const Header: React.FC<HeaderProps> = ({
                 )}
 
                 <div
-                    className="status-indicator"
+                    className={`status-indicator ${!target ? 'clickable-target' : ''}`}
                     style={{
                         color: target ? 'var(--map-accent)' : 'var(--text-faded)',
                         gap: 4, padding: '4px 6px',
                         cursor: 'pointer',
-                        opacity: target ? 1 : 0.6,
+                        opacity: target ? 1 : 0.8,
                         border: target ? '1px solid var(--map-accent)' : '1px solid var(--border-color)',
-                        maxWidth: viewport.isMobile ? '80px' : 'none',
+                        maxWidth: viewport.isMobile ? (isEnteringTarget ? '100px' : '80px') : 'none',
+                        minWidth: viewport.isMobile ? '40px' : '90px',
                         overflow: 'hidden',
                         height: '28px',
                         display: 'flex',
-                        alignItems: 'center'
+                        alignItems: 'center',
+                        transition: 'all 0.2s ease',
+                        background: isEnteringTarget ? 'rgba(var(--map-accent-rgb, 20, 184, 166), 0.1)' : 'transparent'
                     }}
-                    title={target ? "Current Target (Click to clear)" : "No Target"}
-                    onClick={() => target && onClearTarget && onClearTarget()}
+                    title={target ? "Current Target (Click to clear)" : "Click to set target"}
+                    onClick={() => {
+                        if (target) {
+                            onClearTarget();
+                            triggerHaptic(5);
+                        } else if (!isEnteringTarget) {
+                            setIsEnteringTarget(true);
+                            setManualTargetInput('');
+                            triggerHaptic(10);
+                        }
+                    }}
                 >
-                    <Crosshair size={12} />
-                    <span style={{ fontWeight: 'bold', fontSize: '0.75rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {target ? target.toUpperCase() : (viewport.isMobile ? '' : 'NO TARGET')}
-                    </span>
+                    <Crosshair size={12} style={{ flexShrink: 0 }} />
+                    <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center' }}>
+                        {isEnteringTarget ? (
+                            <input
+                                ref={targetInputRef}
+                                type="text"
+                                value={manualTargetInput}
+                                onChange={(e) => setManualTargetInput(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        if (manualTargetInput.trim()) {
+                                            setTarget(manualTargetInput.trim());
+                                            triggerHaptic(15);
+                                        }
+                                        setIsEnteringTarget(false);
+                                    } else if (e.key === 'Escape') {
+                                        setIsEnteringTarget(false);
+                                    }
+                                }}
+                                onBlur={() => {
+                                    // Small delay to allow potential Enter key processing if needed, 
+                                    // though mostly just to clean up state
+                                    setTimeout(() => setIsEnteringTarget(false), 150);
+                                }}
+                                style={{
+                                    background: 'transparent',
+                                    border: 'none',
+                                    color: 'var(--map-accent)',
+                                    outline: 'none',
+                                    width: '100%',
+                                    fontSize: '0.75rem',
+                                    fontWeight: 'bold',
+                                    padding: 0,
+                                    margin: 0,
+                                    textTransform: 'uppercase'
+                                }}
+                                placeholder="..."
+                            />
+                        ) : (
+                            <span style={{ 
+                                fontWeight: 'bold', 
+                                fontSize: '0.75rem', 
+                                overflow: 'hidden', 
+                                textOverflow: 'ellipsis', 
+                                whiteSpace: 'nowrap',
+                                opacity: target ? 1 : 0.7
+                            }}>
+                                {target ? target.toUpperCase() : (viewport.isMobile ? 'TARGET' : 'NO TARGET')}
+                            </span>
+                        )}
+                    </div>
                 </div>
 
                 {teleportTargetsCount > 0 && (

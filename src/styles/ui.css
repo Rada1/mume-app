@@ -9,6 +9,7 @@
     z-index: var(--z-header); /* Elevated above log and HUD */
     flex-shrink: 0;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: visible;
 }
 
 .mobile-header {
@@ -26,6 +27,7 @@
     padding: calc(env(safe-area-inset-top, 0px) + 4px) 12px 4px 12px !important;
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
+    overflow: visible !important;
 }
 
 .mobile-header>* {

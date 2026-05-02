@@ -1,5 +1,4 @@
 import React from 'react';
-import XpTicker from '../../Combat/XpTicker';
 import CombatVitals from '../../Combat/CombatVitals';
 import { useGame } from '../../../context/GameContext';
 
@@ -55,7 +54,6 @@ export const StatsCluster: React.FC<StatsClusterProps> = ({
         >
             {isEditMode && <div className="resize-handle" style={{ zIndex: 1700 }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'stats', 'cluster-resize'); }} />}
             <div style={{ position: 'relative' }}>
-                <XpTicker isLandscape={isLandscape} />
             </div>
             {inCombat && <CombatVitals stats={stats} mood={mood} />}
         </div>

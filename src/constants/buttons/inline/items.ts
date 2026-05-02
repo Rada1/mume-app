@@ -1,4 +1,4 @@
-﻿import { createButton } from '../../../utils/buttonFactory';
+import { createButton } from '../../../utils/buttonFactory';
 
 /**
  * @file items.ts

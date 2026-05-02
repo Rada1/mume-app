@@ -35,6 +35,7 @@ export interface UseGameParserDeps {
         commTextTokens?: import('../../types').Token[],
         providedCombatSide?: 'player' | 'opponent' | 'groupmate',
         providedIsHitImpact?: boolean,
+        providedIsDamageImpact?: boolean,
         providedIsHitterImpact?: boolean,
         providedIsSnoop?: boolean,
         providedIsSnoopInput?: boolean

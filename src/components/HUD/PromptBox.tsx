@@ -7,8 +7,7 @@ import React, { memo, FC, useState, useRef, useCallback, useEffect } from 'react
 import { Swords, Heart, Zap, Footprints, Info, Sliders } from 'lucide-react';
 import './PromptBox.css';
 import { GameStats, CharacterInfo, CombatHealthStatus } from '../../types';
-import { useGame } from '../../context/GameContext';
-import XpTicker from '../Combat/XpTicker';
+import { useGame, useUI } from '../../context/GameContext';
 import { CombatSliderPopout } from '../Combat/CombatSliderPopout';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
 import { useActiveVitals, useActiveCombat, useActiveCharacter } from '../../stores/useActiveGameState';
@@ -253,6 +252,7 @@ const PromptBox: FC<PromptBoxProps> = ({
     onWimpyChange
 }) => {
     const { triggerHaptic, executeCommand, setPlayerPosition, inlineCategories, isNewbieMode, viewport } = useGame();
+    const { handleTabClick } = useUI();
     
     // --- Active View State Selectors ---
     const activeVitals = useActiveVitals();
@@ -459,7 +459,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                                     colorClass="mana" 
                                     segments={MANA_SEGMENTS}
                                     tiers={MANA_TIERS}
-                                    onClick={triggerNumbers}
+                                    onClick={() => handleTabClick('status')}
                                     showAlt={showNumbers}
                                     altStatus={`${mana}/${maxMana}`}
                                     isFighting={inCombat}
@@ -471,7 +471,7 @@ const PromptBox: FC<PromptBoxProps> = ({
                                     colorClass="move" 
                                     segments={MOVE_SEGMENTS}
                                     tiers={MOVE_TIERS}
-                                    onClick={triggerNumbers}
+                                    onClick={() => handleTabClick('status')}
                                     showAlt={showNumbers}
                                     altStatus={`${move}/${maxMove}`}
                                     isFighting={inCombat}
@@ -482,7 +482,6 @@ const PromptBox: FC<PromptBoxProps> = ({
 
                     {/* Center Anchor */}
                     <div className="vitals-center-anchor" style={{ position: 'relative' }}>
-                        <XpTicker isLandscape={viewport.isLandscape} align="center" />
                         <button 
                             className={`pos-combat-square-btn ${inCombat ? 'is-fighting' : ''} ${activeSlider === 'pos' ? 'active' : ''}`}
                             onClick={!isSpectateMode ? handlePosClick : undefined}

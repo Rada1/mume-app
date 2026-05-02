@@ -169,6 +169,20 @@ const findStatus = (str: string | undefined): CombatHealthStatus | null => {
     return 'None';
 };
 
+const resolveWaitingCondition = (data: GmcpCharVitals): boolean | null => {
+    if (typeof data.waiting === 'boolean') return data.waiting;
+    const fields = [data.position, data.status, data.state].filter(Boolean).map(value => String(value).toLowerCase());
+    if (fields.some(value => value === 'waiting' || value.includes('waiting'))) return true;
+    if (fields.some(value => ['standing', 'fighting', 'sleeping', 'sitting', 'resting'].includes(value))) return false;
+
+    const conditions = data.conditions;
+    if (Array.isArray(conditions)) return conditions.some(condition => String(condition).toLowerCase() === 'waiting');
+    if (typeof conditions === 'string') return conditions.toLowerCase().includes('waiting');
+    if (conditions && typeof conditions === 'object' && 'waiting' in conditions) return !!conditions.waiting;
+
+    return null;
+};
+
 /**
  * Creates the vitals actions for a Zustand store.
  * @param set The Zustand set function
@@ -209,12 +223,18 @@ export const createVitalsActions = (set: any, get: any) => ({
             if (data.maxstamina !== undefined) updates.maxMove = data.maxstamina;
 
             // --- XP/TP Sync from Vitals ---
-            if (data.xp !== undefined || data.xp_max !== undefined || data['next-level-xp'] !== undefined || data['next-level-tp'] !== undefined) {
+            if (data.xp !== undefined || data.xp_max !== undefined || data['next-level-xp'] !== undefined || data.tp !== undefined || data['next-level-tp'] !== undefined) {
                 const charInfo = { ...state.characterInfo };
                 if (data.xp !== undefined) charInfo.xp = Number(data.xp);
                 if (data.xp_max !== undefined) charInfo.xpMax = Number(data.xp_max);
-                if (data['next-level-xp'] !== undefined) charInfo.tnl = Number(data['next-level-xp']);
-                if (data['next-level-tp'] !== undefined) charInfo.tpnl = Number(data['next-level-tp']);
+                if (data['next-level-xp'] !== undefined) charInfo.xpMax = Number(data['next-level-xp']);
+                if (data.tp !== undefined) charInfo.tp = Number(data.tp);
+                if (data['next-level-tp'] !== undefined) charInfo.tpMax = Number(data['next-level-tp']);
+
+                // Calculate TNL/TPNL using threshold - current
+                if (charInfo.xpMax > 0) charInfo.tnl = Math.max(0, charInfo.xpMax - charInfo.xp);
+                if (charInfo.tpMax > 0) charInfo.tpnl = Math.max(0, charInfo.tpMax - charInfo.tp);
+                
                 updates.characterInfo = charInfo;
             }
 
@@ -247,10 +267,13 @@ export const createVitalsActions = (set: any, get: any) => ({
                 }
             }
 
+            const waitingCondition = resolveWaitingCondition(data);
+            if (waitingCondition !== null) {
+                updates.conditions = { ...((state as any).conditions || {}), waiting: waitingCondition };
+            }
+
             if (data.position) {
                 const rawPosition = String(data.position).toLowerCase();
-                const isWaiting = rawPosition === 'waiting' || rawPosition.includes('waiting');
-                updates.conditions = { ...((state as any).conditions || {}), waiting: isWaiting };
 
                 // Don't let 'standing' stomp 'riding' because MUME often says 'standing' while mounted.
                 const isCurrentlyRiding = state.position === 'riding' || state.position === 'mounted';
@@ -334,11 +357,15 @@ export const createVitalsActions = (set: any, get: any) => ({
                 fullname: data.fullname ?? state.characterInfo.fullname,
                 level: data.level !== undefined ? Number(data.level) : state.characterInfo.level,
                 xp: data.xp !== undefined ? Number(data.xp) : state.characterInfo.xp,
-                xpMax: data.xp_max !== undefined ? Number(data.xp_max) : state.characterInfo.xpMax,
-                tnl: data.tnl !== undefined ? Number(data.tnl) : (data['next-level-xp'] !== undefined ? Number(data['next-level-xp']) : state.characterInfo.tnl),
+                xpMax: data.xp_max !== undefined ? Number(data.xp_max) : (data['next-level-xp'] !== undefined ? Number(data['next-level-xp']) : state.characterInfo.xpMax),
                 tp: data.tp !== undefined ? Number(data.tp) : state.characterInfo.tp,
-                tpMax: data.tp_max !== undefined ? Number(data.tp_max) : state.characterInfo.tpMax,
-                tpnl: data.tpnl !== undefined ? Number(data.tpnl) : (data['next-level-tp'] !== undefined ? Number(data['next-level-tp']) : state.characterInfo.tpnl),
+                tpMax: data.tp_max !== undefined ? Number(data.tp_max) : (data['next-level-tp'] !== undefined ? Number(data['next-level-tp']) : state.characterInfo.tpMax),
+                tnl: (data.xp_max !== undefined || data['next-level-xp'] !== undefined || data.xp !== undefined) 
+                    ? Math.max(0, (data.xp_max !== undefined ? Number(data.xp_max) : (data['next-level-xp'] !== undefined ? Number(data['next-level-xp']) : state.characterInfo.xpMax)) - (data.xp !== undefined ? Number(data.xp) : state.characterInfo.xp))
+                    : state.characterInfo.tnl,
+                tpnl: (data.tp_max !== undefined || data['next-level-tp'] !== undefined || data.tp !== undefined)
+                    ? Math.max(0, (data.tp_max !== undefined ? Number(data.tp_max) : (data['next-level-tp'] !== undefined ? Number(data['next-level-tp']) : state.characterInfo.tpMax)) - (data.tp !== undefined ? Number(data.tp) : state.characterInfo.tp))
+                    : state.characterInfo.tpnl,
                 race: data.race ?? state.characterInfo.race,
                 subrace: data.subrace ?? state.characterInfo.subrace,
                 subclass: data.subclass ?? state.characterInfo.subclass,

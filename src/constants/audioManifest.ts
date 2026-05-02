@@ -29,8 +29,8 @@ export const AUDIO_MANIFEST = {
             'WATER': { url: '/assets/Sounds/TerrainSounds/shallows.wav', volume: 0.8 },
         } as Record<string, AmbientConfig>,
         weather: {
-            'rain': { url: '/assets/Sounds/SoundEffects/rain.mp3', volume: 0.25 },
-            'heavy-rain': { url: '/assets/Sounds/SoundEffects/rain.mp3', volume: 0.25 },
+            'rain': { url: '/assets/Sounds/SoundEffects/rain.mp3', volume: 0.45 },
+            'heavy-rain': { url: '/assets/Sounds/SoundEffects/rain.mp3', volume: 0.70 },
         } as Record<string, AmbientConfig>,
         zones: {
             'bree': { url: '/assets/Sounds/ZoneSounds/BreeSound.wav' },
@@ -125,6 +125,9 @@ export const AUDIO_MANIFEST = {
         'slash': { path: '/assets/Sounds/SoundEffects/slash.mp3' },
         'smite': { path: '/assets/Sounds/SoundEffects/smite.mp3' },
         'stab': { path: '/assets/Sounds/SoundEffects/stab.mp3' },
+        'thunder': { path: '/assets/Sounds/SoundEffects/thunder.mp3' },
+        'thunder2': { path: '/assets/Sounds/SoundEffects/thunder2.mp3' },
+        'ambient-thunder': { path: '/assets/Sounds/SoundEffects/ambientthunder.mp3' },
         'watermove': { path: '/assets/Sounds/SoundEffects/watermove.mp3' },
     } as Record<string, SoundConfig>,
     bpmMap: {

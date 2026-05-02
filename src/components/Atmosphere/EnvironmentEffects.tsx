@@ -8,6 +8,7 @@ interface EnvironmentEffectsProps {
     weather: WeatherType;
     isFoggy: boolean;
     lightning: boolean;
+    lightningX?: number;
     isImmersionMode: boolean;
     isMobile: boolean;
 }
@@ -17,11 +18,12 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     weather,
     isFoggy,
     lightning,
+    lightningX = 50,
     isImmersionMode,
     isMobile
 }) => {
     return (
-        <>
+        <div style={{ '--lightning-x': `${lightningX}%` } as React.CSSProperties}>
             {/* --- BACK LAYER: Ambient & Lighting [z-index: 1] --- */}
             <div className={`environment-root back lighting-state-${isImmersionMode ? lighting : 'none'}`}>
                 {isImmersionMode && (
@@ -46,9 +48,10 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                 {isImmersionMode && (
                     <>
                         <div
-                            className={`weather-layer weather-cloud ${(weather === 'rain' || weather === 'heavy-rain') ? 'storm-clouds' : ''}`}
+                            className={`weather-layer weather-cloud ${(weather === 'rain' || weather === 'heavy-rain') ? 'storm-clouds' : ''} ${lightning ? 'lightning-active' : ''}`}
                             style={{ opacity: (weather === 'cloud' || weather === 'rain' || weather === 'heavy-rain') ? 1 : 0 }}
                         />
+                        {lightning && <div className="lightning-glow-drop" />}
                         {(weather === 'rain' || weather === 'heavy-rain') && <Rain heavy={weather === 'heavy-rain'} />}
                         {weather === 'snow' && <div className="weather-layer weather-snow" />}
                         {!isMobile && <Embers count={lighting === 'artificial' ? 60 : 30} />}
@@ -57,10 +60,11 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                 {/* Fog renders regardless of immersion mode — it's a gameplay-relevant state */}
                 <div className={`fog-layer ${isFoggy ? 'fog-active' : ''}`} />
 
-                <div className={`lightning-layer ${lightning ? 'lightning-active' : ''}`} />
+                {/* Full-screen lightning disabled in favor of cloud-only lightning */}
+                {/* <div className={`lightning-layer ${lightning ? 'lightning-active' : ''}`} /> */}
 
             </div>
-        </>
+        </div>
     );
 
 };
