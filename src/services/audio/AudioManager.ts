@@ -442,7 +442,7 @@ export class AudioManager {
         const zoneActive = this.activeAmbients.get('zone');
         const effectiveUrl = (activeZoneUrl && activeZoneUrl.includes('/')) ? activeZoneUrl : zoneActive?.url;
 
-        if (inCombat && effectiveUrl) {
+        if (inCombat) {
             const activeDrum = this.activeAmbients.get('drum');
             if (activeDrum) return; // Already playing
 
@@ -450,7 +450,7 @@ export class AudioManager {
             const buffer = await this.loadBuffer(drumUrl);
             if (!buffer) return;
 
-            const musicFilename = effectiveUrl.split('/').pop() || '';
+            const musicFilename = effectiveUrl?.split('/').pop() || '';
             const musicBpm = AUDIO_MANIFEST.bpmMap[musicFilename] || 100;
             const drumBpm = AUDIO_MANIFEST.bpmMap['drumbeat.mp3'] || 100;
 

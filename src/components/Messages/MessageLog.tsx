@@ -236,6 +236,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
         isNewbieMode, showSpectatePromptInLog, input, setInput, sessionMode
     } = useBaseGame() as any;
     const isSpectateMode = useModeStore(s => s.isSpectating);
+    const activeView = useModeStore(s => s.activeView);
     const { replayer, spectateBuffer } = useUI() as any;
     const { messages } = useLog();
     const { target, setTarget, opponentName, opponentHealthStatus } = useVitals();
@@ -322,12 +323,12 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
         // Spectate DVR buffer: hide messages newer than displayCutoff so the user
         // can watch from an earlier point in the session and advance in real-time.
-        if (isSpectateMode && !spectateBuffer.isLive) {
+        if (isSpectateMode && activeView === 'target' && !spectateBuffer.isLive) {
             return base.filter(m => m.timestamp <= spectateBuffer.displayCutoff);
         }
 
         return base;
-    }, [messages, replayMessages, sessionMode, showSpectatePromptInLog, replayer.state.currentTime, isSpectateMode, spectateBuffer.isLive, spectateBuffer.displayCutoff]);
+    }, [messages, replayMessages, sessionMode, showSpectatePromptInLog, replayer.state.currentTime, isSpectateMode, activeView, spectateBuffer.isLive, spectateBuffer.displayCutoff]);
 
     const lastUserMsgIndex = useMemo(() => {
         for (let i = displayMessages.length - 1; i >= 0; i--) {

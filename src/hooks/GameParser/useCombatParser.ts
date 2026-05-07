@@ -25,6 +25,8 @@ export interface CombatParserDeps {
     playLevelSound?: (options?: { pitch?: number, volume?: number }) => void;
     playHitImpactSound?: (options?: { pitch?: number, volume?: number } | string) => void;
     playOofSound?: () => void;
+    playSpectateHitImpactSound?: (options?: { pitch?: number, volume?: number } | string) => void;
+    playSpectateOofSound?: () => void;
     setInCombat?: (inCombat: boolean, force?: boolean) => void;
     characterName?: string | null;
     addMessage?: (type: any, text: string) => void;
@@ -202,11 +204,13 @@ export function useCombatParser(deps: CombatParserDeps) {
             const hasDamageTag = cleanLine.includes('<damage>');
 
             if (hasHitTag) {
-                deps.playHitImpactSound?.(match.modifier);
+                if (isSnoop) deps.playSpectateHitImpactSound?.(match.modifier);
+                else deps.playHitImpactSound?.(match.modifier);
             }
 
             if (hasDamageTag) {
-                deps.playOofSound?.();
+                if (isSnoop) deps.playSpectateOofSound?.();
+                else deps.playOofSound?.();
             }
 
             // Visual FX

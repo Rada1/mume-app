@@ -10,6 +10,9 @@ import { useSessionState } from './useSessionState';
 import { useUIStore } from '../../stores/useUIStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useModeStore } from '../../stores/useModeStore';
+import { useSpectateLiveVitalsStore } from '../../stores/spectate/useSpectateLiveVitalsStore';
+import { useSpectateLiveRoomStore } from '../../stores/spectate/useSpectateLiveRoomStore';
+import { useSpectateLiveCombatStore } from '../../stores/spectate/useSpectateLiveCombatStore';
 
 export const useGameProviderState = (audioTriggers?: {
     playCommMessageSound: () => void;
@@ -81,6 +84,9 @@ export const useGameProviderState = (audioTriggers?: {
     // --- Session Slots ---
     const userSession = useSessionState(characterName, isNewbieMode, gameState, roomDescRef, isAccountModeRef, false, audioTriggers);
     const spectateSession = useSessionState(characterName, isNewbieMode, gameState, roomDescRef, isAccountModeRef, true, audioTriggers);
+    const spectateLiveVitals = useSpectateLiveVitalsStore();
+    const spectateLiveRoom = useSpectateLiveRoomStore();
+    const spectateLiveCombat = useSpectateLiveCombatStore();
 
     const active = mode.isSpectating && mode.activeView === 'target' ? spectateSession : userSession;
 
@@ -140,21 +146,26 @@ export const useGameProviderState = (audioTriggers?: {
         spectateCharacterName: spectateSession.game.characterName,
 
         // Explicit Spectate Mapping
-        setSpectateStats: spectateSession.vitals.setStats,
-        setSpectateWaiting: (waiting: boolean) => spectateSession.vitals.setStats(prev => ({
+        setSpectateStats: spectateLiveVitals.setStats,
+        setSpectateWaiting: (waiting: boolean) => spectateLiveVitals.setStats(prev => ({
             ...prev,
             conditions: { ...prev.conditions, waiting }
         })),
-        setSpectateCharacterName: spectateSession.game.setCharacterName,
-        setSpectatePosition: spectateSession.game.setPlayerPosition,
-        setSpectateInCombat: spectateSession.game.setInCombat,
-        setSpectateOpponentName: spectateSession.vitals.setOpponentName,
-        setSpectateOpponentStatus: spectateSession.vitals.setOpponentHealthStatus,
-        setSpectateRoomNum: spectateSession.game.setRoomNum,
-        setSpectateRoomName: spectateSession.game.setRoomName,
-        setSpectateRoomDesc: spectateSession.game.setRoomDesc,
-        setSpectateRoomZone: spectateSession.game.setRoomZone,
-        setSpectateActivePrompt: spectateSession.vitals.setActivePrompt,
+        setSpectateCharacterName: (name: string | null) => {
+            spectateLiveVitals.setCharacterName(name);
+            spectateSession.game.setCharacterName(name);
+        },
+        setSpectatePosition: spectateLiveVitals.setPosition,
+        setSpectateInCombat: spectateLiveVitals.setInCombat,
+        setSpectateOpponentName: spectateLiveCombat.setOpponentName,
+        setSpectateOpponentStatus: spectateLiveCombat.setOpponentHealthStatus,
+        setSpectateRoomNum: (num: number | null) => spectateLiveRoom.setRoomInfo({ roomNum: num ?? 0 }),
+        setSpectateRoomName: spectateLiveRoom.setRoomName,
+        setSpectateRoomDesc: spectateLiveRoom.setRoomDesc,
+        setSpectateRoomZone: spectateLiveRoom.setRoomZone,
+        setSpectateActivePrompt: spectateLiveVitals.setActivePrompt,
+        setSpectateWeather: spectateLiveVitals.setWeather,
+        setSpectateIsFoggy: spectateLiveVitals.setIsFoggy,
         setStats: active.vitals.setStats,
         isSpectateMode: mode.isSpectating,
 

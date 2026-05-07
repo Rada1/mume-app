@@ -54,6 +54,7 @@ export function useTelnet(config: TelnetConfig) {
     const hasSentGameEntrySetupRef = React.useRef(false);
 
     const snoopBlockRef = React.useRef<{ symbol: string; type: string } | null>(null);
+    const snoopPrefixRegex = /^(?:&amp;|&|mp;)[A-Za-z](?:\s|$)/;
     const gmcpDecoder = React.useRef<GmcpDecoder | null>(null);
     if (!gmcpDecoder.current) {
         gmcpDecoder.current = new GmcpDecoder({
@@ -120,7 +121,7 @@ export function useTelnet(config: TelnetConfig) {
             // Snooped lines (prefixed with &E, &F, etc.) must not update the user's own HUD.
             // Pass them straight through to processLine, which strips the prefix and routes
             // any embedded prompt to the spectate view via setSpectateActivePrompt.
-            if (/^(?:&|mp;)[A-Z] /.test(clean)) return false;
+            if (snoopPrefixRegex.test(clean)) return false;
 
             // In XML mode, prompts are explicitly tagged and should be the entire line
             if (clean.startsWith('<prompt') && clean.endsWith('</prompt>')) return true;
@@ -208,7 +209,7 @@ export function useTelnet(config: TelnetConfig) {
             const normalizedSymbol = rawLetter ? `&${rawLetter}` : '&?';
             const normalizedLine = value.replace(/^((?:\x1b\[[0-9;]*m|\s)*)&amp;([A-Z]) /, '$1&$2 ');
             const cleanLine = normalizedLine.replace(/\x1b\[[0-9;]*m/g, '').trim();
-            if (/^(?:&|mp;)[A-Z](?: |$)/.test(cleanLine)) return normalizedLine;
+            if (snoopPrefixRegex.test(cleanLine)) return normalizedLine;
             return `${normalizedSymbol} ${normalizedLine}`;
         };
 
@@ -257,7 +258,7 @@ export function useTelnet(config: TelnetConfig) {
             const lineSegments = splitSnoopXmlBlocks(rawLine);
             for (const line of lineSegments) {
                 const cleanForSnoopSegment = line.replace(/\x1b\[[0-9;]*m/g, '').trim();
-                if (/^(?:&|mp;)[A-Z](?: |$)/.test(cleanForSnoopSegment)) {
+                if (snoopPrefixRegex.test(cleanForSnoopSegment)) {
                     processedLines.push(line);
                     continue;
                 }
@@ -268,7 +269,7 @@ export function useTelnet(config: TelnetConfig) {
             // passed to handlePromptDetected — flickering the user's HUD with snooped commands.
             // Push straight to processedLines; processLine handles prefix stripping and routing.
             const cleanForSnoop = line.replace(/\x1b\[[0-9;]*m/g, '').trim();
-            if (/^(?:&|mp;)[A-Z] /.test(cleanForSnoop)) {
+            if (snoopPrefixRegex.test(cleanForSnoop)) {
                 if (line.length > 0) processedLines.push(line);
                 continue;
             }
@@ -301,7 +302,7 @@ export function useTelnet(config: TelnetConfig) {
         // Handle text remaining in buffer (the part after the last newline)
         // Snooped partial lines stay buffered for the next chunk — no prompt detection needed.
         const lastLineClean = lastLine.replace(/\x1b\[[0-9;]*m/g, '').trim();
-        if (snoopBlockRef.current || /^<snoop[\s>]/.test(lastLineClean) || /^(?:&|mp;)[A-Z] /.test(lastLineClean)) {
+        if (snoopBlockRef.current || /^<snoop[\s>]/.test(lastLineClean) || snoopPrefixRegex.test(lastLineClean)) {
             bufferRef.current = lastLine;
         } else {
             const xmlSplitLast = splitXmlPrompt(lastLine);

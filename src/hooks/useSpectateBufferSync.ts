@@ -1,35 +1,52 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useSpectateVitalsStore } from '../stores/spectate/useSpectateVitalsStore';
 import { useSpectateRoomStore } from '../stores/spectate/useSpectateRoomStore';
+import { useSpectateCombatStore } from '../stores/spectate/useSpectateCombatStore';
+import { useSpectateLiveVitalsStore } from '../stores/spectate/useSpectateLiveVitalsStore';
+import { useSpectateLiveRoomStore } from '../stores/spectate/useSpectateLiveRoomStore';
+import { useSpectateLiveCombatStore } from '../stores/spectate/useSpectateLiveCombatStore';
+import { CombatHealthStatus, GmcpOccupant, GroupMember } from '../types';
+
+type AudioModifier = { pitch?: number; volume?: number } | string;
 
 interface VitalsSnapshot {
     hp: number; maxHp: number;
     mana: number; maxMana: number;
     move: number; maxMove: number;
     ob?: number; db?: number; pb?: number; armour?: number;
-    hpStatus: any; manaStatus: any; moveStatus: any;
+    hpStatus: CombatHealthStatus | null; manaStatus: string | null; moveStatus: string | null;
     inCombat: boolean;
     lighting: string; weather: string; isFoggy: boolean;
     currentTerrain: string;
-    activePrompt: any;
+    activePrompt: unknown;
     wimpy: number;
 }
 
 interface RoomSnapshot {
-    roomName: string; roomZone: string;
+    roomName: string; roomDesc: string; roomZone: string;
     terrain: string; roomNum: number;
+    exits: string[]; rawExits: Record<string, unknown>;
+    chars: Record<number, GmcpOccupant>; items: GmcpOccupant[];
 }
 
 interface StateSnapshot {
     timestamp: number;
     vitals: VitalsSnapshot;
     room: RoomSnapshot;
+    combat: {
+        opponentId: number | null;
+        opponentName: string | null;
+        opponentHealthStatus: CombatHealthStatus | null;
+        bufferName: string | null;
+        bufferHealthStatus: CombatHealthStatus | null;
+        groupMembers: GroupMember[];
+    };
 }
 
 interface AudioEvent {
     timestamp: number;
     type: 'hit' | 'oof' | 'click';
-    modifier?: any;
+    modifier?: AudioModifier;
 }
 
 export function useSpectateBufferSync({
@@ -45,7 +62,7 @@ export function useSpectateBufferSync({
     displayCutoff: number;
     isLive: boolean;
     isPlaying: boolean;
-    playHitImpactSound: (modifier?: any) => void;
+    playHitImpactSound: (modifier?: AudioModifier) => void;
     playOofSound: () => void;
     playClickSound: () => void;
 }) {
@@ -53,6 +70,76 @@ export function useSpectateBufferSync({
     const audioEventsRef = useRef<AudioEvent[]>([]);
     const lastCutoffRef = useRef<number>(Infinity);
     const isRestoringRef = useRef(false);
+    const isLiveRef = useRef(isLive);
+    const playHitImpactSoundRef = useRef(playHitImpactSound);
+    const playOofSoundRef = useRef(playOofSound);
+    const playClickSoundRef = useRef(playClickSound);
+
+    useEffect(() => {
+        isLiveRef.current = isLive;
+    }, [isLive]);
+
+    useEffect(() => {
+        playHitImpactSoundRef.current = playHitImpactSound;
+        playOofSoundRef.current = playOofSound;
+        playClickSoundRef.current = playClickSound;
+    }, [playHitImpactSound, playOofSound, playClickSound]);
+
+    const snapshotVitals = useCallback((): VitalsSnapshot => {
+        const v = useSpectateLiveVitalsStore.getState();
+        return {
+            hp: v.hp, maxHp: v.maxHp,
+            mana: v.mana, maxMana: v.maxMana,
+            move: v.move, maxMove: v.maxMove,
+            ob: v.ob, db: v.db,
+            pb: v.pb, armour: v.armour,
+            hpStatus: v.hpStatus,
+            manaStatus: v.manaStatus,
+            moveStatus: v.moveStatus,
+            inCombat: v.inCombat,
+            lighting: v.lighting,
+            weather: v.weather,
+            isFoggy: v.isFoggy,
+            currentTerrain: v.currentTerrain,
+            activePrompt: v.activePrompt,
+            wimpy: v.wimpy ?? 0,
+        };
+    }, []);
+
+    const snapshotRoom = useCallback((): RoomSnapshot => {
+        const r = useSpectateLiveRoomStore.getState();
+        return {
+            roomName: r.roomName,
+            roomDesc: r.roomDesc,
+            roomZone: r.roomZone,
+            terrain: r.terrain,
+            roomNum: r.roomNum,
+            exits: [...(r.exits || [])],
+            rawExits: { ...(r.rawExits || {}) },
+            chars: { ...(r.chars || {}) },
+            items: [...(r.items || [])],
+        };
+    }, []);
+
+    const snapshotCombat = useCallback(() => {
+        const c = useSpectateLiveCombatStore.getState();
+        return {
+            opponentId: c.opponentId,
+            opponentName: c.opponentName,
+            opponentHealthStatus: c.opponentHealthStatus,
+            bufferName: c.bufferName,
+            bufferHealthStatus: c.bufferHealthStatus,
+            groupMembers: [...(c.groupMembers || [])],
+        };
+    }, []);
+
+    const applyDisplaySnapshot = useCallback((snap: Pick<StateSnapshot, 'vitals' | 'room' | 'combat'>) => {
+        isRestoringRef.current = true;
+        useSpectateVitalsStore.setState(snap.vitals);
+        useSpectateRoomStore.setState(snap.room);
+        useSpectateCombatStore.setState(snap.combat);
+        isRestoringRef.current = false;
+    }, []);
 
     useEffect(() => {
         if (!isSpectating) {
@@ -62,40 +149,38 @@ export function useSpectateBufferSync({
         }
     }, [isSpectating]);
 
-    // Subscribe to Zustand stores to record timestamped snapshots
+    // Subscribe to live ingest stores. Live mode mirrors live into display;
+    // buffered mode records only, so real-time data cannot pull the UI forward.
     useEffect(() => {
         if (!isSpectating) return;
 
         const record = () => {
             if (isRestoringRef.current) return;
-            const v = useSpectateVitalsStore.getState();
-            const r = useSpectateRoomStore.getState();
-            stateTimelineRef.current.push({
+            const next = {
                 timestamp: Date.now(),
-                vitals: {
-                    hp: v.hp, maxHp: v.maxHp,
-                    mana: v.mana, maxMana: v.maxMana,
-                    move: (v as any).move, maxMove: (v as any).maxMove,
-                    ob: (v as any).ob, db: (v as any).db,
-                    pb: (v as any).pb, armour: (v as any).armour,
-                    hpStatus: (v as any).hpStatus, manaStatus: (v as any).manaStatus, moveStatus: (v as any).moveStatus,
-                    inCombat: (v as any).inCombat,
-                    lighting: (v as any).lighting, weather: (v as any).weather, isFoggy: (v as any).isFoggy,
-                    currentTerrain: (v as any).currentTerrain,
-                    activePrompt: (v as any).activePrompt,
-                    wimpy: (v as any).wimpy ?? 0,
-                },
-                room: {
-                    roomName: r.roomName, roomZone: r.roomZone,
-                    terrain: r.terrain, roomNum: r.roomNum,
-                },
-            });
+                vitals: snapshotVitals(),
+                room: snapshotRoom(),
+                combat: snapshotCombat(),
+            };
+            stateTimelineRef.current.push(next);
+            if (isLiveRef.current) applyDisplaySnapshot(next);
         };
 
-        const unsubV = useSpectateVitalsStore.subscribe(record);
-        const unsubR = useSpectateRoomStore.subscribe(record);
-        return () => { unsubV(); unsubR(); };
-    }, [isSpectating]);
+        const unsubV = useSpectateLiveVitalsStore.subscribe(record);
+        const unsubR = useSpectateLiveRoomStore.subscribe(record);
+        const unsubC = useSpectateLiveCombatStore.subscribe(record);
+        record();
+        return () => { unsubV(); unsubR(); unsubC(); };
+    }, [isSpectating, applyDisplaySnapshot, snapshotCombat, snapshotRoom, snapshotVitals]);
+
+    useEffect(() => {
+        if (!isSpectating || !isLive) return;
+        applyDisplaySnapshot({
+            vitals: snapshotVitals(),
+            room: snapshotRoom(),
+            combat: snapshotCombat(),
+        });
+    }, [isSpectating, isLive, applyDisplaySnapshot, snapshotCombat, snapshotRoom, snapshotVitals]);
 
     // Restore state when displayCutoff changes; replay audio during playback
     useEffect(() => {
@@ -114,15 +199,7 @@ export function useSpectateBufferSync({
         }
 
         if (best) {
-            isRestoringRef.current = true;
-            useSpectateVitalsStore.setState(best.vitals as any);
-            useSpectateRoomStore.setState({
-                roomName: best.room.roomName,
-                roomZone: best.room.roomZone,
-                terrain: best.room.terrain,
-                roomNum: best.room.roomNum,
-            } as any);
-            isRestoringRef.current = false;
+            applyDisplaySnapshot(best);
         }
 
         // Replay audio events newly visible in this tick (only during forward play)
@@ -131,14 +208,14 @@ export function useSpectateBufferSync({
                 e => e.timestamp > prevCutoff && e.timestamp <= displayCutoff
             );
             toPlay.slice(0, 3).forEach(evt => {
-                if (evt.type === 'hit') playHitImpactSound(evt.modifier);
-                else if (evt.type === 'oof') playOofSound();
-                else if (evt.type === 'click') playClickSound();
+                if (evt.type === 'hit') playHitImpactSoundRef.current(evt.modifier);
+                else if (evt.type === 'oof') playOofSoundRef.current();
+                else if (evt.type === 'click') playClickSoundRef.current();
             });
         }
-    }, [displayCutoff, isLive, isPlaying, playHitImpactSound, playOofSound]);
+    }, [displayCutoff, isLive, isPlaying, applyDisplaySnapshot]);
 
-    const recordHit = useCallback((modifier?: any) => {
+    const recordHit = useCallback((modifier?: AudioModifier) => {
         audioEventsRef.current.push({ timestamp: Date.now(), type: 'hit', modifier });
     }, []);
 

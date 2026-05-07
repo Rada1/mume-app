@@ -159,7 +159,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Stable message routing: ensure snoop lines always land in the spectate bucket 
     // regardless of which view is currently active. This prevents "leaking" snoop 
     // data into the main log or losing our own tells while viewing the target.
-    const routedAddMessage = React.useCallback((type: MessageType, text: string, extra?: any, mid?: string, isRoomName?: boolean, precalculated?: any, shopItem?: any, practiceSkill?: any, practiceHeader?: any, isSystem?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, commSenderTokens?: any, commTextTokens?: any, providedCombatSide?: any, providedIsHitImpact?: boolean, providedIsHitterImpact?: boolean, providedIsSnoop?: boolean, providedIsSnoopInput?: boolean) => {
+    const routedAddMessage = React.useCallback((type: MessageType, text: string, extra?: any, mid?: string, isRoomName?: boolean, precalculated?: any, shopItem?: any, practiceSkill?: any, practiceHeader?: any, isSystem?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, commSenderTokens?: any, commTextTokens?: any, providedCombatSide?: any, providedIsHitImpact?: boolean, providedIsDamageImpact?: boolean, providedIsHitterImpact?: boolean, providedIsSnoop?: boolean, providedIsSnoopInput?: boolean) => {
         // Silencing logic for OOC captures
         if (s.userSession.game.silenceUntilPrompt && !providedIsSnoop) {
             return;
@@ -168,7 +168,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // Bump activity for atmospheric effects
         s.bumpActivity();
 
-        const args = [type, text, extra, mid, isRoomName, precalculated, shopItem, practiceSkill, practiceHeader, isSystem, replyTarget, replyCommand, commSender, commAction, commText, commColor, commSenderTokens, commTextTokens, providedCombatSide, providedIsHitImpact, providedIsHitterImpact, providedIsSnoop, providedIsSnoopInput] as const;
+        const args = [type, text, extra, mid, isRoomName, precalculated, shopItem, practiceSkill, practiceHeader, isSystem, replyTarget, replyCommand, commSender, commAction, commText, commColor, commSenderTokens, commTextTokens, providedCombatSide, providedIsHitImpact, providedIsDamageImpact, providedIsHitterImpact, providedIsSnoop, providedIsSnoopInput] as const;
         if (type === 'snoop' || type === 'snoop-command' || type === 'snoop-vitals' || providedIsSnoop) {
             (s.spectateSession.log.addMessage as any)(...args);
         } else {
@@ -306,7 +306,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     payload.commSender, payload.commAction, payload.commText, payload.commColor,
                     undefined, undefined,
                     payload.providedCombatSide, payload.providedIsHitImpact,
-                    payload.providedIsHitterImpact, payload.providedIsSnoop, payload.providedIsSnoopInput
+                    payload.providedIsDamageImpact, payload.providedIsHitterImpact,
+                    payload.providedIsSnoop, payload.providedIsSnoopInput
                 );
             } else {
                 // Raw text (older logs) — add as plain game message, no parser
@@ -362,6 +363,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, [s.status]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const spectateBuffer = useSpectateBuffer();
+    const noopSound = useCallback(() => {}, []);
 
     // --- DVR: sync vitals/weather/audio state with buffer position ---
     const { recordHit, recordOof, recordClick } = useSpectateBufferSync({
@@ -369,36 +371,30 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         displayCutoff: spectateBuffer.displayCutoff,
         isLive: spectateBuffer.isLive,
         isPlaying: spectateBuffer.isPlaying,
-        playHitImpactSound,
-        playOofSound,
-        playClickSound,
+        playHitImpactSound: mode.activeView === 'target' ? playHitImpactSound : noopSound,
+        playOofSound: mode.activeView === 'target' ? playOofSound : noopSound,
+        playClickSound: mode.activeView === 'target' ? playClickSound : noopSound,
     });
 
-    // Wrapped sound functions: record to the spectate audio timeline AND suppress live
-    // playback when scrubbing the buffer (the buffer-replay loop will handle audio).
+    // Wrapped spectate sounds: record every snooped event, but only play when the
+    // target channel is the visible live channel.
     const playHitImpactSoundSpectate = useCallback((modifier?: any) => {
-        if (mode.isSpectating) {
-            recordHit(modifier);
-            if (!spectateBuffer.isLive) return;
-        }
+        recordHit(modifier);
+        if (!mode.isSpectating || mode.activeView !== 'target' || !spectateBuffer.isLive) return;
         playHitImpactSound(modifier);
-    }, [playHitImpactSound, mode.isSpectating, recordHit, spectateBuffer.isLive]);
+    }, [playHitImpactSound, mode.isSpectating, mode.activeView, recordHit, spectateBuffer.isLive]);
 
     const playOofSoundSpectate = useCallback(() => {
-        if (mode.isSpectating) {
-            recordOof();
-            if (!spectateBuffer.isLive) return;
-        }
+        recordOof();
+        if (!mode.isSpectating || mode.activeView !== 'target' || !spectateBuffer.isLive) return;
         playOofSound();
-    }, [playOofSound, mode.isSpectating, recordOof, spectateBuffer.isLive]);
+    }, [playOofSound, mode.isSpectating, mode.activeView, recordOof, spectateBuffer.isLive]);
 
     const playClickSoundSpectate = useCallback(() => {
-        if (mode.isSpectating) {
-            recordClick();
-            if (!spectateBuffer.isLive) return;
-        }
+        recordClick();
+        if (!mode.isSpectating || mode.activeView !== 'target' || !spectateBuffer.isLive) return;
         playClickSound();
-    }, [playClickSound, mode.isSpectating, recordClick, spectateBuffer.isLive]);
+    }, [playClickSound, mode.isSpectating, mode.activeView, recordClick, spectateBuffer.isLive]);
 
     // --- DVR: track GMCP room-info snapshots so seeking replays the correct map state ---
     const spectateRoomSnapshotsRef = useRef<Array<{ timestamp: number; detail: any }>>([]);
@@ -534,8 +530,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         // Audio/Visual
         playEffect,
-        playHitImpactSound: playHitImpactSoundSpectate,
-        playOofSound: playOofSoundSpectate,
+        playHitImpactSound,
+        playOofSound,
+        playSpectateHitImpactSound: playHitImpactSoundSpectate,
+        playSpectateOofSound: playOofSoundSpectate,
         playKillSound,
         playLevelSound,
         playClickSound: playClickSoundSpectate,
@@ -626,13 +624,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setSpectateInCombat: s.setSpectateInCombat,
         setSpectateOpponentName: s.setSpectateOpponentName,
         setSpectateOpponentStatus: s.setSpectateOpponentStatus,
-        setSpectateRoomNum: s.spectateSession.game.setRoomNum,
+        setSpectateRoomNum: s.setSpectateRoomNum,
         setSpectateRoomName: s.setSpectateRoomName,
         setSpectateRoomDesc: s.setSpectateRoomDesc,
         setSpectateRoomZone: s.setSpectateRoomZone,
         setSpectateActivePrompt: s.setSpectateActivePrompt,
-        setSpectateWeather: s.spectateSession.game.setWeather,
-        setSpectateIsFoggy: s.spectateSession.game.setIsFoggy,
+        setSpectateWeather: s.setSpectateWeather,
+        setSpectateIsFoggy: s.setSpectateIsFoggy,
         setSpectateLightningEnabled: s.spectateSession.game.setLightningEnabled,
         // Drawer Setters
         setInventoryLines: s.setInventoryLines,
@@ -664,7 +662,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         shop: shop,
         practice: practice,
         help: help
-    }), [s, v, ui, settingsStore, mode, addMessage, addSystemMessage, playHitImpactSound, playOofSound, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, shop, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
+    }), [s, v, ui, settingsStore, mode, addMessage, addSystemMessage, playHitImpactSound, playOofSound, playHitImpactSoundSpectate, playOofSoundSpectate, playClickSoundSpectate, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, shop, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
 
 
     const parser = useGameParser(deps, s.userSession);

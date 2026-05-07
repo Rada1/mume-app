@@ -50,6 +50,8 @@ export interface UseGameParserDeps {
     // Audio
     playHitImpactSound: (options?: { pitch?: number, volume?: number } | string) => void;
     playOofSound: (options?: { pitch?: number, volume?: number }) => void;
+    playSpectateHitImpactSound?: (options?: { pitch?: number, volume?: number } | string) => void;
+    playSpectateOofSound?: (options?: { pitch?: number, volume?: number }) => void;
     playCommMessageSound: (options?: { volume?: number }) => void;
     playBuySellSound: (options?: { volume?: number }) => void;
     playBashSound: (options?: { pitch?: number, volume?: number }) => void;

@@ -67,6 +67,7 @@ const extractXmlRoomInfo = (line: string): { num: number; area?: string; terrain
 };
 
 const stripAnsiCodes = (text: string) => text.replace(/\x1b\[[0-9;]*m/g, '');
+const SNOOP_PREFIX_REGEX = /^((?:\x1b\[[0-9;]*m|\s)*)(?:&amp;|&|mp;)[A-Za-z](?:\s|$)/;
 
 const isPromptBoundaryLine = (text: string): boolean => {
     const clean = stripAnsiCodes(text).trim();
@@ -143,6 +144,7 @@ const addSnoopedPlainLine = (
         undefined,
         undefined,
         false,
+        undefined,
         undefined,
         undefined,
         undefined,
@@ -268,6 +270,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         inCombatRef: deps.inCombatRef, 
         playHitImpactSound: deps.playHitImpactSound,
         playOofSound: deps.playOofSound, 
+        playSpectateHitImpactSound: deps.playSpectateHitImpactSound,
+        playSpectateOofSound: deps.playSpectateOofSound,
         playKillSound: deps.playKillSound, 
         playLevelSound: deps.playLevelSound, 
         setInCombat,
@@ -402,11 +406,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         
         let isSnoop = false;
         let lineToParse = strippedLine;
-        const snoopRegex = /^((?:\x1b\[[0-9;]*m|\s)*)(?:&|mp;)[A-Z](?: |$)/;
-        const snoopMatch = cleanLine.match(snoopRegex);
+        const snoopMatch = cleanLine.match(SNOOP_PREFIX_REGEX);
         if (snoopMatch) {
             isSnoop = true;
-            lineToParse = cleanLine.replace(snoopRegex, '$1');
+            lineToParse = cleanLine.replace(SNOOP_PREFIX_REGEX, '$1');
             if (lineToParse.includes('<prompt')) {
                 lineToParse = lineToParse
                     .replace(/<prompt[^>]*>|<\/prompt>/g, '')

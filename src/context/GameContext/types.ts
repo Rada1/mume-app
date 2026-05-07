@@ -84,7 +84,7 @@ export interface VitalsContextType {
 export interface LogData {
     messages: Message[];
     setMessages: Dispatch<SetStateAction<Message[]>>;
-    addMessage: (type: MessageType, text: string, extra?: any, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string, html?: string, tokens?: any[] }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, isSystem?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, commSenderTokens?: import('../../types').Token[], commTextTokens?: import('../../types').Token[], providedCombatSide?: 'player' | 'opponent' | 'groupmate', providedIsHitImpact?: boolean, providedIsHitterImpact?: boolean, providedIsSnoop?: boolean, providedIsSnoopInput?: boolean) => void;
+    addMessage: (type: MessageType, text: string, extra?: any, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string, html?: string, tokens?: any[] }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, isSystem?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, commSenderTokens?: import('../../types').Token[], commTextTokens?: import('../../types').Token[], providedCombatSide?: 'player' | 'opponent' | 'groupmate', providedIsHitImpact?: boolean, providedIsDamageImpact?: boolean, providedIsHitterImpact?: boolean, providedIsSnoop?: boolean, providedIsSnoopInput?: boolean) => void;
     addSystemMessage: (text: string) => void;
     isCombatLine: (text: string) => boolean;
     processMessageHtml: (html: string, mid?: string, isRoomName?: boolean, type?: MessageType) => string;
