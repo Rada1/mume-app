@@ -19,7 +19,7 @@ export interface UIState {
     isSettingsOpen: boolean;
     isLibraryOpen: boolean;
     isButtonsOpen: boolean;
-    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'help' | 'traits';
+    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'traits';
     diagnosticLogs: string[];
     showReplayHud: boolean;
     characterTab: 'info' | 'practice' | 'quests';
@@ -29,6 +29,7 @@ export interface UIState {
     isMenuOpen: boolean;
     isSetMenuOpen: boolean;
     menuView: 'main' | 'availableSets';
+    mapMode: 'edit' | 'play';
     
     // Keyword Edit UI
     keywordEditState: { context: string; displayText: string } | null;
@@ -56,7 +57,7 @@ export interface UIState {
     setIsSettingsOpen: (open: boolean) => void;
     setIsLibraryOpen: (open: boolean) => void;
     setIsButtonsOpen: (open: boolean) => void;
-    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'buttons' | 'help' | 'traits') => void;
+    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'traits') => void;
     addDiagnosticLog: (msg: string) => void;
     setShowReplayHud: (show: boolean) => void;
     setKeywordEditState: (state: { context: string; displayText: string } | null) => void;
@@ -97,6 +98,7 @@ export const useUIStore = create<UIState>((set) => ({
     isMenuOpen: false,
     isSetMenuOpen: false,
     menuView: 'main',
+    mapMode: 'play',
     keywordEditState: null,
     keywordFailureBanner: null,
     selectedObjectIds: new Set<string>(),

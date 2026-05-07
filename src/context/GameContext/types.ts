@@ -115,6 +115,7 @@ export interface UIContextType {
         isMenuOpen: boolean;
         isSetMenuOpen: boolean;
         menuView: 'main' | 'availableSets';
+        mapMode?: 'edit' | 'play';
         peekingDrawer?: DrawerType;
         peekingSource?: string;
         showMapperToolbar?: boolean;
@@ -129,6 +130,7 @@ export interface UIContextType {
         isMenuOpen: boolean;
         isSetMenuOpen: boolean;
         menuView: 'main' | 'availableSets';
+        mapMode?: 'edit' | 'play';
         managerSelectedSet: string | null;
         showMapperToolbar?: boolean;
     }>>;
@@ -138,8 +140,8 @@ export interface UIContextType {
     setIsSettingsOpen: (val: boolean) => void;
     isLibraryOpen: boolean;
     setIsLibraryOpen: (val: boolean) => void;
-    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'help' | 'traits';
-    setSettingsTab: (val: 'general' | 'sound' | 'actions' | 'buttons' | 'help' | 'traits') => void;
+    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'traits';
+    setSettingsTab: (val: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'traits') => void;
     setIsMapExpanded: (open: boolean) => void;
     setIsSetManagerOpen: (open: boolean) => void;
     setManagerSelectedSet: (setId: string | null) => void;
@@ -317,6 +319,7 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
         isMenuOpen: boolean;
         isSetMenuOpen: boolean;
         menuView: 'main' | 'availableSets';
+        mapMode: 'edit' | 'play';
         peekingSource: DrawerType;
         showMapperToolbar: boolean;
         characterTab: 'info' | 'practice' | 'quests';

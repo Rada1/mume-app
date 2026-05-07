@@ -7,16 +7,14 @@
 import React, { useRef, useMemo, useState, useEffect, useCallback, forwardRef } from 'react';
 import { useGame, useLog, useVitals, useUI } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { useModeStore } from '../../stores/useModeStore';
 import { useMapper } from '../../context/useMapper';
 import { MapCanvas } from './MapCanvas';
-import { MapperToolbar } from './MapperToolbar';
-import { MapperDropdown } from './MapperDropdown';
 import { MapperContextMenu } from './MapperContextMenu';
 import { RoomInfoCard } from './RoomInfoCard';
 import { useMapperInteractions } from './useMapperInteractions';
 import { useMapperController } from './useMapperController';
 import { useSmartWalk } from './hooks/useSmartWalk';
-import { useMapperExportImport } from './hooks/useMapperExportImport';
 import { useMapperPlayerTracking } from './hooks/useMapperPlayerTracking';
 import { DpadCluster } from './DpadCluster';
 import './Mapper.css';
@@ -43,10 +41,8 @@ export interface MapperHandle {
 }
 
 export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
-    const { isMinimized: isMinimizedProp, setIsMinimized, characterName, isMobile: isMobileProp, isExpanded, heldButton, heldButtonRef, setHeldButton, setCommandPreview } = props;
+    const { isMinimized: isMinimizedProp, characterName, isMobile: isMobileProp, isExpanded, heldButton, heldButtonRef, setHeldButton, setCommandPreview } = props;
     const effectiveIsMinimized = isMinimizedProp ?? (isExpanded !== undefined ? !isExpanded : false);
-    const [mode, setMode] = useState<'play' | 'edit'>('play');
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
     const isDraggingRef = useRef(false);
     const setIsDraggingWithRef = useCallback((val: boolean) => {
@@ -69,18 +65,18 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     } = useGame();
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
     const { addMessage } = useLog();
-    const { setPopoverState } = useUI();
+    const { setPopoverState, ui } = useUI();
     const { playerColor, npcColor, enemyColor, objectColor } = useSettingsStore();
     const isDarkMode = theme === 'dark';
+    const treatMapAsExplored = useModeStore(state => state.isSpectating && state.activeView === 'target');
 
     // Use shared state from MapperContext
     const context = useMapper();
     const {
         rooms, setRooms, markers, setMarkers, currentRoomId,
-        allowPersistence, setAllowPersistence,
         handleAddRoom, handleDeleteRoom, roomsRef,
         currentRoomIdRef, markersRef, preloadedCoordsRef,
-        unveilMap, setUnveilMap, handleResetAndSync, handleSyncLocation, handleClearMap,
+        unveilMap, handleSyncLocation,
         selectedRoomIds, setSelectedRoomIds, selectedMarkerId, setSelectedMarkerId,
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
         renderVersion, triggerRender
@@ -88,7 +84,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
 
     const { handleCenterOnPlayer } = useMapperPlayerTracking(currentRoomId, rooms, autoCenter, setAutoCenter, cameraRef, canvasRef, playerPosRef, playerTrailRef, lastRoomIdRef, triggerRender, setViewZ, preloadedCoordsRef);
     const { walkTargetId, walkPath, startWalking, stopWalking } = useSmartWalk(currentRoomId, rooms, executeCommand, preloadedCoordsRef, addMessage);
-    const { handleExportMap, handleImportMap, handleImportMMapper } = useMapperExportImport(rooms, setRooms, markers, setMarkers, characterName, addMessage, context);
+    const mode = ui.mapMode || 'play';
 
     const roomEntitySignature = useMemo(() => {
         const summarize = (items: import('../../types').GmcpOccupant[] = []) => items
@@ -214,6 +210,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 exploredMarkers={context.exploredMarkers}
                 triggerRender={triggerRender}
                 unveilMap={unveilMap}
+                treatMapAsExplored={treatMapAsExplored}
                 viewZ={viewZ}
                 firstExploredAtRef={context.firstExploredAtRef}
                 preMoveRef={context.preMoveRef}
@@ -240,39 +237,6 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             {isMobile && currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`] || preloadedCoordsRef.current[String(currentRoomId).replace(/^m_/, '')]) && (
                 <DpadCluster heldButton={heldButton} setHeldButton={setHeldButton} />
             )}
-
-            <MapperToolbar
-                mode={mode}
-                setMode={setMode}
-                autoCenter={autoCenter}
-                setAutoCenter={setAutoCenter}
-                setIsMinimized={setIsMinimized ?? (() => { })}
-                isMobile={isMobile}
-                isExpanded={!effectiveIsMinimized}
-                onCenterClick={handleCenterOnPlayer}
-                setIsDropdownOpen={setIsDropdownOpen}
-                unveilMap={unveilMap}
-                setUnveilMap={setUnveilMap}
-                onResetSync={handleResetAndSync}
-                isDarkMode={isDarkMode}
-            />
-
-            <MapperDropdown
-                isOpen={isDropdownOpen}
-                setIsOpen={setIsDropdownOpen}
-                allowPersistence={allowPersistence}
-                setAllowPersistence={setAllowPersistence}
-                isDarkMode={isDarkMode}
-                setIsDarkMode={(dark) => theme === 'dark' ? null : null} // Theme managed by GameContext
-                exportMap={handleExportMap}
-                importMap={handleImportMap}
-                importMMapper={handleImportMMapper}
-                clearMap={() => { handleClearMap(); setIsDropdownOpen(false); }}
-                unveilMap={unveilMap}
-                setUnveilMap={setUnveilMap}
-                onResetSync={handleResetAndSync}
-                isMobile={isMobile}
-            />
 
             {localContextMenu && (
                 <MapperContextMenu

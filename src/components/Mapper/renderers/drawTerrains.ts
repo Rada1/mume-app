@@ -4,7 +4,7 @@ import { GRID_SIZE, getTerrainColor, WALL_COLOR, getTerrainName } from '../mappe
 export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: number, s: number, terrain: any, isDarkMode: boolean, processedIconsRef: React.MutableRefObject<Record<string, HTMLCanvasElement>>, imagesRef: React.MutableRefObject<Record<string, HTMLImageElement>>, variant: number = 0) => {
     const tName = getTerrainName(terrain);
     const variantSpecificTerrains = ['Hills', 'Forest', 'Brush', 'Mountains', 'Field', 'Cavern', 'Tunnel', 'Water', 'Shallows', 'Rapids', 'City', 'Underwater', 'Building'];
-    const key = variantSpecificTerrains.includes(tName) ? `${tName}_v${variant}_${isDarkMode}` : `${tName}_${isDarkMode}`;
+    const key = variantSpecificTerrains.includes(tName) ? `${tName}_v${variant}_${isDarkMode}_v8` : `${tName}_${isDarkMode}_v8`;
     
     if (!processedIconsRef.current[key]) {
         const iconCanvas = document.createElement('canvas');
@@ -20,24 +20,24 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
         ictx.lineCap = 'round';
 
         if (tName === 'Mountains') {
-            ictx.font = `bold ${Math.round(s * 0.45)}px monospace`;
+            ictx.font = `bold ${Math.round(s * 0.3)}px monospace`;
             const mountainColors = isDarkMode ? [
-                "rgba(160, 160, 160, 0.8)", // Grey
-                "rgba(100, 100, 100, 0.8)"  // Darker Grey
+                "rgba(100, 100, 100, 0.45)", // Dark Grey
+                "rgba(80, 80, 80, 0.45)"     // Even Darker
             ] : [
-                "rgba(120, 120, 120, 0.8)", // Medium Grey
-                "rgba(70, 70, 70, 0.8)"     // Darker Grey
+                "rgba(100, 100, 100, 0.4)",  // Medium Grey
+                "rgba(70, 70, 70, 0.4)"      // Darker Grey
             ];
             ictx.fillStyle = mountainColors[variant % 2];
             ictx.textAlign = 'center';
             ictx.textBaseline = 'middle';
-            ictx.fillText('/\\', cX, cY - s * 0.1);
-            ictx.fillText('/__\\', cX, cY + s * 0.2);
+            ictx.fillText('/\\', cX, cY - s * 0.07);
+            ictx.fillText('/__\\', cX, cY + s * 0.13);
         } else if (tName === 'Hills') {
             ictx.font = `bold ${Math.round(s * 0.5)}px monospace`;
             const hillColor = (variant % 2) === 0 
-                ? (isDarkMode ? "rgba(139, 115, 85, 0.7)" : "rgba(101, 84, 62, 0.8)") // brown
-                : (isDarkMode ? "rgba(107, 142, 35, 0.7)" : "rgba(85, 107, 47, 0.8)"); // green
+                ? (isDarkMode ? "rgba(110, 95, 75, 0.4)" : "rgba(80, 65, 50, 0.5)") // muted brown
+                : (isDarkMode ? "rgba(90, 110, 30, 0.4)" : "rgba(70, 90, 40, 0.5)"); // muted green
             ictx.fillStyle = hillColor;
             ictx.textAlign = 'center';
             ictx.textBaseline = 'middle';
@@ -49,11 +49,11 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
         } else if (tName === 'Forest') {
             ictx.font = `bold ${Math.round(s * 0.45)}px monospace`;
             const forestColors = isDarkMode ? [
-                "rgba(107, 142, 35, 0.75)", // OliveDrab
-                "rgba(0, 100, 0, 0.75)"      // DarkGreen
+                "rgba(80, 100, 20, 0.45)", // Darker Olive
+                "rgba(0, 70, 0, 0.45)"      // Darker Green
             ] : [
-                "rgba(85, 107, 47, 0.85)",  // DarkOliveGreen
-                "rgba(0, 80, 0, 0.85)"      // Darker green
+                "rgba(70, 80, 30, 0.45)",   // Muted Olive
+                "rgba(0, 60, 0, 0.45)"      // Muted Green
             ];
             ictx.textAlign = 'center';
             ictx.textBaseline = 'middle';
@@ -108,9 +108,9 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
             ictx.fillText('#', cX, cY);
         } else if (tName === 'Building') {
             const buildingColors = isDarkMode ? [
-                "rgba(180, 180, 180, 0.8)", "rgba(140, 140, 140, 0.8)", "rgba(100, 100, 100, 0.8)"
+                "rgba(60, 60, 60, 0.4)", "rgba(50, 50, 50, 0.4)", "rgba(40, 40, 40, 0.4)"
             ] : [
-                "rgba(100, 100, 100, 0.9)", "rgba(130, 130, 130, 0.9)", "rgba(160, 160, 160, 0.9)"
+                "rgba(60, 60, 60, 0.3)", "rgba(80, 80, 80, 0.3)", "rgba(100, 100, 100, 0.3)"
             ];
             ictx.strokeStyle = buildingColors[variant % buildingColors.length];
             ictx.lineWidth = Math.max(1, s * 0.05);
@@ -166,9 +166,9 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
         } else if (tName === 'Cavern') {
             ictx.font = `${Math.round(s * 0.3)}px monospace`;
             const caveColors = isDarkMode ? [
-                "rgba(148, 158, 174, 0.5)", "rgba(107, 114, 128, 0.5)"
+                "rgba(80, 80, 90, 0.3)", "rgba(60, 60, 70, 0.3)"
             ] : [
-                "rgba(100, 100, 100, 0.6)", "rgba(150, 150, 150, 0.6)"
+                "rgba(100, 100, 100, 0.25)", "rgba(150, 150, 150, 0.25)"
             ];
             ictx.textAlign = 'center';
             ictx.textBaseline = 'middle';
@@ -178,15 +178,15 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
                 ictx.fillStyle = caveColors[(variant + i) % 2];
                 ictx.fillText(pos.char, pos.x * s, pos.y * s);
             }
-            ictx.strokeStyle = isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
+            ictx.strokeStyle = isDarkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)";
             ictx.lineWidth = 1;
             ictx.strokeRect(0, 0, s, s);
         } else if (tName === 'Tunnel') {
             ictx.font = `${Math.round(s * 0.4)}px monospace`;
             const tunnelColors = isDarkMode ? [
-                "rgba(210, 180, 140, 0.6)", "rgba(180, 150, 120, 0.6)"
+                "rgba(90, 80, 70, 0.3)", "rgba(70, 60, 50, 0.3)"
             ] : [
-                "rgba(139, 115, 85, 0.7)", "rgba(101, 84, 62, 0.7)"
+                "rgba(139, 115, 85, 0.25)", "rgba(101, 84, 62, 0.25)"
             ];
             ictx.textAlign = 'center';
             ictx.textBaseline = 'middle';
@@ -196,7 +196,7 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
                 ictx.fillStyle = tunnelColors[(variant + i) % 2];
                 ictx.fillText('∩', pos.x * s, pos.y * s);
             }
-            ictx.strokeStyle = isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
+            ictx.strokeStyle = isDarkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)";
             ictx.lineWidth = 1;
             ictx.strokeRect(0, 0, s, s);
         }

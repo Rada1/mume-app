@@ -1,11 +1,12 @@
 import React from 'react';
-import { X, Music, Cog, Activity, HelpCircle, Tag } from 'lucide-react';
+import { X, Music, Cog, Activity, HelpCircle, Tag, Map } from 'lucide-react';
 import { useGame, useUI } from '../../context/GameContext';
 import GeneralSettings from '../Settings/GeneralSettings';
 import DataManagement from '../Settings/DataManagement';
 import SoundSettings from '../Settings/SoundSettings';
 import ActionSettings from '../Settings/ActionSettings';
 import ButtonSettings from '../Settings/ButtonSettings';
+import MapSettings from '../Settings/MapSettings';
 import HelpGuides from '../Settings/HelpGuides';
 import TraitSettings from '../Settings/TraitSettings';
 import { SoundTrigger, UiMode, InlineCategoryConfig } from '../../types';
@@ -143,6 +144,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                     <div className={`modal-tab ${settingsTab === 'buttons' ? 'active' : ''}`} onClick={() => setSettingsTab('buttons')}>
                         <Activity size={16} /> <span>Buttons</span>
                     </div>
+                    <div className={`modal-tab ${settingsTab === 'map' ? 'active' : ''}`} onClick={() => setSettingsTab('map')}>
+                        <Map size={16} /> <span>Map</span>
+                    </div>
                     <div className={`modal-tab ${settingsTab === 'traits' ? 'active' : ''}`} onClick={() => setSettingsTab('traits')}>
                         <Tag size={16} /> <span>Traits</span>
                     </div>
@@ -252,6 +256,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                             createButton={createButton}
                             setIsSetManagerOpen={setIsSetManagerOpen}
                         />
+                    )}
+
+                    {settingsTab === 'map' && (
+                        <MapSettings />
                     )}
 
                     {settingsTab === 'traits' && (

@@ -7,17 +7,27 @@ interface UseGmcpGroupProps {
     characterName: string | null;
 }
 
+const getMemberKey = (member: Partial<GroupMember>) => {
+    if (member.id !== undefined && member.id !== null) return String(member.id);
+    if (member.name) return member.name.toLowerCase();
+    return null;
+};
+
+const publishActiveMapId = (member: GroupMember, source: string) => {
+    if (member.mapid === undefined || member.mapid === null) return;
+    if (typeof window === 'undefined') return;
+
+    window.dispatchEvent(new CustomEvent('mume-mapper-active-mapid', {
+        detail: { mapid: member.mapid, source, spectating: false }
+    }));
+};
+
 export const useGmcpGroup = ({
     setGroupMembers,
+    setStats,
     characterName
 }: UseGmcpGroupProps) => {
     const youIdRef = useRef<number | null>(null);
-
-    const getMemberKey = (member: Partial<GroupMember>) => {
-        if (member.id !== undefined && member.id !== null) return String(member.id);
-        if (member.name) return member.name.toLowerCase();
-        return null;
-    };
 
     const normalizeGroupMember = (raw: any): GroupMember => {
         const id = raw.id !== undefined && raw.id !== null ? Number(raw.id) : raw.id;
@@ -48,8 +58,13 @@ export const useGmcpGroup = ({
         }
 
         if (isYou) {
-            // The command-bar waiting/cancel state belongs to the controlled
-            // character's Char.Vitals position, not potentially stale Group data.
+            publishActiveMapId(member, source);
+            if (typeof member.waiting === 'boolean') {
+                setStats((prev: { conditions?: Record<string, boolean> }) => ({
+                    ...prev,
+                    conditions: { ...(prev.conditions || {}), waiting: member.waiting }
+                }));
+            }
             return;
         }
 
@@ -104,8 +119,11 @@ export const useGmcpGroup = ({
         const members = Array.isArray(data) ? data.map(normalizeGroupMember) : [];
         
         const you = members.find(isSelfMember);
-        if (you && you.id !== undefined) {
-            youIdRef.current = Number(you.id);
+        if (you) {
+            if (you.id !== undefined) {
+                youIdRef.current = Number(you.id);
+            }
+            publishActiveMapId(you, 'Group.Set');
         }
 
         const others = members.filter(m => !isSelfMember(m));

@@ -37,6 +37,7 @@ interface MapCanvasProps {
     onPointerUp?: (e: React.PointerEvent) => void;
     triggerRender?: () => void;
     unveilMap?: boolean;
+    treatMapAsExplored?: boolean;
     viewZ?: number | null;
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
     preMoveRef?: React.MutableRefObject<{ dir: string, targetId: string, time: number } | null>;
@@ -71,7 +72,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         camera, isDarkMode, isMobile, imagesRef, characterName,
         playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
-        unveilMap, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
+        unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
         roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor,
         opponentName, opponentId, deathRoomId
@@ -82,7 +83,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         cameraRef: camera, isDarkMode, isMobile, imagesRef, characterName,
         playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
         preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
-        unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath,
+        unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
         roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor,
         opponentName, opponentId, deathRoomId

@@ -111,6 +111,8 @@ export const createCombatActions = (set: any, get: any) => ({
                 if (name && (name.toLowerCase() === normalizeCombatantName(opponentName).toLowerCase())) {
                     newOpponentHealth = status;
                 }
+            } else if (opponentName && data.length === 1 && !char.id) {
+                newOpponentHealth = status;
             }
 
             // Buffer match

@@ -1,9 +1,9 @@
 /**
  * @file useCommParser.ts
- * @description Parses GMCP communication channels and XML-tagged comm lines.
+ * @description Parses XML-tagged communication lines for comm bubbles.
  */
 
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 import { MessageType } from '../../types';
 
 export interface CommParserDeps {
@@ -14,32 +14,7 @@ export interface CommParserDeps {
 }
 
 export function useCommParser(deps: CommParserDeps) {
-    const { pendingGmcpCommRef, lastCommIdBySenderRef } = deps;
-    const ignoredCommBufferRef = useRef<string | null>(null);
-    const lastCommMsgIdRef = deps.lastCommMsgIdRef || useRef<string | null>(null);
-    const lastCommTimeRef = deps.lastCommTimeRef || useRef<number>(0);
-
-    const parseComm = useCallback((line: string, textOnly: string, _lower: string) => {
-        const gmcpComm = pendingGmcpCommRef?.current ?? null;
-        if (gmcpComm) pendingGmcpCommRef!.current = null;
-
-        if (ignoredCommBufferRef.current && !gmcpComm) {
-            const cleanLineTxt = textOnly.trim();
-            const currentBuffer = ignoredCommBufferRef.current.trim();
-            
-            if (currentBuffer.startsWith(cleanLineTxt) || cleanLineTxt.startsWith(currentBuffer.substring(0, Math.min(10, currentBuffer.length)))) {
-                if (cleanLineTxt.length > 0) {
-                    ignoredCommBufferRef.current = currentBuffer.substring(cleanLineTxt.length).trim();
-                    if (ignoredCommBufferRef.current.length === 0) {
-                        ignoredCommBufferRef.current = null;
-                    }
-                    return { isSuppressed: true };
-                }
-            } else {
-                ignoredCommBufferRef.current = null;
-            }
-        }
-
+    const parseComm = useCallback((line: string, _textOnly: string, _lower: string) => {
         let replyTarget: string | undefined;
         let replyCommand: string | undefined;
         let commSender: string | undefined;
@@ -147,39 +122,45 @@ export function useCommParser(deps: CommParserDeps) {
             return true;
         };
 
-        if (gmcpComm) {
-            replyTarget = gmcpComm.sender || undefined;
-            const chanMap: Record<string, string> = { 
-                tell: 'tell', tells: 'tell', say: 'say', says: 'say',
-                narrate: 'narrate', narrates: 'narrate', shout: 'shout', shouts: 'shout',
-                yell: 'yell', yells: 'yell', sing: 'sing', sings: 'sing',
-                whisper: 'whisper', whispers: 'whisper', pray: 'pray', prays: 'pray',
-                ask: 'say', asks: 'say', exclaim: 'say', exclaims: 'say'
+        const parseTaggedPlainComm = () => {
+            if (!/<[a-zA-Z][a-zA-Z0-9_-]*(?:\s+[^>]*)?>/.test(line)) return false;
+
+            const plain = stripMarkup(line).trim();
+            const actionMatch = plain.match(/^(.+?)\s+(tells? you|tells?|whispers?|says?|asks?(?:\s+you)?|exclaims?|narrates?|shouts?|yells?|sings?|prays?)(?:\s+.*?|:\s*|,\s*)(.*)$/i);
+            if (!actionMatch) return false;
+
+            const action = actionMatch[2].toLowerCase();
+            const commandMap: Record<string, string> = {
+                tells: 'tell',
+                tell: 'tell',
+                'tells you': 'tell',
+                whispers: 'whisper',
+                whisper: 'whisper',
+                says: 'say',
+                say: 'say',
+                narrates: 'narrate',
+                narrate: 'narrate',
+                shouts: 'shout',
+                shout: 'shout',
+                yells: 'yell',
+                yell: 'yell',
+                sings: 'sing',
+                sing: 'sing',
+                prays: 'pray',
+                pray: 'pray'
             };
-            replyCommand = chanMap[gmcpComm.chan.toLowerCase()] ?? gmcpComm.chan.toLowerCase();
+
+            replyCommand = commandMap[action] ?? action.replace(/s$/, '');
+            replyTarget = actionMatch[1].trim();
             commSender = replyTarget;
-            commAction = replyCommand;
-            
-            // For GMCP, we don't have a specific raw index for the action, 
-            // so we take the first color in the line as a fallback, 
-            // or if it's a known channel, we could hardcode.
-            // But let's try the first color first.
+            commAction = actionMatch[2];
+            commText = actionMatch[3].trim();
             commColor = extractColorAtRawIndex(line.length);
-            
-            if (gmcpComm.msg) {
-                commText = gmcpComm.msg;
-                const prefixMatch = textOnly.match(/^(.*?)\s+(?:says|tells|narrates|yells|shouts|exclaims|sings|whispers|prays|asks)(?:.*?)[,\s:]+\s*/i);
-                const lineContentText = prefixMatch ? textOnly.substring(prefixMatch[0].length) : textOnly;
-                
-                if (commText.length > lineContentText.length) {
-                    ignoredCommBufferRef.current = commText.substring(lineContentText.length).trim();
-                }
-            } else {
-                commText = sanitizeExtractedText(line);
-            }
-        } else {
-            parseXmlComm();
-        }
+            return true;
+        };
+
+        parseXmlComm();
+        if (!replyCommand) parseTaggedPlainComm();
 
         if (replyCommand) {
             msgType = 'comm';
@@ -194,11 +175,11 @@ export function useCommParser(deps: CommParserDeps) {
             commAction,
             commText,
             commColor,
-            lastCommMsgIdRef,
-            lastCommTimeRef,
-            lastCommIdBySenderRef
+            lastCommMsgIdRef: deps.lastCommMsgIdRef,
+            lastCommTimeRef: deps.lastCommTimeRef,
+            lastCommIdBySenderRef: deps.lastCommIdBySenderRef
         };
-    }, [pendingGmcpCommRef, lastCommIdBySenderRef]);
+    }, [deps.lastCommIdBySenderRef, deps.lastCommMsgIdRef, deps.lastCommTimeRef]);
 
     return { parseComm };
 }

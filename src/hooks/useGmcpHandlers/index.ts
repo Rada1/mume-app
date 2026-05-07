@@ -147,14 +147,11 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
         props.setCharacterName(name);
     }, [props.characterName, props.setAbilities, props.addMessage, props.setCharacterName, props.isSpectateMode]);
 
-    const onComm = useCallback((sender: string, chan: string, msg: string) => {
-        // Comm messages arrive via plain text through processLine; the GMCP metadata
-        // (sender, chan) is forwarded via pendingGmcpCommRef in GameContext before the
-        // text line is processed, so no addMessage call is needed here.
-        if (props.pendingGmcpCommRef) {
-            props.pendingGmcpCommRef.current = { sender, chan, msg };
-        }
-    }, [props.pendingGmcpCommRef]);
+    const onComm = useCallback((_sender: string, _chan: string, _msg: string) => {
+        // Comm bubbles are rendered from XML-tagged text lines only. GMCP comm
+        // packets are intentionally ignored here because they can race ahead of
+        // the visible line and cause the wrong log entry to become a bubble.
+    }, []);
 
     const onCharRide = useCallback((data: any) => {
         console.log('[GMCP] Char.Ride:', data);

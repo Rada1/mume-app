@@ -108,6 +108,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setIsTimestampEnabled,
         isNewbieMode,
         setIsNewbieMode,
+        autoSaveSessions,
+        setAutoSaveSessions,
         parley,
         setParley,
         whoList,
@@ -229,6 +231,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setIsTimestampEnabled={setIsTimestampEnabled}
                     isNewbieMode={isNewbieMode}
                     setIsNewbieMode={setIsNewbieMode}
+                    autoSaveSessions={autoSaveSessions}
+                    setAutoSaveSessions={setAutoSaveSessions}
                     objectColor={objectColor}
                     setObjectColor={setObjectColor}
                     fontFamily={fontFamily}

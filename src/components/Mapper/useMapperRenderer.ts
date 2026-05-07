@@ -23,6 +23,7 @@ interface RendererProps {
     stableRoomIdRef: MutableRefObject<string | null>;
     stableMarkersRef: MutableRefObject<Record<string, any>>;
     unveilMap?: boolean;
+    treatMapAsExplored?: boolean;
     viewZ?: number | null;
     stateExploredVnums?: Set<string>;
     exploredRef: MutableRefObject<Set<string>>;
@@ -59,7 +60,7 @@ export const useMapperRenderer = ({
     cameraRef, isDarkMode, isMobile, imagesRef, characterName,
     playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
     preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, exploredRef, exploredMarkers, renderVersion,
-    unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath,
+    unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, walkTargetId, walkPath,
     triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
     roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor,
     opponentName, opponentId, deathRoomId,
@@ -71,6 +72,8 @@ export const useMapperRenderer = ({
     const lastRoomsRef = useRef<Record<string, any>>({});
     const processedIconsRef = useRef<Record<string, HTMLCanvasElement>>({});
     const cacheParamsRef = useRef({ exploredCount: 0 });
+    const fullExploredRef = useRef<{ count: number, set: Set<string> }>({ count: 0, set: new Set() });
+    const emptyExploredAtRef = useRef<Record<string, number>>({});
     
     // Cache for visible items to avoid recalculating room lookups every frame
     const visibleCacheRef = useRef<{
@@ -105,7 +108,19 @@ export const useMapperRenderer = ({
         const ANIM_DUR = 300;
         
         const allRooms = stableRoomsRef.current;
-        const explored = exploredRef.current;
+        const preloaded = preloadedCoordsRef.current;
+        const explored = (() => {
+            if (!treatMapAsExplored) return exploredRef.current;
+            const keys = Object.keys(preloaded);
+            if (fullExploredRef.current.count !== keys.length) {
+                fullExploredRef.current = { count: keys.length, set: new Set(keys) };
+            }
+            return fullExploredRef.current.set;
+        })();
+        const effectiveExploredMarkers = treatMapAsExplored
+            ? new Set(Object.keys(stableMarkersRef.current))
+            : exploredMarkers;
+        const effectiveFirstExploredAtRef = treatMapAsExplored ? emptyExploredAtRef : firstExploredAtRef;
 
         // 1. Update Local Spatial Index if rooms changed
         if (allRooms !== lastRoomsRef.current) {
@@ -158,10 +173,10 @@ export const useMapperRenderer = ({
         // Rebuild if we moved more than 30% of the screen width from the cached center
         const moveThreshold = baseW * 0.4;
 
-        const lastExplored = firstExploredAtRef.current['_latest'] || 0;
+        const lastExplored = effectiveFirstExploredAtRef.current['_latest'] || 0;
         const isExplorationAnimating = (now - lastExplored) < 1000;
 
-        const baseParams = `${curZInt}_${isDarkMode}_${allRooms === lastRoomsRef.current}_${explored.size}_${unveilMap}_${renderVersion}_${activeId}`;
+        const baseParams = `${curZInt}_${isDarkMode}_${allRooms === lastRoomsRef.current}_${explored.size}_${unveilMap}_${treatMapAsExplored}_${renderVersion}_${activeId}`;
         const needsRebuild = cache.lastParams !== baseParams || zoomDiff > 0.25 || moveDist > moveThreshold || isExplorationAnimating;
 
         if (needsRebuild) {
@@ -189,7 +204,6 @@ export const useMapperRenderer = ({
             const roomAtCoord: Record<string, any> = {};
             const visitedAtCoord: Record<string, boolean> = {};
             const localVisible: any[] = [];
-            const preloaded = preloadedCoordsRef.current;
             const floorIndex = spatialIndexRef.current[curZInt];
             
             // Spatially gather visible elements for the enlarged buffer
@@ -204,7 +218,7 @@ export const useMapperRenderer = ({
                         if (bucket) {
                             for (let j = 0; j < bucket.length; j++) {
                                 const vnum = bucket[j];
-                                if (!explored.has(vnum) && !unveilMap) continue;
+                                if (!explored.has(vnum) && !unveilMap && !treatMapAsExplored) continue;
                                 const rData = preloaded[vnum];
                                 const irx = Math.round(rData[0]), iry = Math.round(rData[1]);
                                 const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
@@ -237,8 +251,8 @@ export const useMapperRenderer = ({
 
             const rCtx: RenderContext = {
                 ctx: offCtx, dpr, canvasWidth: cacheW, canvasHeight: cacheH, camera: { ...camera, x: buildCamX, y: buildCamY }, isDarkMode, isMobile,
-                imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers, unveilMap,
-                allRooms, roomAtCoord, visitedAtCoord, preloaded, firstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef,
+                imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers: effectiveExploredMarkers, unveilMap, treatMapAsExplored,
+                allRooms, roomAtCoord, visitedAtCoord, preloaded, firstExploredAtRef: effectiveFirstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef,
                 triggerRender, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, opponentName, opponentId
             };
 
@@ -288,9 +302,9 @@ export const useMapperRenderer = ({
 
         const rCtx: RenderContext = {
             ctx, dpr, canvasWidth: baseW, canvasHeight: baseH, camera, isDarkMode, isMobile,
-            imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers, unveilMap,
+            imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers: effectiveExploredMarkers, unveilMap, treatMapAsExplored,
             allRooms, roomAtCoord: (cache as any).roomAtCoord, visitedAtCoord: (cache as any).visitedAtCoord, 
-            preloaded: preloadedCoordsRef.current, firstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef, clientPredictionsRef,
+            preloaded: preloadedCoordsRef.current, firstExploredAtRef: effectiveFirstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef, clientPredictionsRef,
             groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, opponentName,
             opponentId, deathRoomId
         };
@@ -303,7 +317,7 @@ export const useMapperRenderer = ({
         ctx.restore();
         drawMarquee(rCtx, marquee);
 
-    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, renderVersion, firstExploredAtRef, groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, opponentName, opponentId, deathRoomId]);
+    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, renderVersion, firstExploredAtRef, groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, opponentName, opponentId, deathRoomId]);
 
     return { drawMap };
 };

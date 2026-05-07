@@ -169,6 +169,15 @@ const findStatus = (str: string | undefined): CombatHealthStatus | null => {
     return 'None';
 };
 
+const firstString = (...values: unknown[]): string | null => {
+    for (const value of values) {
+        if (typeof value !== 'string') continue;
+        const trimmed = value.trim();
+        if (trimmed !== '' && Number.isNaN(Number(trimmed))) return trimmed;
+    }
+    return null;
+};
+
 const resolveWaitingCondition = (data: GmcpCharVitals): boolean | null => {
     if (typeof data.waiting === 'boolean') return data.waiting;
     const fields = [data.position, data.status, data.state].filter(Boolean).map(value => String(value).toLowerCase());
@@ -192,6 +201,33 @@ export const createVitalsActions = (set: any, get: any) => ({
     applyCharVitals: (data: GmcpCharVitals) => {
         set((state: VitalsState) => {
             const updates: Partial<VitalsState> = {};
+            const hpStatus = firstString(data.hp_status, data['hp-string'], data['health-string'], data.hp, data.hits, data.health, data.h);
+            const manaStatus = firstString(
+                data.mana_status,
+                data['mana-status'],
+                data['mana-string'],
+                data['sp-string'],
+                data.mana,
+                data.sp,
+                data.m,
+                data.s
+            );
+            const moveStatus = firstString(
+                data.move_status,
+                data.stamina_status,
+                data['move-string'],
+                data['moves-string'],
+                data['mv-string'],
+                data.moves_status,
+                data['moves-status'],
+                data['mp-string'],
+                data.move,
+                data.moves,
+                data.mv,
+                data.mp,
+                data.v,
+                data.stamina
+            );
 
             if (data.hp !== undefined) updates.hp = data.hp;
             if (data.hits !== undefined) updates.hp = data.hits;
@@ -299,16 +335,16 @@ export const createVitalsActions = (set: any, get: any) => ({
             }
 
             // Combat Info via Vitals
-            if (data.hp_status || data['hp-string'] || data['health-string']) {
-                updates.hpStatus = findStatus(data.hp_status ?? data['hp-string'] ?? data['health-string']);
+            if (hpStatus) {
+                updates.hpStatus = findStatus(hpStatus);
             }
 
-            if (data['mana-string'] !== undefined || data['sp-string'] !== undefined) {
-                updates.manaStatus = data['mana-string'] ?? data['sp-string'] ?? null;
+            if (manaStatus !== null) {
+                updates.manaStatus = manaStatus;
             }
 
-            if (data.move_status !== undefined || data.stamina_status !== undefined || data['mp-string'] !== undefined) {
-                updates.moveStatus = data.move_status ?? data.stamina_status ?? data['mp-string'] ?? null;
+            if (moveStatus !== null) {
+                updates.moveStatus = moveStatus;
             }
 
             if (data.weather !== undefined) {

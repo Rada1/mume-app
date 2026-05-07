@@ -39,7 +39,7 @@ const Header: React.FC<HeaderProps> = ({
     const { stats, setStats, target, setTarget, characterInfo } = useVitals();
     const {
         ui, setUI, setIsSettingsOpen, setIsSetManagerOpen, setIsLibraryOpen, setPopoverState,
-        setShowMapperToolbar, replayer
+        setSettingsTab, replayer
     } = useUI();
 
     const [isEnteringTarget, setIsEnteringTarget] = useState(false);
@@ -590,17 +590,19 @@ const Header: React.FC<HeaderProps> = ({
                                     </div>
 
                                     <div
-                                        className={`dropdown-item ${ui.showMapperToolbar ? 'active' : ''}`}
+                                        className="dropdown-item"
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            setShowMapperToolbar(!ui.showMapperToolbar);
+                                            setSettingsTab('map');
+                                            setIsSettingsOpen(true);
+                                            setIsMenuOpen(false);
                                         }}
                                     >
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                             <div style={{ width: '16px', display: 'flex', justifyContent: 'center' }}>
                                                 <MapIcon size={16} />
                                             </div>
-                                            <span>{ui.showMapperToolbar ? 'Hide Map Settings' : 'Show Map Settings'}</span>
+                                            <span>Map Settings</span>
                                         </div>
                                     </div>
 

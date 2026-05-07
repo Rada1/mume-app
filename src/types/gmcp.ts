@@ -17,6 +17,8 @@ export interface GmcpCharVitals {
     m?: number;
     M?: number;
     'mana-string'?: string;
+    mana_status?: string;
+    'mana-status'?: string;
     sp?: number;
     maxsp?: number;
     s?: number;
@@ -33,6 +35,11 @@ export interface GmcpCharVitals {
     mv?: number;
     maxmv?: number;
     'mp-string'?: string;
+    'move-string'?: string;
+    'moves-string'?: string;
+    'mv-string'?: string;
+    moves_status?: string;
+    'moves-status'?: string;
     stamina?: number;
     maxstamina?: number;
     position?: string;

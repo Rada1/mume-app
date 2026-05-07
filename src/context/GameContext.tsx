@@ -716,6 +716,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             isMenuOpen: ui.isMenuOpen,
             isSetMenuOpen: ui.isSetMenuOpen,
             menuView: ui.menuView,
+            mapMode: ui.mapMode,
             peekingSource: 'none' as any,
             showMapperToolbar: settingsStore.showMapperToolbar,
             characterTab: ui.characterTab,

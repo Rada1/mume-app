@@ -14,6 +14,7 @@ import { DIRS, getExitTargetId, getGateState } from '../components/Mapper/mapper
 import { MapperPrediction, MapperRoom, MapperMarker } from '../components/Mapper/mapperTypes';
 import { useSettingsStore } from '../stores/useSettingsStore';
 import { useModeStore } from '../stores/useModeStore';
+import { gmcpBus } from '../events/gmcpBus';
 
 interface MapperContextType {
     rooms: Record<string, MapperRoom>;
@@ -130,6 +131,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const lastDetectedTerrainRef = useRef<string | null>(null);
     const discoverySourceRef = useRef<string | null>(null);
     const firstExploredAtRef = useRef<Record<string, number>>({});
+    const snoopedGroupSelfIdRef = useRef<string | null>(null);
 
     // Master Map Loading
     const hasLoadedRef = useRef(false);
@@ -377,6 +379,66 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     useEffect(() => () => {
         if (predictionClearTimerRef.current) clearTimeout(predictionClearTimerRef.current);
     }, []);
+
+    const applyActiveMapId = useCallback((mapid: string | number, isSnooped: boolean) => {
+        const shouldApply = (isSnooped && activeView === 'target') || (!isSnooped && activeView === 'self');
+        if (!shouldApply || mapid === undefined || mapid === null) return;
+
+        const mapKey = String(mapid);
+        const vnum = serverIdIndexRef.current?.[mapKey] || (preloadedCoordsRef.current[mapKey] ? mapKey : null);
+        if (!vnum) return;
+
+        const nextRoomId = `m_${vnum}`;
+        if (currentRoomIdRef.current === nextRoomId) return;
+
+        setCurrentRoomId(nextRoomId);
+        triggerRender();
+    }, [activeView, currentRoomIdRef, preloadedCoordsRef, serverIdIndexRef, setCurrentRoomId, triggerRender]);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const onActiveMapId = (event: Event) => {
+            const detail = (event as CustomEvent<{ mapid?: string | number; spectating?: boolean }>).detail;
+            if (detail?.mapid === undefined || detail.mapid === null) return;
+            applyActiveMapId(detail.mapid, !!detail.spectating);
+        };
+
+        window.addEventListener('mume-mapper-active-mapid', onActiveMapId);
+        return () => window.removeEventListener('mume-mapper-active-mapid', onActiveMapId);
+    }, [applyActiveMapId]);
+
+    useEffect(() => {
+        const getSelfMapId = (payload: any): string | number | null => {
+            const members = Array.isArray(payload) ? payload : [payload];
+            const self = members.find(member => {
+                if (!member) return false;
+                if (member.type === 'you') return true;
+                return snoopedGroupSelfIdRef.current !== null &&
+                    member.id !== undefined &&
+                    String(member.id) === snoopedGroupSelfIdRef.current;
+            });
+            if (self?.id !== undefined && self?.id !== null) {
+                snoopedGroupSelfIdRef.current = String(self.id);
+            }
+            return self?.mapid ?? self?.roomid ?? self?.room_id ?? self?.rid ?? self?.vnum ?? self?.map_id ?? self?.room ?? null;
+        };
+
+        const isSnooped = (payload: any) => !!(payload?.isSnooped || payload?.spectating);
+        const handleGroupPayload = (payload: any) => {
+            if (!isSnooped(payload)) return;
+            const mapid = getSelfMapId(payload);
+            if (mapid !== null && mapid !== undefined) applyActiveMapId(mapid, true);
+        };
+
+        const unsubs = [
+            gmcpBus.on('Group.Set', handleGroupPayload),
+            gmcpBus.on('Group.Add', handleGroupPayload),
+            gmcpBus.on('Group.Update', handleGroupPayload)
+        ];
+
+        return () => unsubs.forEach(unsub => unsub());
+    }, [applyActiveMapId]);
 
     const value = useMemo(() => ({
         rooms, setRooms, markers, setMarkers, currentRoomId, setCurrentRoomId,

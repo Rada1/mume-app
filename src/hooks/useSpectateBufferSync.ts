@@ -13,6 +13,17 @@ interface VitalsSnapshot {
     hp: number; maxHp: number;
     mana: number; maxMana: number;
     move: number; maxMove: number;
+    gmcpVitals: {
+        hp: number;
+        maxHp: number;
+        mana: number;
+        maxMana: number;
+        move: number;
+        maxMove: number;
+        hpStatus: CombatHealthStatus | null;
+        manaStatus: string | null;
+        moveStatus: string | null;
+    };
     ob?: number; db?: number; pb?: number; armour?: number;
     hpStatus: CombatHealthStatus | null; manaStatus: string | null; moveStatus: string | null;
     inCombat: boolean;
@@ -91,6 +102,7 @@ export function useSpectateBufferSync({
             hp: v.hp, maxHp: v.maxHp,
             mana: v.mana, maxMana: v.maxMana,
             move: v.move, maxMove: v.maxMove,
+            gmcpVitals: { ...v.gmcpVitals },
             ob: v.ob, db: v.db,
             pb: v.pb, armour: v.armour,
             hpStatus: v.hpStatus,

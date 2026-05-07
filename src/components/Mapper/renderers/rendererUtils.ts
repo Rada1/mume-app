@@ -17,6 +17,7 @@ export interface RenderContext {
     explored: Set<string>;
     exploredMarkers: Set<string>;
     unveilMap?: boolean;
+    treatMapAsExplored?: boolean;
     allRooms: Record<string, any>;
     roomAtCoord: Record<string, any>;
     visitedAtCoord: Record<string, boolean>;

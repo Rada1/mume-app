@@ -379,9 +379,9 @@ const PromptBox: FC<PromptBoxProps> = ({
     const manaStatusFromGmcp = normalizeTierStatus(manaStatus, MANA_TIERS) ?? (maxMana <= 0 && mana > 0 ? 'Full' : null);
     const moveStatusFromGmcp = normalizeTierStatus(moveStatus, MOVE_TIERS) ?? (maxMove <= 0 && move > 0 ? 'Unwearied' : null);
 
-    const manaPercent = maxMana > 0
-        ? getManaPercent(mana, maxMana)
-        : (getTierPercent(manaStatusFromGmcp, MANA_TIERS) ?? 0);
+    const manaPercent = manaStatusFromGmcp
+        ? (getTierPercent(manaStatusFromGmcp, MANA_TIERS) ?? 0)
+        : (maxMana > 0 ? getManaPercent(mana, maxMana) : 0);
     const movePercent = moveStatusFromGmcp
         ? (getTierPercent(moveStatusFromGmcp, MOVE_TIERS) ?? 0)
         : (maxMove > 0 ? getMovePercent(move, maxMove) : 0);

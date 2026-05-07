@@ -10,19 +10,31 @@ export const getIndicatorIcon = (sym: string, color: string, outline: boolean = 
     canvas.width = 24; canvas.height = 24;
     const ctx = canvas.getContext('2d')!;
     
-    // Draw fading black background
-    const gradient = ctx.createRadialGradient(12, 12, 4, 12, 12, 12);
-    gradient.addColorStop(0, 'rgba(0, 0, 0, 0.8)');
-    gradient.addColorStop(0.6, 'rgba(0, 0, 0, 0.4)');
-    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    ctx.fillStyle = gradient;
+    // Draw fading black background for contrast
+    const bgGradient = ctx.createRadialGradient(12, 12, 4, 12, 12, 12);
+    bgGradient.addColorStop(0, 'rgba(0, 0, 0, 0.85)');
+    bgGradient.addColorStop(0.7, 'rgba(0, 0, 0, 0.3)');
+    bgGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = bgGradient;
     ctx.beginPath();
     ctx.arc(12, 12, 12, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Draw subtle colored bloom glow
+    const glowGradient = ctx.createRadialGradient(12, 12, 2, 12, 12, 10);
+    const glowColor = color.startsWith('#') ? color : color; // Hex is fine, shadow handles the rest
+    glowGradient.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
+    glowGradient.addColorStop(0.4, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = glowGradient;
     ctx.fill();
 
     ctx.font = 'bold 20px "Inter", sans-serif';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     
+    // Add Bloom effect to the symbol itself
+    ctx.shadowBlur = 7;
+    ctx.shadowColor = color;
+
     if (outline) {
         ctx.strokeStyle = color;
         ctx.lineWidth = 2.5;
@@ -31,6 +43,9 @@ export const getIndicatorIcon = (sym: string, color: string, outline: boolean = 
         ctx.fillStyle = color;
         ctx.fillText(sym, 12, 12);
     }
+    
+    // Reset shadow for next icons
+    ctx.shadowBlur = 0;
     
     indicatorIcons[key] = canvas;
     return canvas;
@@ -227,6 +242,12 @@ export const drawFeatures = (
                             ctx.lineWidth = 3.5;
                             ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.stroke();
                             ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - ddx * 0.25, y2 - ddy * 0.25); ctx.stroke();
+                            
+                            // Add bloom/glow for doors
+                            ctx.save();
+                            ctx.shadowBlur = 8;
+                            ctx.shadowColor = "#ffcc00";
+                            
                             if (isClosed) {
                                 ctx.strokeStyle = "#ffcc00";
                                 ctx.lineWidth = 4.0;
@@ -243,6 +264,7 @@ export const drawFeatures = (
                                     ctx.fillRect(x1 + ddx * 0.75 - sqSize, y1 - sqSize/2, sqSize, sqSize);
                                 }
                             }
+                            ctx.restore();
                         }
                     }
                     ctx.restore();

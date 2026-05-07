@@ -2,7 +2,7 @@
  * @file Draws player, NPC, object, and trail entities on the mapper canvas.
  */
 import { RenderContext, getSeed } from './rendererUtils';
-import { GRID_SIZE, DIRS } from '../mapperUtils';
+import { GRID_SIZE, DIRS, WALL_COLOR } from '../mapperUtils';
 import { getMemberColor } from '../../../utils/groupUtils';
 import { COLOR_NPC, COLOR_PLAYER, COLOR_OBJ } from '../../../utils/categorizationUtils';
 import { occupantAnims, OCCUPANT_ANIM_DURATION, getOccupantKey } from '../occupantAnimStore';
@@ -304,7 +304,7 @@ export const drawEntities = (
 
             ctx.save();
             ctx.globalAlpha = 0.65;
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = '#fab387';
 
             ctx.beginPath();
             ctx.moveTo(tailX, tailY);

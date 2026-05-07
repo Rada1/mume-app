@@ -447,7 +447,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             return;
         }
 
-        if (parseLogGmcp(cleanLine, isSnoop)) return;
+        if (parseLogGmcp(lineToParse, isSnoop)) return;
 
         // --- Fast Path: Skip heavy tokenization during 'where' capture ---
         // The capture parser strips all tokens for 'where' lines anyway (useCaptureParser:134-137),
@@ -496,6 +496,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             textOnly = derivedTokens.map((t: any) => t.content).join('');
             lower = textOnly.toLowerCase();
         }
+
+        if (isSnoop && textOnly.trim().length === 0) return;
 
         // 1. System/Trigger Processing
         processTriggers(lineToParse);
