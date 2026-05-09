@@ -12,16 +12,10 @@ import {
 import type { GmcpOccupant } from '../../types';
 
 export type CharCategory =
-    | 'inline-ally'
-    | 'inline-enemy'
-    | 'inline-neutral'
-    | 'inline-npc'
-    | 'inline-shopkeeper'
-    | 'inline-innkeeper'
-    | 'inline-mounts'
-    | 'inline-guildmaster'
-    | 'inline-trainer'
-    | 'inline-guard';
+    | 'cat-ally'
+    | 'cat-enemy'
+    | 'cat-neutral'
+    | 'cat-npc';
 
 export type CharKind = 'player' | 'npc';
 
@@ -31,56 +25,47 @@ export interface CharClassification {
     color: string;
 }
 
+// NPC subtypes (shopkeeper, innkeeper, etc.) all resolve to cat-npc here.
+// Their specific trait (trait-shopkeeper, trait-innkeeper, …) is added later
+// via keyword matching against the entity name.
 const TYPE_MAP: Record<string, CharCategory | null> = {
     // MUME GMCP Room.Chars types — https://mume.org/help/gmcp_room.chars
-    ally: 'inline-ally',
-    enemy: 'inline-enemy',
-    neutral: 'inline-neutral',
-    npc: 'inline-npc',
+    ally: 'cat-ally',
+    enemy: 'cat-enemy',
+    neutral: 'cat-neutral',
+    npc: 'cat-npc',
     you: null,
 
-    // Specialized types from MUME
-    shopkeeper: 'inline-shopkeeper',
-    dealer: 'inline-shopkeeper',
-    merchant: 'inline-shopkeeper',
-    innkeeper: 'inline-innkeeper',
-    mount: 'inline-mounts',
-    guildmaster: 'inline-guildmaster',
-    trainer: 'inline-trainer',
-    guard: 'inline-guard',
+    // Specialized NPC subtypes — trait resolution handles the distinction
+    shopkeeper: 'cat-npc',
+    dealer: 'cat-npc',
+    merchant: 'cat-npc',
+    innkeeper: 'cat-npc',
+    mount: 'cat-npc',
+    guildmaster: 'cat-npc',
+    trainer: 'cat-npc',
+    guard: 'cat-npc',
 
-    // Legacy producers in this codebase emit these.
-    pc: 'inline-ally',
-    player: 'inline-ally',
+    // Legacy aliases produced by older parsers in this codebase
+    pc: 'cat-ally',
+    player: 'cat-ally',
     self: null,
-    mob: 'inline-npc',
-    mobile: 'inline-npc',
+    mob: 'cat-npc',
+    mobile: 'cat-npc',
 };
 
 const COLOR_MAP: Record<CharCategory, string> = {
-    'inline-ally': COLOR_ALLY,
-    'inline-enemy': COLOR_ENEMY,
-    'inline-neutral': COLOR_NEUTRAL,
-    'inline-npc': COLOR_NPC,
-    'inline-shopkeeper': COLOR_NPC,
-    'inline-innkeeper': COLOR_NPC,
-    'inline-mounts': COLOR_NPC,
-    'inline-guildmaster': COLOR_NPC,
-    'inline-trainer': COLOR_NPC,
-    'inline-guard': COLOR_NPC,
+    'cat-ally': COLOR_ALLY,
+    'cat-enemy': COLOR_ENEMY,
+    'cat-neutral': COLOR_NEUTRAL,
+    'cat-npc': COLOR_NPC,
 };
 
 const KIND_MAP: Record<CharCategory, CharKind> = {
-    'inline-ally': 'player',
-    'inline-enemy': 'player',
-    'inline-neutral': 'player',
-    'inline-npc': 'npc',
-    'inline-shopkeeper': 'npc',
-    'inline-innkeeper': 'npc',
-    'inline-mounts': 'npc',
-    'inline-guildmaster': 'npc',
-    'inline-trainer': 'npc',
-    'inline-guard': 'npc',
+    'cat-ally': 'player',
+    'cat-enemy': 'player',
+    'cat-neutral': 'player',
+    'cat-npc': 'npc',
 };
 
 export function classifyOccupant(

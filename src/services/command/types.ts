@@ -30,7 +30,7 @@ export interface CommandContext {
     setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
     setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     setIsSettingsOpen: (open: boolean) => void;
-    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'help' | 'buttons' | 'traits') => void;
+    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'help' | 'buttons' | 'map') => void;
     setUI?: React.Dispatch<React.SetStateAction<any>>;
     actions: GameAction[];
     setActions: (val: GameAction[] | ((prev: GameAction[]) => GameAction[])) => void;

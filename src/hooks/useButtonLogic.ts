@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { CustomButton, PracticeData } from '../types';
 import { MAGE_SPELLS, CLERIC_SPELLS, WARRIOR_SKILLS, RANGER_SKILLS, THIEF_SKILLS, CLASS_MAPPINGS } from '../utils/spellLists';
-import { getCategoryForName } from '../utils/categorizationUtils';
 
 export const useButtonLogic = (deps: {
     rawButtons: CustomButton[],

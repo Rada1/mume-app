@@ -4,7 +4,6 @@ import { DEFAULT_BUTTONS, DEFAULT_UI_POSITIONS, DEFAULT_SET_SETTINGS } from '../
 import MASTER_SETTINGS from '../constants/mastersettings.json';
 import { useButtonPersistence } from './useButtonPersistence';
 import { useButtonLogic } from './useButtonLogic';
-import { getCategoryForName } from '../utils/categorizationUtils';
 import { useButtonStore } from '../stores/useButtonStore';
 
 export const useButtons = (deps: {
@@ -107,12 +106,8 @@ export const useButtons = (deps: {
             if (b.setId) sets.add(b.setId);
             if (b.trigger?.type === 'switch_set' && b.trigger.targetSet) sets.add(b.trigger.targetSet);
         });
-        // Add all configured inline categories so they show up in managers even if empty
-        if (Array.isArray(inlineCategories)) {
-            inlineCategories.forEach(cat => sets.add(`inline-${cat.id}`));
-        }
         return Array.from(sets);
-    }, [rawButtons, inlineCategories]);
+    }, [rawButtons]);
 
     useEffect(() => {
         const themeColor = setSettings[activeSet]?.themeColor;

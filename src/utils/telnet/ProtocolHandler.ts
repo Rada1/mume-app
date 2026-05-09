@@ -25,8 +25,6 @@ const GMCP_SUPPORTS = [
     "Room.Chars.Add 1",
     "Room.Chars.Update 1",
     "Room.Chars.Remove 1",
-    "Room.Items 1",
-    "Char.Items 1",
     "Comm.Channel 1",
     "Comm.Channel.List 1",
     "External.Room 1",

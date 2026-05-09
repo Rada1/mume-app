@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 import { GmcpOccupant } from '../../types';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
 import { occupantAnims, getOccupantKey } from '../../components/Mapper/occupantAnimStore';
-import { getCategoryForName } from '../../utils/categorizationUtils';
 import { normalizeOccupantType } from '../../services/classification/normalizeOccupantType';
 import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
 
@@ -78,23 +77,19 @@ const parseOccupants = (data: any, characterName: string | null): GmcpOccupant[]
 interface UseGmcpOccupantsProps {
     mapperRef: React.RefObject<MapperRef>;
     setRoomChars?: React.Dispatch<React.SetStateAction<Record<number, GmcpOccupant>>>;
-    setRoomItems?: React.Dispatch<React.SetStateAction<GmcpOccupant[]>>;
     characterName: string | null;
     registerEntity?: (id: string, name: string, location: import('../../types').EntityLocation, category?: string) => import('../../types').GameEntity;
     setIsRiding?: (val: boolean) => void;
     lastRoomChangeTimeRef: React.MutableRefObject<number>;
-    inlineCategories: import('../../types').InlineCategoryConfig[];
 }
 
 export const useGmcpOccupants = ({
     mapperRef,
     setRoomChars,
-    setRoomItems,
     characterName,
     registerEntity,
     setIsRiding,
     lastRoomChangeTimeRef,
-    inlineCategories
 }: UseGmcpOccupantsProps) => {
 
     const onRoomChars = useCallback((data: any) => {
@@ -251,41 +246,8 @@ export const useGmcpOccupants = ({
         });
     }, [setRoomChars, mapperRef]);
 
-    const onRoomItems = useCallback((data: any) => {
-        console.log('[GMCP] Ingesting Items list:', data);
-
-        if ((data as any).location && (data as any).location !== 'room' && (data as any).location !== 'objects') {
-            console.log('[GMCP] Ignoring non-room items location:', (data as any).location);
-            return;
-        }
-
-        let rawList = Array.isArray(data) ? data : ((data as any).items || (data as any).objects || (data as any).obj || (data as any).objs || []);
-        if (rawList && !Array.isArray(rawList)) rawList = [rawList];
-        if (!Array.isArray(rawList)) {
-            console.warn('[GMCP] Failed to parse Items list - rawList is not an array:', rawList);
-            return;
-        }
-
-        const items: GmcpOccupant[] = rawList.map(i => {
-            const obj = typeof i === 'string' ? { name: i, keyword: i, short: i } : { ...i, name: i.name || i.short || i.shortdesc || i.keyword };
-            if (registerEntity && obj.name) {
-                const id = (obj as any).id ? String((obj as any).id) : `roomitems:${obj.name}`;
-                const specCat = getCategoryForName(obj.name, inlineCategories);
-                registerEntity(id, obj.name, 'room', specCat || 'obj-room');
-            }
-            return obj;
-        });
-        console.log(`[GMCP] Resolved ${items.length} room items`);
-        setRoomItems?.(items);
-        
-        import('../../events/gmcpBus').then(({ gmcpBus }) => {
-            gmcpBus.emit('Room.Items', Object.assign(items, { isSnooped: false }));
-        });
-    }, [setRoomItems, registerEntity, inlineCategories]);
-
     return {
         onRoomChars,
-        onRoomItems,
         onAddChar,
         onUpdateChar,
         onRemoveChar

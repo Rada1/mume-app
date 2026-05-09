@@ -1,4 +1,4 @@
-import { GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant, GmcpExitInfo } from '../types';
+import { GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpOccupant, GmcpExitInfo } from '../types';
 
 export function isGmcpCharVitals(data: any): data is GmcpCharVitals {
     if (!data || typeof data !== 'object') return false;
@@ -32,10 +32,6 @@ export function isGmcpRoomInfo(data: any): data is GmcpRoomInfo {
 
 export function isGmcpRoomPlayers(data: any): data is GmcpRoomPlayers {
     return data && (Array.isArray(data) || (typeof data === 'object' && ('players' in data || 'members' in data || 'chars' in data || 'char' in data || 'npcs' in data || 'list' in data || Object.keys(data).length > 0)));
-}
-
-export function isGmcpRoomItems(data: any): data is GmcpRoomItems {
-    return data && (Array.isArray(data) || (typeof data === 'object' && ('items' in data || 'objects' in data || 'obj' in data || 'objs' in data)));
 }
 
 export function isGmcpOccupant(data: any): data is GmcpOccupant {

@@ -6,7 +6,7 @@
 import { RefObject } from 'react';
 import { CustomButton, InlineCategoryConfig, MessageType } from '../types';
 import { pluralizeMumeSubject } from './gameUtils';
-import { getGlowColorForCategory, getCategoryForName, getCategoryType } from './categorizationUtils';
+import { getCategoryIdForKindLocation, getKindForCategory } from './inlineActionModel';
 import { getEffectiveKeyword } from './keywordUtils';
 import { getMemberColor } from './groupUtils';
 import {
@@ -179,7 +179,6 @@ export const applyColorTaggedObjects = (
         const keyword = keywordBase.replace(/\s+/g, '-');
         const finalContext = getEffectiveKeyword(displayName, undefined, undefined, keywordOverrides);
 
-        let category = getCategoryForName(displayName, inlineCategories);
         let kind: string = 'object';
         
         const normalizedName = normalize(name);
@@ -204,7 +203,8 @@ export const applyColorTaggedObjects = (
             }
         }
         
-        const catType = getCategoryType(category || kind, inlineCategories) || kind;
+        const category = getCategoryIdForKindLocation(kind, location);
+        const catType = getKindForCategory(category) || kind;
         const { glow, classExtra } = getTargetAwareStyles(displayName, finalContext, groupColor || '', target);
         
         const buttonId = `auto-obj-${keyword}`;

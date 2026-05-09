@@ -4,7 +4,7 @@ import { isObjectSelected } from '../utils/selectionUtils';
 import { renderInlineSpan, esc } from '../utils/inlineSpanRenderer';
 import { safeHighlight, ARRIVE_REGEX, LEAVE_REGEX } from '../utils/highlighterUtils';
 import { getMemberColor } from '../utils/groupUtils';
-import { getCategoryForName, getCategoryType } from '../utils/categorizationUtils';
+import { getCategoryIdForKindLocation, getKindForCategory } from '../utils/inlineActionModel';
 
 export const useSpecialLineWrappers = (
     selectedObjectIds: Set<string> = new Set(),
@@ -140,7 +140,7 @@ export const useSpecialLineWrappers = (
                 kind: 'ally',
                 location: 'room',
                 context: name,
-                category: 'inline-ally',
+                category: 'cat-ally',
                 action: 'menu',
                 selected: isSelected,
                 draggable: true,
@@ -203,7 +203,7 @@ export const useSpecialLineWrappers = (
                         kind: 'ally',
                         location: 'room',
                         context: nameCandidate,
-                        category: 'inline-ally',
+                        category: 'cat-ally',
                         action: 'menu',
                         selected: isSelected,
                         draggable: true,
@@ -226,7 +226,7 @@ export const useSpecialLineWrappers = (
                 const subjectLower = subject.toLowerCase();
                 const isNpcSubject = /^(a|an|the|some)\s/i.test(subject);
                 const kind = isNpcSubject ? 'npc' : 'ally';
-                const category = isNpcSubject ? 'inline-npc' : 'inline-ally';
+                const category = getCategoryIdForKindLocation(kind, 'room');
                 const buttonId = isNpcSubject ? `auto-npc-${subject}` : `auto-${subject}`;
                 const isSelected = isObjectSelected(selectedObjectIds, buttonId, kind);
                 
@@ -262,10 +262,10 @@ export const useSpecialLineWrappers = (
         if (acquisitionMatch) {
             const itemName = acquisitionMatch[1]?.trim();
             if (itemName) {
-                const category = getCategoryForName(itemName, inlineCategories) || 'object';
+                const category = getCategoryIdForKindLocation('object', 'carried');
                 const buttonId = `auto-item-${itemName.toLowerCase().replace(/\s+/g, '-')}`;
                 const isSelected = isObjectSelected(selectedObjectIds, buttonId, 'object');
-                const kind = getCategoryType(category, inlineCategories) || 'object';
+                const kind = getKindForCategory(category) || 'object';
                 
                 return safeHighlight(originalHtml, itemName, false, (m) => {
                     return renderInlineSpan({
@@ -287,7 +287,7 @@ export const useSpecialLineWrappers = (
         }
 
         return null;
-    }, [selectedObjectIds, groupMembers, inlineCategories, regexCache]);
+    }, [selectedObjectIds, groupMembers, regexCache]);
 
     return { wrapSpecialLine };
 };

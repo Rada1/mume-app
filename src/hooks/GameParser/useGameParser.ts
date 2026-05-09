@@ -638,9 +638,11 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if (time.parseTimeLine(lower)) msgType = 'info' as any;
 
         // --- Magic Sound Effects ---
+        /*
         if (!isSnoop && lineToParse.toLowerCase().includes('<magic>')) {
             deps.playMagicExplosionSound();
         }
+        */
         if (!isSnoop && lower.includes('you start to concentrate...')) {
             deps.playIncantationSound();
         }

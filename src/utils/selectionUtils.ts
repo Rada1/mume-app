@@ -26,7 +26,7 @@ export const isObjectSelected = (selectedObjectIds: Set<string>, id: string, set
         if (id.endsWith(':' + entry)) return true;
 
         // 4. Cross-component keyword matching (Log <-> Drawer)
-        // If entry is "inline-obj-room:auto-item-sword" and id is "inventorylist:123:sword"
+        // If entry is "inline-in-room-obj:auto-item-sword" and id is "inventorylist:123:sword"
         // Both contain "sword" as the final part.
         const entryParts = entry.split(':');
         const idParts = id.split(':');

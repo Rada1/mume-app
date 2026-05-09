@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { gmcpBus } from '../events/gmcpBus';
-import { GmcpRoomInfo, GmcpUpdateExits, GmcpOccupant } from '../types';
 import { useModeStore } from './useModeStore';
 import { RoomState, createRoomActions, initialRoomState } from './slices/roomSlice';
 
@@ -22,11 +21,6 @@ gmcpBus.on('Room.Info', (data) => {
 gmcpBus.on('Room.UpdateExits', (data) => {
     if ((data as any).isSnooped) return;
     useRoomStore.getState().applyExitsUpdate(data);
-});
-
-gmcpBus.on('Room.Items', (data) => {
-    if ((data as any).isSnooped) return;
-    useRoomStore.getState().setItems(data as any);
 });
 
 gmcpBus.on('Room.Chars', (data) => {

@@ -170,13 +170,13 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             if (objectText) {
                 const itemName = objectText;
                 const loc = session.type === 'equipment' ? 'worn' : 'carried';
-                registerEntity(`item:${itemName.toLowerCase()}`, itemName, loc, session.type === 'equipment' ? 'inline-obj-worn' : 'inline-obj-char');
+                registerEntity(`item:${itemName.toLowerCase()}`, itemName, loc, session.type === 'equipment' ? 'cat-worn-object' : 'cat-inventory-object');
             } else {
                 // Fallback for plain text items
                 const itemName = text.trim();
                 if (itemName.length > 3) {
                     const loc = session.type === 'equipment' ? 'worn' : 'carried';
-                    registerEntity(`item:${itemName.toLowerCase()}`, itemName, loc, session.type === 'equipment' ? 'inline-obj-worn' : 'inline-obj-char');
+                    registerEntity(`item:${itemName.toLowerCase()}`, itemName, loc, session.type === 'equipment' ? 'cat-worn-object' : 'cat-inventory-object');
                 }
             }
         }

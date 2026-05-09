@@ -5,7 +5,7 @@
 
 import { GRID_SIZE } from './mapperUtils';
 import { classifyOccupant } from '../../services/classification/classifyOccupant';
-import { getCategoryForName } from '../../utils/categorizationUtils';
+import { getCategoryIdForKindLocation, toCategoryId } from '../../utils/inlineActionModel';
 import { getMemberColor } from '../../utils/groupUtils';
 import { getOccupantCommandTarget } from './mapperOccupantTargetUtils';
 import type { GmcpOccupant, GroupMember, InlineCategoryConfig } from '../../types';
@@ -87,12 +87,14 @@ const getOccupantCategory = (
 ): string => {
     if (typeof occupant !== 'string') {
         const classified = classifyOccupant(occupant);
-        if (classified?.category) return classified.category;
-        if (occupant.category) return occupant.category;
+        if (classified?.category) return toCategoryId(classified.category) || classified.category;
+        if (occupant.category) return toCategoryId(occupant.category) || occupant.category;
     }
 
-    if (kind === 'npc') return getCategoryForName(name, inlineCategories) || 'inline-npc';
-    return 'inline-ally';
+    if (kind === 'npc') return getCategoryIdForKindLocation('npc', 'room');
+    if (kind === 'enemy') return getCategoryIdForKindLocation('enemy', 'room');
+    if (kind === 'neutral') return getCategoryIdForKindLocation('neutral', 'room');
+    return getCategoryIdForKindLocation('player', 'room');
 };
 
 const getGroupIndex = (name: string, groupMembers?: GroupMember[], occupantId?: string | number) => {

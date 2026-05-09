@@ -3,6 +3,7 @@ import { InteractionDeps } from '../useInteractionHandlers';
 import { EntityCapability } from '../../types';
 import { getButtonCommand } from '../../utils/buttonUtils';
 import { formatNpcKeywordTarget, sanitizeGameTarget } from '../../utils/gameUtils';
+import { toCategoryId } from '../../utils/inlineActionModel';
 
 export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>, longPressJustFiredRef?: React.MutableRefObject<boolean>) => {
     const {
@@ -166,7 +167,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         const rawContextStr = context || targetEl.innerText.trim();
         const effectiveContextStr = rawContextStr && keywordOverridesRef.current[rawContextStr] ? keywordOverridesRef.current[rawContextStr] : rawContextStr;
         const isCharacterContext = ['npc', 'enemy', 'neutral', 'ally', 'player'].includes(kind || '') ||
-            ['inline-npc', 'inline-enemy', 'inline-neutral', 'inline-ally'].some(prefix => category?.startsWith(prefix)) ||
+            ['cat-npc', 'cat-enemy', 'cat-neutral', 'cat-ally'].includes(toCategoryId(category) || '') ||
             !!cmd?.startsWith('npc');
         const contextStr = (isCharacterContext ? formatNpcKeywordTarget(effectiveContextStr) : sanitizeGameTarget(effectiveContextStr)) || effectiveContextStr;
 

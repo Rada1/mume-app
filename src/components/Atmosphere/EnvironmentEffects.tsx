@@ -11,6 +11,8 @@ interface EnvironmentEffectsProps {
     lightningX?: number;
     isImmersionMode: boolean;
     isMobile: boolean;
+    bgImage?: string | null;
+    bgImageBottom?: string | null;
 }
 
 export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
@@ -20,12 +22,51 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     lightning,
     lightningX = 50,
     isImmersionMode,
-    isMobile
+    isMobile,
+    bgImage,
+    bgImageBottom
 }) => {
+    // --- Background Cross-fade Logic ---
+    const [layerA, setLayerA] = React.useState<string | null>(bgImage || null);
+    const [layerB, setLayerB] = React.useState<string | null>(null);
+    const [activeLayer, setActiveLayer] = React.useState<'A' | 'B'>('A');
+
+    React.useEffect(() => {
+        if (activeLayer === 'A') {
+            if (bgImage !== layerA) {
+                setLayerB(bgImage || null);
+                setActiveLayer('B');
+            }
+        } else {
+            if (bgImage !== layerB) {
+                setLayerA(bgImage || null);
+                setActiveLayer('A');
+            }
+        }
+    }, [bgImage, activeLayer, layerA, layerB]);
+
     return (
         <div style={{ '--lightning-x': `${lightningX}%` } as React.CSSProperties}>
             {/* --- BACK LAYER: Ambient & Lighting [z-index: 1] --- */}
             <div className={`environment-root back lighting-state-${isImmersionMode ? lighting : 'none'}`}>
+                {isImmersionMode && (
+                    <>
+                        {/* Layer A */}
+                        <div
+                            className={`log-background-mask top ${activeLayer === 'A' ? 'visible' : 'hidden'}`}
+                            style={{ '--bg-image': layerA ? `url(${layerA})` : 'none' } as React.CSSProperties}
+                        />
+                        {/* Layer B */}
+                        <div
+                            className={`log-background-mask top ${activeLayer === 'B' ? 'visible' : 'hidden'}`}
+                            style={{ '--bg-image': layerB ? `url(${layerB})` : 'none' } as React.CSSProperties}
+                        />
+                        <div
+                            className="log-background-mask bottom"
+                            style={{ '--bg-image': bgImageBottom ? `url(${bgImageBottom})` : 'none' } as React.CSSProperties}
+                        />
+                    </>
+                )}
                 {isImmersionMode && (
                     <>
                         <div className="lighting-container lighting-sun" style={{ opacity: lighting === 'sun' ? 1 : 0 }}><div className="lighting-inner" /></div>

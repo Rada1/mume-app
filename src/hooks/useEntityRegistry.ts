@@ -7,13 +7,13 @@
 import { useState, useCallback, useRef } from 'react';
 import { GameEntity, EntityCapability, EntityLocation } from '../types';
 import { extractNoun as smartExtractNoun } from '../utils/keywordUtils';
-import { isItemContainer } from '../utils/gameUtils';
-import { getCategoryForName, getCategoryType, getTraitsForName } from '../utils/categorizationUtils';
-
-// palette definitions for consistency (imported from categorizationUtils style)
-const COLOR_NPC = 'rgba(253, 224, 71, 0.95)';
-const COLOR_PLAYER = '#89CFF0'; // Baby Blue
-const COLOR_OBJ = 'rgba(251, 146, 60, 0.95)';
+import {
+    getCategoryConfig,
+    getTraitConfig,
+    getTraitsForName,
+    toCategoryId,
+    toTraitId
+} from '../utils/inlineActionModel';
 
 export const useEntityRegistry = () => {
     const [entities, setEntities] = useState<Record<string, GameEntity>>({});
@@ -35,15 +35,19 @@ export const useEntityRegistry = () => {
         
         // 1. Resolve Traits (Additive)
         // We look for traits from the name and also include the specifically passed category if it exists
-        const matchedTraits = getTraitsForName(name);
-        if (category) matchedTraits.push(category);
+        const matchedTraits = getTraitsForName(name).map(trait => trait.id);
+        if (category) matchedTraits.push(toTraitId(category) || toCategoryId(category) || category);
         
         // Remove duplicates and canonicalize
         const uniqueTraits = Array.from(new Set(matchedTraits));
 
         for (const traitId of uniqueTraits) {
-            const catType = getCategoryType(traitId);
-            const baseId = traitId.startsWith('inline-') ? traitId.slice(7) : traitId;
+            const categoryConfig = getCategoryConfig(traitId);
+            const traitConfig = getTraitConfig(traitId);
+            const catType = categoryConfig?.kind || traitConfig?.kind || null;
+            const baseId = (traitConfig?.id || categoryConfig?.id || traitId)
+                .replace(/^(trait|cat|inline)-/, '')
+                .replace(/^object-/, '');
 
             // 2. Player/NPC Logic (Additive)
             if (catType === 'player' || baseId === 'ally' || baseId === 'enemy' || baseId === 'neutral') {
@@ -58,21 +62,21 @@ export const useEntityRegistry = () => {
                 if (baseId === 'innkeeper' || lower.includes('innkeeper')) caps.add(EntityCapability.Innkeeper);
                 if (baseId === 'shopkeeper' || lower.includes('shopkeeper')) caps.add(EntityCapability.Shopkeeper);
                 if (baseId === 'guildmaster' || lower.includes('guildmaster')) caps.add(EntityCapability.Guildmaster);
-                if (baseId === 'mounts' || lower.includes('horse') || lower.includes('pony') || lower.includes('warg')) {
+                if (baseId === 'mount' || baseId === 'mounts' || lower.includes('horse') || lower.includes('pony') || lower.includes('warg')) {
                     caps.add(EntityCapability.Mount);
                 }
             }
 
             // 3. Item Capability Detection (Additive)
-            const isItem = catType === 'object' || ['weapon', 'armour', 'shield', 'containers', 'corpses', 'food', 'fluidcontainer'].includes(baseId);
+            const isItem = catType === 'object' || ['weapon', 'armour', 'shield', 'container', 'containers', 'corpse', 'corpses', 'food', 'fluid-container', 'fluidcontainer'].includes(baseId);
             
             if (isItem || location === 'carried' || location === 'worn') {
-                if (baseId === 'corpses' || lower.includes('corpse')) caps.add(EntityCapability.Corpse);
+                if (baseId === 'corpse' || baseId === 'corpses' || lower.includes('corpse')) caps.add(EntityCapability.Corpse);
                 if (baseId === 'weapon' || lower.includes('sword') || lower.includes('blade')) caps.add(EntityCapability.Weapon);
                 if (baseId === 'armour' || lower.includes('mail') || lower.includes('plate')) caps.add(EntityCapability.Wearable);
                 if (baseId === 'shield' || lower.includes('shield')) caps.add(EntityCapability.Shield);
-                if (baseId === 'containers' || lower.includes('bag') || lower.includes('chest')) caps.add(EntityCapability.Container);
-                if (baseId === 'fluidcontainer' || lower.includes('flask') || lower.includes('bottle')) caps.add(EntityCapability.FluidContainer);
+                if (baseId === 'container' || baseId === 'containers' || lower.includes('bag') || lower.includes('chest')) caps.add(EntityCapability.Container);
+                if (baseId === 'fluid-container' || baseId === 'fluidcontainer' || lower.includes('flask') || lower.includes('bottle')) caps.add(EntityCapability.FluidContainer);
                 if (baseId === 'food' || lower.includes('bread') || lower.includes('meat')) caps.add(EntityCapability.Food);
                 if (baseId === 'lightsource' || lower.includes('lantern') || lower.includes('torch')) caps.add(EntityCapability.Light);
                 

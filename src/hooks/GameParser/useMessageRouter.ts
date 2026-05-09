@@ -121,7 +121,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
                     if (alreadyExists) return prev;
                     
                     const newItem = { name: objName, short: objName, id: `roomitems:${objName}` };
-                    registerEntity(`roomitems:${objName}`, objName, 'room', 'inline-obj-room');
+                    registerEntity(`roomitems:${objName}`, objName, 'room', 'cat-room-object');
                     return [...prev, newItem];
                 });
             }
@@ -152,7 +152,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
 
                 const id = `roomitems:${objName}:${Date.now()}:${index}:${Math.random().toString(36).slice(2, 7)}`;
                 const newItem: GmcpOccupant = { name: objName, short: objName, id };
-                registerEntity(id, objName, 'room', 'inline-obj-room');
+                registerEntity(id, objName, 'room', 'cat-room-object');
                 setRoomItems(prev => [...prev, newItem]);
             });
             return;

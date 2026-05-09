@@ -11,7 +11,7 @@ import { Mapper } from '../Mapper/Mapper';
 import { MapperRoomInfo } from '../Mapper/MapperRoomInfo';
 import { useMumeTime } from '../../hooks/useMumeTime';
 import { LineCluster } from '../Layout/HUD/LineCluster';
-import { User, Shield, Users, Map as MapIcon, Activity, UtensilsCrossed, Droplets, CloudFog } from 'lucide-react';
+import { User, Shield, Users, Map as MapIcon, Activity, UtensilsCrossed, Droplets, CloudFog, Clock } from 'lucide-react';
 import { StatusDrawer } from './StatusDrawer';
 
 const SIDEBAR_TABS = [

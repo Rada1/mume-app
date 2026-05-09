@@ -1,6 +1,6 @@
 import { CustomButton, InlineCategoryConfig, GameEntity, EntityCapability, GmcpOccupant } from '../types';
-import { getCategoryForName, canonicalizeCategoryId, resolveKindAndLocation, getTraitConfigsForName, getButtonSetIdForCategory } from './categorizationUtils';
-import { getHierarchyChain, getRelevantSets } from './buttonHierarchyUtils';
+import { resolveKindAndLocation } from './categorizationUtils';
+import { getButtonIdsForTraits, getResolvedTraitSections } from './inlineActionModel';
 
 export interface ActionFilterDeps {
     buttons: CustomButton[];
@@ -25,31 +25,17 @@ export function isButtonValidForEntity(
     const { inlineCategories, roomNpcs, entities } = deps;
     const entity = entities[entityId];
 
-    // --- STEP 1: Determine Relevant Sets (The "Trait-Based" way) ---
-    // We combine the base kind/location with the entity's detected capabilities
-    const traitConfigs = entity?.name ? getTraitConfigsForName(entity.name, inlineCategories || []) : [];
-    const extraSets = traitConfigs.map(getButtonSetIdForCategory).filter(Boolean) as string[];
-
-    const relevantSets = entity 
-        ? getRelevantSets(entity, extraSets)
-        : Array.from(new Set([
-            ...getHierarchyChain(kind, location, categoryOverride),
-            ...extraSets
-          ]));
-
-    const canonicalButtonSetId = canonicalizeCategoryId(button.setId);
-    const canonicalLegacySetId = legacySetId ? canonicalizeCategoryId(legacySetId) : undefined;
-    const canonicalRelevantSets = relevantSets.map(setId => canonicalizeCategoryId(setId));
+    // --- STEP 1: Determine Relevant Traits ---
+    const resolvedTraitSections = getResolvedTraitSections(
+        categoryOverride || legacySetId || entity?.category || kind,
+        entity?.name || null,
+        inlineCategories || []
+    );
+    const traitButtons = new Set(getButtonIdsForTraits(resolvedTraitSections.map(section => section.trait)));
 
     // --- STEP 2: Main Set Validation ---
-    // If the button set is in our relevant traits, it's valid
-    let isValidSet =
-        relevantSets.includes(button.setId) ||
-        canonicalRelevantSets.includes(canonicalButtonSetId) ||
-        button.setId === legacySetId ||
-        (!!canonicalLegacySetId && canonicalButtonSetId === canonicalLegacySetId);
-
-    if (!isValidSet) return false;
+    // Resolved traits are authoritative for inline actions.
+    if (!traitButtons.has(button.id)) return false;
 
     // --- STEP 3: MUME Specific Rule Overrides ---
     // These rules prune buttons that are physically impossible in the current context

@@ -98,7 +98,7 @@ export const LineItem: React.FC<LineItemProps> = ({
                     key={`obj-${match.index}`}
                     className="inline-btn"
                     data-id={line.entityId || line.stableId || line.id}
-                    data-cmd={line.cmd || category || 'inline-obj-char'}
+                    data-cmd={line.cmd || category || 'inline-inventory'}
                     data-context={objectContext}
                     data-kind="object"
                     data-location={location}
@@ -174,7 +174,7 @@ export const LineItem: React.FC<LineItemProps> = ({
                         <span
                             className="inline-btn"
                             data-id={line.entityId || line.stableId || line.id}
-                            data-cmd={line.cmd || category || 'inline-obj-char'}
+                            data-cmd={line.cmd || category || 'inline-inventory'}
                             data-context={lineContext}
                             data-kind="object"
                             data-location={location}

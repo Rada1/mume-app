@@ -31,11 +31,16 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
     const {
         inlineCategories,
         setInlineCategories,
+        customTraits,
+        setCustomTraits,
         connectionUrl,
         setConnectionUrl,
         bgImage,
         setBgImage,
+        bgImageBottom,
+        setBgImageBottom,
         handleFileUpload,
+        handleBottomFileUpload,
         exportSettings,
         exportSettingsFile,
         importSettings,
@@ -80,34 +85,18 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setDisableSmoothScroll,
         isImmersionMode,
         setIsImmersionMode,
-        showLegacyButtons,
-        setShowLegacyButtons,
         favorites,
         setFavorites,
-        isHighlighterEnabled,
-        setIsHighlighterEnabled,
         objectColor,
-        setObjectColor,
         playerColor,
-        setPlayerColor,
         npcColor,
-        setNpcColor,
-        enemyColor,
-        setEnemyColor,
-        neutralColor,
-        setNeutralColor,
-        targetColor,
-        setTargetColor,
         roomColor,
-        setRoomColor,
         isBloomEnabled,
         setIsBloomEnabled,
         showSpectatePromptInLog,
         setShowSpectatePromptInLog,
         isTimestampEnabled,
         setIsTimestampEnabled,
-        isNewbieMode,
-        setIsNewbieMode,
         autoSaveSessions,
         setAutoSaveSessions,
         parley,
@@ -194,7 +183,10 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setConnectionUrl={setConnectionUrl}
                     bgImage={bgImage}
                     setBgImage={setBgImage}
+                    bgImageBottom={bgImageBottom}
+                    setBgImageBottom={setBgImageBottom}
                     handleFileUpload={handleFileUpload}
+                    handleBottomFileUpload={handleBottomFileUpload}
                     exportSettings={() => exportSettingsFile(btn.rawButtons)}
                     importSettings={(e) => importSettings(e, setIsSettingsOpen)}
                     isLoading={isLoading}
@@ -221,44 +213,22 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setDisableSmoothScroll={setDisableSmoothScroll}
                     isImmersionMode={isImmersionMode}
                     setIsImmersionMode={setIsImmersionMode}
-                    showLegacyButtons={showLegacyButtons}
-                    setShowLegacyButtons={setShowLegacyButtons}
-                    isHighlighterEnabled={isHighlighterEnabled}
-                    setIsHighlighterEnabled={setIsHighlighterEnabled}
                     isBloomEnabled={isBloomEnabled}
                     setIsBloomEnabled={setIsBloomEnabled}
                     isTimestampEnabled={isTimestampEnabled}
                     setIsTimestampEnabled={setIsTimestampEnabled}
-                    isNewbieMode={isNewbieMode}
-                    setIsNewbieMode={setIsNewbieMode}
                     autoSaveSessions={autoSaveSessions}
                     setAutoSaveSessions={setAutoSaveSessions}
-                    objectColor={objectColor}
-                    setObjectColor={setObjectColor}
                     fontFamily={fontFamily}
                     setFontFamily={setFontFamily}
                     showSpectatePromptInLog={showSpectatePromptInLog}
                     setShowSpectatePromptInLog={setShowSpectatePromptInLog}
-                    playerColor={playerColor}
-                    setPlayerColor={setPlayerColor}
-                    npcColor={npcColor}
-                    setNpcColor={setNpcColor}
-                    enemyColor={enemyColor}
-                    setEnemyColor={setEnemyColor}
-                    neutralColor={neutralColor}
-                    setNeutralColor={setNeutralColor}
-                    targetColor={targetColor}
-                    setTargetColor={setTargetColor}
-                    roomColor={roomColor}
-                    setRoomColor={setRoomColor}
                     isEditMode={btn.isEditMode}
                     setIsEditMode={btn.setIsEditMode}
                     isGridEnabled={btn.isGridEnabled}
                     setIsGridEnabled={btn.setIsGridEnabled}
                     createButton={btn.createButton}
                     setIsSetManagerOpen={setIsSetManagerOpen}
-                    inlineCategories={inlineCategories}
-                    setInlineCategories={setInlineCategories}
                 />
             )}
 
@@ -349,6 +319,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 setSettings={setSettings || {}}
                 inlineCategories={inlineCategories}
                 setInlineCategories={setInlineCategories}
+                customTraits={customTraits}
+                setCustomTraits={setCustomTraits}
                 favorites={favorites}
                 setFavorites={setFavorites}
                 parley={parley}

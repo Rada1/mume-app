@@ -125,7 +125,7 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
         playerPositionRef: playerPositionRef as any
     });
 
-    const { onRoomChars, onRoomItems, onAddChar, onUpdateChar, onRemoveChar } = useGmcpOccupants({
+    const { onRoomChars, onAddChar, onUpdateChar, onRemoveChar } = useGmcpOccupants({
         ...props,
         lastRoomChangeTimeRef
     });
@@ -175,7 +175,6 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
         onRoomChars,
         onRoomPlayers: onRoomChars,
         onRoomNpcs: onRoomChars,
-        onRoomItems,
         onAddChar,
         onUpdateChar,
         onRemoveChar,

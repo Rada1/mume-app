@@ -86,9 +86,6 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
             className={`popover-item ${isSubButton ? 'is-sub-item' : ''}`}
             data-menu-item="true"
             data-is-menu={['nav', 'menu', 'select-assign', 'select-recipient', 'select-container', 'assign', 'teleport-manage'].includes(button.actionType || '') || button.label === 'Look In' ? "true" : "false"}
-            data-drop-cmd={button.command}
-            data-drop-context={popoverState.context}
-            data-drop-parent={popoverState.parentNoun}
             onPointerDown={(e) => { e.stopPropagation(); }}
             onClick={handleClick}
             style={{ 

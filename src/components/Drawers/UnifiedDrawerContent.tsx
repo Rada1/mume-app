@@ -154,7 +154,7 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
                     <UnifiedView
                         lines={displayEqLines}
                         location="worn"
-                        category="inline-obj-worn"
+                        category="inline-worn"
                         emptyMessage="No equipment data. Tap refresh to update."
                         onRefresh={() => { triggerHaptic(15); executeCommand('eq', true, true); }}
                     />
@@ -162,7 +162,7 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
                     <UnifiedView
                         lines={displayInventoryLines}
                         location="carried"
-                        category="inline-obj-char"
+                        category="inline-inventory"
                         emptyMessage="No inventory data. Tap refresh to update."
                         onRefresh={() => { triggerHaptic(15); executeCommand('inv', true, true); }}
                     />

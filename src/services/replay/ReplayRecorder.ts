@@ -14,7 +14,7 @@ const KEYFRAME_INTERVAL_MS = 5000;
 
 const RECORD_EVENTS: (keyof GmcpEventMap)[] = [
     'Char.Vitals', 'Char.Info', 'Char.Name', 'Char.Position', 'Char.Ride',
-    'Room.Info', 'Room.UpdateExits', 'Room.Chars',  'Room.Items',
+    'Room.Info', 'Room.UpdateExits', 'Room.Chars',
     'Room.AddChar', 'Room.RemoveChar', 'Room.UpdateChar',
     'Room.Chars.Combat', 'Char.Opponent', 'Char.Buffer',
     'Group.Add', 'Group.Update', 'Group.Remove', 'Group.Set',

@@ -8,6 +8,7 @@
 import React from 'react';
 import { Token, EntityToken, AnsiToken, TextToken, InlineCategoryConfig, GmcpOccupant } from '../../types';
 import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
+import { toCategoryId } from '../../utils/inlineActionModel';
 
 export interface TokenizerContext {
     target?: string | null;
@@ -229,7 +230,7 @@ export class Tokenizer {
                     
                     const metadata: any = {
                         kind: 'player',
-                        category: 'inline-player',
+                        category: 'cat-ally',
                         context: playerName,
                         location: 'none',
                         action: 'menu'
@@ -299,7 +300,7 @@ export class Tokenizer {
                 entityId: String(candidate.occupant.id ?? `auto-${content.toLowerCase().replace(/[^a-z0-9]/g, '-')}`),
                 metadata: {
                     kind: gmcpType === 'npc' ? 'npc' : gmcpType === 'enemy' ? 'enemy' : gmcpType === 'neutral' ? 'neutral' : gmcpType === 'ally' ? 'ally' : 'player',
-                    category: `inline-${gmcpType}`,
+                    category: toCategoryId(gmcpType) || 'cat-npc',
                     context: commandTarget,
                     location: 'room',
                     action: 'menu',
@@ -403,23 +404,24 @@ export class Tokenizer {
         if (!content.trim()) return;
 
         let category = 'none';
-        if (kind === 'player') category = 'inline-player';
-        else if (kind === 'enemy') category = 'inline-enemy';
-        else if (kind === 'npc') category = 'inline-npc';
+        if (kind === 'player') category = 'cat-ally';
+        else if (kind === 'enemy') category = 'cat-enemy';
+        else if (kind === 'npc') category = 'cat-npc';
         else if (kind === 'object') {
-            if (this.currentLocation === 'carried') category = 'inline-obj-char';
-            else if (this.currentLocation === 'worn') category = 'inline-obj-worn';
-            else category = 'inline-obj-room';
+            if (this.currentLocation === 'carried') category = 'cat-inventory-object';
+            else if (this.currentLocation === 'worn') category = 'cat-worn-object';
+            else category = 'cat-room-object';
         }
-        else if (kind === 'room') category = 'room';
-        else if (kind === 'exit') category = 'exit';
+        else if (kind === 'room') category = 'cat-room';
+        else if (kind === 'exit') category = 'cat-exit';
 
         if (metadata.type) {
             const t = metadata.type.toLowerCase();
-            category = `inline-${t}`;
             if (t === 'enemy' || t === 'ally' || t === 'neutral' || t === 'npc') {
                 kind = t;
             }
+            // Resolve via alias map; NPC subtypes (shopkeeper, innkeeper, etc.) fall back to cat-npc
+            category = toCategoryId(t) || toCategoryId(`inline-${t}`) || 'cat-npc';
         }
 
         // Text-marker fallback when no explicit type attribute is present:
@@ -428,18 +430,18 @@ export class Tokenizer {
             const trimmed = content.trim();
             if (/^\*.+\*$/.test(trimmed)) {
                 kind = 'enemy';
-                category = 'inline-enemy';
+                category = 'cat-enemy';
             } else if (/^-.+-$/.test(trimmed)) {
                 kind = 'neutral';
-                category = 'inline-neutral';
+                category = 'cat-neutral';
             }
         }
 
         // --- Room Context Override ---
         // If we are explicitly within a <room> tag (check stack or current context), 
-        // the user wants these to be "room buttons" (categorized as 'room').
+        // the user wants these to be room buttons.
         if (activeEntity.stack?.includes('room')) {
-            category = 'room';
+            category = 'cat-room';
         }
 
         // --- COLOR LOOKUP: Prioritize user settings ---

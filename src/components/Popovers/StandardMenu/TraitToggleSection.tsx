@@ -1,14 +1,14 @@
 import React from 'react';
-import { InlineCategoryConfig, PopoverState, MessageType } from '../../../types';
-import { DEFAULT_INLINE_CATEGORIES, getButtonSetIdForCategory } from '../../../utils/categorizationUtils';
-import { useUI, useGame } from '../../../context/GameContext';
-import { Settings } from 'lucide-react';
+import { CustomTraitConfig, PopoverState, MessageType } from '../../../types';
+import { useButtonStore } from '../../../stores/useButtonStore';
+import { DEFAULT_TRAIT_CONFIGS, TraitConfig, inlineConfigToTrait, isTraitConfigRecord, toTraitId } from '../../../utils/inlineActionModel';
 
 interface TraitToggleSectionProps {
     popoverState: PopoverState;
-    inlineCategories: InlineCategoryConfig[];
-    setInlineCategories: (val: InlineCategoryConfig[] | ((prev: InlineCategoryConfig[]) => InlineCategoryConfig[])) => void;
-    dynamicTraits: string[];
+    customTraits: CustomTraitConfig[];
+    setCustomTraits: (val: CustomTraitConfig[] | ((prev: CustomTraitConfig[]) => CustomTraitConfig[])) => void;
+    activeTraits: string[];
+    keywordTraits: string[];
     triggerHaptic?: (ms: number) => void;
     addMessage?: (type: MessageType, content: string) => void;
     refreshLogHighlights?: () => void;
@@ -16,54 +16,66 @@ interface TraitToggleSectionProps {
 
 export const TraitToggleSection: React.FC<TraitToggleSectionProps> = ({
     popoverState,
-    inlineCategories,
-    setInlineCategories,
-    dynamicTraits,
+    customTraits,
+    setCustomTraits,
+    activeTraits,
+    keywordTraits,
     triggerHaptic,
     addMessage,
     refreshLogHighlights
 }) => {
-    const { setIsSetManagerOpen, setManagerSelectedSet } = useUI();
-    const { setPopoverState } = useGame();
     const [newTraitName, setNewTraitName] = React.useState('');
+    const { rawButtons } = useButtonStore();
 
-    const allPotentialCats = [...DEFAULT_INLINE_CATEGORIES, ...(Array.isArray(inlineCategories) ? inlineCategories : [])]
-        .filter((cat, i, self) => self.findIndex(c => c.id === cat.id) === i)
-        .filter(cat => !cat.isGmcpCategory);
+    // --- Derived Data ---
+    const buttonLabelById = React.useMemo(() => new Map(rawButtons.map(button => [button.id, button.label])), [rawButtons]);
+    const activeTraitIds = React.useMemo(() => new Set(activeTraits.map(id => toTraitId(id) || id)), [activeTraits]);
+    const keywordTraitIds = React.useMemo(() => new Set(keywordTraits.map(id => toTraitId(id) || id)), [keywordTraits]);
+    const allPotentialTraits = React.useMemo(() => {
+        const userTraits = (Array.isArray(customTraits) ? customTraits : [])
+            .filter(isTraitConfigRecord)
+            .map(inlineConfigToTrait);
+        const byId = new Map<string, TraitConfig>();
+        [...DEFAULT_TRAIT_CONFIGS, ...userTraits].forEach(trait => byId.set(trait.id, trait));
+        return Array.from(byId.values()).sort((a, b) => a.label.localeCompare(b.label));
+    }, [customTraits]);
 
-    const handleToggle = (cat: InlineCategoryConfig) => {
+    // --- Logic Section ---
+    const handleToggle = (trait: TraitConfig) => {
         if (!popoverState.context) return;
         
         triggerHaptic?.(30);
         const keyword = popoverState.context.toLowerCase();
-        const isTraitActive = dynamicTraits.includes(cat.id);
+        const isTraitActive = keywordTraitIds.has(trait.id);
         
-        setInlineCategories(prev => {
-            const categories = Array.isArray(prev) ? [...prev] : [];
-            const catIndex = categories.findIndex(c => c.id === cat.id);
+        setCustomTraits(prev => {
+            const traits = Array.isArray(prev) ? [...prev] : [];
+            const traitIndex = traits.findIndex(c => isTraitConfigRecord(c) && (toTraitId(c.id) || c.id) === trait.id);
             
-            if (catIndex === -1) {
-                // Add new category instance for this keyword if it didn't exist in custom list
-                return [...categories, { ...cat, keywords: [keyword] }];
+            if (traitIndex === -1) {
+                return [...traits, {
+                    id: trait.id,
+                    kind: trait.kind || 'object',
+                    keywords: [keyword],
+                    buttonIds: trait.buttonIds || []
+                }];
             }
             
-            const targetCat = categories[catIndex];
-            const keywords = targetCat.keywords || [];
+            const targetTrait = traits[traitIndex];
+            const keywords = targetTrait.keywords || [];
             const keywordIndex = keywords.findIndex(k => k.toLowerCase() === keyword);
             
             if (keywordIndex === -1) {
-                // Toggle ON
-                const updatedCat = { ...targetCat, keywords: [...keywords, keyword] };
-                return categories.map((c, i) => i === catIndex ? updatedCat : c);
-            } else {
-                // Toggle OFF
-                const updatedCat = { ...targetCat, keywords: keywords.filter((_, i) => i !== keywordIndex) };
-                return categories.map((c, i) => i === catIndex ? updatedCat : c);
+                const updatedTrait = { ...targetTrait, keywords: [...keywords, keyword] };
+                return traits.map((c, i) => i === traitIndex ? updatedTrait : c);
             }
+
+            const updatedTrait = { ...targetTrait, keywords: keywords.filter((_, i) => i !== keywordIndex) };
+            return traits.map((c, i) => i === traitIndex ? updatedTrait : c);
         });
         
         if (addMessage) {
-            addMessage('system', `${isTraitActive ? 'Removed' : 'Added'} trait ${cat.id.toUpperCase()} for '${popoverState.context}'`);
+            addMessage('system', `${isTraitActive ? 'Removed' : 'Added'} ${trait.label} for '${popoverState.context}'`);
         }
         refreshLogHighlights?.();
     };
@@ -71,29 +83,27 @@ export const TraitToggleSection: React.FC<TraitToggleSectionProps> = ({
     const handleCreateTrait = () => {
         if (!newTraitName.trim() || !popoverState.context) return;
         
-        const id = `inline-${newTraitName.toLowerCase().replace(/\s+/g, '-')}`;
+        const id = `trait-${newTraitName.toLowerCase().replace(/\s+/g, '-')}`;
         const keyword = popoverState.context.toLowerCase();
         
-        setInlineCategories(prev => {
-            const categories = Array.isArray(prev) ? [...prev] : [];
-            if (categories.some(c => c.id === id)) {
-                // Already exists, just toggle it for this keyword
-                const catIndex = categories.findIndex(c => c.id === id);
-                const targetCat = categories[catIndex];
-                const keywords = targetCat.keywords || [];
+        setCustomTraits(prev => {
+            const traits = Array.isArray(prev) ? [...prev] : [];
+            if (traits.some(c => c.id === id)) {
+                const traitIndex = traits.findIndex(c => c.id === id);
+                const targetTrait = traits[traitIndex];
+                const keywords = targetTrait.keywords || [];
                 if (!keywords.includes(keyword)) {
-                    const updatedCat = { ...targetCat, keywords: [...keywords, keyword] };
-                    return categories.map((c, i) => i === catIndex ? updatedCat : c);
+                    const updatedTrait = { ...targetTrait, keywords: [...keywords, keyword] };
+                    return traits.map((c, i) => i === traitIndex ? updatedTrait : c);
                 }
-                return categories;
+                return traits;
             }
             
-            return [...categories, {
+            return [...traits, {
                 id,
                 kind: 'object',
                 keywords: [keyword],
-                color: '#fff',
-                weight: 10
+                buttonIds: []
             }];
         });
         
@@ -104,67 +114,51 @@ export const TraitToggleSection: React.FC<TraitToggleSectionProps> = ({
 
     return (
         <div style={{ padding: '8px', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '8px', maxHeight: '300px', overflowY: 'auto' }}>
-            <div style={{ fontSize: '0.65rem', opacity: 0.5, marginBottom: '6px', textAlign: 'center' }}>MANAGE TRAITS (TOGGLE)</div>
-            
+            <div style={{ fontSize: '0.65rem', opacity: 0.5, marginBottom: '6px', textAlign: 'center' }}>CATEGORY - TRAITS - BUTTONS</div>
+
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '4px', marginBottom: '8px' }}>
-                {allPotentialCats.map(cat => {
-                    const isTraitActive = dynamicTraits.includes(cat.id);
+                {allPotentialTraits.map(trait => {
+                    const isTraitActive = activeTraitIds.has(trait.id);
+                    const isKeywordTrait = keywordTraitIds.has(trait.id);
+                    const buttonLabels = trait.buttonIds
+                        .map(buttonId => buttonLabelById.get(buttonId) || buttonId.replace(/^btn-/, ''))
+                        .join(', ');
                     return (
-                        <div 
-                            key={cat.id}
+                        <div
+                            key={trait.id}
                             className="popover-item"
-                            style={{ 
+                            style={{
                                 position: 'relative',
                                 display: 'flex',
-                                alignItems: 'center',
+                                flexDirection: 'column',
+                                alignItems: 'flex-start',
                                 justifyContent: 'center',
-                                padding: '6px', 
-                                fontSize: '0.7rem', 
-                                textAlign: 'center',
+                                padding: '6px 7px',
+                                fontSize: '0.7rem',
+                                textAlign: 'left',
                                 background: isTraitActive ? 'var(--accent)' : 'rgba(255,255,255,0.05)',
-                                border: `1px solid ${cat.color || 'rgba(255,255,255,0.2)'}`,
-                                color: isTraitActive ? '#000' : (cat.color || '#fff'),
+                                border: '1px solid rgba(255,255,255,0.2)',
+                                color: isTraitActive ? '#000' : '#fff',
                                 borderRadius: '4px',
                                 transition: 'all 0.1s ease',
-                                opacity: isTraitActive ? 1 : 0.7
+                                opacity: isTraitActive ? 1 : 0.7,
+                                cursor: 'pointer',
+                                minHeight: '44px'
                             }}
                             onClick={(e) => {
                                 e.stopPropagation();
-                                handleToggle(cat);
+                                handleToggle(trait);
                             }}
                         >
-                            <span style={{ pointerEvents: 'none' }}>
-                                {cat.id.replace('object-', '').replace('npc-', '').replace('inline-', '').toUpperCase()}
+                            <span style={{ pointerEvents: 'none', fontWeight: 700 }}>
+                                {trait.label.toUpperCase()}
+                                {isTraitActive && !isKeywordTrait ? (
+                                    <span style={{ opacity: 0.55, marginLeft: '4px', fontSize: '0.55rem' }}>DEFAULT</span>
+                                ) : null}
                             </span>
-                            
-                            {getButtonSetIdForCategory(cat) && (
-                                <div 
-                                    className="edit-set-shortcut"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setManagerSelectedSet(getButtonSetIdForCategory(cat)!);
-                                        setIsSetManagerOpen(true);
-                                        setPopoverState(null);
-                                        triggerHaptic?.(50);
-                                    }}
-                                    style={{
-                                        position: 'absolute',
-                                        right: '2px',
-                                        bottom: '2px',
-                                        padding: '2px',
-                                        background: 'rgba(0,0,0,0.3)',
-                                        borderRadius: '3px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        border: '1px solid rgba(255,255,255,0.1)',
-                                        zIndex: 10
-                                    }}
-                                    title="Edit Button Menu"
-                                >
-                                    <Settings size={10} style={{ color: isTraitActive ? '#000' : '#fff' }} />
-                                </div>
-                            )}
+                            <span style={{ pointerEvents: 'none', fontSize: '0.58rem', opacity: 0.68, marginTop: '2px', lineHeight: 1.2 }}>
+                                {buttonLabels || 'No buttons assigned'}
+                            </span>
                         </div>
                     );
                 })}

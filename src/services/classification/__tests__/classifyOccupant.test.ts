@@ -9,33 +9,33 @@ import {
 
 describe('classifyOccupant', () => {
     describe('MUME GMCP Room.Chars types', () => {
-        it('classifies ally as inline-ally / player', () => {
+        it('classifies ally as cat-ally / player', () => {
             expect(classifyOccupant({ type: 'ally' })).toEqual({
-                category: 'inline-ally',
+                category: 'cat-ally',
                 kind: 'player',
                 color: COLOR_ALLY,
             });
         });
 
-        it('classifies enemy as inline-enemy / player', () => {
+        it('classifies enemy as cat-enemy / player', () => {
             expect(classifyOccupant({ type: 'enemy' })).toEqual({
-                category: 'inline-enemy',
+                category: 'cat-enemy',
                 kind: 'player',
                 color: COLOR_ENEMY,
             });
         });
 
-        it('classifies neutral as inline-neutral / player', () => {
+        it('classifies neutral as cat-neutral / player', () => {
             expect(classifyOccupant({ type: 'neutral' })).toEqual({
-                category: 'inline-neutral',
+                category: 'cat-neutral',
                 kind: 'player',
                 color: COLOR_NEUTRAL,
             });
         });
 
-        it('classifies npc as inline-npc / npc', () => {
+        it('classifies npc as cat-npc / npc', () => {
             expect(classifyOccupant({ type: 'npc' })).toEqual({
-                category: 'inline-npc',
+                category: 'cat-npc',
                 kind: 'npc',
                 color: COLOR_NPC,
             });
@@ -49,17 +49,17 @@ describe('classifyOccupant', () => {
     describe('legacy aliases produced by older parsers', () => {
         it('treats "pc" as ally', () => {
             const result = classifyOccupant({ type: 'pc' });
-            expect(result?.category).toBe('inline-ally');
+            expect(result?.category).toBe('cat-ally');
             expect(result?.kind).toBe('player');
         });
 
         it('treats "player" as ally', () => {
-            expect(classifyOccupant({ type: 'player' })?.category).toBe('inline-ally');
+            expect(classifyOccupant({ type: 'player' })?.category).toBe('cat-ally');
         });
 
         it('treats "mob" / "mobile" as npc', () => {
-            expect(classifyOccupant({ type: 'mob' })?.category).toBe('inline-npc');
-            expect(classifyOccupant({ type: 'mobile' })?.category).toBe('inline-npc');
+            expect(classifyOccupant({ type: 'mob' })?.category).toBe('cat-npc');
+            expect(classifyOccupant({ type: 'mobile' })?.category).toBe('cat-npc');
         });
 
         it('treats "self" the same as "you" (no button)', () => {
@@ -69,9 +69,9 @@ describe('classifyOccupant', () => {
 
     describe('case insensitivity', () => {
         it('accepts uppercase and mixed-case types', () => {
-            expect(classifyOccupant({ type: 'ALLY' })?.category).toBe('inline-ally');
-            expect(classifyOccupant({ type: 'Enemy' })?.category).toBe('inline-enemy');
-            expect(classifyOccupant({ type: 'NPC' })?.category).toBe('inline-npc');
+            expect(classifyOccupant({ type: 'ALLY' })?.category).toBe('cat-ally');
+            expect(classifyOccupant({ type: 'Enemy' })?.category).toBe('cat-enemy');
+            expect(classifyOccupant({ type: 'NPC' })?.category).toBe('cat-npc');
         });
     });
 
@@ -106,7 +106,7 @@ describe('classifyOccupant', () => {
         it('ignores name keywords (no "rugged man" → npc fallback)', () => {
             expect(
                 classifyOccupant({ type: 'ally', name: 'a rugged man' } as any)?.category
-            ).toBe('inline-ally');
+            ).toBe('cat-ally');
         });
 
         it('ignores raw `pc` field — classifier expects type to be normalized first', () => {
@@ -119,18 +119,18 @@ describe('classifyOccupant', () => {
         it('ignores ANSI color hints', () => {
             expect(
                 classifyOccupant({ type: 'enemy', color: 'magenta' } as any)?.category
-            ).toBe('inline-enemy');
+            ).toBe('cat-enemy');
         });
 
         it('ignores legacy pc boolean field when type is the primary signal', () => {
             // type wins over pc:false
             expect(
                 classifyOccupant({ type: 'ally', pc: false } as any)?.category
-            ).toBe('inline-ally');
+            ).toBe('cat-ally');
             // type wins over pc:true
             expect(
                 classifyOccupant({ type: 'enemy', pc: true } as any)?.category
-            ).toBe('inline-enemy');
+            ).toBe('cat-enemy');
         });
     });
 });

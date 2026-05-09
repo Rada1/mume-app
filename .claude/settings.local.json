@@ -21,7 +21,12 @@
       "Bash(git -C \"c:/Users/pwetz/Downloads/mume app\" log --all --oneline -30)",
       "Bash(xargs -I{} sh -c 'echo \"=== {} ===\"; git -C \"c:/Users/pwetz/Downloads/mume app\" show {} -- \"*.ts\" \"*.tsx\" 2>/dev/null | grep -n \"empty\\\\|blank\\\\|separator\\\\|snoop.*push\\\\|addMessage.*\\\\\"\\\\\"\\\\|processedLines.*push.*'\\\\''\\\\|push.*'\\\\''\"')",
       "Bash(grep -E \"\\\\.ts$\")",
-      "Bash(grep -E \"\\\\.\\(tsx|ts|jsx|js\\)$\")"
+      "Bash(grep -E \"\\\\.\\(tsx|ts|jsx|js\\)$\")",
+      "Bash(curl -s \"https://esm.sh/ansi-to-html@^0.7.2\")",
+      "Bash(node -e \"const s=require\\('./src/constants/mastersettings.json'\\); const b=s.buttons||[]; const matches=b.filter\\(x=>/inlp-|innpc-|tgt-/.test\\(x.id\\)\\); console.log\\(JSON.stringify\\(matches.map\\(x=>x.id\\),null,2\\)\\)\")",
+      "Bash(node -e \"const s=require\\('./src/constants/mastersettings.json'\\); const b=s.buttons||[]; const matches=b.filter\\(x=>/inlp-|innpc-|tgt-/.test\\(x.id\\)\\); console.log\\(JSON.stringify\\(matches,null,2\\)\\)\")",
+      "Bash(del \"c:\\\\Users\\\\pwetz\\\\Downloads\\\\mume app\\\\src\\\\hooks\\\\interactions\\\\useLogDragAndDrop.ts\")",
+      "Bash(grep -v \"^$\")"
     ]
   }
 }

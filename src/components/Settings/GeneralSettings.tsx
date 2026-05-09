@@ -2,8 +2,6 @@ import React from 'react';
 import { Wifi, WifiOff, Upload } from 'lucide-react';
 import { DEFAULT_BG } from '../../constants';
 import { useModeStore } from '../../stores/useModeStore';
-import { InlineCategoryConfig } from '../../types';
-import CategoryTraitCards from './CategoryTraitCards';
 
 interface GeneralSettingsProps {
     connectionUrl: string;
@@ -14,6 +12,7 @@ interface GeneralSettingsProps {
     setAutoConnect: (val: boolean) => void;
     loginName: string;
     setLoginName: (val: string) => void;
+
     loginPassword: string;
     setLoginPassword: (val: string) => void;
     isMmapperMode: boolean;
@@ -21,8 +20,11 @@ interface GeneralSettingsProps {
     theme: 'light' | 'dark';
     setTheme: (val: 'light' | 'dark') => void;
     bgImage: string | null;
+    bgImageBottom?: string | null;
     setBgImage: (val: string | null) => void;
+    setBgImageBottom?: (val: string | null) => void;
     handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    handleBottomFileUpload?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     showDebugEchoes: boolean;
     setShowDebugEchoes: (val: boolean) => void;
     uiMode: import('../../types').UiMode;
@@ -31,28 +33,10 @@ interface GeneralSettingsProps {
     setDisableSmoothScroll: (val: boolean) => void;
     isImmersionMode: boolean;
     setIsImmersionMode: (val: boolean) => void;
-    isHighlighterEnabled: boolean;
-    setIsHighlighterEnabled: (val: boolean) => void;
-    objectColor: string;
-    setObjectColor: (val: string) => void;
-    playerColor: string;
-    setPlayerColor: (val: string) => void;
-    npcColor: string;
-    setNpcColor: (val: string) => void;
-    enemyColor: string;
-    setEnemyColor: (val: string) => void;
-    neutralColor: string;
-    setNeutralColor: (val: string) => void;
-    targetColor: string;
-    setTargetColor: (val: string) => void;
-    roomColor: string;
-    setRoomColor: (val: string) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
     isTimestampEnabled: boolean;
     setIsTimestampEnabled: (val: boolean) => void;
-    isNewbieMode: boolean;
-    setIsNewbieMode: (val: boolean) => void;
     fontFamily: string;
     setFontFamily: (val: string) => void;
     logFontSize: number;
@@ -61,8 +45,6 @@ interface GeneralSettingsProps {
     setAutoSaveSessions: (val: boolean) => void;
     showSpectatePromptInLog: boolean;
     setShowSpectatePromptInLog: (val: boolean) => void;
-    inlineCategories: InlineCategoryConfig[];
-    setInlineCategories: (val: InlineCategoryConfig[] | ((prev: InlineCategoryConfig[]) => InlineCategoryConfig[])) => void;
 }
 
 const GeneralSettings: React.FC<GeneralSettingsProps> = ({
@@ -82,7 +64,10 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setTheme,
     bgImage,
     setBgImage,
+    bgImageBottom,
+    setBgImageBottom,
     handleFileUpload,
+    handleBottomFileUpload,
     showDebugEchoes,
     setShowDebugEchoes,
     uiMode,
@@ -91,28 +76,10 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setDisableSmoothScroll,
     isImmersionMode,
     setIsImmersionMode,
-    isHighlighterEnabled,
-    setIsHighlighterEnabled,
-    objectColor,
-    setObjectColor,
-    playerColor,
-    setPlayerColor,
-    npcColor,
-    setNpcColor,
-    enemyColor,
-    setEnemyColor,
-    neutralColor,
-    setNeutralColor,
-    targetColor,
-    setTargetColor,
-    roomColor,
-    setRoomColor,
     isBloomEnabled,
     setIsBloomEnabled,
     isTimestampEnabled,
     setIsTimestampEnabled,
-    isNewbieMode,
-    setIsNewbieMode,
     fontFamily,
     setFontFamily,
     logFontSize,
@@ -121,8 +88,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setAutoSaveSessions,
     showSpectatePromptInLog,
     setShowSpectatePromptInLog,
-    inlineCategories,
-    setInlineCategories
 }) => {
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const setIsSpectateMode = useModeStore(s => s.setIsSpectating);
@@ -577,50 +542,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                     </button>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                        <div style={{ flex: '1 1 200px' }}>
-                            <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Object Highlighting</label>
-                            <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Highlight weapons, armor, and interactable objects in text.</div>
-                        </div>
-                        <div
-                            className={`setting-toggle ${isHighlighterEnabled ? 'active' : ''}`}
-                            onClick={(e) => { e.stopPropagation(); setIsHighlighterEnabled(!isHighlighterEnabled); }}
-                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isHighlighterEnabled ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
-                        >
-                            <div style={{
-                                width: '20px',
-                                height: '20px',
-                                background: '#fff',
-                                borderRadius: '50%',
-                                position: 'absolute',
-                                top: '2px',
-                                left: isHighlighterEnabled ? '22px' : '2px',
-                                transition: 'all 0.3s'
-                            }} />
-                        </div>
-                    </div>
-                    {isHighlighterEnabled && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginLeft: '10px' }}>
-                            <label className="setting-label" style={{ margin: 0, fontSize: '0.8rem' }}>Color:</label>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <input 
-                                    type="color" 
-                                    value={objectColor.startsWith('rgba') ? '#fb923c' : objectColor} 
-                                    onChange={(e) => setObjectColor(e.target.value)}
-                                    style={{ width: '30px', height: '20px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }}
-                                />
-                                <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', fontFamily: 'var(--font-main)' }}>{objectColor}</span>
-                                <button 
-                                    className="btn-secondary" 
-                                    style={{ margin: 0, padding: '2px 8px', fontSize: '0.65rem', height: 'auto' }}
-                                    onClick={() => setObjectColor('rgba(251, 146, 60, 0.95)')}
-                                >Reset</button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
                     <div style={{ flex: '1 1 200px' }}>
                         <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Client Theme</label>
@@ -650,48 +571,20 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
                     <div style={{ flex: '1 1 200px' }}>
-                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Newbie Mode</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Toggle the sticky room card, mini-map, and auto-clearing log.</div>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', margin: 0 }}>Show Spectated Player's Prompt</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Display the snooped player's prompt line in the message log during spectate mode.</div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.8rem', color: isNewbieMode ? '#ec4899' : '#64748b' }}>{isNewbieMode ? 'ON' : 'OFF'}</span>
+                        <span style={{ fontSize: '0.8rem', color: showSpectatePromptInLog ? '#ec4899' : '#64748b' }}>{showSpectatePromptInLog ? 'ON' : 'OFF'}</span>
                         <button
-                            className={`setting-toggle ${isNewbieMode ? 'active' : ''}`}
-                            onClick={() => setIsNewbieMode(!isNewbieMode)}
-                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isNewbieMode ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                            className={`setting-toggle ${showSpectatePromptInLog ? 'active' : ''}`}
+                            onClick={() => setShowSpectatePromptInLog(!showSpectatePromptInLog)}
+                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: showSpectatePromptInLog ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
                         >
-                            <div style={{
-                                width: '20px',
-                                height: '20px',
-                                background: '#fff',
-                                borderRadius: '50%',
-                                position: 'absolute',
-                                top: '2px',
-                                left: isNewbieMode ? '22px' : '2px',
-                                transition: 'all 0.3s'
-                            }} />
+                            <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: showSpectatePromptInLog ? '22px' : '2px', transition: 'all 0.3s' }} />
                         </button>
                     </div>
                 </div>
-
-                {isNewbieMode && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
-                        <div style={{ flex: '1 1 200px' }}>
-                            <label className="setting-label" style={{ color: 'var(--text-primary)', margin: 0 }}>Show Spectated Player's Prompt</label>
-                            <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Display the snooped player's prompt line in the message log during spectate mode.</div>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ fontSize: '0.8rem', color: showSpectatePromptInLog ? '#ec4899' : '#64748b' }}>{showSpectatePromptInLog ? 'ON' : 'OFF'}</span>
-                            <button
-                                className={`setting-toggle ${showSpectatePromptInLog ? 'active' : ''}`}
-                                onClick={() => setShowSpectatePromptInLog(!showSpectatePromptInLog)}
-                                style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: showSpectatePromptInLog ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
-                            >
-                                <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: showSpectatePromptInLog ? '22px' : '2px', transition: 'all 0.3s' }} />
-                            </button>
-                        </div>
-                    </div>
-                )}
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
                     <div style={{ flex: '1 1 200px' }}>
@@ -720,70 +613,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 </div>
             </div>
 
-            <div className="setting-group" style={{ border: '1px solid var(--border-modal)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
-                <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', marginBottom: '12px', display: 'block' }}>Category & Highlighting Colors</label>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input type="color" value={playerColor} onChange={(e) => setPlayerColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
-                        <div>
-                            <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Ally</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Inline menus & logs</div>
-                            <CategoryTraitCards categoryId="inline-ally" kind="player" inlineCategories={inlineCategories} setInlineCategories={setInlineCategories} />
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input type="color" value={enemyColor} onChange={(e) => setEnemyColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
-                        <div>
-                            <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Enemy</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Inline menus & logs</div>
-                            <CategoryTraitCards categoryId="inline-enemy" kind="player" inlineCategories={inlineCategories} setInlineCategories={setInlineCategories} />
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input type="color" value={neutralColor} onChange={(e) => setNeutralColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
-                        <div>
-                            <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Neutral</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Inline menus & logs</div>
-                            <CategoryTraitCards categoryId="inline-neutral" kind="player" inlineCategories={inlineCategories} setInlineCategories={setInlineCategories} />
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input type="color" value={targetColor} onChange={(e) => setTargetColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
-                        <div>
-                            <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Target</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Double-click menu</div>
-                            <CategoryTraitCards categoryId="target" kind="none" inlineCategories={inlineCategories} setInlineCategories={setInlineCategories} />
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input type="color" value={npcColor} onChange={(e) => setNpcColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
-                        <div>
-                            <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>NPCs</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Inline menus & logs</div>
-                            <CategoryTraitCards categoryId="npc" kind="npc" inlineCategories={inlineCategories} setInlineCategories={setInlineCategories} />
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input type="color" value={objectColor.startsWith('rgba') ? '#fb923c' : objectColor} onChange={(e) => setObjectColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
-                        <div>
-                            <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Objects</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Highlights & menus</div>
-                            <CategoryTraitCards categoryId="object" kind="object" inlineCategories={inlineCategories} setInlineCategories={setInlineCategories} />
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input type="color" value={roomColor} onChange={(e) => setRoomColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
-                        <div>
-                            <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Room Items</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Static items & names</div>
-                            <CategoryTraitCards categoryId="room" kind="room" inlineCategories={inlineCategories} setInlineCategories={setInlineCategories} />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div className="setting-group">
-                <label className="setting-label">Background Image</label>
+                <label className="setting-label">Background Image (Top/Full)</label>
                 <div style={{ display: 'flex', gap: '10px' }}>
                     <input
                         type="file"
@@ -800,6 +631,28 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                     </button>
                     <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={() => setBgImage(DEFAULT_BG)}>
                         Reset
+                    </button>
+                </div>
+            </div>
+
+            <div className="setting-group">
+                <label className="setting-label">Background Image (Bottom)</label>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <input
+                        type="file"
+                        id="bg-bottom-upload"
+                        hidden
+                        onChange={handleBottomFileUpload}
+                        accept="image/*"
+                    />
+                    <label htmlFor="bg-bottom-upload" className="btn-secondary" style={{ marginTop: 0, width: 'auto' }}>
+                        <Upload size={16} /> Upload
+                    </label>
+                    <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={() => setBgImageBottom?.(null)}>
+                        Clear
+                    </button>
+                    <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={() => setBgImageBottom?.(bgImage)}>
+                        Sync to Top
                     </button>
                 </div>
             </div>

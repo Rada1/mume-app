@@ -19,7 +19,7 @@ export interface UIState {
     isSettingsOpen: boolean;
     isLibraryOpen: boolean;
     isButtonsOpen: boolean;
-    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'traits';
+    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help';
     diagnosticLogs: string[];
     showReplayHud: boolean;
     characterTab: 'info' | 'practice' | 'quests';
@@ -57,7 +57,7 @@ export interface UIState {
     setIsSettingsOpen: (open: boolean) => void;
     setIsLibraryOpen: (open: boolean) => void;
     setIsButtonsOpen: (open: boolean) => void;
-    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'traits') => void;
+    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help') => void;
     addDiagnosticLog: (msg: string) => void;
     setShowReplayHud: (show: boolean) => void;
     setKeywordEditState: (state: { context: string; displayText: string } | null) => void;

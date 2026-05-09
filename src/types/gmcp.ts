@@ -135,7 +135,6 @@ export interface GmcpOccupant {
 
 export interface GmcpRoomPlayers extends Array<string | GmcpOccupant> {}
 export interface GmcpRoomNpcs extends Array<string | GmcpOccupant> {}
-export interface GmcpRoomItems extends Array<string | GmcpOccupant> {}
 
 export interface GmcpCharInfo {
     name?: string;

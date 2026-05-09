@@ -45,8 +45,6 @@ export const useGameProviderState = (audioTriggers?: {
     const [parley, setParley] = useState<ParleyState>({ active: false, command: 'tell', target: null, message: '' });
     const [mumeEditState, setMumeEditState] = [uiStore.mumeEditState, uiStore.setMumeEditState] as const;
 
-    const [draggedTarget, setDraggedTarget] = useState<{ name: string; type: string; x: number; y: number } | null>(null);
-    const [activeDragData, setActiveDragData] = useState<unknown>(null);
     const [input, setInput] = useState("");
     const [commandPreview, setCommandPreview] = useState<string | null>(null);
 
@@ -176,8 +174,6 @@ export const useGameProviderState = (audioTriggers?: {
         selectedObjectIds: active.log.selectedObjectIds,
         toggleObjectSelection: active.log.toggleObjectSelection,
         clearObjectSelection: active.log.clearObjectSelection,
-        draggedTarget, setDraggedTarget,
-        activeDragData, setActiveDragData,
         input, setInput,
         commandPreview, setCommandPreview,
         diagnosticLogs: uiStore.diagnosticLogs,

@@ -3,6 +3,7 @@ import { InteractionDeps } from '../useInteractionHandlers';
 import { CustomButton } from '../../types';
 import { formatNpcKeywordTarget, sanitizeGameTarget } from '../../utils/gameUtils';
 import { triggerRingAnimation, getPressedColor } from './pointerUtils';
+import { toCategoryId } from '../../utils/inlineActionModel';
 
 export const useButtonClicks = (deps: InteractionDeps) => {
     const {
@@ -42,7 +43,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         }
         
         // --- Redirect Guildmaster Practice to Drawer ---
-        if (button.id === 'cat-guildmaster-practice') {
+        if (button.id === 'btn-guildmaster-practice') {
             handleTabClick('character');
             setCharTab('skills');
             executeCommand('practice', true, true, true, true);
@@ -77,7 +78,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
 
         const effectiveContext = (context && keywordOverrides[context]) ? keywordOverrides[context] : context;
         const isNpcContext = ['npc', 'enemy', 'neutral', 'ally', 'player'].includes(popoverState?.kind || '') ||
-            ['inline-npc', 'inline-enemy', 'inline-neutral', 'inline-ally'].some(prefix => popoverState?.category?.startsWith(prefix)) ||
+            ['cat-npc', 'cat-enemy', 'cat-neutral', 'cat-ally'].includes(toCategoryId(popoverState?.category) || '') ||
             !!popoverState?.setId?.startsWith('npc');
         console.log('[useButtonClicks] context resolution:', { context, effectiveContext, keywordOverride: context ? keywordOverrides[context] : undefined });
         let finalContext = (isNpcContext ? formatNpcKeywordTarget(effectiveContext) : sanitizeGameTarget(effectiveContext)) || effectiveContext || '';
@@ -269,12 +270,12 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             } else if (firstWord === 'remove') {
                 applyOptimisticChange({ type: 'remove', noun: remainder });
             } else if (firstWord === 'drop') {
-                const fromSource = (button.setId === 'equipmentlist' || button.setId === 'inline-obj-worn') ? 'eq' : 'inv';
+                const fromSource = (button.setId === 'equipmentlist' || button.setId === 'cat-worn-object') ? 'eq' : 'inv';
                 applyOptimisticChange({ type: 'drop', noun: remainder, from: fromSource });
             } else if (firstWord === 'give' && remainder.includes(' ')) {
                 const parts = remainder.split(' ');
                 const itemNoun = parts[0];
-                const fromSource = (button.setId === 'equipmentlist' || button.setId === 'inline-obj-worn') ? 'eq' : 'inv';
+                const fromSource = (button.setId === 'equipmentlist' || button.setId === 'cat-worn-object') ? 'eq' : 'inv';
                 applyOptimisticChange({ type: 'give', noun: itemNoun, from: fromSource });
             } else if (firstWord === 'put' && remainder.includes(' ')) {
                 const parts = remainder.split(' ');

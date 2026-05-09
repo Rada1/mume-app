@@ -24,7 +24,8 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 - **Entity Registry (NPCs, Players, Items):** `src/hooks/useEntityRegistry.ts` (Source of Truth)
 - **User Settings & Persistence:** `src/hooks/useSettings.ts`, `src/context/GameContext/useSettingsState.ts`
 - **Global Types & Interfaces:** `src/types/index.ts`
-- **Custom Traits & Categorization:** `src/utils/categorizationUtils.ts`, `src/components/Settings/TraitSettings.tsx`
+- **Inline Category -> Trait -> Button Model:** `src/utils/inlineActionModel.ts`, `src/utils/actionUtils.ts`, `src/components/Popovers/StandardMenuPopover.tsx`
+- **Legacy Categorization / Compatibility:** `src/utils/categorizationUtils.ts`, `src/components/Settings/TraitSettings.tsx`
 
 ### 🏗️ UI & Layout
 - **Main App Shell:** `src/index.tsx`
@@ -59,7 +60,7 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 | **Fix a Layout Issue** | `src/components/Layout/`, `src/styles/layout.css` |
 | **Handle a New GMCP Packet** | `useGmcpHandlers.ts`, `GameContext.tsx`, `types/index.ts` |
 | **Change Message Styling** | `useMessageLog.ts`, `useMessageHighlighter.ts`, `MessageLog.css` |
-| **Fix Inline Button Menus** | `actionUtils.ts`, `useEntityRegistry.ts` |
+| **Fix Inline Button Menus** | `inlineActionModel.ts`, `actionUtils.ts`, `StandardMenuPopover.tsx` |
 | **Update Parser Logic** | `src/hooks/GameParser/`, `useGameParser.ts` |
 | **Add a New Modal/Setting** | `ModalsLayer.tsx`, `useSettings.ts`, `SettingsModal.tsx` |
 | **Update Button Logic** | `useButtons.ts`, `useButtonLogic.ts`, `ButtonUtils.ts` |
@@ -67,7 +68,7 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 | **Modify Drawers/UI Tabs** | `src/components/Drawers/`, `DrawerManager.tsx` |
 | **Fix Broad Highlighting** | `Tokenizer.ts`, `useEntityRegistry.ts` |
 | **Replay a Session** | `useSessionReplayer.ts`, `useSessionManager.ts` |
-| **Manage Custom Traits** | `categorizationUtils.ts`, `TraitSettings.tsx`, `useSettingsStore.ts` |
+| **Manage Custom Traits** | `inlineActionModel.ts`, `TraitSettings.tsx`, `useSettingsStore.ts` |
 
 ## 🚫 Avoid Scanning (Use .geminiignore)
 - **Data/Logs:** Do NOT open `.txt`, `.xml`, `.mm2`, or large `.json` files in the root.

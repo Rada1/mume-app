@@ -20,45 +20,45 @@ const findEntityFor = (tokens: Token[], content: string): EntityToken | undefine
 
 describe('Tokenizer — char inline button assignment (GMCP source-of-truth contract)', () => {
     describe('GMCP type drives the inline category', () => {
-        it('emits inline-ally for type=ally', () => {
+        it('emits cat-ally for type=ally', () => {
             const tokens = Tokenizer.tokenize(
                 'Frodo arrives from the south.',
                 makeContext([{ id: '1', name: 'Frodo', type: 'ally' }])
             );
             const ent = findEntityFor(tokens, 'Frodo');
-            expect(ent?.metadata?.category).toBe('inline-ally');
+            expect(ent?.metadata?.category).toBe('cat-ally');
             expect(ent?.metadata?.kind).toBe('ally');
         });
 
-        it('emits inline-enemy for type=enemy', () => {
+        it('emits cat-enemy for type=enemy', () => {
             const tokens = Tokenizer.tokenize(
                 'Sauron stands here.',
                 makeContext([{ id: '2', name: 'Sauron', type: 'enemy' }])
             );
             const ent = findEntityFor(tokens, 'Sauron');
-            expect(ent?.metadata?.category).toBe('inline-enemy');
+            expect(ent?.metadata?.category).toBe('cat-enemy');
             expect(ent?.metadata?.kind).toBe('enemy');
             expect(ent?.metadata?.context).toBe('*Sauron*');
         });
 
-        it('emits inline-neutral for type=neutral', () => {
+        it('emits cat-neutral for type=neutral', () => {
             const tokens = Tokenizer.tokenize(
                 'Gollum hisses.',
                 makeContext([{ id: '3', name: 'Gollum', type: 'neutral' }])
             );
             const ent = findEntityFor(tokens, 'Gollum');
-            expect(ent?.metadata?.category).toBe('inline-neutral');
+            expect(ent?.metadata?.category).toBe('cat-neutral');
             expect(ent?.metadata?.kind).toBe('neutral');
             expect(ent?.metadata?.context).toBe('-Gollum-');
         });
 
-        it('emits inline-npc for type=npc', () => {
+        it('emits cat-npc for type=npc', () => {
             const tokens = Tokenizer.tokenize(
                 'A grimy orc snarls.',
                 makeContext([{ id: '4', name: 'orc', type: 'npc' }])
             );
             const ent = findEntityFor(tokens, 'orc');
-            expect(ent?.metadata?.category).toBe('inline-npc');
+            expect(ent?.metadata?.category).toBe('cat-npc');
             expect(ent?.metadata?.kind).toBe('npc');
         });
     });
@@ -216,7 +216,7 @@ describe('Tokenizer — char inline button assignment (GMCP source-of-truth cont
             );
             const ent = findEntityFor(tokens, 'a rusty sword');
             expect(ent).toBeDefined();
-            expect(ent?.metadata?.category).toBe('inline-obj-room');
+            expect(ent?.metadata?.category).toBe('cat-room-object');
         });
 
         it('does NOT emit object buttons for hit tags', () => {

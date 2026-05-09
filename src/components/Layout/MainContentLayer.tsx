@@ -23,7 +23,6 @@ interface MainContentLayerProps {
     setHeldButton: React.Dispatch<React.SetStateAction<any>>;
     mumeEditState: { isOpen: boolean; title: string; text: string; key: string };
     setMumeEditState: React.Dispatch<React.SetStateAction<{ isOpen: boolean; title: string; text: string; key: string }>>;
-    handleDragStart: (e: any, id: string, type: string) => void;
     wasDraggingRef: React.MutableRefObject<boolean>;
 }
 
@@ -39,7 +38,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     setHeldButton,
     mumeEditState,
     setMumeEditState,
-    handleDragStart,
     wasDraggingRef
 }) => {
     const { setStats, activePrompt, target } = useVitals() as any;
@@ -57,7 +55,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         roomDesc,
         handleLogClick,
         handleLogDoubleClick,
-        handleDragEnd,
         handleButtonClick,
         spatButtons,
         setSpatButtons,
@@ -168,7 +165,15 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             />
 
             <div className="message-log-wrapper" style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative', gap: '8px' }}>
-                <div className="message-log-container" ref={logContainerRef} style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+                <div 
+                    className="message-log-container" 
+                    ref={logContainerRef} 
+                    style={{ 
+                        flex: 1, 
+                        position: 'relative', 
+                        overflow: 'hidden'
+                    } as React.CSSProperties}
+                >
                     {isMobile && <Embers />}
                     {isNewbieMode && roomName && (
                         <div className={`sticky-room-header terrain-${String(currentTerrain || 'field').toLowerCase()}`} key="newbie-room-header">
@@ -189,8 +194,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         onMouseUp={handleMouseUp}
                         onPointerDown={handleLogPointerDown}
                         onPointerUp={handleLogPointerUp}
-                        onDragStart={handleDragStart as any}
-                        onDragEnd={handleDragEnd as any}
                     />
                 </div>
 

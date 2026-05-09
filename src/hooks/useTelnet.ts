@@ -38,7 +38,6 @@ export interface TelnetConfig {
         onGmcpGroup?: (data: any) => void;
         onGmcpOccupants?: (data: any) => void;
         onGmcpRoomChars?: (data: any) => void;
-        onGmcpRoomItems?: (data: any) => void;
         [key: string]: any;
     };
 }
@@ -67,7 +66,6 @@ export function useTelnet(config: TelnetConfig) {
             onRoomInfo: (val) => configRef.current.handlers.onRoomInfo?.(val),
             onRoomUpdateExits: (val) => configRef.current.handlers.onRoomUpdateExits?.(val),
             onRoomChars: (val) => configRef.current.handlers.onRoomChars?.(val),
-            onRoomItems: (val) => configRef.current.handlers.onRoomItems?.(val),
             onAddChar: (val) => configRef.current.handlers.onAddChar?.(val),
             onUpdateChar: (val) => configRef.current.handlers.onUpdateChar?.(val),
             onRemoveChar: (val) => configRef.current.handlers.onRemoveChar?.(val),
@@ -446,8 +444,6 @@ export function useTelnet(config: TelnetConfig) {
             if (handlers.onRoomPlayers) handlers.onRoomPlayers(parsed);
         } else if (isRoomCharsFullSet) {
             if (handlers.onRoomNpcs) handlers.onRoomNpcs(parsed);
-        } else if (pkg.startsWith('Room.Items') || pkg.startsWith('Room.Objects')) {
-            if (handlers.onRoomItems) handlers.onRoomItems(parsed);
         }
 
         // 2. Generic package routing for all other handlers

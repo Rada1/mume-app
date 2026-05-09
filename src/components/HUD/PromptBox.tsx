@@ -9,7 +9,7 @@ import './PromptBox.css';
 import { GameStats, CharacterInfo, CombatHealthStatus } from '../../types';
 import { useGame, useUI } from '../../context/GameContext';
 import { CombatSliderPopout } from '../Combat/CombatSliderPopout';
-import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
+import { getInlineGlowColor } from '../../utils/inlineActionModel';
 import { useActiveVitals, useActiveCombat, useActiveCharacter } from '../../stores/useActiveGameState';
 import { useModeStore } from '../../stores/useModeStore';
 import { TokenRenderer } from '../Messages/TokenRenderer';
@@ -355,8 +355,7 @@ const PromptBox: FC<PromptBoxProps> = ({
     // Dynamic color for opponent (NPC/Player/etc) to match log higlighter
     const opponentColor = React.useMemo(() => {
         if (!opponentName) return undefined;
-        const cat = getCategoryForName(opponentName, inlineCategories);
-        return getGlowColorForCategory(cat, inlineCategories) || undefined;
+        return getInlineGlowColor('cat-npc', inlineCategories, { npc: '#facc15' }) || undefined;
     }, [opponentName, inlineCategories]);
 
     const triggerNumbers = useCallback(() => {

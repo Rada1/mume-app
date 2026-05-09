@@ -58,7 +58,7 @@ export const buildPlayerLineTokens = (
     const after = text.substring(nameIdx + playerName.length);
     const entityId = `player:${playerName.toLowerCase()}`;
 
-    registerEntity?.(entityId, playerName, 'none', 'inline-ally');
+    registerEntity?.(entityId, playerName, 'none', 'cat-ally-remote');
 
     return [
         ...(before ? [{ type: 'text' as const, content: before }] : []),
@@ -68,7 +68,7 @@ export const buildPlayerLineTokens = (
             entityId,
             metadata: {
                 kind: 'player',
-                category: 'inline-ally',
+                category: 'cat-ally-remote',
                 context: playerName,
                 location: 'none',
                 action: 'menu'

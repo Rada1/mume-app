@@ -22,14 +22,30 @@ export type EntityKind =
     | 'none';
 
 export interface InlineCategoryConfig {
-    id: string;                  // canonical, always starts 'inline-'
+    id: string;                  // legacy category/trait id; migration accepts inline-*, cat-*, and trait-*
     kind: EntityKind;
     parent?: string;             // canonical ID of parent
     keywords: string[];
     color?: string;              // optional; defaults to kind's color
+    defaultTraitIds?: string[];   // migration bridge: category -> trait selections
     categoryType?: EntityKind | 'account' | 'target' | 'quest' | 'none'; // legacy support
-    buttonSetId?: string;        // The button set (menu) to display for this trait
+    buttonSetId?: string;        // legacy only: old button set alias for saved custom traits
     isGmcpCategory?: boolean;    // if true, driven by GMCP type field — hidden from the trait UI
+    isLocationCategory?: boolean; // if true, driven by item location (room/carried/worn) — shown as always-active, non-toggleable
+}
+
+export interface CategoryOverride {
+    id: string;
+    kind?: EntityKind;
+    color?: string;
+    defaultTraitIds?: string[];
+}
+
+export interface CustomTraitConfig {
+    id: string;
+    kind: EntityKind;
+    keywords: string[];
+    buttonIds?: string[];
 }
 
 export enum EntityCapability {

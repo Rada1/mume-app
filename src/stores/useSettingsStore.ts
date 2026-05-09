@@ -5,21 +5,20 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { UiMode, TeleportTarget, InlineCategoryConfig, ZoneMusicMapping } from '../types';
+import { UiMode, TeleportTarget, InlineCategoryConfig, ZoneMusicMapping, CategoryOverride, CustomTraitConfig } from '../types';
 import { canonicalizeCategoryId } from '../utils/categorizationUtils';
+import { getCategoryConfig, getTraitConfig, toCategoryId, toTraitId } from '../utils/inlineActionModel';
 import { DEFAULT_URL } from '../constants';
 
 interface SettingsState {
-    // Connection
     connectionUrl: string;
     autoConnect: boolean;
     loginName: string;
-    loginPassword?: string; // Optional for auto-login
-    
-    // Appearance
+    loginPassword?: string;
     theme: 'dark' | 'light';
     accentColor: string;
     bgImage: string | null;
+    bgImageBottom: string | null;
     fontFamily: string;
     uiMode: UiMode;
     isBloomEnabled: boolean;
@@ -31,8 +30,6 @@ interface SettingsState {
     neutralColor: string;
     targetColor: string;
     roomColor: string;
-    
-    // UI Behavior
     disableSmoothScroll: boolean;
     isImmersionMode: boolean;
     isTimestampEnabled: boolean;
@@ -41,27 +38,23 @@ interface SettingsState {
     showSpectatePromptInLog: boolean;
     showControls: boolean;
     showOrganicTerrain: boolean;
-    
-    // Game/Mechanics
     isSoundEnabled: boolean;
     isNewbieMode: boolean;
     isMmapperMode: boolean;
     autoSaveSessions: boolean;
     soundTriggers: import('../types').SoundTrigger[];
     teleportTargets: TeleportTarget[];
+    categoryOverrides: CategoryOverride[];
+    customTraits: CustomTraitConfig[];
     inlineCategories: InlineCategoryConfig[];
     favorites: string[];
     zoneMusic: ZoneMusicMapping[];
     masterVolume: number;
     sfxVolume: number;
     musicVolume: number;
-
-    // Mapper Context Settings
     allowMapPersistence: boolean;
     unveilMap: boolean;
     showMapperToolbar: boolean;
-    
-    // Actions
     setConnectionUrl: (val: string) => void;
     setLoginName: (val: string) => void;
     setLoginPassword: (val: string) => void;
@@ -69,6 +62,7 @@ interface SettingsState {
     setTheme: (val: 'dark' | 'light') => void;
     setAccentColor: (val: string) => void;
     setBgImage: (val: string | null) => void;
+    setBgImageBottom: (val: string | null) => void;
     setFontFamily: (val: string) => void;
     setUiMode: (val: UiMode) => void;
     setIsBloomEnabled: (val: boolean) => void;
@@ -94,6 +88,8 @@ interface SettingsState {
     setAutoSaveSessions: (val: boolean) => void;
     setSoundTriggers: (val: import('../types').SoundTrigger[]) => void;
     setTeleportTargets: (val: TeleportTarget[]) => void;
+    setCategoryOverrides: (val: CategoryOverride[] | ((prev: CategoryOverride[]) => CategoryOverride[])) => void;
+    setCustomTraits: (val: CustomTraitConfig[] | ((prev: CustomTraitConfig[]) => CustomTraitConfig[])) => void;
     setInlineCategories: (val: InlineCategoryConfig[] | ((prev: InlineCategoryConfig[]) => InlineCategoryConfig[])) => void;
     setFavorites: (val: string[] | ((prev: string[]) => string[])) => void;
     setZoneMusic: (val: ZoneMusicMapping[]) => void;
@@ -104,6 +100,72 @@ interface SettingsState {
     setUnveilMap: (val: boolean) => void;
     setShowMapperToolbar: (val: boolean) => void;
 }
+
+interface InlineActionBuckets {
+    categoryOverrides: CategoryOverride[];
+    customTraits: CustomTraitConfig[];
+}
+
+const splitInlineActionConfigs = (configs: InlineCategoryConfig[] = []): InlineActionBuckets => {
+    const categoryOverrides: CategoryOverride[] = [];
+    const customTraits: CustomTraitConfig[] = [];
+
+    configs.forEach(config => {
+        if (!config || typeof config !== 'object' || !config.id) return;
+        const categoryId = toCategoryId(config.id);
+        const traitId = toTraitId(config.id);
+        const defaultTraitIds = Array.isArray(config.defaultTraitIds)
+            ? config.defaultTraitIds.map(id => toTraitId(id) || id)
+            : undefined;
+
+        if (categoryId || defaultTraitIds || (!!config.color && !traitId && !config.id.startsWith('trait-'))) {
+            categoryOverrides.push({
+                id: categoryId || config.id,
+                kind: config.kind,
+                color: config.color,
+                defaultTraitIds
+            });
+            return;
+        }
+
+        customTraits.push({
+            id: traitId || (config.id.startsWith('trait-') ? config.id : `trait-${config.id.replace(/^inline-/, '')}`),
+            kind: config.kind || 'object',
+            keywords: config.keywords || [],
+            buttonIds: (config as InlineCategoryConfig & { buttonIds?: string[] }).buttonIds
+        });
+    });
+
+    return {
+        categoryOverrides: dedupeById(categoryOverrides),
+        customTraits: dedupeById(customTraits)
+    };
+};
+
+const combineInlineActionConfigs = (
+    categoryOverrides: CategoryOverride[] = [],
+    customTraits: CustomTraitConfig[] = []
+): InlineCategoryConfig[] => [
+    ...categoryOverrides.map(override => ({
+        id: toCategoryId(override.id) || override.id,
+        kind: override.kind || getCategoryConfig(override.id)?.kind || 'object',
+        keywords: [],
+        color: override.color,
+        defaultTraitIds: override.defaultTraitIds
+    })),
+    ...customTraits.map(trait => ({
+        id: toTraitId(trait.id) || trait.id,
+        kind: trait.kind || getTraitConfig(trait.id)?.kind || 'object',
+        keywords: trait.keywords || [],
+        buttonIds: trait.buttonIds
+    }))
+];
+
+const dedupeById = <T extends { id: string }>(items: T[]): T[] => {
+    const byId = new Map<string, T>();
+    items.forEach(item => byId.set(item.id, item));
+    return Array.from(byId.values());
+};
 
 export const useSettingsStore = create<SettingsState>()(
     persist(
@@ -117,6 +179,7 @@ export const useSettingsStore = create<SettingsState>()(
             theme: 'dark',
             accentColor: '#f48f3c',
             bgImage: null,
+            bgImageBottom: null,
             fontFamily: "'Space Mono', monospace",
             uiMode: 'auto',
             isBloomEnabled: true,
@@ -144,6 +207,8 @@ export const useSettingsStore = create<SettingsState>()(
             autoSaveSessions: false,
             soundTriggers: [],
             teleportTargets: [],
+            categoryOverrides: [],
+            customTraits: [],
             inlineCategories: [],
             favorites: [],
             zoneMusic: [],
@@ -163,6 +228,7 @@ export const useSettingsStore = create<SettingsState>()(
             setTheme: (theme) => set({ theme }),
             setAccentColor: (accentColor) => set({ accentColor }),
             setBgImage: (bgImage) => set({ bgImage }),
+            setBgImageBottom: (bgImageBottom) => set({ bgImageBottom }),
             setFontFamily: (fontFamily) => set({ fontFamily }),
             setUiMode: (uiMode) => set({ uiMode }),
             setIsBloomEnabled: (isBloomEnabled) => set({ isBloomEnabled }),
@@ -188,9 +254,29 @@ export const useSettingsStore = create<SettingsState>()(
             setAutoSaveSessions: (autoSaveSessions) => set({ autoSaveSessions }),
             setSoundTriggers: (soundTriggers) => set({ soundTriggers }),
             setTeleportTargets: (teleportTargets) => set({ teleportTargets }),
-            setInlineCategories: (val) => set((state) => ({ 
-                inlineCategories: typeof val === 'function' ? val(state.inlineCategories) : val 
-            })),
+            setCategoryOverrides: (val) => set((state) => {
+                const categoryOverrides = typeof val === 'function' ? val(state.categoryOverrides) : val;
+                return {
+                    categoryOverrides,
+                    inlineCategories: combineInlineActionConfigs(categoryOverrides, state.customTraits)
+                };
+            }),
+            setCustomTraits: (val) => set((state) => {
+                const customTraits = typeof val === 'function' ? val(state.customTraits) : val;
+                return {
+                    customTraits,
+                    inlineCategories: combineInlineActionConfigs(state.categoryOverrides, customTraits)
+                };
+            }),
+            setInlineCategories: (val) => set((state) => {
+                const inlineCategories = typeof val === 'function' ? val(state.inlineCategories) : val;
+                const { categoryOverrides, customTraits } = splitInlineActionConfigs(inlineCategories);
+                return {
+                    categoryOverrides,
+                    customTraits,
+                    inlineCategories: combineInlineActionConfigs(categoryOverrides, customTraits)
+                };
+            }),
             setFavorites: (val) => set((state) => ({ 
                 favorites: typeof val === 'function' ? val(state.favorites) : val 
             })),
@@ -204,7 +290,7 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 2,
+            version: 4,
             migrate: (persistedState: any, version: number) => {
                 if (version < 1) {
                     // Update category IDs to canonical format
@@ -227,8 +313,49 @@ export const useSettingsStore = create<SettingsState>()(
                         persistedState.zoneMusic = [];
                     }
                 }
+
+                if (version < 3) {
+                    if (persistedState.inlineCategories && Array.isArray(persistedState.inlineCategories)) {
+                        persistedState.inlineCategories = persistedState.inlineCategories.map((config: any) => {
+                            if (!config || typeof config !== 'object' || !config.id) return config;
+                            const categoryId = toCategoryId(config.id);
+                            const traitId = toTraitId(config.id);
+                            const defaultTraitIds = Array.isArray(config.defaultTraitIds)
+                                ? config.defaultTraitIds.map((id: string) => toTraitId(id) || id)
+                                : config.defaultTraitIds;
+
+                            return {
+                                ...config,
+                                id: categoryId || traitId || config.id,
+                                defaultTraitIds
+                            };
+                        });
+                    }
+                }
+
+                if (version < 4 || !persistedState.categoryOverrides || !persistedState.customTraits) {
+                    const split = splitInlineActionConfigs(persistedState.inlineCategories || []);
+                    persistedState.categoryOverrides = persistedState.categoryOverrides || split.categoryOverrides;
+                    persistedState.customTraits = persistedState.customTraits || split.customTraits;
+                    persistedState.inlineCategories = combineInlineActionConfigs(
+                        persistedState.categoryOverrides,
+                        persistedState.customTraits
+                    );
+                }
                 
                 return persistedState;
+            },
+            merge: (persistedState: any, currentState) => {
+                const merged = { ...currentState, ...(persistedState || {}) } as SettingsState;
+                merged.inlineCategories = combineInlineActionConfigs(
+                    merged.categoryOverrides || [],
+                    merged.customTraits || []
+                );
+                return merged;
+            },
+            partialize: (state) => {
+                const { inlineCategories: _inlineCategories, ...persisted } = state;
+                return persisted;
             }
         }
     )

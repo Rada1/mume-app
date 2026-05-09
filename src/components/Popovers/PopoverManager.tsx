@@ -1,5 +1,5 @@
 import React, { useLayoutEffect } from 'react';
-import { CustomButton, PopoverState, TeleportTarget, DrawerLine } from '../../types';
+import { CustomButton, CustomTraitConfig, PopoverState, TeleportTarget, DrawerLine } from '../../types';
 
 interface PopoverManagerProps {
     popoverState: PopoverState | null;
@@ -23,6 +23,8 @@ interface PopoverManagerProps {
     setSettings: Record<string, any>;
     inlineCategories: any[];
     setInlineCategories: React.Dispatch<React.SetStateAction<any[]>>;
+    customTraits: CustomTraitConfig[];
+    setCustomTraits: (val: CustomTraitConfig[] | ((prev: CustomTraitConfig[]) => CustomTraitConfig[])) => void;
     favorites: string[];
     setFavorites: React.Dispatch<React.SetStateAction<string[]>>;
     parley: any;
@@ -61,8 +63,8 @@ import { ContainerPopover } from './ContainerPopover';
 import { ContainerSelectPopover } from './ContainerSelectPopover';
 import { FloatingGroupCard } from '../HUD/FloatingGroupCard';
 import { HelpCard } from '../Utility/HelpCard';
-import { getHierarchyChain } from '../../utils/buttonHierarchyUtils';
-import { canonicalizeCategoryId, getCategoryForName, getGlowColorForCategory, resolveKindAndLocation, getButtonSetIdForCategory, getTraitConfigsForName } from '../../utils/categorizationUtils';
+import { canonicalizeCategoryId, resolveKindAndLocation } from '../../utils/categorizationUtils';
+import { getButtonIdsForTraits, getInlineGlowColor, getResolvedTraitSections, toCategoryId } from '../../utils/inlineActionModel';
 
 const formatDialCategoryLabel = (kind?: string, category?: string | null, setId?: string): string => {
     // Prefer the canonical category over the raw kind so we show "ALLY"/"ENEMY"/"NEUTRAL"
@@ -74,7 +76,7 @@ const formatDialCategoryLabel = (kind?: string, category?: string | null, setId?
 };
 
 export const PopoverManager: React.FC<PopoverManagerProps> = ({
-    popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, roomNpcs, roomItems, inventoryLines, eqLines, setSettings, inlineCategories, setInlineCategories, favorites, setFavorites, parley, setParley, whoList,
+    popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, roomNpcs, roomItems, inventoryLines, eqLines, setSettings, inlineCategories, setInlineCategories, customTraits, setCustomTraits, favorites, setFavorites, parley, setParley, whoList,
     isMendingMode, setIsMendingMode, setMendingTarget, handleTabClick, setGearTab, setPlayersTab, setCharTab, refreshLogHighlights, practice, shop, openKeywordEdit,
     entities, registerEntity, selectedObjectIds, clearObjectSelection, keywordOverrides, accountCharacters, accountState, setAccountState,
     playerColor, npcColor, objectColor, roomColor
@@ -242,31 +244,32 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     console.log('[PopoverManager] Current state:', { type: popoverState.type, setId: popoverState.setId, context: popoverState.context, direction: popoverState.direction });
 
     // Resolve themeColor: Always prioritize base Category colors (NPC, Player, etc) over Trait colors.
-    const detectedCatId = popoverState.category || (popoverState.context ? getCategoryForName(popoverState.context, inlineCategories || []) : popoverState.setId);
-    let themeColor = getGlowColorForCategory(
+    const detectedCatId = popoverState.category || popoverState.setId || popoverState.kind || null;
+    let themeColor = getInlineGlowColor(
         detectedCatId, 
         inlineCategories || [], 
         { player: playerColor, npc: npcColor, object: objectColor, room: roomColor }
     ) || popoverState.accentColor || undefined;
 
     if (popoverState.menuDisplay === 'dial') {
-        const detectedCatId = popoverState.category || (popoverState.context ? getCategoryForName(popoverState.context, inlineCategories || []) : null);
+        const detectedCatId = popoverState.category || popoverState.setId || popoverState.kind || null;
         const { kind, location } = resolveKindAndLocation(popoverState.kind, popoverState.location, popoverState.setId);
-        const categorySet = detectedCatId ? canonicalizeCategoryId(detectedCatId) : null;
-        const categoryConfig = categorySet ? (inlineCategories || []).find(cat => cat.id === categorySet) : null;
-        const traitConfigs = popoverState.context ? getTraitConfigsForName(popoverState.context, inlineCategories || []) : [];
-        const traitSets = traitConfigs.flatMap(trait => [trait.id, getButtonSetIdForCategory(trait)].filter(Boolean) as string[]);
+        const categorySet = detectedCatId ? (toCategoryId(detectedCatId) || canonicalizeCategoryId(detectedCatId)) : null;
+        const traitSections = getResolvedTraitSections(
+            categorySet || popoverState.setId || kind,
+            popoverState.context || null,
+            inlineCategories || []
+        );
+        const actionButtonIds = getButtonIdsForTraits(traitSections.map(section => section.trait));
         const setIdsChain = Array.from(new Set([
-            ...getHierarchyChain(kind, location),
             popoverState.setId,
-            categorySet,
-            getButtonSetIdForCategory(categoryConfig),
-            ...traitSets
+            categorySet || kind
         ].filter(Boolean) as string[]));
         
         return (
             <DialMenu
                 setId={setIdsChain}
+                actionButtonIds={actionButtonIds}
                 initialX={popoverState.initialPointerX ?? popoverState.x}
                 initialY={popoverState.initialPointerY ?? popoverState.y}
                 buttons={buttons}
@@ -389,7 +392,8 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     whoList={whoList}
                     executeCommand={executeCommand}
                     inlineCategories={inlineCategories}
-                    setInlineCategories={setInlineCategories}
+                    customTraits={customTraits}
+                    setCustomTraits={setCustomTraits}
                     isMendingMode={isMendingMode}
                     setIsMendingMode={setIsMendingMode}
                     setMendingTarget={setMendingTarget}

@@ -1,5 +1,5 @@
-import { GameStats, WeatherType, GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant, GmcpExitInfo, GmcpUpdateExits, GmcpRoomNpcs, GmcpCharInfo } from '../../types';
-import { isGmcpCharVitals, isGmcpRoomInfo, isGmcpRoomPlayers, isGmcpRoomItems, isGmcpExitInfoMap } from '../../utils/gmcpValidation';
+import { GameStats, WeatherType, GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpOccupant, GmcpExitInfo, GmcpUpdateExits, GmcpRoomNpcs, GmcpCharInfo } from '../../types';
+import { isGmcpCharVitals, isGmcpRoomInfo, isGmcpRoomPlayers, isGmcpExitInfoMap } from '../../utils/gmcpValidation';
 import { normalizeGmcpWeather } from '../weatherUtils';
 
 export interface GmcpHandlers {
@@ -14,7 +14,6 @@ export interface GmcpHandlers {
     onUpdateChar?: (data: any) => void;
     onRemoveChar?: (data: any) => void;
     onRoomChars?: (data: any) => void;
-    onRoomItems?: (data: GmcpRoomItems) => void;
     onRoomInfo?: (data: GmcpRoomInfo) => void;
     onRoomUpdateExits?: (data: GmcpUpdateExits) => void;
     onCharVitals?: (data: GmcpCharVitals) => void;
@@ -62,8 +61,6 @@ export class GmcpDecoder {
             this.handleSimpleJson(json, handlers.onUpdateChar);
         } else if (pkgLower === 'room.chars.remove' || pkgLower === 'room.char.remove' || pkgLower === 'room.players.remove' || pkgLower === 'room.npcs.remove' || pkgLower === 'room.removeplayer' || pkgLower === 'room.removenpc' || pkgLower === 'room.removechar') {
             this.handleSimpleJson(json, handlers.onRemoveChar);
-        } else if (pkgLower.startsWith('room.items') || pkgLower.startsWith('room.objects') || pkgLower === 'char.items' || pkgLower === 'char.inv' || pkgLower === 'room.items.list' || pkgLower === 'char.items.list' || pkgLower === 'room.items.set' || pkgLower === 'mume.client.inventory' || pkgLower === 'mume.client.equipment' || pkgLower === 'mume.client.roomitems') {
-            this.handleRoomItems(json);
         } else if (pkgLower === 'char.name') {
             this.handleCharName(json);
         } else if (pkgLower === 'char.status' || pkgLower === 'char.info' || pkgLower === 'char.statusvars') {
@@ -402,13 +399,6 @@ export class GmcpDecoder {
                 }
             }
         } catch (e) { }
-    }
-
-    private handleRoomItems(json: string) {
-        try {
-            const data = JSON.parse(json);
-            if (isGmcpRoomItems(data) && this.handlers.onRoomItems) this.handlers.onRoomItems(data);
-        } catch (e) { console.error('[GMCP] Parse error in Room.Items:', e, json); }
     }
 
     private handleSimpleJson(json: string, handler?: (data: any) => void) {

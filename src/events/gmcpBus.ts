@@ -3,7 +3,6 @@ import type {
     GmcpCharInfo,
     GmcpRoomInfo,
     GmcpUpdateExits,
-    GmcpRoomItems,
     GmcpOccupant,
     GmcpMumeEdit,
     MessageType,
@@ -21,7 +20,6 @@ export interface GmcpEventMap {
     'Room.AddChar': any;
     'Room.UpdateChar': any;
     'Room.RemoveChar': any;
-    'Room.Items': GmcpRoomItems;
     'Room.Chars.Combat': any[];
     'Room.Players': any[];
     'Room.Npcs': any[];

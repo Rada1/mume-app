@@ -46,8 +46,6 @@ export interface InteractionDeps {
         isDrawerPeeking: boolean;
     };
     setUI: React.Dispatch<React.SetStateAction<any>>;
-    setActiveDragData: (val: any) => void;
-    activeDragData: any;
     heldButton: any;
     heldButtonRef?: React.MutableRefObject<any>;
     setHeldButton: (val: any) => void;
@@ -74,14 +72,10 @@ export interface InteractionDeps {
 import { useButtonClicks } from './interactions/useButtonClicks';
 import { useGestures } from './interactions/useGestures';
 import { useLogTaps } from './interactions/useLogTaps';
-import { useLogDragAndDrop } from './interactions/useLogDragAndDrop';
-
 export const useInteractionHandlers = (deps: InteractionDeps) => {
     const { handleButtonClick } = useButtonClicks(deps);
     const { handleInputSwipe } = useGestures(deps);
     const { handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp } = useLogTaps(deps);
-    const { handleDragStart, handleDragEnd } = useLogDragAndDrop(deps);
-
 
     return {
         handleButtonClick,
@@ -90,7 +84,5 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         handleLogDoubleClick,
         handleLogPointerDown,
         handleLogPointerUp,
-        handleDragStart,
-        handleDragEnd
     };
 };

@@ -5,6 +5,7 @@ import { CircleHelp } from 'lucide-react';
 
 interface DialMenuProps {
     setId: string | string[];
+    actionButtonIds?: string[];
     initialX: number;
     initialY: number;
     buttons: CustomButton[];
@@ -21,6 +22,7 @@ interface DialMenuProps {
 
 export const DialMenu: React.FC<DialMenuProps> = ({
     setId,
+    actionButtonIds,
     initialX,
     initialY,
     buttons,
@@ -35,6 +37,19 @@ export const DialMenu: React.FC<DialMenuProps> = ({
     onTag
 }) => {
     const menuButtons = useMemo(() => {
+        if (actionButtonIds?.length) {
+            const buttonById = new Map(buttons.map(button => [button.id, button]));
+            const seenCommands = new Set<string>();
+            return actionButtonIds
+                .map(id => buttonById.get(id))
+                .filter((button): button is CustomButton => !!button && button.isVisible !== false)
+                .filter(button => {
+                    if (seenCommands.has(button.command)) return false;
+                    seenCommands.add(button.command);
+                    return true;
+                });
+        }
+
         const ids = Array.isArray(setId) ? setId : [setId];
         const seenCommands = new Set<string>();
         const result: CustomButton[] = [];
@@ -54,7 +69,7 @@ export const DialMenu: React.FC<DialMenuProps> = ({
             });
         });
         return result;
-    }, [buttons, setId]);
+    }, [actionButtonIds, buttons, setId]);
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const activeIndexRef = useRef<number | null>(null);
     const lastHapticIndex = useRef<number | null>(null);
@@ -234,7 +249,7 @@ export const DialMenu: React.FC<DialMenuProps> = ({
                                         onTag();
                                     }}
                                 >
-                                    TAG
+                                    TRAIT
                                 </button>
                             )}
                         </div>

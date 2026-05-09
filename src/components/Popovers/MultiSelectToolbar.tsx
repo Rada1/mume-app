@@ -22,7 +22,7 @@ export const MultiSelectToolbar: React.FC = () => {
 
     const commonActions = getCommonActions(
         selectedEntries,
-        'inline-obj-char',
+        'inline-inventory',
         {
             buttons: btn.buttons,
             inlineCategories,

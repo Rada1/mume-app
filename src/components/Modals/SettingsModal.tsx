@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Music, Cog, Activity, HelpCircle, Tag, Map } from 'lucide-react';
+import { X, Music, Cog, Activity, HelpCircle, Map } from 'lucide-react';
 import { useGame, useUI } from '../../context/GameContext';
 import GeneralSettings from '../Settings/GeneralSettings';
 import DataManagement from '../Settings/DataManagement';
@@ -8,15 +8,17 @@ import ActionSettings from '../Settings/ActionSettings';
 import ButtonSettings from '../Settings/ButtonSettings';
 import MapSettings from '../Settings/MapSettings';
 import HelpGuides from '../Settings/HelpGuides';
-import TraitSettings from '../Settings/TraitSettings';
-import { SoundTrigger, UiMode, InlineCategoryConfig } from '../../types';
+import { SoundTrigger, UiMode } from '../../types';
 
 interface SettingsModalProps {
     connectionUrl: string;
     setConnectionUrl: (val: string) => void;
     bgImage: string | null;
+    bgImageBottom?: string | null;
     setBgImage: (val: string | null) => void;
+    setBgImageBottom?: (val: string | null) => void;
     handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    handleBottomFileUpload?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     exportSettings: () => void;
     importSettings: (e: React.ChangeEvent<HTMLInputElement>) => void;
     isLoading: boolean;
@@ -43,35 +45,17 @@ interface SettingsModalProps {
     setDisableSmoothScroll: (val: boolean) => void;
     isImmersionMode: boolean;
     setIsImmersionMode: (val: boolean) => void;
-    isHighlighterEnabled: boolean;
-    setIsHighlighterEnabled: (val: boolean) => void;
-    objectColor: string;
-    setObjectColor: (val: string) => void;
-    playerColor: string;
-    setPlayerColor: (val: string) => void;
-    npcColor: string;
-    setNpcColor: (val: string) => void;
-    enemyColor: string;
-    setEnemyColor: (val: string) => void;
-    neutralColor: string;
-    setNeutralColor: (val: string) => void;
-    targetColor: string;
-    setTargetColor: (val: string) => void;
-    roomColor: string;
-    setRoomColor: (val: string) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
     isTimestampEnabled: boolean;
     setIsTimestampEnabled: (val: boolean) => void;
     fontFamily: string;
     setFontFamily: (val: string) => void;
-    isNewbieMode: boolean;
-    setIsNewbieMode: (val: boolean) => void;
     autoSaveSessions?: boolean;
     setAutoSaveSessions?: (val: boolean) => void;
     showSpectatePromptInLog?: boolean;
     setShowSpectatePromptInLog?: (val: boolean) => void;
-    
+
     // Button specific props
     isEditMode: boolean;
     setIsEditMode: (val: boolean) => void;
@@ -79,29 +63,20 @@ interface SettingsModalProps {
     setIsGridEnabled: (val: boolean) => void;
     createButton: () => void;
     setIsSetManagerOpen: (val: boolean) => void;
-    showLegacyButtons: boolean;
-    setShowLegacyButtons: (val: boolean) => void;
-    inlineCategories: InlineCategoryConfig[];
-    setInlineCategories: (val: InlineCategoryConfig[] | ((prev: InlineCategoryConfig[]) => InlineCategoryConfig[])) => void;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
-    connectionUrl, setConnectionUrl, bgImage, setBgImage, handleFileUpload,
-    exportSettings, importSettings, isLoading, newSoundPattern, setNewSoundPattern,
-    newSoundRegex, setNewSoundRegex, handleSoundUpload, soundTriggers, setSoundTriggers,
+    connectionUrl, setConnectionUrl, bgImage, setBgImage, bgImageBottom, setBgImageBottom, handleFileUpload, handleBottomFileUpload,
+    exportSettings, importSettings, isLoading,
+    newSoundPattern, setNewSoundPattern, newSoundRegex, setNewSoundRegex, handleSoundUpload, soundTriggers, setSoundTriggers,
     resetButtons, connect, loginName, setLoginName, loginPassword, setLoginPassword,
     autoConnect, setAutoConnect, showDebugEchoes, setShowDebugEchoes, uiMode, setUiMode,
     disableSmoothScroll, setDisableSmoothScroll, isImmersionMode, setIsImmersionMode,
-    isHighlighterEnabled, setIsHighlighterEnabled, objectColor, setObjectColor,
-    playerColor, setPlayerColor, npcColor, setNpcColor,
-    enemyColor, setEnemyColor, neutralColor, setNeutralColor, targetColor, setTargetColor, roomColor, setRoomColor,
     isBloomEnabled, setIsBloomEnabled,
     isTimestampEnabled, setIsTimestampEnabled, fontFamily, setFontFamily,
-    isNewbieMode, setIsNewbieMode,
     autoSaveSessions, setAutoSaveSessions, showSpectatePromptInLog, setShowSpectatePromptInLog,
     isEditMode, setIsEditMode, isGridEnabled, setIsGridEnabled, createButton,
-    setIsSetManagerOpen, showLegacyButtons, setShowLegacyButtons,
-    inlineCategories, setInlineCategories
+    setIsSetManagerOpen,
 }) => {
     const {
         isMmapperMode, setIsMmapperMode,
@@ -115,8 +90,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     const { setIsSettingsOpen, settingsTab, setSettingsTab } = useUI();
 
     return (
-        <div 
-            className="modal-overlay" 
+        <div
+            className="modal-overlay"
             onClick={(e) => {
                 if (e.target === e.currentTarget) {
                     setIsSettingsOpen(false);
@@ -147,9 +122,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                     <div className={`modal-tab ${settingsTab === 'map' ? 'active' : ''}`} onClick={() => setSettingsTab('map')}>
                         <Map size={16} /> <span>Map</span>
                     </div>
-                    <div className={`modal-tab ${settingsTab === 'traits' ? 'active' : ''}`} onClick={() => setSettingsTab('traits')}>
-                        <Tag size={16} /> <span>Traits</span>
-                    </div>
                     <div className={`modal-tab ${settingsTab === 'help' ? 'active' : ''}`} onClick={() => setSettingsTab('help')}>
                         <HelpCircle size={16} /> <span>Help & Guides</span>
                     </div>
@@ -177,45 +149,28 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setShowDebugEchoes={setShowDebugEchoes}
                                 bgImage={bgImage}
                                 setBgImage={setBgImage}
+                                bgImageBottom={bgImageBottom}
+                                setBgImageBottom={setBgImageBottom}
                                 handleFileUpload={handleFileUpload}
+                                handleBottomFileUpload={handleBottomFileUpload}
                                 uiMode={uiMode}
                                 setUiMode={setUiMode}
                                 disableSmoothScroll={disableSmoothScroll}
                                 setDisableSmoothScroll={setDisableSmoothScroll}
                                 isImmersionMode={isImmersionMode}
                                 setIsImmersionMode={setIsImmersionMode}
-                                isHighlighterEnabled={isHighlighterEnabled}
-                                setIsHighlighterEnabled={setIsHighlighterEnabled}
-                                objectColor={objectColor}
-                                setObjectColor={setObjectColor}
-                                playerColor={playerColor}
-                                setPlayerColor={setPlayerColor}
-                                npcColor={npcColor}
-                                setNpcColor={setNpcColor}
-                                enemyColor={enemyColor}
-                                setEnemyColor={setEnemyColor}
-                                neutralColor={neutralColor}
-                                setNeutralColor={setNeutralColor}
-                                targetColor={targetColor}
-                                setTargetColor={setTargetColor}
-                                roomColor={roomColor}
-                                setRoomColor={setRoomColor}
                                 isBloomEnabled={isBloomEnabled}
                                 setIsBloomEnabled={setIsBloomEnabled}
                                 isTimestampEnabled={isTimestampEnabled}
                                 setIsTimestampEnabled={setIsTimestampEnabled}
-                                isNewbieMode={isNewbieMode}
-                                setIsNewbieMode={setIsNewbieMode}
                                 fontFamily={fontFamily}
                                 setFontFamily={setFontFamily}
                                 logFontSize={viewport.logFontSize}
                                 setLogFontSize={viewport.setLogFontSize}
-                                autoSaveSessions={autoSaveSessions}
-                                setAutoSaveSessions={setAutoSaveSessions}
-                                showSpectatePromptInLog={showSpectatePromptInLog}
-                                setShowSpectatePromptInLog={setShowSpectatePromptInLog}
-                                inlineCategories={inlineCategories}
-                                setInlineCategories={setInlineCategories}
+                                autoSaveSessions={autoSaveSessions ?? false}
+                                setAutoSaveSessions={setAutoSaveSessions ?? (() => {})}
+                                showSpectatePromptInLog={showSpectatePromptInLog ?? false}
+                                setShowSpectatePromptInLog={setShowSpectatePromptInLog ?? (() => {})}
                             />
                             <DataManagement
                                 exportSettings={exportSettings}
@@ -260,13 +215,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
                     {settingsTab === 'map' && (
                         <MapSettings />
-                    )}
-
-                    {settingsTab === 'traits' && (
-                        <TraitSettings 
-                            inlineCategories={inlineCategories}
-                            setInlineCategories={setInlineCategories}
-                        />
                     )}
 
                     {settingsTab === 'help' && (

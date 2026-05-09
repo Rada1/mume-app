@@ -7,7 +7,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    background: transparent !important;
+    background-color: transparent !important;
     border: none !important;
     box-shadow: none !important;
     margin: 0;
@@ -15,7 +15,7 @@
 }
 
 .newbie-mode .message-log-container {
-    background: transparent !important;
+    background-color: transparent !important;
     border-radius: 0;
     margin: 0;
     border: none !important;

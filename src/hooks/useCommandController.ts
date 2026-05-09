@@ -36,7 +36,7 @@ export interface CommandControllerDeps {
     setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
     setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     setIsSettingsOpen: (open: boolean) => void;
-    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'help' | 'buttons' | 'traits') => void;
+    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'help' | 'buttons' | 'map') => void;
     setIsMapExpanded: (open: boolean) => void;
     setUI: React.Dispatch<React.SetStateAction<any>>;
     viewport: any;
@@ -52,8 +52,6 @@ export interface CommandControllerDeps {
     };
     actions: import('../types').GameAction[];
     setActions: (val: import('../types').GameAction[] | ((prev: import('../types').GameAction[]) => import('../types').GameAction[])) => void;
-    setActiveDragData: (val: any) => void;
-    activeDragData: any;
     practice: any;
     heldButton: any;
     setHeldButton: (val: any) => void;
@@ -231,7 +229,7 @@ export function useCommandController(deps: CommandControllerDeps) {
 
     useNumpadControls(executeCommand);
 
-    const { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd } = useInteractionHandlers({
+    const { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp } = useInteractionHandlers({
         ...deps, executeCommand, input, ui: deps.ui, parley: deps.parley, setParley: deps.setParley,
         isTrackpadModifierActive: deps.isTrackpadModifierActive,
         handleTabClick: deps.handleTabClick,
@@ -274,5 +272,5 @@ export function useCommandController(deps: CommandControllerDeps) {
 
     }, [input, executeCommand, viewport, setInput, deps.mapperRef, deps.parley]);
 
-    return { executeCommand, handleButtonClick, handleInputSwipe, handleSend, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd };
+    return { executeCommand, handleButtonClick, handleInputSwipe, handleSend, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp };
 }

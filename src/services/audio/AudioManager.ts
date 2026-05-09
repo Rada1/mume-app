@@ -530,7 +530,7 @@ export class AudioManager {
     }
 
     public stopIncantation(playExplosion: boolean = false) {
-        if (playExplosion) this.playEffect('magicexplosion', { volume: 1.5 });
+        // if (playExplosion) this.playEffect('magicexplosion', { volume: 1.5 });
         const active = this.activeAmbients.get('incantation');
         if (active) {
             this.fadeOutAndStop(active.source, active.gain, active.filter, 0.1);

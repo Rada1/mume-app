@@ -277,11 +277,9 @@ const MudClient = () => {
                         commandPreview={commandPreview}
                         setCommandPreview={setCommandPreview}
                         heldButton={heldButton}
-                        heldButtonRef={heldButtonRef}
                         setHeldButton={setHeldButton}
                         mumeEditState={mumeEditState}
                         setMumeEditState={setMumeEditState}
-                        handleDragStart={handleDragStart}
                         wasDraggingRef={wasDraggingRef}
                     />
                 </ErrorBoundary>

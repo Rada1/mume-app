@@ -122,7 +122,9 @@ export const useAudioEffects = () => {
         }
     }, [playEffect]);
 
-    const playMagicExplosionSound = useCallback((options?: { volume?: number }) => playEffect('magicexplosion', { ...options, volume: options?.volume || 1.5 }), [playEffect]);
+    const playMagicExplosionSound = useCallback((options?: { volume?: number }) => {
+        // playEffect('magicexplosion', { ...options, volume: options?.volume || 1.5 })
+    }, [playEffect]);
     const playIncantationSound = useCallback(() => audioManager.playIncantation(), []);
     const stopIncantationSound = useCallback((playExplosion: boolean = false) => audioManager.stopIncantation(playExplosion), []);
 

@@ -123,6 +123,67 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         e.target.value = '';
     }, [settingsStore]);
 
+    const handleBottomFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            const dataUrl = typeof reader.result === 'string' ? reader.result : null;
+            if (!dataUrl) return;
+
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) return;
+
+                ctx.drawImage(img, 0, 0);
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+
+                // Chroma key: make near-white pixels transparent; flatten everything else to pure black
+                // Preserve "glowing" pixels (high saturation/color, e.g. the green glowing eyes)
+                const whiteThreshold = 220;
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+
+                    if (r > whiteThreshold && g > whiteThreshold && b > whiteThreshold) {
+                        // Near-white → transparent
+                        data[i + 3] = 0;
+                    } else {
+                        // Check if this is a "glowing" colored pixel (e.g. green eyes)
+                        const max = Math.max(r, g, b);
+                        const min = Math.min(r, g, b);
+                        const saturation = max > 0 ? (max - min) / max : 0;
+                        const isGlowing = saturation > 0.4 && max > 80;
+
+                        if (isGlowing) {
+                            // Keep original glowing color
+                        } else {
+                            // Force to pure black silhouette
+                            data[i] = 0;
+                            data[i + 1] = 0;
+                            data[i + 2] = 0;
+                            data[i + 3] = 255;
+                        }
+                    }
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+                const result = canvas.toDataURL('image/png');
+                settingsStore.setBgImageBottom(result);
+            };
+            img.src = dataUrl;
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+    }, [settingsStore]);
+
     // 3. Logic Hooks
     const env = useEnvironment({
         lighting: s.lighting || 'none', setLighting: s.setLighting,
@@ -275,7 +336,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         else if (isRoomCharRemove) h.onRemoveChar?.(parsed);
         else if (pkg.startsWith('Room.Players') && isRoomCharsFullSet) h.onRoomPlayers?.(parsed);
         else if (isRoomCharsFullSet) h.onRoomNpcs?.(parsed);
-        else if (pkg.startsWith('Room.Items') || pkg.startsWith('Room.Objects')) h.onRoomItems?.(parsed);
 
         // Generic routing for remaining packages (Char.Ride, Mume.MumeEdit, etc.)
         const parts = pkg.split('.');
@@ -803,8 +863,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsSettingsOpen: ui.setIsSettingsOpen, setSettingsTab: ui.setSettingsTab,
         setIsMapExpanded: s.setIsMapExpanded, setUI: s.setUI as any, viewport, triggerHaptic,
         btn, joystick, wasDraggingRef: { current: false }, ui: s.ui as any,
-        actions: s.actions, setActions: s.setActions, setActiveDragData: s.setActiveDragData,
-        activeDragData: s.activeDragData, practice, heldButton: v.heldButton,
+        actions: s.actions, setActions: s.setActions, practice, heldButton: v.heldButton,
         setHeldButton: v.setHeldButton, parley: s.parley, setParley: s.setParley,
         isTrackpadModifierActive: s.isTrackpadModifierActive, shop,
         keywordOverrides: keywordOverrides.overrides, openKeywordEdit, lastCommandContextRef: { current: null },
@@ -891,8 +950,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         triggerSpitManual,
         diagnosticLogs: ui.diagnosticLogs,
         addDiagnosticLog: ui.addDiagnosticLog,
-        activeDragData: s.activeDragData,
-        setActiveDragData: s.setActiveDragData,
         selectedObjectIds: s.selectedObjectIds,
         toggleObjectSelection: s.toggleObjectSelection,
         clearObjectSelection: s.clearObjectSelection,
@@ -900,16 +957,17 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         gameTime: s.gameTime,
         setGameTime: s.setGameTime,
         bgImage: settingsStore.bgImage,
+        bgImageBottom: settingsStore.bgImageBottom,
         setBgImage: settingsStore.setBgImage,
+        setBgImageBottom: settingsStore.setBgImageBottom,
         practice,
         help,
         shop,
         quests,
         keywordOverrides: keywordOverrides.overrides,
-        draggedTarget: s.draggedTarget,
-        setDraggedTarget: s.setDraggedTarget,
         containerRef: { current: null },
         handleFileUpload,
+        handleBottomFileUpload,
         exportSettings: () => ({}),
         exportSettingsFile: () => {},
         importSettings: () => {},

@@ -140,8 +140,8 @@ export interface UIContextType {
     setIsSettingsOpen: (val: boolean) => void;
     isLibraryOpen: boolean;
     setIsLibraryOpen: (val: boolean) => void;
-    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'traits';
-    setSettingsTab: (val: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'traits') => void;
+    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help';
+    setSettingsTab: (val: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help') => void;
     setIsMapExpanded: (open: boolean) => void;
     setIsSetManagerOpen: (open: boolean) => void;
     setManagerSelectedSet: (setId: string | null) => void;
@@ -369,6 +369,7 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     setShowControls: (val: boolean) => void;
     isPasswordMode: boolean;
     spectateCharacterName: string | null;
+    spectateTerrain: string;
     showLegacyButtons: boolean;
     setShowLegacyButtons: (val: boolean) => void;
     showOrganicTerrain: boolean;
@@ -459,7 +460,9 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
 
     // Settings
     bgImage: string | null;
+    bgImageBottom: string | null;
     setBgImage: (val: string | null) => void;
+    setBgImageBottom: (val: string | null) => void;
     connectionUrl: string;
     setConnectionUrl: Dispatch<SetStateAction<string>>;
     loginName: string;
@@ -476,6 +479,8 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     newSoundRegex: boolean;
     setNewSoundRegex: Dispatch<SetStateAction<boolean>>;
     handleFileUpload: (e: ChangeEvent<HTMLInputElement>) => void;
+    handleBottomFileUpload: (e: ChangeEvent<HTMLInputElement>) => void;
+
     exportSettings: () => Record<string, unknown>;
     exportSettingsFile: (buttons: CustomButton[]) => void;
     importSettings: (e: ChangeEvent<HTMLInputElement>, setIsSettingsOpen: (v: boolean) => void) => void;
@@ -492,8 +497,6 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     handleLogDoubleClick: (e: MouseEvent) => void;
     handleLogPointerDown: (e: React.PointerEvent) => void;
     handleLogPointerUp: (e: React.PointerEvent) => void;
-    handleDragStart: (e: React.DragEvent) => void;
-    handleDragEnd: (e: React.DragEvent) => void;
     mapperRef: RefObject<MapperRef>;
 
     // Parser State
@@ -539,17 +542,12 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     setSettings: Record<string, import('../../types').ButtonSetSettings>;
     setSetSettings: Dispatch<SetStateAction<Record<string, import('../../types').ButtonSetSettings>>>;
 
-    draggedTarget: { name: string; type: string; x: number; y: number } | null;
-    setDraggedTarget: Dispatch<SetStateAction<{ name: string; type: string; x: number; y: number } | null>>;
-
     spatButtons: SpatButton[];
     setSpatButtons: Dispatch<SetStateAction<SpatButton[]>>;
     triggerSpitManual: (b: CustomButton) => void;
 
     diagnosticLogs: string[];
     addDiagnosticLog: (msg: string) => void;
-    activeDragData: unknown;
-    setActiveDragData: Dispatch<SetStateAction<unknown>>;
 
     // Selection State
     selectedObjectIds: Set<string>;

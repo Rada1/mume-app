@@ -1,8 +1,9 @@
 import React from 'react';
 import { Token, EntityToken, AnsiToken } from '../../types';
-import { useVitals } from '../../context/GameContext';
+import { useVitals, useBaseGame } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { COLOR_PLAYER, COLOR_NPC, COLOR_OBJ, COLOR_ROOM, COLOR_ENEMY, COLOR_NEUTRAL } from '../../utils/categorizationUtils';
+import { getCategoryColorWithOverrides } from '../../utils/inlineActionModel';
 import { extractMumeKeyword } from '../../utils/gameUtils';
 
 import { MessageType } from '../../types';
@@ -43,6 +44,12 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
 }) => {
     const { target } = useVitals();
     const settings = useSettingsStore();
+    const { inlineCategories } = useBaseGame();
+
+    const getCategoryColorOverride = (categoryId: string | undefined): string | undefined => {
+        if (!categoryId) return undefined;
+        return getCategoryColorWithOverrides(categoryId, inlineCategories, '') || undefined;
+    };
 
     if (!tokens || tokens.length === 0) {
         if (!fallbackHtml) return null;
@@ -153,12 +160,17 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                         if (propMetadata?.action || e.metadata?.action) props['data-action'] = propMetadata?.action || e.metadata?.action;
                     }
 
-                    // Apply category colors from settings - PRIORITY: Kind (Category) Master > Trait
+                    // Apply category colors from settings - per-category override > global kind color > token metadata.
                     let style: React.CSSProperties = { ...(e.metadata?.style || {}) };
                     const kind = propMetadata?.kind || e.metadata?.kind;
-                    
-                    let categoryColor = null;
-                    if (kind === 'target') categoryColor = settings.targetColor || '#facc15';
+                    const tokenCategoryId = propMetadata?.category || e.metadata?.category;
+
+                    const perCategoryOverride = getCategoryColorOverride(tokenCategoryId);
+
+                    let categoryColor: string | null = null;
+                    if (perCategoryOverride) {
+                        categoryColor = perCategoryOverride;
+                    } else if (kind === 'target') categoryColor = settings.targetColor || '#facc15';
                     else if (kind === 'player' || kind === 'ally') categoryColor = settings.playerColor || COLOR_PLAYER;
                     else if (kind === 'enemy') categoryColor = settings.enemyColor || COLOR_ENEMY;
                     else if (kind === 'neutral') categoryColor = settings.neutralColor || COLOR_NEUTRAL;
@@ -166,9 +178,8 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                     else if (kind === 'object') categoryColor = settings.objectColor || COLOR_OBJ;
                     else if (kind === 'room') categoryColor = settings.roomColor || COLOR_ROOM;
 
-                    // Only use metadata-provided colors (Traits) if the Kind itself doesn't have a color
                     if (!categoryColor) {
-                        categoryColor = e.metadata?.glowColor || e.metadata?.color;
+                        categoryColor = e.metadata?.glowColor || e.metadata?.color || null;
                     }
                     
                     if (categoryColor) {

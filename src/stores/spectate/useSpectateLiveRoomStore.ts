@@ -52,7 +52,3 @@ gmcpBus.on('Room.Chars', (data) => {
     getSpectateLiveRoom().setChars(data as Record<number, GmcpOccupant>);
 });
 
-gmcpBus.on('Room.Items', (data) => {
-    if (!isSnooped(data)) return;
-    getSpectateLiveRoom().applyItemsUpdate(data as GmcpOccupant[]);
-});

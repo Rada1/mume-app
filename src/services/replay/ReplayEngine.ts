@@ -83,8 +83,6 @@ export class ReplayEngine {
                     useReplayRoomStore.getState().loadSnapshot({ players: data } as any);
                 } else if (namespace === 'Room.Npcs') {
                     useReplayRoomStore.getState().loadSnapshot({ npcs: data } as any);
-                } else if (namespace === 'Room.Items') {
-                    useReplayRoomStore.getState().loadSnapshot({ items: data } as any);
                 } else if (namespace === 'Group.Members') {
                     if (Array.isArray(data)) {
                         useReplayCombatStore.getState().loadSnapshot({ groupMembers: data } as any);
