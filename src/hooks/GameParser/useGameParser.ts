@@ -69,6 +69,15 @@ const extractXmlRoomInfo = (line: string): { num: number; area?: string; terrain
 
 const stripAnsiCodes = (text: string) => text.replace(/\x1b\[[0-9;]*m/g, '');
 const SNOOP_PREFIX_REGEX = /^((?:\x1b\[[0-9;]*m|\s)*)(?:&amp;|&|mp;)[A-Za-z](?:\s|$)/;
+const COMM_XML_OPEN_REGEX = /<(tell|say|narrate|shout|yell|song|sing|pray|whisper)(?:\s+[^>]*)?>/i;
+
+const getUnclosedCommXmlTag = (text: string): string | null => {
+    const match = text.match(COMM_XML_OPEN_REGEX);
+    if (!match) return null;
+    const tag = match[1].toLowerCase();
+    const closeRegex = new RegExp(`<\\/${tag}>`, 'i');
+    return closeRegex.test(text.slice(match.index || 0)) ? null : tag;
+};
 
 const isPromptBoundaryLine = (text: string): boolean => {
     const clean = stripAnsiCodes(text).trim();
@@ -205,6 +214,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     const { registerEntity, extractNoun } = useEntityRegistry();
     const nearbyCaptureRef = useRef<{ active: boolean; lines: DrawerLine[] }>({ active: false, lines: [] });
     const shopCaptureRef = useRef<{ active: boolean; items: import('../../types').ShopItem[] }>({ active: false, items: [] });
+    const pendingCommXmlRef = useRef<{ tag: string; line: string; isSnoop: boolean } | null>(null);
     const finalizeNearbyCapture = useCallback(() => {
         if (!nearbyCaptureRef.current.active) return;
         setWhereLines([...nearbyCaptureRef.current.lines]);
@@ -433,6 +443,24 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
                     .replace(/&lt;/gi, '<')
                     .replace(/&amp;/gi, '&')
                     .trim();
+            }
+        }
+
+        const pendingCommXml = pendingCommXmlRef.current;
+        if (pendingCommXml) {
+            lineToParse = `${pendingCommXml.line} ${lineToParse.trimStart()}`;
+            isSnoop = pendingCommXml.isSnoop;
+            const closeRegex = new RegExp(`<\\/${pendingCommXml.tag}>`, 'i');
+            if (!closeRegex.test(lineToParse)) {
+                pendingCommXmlRef.current = { ...pendingCommXml, line: lineToParse };
+                return;
+            }
+            pendingCommXmlRef.current = null;
+        } else {
+            const unclosedCommTag = getUnclosedCommXmlTag(lineToParse);
+            if (unclosedCommTag) {
+                pendingCommXmlRef.current = { tag: unclosedCommTag, line: lineToParse, isSnoop };
+                return;
             }
         }
 
