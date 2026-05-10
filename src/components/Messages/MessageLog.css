@@ -564,8 +564,7 @@
 
 .message.recent-entry .message-content,
 .message.recent-entry .user-command-bubble,
-.message.recent-entry .snoop-command-bubble,
-.message.recent-entry .comm-bubble {
+.message.recent-entry .snoop-command-bubble {
     -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 36%, rgba(0, 0, 0, 0.35) 52%, transparent 68%);
     mask-image: linear-gradient(90deg, #000 0%, #000 36%, rgba(0, 0, 0, 0.35) 52%, transparent 68%);
     -webkit-mask-size: 400% 100%;
@@ -590,8 +589,7 @@
 @media (prefers-reduced-motion: reduce) {
     .message.recent-entry .message-content,
     .message.recent-entry .user-command-bubble,
-    .message.recent-entry .snoop-command-bubble,
-    .message.recent-entry .comm-bubble {
+    .message.recent-entry .snoop-command-bubble {
         -webkit-mask-image: none;
         mask-image: none;
         animation: none !important;
