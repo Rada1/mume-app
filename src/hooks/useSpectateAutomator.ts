@@ -24,7 +24,7 @@ interface SpectateAutomatorDeps {
     resetSpectateContext?: () => void;
 }
 
-const SNOOP_ROTATION_MS = 10 * 60 * 1000; // 10 minutes
+const SNOOP_ROTATION_MS = 5 * 60 * 1000; // 5 minutes
 
 export function useSpectateAutomator(deps: SpectateAutomatorDeps) {
     const {
@@ -155,7 +155,7 @@ export function useSpectateAutomator(deps: SpectateAutomatorDeps) {
                 return updated;
             }
         });
-    }, [spectateCharacterName, addSystemMessage, snoopPlayer, setSpectateQueue, isSpectateMode, lastSnoopStartTime, executeCommand]);
+    }, [spectateCharacterName, addSystemMessage, snoopPlayer, setSpectateQueue, isSpectateMode, lastSnoopStartTime, executeCommand, rotateQueue]);
 
     // Rotation Timer
     useEffect(() => {
@@ -171,7 +171,7 @@ export function useSpectateAutomator(deps: SpectateAutomatorDeps) {
 
         timerRef.current = setTimeout(() => {
             if (spectateQueue.length > 0) {
-                addSystemMessage(`Automator: 10 minutes elapsed. Rotating to next player.`);
+                addSystemMessage(`Automator: 5 minutes elapsed. Rotating to next player.`);
                 rotateQueue(true);
             } else {
                 // If queue empty, keep snooping but DO NOT reset timer.

@@ -31,7 +31,7 @@ export const useModeStore = create<ModeState>((set) => ({
 
     setMode: (mode) => set({ mode }),
     setIsSpectating: (val) => set({ isSpectating: val }),
-    startSpectate: (target) => set({ isSpectating: true, spectateTarget: target, activeView: 'target' }),
+    startSpectate: (target) => set({ isSpectating: true, spectateTarget: target, lastSnoopStartTime: Date.now(), activeView: 'target' }),
     stopSpectate: () => set({ isSpectating: false, spectateTarget: null, spectateQueue: [], lastSnoopStartTime: null, activeView: 'self' }),
     setActiveCharacter: (name) => set({ activeCharacter: name }),
     setSpectateQueue: (update) => set((state) => ({ 

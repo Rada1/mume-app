@@ -9,11 +9,19 @@ import { useModeStore } from '../../../stores/useModeStore';
 import { ChevronRight, List, Timer, User, X } from 'lucide-react';
 import './SpectateQueueHUD.css';
 
-const SNOOP_ROTATION_MS = 10 * 60 * 1000;
+const SNOOP_ROTATION_MS = 5 * 60 * 1000;
 
 export const SpectateQueueHUD: React.FC = () => {
     const { removeFromQueue, rotateQueue } = useGame();
     const { isSpectating, spectateTarget, spectateQueue, lastSnoopStartTime } = useModeStore();
+    const [now, setNow] = React.useState(() => Date.now());
+
+    React.useEffect(() => {
+        if (!isSpectating || !lastSnoopStartTime) return;
+        setNow(Date.now());
+        const interval = window.setInterval(() => setNow(Date.now()), 1000);
+        return () => window.clearInterval(interval);
+    }, [isSpectating, lastSnoopStartTime]);
 
     if (!isSpectating) return null;
 
@@ -22,7 +30,7 @@ export const SpectateQueueHUD: React.FC = () => {
     if (queue.length === 0 && (!spectateCharacterName || spectateCharacterName === 'None')) return null;
 
     const remainingMs = lastSnoopStartTime 
-        ? Math.max(0, SNOOP_ROTATION_MS - (Date.now() - lastSnoopStartTime))
+        ? Math.max(0, SNOOP_ROTATION_MS - (now - lastSnoopStartTime))
         : 0;
     
     const mins = Math.floor(remainingMs / 60000);
@@ -36,8 +44,14 @@ export const SpectateQueueHUD: React.FC = () => {
     return (
         <div className="spectate-queue-hud">
             <div className="spectate-hud-header">
-                <Timer size={14} className="hud-icon" />
-                <span className="hud-timer">{timerStr}</span>
+                <div className="spectate-hud-title">
+                    <List size={13} className="hud-icon" />
+                    <span>Spectate Queue</span>
+                </div>
+                <div className="spectate-hud-timer">
+                    <Timer size={13} className="hud-icon" />
+                    <span className="hud-timer">{timerStr}</span>
+                </div>
             </div>
             
             <div className="spectate-hud-current">
@@ -78,7 +92,7 @@ export const SpectateQueueHUD: React.FC = () => {
             {queue.length > 0 && (
                 <div className="spectate-hud-list">
                     <div className="hud-list-header">
-                        <List size={16} className="hud-icon" />
+                        <ChevronRight size={14} className="hud-icon" />
                         <span>NEXT IN QUEUE</span>
                     </div>
                     {queue.map((name, i) => (
