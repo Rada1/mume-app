@@ -27,6 +27,7 @@ import { PipelineOrchestrator } from '../../services/parser/PipelineOrchestrator
 import { Tokenizer } from '../../services/parser/Tokenizer';
 import { useActionTracker } from './useActionTracker';
 import { buildPlayerLineTokens } from './playerLineTokens';
+import { useUIStore } from '../../stores/useUIStore';
 
 const decodeTextEntities = (text: string) => text
     .replace(/&gt;/gi, '>')
@@ -100,13 +101,14 @@ const isWhereTableLine = (text: string): boolean => {
 
 const createWhereLine = (rawText: string, ansiConvert: any): DrawerLine => {
     const text = stripInlineMarkup(rawText).trimEnd();
+    const isHeader = /^player\s+distance\s+direction\s+room$/i.test(text.trim()) || /^-{5,}$/.test(text.trim());
     return {
         id: `where-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         text: text.trim(),
         rawText,
         html: ansiConvert.toHtml(text),
-        tokens: [{ type: 'text', content: text }],
-        isHeader: /^player\s+distance\s+direction\s+room$/i.test(text.trim()) || /^-{5,}$/.test(text.trim()),
+        tokens: isHeader ? [{ type: 'text', content: text }] : (buildPlayerLineTokens(text) || [{ type: 'text', content: text }]),
+        isHeader,
         isItem: false
     };
 };
@@ -168,7 +170,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         setRoomName, setRoomDesc, setRoomZone, setCurrentTerrain, setInCombat, 
         setPlayerPosition, setWeather, setIsFoggy, setLightningEnabled, 
         setInventoryLines: sessionSetInventoryLines, setStatsLines: sessionSetStatsLines, 
-        setInfoLines, setScoreLines: sessionSetScoreLines, setQuestLines, 
+        setInfoLines, setScoreLines: sessionSetScoreLines, setQuestLines, setAchievementLines,
         setPracticeLines: sessionSetPracticeLines, setWhoLines, setWhereLines, 
         setEqLines: sessionSetEqLines, setRoomExits, setGameTime 
     } = session.game as any;
@@ -191,6 +193,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     const { finalizeQuests } = useQuestsHandler(setQuests, deps.quests.activeQuests);
     const { registerEntity, extractNoun } = useEntityRegistry();
     const nearbyCaptureRef = useRef<{ active: boolean; lines: DrawerLine[] }>({ active: false, lines: [] });
+    const shopCaptureRef = useRef<{ active: boolean; items: import('../../types').ShopItem[] }>({ active: false, items: [] });
     const finalizeNearbyCapture = useCallback(() => {
         if (!nearbyCaptureRef.current.active) return;
         setWhereLines([...nearbyCaptureRef.current.lines]);
@@ -211,6 +214,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         setScoreLines: sessionSetScoreLines,
         setInfoLines,
         setQuestLines,
+        setAchievementLines,
         practiceHandler: deps.practiceHandler,
         registerEntity,
         ansiConvert: deps.ansiConvert,
@@ -364,7 +368,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         accountState: deps.accountState, 
         executeCommandRef: deps.executeCommandRef,
         sendCommand: session.game.sendCommand || ((cmd: string) => {}),
-        addMessage: deps.addMessage
+        addMessage: deps.addMessage,
+        captureStage: deps.captureStage
     });
 
     const time = useTimeParser({
@@ -456,13 +461,37 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         const activeCapture = capture.getActiveType();
         const expectedCaptureBeforeTokenize = normalizeStageToCaptureType(deps.captureStage.current) as any;
         const isWhereCapture = !isSnoop && (activeCapture === 'where' || expectedCaptureBeforeTokenize === 'where');
+        // Skip entity tokenization during account phase — account text is pure terminal output
+        // and inline-btn padding/bold/letter-spacing break monospace column alignment.
+        const isAccountPhase = !isSnoop && deps.gameState === 'account';
 
         let tokenizerContext: any;
         let derivedTokens: any[];
         let textOnly: string;
         let lower: string;
 
-        if (isWhereCapture) {
+        if (isAccountPhase) {
+            // Account text is raw terminal output. We trim leading/trailing whitespace
+            // to ensure consistent alignment in the mobile log container.
+            const ansiStripped = lineToParse.replace(/\x1b\[[0-9;]*m/g, '');
+            let normalized = ansiStripped.trim();
+
+            // --- Privacy: Strip the "Host" column from `list` output ---
+            // Matches the column header "Host" at the end of the header line.
+            normalized = normalized.replace(/\s+Host\s*$/, '');
+            // Matches trailing IP addresses in dashed notation (e.g. 162-236-88-200)
+            // and fully qualified domain names (e.g. 112.lightspeed.moblal.sbcglobal.net)
+            // that appear after the delete/rent fields in character list entries.
+            normalized = normalized.replace(
+                /\s+(?:\d{1,3}(?:[.-]\d{1,3}){2,}[\w.-]*|[\w-]+(?:\.[\w-]+){2,})\s*$/,
+                ''
+            );
+
+            tokenizerContext = {};
+            derivedTokens = [];
+            textOnly = normalized;
+            lower = normalized.toLowerCase();
+        } else if (isWhereCapture) {
             // Lightweight path: extract text without full tokenization
             const stripped = stripInlineMarkup(lineToParse);
             tokenizerContext = {};
@@ -524,8 +553,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if (commResult.msgType !== 'game') msgType = commResult.msgType;
 
         const promptInfo = prompt.parsePrompt(textOnly, isSnoop);
+        const isAccountRelatedStage = ['login', 'account-menu', 'character-creation', 'stat-editing'].includes(deps.accountState.stage);
+
         if (!isSnoop && deps.gameState === 'account' && promptInfo.isMatch) {
-            if (promptInfo.promptPart.trim() !== 'Account>') {
+            if (promptInfo.promptPart.trim() !== 'Account>' && !isAccountRelatedStage) {
                 deps.setGameState('playing');
             }
         }
@@ -560,6 +591,49 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         if (stat.parseGlobalStatus(textOnly, lower)) msgType = 'info' as any;
         if (stat.parseDetailedScore(textOnly, lower)) msgType = 'info' as any;
 
+        // --- Shop List Capture ---
+        if (!isSnoop && !isAccountPhase) {
+            const shopStore = useUIStore.getState();
+            if (shopCaptureRef.current.active) {
+                if (isCaptureBoundary) {
+                    if (shopCaptureRef.current.items.length > 0) {
+                        shopStore.setShopItems(shopCaptureRef.current.items);
+                    }
+                    shopCaptureRef.current = { active: false, items: [] };
+                } else {
+                    const m = textOnly.match(/^\s*(\d+)\.\s+(.+?)\s+up to\s+(.+?)(?:\s+<([^>]+)>)?\s*\.?\s*$/);
+                    if (m) {
+                        shopCaptureRef.current.items.push({
+                            num: parseInt(m[1], 10),
+                            name: m[2].trim(),
+                            price: m[3].trim(),
+                            vnum: m[4]
+                        });
+                        return;
+                    } else if (textOnly.trim() === '' && shopCaptureRef.current.items.length > 0) {
+                        shopStore.setShopItems(shopCaptureRef.current.items);
+                        shopCaptureRef.current = { active: false, items: [] };
+                    }
+                }
+            } else if (
+                /^you can buy:/i.test(lower) ||
+                /^items? (?:for sale|matching)/i.test(lower) ||
+                /^\d+ items? for sale/i.test(lower)
+            ) {
+                shopCaptureRef.current = { active: true, items: [] };
+                shopStore.setIsShopOpen(true);
+                return;
+            }
+
+            // Parse 'info %r' money line while shop is open
+            if (shopStore.isShopOpen) {
+                const moneyMatch = textOnly.match(/^([\d,]+\s+gold coins?(?:,\s+[\d,]+\s+silver penn(?:ies|y))?(?:(?:,?\s+and\s+|,\s+)[\d,]+\s+copper penn(?:ies|y))?)\s*\.?\s*$/i);
+                if (moneyMatch) {
+                    shopStore.setShopBalance(moneyMatch[1].trim());
+                }
+            }
+        }
+
         // Action Tracking (for manual inventory updates)
         actionTracker.trackAction(lineToParse, textOnly, lower);
         router.detectItemsInRoom(textOnly, lineToParse, false);
@@ -574,7 +648,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             capture.finalizeSession();
         }
 
-        const incomingCaptureType = !isSnoop && !isCaptureBoundary
+        const incomingCaptureType = !isSnoop && !isCaptureBoundary && !isAccountPhase
             ? capture.checkTriggers(textOnly, (promptInfo as any).attachedText)
             : null;
         if (incomingCaptureType && capture.hasSession() && incomingCaptureType !== capture.getActiveType()) {
@@ -598,7 +672,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             !isCaptureBoundary &&
             !capture.hasSession() &&
             !incomingCaptureType &&
-            expectedCaptureType === 'who'
+            ['who', 'achievement'].includes(expectedCaptureType)
         );
         if (canStartExpectedCapture) {
             capture.startSession(expectedCaptureType);
@@ -667,19 +741,42 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
         if (isVisible) {
             const mid = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-            const ansiHtml = deps.ansiConvert.toHtml(lineToParse);
-            const messageObj = PipelineOrchestrator.processTextLine(lineToParse, ansiHtml, finalType, tokenizerContext, finalTokens);
+            let lineToConvert = isAccountPhase ? lineToParse.trim() : lineToParse;
+            if (isAccountPhase) {
+                // Mirror the privacy redaction on the raw ANSI string so the
+                // rendered HTML also hides the Host column from `list` output.
+                lineToConvert = lineToConvert.replace(/\s+Host\s*$/, '');
+                lineToConvert = lineToConvert.replace(
+                    /\s+(?:\d{1,3}(?:[.-]\d{1,3}){2,}[\w.-]*|[\w-]+(?:\.[\w-]+){2,})\s*$/,
+                    ''
+                );
+            }
+            const ansiHtml = deps.ansiConvert.toHtml(lineToConvert);
+
+            // Account phase: render raw ANSI HTML, no entity pipeline, no tokens.
+            // ansi-to-html is configured with escapeXML:true so <name>/<sort>/etc. become &lt;name&gt;.
+            let messageHtml: string;
+            let messageTokens: any[] | undefined;
+            if (isAccountPhase) {
+                messageHtml = ansiHtml;
+                messageTokens = undefined;
+            } else {
+                const messageObj = PipelineOrchestrator.processTextLine(lineToParse, ansiHtml, finalType, tokenizerContext, finalTokens);
+                messageHtml = messageObj.html;
+                messageTokens = messageObj.tokens;
+            }
+
             const tokenizeFresh = (text: string) => {
                 const freshTokenizer = Tokenizer.getInstance();
                 freshTokenizer.reset('room');
                 return freshTokenizer.tokenize(text, tokenizerContext);
             };
-            
+
             const hasHitTag = lineToParse.includes('<hit>');
             const hasDamageTag = lineToParse.includes('<damage>');
             deps.addMessage(
-                finalType, textOnly, undefined, mid, false, 
-                { textOnly, lower, html: messageObj.html, tokens: messageObj.tokens },
+                finalType, textOnly, undefined, mid, false,
+                { textOnly, lower, html: messageHtml, tokens: messageTokens },
                 undefined, undefined, undefined, false, 
                 commResult.replyTarget, commResult.replyCommand, commResult.commSender, commResult.commAction, commResult.commText, commResult.commColor,
                 commResult.commSender ? tokenizeFresh(commResult.commSender) : undefined,
@@ -692,7 +789,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
     }, [
         processTriggers, router, combat, room, account, stat, atmosphere, time, parseLogGmcp, actionTracker,
-        deps.addMessage, deps.isNewbieMode, session.game, deps.groupMembers, deps.inlineCategories, deps.btn, session.vitals.target, deps.captureStage, deps.ansiConvert, capture, finalizeNearbyCapture
+        deps.addMessage, deps.isNewbieMode, session.game, deps.groupMembers, deps.inlineCategories, deps.btn, session.vitals.target, deps.captureStage, deps.ansiConvert, deps.practiceHandler, capture, finalizeNearbyCapture
     ]);
 
     return useMemo(() => ({

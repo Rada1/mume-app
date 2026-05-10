@@ -19,7 +19,6 @@ import { useCommandController } from '../hooks/useCommandController';
 import { useSpatButtons } from '../hooks/useSpatButtons';
 import { usePracticeHandler } from '../hooks/usePracticeHandler';
 import { useQuestsHandler } from '../hooks/useQuestsHandler';
-import { useShopHandler } from '../hooks/useShopHandler';
 import { useHelpHandler } from '../hooks/useHelpHandler';
 import { useKeywordOverrides } from '../hooks/useKeywordOverrides';
 import { MapperRef } from '../components/Mapper/mapperTypes';
@@ -87,7 +86,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const refreshLogHighlights = useCallback(() => setHighlightVersion(v => v + 1), []);
     
     // 1. Audio System
-    useAmbientController();
     const audioEffects = useAudioEffects();
     const {
         audioCtxRef, initAudio, playMovementSound, playDoorSound, playClickSound,
@@ -105,6 +103,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         playCombatHitSound: playHitImpactSound,
         playLevelUpSound: playLevelSound
     });
+
+    // 3. Ambient Controller (Must be after state initialization)
+    useAmbientController(s.accountState.stage);
 
     const ui = useUIStore();
     const settingsStore = useSettingsStore();
@@ -381,11 +382,15 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, [replayMsg.addMessage, dispatchReplayGmcp]));
 
     // 5. Telnet & Networking
+    const gameStateRef = React.useRef(s.gameState);
+    React.useEffect(() => { gameStateRef.current = s.gameState; }, [s.gameState]);
+
     const telnet = useTelnet({
         connectionUrl: settingsStore.connectionUrl,
         processLine: (line, tokens) => {
             return parserRef.current?.processLine(line, tokens) ?? null;
         },
+        getGameState: () => gameStateRef.current,
         recordEntry: (type, data) => s.userSession.recorder.recordEntry(type, data),
         setPrompt: v.setActivePrompt,
         onCharNameChange: gmcpHandlers.onCharNameChange,
@@ -549,7 +554,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // 6. Final Controller & Parser
     const { spatButtons, setSpatButtons, triggerSpitManual } = useSpatButtons(messages, useRef<HTMLDivElement>(null), triggerHaptic);
-    const practice = usePracticeHandler(s.setAbilities);
+    const practice = usePracticeHandler(s.setAbilities, s.setPracticeLines);
     const btn = useButtons({
         abilities: s.abilities,
         characterClass: s.characterClass,
@@ -564,7 +569,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const joystick = useJoystick(triggerHaptic, s.roomExits, playClickSound);
     const editor = useButtonEditor(btn);
     const help = useHelpHandler();
-    const shop = useShopHandler();
     const quests = useQuestsHandler(s.setQuests, s.quests.activeQuests);
     const keywordOverrides = useKeywordOverrides();
     const openKeywordEdit = useCallback((context: string, displayText: string) => {
@@ -584,7 +588,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // Handlers
         practiceHandler: practice,
         questsHandler: quests,
-        shopHandler: shop,
         helpHandler: help,
         keywordOverrides: keywordOverrides.overrides,
 
@@ -702,6 +705,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setScoreLines: s.setScoreLines,
         setInfoLines: s.setInfoLines,
         setQuestLines: s.setQuestLines,
+        setAchievementLines: s.setAchievementLines,
         setWhoList: s.active.game.setWhoList,
         setWhereList: s.active.game.setWhereList,
         
@@ -719,10 +723,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         ansiConvert,
         btn,
         quests: s.quests,
-        shop: shop,
         practice: practice,
         help: help
-    }), [s, v, ui, settingsStore, mode, addMessage, addSystemMessage, playHitImpactSound, playOofSound, playHitImpactSoundSpectate, playOofSoundSpectate, playClickSoundSpectate, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, shop, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
+    }), [s, v, ui, settingsStore, mode, addMessage, addSystemMessage, playHitImpactSound, playOofSound, playHitImpactSoundSpectate, playOofSoundSpectate, playClickSoundSpectate, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
 
 
     const parser = useGameParser(deps, s.userSession);
@@ -750,7 +753,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const uiValue: UIContextType = useMemo(() => {
         const requestDrawerRefresh = (drawer: DrawerType) => {
             if (drawer === 'equipment') {
-                executeCommandRef.current?.(ui.gearTab === 'worn' ? 'eq' : 'inv', true, true, false, true);
+                const gearCommand = ui.gearTab === 'worn' ? 'eq' : ui.gearTab === 'inv' ? 'inv' : 'look';
+                executeCommandRef.current?.(gearCommand, true, true, false, true);
             } else if (drawer === 'players') {
                 if (ui.playersTab === 'online') {
                     s.setWhoLines([]);
@@ -763,6 +767,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 if (ui.charTab === 'info') executeCommandRef.current?.('info', true, true, false, true);
                 else if (ui.charTab === 'quests') executeCommandRef.current?.('quest', true, true, false, true);
                 else if (ui.charTab === 'skills') executeCommandRef.current?.('practice', true, true, false, true);
+                else if (ui.charTab === 'achievements') executeCommandRef.current?.('achievement', true, true, false, true);
             }
         };
 
@@ -825,6 +830,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         infoLines: s.infoLines,
         practiceLines: s.practiceLines,
         questLines: s.questLines,
+        achievementLines: s.achievementLines,
         whoLines: s.whoLines,
         whereLines: s.whereLines,
         setWhoLines: s.setWhoLines,
@@ -843,14 +849,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         replayer,
         spectateBuffer,
         };
-    }, [ui, s.inventoryLines, s.eqLines, s.statsLines, s.scoreLines, s.infoLines, s.practiceLines, s.questLines, s.whoLines, s.whereLines, s.characterName, s.userSession.recorder, settingsStore.showMapperToolbar, settingsStore.setShowMapperToolbar, replayer, spectateBuffer]);
+    }, [ui, s.inventoryLines, s.eqLines, s.statsLines, s.scoreLines, s.infoLines, s.practiceLines, s.questLines, s.achievementLines, s.whoLines, s.whereLines, s.characterName, s.userSession.recorder, settingsStore.showMapperToolbar, settingsStore.setShowMapperToolbar, replayer, spectateBuffer]);
 
     const controller = useCommandController({
         telnet, addMessage, initAudio, navIntervalRef: { current: null }, mapperRef,
         teleportTargets: settingsStore.teleportTargets, help, 
         captureStage,
         setInventoryLines: s.setInventoryLines, setStatsLines: s.setStatsLines,
-        setInfoLines: s.setInfoLines, setScoreLines: s.setScoreLines, setEqLines: s.setEqLines,
+        setInfoLines: s.setInfoLines, setAchievementLines: s.setAchievementLines, setScoreLines: s.setScoreLines, setEqLines: s.setEqLines,
         setCommandPreview: s.setCommandPreview, input: s.input, setInput: s.setInput, isNewbieMode: s.isNewbieMode,
         status: s.status, target: v.target, setTarget: v.setTarget, setPendingMove: v.setPendingMove,
         activePrompt: v.activePrompt?.text || '', finalizeCapture: parser.finalizeCapture, popoverState: s.popoverState,
@@ -865,7 +871,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         btn, joystick, wasDraggingRef: { current: false }, ui: s.ui as any,
         actions: s.actions, setActions: s.setActions, practice, heldButton: v.heldButton,
         setHeldButton: v.setHeldButton, parley: s.parley, setParley: s.setParley,
-        isTrackpadModifierActive: s.isTrackpadModifierActive, shop,
+        isTrackpadModifierActive: s.isTrackpadModifierActive,
         keywordOverrides: keywordOverrides.overrides, openKeywordEdit, lastCommandContextRef: { current: null },
         entities: s.entities, applyOptimisticChange: s.applyOptimisticChange,
         selectedObjectIds: s.selectedObjectIds, toggleObjectSelection: s.toggleObjectSelection,
@@ -962,7 +968,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setBgImageBottom: settingsStore.setBgImageBottom,
         practice,
         help,
-        shop,
         quests,
         keywordOverrides: keywordOverrides.overrides,
         containerRef: { current: null },
@@ -981,7 +986,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }), [
         s, v, telnet, parser, controller, btn, joystick, editor, replayer,
         viewport, env, audioCtxRef, initAudio, spatButtons, ui.diagnosticLogs,
-        practice, help, shop, quests, keywordOverrides,
+        practice, help, quests, keywordOverrides,
         s.userSession.recorder, mapperRef, sessionMode, setSessionMode
     ]);
 

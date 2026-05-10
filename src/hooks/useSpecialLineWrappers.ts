@@ -19,80 +19,6 @@ export const useSpecialLineWrappers = (
      */
     const wrapSpecialLine = useCallback((originalHtml: string, mid: string, type?: MessageType): string | null => {
         
-        // --- 1. Account Selection Buttons ---
-        if (type === 'account-selection' || type === 'account-selection-edit') {
-            const rawText = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
-            const numMatch = rawText.match(/\((\d+)\)/);
-            const num = numMatch ? numMatch[1] : '';
-            const isEdit = type === 'account-selection-edit' || rawText.includes('Edit');
-            
-            return renderInlineSpan({
-                id: `account-selection-${mid}-${num}`,
-                mid,
-                cmd: 'button',
-                kind: 'control',
-                location: 'none',
-                context: num,
-                action: 'command',
-                category: 'account',
-                dataAttrs: isEdit ? { 'account-stage': 'stat-editing' } : undefined,
-                extraClasses: ['auto-account-cmd'],
-                innerHtml: originalHtml
-            });
-        }
-
-        // --- 2. Account Stat Edit Buttons (+/-) ---
-        if (type === 'account-stat-edit') {
-            const statRegex = /([a-z]{3}):\s*(?:<[^>]+>)*(\d+)(?:<[^>]+>)*/gi;
-            const blocks = originalHtml.replace(statRegex, (m, stat, valStr) => {
-                const val = parseInt(valStr);
-                const plusCmd = `${stat} ${val + 1}`;
-                const minusCmd = `${stat} ${val - 1}`;
-                
-                const plusBtn = renderInlineSpan({
-                    id: `account-stat-${mid}-${stat}-plus`,
-                    mid,
-                    cmd: 'button',
-                    kind: 'control',
-                    location: 'none',
-
-                    action: 'command',
-                    context: plusCmd,
-                    category: 'account',
-                    dataAttrs: { silent: 'true' },
-                    extraClasses: ['stat-btn'],
-                    innerHtml: '+'
-                });
-
-                const minusBtn = renderInlineSpan({
-                    id: `account-stat-${mid}-${stat}-minus`,
-                    mid,
-                    cmd: 'button',
-                    kind: 'control',
-                    location: 'none',
-
-                    action: 'command',
-                    context: minusCmd,
-                    category: 'account',
-                    dataAttrs: { silent: 'true' },
-                    extraClasses: ['stat-btn'],
-                    innerHtml: '-'
-                });
-
-                return `
-                    <div class="stat-block">
-                        <div class="stat-label">${stat}:</div>
-                        <div class="stat-controls">
-                            ${plusBtn}
-                            <span class="stat-value">${valStr}</span>
-                            ${minusBtn}
-                        </div>
-                    </div>
-                `.trim();
-            });
-            return `<div class="stat-editor-row">${blocks}</div>`;
-        }
-
         // --- 3. Quest List Highlighting ---
         if (type === 'quest-list') {
             const textOnly = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
@@ -147,29 +73,6 @@ export const useSpecialLineWrappers = (
                 extraClasses: ['auto-occupant', 'pc-highlighter'],
                 innerHtml: originalHtml
             });
-        }
-
-        // --- 5. Account Character List Buttons ---
-        if (type === 'account-character-list') {
-            const rawText = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
-            const parts = rawText.split(/\s+/);
-            const characterName = parts[0].endsWith(')') ? parts[1] : parts[0];
-            
-            return safeHighlight(originalHtml, characterName, false, (m) => {
-                return renderInlineSpan({
-                    id: `account-char-${mid}-${characterName}`,
-                    mid,
-                    cmd: 'button',
-                    kind: 'control',
-                    location: 'account',
-
-                    context: `play ${characterName}`,
-                    action: 'command',
-                    category: 'account',
-                    extraClasses: ['auto-account-cmd'],
-                    innerHtml: m
-                });
-            }, regexCache);
         }
 
         // --- 6. WHO/WHERE List Highlighting ---

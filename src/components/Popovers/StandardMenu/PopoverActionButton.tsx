@@ -18,7 +18,7 @@ interface PopoverActionButtonProps {
     addMessage: (type: MessageType, content: string) => void;
     triggerHaptic?: (ms: number) => void;
     handleTabClick: (drawer: 'character' | 'players' | 'equipment') => void;
-    setGearTab: (tab: 'worn' | 'inv') => void;
+    setGearTab: (tab: 'worn' | 'inv' | 'vicinity') => void;
     selectedObjectIds: Set<string>;
     clearObjectSelection: () => void;
     entities: Record<string, GameEntity>;

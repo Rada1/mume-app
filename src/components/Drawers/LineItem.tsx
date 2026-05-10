@@ -10,6 +10,8 @@ import { extractMumeKeyword } from '../../utils/gameUtils';
 import { ansiConvert } from '../../utils/ansi';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { COLOR_OBJ } from '../../utils/categorizationUtils';
+import { getPracticeClassKey } from '../../utils/practiceClassCatalog';
+import { rememberLastPracticedSkill } from '../../utils/practiceLastSkillMemory';
 import { TokenRenderer } from '../Messages/TokenRenderer';
 
 interface LineItemProps {
@@ -30,6 +32,21 @@ interface TokenMetadata {
     action?: string;
 }
 
+const SKILL_CLASS_COLORS: Record<string, string> = {
+    warrior: '#ef4444',
+    ranger: '#22c55e',
+    none: '#22c55e',
+    mage: '#3b82f6',
+    cleric: '#fbbf24',
+    thief: '#cbd5e1'
+};
+
+const getPracticeClassColor = (lineText: string, skillName: string): string => {
+    const classMatch = lineText.match(/\b(warrior|ranger|mage|cleric|thief|none)\b(?:\s+\d+)?\s*$/i);
+    const classKey = classMatch?.[1]?.toLowerCase() || getPracticeClassKey(skillName) || 'none';
+    return SKILL_CLASS_COLORS[classKey] || SKILL_CLASS_COLORS.none;
+};
+
 export const LineItem: React.FC<LineItemProps> = ({ 
     line, 
     fontSize, 
@@ -41,6 +58,7 @@ export const LineItem: React.FC<LineItemProps> = ({
     const depth = line.depth || 0;
     const isHeader = !!line.isHeader;
     const lineContext = line.context || extractMumeKeyword(line.text);
+    const isCommandLine = line.cmd === 'practice %n';
     const tokenMetadata: TokenMetadata = line.isItem
         ? {
             id: line.entityId || line.stableId || line.id,
@@ -49,7 +67,7 @@ export const LineItem: React.FC<LineItemProps> = ({
             location,
             category,
             cmd: line.cmd,
-            action: 'menu'
+            action: isCommandLine ? 'command' : 'menu'
         }
         : {
             context: line.context,
@@ -103,7 +121,8 @@ export const LineItem: React.FC<LineItemProps> = ({
                     data-kind="object"
                     data-location={location}
                     data-category="object"
-                    data-action="menu"
+                    data-action={isCommandLine ? 'command' : 'menu'}
+                    data-from-drawer={isCommandLine ? 'true' : undefined}
                     style={{
                         '--glow-color': objectColor,
                         color: 'var(--glow-color)',
@@ -129,6 +148,43 @@ export const LineItem: React.FC<LineItemProps> = ({
     };
 
     const hasObjectXml = line.isItem && /<object[^>]*>.*?<\/object>/i.test(line.rawText || line.html || line.text);
+
+    if (isCommandLine) {
+        const match = line.text.match(/^(.+?)(\s{2,}.*)$/);
+        const skillName = line.context || match?.[1]?.trim() || line.text.trim();
+        const rest = match?.[2] || '';
+        const skillColor = getPracticeClassColor(line.text, skillName);
+
+        return (
+            <div style={baseStyle}>
+                <div
+                    className="message-content"
+                    style={{ display: 'block', whiteSpace: 'pre', lineHeight: 'inherit' }}
+                >
+                    <span
+                        className="inline-btn"
+                        data-id={line.entityId || line.stableId || line.id}
+                        data-cmd="practice %n"
+                        data-context={skillName}
+                        data-kind="skill"
+                        data-location="practice"
+                        data-category="cat-practice-skill"
+                        data-action="command"
+                        data-from-drawer="true"
+                        onPointerDownCapture={() => rememberLastPracticedSkill(skillName)}
+                        style={{
+                            '--glow-color': skillColor,
+                            color: 'var(--glow-color)',
+                            fontWeight: 800
+                        } as React.CSSProperties}
+                    >
+                        {skillName}
+                    </span>
+                    <span>{rest}</span>
+                </div>
+            </div>
+        );
+    }
 
     if (hasObjectXml) {
         return (
@@ -179,7 +235,8 @@ export const LineItem: React.FC<LineItemProps> = ({
                             data-kind="object"
                             data-location={location}
                             data-category="object"
-                            data-action="menu"
+                            data-action={isCommandLine ? 'command' : 'menu'}
+                            data-from-drawer={isCommandLine ? 'true' : undefined}
                             style={{
                                 '--glow-color': objectColor,
                                 color: 'var(--glow-color)',

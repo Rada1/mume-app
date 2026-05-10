@@ -24,11 +24,12 @@ interface UseAccountParserProps {
     setMessages?: React.Dispatch<React.SetStateAction<import('../../types').Message[]>>;
     clearLog?: () => void;
     setIsPasswordMode: (val: boolean) => void;
+    captureStage: React.MutableRefObject<string>;
 }
 
 // --- Logic Section: Hook Implementation ---
 
-export function useAccountParser({ accountState, setAccountState, accountStageRef, gameState, setGameState, sendCommand, executeCommandRef, isMobile, addDiagnosticLog, addMessage, setMessages, clearLog, setIsPasswordMode }: UseAccountParserProps) {
+export function useAccountParser({ accountState, setAccountState, accountStageRef, gameState, setGameState, sendCommand, executeCommandRef, isMobile, addDiagnosticLog, addMessage, setMessages, clearLog, setIsPasswordMode, captureStage }: UseAccountParserProps) {
     // Use Refs to keep parseAccountLine stable and avoid re-render loops
     const gameStateRef = useRef(gameState);
     gameStateRef.current = gameState;
@@ -58,11 +59,34 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             isSilentListingRef.current = true;
         }
 
+        // --- 0. Global Prompt Detection: Account> ---
+        // If we see this, we are ALWAYS at the main account menu.
+        // We use endsWith to catch cases where the prompt might follow some text without a newline.
+        if (trimmedLine.endsWith('Account>') || trimmedLine === 'Account>') {
+            console.log('[AccountParser] Main Account Menu detected');
+            accountStageRef.current = 'account-menu';
+            setGameState('account');
+            setAccountState(prev => ({ 
+                ...prev, 
+                stage: 'account-menu', 
+                currentPrompt: undefined,
+                creationPrompt: undefined, // Clear creation buttons
+                isGathering: false,
+                // Clear creation specific data to avoid stale UI when restarting creation
+                pointsLeft: undefined,
+                stats: undefined 
+            }));
+            captureStage.current = 'none';
+            isSilentListingRef.current = false;
+            setIsPasswordMode(false);
+            return true;
+        }
+
         // Fire login setup commands regardless of current game state (handles reconnects too)
         if (trimmedLine.includes('Welcome to the land of Middle-earth')) {
             console.log('[AccountParser] Login detected via welcome line');
             setGameState('playing');
-            setAccountState(prev => ({ ...prev, stage: 'none' }));
+            setAccountState(prev => ({ ...prev, stage: 'none', currentPrompt: undefined }));
             setIsPasswordMode(false);
             gmcpBus.emit('Session.Start', { characterName: 'Player' });
 
@@ -92,10 +116,18 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
 
         // During gameplay, skip all account parsing except detecting return to Account>
         if ((gameStateRef.current as string) === 'playing') {
-            if (trimmedLine === 'Account>') {
+            if (trimmedLine.endsWith('Account>') || trimmedLine === 'Account>') {
                 hasSentGameEntrySetupRef.current = false;
                 setGameState('account');
-                setAccountState(prev => ({ ...prev, stage: 'account-menu' }));
+                setAccountState(prev => ({ 
+                    ...prev, 
+                    stage: 'account-menu', 
+                    currentPrompt: undefined,
+                    creationPrompt: undefined,
+                    pointsLeft: undefined,
+                    stats: undefined
+                }));
+                captureStage.current = 'none';
                 setIsPasswordMode(false);
                 return true;
             }
@@ -116,7 +148,12 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 if (activePrompt || gameStateRef.current !== 'playing') {
                     console.log(`[AccountParser] Detected prompt: ${activePrompt ? 'Name' : 'Password'}. Switching to account state.`);
                     setGameState('account');
-                    setAccountState(prev => ({ ...prev, stage: 'login' }));
+                    setAccountState(prev => ({ 
+                        ...prev, 
+                        stage: 'login',
+                        currentPrompt: activePrompt ? "By what name do you wish to be known?" : "Account Password:"
+                    }));
+                    captureStage.current = 'none';
                     
                     if (activePassPrompt) setIsPasswordMode(true);
                     else if (activePrompt) setIsPasswordMode(false);
@@ -128,45 +165,192 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             }
         }
 
+        // --- Paginator Auto-Advance (silent AND visible listing) ---
+        // Detects the MUME pager prompt (e.g. "*** Return: continue, b: back... (63%) ***")
+        // and automatically sends an empty return to page through the list.
+        // This runs unconditionally during the account phase so both manual `list`
+        // commands and silent background gathers advance past pagination automatically.
+        const isPaginator = trimmedLine.includes('Return: continue') ||
+                            trimmedLine.includes('*** [Hit Return') ||
+                            (trimmedLine.startsWith('***') && trimmedLine.toLowerCase().includes('continue')) ||
+                            (trimmedLine.includes('(') && trimmedLine.includes('%)') && trimmedLine.includes('continue'));
+
+        if (isPaginator) {
+            // Use queueMicrotask so the current parse cycle and React state updates
+            // fully commit before the server receives our newline and floods us with
+            // the next page. setTimeout(150) caused the response to arrive mid-update
+            // and sit in a buffer until the next user action triggered a render flush.
+            queueMicrotask(() => sendCommand(''));
+            // Suppress the paginator line from the log — it's transient noise.
+            return true;
+        }
+
         // --- Silent Listing Suppression ---
         if (isSilentListingRef.current) {
-            const isPaginator = trimmedLine.includes('Return: continue') || 
-                               trimmedLine.includes('*** [Hit Return') ||
-                               (trimmedLine.startsWith('***') && trimmedLine.toLowerCase().includes('continue')) ||
-                               (trimmedLine.includes('(') && trimmedLine.includes('%)') && trimmedLine.includes('continue'));
-
-            if (isPaginator) {
-                if (executeCommandRef.current) {
-                    setTimeout(() => {
-                        if (executeCommandRef.current) {
-                            executeCommandRef.current('', true, true); 
-                        }
-                    }, 150);
-                }
-                return true;
-            }
-
             if (trimmedLine === 'Account>') {
                 isSilentListingRef.current = false;
                 setAccountState(prev => ({ ...prev, isGathering: false, stage: 'account-menu' }));
-            } 
+            }
         }
 
         const shouldSuppress = isSilentListingRef.current;
 
         // --- 0. Detect Stat Edit Trigger ---
-        if (trimmedLine.includes('Please specify an ability') && trimmedLine.includes('(str, int, etc.)')) {
+        if ((trimmedLine.includes('Please specify an ability') && trimmedLine.includes('(str, int, etc.)')) ||
+            (trimmedLine.includes('Enter ability') && trimmedLine.includes('"R" (reset)'))) {
             accountStageRef.current = 'stat-editing';
-            setAccountState(prev => ({ ...prev, stage: 'stat-editing' }));
+            
+            const statOptions = [
+                { id: 'str', label: 'Strength' },
+                { id: 'int', label: 'Intelligence' },
+                { id: 'wis', label: 'Wisdom' },
+                { id: 'dex', label: 'Dexterity' },
+                { id: 'con', label: 'Constitution' },
+                { id: 'wil', label: 'Willpower' },
+                { id: 'per', label: 'Perception' },
+                { id: 'R', label: 'Reset (R)' },
+                { id: 'Q', label: 'Done (Q)' }
+            ];
+
+            setAccountState(prev => ({ 
+                ...prev, 
+                stage: 'stat-editing', 
+                currentPrompt: undefined,
+                characters: [], // Clear characters when entering stat editing
+                creationPrompt: {
+                    title: 'Stat Editing',
+                    description: trimmedLine,
+                    options: statOptions
+                }
+            }));
+            captureStage.current = 'none';
+            setGameState('account');
         }
 
-        // --- 0b. Detect Stat Summary Disclaimer ---
+        // --- 0a. Detect Character Creation Start ---
+        if (trimmedLine.includes('You must now choose a name for your character') || 
+            trimmedLine.includes('Enter a name for your character') ||
+            trimmedLine.includes('What name do you wish to have') ||
+            trimmedLine.includes('Choose Your Allegiance') ||
+            trimmedLine.includes('Which side will you fight for') ||
+            trimmedLine.includes('Pick a number, "back", "?"')) {
+            accountStageRef.current = 'character-creation';
+            setAccountState(prev => ({ 
+                ...prev, 
+                stage: 'character-creation', 
+                currentPrompt: undefined,
+                characters: [] // Clear characters when entering creation
+            }));
+            captureStage.current = 'none';
+            setGameState('account');
+        }
+
+        // --- 0b. Detect Character Creation Prompts ---
+        const isCreationRelatedStage = ['character-creation', 'stat-editing'].includes(accountStageRef.current);
+        
+        if (isCreationRelatedStage) {
+            if (trimmedLine.includes('Do you want to use the default configuration') ||
+                trimmedLine.startsWith('Choose Your') ||
+                trimmedLine.includes('Compared to other') ||
+                trimmedLine.includes('review the following statistics') ||
+                trimmedLine.includes('What race do you want to be') ||
+                trimmedLine.includes('What sex do you want to be') ||
+                trimmedLine.includes('Are you sure you want to be a') ||
+                trimmedLine.includes('You will be a') ||
+                trimmedLine.includes('Enter a name for your character')) {
+                // Clear existing options when a NEW major question starts
+                setAccountState(prev => ({ 
+                    ...prev, 
+                    creationPrompt: { title: trimmedLine, description: '', options: [] } 
+                }));
+            }
+
+            if (trimmedLine.match(/(Str|Int|Wis|Wisdom|Dex|Con|Wil|Will|Per)\s*[:=]\s*(\d+)/i)) {
+                const stats: Record<string, number> = {};
+                const matches = Array.from(trimmedLine.matchAll(/(Str|Int|Wis|Wisdom|Dex|Con|Wil|Will|Per)\s*[:=]\s*(\d+)/gi));
+                for (const match of matches) {
+                    const key = match[1].toLowerCase();
+                    const canonicalKey = key.startsWith('wis') ? 'wis' : key.startsWith('wil') ? 'wil' : key;
+                    stats[canonicalKey] = parseInt(match[2]);
+                }
+                if (Object.keys(stats).length > 0) {
+                    setAccountState(prev => ({ ...prev, stats: { ...(prev.stats || {}), ...stats } }));
+                    // Suppress stat lines when in the editor to keep it clean
+                    if (accountStageRef.current === 'stat-editing') return true;
+                }
+            }
+
+            if (trimmedLine.includes('point left') || trimmedLine.includes('points left')) {
+                const match = trimmedLine.match(/(\d+)\s+point[s]?\s+left/i);
+                if (match) {
+                    const points = parseInt(match[1]);
+                    setAccountState(prev => ({ ...prev, pointsLeft: points }));
+                    // If we see points, we are definitely in stat-editing
+                    if (accountStageRef.current !== 'stat-editing') {
+                        accountStageRef.current = 'stat-editing';
+                        setAccountState(prev => ({ ...prev, stage: 'stat-editing' }));
+                    }
+                    return true;
+                }
+            }
+
+            if (trimmedLine.includes('will you be') || trimmedLine.includes('Pick a number') || trimmedLine.includes('Select an option') || trimmedLine.includes('Compared to other') || (trimmedLine.includes('?') && trimmedLine.length < 100)) {
+                setAccountState(prev => {
+                    if (prev.creationPrompt?.title === trimmedLine) return prev;
+                    return {
+                        ...prev,
+                        creationPrompt: {
+                            options: prev.creationPrompt?.options || [],
+                            title: trimmedLine,
+                            description: prev.creationPrompt?.description || ''
+                        }
+                    };
+                });
+            }
+
+            // More flexible regex to capture options like (1) Description or (a) Option
+            // Also handle options that might not start the line but follow a prompt
+            // Only match 1-3 character options (like (1), (a), (10), (str)) to avoid matching long flavor text like "(The man...)"
+            // Also ensure it doesn't look like a full parenthesized sentence (starting with '(' and ending with ')')
+            const optionMatch = trimmedLine.match(/^\s*\(([\w\d]{1,3})\)\s+([^(\[]+)/) || 
+                               trimmedLine.match(/\(([\w\d]{1,3})\)\s+([^(\[]+)/);
+            
+            if (optionMatch && accountStageRef.current !== 'stat-editing') {
+                const id = optionMatch[1];
+                const label = optionMatch[2].trim();
+                
+                // Heuristic: If it starts and ends with parentheses, it's likely flavor text, not a menu option.
+                // MUME menu options like "(1) Choice" or "(str) Stat" don't end with a closing parenthesis for the whole line.
+                const isFlavorText = trimmedLine.startsWith('(') && trimmedLine.endsWith(')');
+                const isLikelyOption = !isFlavorText && id.length <= 3 && label.length > 0 && !label.includes(':') && !label.includes('points left');
+                
+                if (isLikelyOption) {
+                    setAccountState(prev => {
+                        const currentPrompt = prev.creationPrompt || { title: '', description: '', options: [] };
+                        const existingOptions = currentPrompt.options || [];
+                        if (existingOptions.some(o => o.id === id)) return prev;
+                        
+                        return {
+                            ...prev,
+                            creationPrompt: {
+                                ...currentPrompt,
+                                options: [...existingOptions, { id, label }]
+                            }
+                        };
+                    });
+                    // Preserve creation option lines in the log for context, even if they are also buttons.
+                    return false;
+                }
+            }
+        }
+
+        // --- 0c. Detect Stat Summary Disclaimer ---
         if (trimmedLine.includes('review the following statistics') || trimmedLine.includes('provided values, as stats have a major impact')) {
-            accountStageRef.current = 'character-select';
-            setAccountState(prev => ({ ...prev, stage: 'character-select' }));
+            accountStageRef.current = 'character-creation';
+            setAccountState(prev => ({ ...prev, stage: 'character-creation', currentPrompt: undefined, characters: [] }));
         }
 
-        const isSelectionLine = /^\s*\(\d+\)/.test(trimmedLine);
+        const isSelectionLine = /^\s*\(\d{1,2}\)/.test(trimmedLine);
         if (isSelectionLine) {
             const isEditSelection = trimmedLine.includes('Edit') && accountStageRef.current !== 'stat-editing';
             // Just detect state
@@ -176,16 +360,16 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         if (isStatLine) {
             if (accountStageRef.current === 'stat-editing') {
                 setMessages?.(prev => prev.filter(m => m.id !== 'account-stat-line'));
+                return true;
             }
         }
 
-        const isPointsLine = /points left/i.test(trimmedLine);
+        const isPointsLine = /point[s]?\s+left/i.test(trimmedLine);
         if (isPointsLine) {
-            if (accountStageRef.current !== 'stat-editing') {
-                accountStageRef.current = 'stat-editing';
-                setAccountState(prev => ({ ...prev, stage: 'stat-editing' }));
+            if (accountStageRef.current === 'stat-editing') {
+                setMessages?.(prev => prev.filter(m => m.id !== 'account-points-line'));
+                return true;
             }
-            setMessages?.(prev => prev.filter(m => m.id !== 'account-points-line'));
         }
 
         // 2. Detect Character List Headers
@@ -193,16 +377,18 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             setGameState('account');
             setAccountState(prev => ({
                 ...prev,
-                stage: (prev.stage === 'account-menu' || prev.stage === 'login') ? 'account-menu' : 'character-select',
-                characters: []
+                stage: 'account-menu',
+                characters: [],
+                currentPrompt: undefined
             }));
             setIsPasswordMode(false);
             return shouldSuppress;
         }
 
         // 3. Detect Character Entries
+        const isSelectStage = accountStageRef.current === 'account-menu';
         const charMatch = trimmedLine.match(/^\s*(\d+)\)\s+([a-zA-Z]+)\s+(\d+)\s+([a-zA-Z\-]+)\s+(.*?)\s+(Yesterday|Today|[\d\w\s]+ago|Never)\s+(.*)$/i);
-        if (charMatch) {
+        if (isSelectStage && charMatch) {
             const [_, index, name, level, race, sublevel, logon, rent] = charMatch;
             const newChar: CharacterEntry = { index: parseInt(index), name, level: parseInt(level), race, sublevel, logon, rent, area: '' };
             setAccountState(prev => ({ ...prev, characters: prev.characters.some(c => c.name === name) ? prev.characters : [...prev.characters, newChar] }));
@@ -218,7 +404,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         const logonRegex = /(\d+\s+(?:days?|yrs?|wks?|weeks?|months?|mths?|hours?|hrs?|mins?|secs?|ago|years?)|Yesterday|Today|Never|\bnew\b|\bPlaying\b|\bno link\b|\bRetired\b|\bDead\b)/i;
         const logonMatchLine = trimmedLine.match(logonRegex);
         
-        if (logonMatchLine && logonMatchLine.index !== undefined && logonMatchLine.index > 20) {
+        if (isSelectStage && logonMatchLine && logonMatchLine.index !== undefined && logonMatchLine.index > 20) {
             const cleanName = trimmedLine.split(/\s+/)[0];
             const exclusions = ['play', 'create', 'new', 'time', 'list', 'move', 'password', 'add', 'info', 'practice', 'link', 'lag', 'help', 'menu', 'quit', 'where'];
             const lowerName = cleanName.toLowerCase();
@@ -259,7 +445,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             (trimmedLine.includes('Select a character') && trimmedLine.includes('(N)ew')) ||
             trimmedLine.includes('If you have never played MUME before')) {
             setGameState('account');
-            setAccountState(prev => ({ ...prev, stage: 'character-select' }));
+            setAccountState(prev => ({ ...prev, stage: 'account-menu', currentPrompt: undefined }));
             setIsPasswordMode(false);
             return false;
         }
@@ -268,7 +454,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         if (trimmedLine.includes('Available commands:')) {
             setGameState('account');
             accountStageRef.current = 'account-menu';
-            setAccountState(prev => ({ ...prev, stage: 'account-menu' }));
+            setAccountState(prev => ({ ...prev, stage: 'account-menu', currentPrompt: undefined }));
             setIsPasswordMode(false);
             return false;
         }
@@ -285,8 +471,12 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             // Let fall through
         }
 
+        // 7. General Suppression for Creation/Stat Stages
+        // Removed broad suppression to allow game descriptive/flavor text to appear.
+        // Surgical suppression is handled above for stats, points, and options.
+
         return false;
-    }, [setAccountState, setGameState, addMessage, gameState, accountState.isGathering, sendCommand]);
+    }, [setAccountState, setGameState, addMessage, gameState, accountState.isGathering, sendCommand, captureStage]);
 
     return { parseAccountLine };
 }

@@ -8,10 +8,15 @@ interface ButtonSwipeOverlayProps {
     isCancelling: boolean;
     buttonRect?: DOMRect;
     rayParams: { angle: number, length: number, opacity: number, color?: string };
+    onSwap?: () => void;
 }
 
-export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, activeDir, isCancelling, buttonRect, rayParams }) => {
+export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, activeDir, isCancelling, buttonRect, rayParams, onSwap }) => {
     if (!activeDir && !isCancelling) return null;
+
+    const longCmd = activeDir && (activeDir as any) !== 'center'
+        ? (button.longSwipeCommands?.[activeDir as SwipeDirection] || '').trim()
+        : '';
 
     const centerX = buttonRect ? (buttonRect.left + buttonRect.width / 2) : 0;
     const centerY = buttonRect ? (buttonRect.top + buttonRect.height / 2) : 0;
@@ -76,6 +81,16 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                     </svg>
                 </div>
             </div>
+            {longCmd && onSwap && (
+                <div
+                    className="swap-button"
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onPointerUp={(e) => { e.stopPropagation(); onSwap(); }}
+                    style={{ pointerEvents: 'auto' }}
+                >
+                    SWAP
+                </div>
+            )}
             <div className={`cancel-indicator ${isCancelling ? 'active' : ''}`} style={{
                 '--cancel-x': `calc(var(--wheel-center-x, 50%) + 200px)`,
                 '--cancel-y': `var(--wheel-center-y, 50%)`

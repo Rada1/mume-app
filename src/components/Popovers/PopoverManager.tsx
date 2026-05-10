@@ -34,12 +34,11 @@ interface PopoverManagerProps {
     setIsMendingMode?: (val: boolean) => void;
     setMendingTarget?: (val: string | null) => void;
     handleTabClick: (drawer: 'character' | 'players' | 'equipment') => void;
-    setGearTab: (tab: 'worn' | 'inv') => void;
+    setGearTab: (tab: 'worn' | 'inv' | 'vicinity') => void;
     setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
     setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     refreshLogHighlights: () => void;
     practice: any;
-    shop: any;
     openKeywordEdit: (context: string, displayText: string) => void;
     entities: any;
     registerEntity: (id: string, name: string, location: import('../../types').EntityLocation, category?: string) => import('../../types').GameEntity;
@@ -58,10 +57,8 @@ import { DialMenu } from './DialMenu';
 import { StandardMenuPopover } from './StandardMenuPopover';
 import { RecipientSelectPopover } from './RecipientSelectPopover';
 import { TeleportSavePopover, TeleportSelectPopover, TeleportManagePopover } from './TeleportPopovers';
-import ShopSearchPopover from './ShopSearchPopover';
 import { ContainerPopover } from './ContainerPopover';
 import { ContainerSelectPopover } from './ContainerSelectPopover';
-import { FloatingGroupCard } from '../HUD/FloatingGroupCard';
 import { HelpCard } from '../Utility/HelpCard';
 import { canonicalizeCategoryId, resolveKindAndLocation } from '../../utils/categorizationUtils';
 import { getButtonIdsForTraits, getInlineGlowColor, getResolvedTraitSections, toCategoryId } from '../../utils/inlineActionModel';
@@ -77,13 +74,13 @@ const formatDialCategoryLabel = (kind?: string, category?: string | null, setId?
 
 export const PopoverManager: React.FC<PopoverManagerProps> = ({
     popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, roomNpcs, roomItems, inventoryLines, eqLines, setSettings, inlineCategories, setInlineCategories, customTraits, setCustomTraits, favorites, setFavorites, parley, setParley, whoList,
-    isMendingMode, setIsMendingMode, setMendingTarget, handleTabClick, setGearTab, setPlayersTab, setCharTab, refreshLogHighlights, practice, shop, openKeywordEdit,
+    isMendingMode, setIsMendingMode, setMendingTarget, handleTabClick, setGearTab, setPlayersTab, setCharTab, refreshLogHighlights, practice, openKeywordEdit,
     entities, registerEntity, selectedObjectIds, clearObjectSelection, keywordOverrides, accountCharacters, accountState, setAccountState,
     playerColor, npcColor, objectColor, roomColor
 }) => {
 
     useLayoutEffect(() => {
-        if (popoverState && popoverState.type !== 'shop-card' && popoverRef.current) {
+        if (popoverState && popoverRef.current) {
             const el = popoverRef.current;
             const rect = el.getBoundingClientRect();
             const winH = window.innerHeight, winW = window.innerWidth;
@@ -108,7 +105,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     const scrollIntervalRef = React.useRef<number | null>(null);
 
     React.useEffect(() => {
-        if (!popoverState || popoverState.menuDisplay === 'dial' || popoverState.type === 'shop-card' || popoverState.type === 'help-card') return;
+        if (!popoverState || popoverState.menuDisplay === 'dial' || popoverState.type === 'help-card') return;
 
         const handlePointerMove = (e: PointerEvent) => {
             const menuContainer = document.querySelector('.popover-menu') as HTMLElement;
@@ -315,20 +312,6 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         );
     }
 
-    if (popoverState.type === 'shop-card') {
-        return (
-            <FloatingGroupCard
-                type="shop"
-                shopItems={popoverState.shopItems}
-                onClose={() => setPopoverState(null)}
-                executeCommand={executeCommand}
-                shop={shop}
-                setPopoverState={setPopoverState}
-                popoverRef={popoverRef}
-            />
-        );
-    }
-
     if (popoverState.type === 'help-card' && popoverState.helpData) {
         return (
             <HelpCard 
@@ -341,7 +324,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     }
 
     return (
-        <div className={`popover-menu ${popoverState.type === 'shop-search' ? 'shop-search-active' : ''}`} ref={popoverRef} style={{
+        <div className="popover-menu" ref={popoverRef} style={{
             position: 'fixed',
             left: popoverState.x,
             top: popoverState.y,
@@ -352,7 +335,6 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             {popoverState.type === 'teleport-select' && <TeleportSelectPopover popoverState={popoverState} setPopoverState={setPopoverState} teleportTargets={teleportTargets} executeCommand={executeCommand} />}
             {popoverState.type === 'teleport-manage' && <TeleportManagePopover teleportTargets={teleportTargets} setTeleportTargets={setTeleportTargets} setPopoverState={setPopoverState} />}
             {popoverState.type === 'give-recipient-select' && <RecipientSelectPopover popoverState={popoverState} roomPlayers={roomPlayers} roomNpcs={roomNpcs} executeCommand={executeCommand} setPopoverState={setPopoverState} themeColor={themeColor} />}
-            {popoverState.type === 'shop-search' && <ShopSearchPopover executeCommand={executeCommand} onClose={() => setPopoverState(null)} />}
             {popoverState.type === 'container' && (
                 <ContainerPopover 
                     popoverState={popoverState} 
@@ -374,7 +356,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     themeColor={themeColor}
                 />
             )}
-            {(popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target' || popoverState.type === 'give-target-select' || popoverState.type === 'menu' || popoverState.type === 'character-select' || !popoverState.type) && (
+            {(popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target' || popoverState.type === 'give-target-select' || popoverState.type === 'menu' || !popoverState.type) && (
                 <StandardMenuPopover
                     popoverState={popoverState}
                     buttons={buttons}

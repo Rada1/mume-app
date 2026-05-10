@@ -18,6 +18,7 @@ export interface CommandContext {
     setInventoryLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setStatsLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setInfoLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
+    setAchievementLines?: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setScoreLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setEqLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setTarget: (val: string | null) => void;
@@ -26,7 +27,7 @@ export interface CommandContext {
     setPopoverState: (val: any) => void;
     status: 'connected' | 'disconnected' | 'connecting';
     handleTabClick: (drawer: 'character' | 'players' | 'equipment') => void;
-    setGearTab: (tab: 'worn' | 'inv') => void;
+    setGearTab: (tab: 'worn' | 'inv' | 'vicinity') => void;
     setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
     setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     setIsSettingsOpen: (open: boolean) => void;

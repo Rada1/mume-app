@@ -103,6 +103,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    font-size: var(--dynamic-log-size, 16px);
 }
 
 .drawer-content .inline-btn,

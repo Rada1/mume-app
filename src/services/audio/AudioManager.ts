@@ -14,6 +14,7 @@ export interface AmbientOptions {
     dynamicUrls?: string[];
     inCombat?: boolean;
     isDay?: boolean;
+    loop?: boolean;
 }
 
 type AmbientType = 'terrain' | 'weather' | 'zone' | 'drum' | 'incantation' | 'heartbeat' | 'breath';
@@ -230,7 +231,7 @@ export class AudioManager {
     }
 
     public async setAmbient(type: 'terrain' | 'weather' | 'zone', options: AmbientOptions) {
-        const { key, dynamicUrls, inCombat = false, isDay = true } = options;
+        const { key, dynamicUrls, inCombat = false, isDay = true, loop } = options;
         if (!this._isSoundEnabled && key !== null) return;
         this.init();
         if (!this.audioCtx) return;
@@ -272,7 +273,7 @@ export class AudioManager {
                 targetVolume = config.volume;
             }
         } else if (type === 'zone') {
-            isLoop = false;
+            isLoop = loop ?? false;
             let configUrls: string | string[] | undefined = undefined;
             if (dynamicUrls && dynamicUrls.length > 0) {
                  configUrls = dynamicUrls;

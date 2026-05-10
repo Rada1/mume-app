@@ -100,6 +100,51 @@ export const GameButton: React.FC<GameButtonProps> = ({
         }
     }, [joystick.isActive, heldButton?.id, button.id, joystick.currentDir, joystick.isTargetModifierActive, target, setCommandPreview]);
 
+    const handleSwap = React.useCallback(() => {
+        if (!activeDir || (activeDir as any) === 'center') return;
+        const dirVectors: Record<string, [number, number]> = {
+            right: [30, 0], se: [21, 21], down: [0, 30], sw: [-21, 21],
+            left: [-30, 0], nw: [-21, -21], up: [0, -30], ne: [21, -21]
+        };
+        const [dx, dy] = dirVectors[activeDir as string] || [0, 0];
+        const result = getButtonCommand(button, dx, dy, undefined, 100,
+            heldButton?.id === button.id ? (heldButton?.modifiers || []) : [],
+            joystick, target, true);
+        if (!result?.cmd?.trim()) return;
+
+        triggerHaptic(40);
+        setHeldButton(prev => prev ? { ...prev, didFire: true } : prev);
+        setActiveDir(null);
+
+        if (result.actionType === 'nav') {
+            setActiveSet(result.cmd);
+        } else if (['assign', 'menu', 'select-assign', 'select-recipient'].includes(result.actionType || '')) {
+            const rect = buttonRef.current?.getBoundingClientRect();
+            const isDial = button.menuDisplay === 'dial';
+            setPopoverState({
+                x: isDial ? window.innerWidth / 2 : (rect ? rect.right + 10 : window.innerWidth / 2),
+                y: isDial ? window.innerHeight / 2 : (rect ? rect.top : window.innerHeight / 2),
+                sourceHeight: rect?.height || 0,
+                setId: result.cmd,
+                context: result.actionType === 'select-assign' ? result.modifiers : button.label,
+                assignSourceId: (result.actionType === 'assign' || result.actionType === 'select-assign') ? button.id : undefined,
+                assignSwipeDir: result.dir,
+                executeAndAssign: result.actionType === 'select-assign' || result.actionType === 'assign',
+                menuDisplay: button.menuDisplay,
+                accentColor: button.style.borderColor || button.style.backgroundColor,
+                type: result.actionType === 'select-recipient' ? 'give-recipient-select' : undefined,
+            });
+        } else if (result.actionType === 'preload' || result.cmd.startsWith('input:')) {
+            const prefill = result.cmd.startsWith('input:') ? result.cmd.slice(6) : (result.cmd + (result.cmd.endsWith(' ') ? '' : ' '));
+            handleButtonClick({ ...button, command: prefill, actionType: 'preload', _skipJoystick: true } as any, {} as any);
+        } else if (result.cmd === '__clear_target__') {
+            handleButtonClick({ ...button, command: '__clear_target__', actionType: 'command', _skipJoystick: true } as any, {} as any);
+        } else {
+            executeCommand(result.cmd, false, false);
+        }
+    }, [activeDir, button, heldButton, joystick, target, executeCommand, triggerHaptic,
+        setHeldButton, setActiveDir, setActiveSet, setPopoverState, handleButtonClick, buttonRef]);
+
     React.useLayoutEffect(() => {
         if (buttonRef.current && needsCircularVitals) {
             const el = buttonRef.current;
@@ -192,12 +237,13 @@ export const GameButton: React.FC<GameButtonProps> = ({
                     isOuter={true}
                 />
             )}
-            <ButtonSwipeOverlay 
-                button={button} 
-                activeDir={activeDir} 
-                isCancelling={isCancelling} 
+            <ButtonSwipeOverlay
+                button={button}
+                activeDir={activeDir}
+                isCancelling={isCancelling}
                 buttonRect={buttonRef.current?.getBoundingClientRect()}
                 rayParams={rayParams}
+                onSwap={handleSwap}
             />
             <ButtonLabel button={button} />
 

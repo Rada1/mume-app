@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Mapper } from '../../Mapper/Mapper';
 import { LineCluster } from './LineCluster';
 import { useGame, useUI, useVitals } from '../../../context/GameContext';
@@ -6,10 +6,11 @@ import { GameContextType, UIContextType } from '../../../context/GameContext/typ
 import { CloudFog, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplets, Activity, Clock } from 'lucide-react';
 import { useMumeTime } from '../../../hooks/useMumeTime';
 import InputArea from '../../Controls/InputArea';
-import { UnifiedDrawerContent } from '../../Drawers/UnifiedDrawerContent';
 import CombatStatsPanel from '../../Combat/CombatStatsPanel';
 import { MapperRoomInfo } from '../../Mapper/MapperRoomInfo';
 import { UiPositions, SwipeDirection } from '../../../types';
+import { GutterDrawerPanel } from './GutterDrawerPanel';
+
 
 interface MapperClusterProps {
     uiPositions: UiPositions;
@@ -39,18 +40,14 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
 }) => {
     const {
         triggerHaptic, viewport, btn, handleButtonClick, executeCommand, joystick,
-        handleLogClick,
         spatButtons, setSpatButtons, parley, setParley, whoList,
-        inlineCategories, env, isFoggy, gameState, currentTerrain, gameTime
+        inlineCategories, env, isFoggy, gameState, currentTerrain, gameTime, accountState, setAccountState
     } = useGame() as GameContextType;
-    const { target, activePrompt, stats, groupMembers } = useVitals();
+    const { target, activePrompt, stats } = useVitals();
     const currentTime = useMumeTime(gameTime);
     const {
         ui, setPopoverState,
-        handleTabClick, toggleMap, displayInventoryLines, displayEqLines,
-        whoLines, whereLines, infoLines, questLines, practiceLines,
-        setWhoLines, setWhereLines,
-        gearTab, setGearTab, playersTab, setPlayersTab, charTab, setCharTab
+        handleTabClick, toggleMap
     } = useUI() as UIContextType;
     const { getLightingIcon, getWeatherIcon, lighting, weather } = env;
     const isExpanded = ui.mapExpanded;
@@ -58,10 +55,376 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
 
     // Mobile DOCKED (Gutter) Mode
     const isReplaying = (useGame() as GameContextType).sessionMode === 'replay';
-    
+
+    // --- Sticky options for smooth creation-screen transitions ---
+    // Holds the last non-empty set of options so we never flash to an empty state
+    // while waiting for the server's next set to arrive.
+    const stickyOptionsRef = useRef<{ id: string; label: string }[]>([]);
+    const [displayedOptions, setDisplayedOptions] = useState<{ id: string; label: string }[]>([]);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+    const transitionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const liveOptions = accountState.creationPrompt?.options ?? [];
+
+    useEffect(() => {
+        if (liveOptions.length > 0) {
+            // New options arrived — if we were transitioning, snap in cleanly.
+            if (transitionTimerRef.current) {
+                clearTimeout(transitionTimerRef.current);
+                transitionTimerRef.current = null;
+            }
+            stickyOptionsRef.current = liveOptions;
+            setIsTransitioning(false);
+            setDisplayedOptions(liveOptions);
+        } else if (stickyOptionsRef.current.length > 0) {
+            // Options were cleared (user tapped a button) — hold the last set
+            // briefly to avoid a flash, then allow the new set to render in.
+            setIsTransitioning(true);
+            // After a short grace period (server round-trip) with no new options
+            // arriving, we surrender the sticky hold so text-entry prompts work.
+            transitionTimerRef.current = setTimeout(() => {
+                stickyOptionsRef.current = [];
+                setDisplayedOptions([]);
+                setIsTransitioning(false);
+            }, 800);
+        }
+    }, [liveOptions.length, liveOptions]);
+
     // On mobile portrait, we show the gutter. On desktop/landscape, Mapper is in DrawerManager
     if (!isMobile || isLandscape || (gameState === 'disconnected' && !isReplaying)) {
         return null;
+    }
+
+    // Account screen: full-height gutter with account drawer, no map or tabs
+    if (gameState === 'account') {
+        const isLoginStage = accountState.stage === 'login';
+        const isMenuStage = accountState.stage === 'account-menu';
+        const isCreationStage = accountState.stage === 'character-creation' || accountState.stage === 'stat-editing';
+
+        const menuCommands = [
+            'create', 'play', 'time', 'list', 'move', 'password', 
+            'add', 'info', 'practice', 'link', 'lag', 'help', 'menu', 'quit'
+        ];
+
+        return (
+            <div className="mobile-bottom-gutter account-gutter">
+                <div 
+                    className="account-gutter-content" 
+                    style={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        flex: 1, 
+                        justifyContent: isLoginStage ? 'center' : 'flex-start',
+                        alignItems: 'center',
+                        width: '100%',
+                        padding: '0 8px'
+                    }}
+                >
+                    {/* Character Select panel removed per user request */}
+                    
+                    <div className="account-mobile-gutter-layout" style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        {isLoginStage && accountState.currentPrompt && (
+                            <div className="account-prompt-display">
+                                {accountState.currentPrompt}
+                            </div>
+                        )}
+
+                        {isMenuStage && (
+                            <>
+                                <div style={{ 
+                                    color: 'rgba(255,255,255,0.4)', 
+                                    fontSize: '11px', 
+                                    fontWeight: 900, 
+                                    textTransform: 'uppercase', 
+                                    letterSpacing: '1.5px', 
+                                    marginBottom: '2px', 
+                                    width: '100%', 
+                                    textAlign: 'center',
+                                    marginTop: '2px'
+                                }}>
+                                    Menu
+                                </div>
+                                <div className="account-menu-buttons-list">
+                                    {menuCommands.map(cmd => (
+                                        <button
+                                            key={cmd}
+                                            className="account-menu-btn"
+                                            onClick={() => executeCommand(cmd)}
+                                        >
+                                            {cmd}
+                                        </button>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+
+                        {isCreationStage && (
+                            <div className="creation-flow-container" style={{ display: 'flex', flexDirection: 'column', flex: 1, width: '100%', minHeight: 0, overflow: 'hidden' }}>
+                                <div style={{ 
+                                    color: 'rgba(255,255,255,0.4)', 
+                                    fontSize: '11px', 
+                                    fontWeight: 900, 
+                                    textTransform: 'uppercase', 
+                                    letterSpacing: '1.5px', 
+                                    marginBottom: '2px', 
+                                    width: '100%', 
+                                    textAlign: 'center',
+                                    marginTop: '2px'
+                                }}>
+                                    Create Character
+                                </div>
+                                {accountState.stage === 'stat-editing' && accountState.pointsLeft !== undefined && (
+                                    <div className="creation-points-header" style={{ 
+                                        padding: '2px 12px', 
+                                        textAlign: 'center', 
+                                        borderBottom: '1px solid rgba(255,255,255,0.05)',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        width: '100%'
+                                    }}>
+                                        <div style={{
+                                            color: '#00ff00',
+                                            fontSize: '11px',
+                                            fontWeight: 'bold',
+                                            textTransform: 'uppercase',
+                                            letterSpacing: '1px',
+                                            background: 'rgba(0, 255, 0, 0.1)',
+                                            padding: '2px 10px',
+                                            borderRadius: '10px',
+                                            border: '1px solid rgba(0, 255, 0, 0.2)'
+                                        }}>
+                                            {accountState.pointsLeft} {accountState.pointsLeft === 1 ? 'Point' : 'Points'} Left
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="creation-options-list" style={{ 
+                                    display: 'flex', 
+                                    flexDirection: 'column',
+                                    flexWrap: 'nowrap',
+                                    gap: '0px', 
+                                    alignItems: 'center',
+                                    justifyContent: 'flex-start',
+                                    flex: 1,
+                                    width: '100%',
+                                    padding: '0px',
+                                    overflowY: 'auto',
+                                    overflowX: 'hidden',
+                                    WebkitOverflowScrolling: 'touch',
+                                    maxHeight: '100%',
+                                    scrollbarWidth: 'none',
+                                    opacity: isTransitioning ? 0.35 : 1,
+                                    transition: 'opacity 0.18s ease'
+                                }}>
+                                    {(() => {
+                                        const isStatStage = accountState.stage === 'stat-editing';
+                                        const statOptions = displayedOptions.filter(opt => ['str', 'int', 'wis', 'dex', 'con', 'wil', 'per'].includes(opt.id));
+                                        const actionOptions = displayedOptions.filter(opt => !['str', 'int', 'wis', 'dex', 'con', 'wil', 'per'].includes(opt.id));
+
+                                        if (isStatStage) {
+                                            return (
+                                                <div style={{ display: 'flex', width: '100%', gap: '8px', padding: '0 4px', alignItems: 'stretch' }}>
+                                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                                                        {statOptions.map(opt => {
+                                                            const currentValue = accountState.stats?.[opt.id];
+                                                            return (
+                                                                <div key={opt.id} className="stat-editor-row" style={{
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'space-between',
+                                                                    width: '100%',
+                                                                    background: 'rgba(255, 255, 255, 0.04)',
+                                                                    padding: '0 10px',
+                                                                    borderRadius: '6px',
+                                                                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                                                                    height: '24px',
+                                                                    boxSizing: 'border-box'
+                                                                }}>
+                                                                    <span style={{ color: 'var(--text-faded)', fontSize: '10px', fontWeight: 800, width: '28px', letterSpacing: '0.04em' }}>{opt.id.toUpperCase()}</span>
+                                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                        <button 
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                executeCommand(`${opt.id} ${currentValue! - 1}`);
+                                                                            }}
+                                                                            style={{
+                                                                                background: 'rgba(255, 50, 50, 0.15)',
+                                                                                border: '1px solid rgba(255, 50, 50, 0.25)',
+                                                                                borderRadius: '4px',
+                                                                                width: '24px',
+                                                                                height: '24px',
+                                                                                color: '#ff8888',
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'center',
+                                                                                fontSize: '16px',
+                                                                                fontWeight: 900,
+                                                                                cursor: 'pointer',
+                                                                                padding: 0
+                                                                            }}
+                                                                        >
+                                                                            −
+                                                                        </button>
+                                                                        <span style={{ color: '#fff', fontSize: '13px', fontWeight: 'bold', minWidth: '18px', textAlign: 'center' }}>
+                                                                            {currentValue}
+                                                                        </span>
+                                                                        <button 
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                executeCommand(`${opt.id} ${currentValue! + 1}`);
+                                                                            }}
+                                                                            style={{
+                                                                                background: 'rgba(50, 255, 50, 0.15)',
+                                                                                border: '1px solid rgba(50, 255, 255, 0.25)',
+                                                                                borderRadius: '4px',
+                                                                                width: '24px',
+                                                                                height: '24px',
+                                                                                color: '#88ff88',
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'center',
+                                                                                fontSize: '16px',
+                                                                                fontWeight: 900,
+                                                                                cursor: 'pointer',
+                                                                                padding: 0
+                                                                            }}
+                                                                        >
+                                                                            +
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                    <div style={{ width: '85px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                        {actionOptions.map(opt => (
+                                                            <button
+                                                                key={opt.id}
+                                                                className="account-menu-btn creation-option-btn no-arrow"
+                                                                style={{
+                                                                    width: '100%',
+                                                                    textAlign: 'center',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    padding: '0 8px',
+                                                                    flex: 1,
+                                                                    minHeight: '40px',
+                                                                    fontSize: '11px',
+                                                                    fontWeight: 'bold'
+                                                                }}
+                                                                onClick={() => executeCommand(opt.id)}
+                                                            >
+                                                                {opt.label.split(' ')[0]}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            );
+                                        }
+
+                                        return displayedOptions.map(opt => (
+                                            <button
+                                                key={opt.id}
+                                                className="account-menu-btn creation-option-btn"
+                                                style={{
+                                                    width: '100%',
+                                                    textAlign: 'left',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    padding: '10px 16px',
+                                                    margin: '1px 0'
+                                                }}
+                                                onClick={() => {
+                                                    setAccountState?.(prev => ({
+                                                        ...prev,
+                                                        lastSelectedId: opt.id
+                                                    }));
+                                                    executeCommand(opt.id);
+                                                }}
+                                            >
+                                                <span style={{ color: '#fff', marginRight: '8px', fontWeight: 'bold', minWidth: '16px' }}>
+                                                    {/^\d+$/.test(opt.id) ? (
+                                                        <>
+                                                            (<span style={{ color: '#4ade80' }}>{opt.id}</span>)
+                                                        </>
+                                                    ) : opt.id}
+                                                </span>
+                                                <span style={{ flex: 1, fontWeight: 'bold' }}>{opt.label}</span>
+                                            </button>
+                                        ));
+                                    })()}
+                                </div>
+
+                                <div className="creation-nav-buttons" style={{ 
+                                    display: 'flex', 
+                                    gap: '8px', 
+                                    justifyContent: 'center', 
+                                    padding: '2px 12px',
+                                    width: '100%',
+                                    borderTop: '1px solid rgba(255,255,255,0.05)',
+                                    background: 'rgba(0,0,0,0.1)',
+                                    opacity: isTransitioning ? 0 : 1,
+                                    pointerEvents: isTransitioning ? 'none' : undefined,
+                                    transition: 'opacity 0.18s ease'
+                                }}>
+                                    <button 
+                                        className="account-menu-btn"
+                                        style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
+                                        onClick={() => executeCommand('back')}
+                                    >
+                                        Back
+                                    </button>
+                                    <button 
+                                        className="account-menu-btn"
+                                        style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
+                                        onClick={() => {
+                                            executeCommand('');
+                                            executeCommand('');
+                                        }}
+                                    >
+                                        Main Menu
+                                    </button>
+                                    <button 
+                                        className="account-menu-btn"
+                                        style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
+                                        onClick={() => executeCommand('?')}
+                                    >
+                                        ?
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {(!isCreationStage || (!displayedOptions.length && !isTransitioning)) && (
+                            <div
+                                className="mobile-gutter-input-wrapper"
+                                style={{ position: 'relative', zIndex: 1, padding: '0', flexShrink: 0, marginBottom: (isLoginStage || isMenuStage || isCreationStage) ? '0' : '16px', width: '100%' }}
+                            >
+                            <InputArea
+                                input={input}
+                                setInput={setInput}
+                                onSend={handleSend}
+                                onSwipe={handleInputSwipe}
+                                isMobile={isMobile}
+                                isKeyboardOpen={isKeyboardOpen}
+                                commandPreview={null}
+                                spatButtons={spatButtons}
+                                setActiveSet={btn.setActiveSet}
+                                executeCommand={executeCommand}
+                                setSpatButtons={setSpatButtons}
+                                setPopoverState={setPopoverState}
+                                parley={parley}
+                                setParley={setParley}
+                                whoList={whoList}
+                                gameState={gameState}
+                                terrain={currentTerrain}
+                            />
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     const isShown = ui.mapExpanded && ui.drawer === 'none';
@@ -167,35 +530,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
 
             {/* Drawer Area */}
             {!isShown && ui.drawer !== 'none' && (
-                <div className="gutter-drawer-container gutter-panel-card" style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-                    <div
-                        className="gutter-drawer-content"
-                        style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}
-                        onClick={handleLogClick as any}
-                    >
-                        <UnifiedDrawerContent
-                            drawer={ui.drawer}
-                            gearTab={gearTab}
-                            setGearTab={setGearTab}
-                            playersTab={playersTab}
-                            setPlayersTab={setPlayersTab}
-                            charTab={charTab}
-                            setCharTab={setCharTab}
-                            displayInventoryLines={displayInventoryLines}
-                            displayEqLines={displayEqLines}
-                            whoLines={whoLines}
-                            whereLines={whereLines}
-                            infoLines={infoLines}
-                            questLines={questLines}
-                            practiceLines={practiceLines}
-                            groupMembers={groupMembers}
-                            triggerHaptic={triggerHaptic}
-                            executeCommand={executeCommand}
-                            setWhoLines={setWhoLines}
-                            setWhereLines={setWhereLines}
-                        />
-                    </div>
-                </div>
+                <GutterDrawerPanel />
             )}
 
             {/* Command Bar at the BOTTOM of the gutter */}

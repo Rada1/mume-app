@@ -13,6 +13,7 @@ interface EnvironmentEffectsProps {
     isMobile: boolean;
     bgImage?: string | null;
     bgImageBottom?: string | null;
+    terrain?: string | null;
 }
 
 export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
@@ -24,7 +25,8 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     isImmersionMode,
     isMobile,
     bgImage,
-    bgImageBottom
+    bgImageBottom,
+    terrain
 }) => {
     // --- Background Cross-fade Logic ---
     const [layerA, setLayerA] = React.useState<string | null>(bgImage || null);
@@ -48,7 +50,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     return (
         <div style={{ '--lightning-x': `${lightningX}%` } as React.CSSProperties}>
             {/* --- BACK LAYER: Ambient & Lighting [z-index: 1] --- */}
-            <div className={`environment-root back lighting-state-${isImmersionMode ? lighting : 'none'}`}>
+            <div className={`environment-root back lighting-state-${isImmersionMode ? lighting : 'none'} terrain-${(terrain || 'default').toLowerCase().replace(/\s+/g, '-')}`}>
                 {isImmersionMode && (
                     <>
                         {/* Layer A */}
@@ -76,6 +78,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
 
                         <div className="dust-layer" />
                         <div className="overlay-layer" />
+                        <div className="terrain-tint-layer" />
                         <div className={`storm-overlay-layer ${weather === 'heavy-rain' ? 'active' : ''}`} />
                         <div className="screen-vignette" />
 

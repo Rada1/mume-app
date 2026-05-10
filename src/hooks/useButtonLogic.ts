@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { CustomButton, PracticeData } from '../types';
 import { MAGE_SPELLS, CLERIC_SPELLS, WARRIOR_SKILLS, RANGER_SKILLS, THIEF_SKILLS, CLASS_MAPPINGS } from '../utils/spellLists';
+import { applyPracticeSwipeDefaults } from '../utils/swipeAutoPopulate';
 
 export const useButtonLogic = (deps: {
     rawButtons: CustomButton[],
@@ -121,7 +122,9 @@ export const useButtonLogic = (deps: {
                 }
             }
 
-            return modified;
+            return isSmartPopulateEnabled
+                ? applyPracticeSwipeDefaults(modified, safeAbilities, practiceData)
+                : modified;
         });
 
         // 2. Dynamic generation for Smart Sets

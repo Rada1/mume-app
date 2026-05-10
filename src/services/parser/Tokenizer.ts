@@ -188,7 +188,9 @@ export class Tokenizer {
         const lower = decoded.toLowerCase();
 
         // --- STATE MACHINE: Context Inference (Handles both tagged and plain text headers) ---
-        if (lower.includes('carrying') && !lower.includes('stop using')) this.currentLocation = 'carried';
+        if (lower.includes('you stop using')) this.currentLocation = 'carried';
+        else if (lower.includes('you wear') || lower.includes('you wield') || lower.includes('you start using')) this.currentLocation = 'worn';
+        else if (lower.includes('carrying')) this.currentLocation = 'carried';
         else if (lower.includes('using') || lower.includes('equipped')) this.currentLocation = 'worn';
         else if (lower.includes('in the') || lower.includes('contents')) this.currentLocation = 'container';
         else if (lower.includes('obvious exits')) this.currentLocation = 'room';

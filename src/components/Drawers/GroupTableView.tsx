@@ -82,7 +82,7 @@ export const GroupTableView: React.FC<{ members: GroupMember[] }> = ({ members }
     if (members.length === 0) return <EmptyGroup />;
 
     return (
-        <div style={{ flex: 1, overflow: 'auto', padding: '18px 16px', fontFamily: 'var(--font-mono, monospace)', fontSize: '13px', whiteSpace: 'nowrap', lineHeight: 1.55 }}>
+        <div style={{ flex: 1, overflow: 'auto', padding: '18px 16px', fontFamily: 'var(--font-mono, monospace)', fontSize: 'var(--dynamic-log-size, 16px)', whiteSpace: 'nowrap', lineHeight: 1.55 }}>
             <HeaderRow />
             {members.map((member) => {
                 const tableMember = member as GroupTableMember;

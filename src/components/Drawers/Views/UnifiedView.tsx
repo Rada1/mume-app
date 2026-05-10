@@ -38,7 +38,7 @@ export const UnifiedView: React.FC<UnifiedViewProps> = ({
                 overflowY: 'auto', 
                 padding: '0 8px 20px 8px',
                 fontFamily: 'var(--font-mono, monospace)',
-                fontSize: '13px'
+                fontSize: 'var(--dynamic-log-size, 16px)'
             }}>
                 {lines.length > 0 ? (
                     lines.map((line) => (

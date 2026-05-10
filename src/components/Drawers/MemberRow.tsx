@@ -67,7 +67,7 @@ export const MemberRow: React.FC<MemberRowProps> = ({ member, index }) => {
             {isTarget && (
                 <div style={{
                     position: 'absolute', top: '-6px', right: '6px',
-                    fontSize: '0.55rem', fontWeight: 'bold', textTransform: 'uppercase',
+                    fontSize: '0.55em', fontWeight: 'bold', textTransform: 'uppercase',
                     color: 'var(--accent, #4a90e2)', letterSpacing: '0.5px',
                     background: 'var(--bg, #1a1a2e)', padding: '0 4px', borderRadius: '3px'
                 }}>

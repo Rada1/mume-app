@@ -12,7 +12,7 @@ export function useReplayMessages() {
         mid?: string,
         isRoomName?: boolean,
         precalculated?: { textOnly?: string; lower?: string; html?: string; tokens?: any[] },
-        shopItem?: any,
+        _shopItem?: any,
         practiceSkill?: any,
         practiceHeader?: any,
         _isSystem?: boolean,
@@ -55,7 +55,6 @@ export function useReplayMessages() {
             isHitterImpact: providedIsHitterImpact,
             isSnoop: providedIsSnoop,
             isSnoopInput: providedIsSnoopInput,
-            shopItem,
             practiceSkill,
             practiceHeader,
         };

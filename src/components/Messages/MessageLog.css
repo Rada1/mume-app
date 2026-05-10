@@ -108,7 +108,7 @@
     flex-shrink: 0;                /* Prevent squashing in flex containers */
     word-wrap: break-word;
     white-space: pre-wrap;
-    padding: 0;
+    padding: 0 6px;
     margin: 0;                     /* Removed -1px to prevent overlap */
     min-height: 0;                 /* Dense terminal logic */
     background: transparent;       /* Standard game text is now high-contrast transparent */
@@ -122,10 +122,7 @@
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
 }
 
-.message.shop-item {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-}
+
 
 .newbie-mode .message {
     animation: none !important;
@@ -177,7 +174,7 @@
     background: transparent !important;
     border-left: none !important;
     border-radius: 0 !important;
-    padding: 0 !important;
+    padding: 0 6px !important;
     margin: 0 !important;
     box-shadow: none !important;
     line-height: 1.4 !important;
@@ -189,7 +186,7 @@
 
 .message.is-room-block:not(.is-room-name) {
     background: transparent !important;
-    padding: 0 6px;
+    /* padding: 0 6px; -- Now inherited from base .message */
     margin: 0;
     border: none;
     border-radius: 0;
@@ -785,7 +782,7 @@
     font-weight: bold;
     opacity: 1;
     line-height: 1.25 !important;
-    padding: 2px 0 !important;
+    padding: 2px 6px !important;
     box-shadow: none !important;
     min-height: 1.25em !important;
 }
@@ -1382,78 +1379,6 @@ span.inline-btn {
 
 /* Fixed: inherits from .inline-btn:active */
 
-/* Shop Item Cards (Interactive) */
-.shop-item-card.inline-btn {
-    display: flex !important;
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    padding: 1px 4px;
-    margin: 1px 0;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    max-width: 100%;
-    cursor: pointer;
-    overflow: hidden;
-    text-shadow: none;
-    line-height: inherit;
-}
-
-.shop-item-card:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(100, 220, 255, 0.3);
-    transform: none;
-}
-
-.shop-item-card.recent-entry {
-    animation: none !important;
-    opacity: 1 !important;
-}
-
-.shop-item-id {
-    font-size: 0.85em;
-    font-weight: bold;
-    color: var(--text-faded);
-    opacity: 0.6;
-}
-
-.shop-item-name {
-    font-size: 1em;
-    font-weight: bold;
-    color: var(--text-primary);
-}
-
-.shop-item-condition {
-    font-size: 0.8rem;
-    color: var(--text-dim);
-    font-style: italic;
-}
-
-.shop-item-price {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 1em;
-    white-space: nowrap;
-}
-
-.price-icon {
-    opacity: 0.8;
-}
-
-.shop-item-tap-hint {
-    font-size: 0.7rem;
-    color: var(--text-faded);
-    opacity: 0;
-    text-align: right;
-    margin-top: 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: opacity 0.3s ease;
-}
-
-.shop-item-card:hover .shop-item-tap-hint {
-    opacity: 0.8;
-}
 
 /* --- Drag & Drop Target Highlighting --- */
 .input-area.drop-hover-active {

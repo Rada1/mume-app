@@ -3,7 +3,9 @@ import { gmcpBus } from '../../events/gmcpBus';
 import { useVitalsStore } from '../useVitalsStore';
 import { useRoomStore } from '../useRoomStore';
 import { useModeStore } from '../useModeStore';
+import { useCombatStore } from '../useCombatStore';
 import { initialVitalsState } from '../slices/vitalsSlice';
+import { initialCombatState } from '../slices/combatSlice';
 
 describe('MUME Store Integration Tests', () => {
     beforeEach(() => {
@@ -21,6 +23,7 @@ describe('MUME Store Integration Tests', () => {
         });
 
         useModeStore.setState({ isSpectating: false });
+        useCombatStore.setState(initialCombatState);
     });
 
     describe('Vitals Store Integration', () => {
@@ -60,6 +63,40 @@ describe('MUME Store Integration Tests', () => {
 
             gmcpBus.emit('Char.Vitals', { position: 'standing' });
             expect(useVitalsStore.getState().conditions?.waiting).toBe(false);
+        });
+    });
+
+    describe('Combat Store Integration', () => {
+        it('does not target the mount ridden by the player as an opponent', () => {
+            gmcpBus.emit('Room.Chars', [
+                {
+                    id: 7,
+                    name: 'a pack horse',
+                    short: 'A pack horse is here, ridden by you.',
+                    type: 'npc',
+                    fighting: 'you'
+                }
+            ]);
+
+            const state = useCombatStore.getState();
+            expect(state.opponentId).toBeNull();
+            expect(state.opponentName).toBeNull();
+        });
+
+        it('still targets a real room occupant fighting the player', () => {
+            gmcpBus.emit('Room.Chars', [
+                {
+                    id: 9,
+                    name: 'an orc',
+                    short: 'An orc is here.',
+                    type: 'npc',
+                    fighting: 'you'
+                }
+            ]);
+
+            const state = useCombatStore.getState();
+            expect(state.opponentId).toBe(9);
+            expect(state.opponentName).toBe('an orc');
         });
     });
 

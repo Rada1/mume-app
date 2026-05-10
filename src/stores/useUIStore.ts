@@ -38,14 +38,28 @@ export interface UIState {
     managerSelectedSet: string | null;
     
     // Tab States for Drawers
-    gearTab: 'worn' | 'inv';
+    gearTab: 'worn' | 'inv' | 'vicinity';
     playersTab: 'online' | 'nearby' | 'group';
-    charTab: 'info' | 'quests' | 'skills';
+    charTab: 'info' | 'quests' | 'skills' | 'achievements';
+
+    // Shop panel
+    isShopOpen: boolean;
+    setIsShopOpen: (open: boolean) => void;
+    shopItems: import('../types').ShopItem[];
+    setShopItems: (items: import('../types').ShopItem[]) => void;
+    heldShopAction: 'buy' | 'show' | 'compare' | 'sell' | 'value' | null;
+    setHeldShopAction: (action: 'buy' | 'show' | 'compare' | 'sell' | 'value' | null) => void;
+    compareFirstTarget: number | null;
+    setCompareFirstTarget: (num: number | null) => void;
+    shopBalance: string | null;
+    setShopBalance: (balance: string | null) => void;
+    shopBalanceRequested: boolean;
+    setShopBalanceRequested: (v: boolean) => void;
 
     // Actions
-    setGearTab: (tab: 'worn' | 'inv') => void;
+    setGearTab: (tab: 'worn' | 'inv' | 'vicinity') => void;
     setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
-    setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
+    setCharTab: (tab: 'info' | 'quests' | 'skills' | 'achievements') => void;
     
     setDrawer: (drawer: DrawerType) => void;
     setIsDrawerPeeking: (peeking: boolean) => void;
@@ -104,6 +118,19 @@ export const useUIStore = create<UIState>((set) => ({
     selectedObjectIds: new Set<string>(),
     managerSelectedSet: null,
     
+    isShopOpen: false,
+    setIsShopOpen: (open) => set({ isShopOpen: open }),
+    shopItems: [],
+    setShopItems: (items) => set({ shopItems: items }),
+    heldShopAction: null,
+    setHeldShopAction: (action) => set({ heldShopAction: action }),
+    compareFirstTarget: null,
+    setCompareFirstTarget: (num) => set({ compareFirstTarget: num }),
+    shopBalance: null,
+    setShopBalance: (balance) => set({ shopBalance: balance }),
+    shopBalanceRequested: false,
+    setShopBalanceRequested: (v) => set({ shopBalanceRequested: v }),
+
     gearTab: 'worn',
     playersTab: 'online',
     charTab: 'info',

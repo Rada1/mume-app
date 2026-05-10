@@ -21,11 +21,6 @@
     touch-action: none;
 }
 
-.popover-menu.shop-search-active {
-    max-width: 300px;
-    width: 300px;
-}
-
 .popover-header {
     padding-bottom: 5px;
     margin-bottom: 5px;
@@ -374,87 +369,3 @@ body.has-popover .dial-menu-overlay {
     opacity: 1;
 }
 
-/* Shop Search Popover Styles */
-.shop-search-popover {
-    display: flex;
-    flex-direction: column;
-    padding: 4px;
-}
-
-.search-input-wrapper {
-    position: relative;
-    margin-bottom: 12px;
-}
-
-.search-icon {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-dim);
-    pointer-events: none;
-}
-
-.shop-search-input {
-    width: 100%;
-    background: var(--input-bg);
-    border: 1px solid var(--border-modal);
-    border-radius: 8px;
-    padding: 10px 10px 10px 34px;
-    color: var(--text-primary);
-    font-size: 0.9rem;
-    outline: none;
-    transition: all 0.2s;
-}
-
-.shop-search-input:focus {
-    border-color: var(--accent);
-    background: var(--bg-panel);
-}
-
-.shop-category-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-
-.shop-category-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    color: var(--text-dim);
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.shop-category-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--accent);
-    color: var(--accent);
-}
-
-.shop-category-btn svg {
-    opacity: 0.8;
-}
-
-.shop-search-submit {
-    padding: 10px;
-    background: var(--accent);
-    color: #000;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: opacity 0.2s;
-}
-
-.shop-search-submit:hover {
-    opacity: 0.9;
-}

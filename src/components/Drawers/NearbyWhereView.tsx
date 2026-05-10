@@ -6,6 +6,7 @@
 import React from 'react';
 import { RefreshCw } from 'lucide-react';
 import { DrawerLine } from '../../types';
+import { LineItem } from './LineItem';
 
 interface NearbyWhereViewProps {
     lines: DrawerLine[];
@@ -14,19 +15,23 @@ interface NearbyWhereViewProps {
 
 export const NearbyWhereView: React.FC<NearbyWhereViewProps> = ({ lines, onRefresh }) => (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, position: 'relative', background: 'rgba(0,0,0,0.1)' }}>
-        <div style={{ flex: 1, overflowY: 'auto', padding: '14px 12px 56px', fontFamily: 'var(--font-mono, monospace)', fontSize: '13px', whiteSpace: 'pre', color: 'rgba(255,255,255,0.86)' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '14px 12px 56px', fontFamily: 'var(--font-mono, monospace)', fontSize: 'var(--dynamic-log-size, 16px)', whiteSpace: 'pre', color: 'rgba(255,255,255,0.86)' }}>
             {lines.length > 0 ? (
                 lines.map(line => (
-                    <div
-                        key={line.id}
-                        style={{
-                            color: line.isHeader ? 'rgba(255,255,255,0.72)' : 'rgba(255,255,255,0.92)',
-                            fontWeight: line.isHeader ? 700 : 500,
-                            lineHeight: 1.55
-                        }}
-                    >
-                        {line.text}
-                    </div>
+                    line.tokens && line.tokens.length > 0 ? (
+                        <LineItem key={line.id} line={line} category="inline-player" />
+                    ) : (
+                        <div
+                            key={line.id}
+                            style={{
+                                color: line.isHeader ? 'rgba(255,255,255,0.72)' : 'rgba(255,255,255,0.92)',
+                                fontWeight: line.isHeader ? 700 : 500,
+                                lineHeight: 1.55
+                            }}
+                        >
+                            {line.text}
+                        </div>
+                    )
                 ))
             ) : (
                 <div style={{ padding: '28px 8px', textAlign: 'center', color: 'rgba(255,255,255,0.3)', fontStyle: 'italic', whiteSpace: 'normal' }}>

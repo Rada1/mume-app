@@ -154,16 +154,7 @@ const Header: React.FC<HeaderProps> = ({
     }, [ui.isMenuOpen]);
 
     return (
-        <header 
-            className={`header ${viewport.isMobile ? 'mobile-header' : ''}`} 
-            style={{ 
-                display: 'grid', 
-                gridTemplateColumns: viewport.isMobile ? 'auto 1fr auto' : 'minmax(180px, auto) 1fr auto',
-                alignItems: 'center', 
-                gap: 8,
-                paddingRight: viewport.isMobile ? '8px' : '12px'
-            }}
-        >
+        <header className={`header ${viewport.isMobile ? 'mobile-header' : ''}`}>
             {/* Left: Player Status HUD */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'visible', position: 'relative' }}>
                 <div className="player-status-hud" onClick={() => setUI(prev => ({ ...prev, drawer: 'character' }))}>
@@ -385,7 +376,7 @@ const Header: React.FC<HeaderProps> = ({
                     </div>
                 )}
 
-                {isEditMode && !isLandscape && (
+                {isEditMode && !viewport.isLandscape && (
                     <div className="action-menu-wrapper" ref={setMenuRef} style={{ flexShrink: 1, minWidth: 0 }}>
                         <div
                             className={`set-switcher ${isSetMenuOpen ? 'active' : ''}`}

@@ -35,7 +35,7 @@ export interface PopoverState {
     x: number;
     y: number;
     sourceHeight?: number;
-    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'give-target-select' | 'put-container-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target' | 'container' | 'shop-card' | 'session-log' | 'help-card' | 'character-select';
+    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'give-target-select' | 'put-container-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target' | 'container' | 'shop-card' | 'session-log' | 'help-card';
     setId: string; // The legacy command or set ID. Can still hold standard menu set IDs.
     kind?: EntityKind; 
     location?: EntityLocation; 

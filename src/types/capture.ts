@@ -15,6 +15,7 @@ export type CaptureType =
   | 'score'
   | 'info'
   | 'quests'
+  | 'achievement'
   | 'container'
   | 'help'
   | 'none';

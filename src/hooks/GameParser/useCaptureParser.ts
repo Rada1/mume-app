@@ -22,6 +22,7 @@ export interface CaptureParserDeps {
     setScoreLines: (lines: DrawerLine[]) => void;
     setInfoLines: (lines: DrawerLine[]) => void;
     setQuestLines: (lines: DrawerLine[]) => void;
+    setAchievementLines: (lines: DrawerLine[]) => void;
     practiceHandler?: {
         parsePracticeLine: (text: string) => unknown;
         finalizePractice: () => void;
@@ -35,7 +36,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
     const {
         setCaptureSession,
         setInventoryLines, setEqLines, setStatsLines, setPracticeLines,
-        setWhoLines, setWhoList, setScoreLines, setInfoLines, setQuestLines, registerEntity,
+        setWhoLines, setWhoList, setScoreLines, setInfoLines, setQuestLines, setAchievementLines, registerEntity,
         practiceHandler,
         ansiConvert, captureStage
     } = deps;
@@ -58,8 +59,9 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         else if (lower.includes('your inventory contains:')) type = 'inventory';
         else if (lower.includes('character name:') || lower.includes('character information for')) type = 'stats';
         else if (clean.startsWith('[stat]')) type = 'stats';
-        else if (lower.includes('skill') && lower.includes('knowledge')) type = 'practice';
+        else if (/^(?:<header>)?\s*skill(?:\s*\/\s*spell)?\s+(?:sessions\s+)?knowledge\b/i.test(clean)) type = 'practice';
         else if (lower.includes('practice sessions left')) type = 'practice';
+        else if (/^you have .+ achievements?:?$/i.test(clean)) type = 'achievement';
         else if (lower.includes('unfinished quest') || lower.includes('no unfinished quests') || lower.includes('not found any new quests') || (lower.includes('learnt of') && lower.includes('quest'))) type = 'quests';
         else if (lower.includes(', a level ') || lower.startsWith('you are a ') || lower.includes('real time')) type = 'info';
         else if (/\d+\/\d+ hits, \d+\/\d+ mana, and \d+\/\d+ moves/i.test(lower)) type = 'score';
@@ -97,7 +99,8 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             'stats': 'stat',
             'practice': 'practice',
             'info': 'info',
-            'score': 'score'
+            'score': 'score',
+            'achievement': 'achievement'
         };
         if (stageMap[type]) {
             captureStage.current = stageMap[type];
@@ -240,6 +243,9 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                 case 'quests':
                     setQuestLines(lines);
                     break;
+                case 'achievement':
+                    setAchievementLines(lines);
+                    break;
             }
         } catch (err) {
             console.error(`[Capture] Error updating ${session.type} lines:`, err);
@@ -248,7 +254,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         sessionRef.current = null;
         setCaptureSession(null);
         captureStage.current = 'none';
-    }, [setInventoryLines, setEqLines, setStatsLines, setWhoLines, setWhoList, setScoreLines, setInfoLines, setPracticeLines, setQuestLines, setCaptureSession, captureStage, practiceHandler]);
+    }, [setInventoryLines, setEqLines, setStatsLines, setWhoLines, setWhoList, setScoreLines, setInfoLines, setPracticeLines, setQuestLines, setAchievementLines, setCaptureSession, captureStage, practiceHandler]);
 
     const hasSession = useCallback(() => sessionRef.current !== null, [sessionRef]);
     const isSilent = useCallback(() => sessionRef.current?.isSilent || false, [sessionRef]);

@@ -31,7 +31,7 @@ export interface InteractionDeps {
     viewport: any;
     setIsMapExpanded: (val: boolean) => void;
     handleTabClick: (drawer: any) => void;
-    setGearTab: (tab: 'worn' | 'inv') => void;
+    setGearTab: (tab: 'worn' | 'inv' | 'vicinity') => void;
     setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
     setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     setSettingsTab: (val: any) => void;

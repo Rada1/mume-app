@@ -20,7 +20,8 @@ export function isButtonValidForEntity(
     location: string,
     deps: ActionFilterDeps,
     categoryOverride?: string,
-    legacySetId?: string
+    legacySetId?: string,
+    context?: string
 ): boolean {
     const { inlineCategories, roomNpcs, entities } = deps;
     const entity = entities[entityId];
@@ -28,7 +29,7 @@ export function isButtonValidForEntity(
     // --- STEP 1: Determine Relevant Traits ---
     const resolvedTraitSections = getResolvedTraitSections(
         categoryOverride || legacySetId || entity?.category || kind,
-        entity?.name || null,
+        entity?.name || context || null,
         inlineCategories || []
     );
     const traitButtons = new Set(getButtonIdsForTraits(resolvedTraitSections.map(section => section.trait)));
@@ -61,6 +62,26 @@ export function isButtonValidForEntity(
 
     // 3. Block shop actions for worn items (MUME requires you to remove them first)
     if (isShopCmd && location === 'worn') {
+        return false;
+    }
+
+    // 4. Whetstone actions only apply when worn
+    if (button.id === 'btn-whet' && location !== 'worn') {
+        return false;
+    }
+    
+    // 5. Recite actions only apply when in inventory
+    if (button.id === 'btn-recite' && location !== 'carried') {
+        return false;
+    }
+
+    // 6. Wield actions only apply when in inventory
+    if (button.id === 'btn-weapon-wield' && location === 'worn') {
+        return false;
+    }
+
+    // 7. Draw actions only apply when worn
+    if (button.id === 'btn-draw' && location !== 'worn') {
         return false;
     }
 

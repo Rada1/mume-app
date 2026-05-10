@@ -37,6 +37,7 @@ export interface ExecutorDeps {
     setInventoryLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setStatsLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setInfoLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
+    setAchievementLines?: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setScoreLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setEqLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setTarget: (val: string | null) => void;
@@ -46,7 +47,7 @@ export interface ExecutorDeps {
     setPopoverState: (val: any) => void;
     status: 'connected' | 'disconnected' | 'connecting';
     handleTabClick: (drawer: 'character' | 'players' | 'equipment') => void;
-    setGearTab: (tab: 'worn' | 'inv') => void;
+    setGearTab: (tab: 'worn' | 'inv' | 'vicinity') => void;
     setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
     setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     setIsSettingsOpen: (open: boolean) => void;
@@ -55,6 +56,11 @@ export interface ExecutorDeps {
     setActions: (val: GameAction[] | ((prev: GameAction[]) => GameAction[])) => void;
     activePrompt: string;
     isPasswordMode: boolean;
+    practice?: {
+        setLastPracticedSkill: (skill: string | null) => void;
+        setIsUiRequested?: (val: boolean) => void;
+        setSilentSyncPending?: (val: boolean) => void;
+    };
     recordEntry?: (type: any, data: any, options?: { mask?: boolean }) => void;
 }
 
@@ -114,6 +120,15 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         }
 
         const finalCmd = result;
+        const normalizedFinalCmd = finalCmd.trim().toLowerCase();
+        const shouldRefreshPractice = !silent && !isSystem && normalizedFinalCmd.startsWith('practice ');
+
+        if (normalizedFinalCmd.startsWith('practice ')) {
+            d.practice?.setLastPracticedSkill(finalCmd.trim().slice(9).trim());
+        } else if (normalizedFinalCmd === 'practice') {
+            d.practice?.setIsUiRequested?.(!silent && !isSystem);
+            if (isSystem && silent) d.practice?.setSilentSyncPending?.(true);
+        }
 
         // --- 4. Navigation Safety ---
         if (!isSystem && navIntervalRef?.current) {
@@ -178,8 +193,12 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         }
 
         // --- 9. Telnet Send ---
-        if (status === 'connected') telnet.sendCommand(finalCmd);
-        else if (!silent) addMessage('error', 'Not connected.');
+        if (status === 'connected') {
+            telnet.sendCommand(finalCmd);
+            if (shouldRefreshPractice) {
+                setTimeout(() => executeCommand('practice', true, true, false, true), 300);
+            }
+        } else if (!silent) addMessage('error', 'Not connected.');
 
     }, [registry]);
 

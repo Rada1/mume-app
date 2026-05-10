@@ -19,6 +19,7 @@ import { useUIStore } from '../stores/useUIStore';
 export interface TelnetConfig {
     connectionUrl: string;
     processLine: (line: string, tokens?: any) => void;
+    getGameState?: () => string;
     recordEntry?: (type: 'rx' | 'tx' | 'gmcp' | 'ui' | 'sys', data: any) => void;
     setPrompt: (prompt: string) => void;
     onCharNameChange?: (name: string) => void;
@@ -341,7 +342,13 @@ export function useTelnet(config: TelnetConfig) {
                     if (chunk.length === 0) return;
 
                     const settings = getSettings();
-                    PipelineOrchestrator.ingestChunk(
+                    const isAccountMode = configRef.current.getGameState?.() === 'account';
+                    if (isAccountMode) {
+                        for (const entry of chunk) {
+                            const line = typeof entry === 'string' ? entry : entry.line;
+                            configRef.current.processLine(line, null);
+                        }
+                    } else PipelineOrchestrator.ingestChunk(
                         chunk,
                         () => {
                             const roomStore = getActiveRoom();

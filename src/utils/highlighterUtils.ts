@@ -157,7 +157,6 @@ export const applyColorTaggedObjects = (
     const lowerInner = html.match(OBJECT_COLOR_RE)?.[2]?.toLowerCase() || '';
     
     if (type === 'equipment-list' || lowerHtml.includes('(worn)') || lowerInner.includes('(worn)')) location = 'worn';
-    else if (type === 'shop-item') location = 'shop';
     else if (type === 'inventory-list' || lowerHtml.includes('(carried)') || lowerInner.includes('(carried)')) location = 'carried';
     else if (lowerHtml.includes('you stop using') || 
              lowerHtml.includes('you are carrying') || 

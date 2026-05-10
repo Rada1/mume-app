@@ -115,7 +115,7 @@ export function useMessageLog(
         mid?: string,          // Maps to cmd
         isRoomName?: boolean,  // Maps to context
         precalculated?: { textOnly: string, lower: string, html?: string, tokens?: any[] }, // Maps to htmlProps
-        shopItem?: any,        // Maps to sender
+        _shopItem?: any,       // Maps to sender (unused — shop system removed)
         practiceSkill?: any,   // Maps to channel
         practiceHeader?: any,  // Maps to id
         isSystem: boolean = false, // Maps to isSystem
@@ -340,7 +340,6 @@ export function useMessageLog(
             isRoomBlock: isActuallyRoomName,
             isRoomBlockStart: isActuallyRoomName,
             isNarrate,
-            shopItem,
             practiceSkill,
             practiceHeader,
             commSender,

@@ -53,8 +53,17 @@ gmcpBus.on('Room.Chars.Combat', (data: any) => {
 // fighting: "you" means that specific character is attacking the player.
 // This disambiguates identical-named NPCs (e.g. 3 pack horses, only one fighting).
 
+const isRiddenByPlayer = (char: any) => {
+    const text = [char.name, char.short, char.shortdesc, char.desc, char.description]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+    return text.includes('ridden by you');
+};
+
 const applyFightingYou = (char: any) => {
-    if (!char || char.fighting !== 'you' || char.id == null) return;
+    if (!char || String(char.fighting).toLowerCase() !== 'you' || char.id == null) return;
+    if (isRiddenByPlayer(char)) return;
     const store = useCombatStore.getState();
     store.setOpponentId(char.id);
     if (char.name) store.setOpponentName(char.name);

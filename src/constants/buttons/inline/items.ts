@@ -49,7 +49,10 @@ export const ITEM_BUTTONS = [
 
     // --- WORN OBJECTS ---
     createButton({ id: 'btn-worn-remove', label: 'Remove', command: 'remove %n', setId: 'cat-worn-object', color: '#94a3b8', width: 100 }),
-    createButton({ id: 'btn-worn-examine', label: 'Examine', command: 'examine %n', setId: 'cat-worn-object', color: '#3b82f6', width: 100 })
+    createButton({ id: 'btn-worn-examine', label: 'Examine', command: 'examine %n', setId: 'cat-worn-object', color: '#3b82f6', width: 100 }),
+    createButton({ id: 'btn-whet', label: 'Whet', command: 'whet %n', setId: 'inline-whetstone', color: '#64748b' }),
+    createButton({ id: 'btn-recite', label: 'Recite', command: 'recite %n', setId: 'inline-scroll', color: '#8b5cf6' }),
+    createButton({ id: 'btn-draw', label: 'Draw', command: 'draw %n', setId: 'inline-drawable', color: '#6366f1' })
 ];
 
 

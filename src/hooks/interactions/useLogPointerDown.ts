@@ -18,7 +18,7 @@ export const useLogPointerDown = (
         executeCommand, triggerHaptic, btn, joystick, target,
         viewport, selectedObjectIds, toggleObjectSelection,
         heldButton, heldButtonRef, setHeldButton, lastCommandContextRef, isTrackpadModifierActive,
-        keywordOverrides
+        keywordOverrides, parley, setParley
     } = deps;
 
     const handleLogPointerDown = useCallback((e: React.PointerEvent) => {
@@ -40,7 +40,7 @@ export const useLogPointerDown = (
                 if (resolved?.cmd) {
                     lastCommandContextRef.current = { context: rawContextStrDown, displayText: label };
                     executeCommand(resolved.cmd);
-                    setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
+                    setHeldButton((prev: any) => prev ? { ...prev, lastTargetFireAt: Date.now() } : null);
                     triggerHaptic(60);
                     return;
                 }
@@ -48,12 +48,30 @@ export const useLogPointerDown = (
 
             let finalCmd = isLong ? (activeHeldButton.longCommand || activeHeldButton.baseCommand) : activeHeldButton.baseCommand;
             if (finalCmd) {
+                if (finalCmd === '__parley__') {
+                    lastCommandContextRef.current = { context: rawContextStrDown, displayText: label };
+                    setParley({ active: true, command: parley.command || 'tell', target: contextStr || rawContextStrDown, message: '' });
+                    setTimeout(() => {
+                        const inputEl = document.querySelector('input') as HTMLInputElement;
+                        if (!inputEl) return;
+                        const wasReadOnly = inputEl.readOnly;
+                        if (viewport.isMobile) inputEl.readOnly = false;
+                        inputEl.focus();
+                        if (viewport.isMobile) {
+                            setTimeout(() => { if (inputEl) inputEl.readOnly = wasReadOnly; }, 100);
+                        }
+                    }, 10);
+                    setHeldButton((prev: any) => prev ? { ...prev, lastTargetFireAt: Date.now() } : null);
+                    triggerHaptic(60);
+                    return;
+                }
+
                 if (contextStr) {
                     finalCmd = finalCmd.includes('%n') ? finalCmd.replace(/%n/g, contextStr) : `${finalCmd} ${contextStr}`;
                 }
                 lastCommandContextRef.current = { context: rawContextStrDown, displayText: label };
                 executeCommand(finalCmd);
-                setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
+                setHeldButton((prev: any) => prev ? { ...prev, lastTargetFireAt: Date.now() } : null);
                 triggerHaptic(60);
                 return;
             }
@@ -96,7 +114,7 @@ export const useLogPointerDown = (
     }, [
         btn, joystick, target, executeCommand, triggerHaptic, setHeldButton, heldButton,
         viewport, lastCommandContextRef, keywordOverrides, isTrackpadModifierActive,
-        selectedObjectIds, toggleObjectSelection, lookModFiredRef,
+        selectedObjectIds, toggleObjectSelection, lookModFiredRef, parley.command, setParley,
         logLongPressTimerRef
     ]);
 

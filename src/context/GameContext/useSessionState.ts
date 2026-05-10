@@ -247,6 +247,7 @@ export const useSessionState = (
     const [infoLines, setInfoLines] = useState<DrawerLine[]>([]);
     const [scoreLines, setScoreLines] = useState<DrawerLine[]>([]);
     const [questLines, setQuestLines] = useState<DrawerLine[]>([]);
+    const [achievementLines, setAchievementLines] = useState<DrawerLine[]>([]);
     const [practiceLines, setPracticeLines] = useState<DrawerLine[]>([]);
     const [whoLines, setWhoLines] = useState<DrawerLine[]>([]);
     const [whereLines, setWhereLines] = useState<DrawerLine[]>([]);
@@ -310,6 +311,7 @@ export const useSessionState = (
             infoLines, setInfoLines,
             scoreLines, setScoreLines,
             questLines, setQuestLines,
+            achievementLines, setAchievementLines,
             practiceLines, setPracticeLines,
             whoLines, setWhoLines,
             whereLines, setWhereLines,
@@ -353,7 +355,7 @@ export const useSessionState = (
         isFoggy, setIsFoggy, inCombat, setInCombat,
         playerPosition, setPlayerPosition, isRiding, setIsRiding, roomPlayers,
         roomNpcs, roomItems, setRoomItems, inventoryLines, statsLines,
-        infoLines, scoreLines, questLines, practiceLines, whoLines, whereLines,
+        infoLines, scoreLines, questLines, achievementLines, practiceLines, whoLines, whereLines,
         eqLines, abilities, characterClass, actions, mood, spellSpeed, alertness,
         level, currentName, setCurrentName, registry, teleportTargets, quests,
         lightningEnabled, rStore.whoList, setWhoList, whereList, setWhereList, log, ui.selectedObjectIds,

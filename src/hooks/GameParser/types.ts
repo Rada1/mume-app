@@ -100,7 +100,6 @@ export interface UseGameParserDeps {
     spectateRoomName: string;
     spectateRoomDesc: string;
     setIsSpectateMode: (val: boolean) => void;
-    shop: any;
     practiceHandler?: ReturnType<typeof import('../usePracticeHandler').usePracticeHandler>;
     gameState: GameState;
     setGameState: Dispatch<SetStateAction<GameState>>;
@@ -149,6 +148,7 @@ export interface UseGameParserDeps {
     setScoreLines: (lines: DrawerLine[]) => void;
     setInfoLines: (lines: DrawerLine[]) => void;
     setQuestLines: (lines: DrawerLine[]) => void;
+    setAchievementLines: (lines: DrawerLine[]) => void;
     setWhoList: (list: string[]) => void;
     setWhereList: (list: import('../../types').WhereEntry[]) => void;
 

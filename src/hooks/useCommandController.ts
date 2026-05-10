@@ -16,6 +16,7 @@ export interface CommandControllerDeps {
     setInventoryLines: (val: any) => void;
     setStatsLines: (val: any) => void;
     setInfoLines: (val: any) => void;
+    setAchievementLines?: (val: any) => void;
     setScoreLines: (val: any) => void;
     setEqLines: (val: any) => void;
     setCommandPreview: (val: string | null) => void;
@@ -32,7 +33,7 @@ export interface CommandControllerDeps {
     popoverState: any;
     setPopoverState: (val: any) => void;
     handleTabClick: (drawer: 'character' | 'players' | 'equipment') => void;
-    setGearTab: (tab: 'worn' | 'inv') => void;
+    setGearTab: (tab: 'worn' | 'inv' | 'vicinity') => void;
     setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
     setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     setIsSettingsOpen: (open: boolean) => void;
@@ -58,7 +59,6 @@ export interface CommandControllerDeps {
     parley: import('../types').ParleyState;
     setParley: React.Dispatch<React.SetStateAction<import('../types').ParleyState>>;
     isTrackpadModifierActive: boolean;
-    shop: any;
     keywordOverrides: Record<string, string>;
     openKeywordEdit: (context: string, displayText: string) => void;
     help: any;
@@ -115,7 +115,7 @@ export function useCommandController(deps: CommandControllerDeps) {
 
     const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, isHistorical = false, fromDrawer = false, options?: { shouldFocus?: boolean, fromUi?: boolean }) => {
         const d = depsRef.current;
-        const { viewport, waiting, isSoundEnabled, playClickSound, recordEntry, practice, shop, nextCommandIsSilent } = d;
+        const { viewport, waiting, isSoundEnabled, playClickSound, recordEntry, practice, nextCommandIsSilent } = d;
 
         const effectiveSilent = silent || nextCommandIsSilent.current;
         if (nextCommandIsSilent.current) {
@@ -160,17 +160,26 @@ export function useCommandController(deps: CommandControllerDeps) {
             }
         }
 
-        if (cmd.toLowerCase().startsWith('practice ')) {
-            practice.setLastPracticedSkill(cmd.substring(9).trim());
-        } else if (cmd.toLowerCase() === 'practice') {
+        if (cmd.toLowerCase() === 'practice') {
             if (options?.fromUi) practice.setIsUiRequested(true);
             
             // Silent system practice (e.g. initial connect sync)
             if (isSystem && effectiveSilent) practice.setSilentSyncPending(true);
-        } else if (cmd.toLowerCase().startsWith('list') || cmd.toLowerCase().startsWith('browse')) {
-            if (options?.fromUi) shop.setIsUiRequested(true);
+        } else if ((cmd.toLowerCase().startsWith('list') || cmd.toLowerCase().startsWith('browse')) && d.gameState !== 'account') {
+            import('../stores/useUIStore').then(({ useUIStore }) => useUIStore.getState().setIsShopOpen(true));
         } else if (cmd.toLowerCase() === 'help' || cmd.toLowerCase().startsWith('help ')) {
             deps.help.setIsUiRequested(true);
+        }
+
+        // --- Account Creation Option Clearing ---
+        if (d.gameState === 'account' && !isSystem) {
+            const stage = d.accountStageRef?.current;
+            if (stage && ['character-creation', 'stat-editing'].includes(stage)) {
+                d.setAccountState?.(prev => ({
+                    ...prev,
+                    creationPrompt: prev.creationPrompt ? { ...prev.creationPrompt, options: [] } : undefined
+                }));
+            }
         }
 
         // --- Theater Mode Search Interception ---

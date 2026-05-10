@@ -255,6 +255,35 @@
     text-shadow: 0 0 20px var(--set-accent, var(--accent));
 }
 
+.swap-button {
+    position: fixed;
+    left: var(--wheel-center-x, 50%);
+    top: calc(var(--wheel-center-y, 33%) + 135px);
+    transform: translate(-50%, 0);
+    padding: 9px 24px;
+    background: rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.15);
+    border: 1px solid rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.5);
+    border-radius: 20px;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    z-index: 50005;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    user-select: none;
+    touch-action: none;
+    animation: swipe-wheel-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 10px rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.2);
+    transition: background 0.1s, transform 0.1s;
+}
+
+.swap-button:active {
+    background: rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.45);
+    transform: translate(-50%, 0) scale(0.94);
+}
+
 .button-label {
     position: absolute;
     top: 50%;

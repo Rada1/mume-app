@@ -10,6 +10,7 @@ import { ansiConvert } from '../../utils/ansi';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
 import { TokenRenderer } from '../Messages/TokenRenderer';
 import { Embers } from '../Atmosphere/Embers';
+import { ShopPanel } from '../Shop/ShopPanel';
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -65,7 +66,8 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         showControls,
         isNewbieMode,
         gameState,
-        inCombat
+        inCombat,
+        accountState
     } = useGame() as any;
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const { processMessageHtml, processMessageTokens } = useLog();
@@ -84,6 +86,18 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     }, [executeCommand, triggerHaptic, setStats]);
     const logContainerRef = React.useRef<HTMLDivElement>(null);
     const [headerHeight, setHeaderHeight] = React.useState(0);
+
+    React.useLayoutEffect(() => {
+        const el = document.querySelector('.header') as HTMLElement | null;
+        if (!el) return;
+        const update = () => {
+            document.documentElement.style.setProperty('--shop-panel-top', `${el.getBoundingClientRect().height}px`);
+        };
+        const obs = new ResizeObserver(update);
+        obs.observe(el);
+        update();
+        return () => obs.disconnect();
+    }, []);
 
 
     // --- Dynamic Room Card Spacing ---
@@ -163,14 +177,17 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                 getWeatherIcon={getWeatherIcon}
                 onResetMap={onResetMap}
             />
+            <div className="shop-panel-wrap">
+                <ShopPanel />
+            </div>
 
             <div className="message-log-wrapper" style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative', gap: '8px' }}>
-                <div 
-                    className="message-log-container" 
-                    ref={logContainerRef} 
-                    style={{ 
-                        flex: 1, 
-                        position: 'relative', 
+                <div
+                    className="message-log-container"
+                    ref={logContainerRef}
+                    style={{
+                        flex: 1,
+                        position: 'relative',
                         overflow: 'hidden'
                     } as React.CSSProperties}
                 >
@@ -205,14 +222,16 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             </div>
 
             <div className="control-card-wrapper">
-                <PromptBox
-                    processMessageHtml={processMessageHtml}
-                    processMessageTokens={processMessageTokens}
-                    onWimpyChange={!isSpectateMode ? handleWimpyChange : undefined}
-                />
+                {gameState !== 'account' && (
+                    <PromptBox
+                        processMessageHtml={processMessageHtml}
+                        processMessageTokens={processMessageTokens}
+                        onWimpyChange={!isSpectateMode ? handleWimpyChange : undefined}
+                    />
+                )}
 
-                {/* Render InputArea only on desktop, landscape mobile, or during account phase 
-                    This prevents the duplicate command bar in portrait mobile play mode. */}
+                {/* Render InputArea only on desktop, landscape mobile, or during account phase on those platforms. 
+                    On mobile portrait, InputArea is rendered within MapperCluster to occupy the gutter. */}
                 {((gameState === 'account' && (isLandscape || !isMobile)) || (!isMobile && !(viewport as any).isForcePortrait) || isLandscape) && (
                     <InputArea
                         input={input}

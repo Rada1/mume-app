@@ -1,18 +1,13 @@
 /**
  * @file mechanics.ts
- * @description Shop, Quest, Practice, and Group mechanics.
+ * @description Quest, Practice, and Group mechanics.
  */
 
 export interface ShopItem {
-    id: string;
+    num: number;
     name: string;
-    shortName?: string;
-    description: string;
     price: string;
-    condition?: string;
-    age?: string;
-    count?: string;
-    details?: string;
+    vnum?: string;
 }
 
 export interface PracticeSkill {
@@ -23,6 +18,8 @@ export interface PracticeSkill {
     difficulty: string;
     advice: string;
     skillClass?: string;
+    mana?: string;
+    castingTime?: string;
 }
 
 export interface PracticeData {

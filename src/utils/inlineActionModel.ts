@@ -39,10 +39,10 @@ export type InlineActionConfigRecord = InlineCategoryConfig | CategoryOverride |
 export const DEFAULT_CATEGORY_CONFIGS: CategoryConfig[] = [
     { id: 'cat-target', label: 'Target', kind: 'none', legacyIds: ['target'], defaultTraitIds: ['trait-target'] },
     { id: 'cat-ally', label: 'Ally', kind: 'player', color: '#22c55e', isGmcpCategory: true, legacyIds: ['inline-ally', 'player', 'ally'], defaultTraitIds: ['trait-group', 'trait-social', 'trait-identify', 'trait-examine', 'trait-consider'] },
-    { id: 'cat-enemy', label: 'Enemy', kind: 'player', color: '#ef4444', isGmcpCategory: true, legacyIds: ['inline-enemy', 'enemy'], defaultTraitIds: ['trait-combat', 'trait-identify', 'trait-examine', 'trait-consider'] },
+    { id: 'cat-enemy', label: 'Enemy', kind: 'player', color: '#ef4444', isGmcpCategory: true, legacyIds: ['inline-enemy', 'enemy'], defaultTraitIds: ['trait-identify', 'trait-examine', 'trait-consider'] },
     { id: 'cat-neutral', label: 'Neutral', kind: 'player', color: '#eab308', isGmcpCategory: true, legacyIds: ['inline-neutral', 'neutral'], defaultTraitIds: ['trait-social', 'trait-identify', 'trait-examine', 'trait-consider'] },
     { id: 'cat-ally-remote', label: 'Remote Ally', kind: 'player', color: '#22c55e', isLocationCategory: true, legacyIds: ['inline-ally-remote', 'ally-remote'], defaultTraitIds: ['trait-identify', 'trait-converse'] },
-    { id: 'cat-npc', label: 'NPC', kind: 'npc', isGmcpCategory: true, legacyIds: ['inline-npc', 'npc'], defaultTraitIds: ['trait-group', 'trait-combat', 'trait-examine', 'trait-consider'] },
+    { id: 'cat-npc', label: 'NPC', kind: 'npc', isGmcpCategory: true, legacyIds: ['inline-npc', 'npc'], defaultTraitIds: ['trait-group', 'trait-examine', 'trait-consider'] },
     { id: 'cat-room-object', label: 'Room Object', kind: 'object', isLocationCategory: true, legacyIds: ['inline-in-room-obj', 'object-room', 'obj-room'], defaultTraitIds: ['trait-room-object'] },
     { id: 'cat-inventory-object', label: 'Inventory Object', kind: 'object', isLocationCategory: true, legacyIds: ['inline-inventory', 'inventory', 'obj-char'], defaultTraitIds: ['trait-inventory-object'] },
     { id: 'cat-worn-object', label: 'Worn Object', kind: 'object', isLocationCategory: true, legacyIds: ['inline-worn', 'worn', 'obj-worn'], defaultTraitIds: ['trait-worn-object'] },
@@ -53,7 +53,6 @@ export const DEFAULT_CATEGORY_CONFIGS: CategoryConfig[] = [
 
 export const DEFAULT_TRAIT_CONFIGS: TraitConfig[] = [
     { id: 'trait-target', label: 'Target', legacySetIds: ['target'], keywords: [], buttonIds: ['btn-look', 'btn-examine', 'btn-get', 'btn-hit', 'btn-target-clear'] },
-    { id: 'trait-combat', label: 'Combat', legacySetIds: ['inline-enemy', 'inline-default'], keywords: [], buttonIds: ['btn-hit'] },
     { id: 'trait-consider', label: 'Consider', legacySetIds: ['inline-ally'], keywords: [], buttonIds: ['btn-consider'] },
     { id: 'trait-examine', label: 'Examine', legacySetIds: ['inline-ally', 'inline-object'], keywords: [], buttonIds: ['btn-examine', 'btn-obj-examine'] },
     { id: 'trait-identify', label: 'Identify', legacySetIds: ['inline-ally'], keywords: [], buttonIds: ['btn-whois'] },
@@ -69,11 +68,14 @@ export const DEFAULT_TRAIT_CONFIGS: TraitConfig[] = [
     { id: 'trait-food', label: 'Food', kind: 'object', legacySetIds: ['inline-food'], keywords: ['meat', 'bread', 'biscuit', 'lembas', 'mushroom', 'honey', 'wafer', 'cookie', 'eg', 'dumpling', 'bannock', 'cheese', 'pastry', 'flour', 'cake', 'pie'], buttonIds: ['btn-food-eat'] },
     { id: 'trait-water', label: 'Water', kind: 'object', legacySetIds: ['inline-water'], keywords: ['water', 'fountain', 'pond', 'stream', 'well', 'spring', 'lake', 'river', 'sea', 'ocean', 'puddle', 'basin'], buttonIds: ['btn-water-drink'] },
     { id: 'trait-fluid-container', label: 'Fluid Container', kind: 'object', legacySetIds: ['inline-fluidcontainer'], keywords: ['flask', 'bottle', 'cup', 'skin', 'flagon', 'goblet', 'vial', 'keg', 'barrel', 'waterskin', 'pitcher', 'jug', 'mug', 'stein', 'pot', 'bowl', 'bucket', 'pail', 'calabash', 'gourd'], buttonIds: ['btn-fluid-drink', 'btn-fluid-pour', 'btn-fluid-empty', 'btn-fluid-look-in'] },
-    { id: 'trait-weapon', label: 'Weapon', kind: 'object', legacySetIds: ['inline-weapon'], keywords: ['sword', 'blade', 'dagger', 'axe', 'mace', 'spear', 'staff', 'club', 'flail', 'scimitar', 'rapier', 'halberd', 'bow', 'sling', 'knife', 'wand', 'hammer'], buttonIds: ['btn-weapon-wield', 'btn-inv-sell', 'btn-inv-value', 'btn-inv-mend'] },
+    { id: 'trait-weapon', label: 'Wieldable', kind: 'object', legacySetIds: ['inline-weapon'], keywords: ['sword', 'blade', 'dagger', 'axe', 'mace', 'spear', 'staff', 'club', 'flail', 'scimitar', 'rapier', 'halberd', 'bow', 'sling', 'knife', 'wand', 'hammer'], buttonIds: ['btn-weapon-wield'] },
     { id: 'trait-room-object', label: 'Room Object', kind: 'object', legacySetIds: ['inline-in-room-obj'], keywords: [], buttonIds: ['btn-get'] },
-    { id: 'trait-inventory-object', label: 'Inventory Object', kind: 'object', legacySetIds: ['inline-inventory'], keywords: [], buttonIds: ['btn-inv-drop', 'btn-inv-wear', 'btn-inv-wield', 'btn-inv-sell', 'btn-inv-value', 'btn-inv-give', 'btn-inv-put'] },
-    { id: 'trait-worn-object', label: 'Worn Object', kind: 'object', legacySetIds: ['inline-worn'], keywords: [], buttonIds: ['btn-worn-remove', 'btn-worn-examine'] },
+    { id: 'trait-inventory-object', label: 'Inventory Object', kind: 'object', legacySetIds: ['inline-inventory'], keywords: [], buttonIds: ['btn-inv-drop', 'btn-inv-wear', 'btn-inv-give', 'btn-inv-put'] },
+    { id: 'trait-worn-object', label: 'Worn Object', kind: 'object', legacySetIds: ['inline-worn'], keywords: [], buttonIds: ['btn-worn-remove'] },
     { id: 'trait-observable', label: 'Observable', kind: 'object', legacySetIds: ['inline-object', 'trait-object'], keywords: [], buttonIds: ['btn-obj-examine'] },
+    { id: 'trait-whetstone', label: 'Whetstone', kind: 'object', keywords: ['a stone'], buttonIds: ['btn-whet'] },
+    { id: 'trait-reciteable', label: 'Reciteable', kind: 'object', keywords: ['scroll'], buttonIds: ['btn-recite'] },
+    { id: 'trait-drawable', label: 'Drawable', kind: 'object', keywords: ['bow', 'crossbow', 'scabbard', 'sheath', 'harness'], buttonIds: ['btn-draw'] },
     { id: 'trait-exit', label: 'Exit', kind: 'exit', legacySetIds: ['inline-exit'], keywords: ['north', 'south', 'east', 'west', 'up', 'down'], buttonIds: ['btn-exit-go', 'btn-look'] }
 ];
 

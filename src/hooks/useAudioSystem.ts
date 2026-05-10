@@ -5,7 +5,7 @@ import { useActiveRoom, useActiveCombat, useActiveVitals } from '../stores/useAc
 import { useHaptics } from './interactions/useHaptics';
 import { useModeStore } from '../stores/useModeStore';
 
-export const useAmbientController = () => {
+export const useAmbientController = (accountStage: string = 'none') => {
     const isSoundEnabled = useSettingsStore(state => state.isSoundEnabled);
     const zoneMusic = useSettingsStore(state => state.zoneMusic);
     const mode = useModeStore(state => state.mode);
@@ -43,6 +43,16 @@ export const useAmbientController = () => {
     useEffect(() => {
         if (!isSoundEnabled) return;
 
+        // Account mode overrides standard zone music
+        if (accountStage !== 'none') {
+            audioManager.setAmbient('zone', { 
+                key: 'account', 
+                dynamicUrls: ['/assets/Sounds/Account/accountmusic.mp3'],
+                loop: true
+            });
+            return;
+        }
+
         let normalizedZone = roomZone ? roomZone.toLowerCase()
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
@@ -58,7 +68,7 @@ export const useAmbientController = () => {
         const dynamicUrls = mapping ? (Array.isArray(mapping.url) ? mapping.url : [mapping.url]) : undefined;
 
         audioManager.setAmbient('zone', { key: normalizedZone, inCombat, dynamicUrls });
-    }, [roomZone, inCombat, isSoundEnabled, zoneMusic, mode, isSpectating, activeView]);
+    }, [roomZone, inCombat, isSoundEnabled, zoneMusic, mode, isSpectating, activeView, accountStage]);
 
     // Handle drum loop
     useEffect(() => {

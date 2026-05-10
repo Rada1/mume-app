@@ -8,7 +8,7 @@ import { CommandMiddleware } from '../types';
 
 export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isSystem, fromDrawer }) => {
     const {
-        captureStage, setStatsLines, setInfoLines, setScoreLines, finalizeCapture,
+        captureStage, setStatsLines, setInfoLines, setAchievementLines, setScoreLines, finalizeCapture,
         setPendingFlags
     } = context;
     const lowerCmd = cmd.toLowerCase().trim();
@@ -23,6 +23,7 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
     if (captureStage) {
         if (lowerCmd === 'where') captureStage.current = 'where';
         else if (lowerCmd === 'who') captureStage.current = 'who';
+        else if (lowerCmd === 'achievement' || lowerCmd === 'achievements') captureStage.current = 'achievement';
     }
 
     if (!isSystem && !fromDrawer) {
@@ -38,6 +39,8 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
             if (setScoreLines) setScoreLines([]);
         } else if (lowerCmd === 'info') {
             if (setInfoLines) setInfoLines([]);
+        } else if (lowerCmd === 'achievement' || lowerCmd === 'achievements') {
+            if (setAchievementLines) setAchievementLines([]);
         }
     }
 

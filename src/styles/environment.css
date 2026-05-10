@@ -48,11 +48,15 @@
     top: 50dvh;
     height: 50dvh;
     background-size: auto 100%;
-    background-position: center;
-    z-index: 1;
-    mix-blend-mode: normal;
-    opacity: 1;
-    filter: none;
+    background-position: center bottom;
+    z-index: 0;
+    mix-blend-mode: luminosity;
+    opacity: 0.3;
+    filter: blur(5px) brightness(0.85) contrast(1.1);
+    
+    /* Breathing Animation */
+    transform-origin: bottom;
+    animation: breathing-stretch 5s ease-in-out infinite;
 }
 
 /* Portrait Mode: Constrain Top Image to Log Area, Hide Bottom Image */
@@ -98,18 +102,18 @@
 
 .lighting-state-sun .overlay-layer {
     background: linear-gradient(to bottom, 
-        rgba(100, 180, 255, 0.18) 0%, 
-        rgba(150, 210, 255, 0.08) 35%, 
+        rgba(100, 180, 255, 0.1) 0%, 
+        rgba(150, 210, 255, 0.05) 35%, 
         rgba(0, 5, 20, 0.02) 100%
     );
-    /* SLIGHTLY stronger sky-blue wash near the top, fading to a very faint ambient tint below */
+    /* SUBTLE sky-blue wash near the top, fading to a very faint ambient tint below */
 }
 
 .is-mobile:not(.is-landscape) .lighting-state-sun .overlay-layer {
     /* Diagonal gradient for portrait mobile to emphasize darkness in the bottom-left corner */
     background: linear-gradient(225deg, 
-        rgba(100, 180, 255, 0.18) 0%, 
-        rgba(150, 210, 255, 0.06) 40%, 
+        rgba(100, 180, 255, 0.1) 0%, 
+        rgba(150, 210, 255, 0.04) 40%, 
         rgba(0, 5, 20, 0.08) 100%
     );
 }
@@ -159,8 +163,8 @@
 }
 
 .lighting-state-dark .overlay-layer {
-    /* Neutral charcoal wash - removing the blue tinge */
-    background: rgba(15, 15, 15, 0.65);
+    /* Neutral charcoal wash - slightly brighter (reduced from 0.65 to 0.58) */
+    background: rgba(15, 15, 15, 0.58);
 }
 
 .screen-vignette {
@@ -219,9 +223,9 @@
 }
 
 .lighting-sun .lighting-inner {
-    /* WEAKENED sun origin with a LIGHT BLUE SKY glow in the top right */
+    /* WEAKENED sun origin with a VERY SUBTLE BLUE SKY glow in the top right */
     background: 
-        radial-gradient(circle at 95% -10%, rgba(0, 160, 255, 0.15) 0%, transparent 65%),
+        radial-gradient(circle at 95% -10%, rgba(0, 160, 255, 0.08) 0%, transparent 65%),
         radial-gradient(ellipse 90% 160% at 92% -30%,
             rgba(255, 255, 252, 0.52) 0%,
             rgba(255, 252, 230, 0.2) 40%,
@@ -230,9 +234,9 @@
 }
 
 .is-mobile .lighting-sun .lighting-inner {
-    /* WEAKENED sun origin for mobile with blue sky accent - Narrowed to keep bottom-left darker */
+    /* WEAKENED sun origin for mobile with subtle blue sky accent - Narrowed to keep bottom-left darker */
     background: 
-        radial-gradient(circle at 95% -10%, rgba(0, 160, 255, 0.12) 0%, transparent 60%),
+        radial-gradient(circle at 95% -10%, rgba(0, 160, 255, 0.06) 0%, transparent 60%),
         radial-gradient(ellipse 110% 150% at 92% -30%,
             rgba(255, 255, 252, 0.52) 0%,
             rgba(255, 252, 230, 0.2) 36%,
@@ -606,3 +610,99 @@
 }
 
 
+
+/* --- Terrain-Specific Tints --- */
+
+.terrain-tint-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5; /* Above overlay-layer (4), below storm-overlay (10) and lighting-container (100) */
+    transition: background-color 2.5s cubic-bezier(0.4, 0, 0.2, 1);
+    mix-blend-mode: soft-light;
+}
+
+/* Forest/Woods - Forest Green */
+.terrain-forest .terrain-tint-layer,
+.terrain-woods .terrain-tint-layer,
+.terrain-dense-forest .terrain-tint-layer,
+.terrain-light-forest .terrain-tint-layer {
+    background-color: rgba(34, 139, 34, 0.12);
+}
+
+/* Swamp/Marsh - Olive Drab */
+.terrain-swamp .terrain-tint-layer,
+.terrain-marsh .terrain-tint-layer {
+    background-color: rgba(85, 107, 47, 0.12);
+}
+
+/* Water/Underwater - Sea Blue */
+.terrain-water .terrain-tint-layer,
+.terrain-river .terrain-tint-layer,
+.terrain-lake .terrain-tint-layer,
+.terrain-ocean .terrain-tint-layer,
+.terrain-shallow-water .terrain-tint-layer,
+.terrain-underwater .terrain-tint-layer {
+    background-color: rgba(0, 105, 148, 0.15);
+}
+
+/* Desert/Sand - Desert Sand */
+.terrain-desert .terrain-tint-layer,
+.terrain-sand .terrain-tint-layer {
+    background-color: rgba(194, 178, 128, 0.1);
+}
+
+/* Arctic/Snow - Arctic Cyan */
+.terrain-arctic .terrain-tint-layer,
+.terrain-snow .terrain-tint-layer,
+.terrain-tundra .terrain-tint-layer {
+    background-color: rgba(224, 255, 255, 0.08);
+}
+
+/* Mountains/Hills/Rocky - Slate Blue/Grey */
+.terrain-mountain .terrain-tint-layer,
+.terrain-mountains .terrain-tint-layer,
+.terrain-rocky .terrain-tint-layer,
+.terrain-hills .terrain-tint-layer,
+.terrain-hill .terrain-tint-layer {
+    background-color: rgba(112, 128, 144, 0.08);
+}
+
+/* Field/Grass/Plains - Grass Green (Previous Forest Tint) */
+.terrain-field .terrain-tint-layer,
+.terrain-grass .terrain-tint-layer,
+.terrain-plains .terrain-tint-layer,
+.terrain-farmland .terrain-tint-layer {
+    background-color: rgba(34, 139, 34, 0.08);
+}
+
+/* Road/Path/Trail - Dusty Beige */
+.terrain-road .terrain-tint-layer,
+.terrain-path .terrain-tint-layer,
+.terrain-trail .terrain-tint-layer {
+    background-color: rgba(210, 180, 140, 0.04);
+}
+
+/* Caves/Underground - Earthy Brown (Multiply) */
+.terrain-cave .terrain-tint-layer,
+.terrain-cavern .terrain-tint-layer,
+.terrain-tunnel .terrain-tint-layer,
+.terrain-underground .terrain-tint-layer {
+    background-color: rgba(43, 29, 14, 0.18);
+    mix-blend-mode: multiply;
+}
+
+/* Urban/Indoor - Brownish Building Tint */
+.terrain-urban .terrain-tint-layer,
+.terrain-city .terrain-tint-layer,
+.terrain-town .terrain-tint-layer,
+.terrain-building .terrain-tint-layer,
+.terrain-inside .terrain-tint-layer,
+.terrain-indoors .terrain-tint-layer {
+    background-color: rgba(101, 67, 33, 0.1);
+}
+
+@keyframes breathing-stretch {
+    0%, 100% { transform: scaleY(1) scaleX(1); }
+    50% { transform: scaleY(1.015) scaleX(1.003); }
+}

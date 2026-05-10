@@ -146,12 +146,12 @@ export interface UIContextType {
     setIsSetManagerOpen: (open: boolean) => void;
     setManagerSelectedSet: (setId: string | null) => void;
     setShowMapperToolbar: (show: boolean) => void;
-    gearTab: 'worn' | 'inv';
-    setGearTab: (tab: 'worn' | 'inv') => void;
+    gearTab: 'worn' | 'inv' | 'vicinity';
+    setGearTab: (tab: 'worn' | 'inv' | 'vicinity') => void;
     playersTab: 'online' | 'nearby' | 'group';
     setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
-    charTab: 'info' | 'quests' | 'skills';
-    setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
+    charTab: 'info' | 'quests' | 'skills' | 'achievements';
+    setCharTab: (tab: 'info' | 'quests' | 'skills' | 'achievements') => void;
     handleTabClick: (drawer: 'none' | 'character' | 'players' | 'equipment' | 'status') => void;
     displayInventoryLines: DrawerLine[];
     displayEqLines: DrawerLine[];
@@ -161,6 +161,7 @@ export interface UIContextType {
     infoLines: DrawerLine[];
     practiceLines: DrawerLine[];
     questLines: DrawerLine[];
+    achievementLines: DrawerLine[];
     whoLines: DrawerLine[];
     whereLines: DrawerLine[];
     setWhoLines: Dispatch<SetStateAction<DrawerLine[]>>;
@@ -239,6 +240,8 @@ export interface SessionContextType {
         setScoreLines: Dispatch<SetStateAction<DrawerLine[]>>;
         questLines: DrawerLine[];
         setQuestLines: Dispatch<SetStateAction<DrawerLine[]>>;
+        achievementLines: DrawerLine[];
+        setAchievementLines: Dispatch<SetStateAction<DrawerLine[]>>;
         practiceLines: DrawerLine[];
         setPracticeLines: Dispatch<SetStateAction<DrawerLine[]>>;
         whoLines: DrawerLine[];
@@ -505,6 +508,7 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     setStatsLines: Dispatch<SetStateAction<DrawerLine[]>>;
     setInfoLines: Dispatch<SetStateAction<DrawerLine[]>>;
     setPracticeLines: Dispatch<SetStateAction<DrawerLine[]>>;
+    setAchievementLines: Dispatch<SetStateAction<DrawerLine[]>>;
     setWhoLines: Dispatch<SetStateAction<DrawerLine[]>>;
     setWhereLines: Dispatch<SetStateAction<DrawerLine[]>>;
     setEqLines: Dispatch<SetStateAction<DrawerLine[]>>;

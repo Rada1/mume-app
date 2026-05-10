@@ -8,13 +8,12 @@ import { CustomButton, MessageType, PopoverState, InlineCategoryConfig, GameEnti
 import { resolveKindAndLocation } from '../../utils/categorizationUtils';
 import { isButtonValidForEntity } from '../../utils/actionUtils';
 import { getButtonIdsForTraits, getCategoryConfig, getResolvedTraitSections, getTraitsForName as getInlineActionTraits } from '../../utils/inlineActionModel';
-import { formatNpcKeywordTarget } from '../../utils/gameUtils';
+import { formatMumeTarget } from '../../utils/gameUtils';
 import { CircleHelp } from 'lucide-react';
 
 // --- Sub-components ---
 import { TraitToggleSection } from './StandardMenu/TraitToggleSection';
 import { TraitFilterRail } from './StandardMenu/TraitFilterRail';
-import { CharacterSelectSection } from './StandardMenu/CharacterSelectSection';
 import { PopoverActionButton } from './StandardMenu/PopoverActionButton';
 import { ParleySection } from './StandardMenu/ParleySection';
 
@@ -42,7 +41,7 @@ interface StandardMenuProps {
     setIsMendingMode?: (val: boolean) => void;
     setMendingTarget?: (val: string | null) => void;
     handleTabClick: (drawer: 'character' | 'players' | 'equipment') => void;
-    setGearTab: (tab: 'worn' | 'inv') => void;
+    setGearTab: (tab: 'worn' | 'inv' | 'vicinity') => void;
     setPlayersTab: (tab: 'online' | 'nearby' | 'group') => void;
     setCharTab: (tab: 'info' | 'quests' | 'skills') => void;
     refreshLogHighlights?: () => void;
@@ -129,7 +128,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
     }, [activeTraitFilter, sectionDefs]);
     const isTacticalSet = ['warriorskilllist', 'rangerskilllist', 'clericspelllist', 'thiefskilllist', 'magespelllist', 'doors'].includes(safeSetId);
     const isCharacterKind = ['npc', 'enemy', 'neutral', 'ally', 'player'].includes(kind);
-    const targetContext = isCharacterKind ? (formatNpcKeywordTarget(popoverState.context) || popoverState.context || null) : (popoverState.context || null);
+    const targetContext = formatMumeTarget(popoverState.context) || popoverState.context || null;
     const toggleFavorite = (e: React.MouseEvent, command: string) => {
         e.stopPropagation();
         setFavorites(prev => prev.includes(command) ? prev.filter(id => id !== command) : [...prev, command]);
@@ -143,9 +142,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         
         const favoritedButtons = buttons.filter(b => {
             if (activeSection && !activeSection.buttonIds.includes(b.id)) return false;
-            const isValid = shouldUseEntityFilter
-                ? isButtonValidForEntity(b, popoverState.entityId!, kind, location, filterDeps, popoverState.category, safeSetId)
-                : true;
+            const isValid = isButtonValidForEntity(b, popoverState.entityId || '', kind, location, filterDeps, popoverState.category, safeSetId, popoverState.context);
             if (!isValid) return false;
             const suppliedByTrait = resolvedTraitButtonIds.has(b.id);
             return suppliedByTrait && favorites.includes(b.command);
@@ -168,9 +165,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                         const setIdButtons = buttons.filter(b => {
                             const suppliedBySection = section.buttonIds.includes(b.id);
                             if (!suppliedBySection || favorites.includes(b.command) || seenCommands.has(b.command)) return false;
-                            const isValid = shouldUseEntityFilter
-                                ? isButtonValidForEntity(b, popoverState.entityId!, kind, location, filterDeps, popoverState.category, safeSetId)
-                                : true;
+                            const isValid = isButtonValidForEntity(b, popoverState.entityId || '', kind, location, filterDeps, popoverState.category, safeSetId, popoverState.context);
                             if (isValid) seenCommands.add(b.command);
                             return isValid;
                         });
@@ -198,9 +193,6 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
     };
 
     // --- Special Cases ---
-    if (safeSetId === 'play-character-select') {
-        return <CharacterSelectSection accountState={accountState} setAccountState={setAccountState} executeCommand={executeCommand} handleCharacterClick={(char) => { triggerHaptic?.(20); executeCommand(`play ${char.name}`); setPopoverState(null); }} />;
-    }
 
     const isInlineMenu = ['object', 'npc', 'player', 'ally', 'enemy', 'neutral'].includes(kind) || ['inventorylist', 'equipmentlist', 'roomitems', 'roomnpcs', 'selection'].includes(safeSetId) || safeSetId.startsWith('object') || safeSetId.startsWith('npc');
     const isTargetable = !isTacticalSet && (['selection', 'inventorylist', 'equipmentlist', 'npc', 'player', 'object-corpse'].includes(safeSetId) || ['player', 'ally', 'npc', 'enemy', 'neutral'].includes(kind) || (kind === 'object' && location === 'room') || NPC_SUBCATEGORIES.includes(safeSetId));

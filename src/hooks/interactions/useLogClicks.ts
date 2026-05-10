@@ -4,6 +4,7 @@ import { EntityCapability } from '../../types';
 import { getButtonCommand } from '../../utils/buttonUtils';
 import { formatNpcKeywordTarget, sanitizeGameTarget } from '../../utils/gameUtils';
 import { toCategoryId } from '../../utils/inlineActionModel';
+import { useUIStore } from '../../stores/useUIStore';
 
 export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>, longPressJustFiredRef?: React.MutableRefObject<boolean>) => {
     const {
@@ -94,6 +95,11 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         initAudio(); // Sound fix
         // Allow clicks in mobile portrait even if map is open in gutter
         if (ui.mapExpanded && viewport.isMobile && viewport.isLandscape) return;
+
+        // Close shop panel if open when tapping log
+        if (useUIStore.getState().isShopOpen) {
+            useUIStore.getState().setIsShopOpen(false);
+        }
 
         const now = Date.now();
         const targetEl = (e.target instanceof HTMLElement) ? e.target.closest('.inline-btn') as HTMLElement : (e.target as any)?.parentElement?.closest('.inline-btn') as HTMLElement;

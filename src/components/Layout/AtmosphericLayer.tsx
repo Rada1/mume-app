@@ -22,19 +22,23 @@ export const AtmosphericLayer: React.FC = () => {
         activeSession,
         currentTerrain,
         spectateTerrain,
+        accountState,
     } = useGame();
 
     // --- Terrain Resolution ---
-    // Use spectate terrain when spectating, player terrain otherwise.
+    const isAccountMode = accountState.stage !== 'none';
     const isSpectating = activeSession === 'spectate';
     const activeTerrain = isSpectating ? spectateTerrain : currentTerrain;
 
-    // Manual upload overrides terrain-driven image; terrain image is the fallback.
-    const resolvedBgImage = bgImage ?? resolveTerrainBackground(activeTerrain);
+    // Account Mode Overrides: Force sunlight and field background
+    const effectiveLighting = isAccountMode ? 'sun' : lighting;
+    const resolvedBgImage = isAccountMode 
+        ? '/assets/Pictures/account.png' 
+        : (bgImage ?? resolveTerrainBackground(activeTerrain));
 
     return (
         <EnvironmentEffects
-            lighting={lighting}
+            lighting={effectiveLighting}
             weather={weather}
             isFoggy={isFoggy}
             lightning={lightningEnabled}
@@ -42,6 +46,7 @@ export const AtmosphericLayer: React.FC = () => {
             isMobile={viewport.isMobile}
             bgImage={resolvedBgImage}
             bgImageBottom={bgImageBottom}
+            terrain={activeTerrain}
         />
     );
 };

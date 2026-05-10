@@ -1,22 +1,29 @@
 .header {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(180px, auto) 1fr auto;
     align-items: center;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
-    margin-bottom: 10px;
+    width: 100%;
+    background: #0d0d0d;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    z-index: 9500; /* Above shop panel (--z-drawer: 9200) */
     position: relative;
-    z-index: var(--z-header); /* Elevated above log and HUD */
+    padding: 4px 12px;
+    margin-top: 0;
+    margin-bottom: 0;
+    box-sizing: border-box;
+    gap: 8px; /* Horizontal gap between grid columns */
     flex-shrink: 0;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: visible;
 }
 
 .mobile-header {
+    grid-template-columns: auto 1fr auto;
     background: #0d0d0d !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.05)) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
     position: absolute !important;
     top: 0;
     left: 0;
@@ -25,6 +32,8 @@
     pointer-events: none;
     margin-bottom: 0 !important;
     padding: calc(env(safe-area-inset-top, 0px) + 4px) 12px 4px 12px !important;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
     overflow: visible !important;
@@ -76,6 +85,11 @@
     align-items: center;
     flex-shrink: 0;
     gap: 4px;
+    padding-right: 0;
+}
+
+.mobile-header .controls {
+    padding-right: 4px;
 }
 
 .reconnect-btn {

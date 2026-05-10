@@ -93,7 +93,7 @@ export const useGameProviderState = (audioTriggers?: {
     const ui = {
         ...uiStore,
         stats: active.game.statsLines.length + active.game.scoreLines.length,
-        info: active.game.infoLines.length + active.game.practiceLines.length + active.game.questLines.length,
+        info: active.game.infoLines.length + active.game.practiceLines.length + active.game.questLines.length + active.game.achievementLines.length,
         inventory: active.game.inventoryLines.length + active.game.eqLines.length,
         players: active.game.whoLines.length + active.game.whereLines.length
     };

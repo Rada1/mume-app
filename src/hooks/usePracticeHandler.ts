@@ -1,8 +1,11 @@
 import { useState, useRef, useCallback } from 'react';
-import { PracticeData, PracticeSkill } from '../types';
+import { DrawerLine, PracticeData, PracticeSkill } from '../types';
+import { getPracticeClassLabel } from '../utils/practiceClassCatalog';
+import { readLastPracticedSkill, rememberLastPracticedSkill } from '../utils/practiceLastSkillMemory';
 
 export function usePracticeHandler(
-    setAbilities: (val: Record<string, number> | ((prev: Record<string, number>) => Record<string, number>)) => void
+    setAbilities: (val: Record<string, number> | ((prev: Record<string, number>) => Record<string, number>)) => void,
+    setPracticeLines?: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void
 ) {
     const isPracticeActiveRef = useRef(false);
     const isAtGuildmasterRef = useRef(false);
@@ -18,12 +21,43 @@ export function usePracticeHandler(
     const [practiceData, setPracticeData] = useState<PracticeData | null>(null);
     const [isUiRequested, setIsUiRequested] = useState(false);
     const lastPracticedSkillRef = useRef<string | null>(null);
+    const lastPracticeUpdateKeyRef = useRef<string | null>(null);
     const parsedSkillsRef = useRef<PracticeSkill[]>([]);
     const practiceLogBufferRef = useRef<{ type: 'header' | 'skill', data: any, text: string }[]>([]);
 
     const setLastPracticedSkill = (skill: string | null) => {
-        lastPracticedSkillRef.current = skill;
+        const nextSkill = skill?.trim() || null;
+        lastPracticedSkillRef.current = nextSkill;
+        rememberLastPracticedSkill(nextSkill);
     };
+
+    const updatePracticeDrawerLine = useCallback((skillName: string, sessions: string, knowledge: string) => {
+        setPracticeLines?.((prev: DrawerLine[]) => prev.map(line => {
+            const sessionsLeftMatch = line.text.match(/^(You have\s+)(\d+)(\s+practice sessions? left\.?)$/i);
+            if (sessionsLeftMatch) {
+                const nextCount = Math.max(0, parseInt(sessionsLeftMatch[2], 10) - 1);
+                const text = `${sessionsLeftMatch[1]}${nextCount}${sessionsLeftMatch[3]}`;
+                return { ...line, text, rawText: text, html: text, tokens: undefined };
+            }
+
+            const escapedName = skillName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const match = line.text.match(new RegExp(`^(\\s*${escapedName})(\\s+)(\\S+)(\\s+)(\\S+)(.*)$`, 'i'));
+            const fallbackParts = line.text.trim().split(/\s{2,}/);
+            const isFallbackMatch = fallbackParts[0]?.toLowerCase() === skillName.toLowerCase() && fallbackParts.length >= 3;
+            if (!match && !isFallbackMatch) return line;
+
+            const text = match
+                ? `${match[1]}${match[2]}${sessions.padStart(match[3].length)}${match[4]}${knowledge.padStart(match[5].length)}${match[6]}`
+                : `${fallbackParts[0]}  ${sessions}  ${knowledge}  ${fallbackParts.slice(3).join('  ')}`;
+            return {
+                ...line,
+                text,
+                rawText: text,
+                html: text,
+                tokens: undefined
+            };
+        }));
+    }, [setPracticeLines]);
 
     const parsePracticeLine = useCallback((text: string): PracticeSkill | null | boolean | { sessionsLeft: number } => {
         const lower = text.toLowerCase();
@@ -35,7 +69,7 @@ export function usePracticeHandler(
         // "You have 5 practice sessions available."
         const sessionMatch = text.match(/You have (\d+)/i) || text.match(/(\d+) (?:practice )?sessions?/i);
         
-        if (sessionMatch && lower.includes('session')) {
+        if (sessionMatch && lower.includes('session') && !lower.includes('you took')) {
             const count = parseInt(sessionMatch[1]);
             console.log(`[PracticeHandler] DETECTED SESSIONS: ${count} from line: "${text}"`);
             setIsPracticeActive(true);
@@ -94,9 +128,14 @@ export function usePracticeHandler(
                 const sessionsStr = hasSessionsCol ? parts[1].trim().replace(/\s+/g, '') : '';
                 const knowledgeStr = (hasSessionsCol ? parts[2] : parts[1])?.trim() || '';
                 const difficulty    = (hasSessionsCol ? parts[3] : parts[2])?.trim() || '';
-                const rawClass = (hasSessionsCol ? parts[4] : parts[3])?.trim();
-                const isExplicitNone = rawClass?.toLowerCase() === 'none';
-                let skillClass = rawClass || 'Ranger';
+                const trailing = (hasSessionsCol ? parts[4] : parts[3])?.trim();
+                const trailingLower = trailing?.toLowerCase();
+                const isClassValue = !!trailingLower && ['ranger', 'warrior', 'mage', 'cleric', 'thief', 'none'].includes(trailingLower);
+                const isExplicitNone = trailingLower === 'none';
+                const advice = hasSessionsCol && !isClassValue ? trailing || '' : '';
+                let skillClass = isClassValue ? trailing || 'Ranger' : 'Ranger';
+                const mana = !hasSessionsCol ? parts[4]?.trim() || '' : '';
+                const castingTime = !hasSessionsCol ? parts[5]?.trim() || '' : '';
 
                 // Multi-word values (e.g. "Easy to improve") are advice, not a class name
                 if (!skillClass || isExplicitNone || skillClass.includes(' ')) skillClass = 'Ranger';
@@ -106,28 +145,15 @@ export function usePracticeHandler(
                 const knowledge = knowledgeStr.includes('%') ? knowledgeStr : knowledgeStr;
                 const proficiency = mappedPercentage ? parseInt(mappedPercentage) : (parseInt(knowledgeStr) || 0);
 
-                // Heuristic for skills if the class column is missing or ambiguous
-                const skillNameLower = name.toLowerCase();
-                const warriorSkills = ['bash', 'kick', 'rescue', 'slashing', 'stabbing', 'two-handed', 'cleaving', 'concussion', 'parry', 'endurance', 'shield parry'];
-                const mageSkills = ['magic', 'spell', 'meditate', 'staff'];
-                const clericSkills = ['pray', 'bless', 'healing', 'percieve'];
-                const thiefSkills = ['hide', 'sneak', 'steal', 'backstab', 'pick lock', 'search', 'climb', 'trap'];
-
-                // If it came in as Ranger (our default) or missing, try more specific heuristics,
-                // BUT only if it wasn't explicitly labeled as "None" by the game.
-                if (!isExplicitNone && (skillClass === 'Ranger' || !rawClass)) {
-                    if (warriorSkills.some(s => skillNameLower.includes(s))) skillClass = 'Warrior';
-                    else if (mageSkills.some(s => skillNameLower.includes(s))) skillClass = 'Mage';
-                    else if (clericSkills.some(s => skillNameLower.includes(s))) skillClass = 'Cleric';
-                    else if (thiefSkills.some(s => skillNameLower.includes(s))) skillClass = 'Thief';
-                    // Defaults to Ranger if none of the above
-                    else skillClass = 'Ranger';
+                const catalogClass = getPracticeClassLabel(name);
+                if (!isExplicitNone && (skillClass === 'Ranger' || !isClassValue)) {
+                    skillClass = catalogClass || 'Ranger';
                 }
 
                 // Accept any line that has a sessions column OR a recognisable knowledge value
                 if (hasSessionsCol || proficiency > 0 || knowledgeStr.includes('%') || mappedPercentage) {
                     const skill: PracticeSkill = {
-                        name, sessions: sessionsStr, knowledge, proficiency, difficulty, advice: '', skillClass
+                        name, sessions: sessionsStr, knowledge, proficiency, difficulty, advice, skillClass, mana, castingTime
                     };
 
                     console.log(`[PracticeHandler] Parsed skill: "${skill.name}" | Sessions: ${skill.sessions} | Knowledge: ${skill.knowledge} | Difficulty: ${skill.difficulty} | Class: ${skill.skillClass} (GM: ${isAtGuildmasterRef.current})`);
@@ -135,6 +161,15 @@ export function usePracticeHandler(
                     return skill;
                 } else {
                     console.log(`[PracticeHandler] Skipping line (unrecognised): "${text}"`);
+                }
+            }
+
+            const continuation = text.trim();
+            if (continuation && !/^-+$/.test(continuation) && parsedSkillsRef.current.length > 0) {
+                const previous = parsedSkillsRef.current[parsedSkillsRef.current.length - 1];
+                if (previous.advice) {
+                    previous.advice = `${previous.advice} ${continuation}`;
+                    return true;
                 }
             }
         }
@@ -145,15 +180,21 @@ export function usePracticeHandler(
         const updateMatch = text.match(/You took (\d+) out of (\d+) sessions?.*knowledge is now (\d+)%/i);
         if (updateMatch) {
             const [_, taken, remaining, newKnowledge] = updateMatch;
-            const skillName = lastPracticedSkillRef.current;
+            const skillName = lastPracticedSkillRef.current || readLastPracticedSkill();
             console.log(`[PracticeHandler] DETECTED UPDATE: ${taken}/${remaining} sessions, ${newKnowledge}% knowledge for skill: ${skillName}`);
             if (skillName) {
+                const updateKey = `${skillName.toLowerCase()}|${taken}|${remaining}|${newKnowledge}`;
+                if (lastPracticeUpdateKeyRef.current === updateKey) return false;
+                lastPracticeUpdateKeyRef.current = updateKey;
+
+                const sessions = `${taken}/${remaining}`;
+                const knowledge = `${newKnowledge}%`;
                 setPracticeData(prev => {
                     if (!prev) return prev;
                     
                     const skills = prev.skills.map(s => 
                         s.name.toLowerCase() === skillName.toLowerCase() 
-                            ? { ...s, sessions: `${taken}/${remaining}`, knowledge: newKnowledge + '%', proficiency: parseInt(newKnowledge) }
+                            ? { ...s, sessions, knowledge, proficiency: parseInt(newKnowledge) }
                             : s
                     );
 
@@ -162,6 +203,7 @@ export function usePracticeHandler(
                     
                     return { ...prev, skills, sessionsLeft };
                 });
+                updatePracticeDrawerLine(skillName, sessions, knowledge);
                 const normalizedName = skillName.trim().toLowerCase();
                 setAbilities(prevAbils => ({ ...prevAbils, [normalizedName]: parseInt(newKnowledge) }));
             }
@@ -169,7 +211,7 @@ export function usePracticeHandler(
         }
 
         return false;
-    }, [setIsPracticeActive, setAbilities]);
+    }, [setIsPracticeActive, setAbilities, updatePracticeDrawerLine]);
 
     const finalizePractice = useCallback((
         addMessage?: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean) => void,

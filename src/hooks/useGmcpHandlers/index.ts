@@ -163,11 +163,15 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
         if (riding) {
             if (props.setIsRiding) props.setIsRiding(true);
             props.setPlayerPosition('riding');
+            props.setInCombat?.(false, true);
+            props.setOpponentId(null);
+            props.setOpponentName(null);
+            props.setOpponentHealthStatus(null);
         } else {
             if (props.setIsRiding) props.setIsRiding(false);
             props.setPlayerPosition('standing');
         }
-    }, [props.setIsRiding, props.setPlayerPosition, props.isSpectateMode]);
+    }, [props.setIsRiding, props.setPlayerPosition, props.setInCombat, props.setOpponentId, props.setOpponentName, props.setOpponentHealthStatus, props.isSpectateMode]);
 
     return {
         onRoomInfo,

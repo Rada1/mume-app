@@ -16,7 +16,7 @@ interface DrawerShellProps {
 
 export const DrawerShell: React.FC<DrawerShellProps> = ({ id, side, title, children }) => {
     const { ui, setUI } = useUI();
-    const { triggerHaptic, handleLogClick } = useGame();
+    const { triggerHaptic, handleLogClick, handleLogPointerDown, handleLogPointerUp } = useGame();
     const isOpen = ui.drawer === id;
 
     if (!isOpen) return null;
@@ -35,7 +35,7 @@ export const DrawerShell: React.FC<DrawerShellProps> = ({ id, side, title, child
                 padding: '6px 10px',
                 pointerEvents: 'auto'
             }}>
-                <span className="drawer-title" style={{ opacity: 0.4, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                <span className="drawer-title" style={{ opacity: 0.4, fontSize: '0.7em', textTransform: 'uppercase', letterSpacing: '1px' }}>
                     {title || id}
                 </span>
                 {window.innerWidth > 1024 && (
@@ -59,7 +59,14 @@ export const DrawerShell: React.FC<DrawerShellProps> = ({ id, side, title, child
                     </button>
                 )}
             </div>
-            <div className="drawer-content" style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }} onClick={handleLogClick as any}>
+            <div
+                className="drawer-content"
+                style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                onClick={handleLogClick as any}
+                onPointerDown={handleLogPointerDown}
+                onPointerUp={handleLogPointerUp}
+                onPointerCancel={handleLogPointerUp}
+            >
                 {children}
             </div>
         </div>

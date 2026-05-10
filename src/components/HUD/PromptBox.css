@@ -133,15 +133,21 @@
 
 .prompt-combat-stat {
     display: inline-flex;
-    align-items: baseline;
-    gap: 2px;
+    align-items: center;
+    gap: 4px;
     white-space: nowrap;
 }
 
-.prompt-combat-stats-line b {
-    color: rgba(255, 255, 255, 0.88);
-    font-weight: 900;
-    font-size: 1em;
+.stat-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.6);
+    transition: color 0.2s ease;
+}
+
+.prompt-combat-stats-line:hover .stat-icon-wrapper {
+    color: rgba(255, 255, 255, 0.95);
 }
 
 .prompt-combat-stat strong {

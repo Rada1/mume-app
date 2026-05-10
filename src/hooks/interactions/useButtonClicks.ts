@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { InteractionDeps } from '../useInteractionHandlers';
 import { CustomButton } from '../../types';
-import { formatNpcKeywordTarget, sanitizeGameTarget } from '../../utils/gameUtils';
+import { formatMumeTarget, sanitizeGameTarget } from '../../utils/gameUtils';
 import { triggerRingAnimation, getPressedColor } from './pointerUtils';
 import { toCategoryId } from '../../utils/inlineActionModel';
 
@@ -81,7 +81,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             ['cat-npc', 'cat-enemy', 'cat-neutral', 'cat-ally'].includes(toCategoryId(popoverState?.category) || '') ||
             !!popoverState?.setId?.startsWith('npc');
         console.log('[useButtonClicks] context resolution:', { context, effectiveContext, keywordOverride: context ? keywordOverrides[context] : undefined });
-        let finalContext = (isNpcContext ? formatNpcKeywordTarget(effectiveContext) : sanitizeGameTarget(effectiveContext)) || effectiveContext || '';
+        let finalContext = formatMumeTarget(effectiveContext) || effectiveContext || '';
         console.log('[useButtonClicks] finalContext:', finalContext);
         let detectedParent = parentNoun;
 

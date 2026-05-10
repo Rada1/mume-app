@@ -104,7 +104,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         whoList,
         refreshLogHighlights,
         practice,
-        shop,
         openKeywordEdit,
         keywordEditState, setKeywordEditState,
         setKeywordOverride, removeKeywordOverride,
@@ -328,7 +327,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 whoList={whoList}
                 refreshLogHighlights={refreshLogHighlights}
                 practice={practice}
-                shop={shop}
                 openKeywordEdit={openKeywordEdit}
                 entities={entities}
                 registerEntity={registerEntity}

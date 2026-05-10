@@ -17,7 +17,7 @@ const Card: React.FC<{ title: string; children: React.ReactNode }> = ({ title, c
         gap: 7,
     }}>
         <div style={{
-            fontSize: '0.55rem', fontWeight: 700, textTransform: 'uppercase',
+            fontSize: '0.55em', fontWeight: 700, textTransform: 'uppercase',
             letterSpacing: '1.5px', color: 'rgba(255,255,255,0.22)', marginBottom: 2,
         }}>
             {title}
@@ -32,9 +32,9 @@ const GREEN_GLOW = 'rgba(74,222,128,0.3)';
 
 const Row: React.FC<{ label: string; value: React.ReactNode; dim?: boolean }> = ({ label, value, dim }) => (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
-        <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.32)', flexShrink: 0 }}>{label}</span>
+        <span style={{ fontSize: '0.62em', color: 'rgba(255,255,255,0.32)', flexShrink: 0 }}>{label}</span>
         <span style={{
-            fontSize: '0.7rem',
+            fontSize: '1em',
             color: dim ? 'rgba(255,255,255,0.2)' : GREEN,
             textShadow: dim ? 'none' : `0 0 8px ${GREEN_GLOW}`,
             fontWeight: 500, textAlign: 'right', wordBreak: 'break-word',
@@ -68,12 +68,12 @@ const BarRow: React.FC<{
         <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
             {/* numbers row */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.32)', minWidth: 36 }}>{label}</span>
-                <span style={{ fontSize: '0.65rem', fontFamily: 'monospace', color: fill, textShadow: `0 0 6px ${fill}` }}>
+                <span style={{ fontSize: '0.62em', color: 'rgba(255,255,255,0.32)', minWidth: 36 }}>{label}</span>
+                <span style={{ fontSize: '1em', fontFamily: 'monospace', color: fill, textShadow: `0 0 6px ${fill}` }}>
                     {value}
                     <span style={{ opacity: 0.45 }}> / {max}</span>
                     {statusStr && (
-                        <span style={{ marginLeft: 7, opacity: 0.55, fontSize: '0.58rem', color: 'rgba(255,255,255,0.5)', textShadow: 'none' }}>
+                        <span style={{ marginLeft: 7, opacity: 0.55, fontSize: '0.75em', color: 'rgba(255,255,255,0.5)', textShadow: 'none' }}>
                             ({statusStr})
                         </span>
                     )}
@@ -117,7 +117,7 @@ const Pill: React.FC<{ label: string; active: boolean; color?: string }> = ({ la
     <span style={{
         padding: '2px 7px',
         borderRadius: 10,
-        fontSize: '0.58rem',
+        fontSize: '0.7em',
         fontWeight: 700,
         textTransform: 'uppercase',
         letterSpacing: '0.5px',
@@ -174,19 +174,20 @@ export const StatusDrawer: React.FC = () => {
             flex: 1, overflowY: 'auto', padding: '10px 10px 16px',
             display: 'flex', flexDirection: 'column', gap: 8,
             scrollbarWidth: 'thin',
+            fontSize: 'var(--dynamic-log-size, 16px)'
         }}>
             {/* ── Identity ── */}
             <Card title="Character">
                 {characterInfo.fullname ? (
-                    <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'rgba(255,255,255,0.9)', lineHeight: 1.3 }}>
+                    <div style={{ fontSize: '1.2em', fontWeight: 600, color: 'rgba(255,255,255,0.9)', lineHeight: 1.3 }}>
                         {characterInfo.fullname}
                     </div>
                 ) : characterInfo.name ? (
-                    <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'rgba(255,255,255,0.9)' }}>
+                    <div style={{ fontSize: '1.2em', fontWeight: 600, color: 'rgba(255,255,255,0.9)' }}>
                         {characterInfo.name}
                     </div>
                 ) : (
-                    <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.2)', fontStyle: 'italic' }}>Not logged in</div>
+                    <div style={{ fontSize: '1em', color: 'rgba(255,255,255,0.2)', fontStyle: 'italic' }}>Not logged in</div>
                 )}
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 12px', marginTop: 2 }}>
                     {characterInfo.level > 0 && <Row label="Level" value={characterInfo.level} />}
@@ -260,7 +261,7 @@ export const StatusDrawer: React.FC = () => {
                             <span>
                                 {opponentName}
                                 {opponentHealthStatus && (
-                                    <span style={{ marginLeft: 8, fontSize: '0.62rem', color: statusColor(opponentHealthStatus) }}>
+                                    <span style={{ marginLeft: 8, fontSize: '0.85em', color: statusColor(opponentHealthStatus) }}>
                                         {opponentHealthStatus}
                                     </span>
                                 )}
@@ -272,7 +273,7 @@ export const StatusDrawer: React.FC = () => {
                             <span>
                                 {bufferName}
                                 {bufferHealthStatus && (
-                                    <span style={{ marginLeft: 8, fontSize: '0.62rem', color: statusColor(bufferHealthStatus) }}>
+                                    <span style={{ marginLeft: 8, fontSize: '0.85em', color: statusColor(bufferHealthStatus) }}>
                                         {bufferHealthStatus}
                                     </span>
                                 )}

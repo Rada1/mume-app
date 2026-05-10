@@ -6,10 +6,34 @@
 import { GameEntity } from '../types';
 
 /**
+ * Hardcoded keyword exceptions for specific MUME items where heuristic parsing fails.
+ * @description These are rare cases that should be revisited if GMCP provides keyword data.
+ * To add a new exception, simply add a case here.
+ */
+const getHardcodedKeywordException = (name: string): string | null => {
+    const clean = name.toLowerCase();
+    
+    // 1. Specific legendary or complex items
+    if (clean.includes('belt of pearls and crystals')) return 'belt';
+    if (clean.includes('belt of fell hide')) return 'belt';
+
+    // 2. Keyword-dominant types: if these appear anywhere, they are the primary keyword
+    if (clean.includes('sheath')) return 'sheath';
+    if (clean.includes('scabbard')) return 'scabbard';
+    if (clean.includes('harness')) return 'harness';
+
+    return null;
+};
+
+/**
  * Extracts the MUME interaction keyword from an item's display name.
  * Only the core noun (not adjectives or material prefixes) is a valid keyword.
  */
 export const extractMumeKeyword = (label: string): string => {
+    // Check for hardcoded exceptions first
+    const exception = getHardcodedKeywordException(label);
+    if (exception) return exception;
+
     // Strip ANSI, tags, parentheses, and brackets
     let name = label.replace(/\x1b\[[0-9;]*m/g, '')
                     .replace(/<[^>]*>/g, '')
@@ -103,6 +127,9 @@ export const sanitizeGameTarget = (target: string | null | undefined): string | 
     if (target === null || target === undefined) return null;
     let clean = target.trim();
 
+    const exception = getHardcodedKeywordException(clean);
+    if (exception) return exception;
+
     // Inline GMCP character targets are already command-shaped, including
     // ordinal prefixes and enemy markers such as 2.*orc*.
     if (/^\d+\.[\w'*.-]+(?:-[\w'*.-]+)*$/.test(clean) || /^(?:\d+\.)?\*[^*]+\*$/.test(clean)) {
@@ -127,18 +154,25 @@ export const sanitizeGameTarget = (target: string | null | undefined): string | 
     // Aggressively strip punctuation from entities
     clean = clean.replace(/[.,:;!?"'()[\]{}<>*#~]/g, ' ').trim();
     
-    // Strip leading articles and quantifiers
-    clean = clean.replace(/^(a|an|the|some)\s+(pair|pairs|set|piece|bundle|pile|handful|bit|slice|loaf|lump|chunk|portion)\s+of\s+/i, '');
-    clean = clean.replace(/^(pair|pairs|set|piece|bundle|pile|handful|bit|slice|loaf|lump|chunk|portion)\s+of\s+/i, '');
-    clean = clean.replace(/^(a|an|the|some)\s+/i, '');
+    // Rule: Strip "pair of", "set of", and leading articles globally
+    // We use word boundaries to avoid partial matches (e.g. "another" containing "an")
+    clean = clean.replace(/\b(pair|pairs|set|piece|bundle|pile|handful|bit|slice|loaf|lump|chunk|portion)\s+of\s+/gi, '');
+    clean = clean.replace(/\b(a|an|the|some)\s+/gi, '');
 
-    return clean.replace(/\s+/g, ' ');
+    return clean.replace(/\s+/g, ' ').trim();
 };
 
-export const formatNpcKeywordTarget = (target: string | null | undefined): string | null => {
+/**
+ * Formats a target string with hyphens for MUME interaction.
+ * Used for both NPCs and objects to ensure multi-word targets are parsed correctly.
+ */
+export const formatMumeTarget = (target: string | null | undefined): string | null => {
     const clean = sanitizeGameTarget(target);
     return clean ? clean.replace(/\s+/g, '-').toLowerCase() : null;
 };
+
+// Legacy alias for backward compatibility
+export const formatNpcKeywordTarget = formatMumeTarget;
 
 /**
  * Unified "Data-Driven" keyword resolver.

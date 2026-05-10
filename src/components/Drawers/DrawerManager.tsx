@@ -36,7 +36,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 }) => {
     const { 
         characterName, viewport, triggerHaptic, gameState, executeCommand,
-        btn, joystick, handleButtonClick, editor, env, isFoggy, gameTime
+        btn, joystick, handleButtonClick, editor, env, isFoggy, gameTime, roomItems
     } = useGame();
     const currentTime = useMumeTime(gameTime);
     const {
@@ -44,7 +44,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         setPopoverState,
         displayInventoryLines, displayEqLines,
 
-        infoLines, questLines, practiceLines,
+        infoLines, questLines, achievementLines, practiceLines,
         whoLines, whereLines,
         setWhoLines, setWhereLines,
         gearTab, setGearTab, playersTab, setPlayersTab, charTab, setCharTab
@@ -184,10 +184,12 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                     setCharTab={setCharTab}
                     displayInventoryLines={displayInventoryLines}
                     displayEqLines={displayEqLines}
+                    roomItems={roomItems}
                     whoLines={whoLines}
                     whereLines={whereLines}
                     infoLines={infoLines}
                     questLines={questLines}
+                    achievementLines={achievementLines}
                     practiceLines={practiceLines}
                     groupMembers={groupMembers}
                     triggerHaptic={triggerHaptic}
@@ -209,10 +211,12 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                     setCharTab={setCharTab}
                     displayInventoryLines={displayInventoryLines}
                     displayEqLines={displayEqLines}
+                    roomItems={roomItems}
                     whoLines={whoLines}
                     whereLines={whereLines}
                     infoLines={infoLines}
                     questLines={questLines}
+                    achievementLines={achievementLines}
                     practiceLines={practiceLines}
                     groupMembers={groupMembers}
                     triggerHaptic={triggerHaptic}
@@ -234,10 +238,12 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                     setCharTab={setCharTab}
                     displayInventoryLines={displayInventoryLines}
                     displayEqLines={displayEqLines}
+                    roomItems={roomItems}
                     whoLines={whoLines}
                     whereLines={whereLines}
                     infoLines={infoLines}
                     questLines={questLines}
+                    achievementLines={achievementLines}
                     practiceLines={practiceLines}
                     groupMembers={groupMembers}
                     triggerHaptic={triggerHaptic}

@@ -331,7 +331,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                                     inputRef.current.focus();
                                 }
                             }}
-                            placeholder={isPasswordMode ? "Enter password..." : (commandPreview ? "" : "Enter command...")}
+                            placeholder={isPasswordMode ? "Enter password..." : (gameState === 'account' ? "Enter username..." : (commandPreview ? "" : "Enter command..."))}
                         />
                     </div>
 

@@ -3,7 +3,7 @@
  * @description Account and character selection stages.
  */
 
-export type AccountStage = 'login' | 'character-select' | 'character-detail' | 'account-menu' | 'character-creation' | 'stat-editing' | 'none';
+export type AccountStage = 'login' | 'account-menu' | 'character-creation' | 'stat-editing' | 'none';
 
 export interface CharacterEntry {
     index?: number;
@@ -37,5 +37,8 @@ export interface AccountState {
     selectedCharacter: CharacterEntry | null;
     creationPrompt?: CreationPrompt;
     lastCreatedCharacterName?: string;
+    currentPrompt?: string;
     isGathering?: boolean;
+    stats?: Record<string, number>;
+    pointsLeft?: number;
 }

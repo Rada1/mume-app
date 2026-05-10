@@ -4,7 +4,6 @@ import { ansiConvert } from '../../utils/ansi';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
 import { TokenRenderer } from './TokenRenderer';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import ShopItemCard from '../Shop/ShopItemCard';
 import PracticeSkillCard from '../Practice/PracticeSkillCard';
 import PracticeHeaderCard from '../Practice/PracticeHeaderCard';
 import PracticeClassHeaderCard from '../Practice/PracticeClassHeaderCard';
@@ -138,11 +137,6 @@ const MessageItem = React.memo(({
                 </div>
             ) : msg.type === 'prompt' ? (
                 <span><TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.textRaw || ''))} /></span>
-            ) : msg.type === 'shop-item' && msg.shopItem ? (
-                <div className="content-row">
-                    <ShopItemCard item={msg.shopItem} executeCommand={executeCommand} />
-                    <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
-                </div>
             ) : msg.type === 'practice-skill' && msg.practiceSkill ? (
                 <PracticeSkillCard skill={msg.practiceSkill} />
             ) : msg.type === 'practice-header' && msg.practiceHeader ? (
@@ -441,7 +435,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
                 const lineCount = Math.max(1, Math.ceil((msg.commText || '').length / bubbleCols));
                 return 46 + lineCount * 22;
             }
-            if (msg.type === 'shop-item') return 120;
             if (msg.type === 'practice-skill') return 84;
             if (msg.type === 'practice-header') return 52;
             if (msg.type === 'practice-class-header') return 32;

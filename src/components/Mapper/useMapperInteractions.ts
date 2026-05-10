@@ -5,6 +5,7 @@ import { MapperRoom, MapperMarker } from './mapperTypes';
 import { GRID_SIZE, DRAG_SENSITIVITY, ZOOM_SENSITIVITY } from './mapperUtils';
 import { useMapHitTest } from './hooks/useMapHitTest';
 import { getButtonCommand } from '../../utils/buttonUtils';
+import { fireHeldCommandAtMapOccupant } from './mapperHeldCommandTarget';
 import type { GmcpOccupant, GroupMember, InlineCategoryConfig } from '../../types';
 
 export interface InteractionDeps {
@@ -466,6 +467,10 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         if (occupantHit) {
                             if (dragTypeRef.current === 'joystick' && depsRef.current.joystick?.handleJoystickCancel) {
                                 depsRef.current.joystick.handleJoystickCancel(e as any);
+                            }
+
+                            if (fireHeldCommandAtMapOccupant(depsRef.current, occupantHit)) {
+                                return;
                             }
 
                             const entityId = occupantHit.id !== undefined
