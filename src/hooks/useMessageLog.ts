@@ -15,6 +15,8 @@ export const MOVE_FAILURE_REGEX = /^(The .+ seems to be closed\.|Alas, you canno
 
 // ---------------------------------------------------------------------------
 let lastVibrateTime = 0;
+const USER_LOG_MESSAGE_LIMIT = 500;
+const SPECTATE_LOG_MESSAGE_LIMIT = Number.POSITIVE_INFINITY;
 
 export function useMessageLog(
     inCombatRef: React.RefObject<boolean>,
@@ -36,6 +38,7 @@ export function useMessageLog(
     isSpectateSession?: boolean
 ) {
     const [messages, setMessages] = useState<Message[]>([]);
+    const messageLimit = isSpectateSession ? SPECTATE_LOG_MESSAGE_LIMIT : USER_LOG_MESSAGE_LIMIT;
     const lastMessageRef = useRef<Message | null>(null);
     const messageBufferRef = useRef<Message[]>([]);
     const flushTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -96,8 +99,8 @@ export function useMessageLog(
 
         setMessages(prev => {
             const nextMessages = [...prev, ...ordered];
-            if (nextMessages.length >= 500) {
-                const trimmed = nextMessages.slice(nextMessages.length - 500);
+            if (nextMessages.length >= messageLimit) {
+                const trimmed = nextMessages.slice(nextMessages.length - messageLimit);
                 // Remove evicted IDs from the set so it stays bounded.
                 const kept = new Set(trimmed.map(m => m.id).filter(Boolean));
                 addedMidSetRef.current.forEach(id => { if (!kept.has(id)) addedMidSetRef.current.delete(id); });
@@ -106,7 +109,7 @@ export function useMessageLog(
             return nextMessages;
         });
         flushTimeoutRef.current = null;
-    }, []);
+    }, [messageLimit]);
 
     const addMessage = useCallback((
         type: MessageType,
@@ -386,7 +389,7 @@ export function useMessageLog(
             if (mid) addedMidSetRef.current.add(mid);
             setMessages(prev => {
                 const nextMessages = [...prev, ...drained, msg];
-                return nextMessages.length >= 500 ? nextMessages.slice(nextMessages.length - 500) : nextMessages;
+                return nextMessages.length >= messageLimit ? nextMessages.slice(nextMessages.length - messageLimit) : nextMessages;
             });
         } else {
             // Deduplicate: if an ID is provided, ensure it's not already in the buffer or state.
@@ -403,7 +406,7 @@ export function useMessageLog(
                 flushTimeoutRef.current = setTimeout(flushMessages, 50);
             }
         }
-    }, [inCombatRef, setMessages, flushMessages, roomContext, isAccountModeRef, playCommMessageSound]);
+    }, [inCombatRef, setMessages, flushMessages, roomContext, isAccountModeRef, playCommMessageSound, messageLimit]);
 
     const clearLog = useCallback(() => {
         messageBufferRef.current = [];
@@ -426,9 +429,9 @@ export function useMessageLog(
         };
         setMessages(prev => {
             const nextMessages = [...prev, msg];
-            return nextMessages.length >= 500 ? nextMessages.slice(nextMessages.length - 500) : nextMessages;
+            return nextMessages.length >= messageLimit ? nextMessages.slice(nextMessages.length - messageLimit) : nextMessages;
         });
-    }, [setMessages]);
+    }, [setMessages, messageLimit]);
 
     return useMemo(() => ({ 
         messages, 
