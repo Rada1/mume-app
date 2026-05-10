@@ -830,6 +830,10 @@
     box-shadow: none !important;
 }
 
+.message.prompt.old-batch-dim {
+    opacity: 0.5;
+}
+
 .sticky-room-header {
     position: relative;
     top: 0;
