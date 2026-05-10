@@ -59,7 +59,7 @@
     animation: breathing-stretch 5s ease-in-out infinite;
 }
 
-/* Portrait Mode: Constrain Top Image to Log Area, Hide Bottom Image */
+/* Portrait Mode: Enable Both Images with a Cross-Fade in the Log Area */
 @media (max-width: 1024px) and (orientation: portrait) {
     .log-background-mask.top {
         top: calc(env(safe-area-inset-top, 0px) + 42px);
@@ -67,13 +67,27 @@
         height: auto;
         left: 0;
         right: 0;
-        mask-image: none;
-        -webkit-mask-image: none;
-        box-shadow: inset 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 -20px 40px rgba(0, 0, 0, 0.4);
+        /* Fade out as it reaches the bottom half */
+        mask-image: linear-gradient(to bottom, black 0%, black 25%, transparent 60%);
+        -webkit-mask-image: linear-gradient(to bottom, black 0%, black 25%, transparent 60%);
+        box-shadow: inset 0 20px 40px rgba(0, 0, 0, 0.4);
     }
     
     .log-background-mask.bottom {
-        display: none;
+        display: block;
+        /* Only occupy the bottom 50% of the log area vertically */
+        bottom: var(--mobile-gutter-height, 140px);
+        height: calc((100dvh - (env(safe-area-inset-top, 0px) + 42px) - var(--mobile-gutter-height, 140px)) / 2);
+        top: auto;
+        left: 0;
+        right: 0;
+        background-position: center bottom;
+        /* Fade in from its own top edge (the midpoint of the log) */
+        mask-image: linear-gradient(to top, black 70%, transparent 100%);
+        -webkit-mask-image: linear-gradient(to top, black 70%, transparent 100%);
+        opacity: 0.35;
+        filter: blur(4px) brightness(0.8) contrast(1.1);
+        z-index: 0;
     }
 }
 

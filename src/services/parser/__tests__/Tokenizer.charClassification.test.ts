@@ -219,6 +219,50 @@ describe('Tokenizer — char inline button assignment (GMCP source-of-truth cont
             expect(ent?.metadata?.category).toBe('cat-room-object');
         });
 
+        it('parses escaped XML tags before rendering text', () => {
+            const tokens = Tokenizer.tokenize(
+                'You see &lt;object&gt;a rusty sword&lt;/object&gt; on the ground.',
+                makeContext([])
+            );
+            const textOnly = tokens.map(t => t.content).join('');
+            const ent = findEntityFor(tokens, 'a rusty sword');
+
+            expect(textOnly).toBe('You see a rusty sword on the ground.');
+            expect(ent).toBeDefined();
+            expect(ent?.metadata?.category).toBe('cat-room-object');
+        });
+
+        it('strips presentation-only XML tags around equipment slots', () => {
+            const tokens = Tokenizer.tokenize(
+                '&lt;worn on finger&gt; a <object>brightly shining ring</object>',
+                makeContext([]),
+                'worn'
+            );
+            const textOnly = tokens.map(t => t.content).join('');
+            const ent = findEntityFor(tokens, 'brightly shining ring');
+
+            expect(textOnly).toBe(' a brightly shining ring');
+            expect(textOnly).not.toContain('<worn');
+            expect(ent?.metadata?.category).toBe('cat-worn-object');
+        });
+
+        it('emits child entities inside XML room wrappers', () => {
+            const tokens = Tokenizer.tokenize(
+                "<room id=8413777 area=&quot;Valinor&quot; terrain=city><name>The Shapers' Board</name>A large &lt;object&gt;bulletin board&lt;/object&gt; is here. A sturdy <character>pack horse</character> is standing here.</room>",
+                makeContext([{ id: '10', name: 'pack horse', keyword: 'pack-horse', type: 'npc' }])
+            );
+            const room = findEntityFor(tokens, "The Shapers' Board");
+            const object = findEntityFor(tokens, 'bulletin board');
+            const npc = findEntityFor(tokens, 'pack horse');
+            const textOnly = tokens.map(t => t.content).join('');
+
+            expect(textOnly).not.toContain('<object>');
+            expect(textOnly).not.toContain('</object>');
+            expect(room?.metadata?.category).toBe('cat-room');
+            expect(object?.metadata?.category).toBe('cat-room-object');
+            expect(npc?.metadata?.category).toBe('cat-npc');
+        });
+
         it('does NOT emit object buttons for hit tags', () => {
             const tokens = Tokenizer.tokenize(
                 'You <hit>cleave hard</hit> at the orc.',

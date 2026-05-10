@@ -90,6 +90,16 @@ const stripInlineMarkup = (text: string): string => text
         return '';
     });
 
+const isGameplayXmlLine = (text: string): boolean => {
+    const clean = stripInlineMarkup(text).trim().toLowerCase();
+    if (!clean) return false;
+    if (clean.endsWith('account>')) return false;
+    if (clean.includes('by what name do you wish') || clean.includes('account password:') || clean === 'password:') return false;
+
+    return /<\/?(?:room|name|description|character|player|object|exit|prompt|movement|header|status|enemy)\b/i.test(text) ||
+        /&lt;\/?(?:room|name|description|character|player|object|exit|prompt|movement|header|status|enemy)\b/i.test(text);
+};
+
 const isWhereTableLine = (text: string): boolean => {
     const clean = stripInlineMarkup(text).trim();
     if (!clean) return false;
@@ -425,6 +435,13 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             }
         }
 
+        if (!isSnoop && deps.gameState === 'account' && isGameplayXmlLine(lineToParse)) {
+            deps.accountStageRef.current = 'none' as any;
+            deps.setAccountState(prev => ({ ...prev, stage: 'none', currentPrompt: undefined, creationPrompt: undefined }));
+            deps.setIsPasswordMode(false);
+            deps.setGameState('playing');
+        }
+
         const snoopedRoomInfo = isSnoop ? extractXmlRoomInfo(lineToParse) : null;
         if (snoopedRoomInfo) {
             if (typeof window !== 'undefined') {
@@ -463,7 +480,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         const isWhereCapture = !isSnoop && (activeCapture === 'where' || expectedCaptureBeforeTokenize === 'where');
         // Skip entity tokenization during account phase — account text is pure terminal output
         // and inline-btn padding/bold/letter-spacing break monospace column alignment.
-        const isAccountPhase = !isSnoop && deps.gameState === 'account';
+        const isAccountPhase = !isSnoop && deps.gameState === 'account' && !isGameplayXmlLine(lineToParse);
 
         let tokenizerContext: any;
         let derivedTokens: any[];

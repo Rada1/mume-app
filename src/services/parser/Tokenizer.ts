@@ -78,6 +78,7 @@ export class Tokenizer {
             this.resetOccupantMatches();
         }
         const tokens: Token[] = [];
+        const textToScan = this.normalizeEscapedXmlDelimiters(textRaw);
         
         // Entity Tracking
         let activeEntity: {
@@ -97,11 +98,11 @@ export class Tokenizer {
         let match;
         let lastIndex = 0;
 
-        while ((match = scanner.exec(textRaw)) !== null) {
+        while ((match = scanner.exec(textToScan)) !== null) {
             const [fullMatch, tagName, attributes] = match;
 
             if (match.index > lastIndex) {
-                const content = textRaw.substring(lastIndex, match.index);
+                const content = textToScan.substring(lastIndex, match.index);
                 this.handleText(content, tokens, this.currentStyle, activeEntity, context);
             }
             lastIndex = scanner.lastIndex;
@@ -153,18 +154,27 @@ export class Tokenizer {
                         }
                     }
                 } else {
-                    this.handleText(fullMatch, tokens, this.currentStyle, activeEntity, context);
+                    // MUME XML mode can include presentation-only tags such as
+                    // <wielded> and <worn on finger>. They should never leak into
+                    // the rendered log; keep their enclosed text flowing normally.
                 }
             }
         }
 
-        if (lastIndex < textRaw.length) {
-            this.handleText(textRaw.substring(lastIndex), tokens, this.currentStyle, activeEntity, context);
+        if (lastIndex < textToScan.length) {
+            this.handleText(textToScan.substring(lastIndex), tokens, this.currentStyle, activeEntity, context);
         }
         
         if (activeEntity) this.emitEntity(activeEntity, tokens, context);
 
         return tokens;
+    }
+
+    private normalizeEscapedXmlDelimiters(text: string): string {
+        if (!text || !/&(?:lt|gt);/i.test(text)) return text;
+        return text
+            .replace(/&lt;/gi, '<')
+            .replace(/&gt;/gi, '>');
     }
 
     private decodeEntities(text: string): string {
@@ -442,7 +452,7 @@ export class Tokenizer {
         // --- Room Context Override ---
         // If we are explicitly within a <room> tag (check stack or current context), 
         // the user wants these to be room buttons.
-        if (activeEntity.stack?.includes('room')) {
+        if (activeEntity.tag === 'name' && activeEntity.stack?.includes('room')) {
             category = 'cat-room';
         }
 
@@ -524,7 +534,7 @@ export class Tokenizer {
         }
         if (fullStack.includes('player')) return 'player';
         if (fullStack.includes('object')) return 'object';
-        if (fullStack.includes('room') || fullStack.includes('name')) return 'room';
+        if (lowerTag === 'name' && fullStack.includes('room')) return 'room';
         if (fullStack.includes('exit')) return 'exit';
 
         return 'none';

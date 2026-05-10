@@ -91,7 +91,7 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
                 html: label,
                 context: item.keyword,
                 isItem: true,
-                cmd: 'inline-in-room-obj'
+                cmd: 'cat-room-object'
             };
         });
         return [header, ...itemLines];
@@ -108,9 +108,9 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
     const selectGearTab = (tab: GearTab) => {
         triggerHaptic(10);
         setGearTab(tab);
-        if (tab === 'worn') executeCommand('eq', true, true);
-        else if (tab === 'inv') executeCommand('inv', true, true);
-        else executeCommand('look', true, true);
+        if (tab === 'worn') executeCommand('eq', true, true, false, true);
+        else if (tab === 'inv') executeCommand('inv', true, true, false, true);
+        else executeCommand('look', true, true, false, true);
     };
 
     const selectPlayersTab = (tab: PlayersTab) => {
@@ -127,10 +127,10 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
     const selectCharTab = (tab: CharacterTab) => {
         triggerHaptic(10);
         setCharTab(tab);
-        if (tab === 'info') executeCommand('info', true, true);
-        else if (tab === 'quests') executeCommand('quest', true, true);
-        else if (tab === 'skills') executeCommand('practice', true, true);
-        else if (tab === 'achievements') executeCommand('achievement', true, true);
+        if (tab === 'info') executeCommand('info', true, true, false, true);
+        else if (tab === 'quests') executeCommand('quest', true, true, false, true);
+        else if (tab === 'skills') executeCommand('practice', true, true, false, true);
+        else if (tab === 'achievements') executeCommand('achievement', true, true, false, true);
     };
 
     const renderHoldActions = (actions: { id: string; label: string; command: string }[]) => (
@@ -169,9 +169,9 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
                         <UnifiedView
                             lines={displayEqLines}
                             location="worn"
-                            category="inline-worn"
+                            category="cat-worn-object"
                             emptyMessage="No equipment data. Tap refresh to update."
-                            onRefresh={() => { triggerHaptic(15); executeCommand('eq', true, true); }}
+                            onRefresh={() => { triggerHaptic(15); executeCommand('eq', true, true, false, true); }}
                         />
                         {renderHoldActions([{ id: 'drawer-worn-remove', label: 'Remove', command: 'remove %n' }])}
                     </>
@@ -181,9 +181,9 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
                         <UnifiedView
                             lines={displayInventoryLines}
                             location="carried"
-                            category="inline-inventory"
+                            category="cat-inventory-object"
                             emptyMessage="No inventory data. Tap refresh to update."
-                            onRefresh={() => { triggerHaptic(15); executeCommand('inv', true, true); }}
+                            onRefresh={() => { triggerHaptic(15); executeCommand('inv', true, true, false, true); }}
                         />
                         {renderHoldActions([
                             { id: 'drawer-inv-wear', label: 'Wear', command: 'wear %n' },
@@ -196,9 +196,9 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
                         <UnifiedView
                             lines={roomObjectLines}
                             location="room"
-                            category="inline-in-room-obj"
+                            category="cat-room-object"
                             emptyMessage="No room objects detected. Tap refresh to look around."
-                            onRefresh={() => { triggerHaptic(15); executeCommand('look', true, true); }}
+                            onRefresh={() => { triggerHaptic(15); executeCommand('look', true, true, false, true); }}
                         />
                         {renderHoldActions([{ id: 'drawer-vicinity-get', label: 'Get', command: 'get %n' }])}
                     </>
@@ -265,14 +265,14 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
                     <UnifiedView
                         lines={infoLines}
                         emptyMessage="No info data. Tap refresh to update."
-                        onRefresh={() => { triggerHaptic(15); executeCommand('info', true, true); }}
+                        onRefresh={() => { triggerHaptic(15); executeCommand('info', true, true, false, true); }}
                     />
                 )}
                 {charTab === 'quests' && (
                     <UnifiedView
                         lines={questLines}
                         emptyMessage="No quest data. Tap refresh to update."
-                        onRefresh={() => { triggerHaptic(15); executeCommand('quest', true, true); }}
+                        onRefresh={() => { triggerHaptic(15); executeCommand('quest', true, true, false, true); }}
                     />
                 )}
                 {charTab === 'skills' && (
@@ -280,13 +280,13 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
                         <UnifiedView
                             lines={practiceTargetLines}
                             emptyMessage="No skills data. Tap refresh to update."
-                            onRefresh={() => { triggerHaptic(15); executeCommand('practice', true, true); }}
+                            onRefresh={() => { triggerHaptic(15); executeCommand('practice', true, true, false, true); }}
                         />
                         {renderHoldActions([{ id: 'drawer-skills-practice', label: 'Practice', command: 'practice %n' }])}
                     </>
                 )}
                 {charTab === 'achievements' && (
-                    <UnifiedView lines={achievementLines} emptyMessage="No achievement data. Tap refresh to update." onRefresh={() => { triggerHaptic(15); executeCommand('achievement', true, true); }} />
+                    <UnifiedView lines={achievementLines} emptyMessage="No achievement data. Tap refresh to update." onRefresh={() => { triggerHaptic(15); executeCommand('achievement', true, true, false, true); }} />
                 )}
             </>
         );

@@ -49,7 +49,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         // Drawer visibility alone must not suppress manual commands typed while a
         // drawer is open; only drawer-origin or otherwise silent captures are hidden.
         if (capture.hasSession()) {
-            if (fromDrawer) isDrawerHiding = true;
+            if (fromDrawer) return false;
             else if (stage === 'practice' && isSilent) isDrawerHiding = true;
             else if (stage === 'container' && (fromDrawer || isSilent)) isDrawerHiding = true;
             else if (stage === 'score' || stage === 'help') isDrawerHiding = true;
