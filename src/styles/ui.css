@@ -43,6 +43,20 @@
     pointer-events: auto;
 }
 
+.header-right-cluster {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    min-width: 0;
+    white-space: nowrap;
+}
+
+.header-right-cluster .controls,
+.header-right-cluster .view-switcher {
+    flex-wrap: nowrap;
+}
+
 .title {
     font-family: 'Menlo', monospace;
     font-size: 1.4rem;

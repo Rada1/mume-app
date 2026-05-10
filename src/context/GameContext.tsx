@@ -233,11 +233,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             textOnly === '>' ||
             (textOnly.endsWith('>') && /(?:^|[\s\[\]!(*>])(?:HP|MA|MV|SP):\w+/i.test(textOnly))
         );
+        const isBlankLine = textOnly.length === 0;
 
         // Spectate snoop output is routed to the target log, but MUME also sends
-        // the observer's prompt between snoop bursts. Keep that boundary useful
-        // for parsers while preventing USERS log prompt spam.
-        if (mode.isSpectating && !providedIsSnoop && looksLikePrompt) {
+        // the observer's prompt/spacer between snoop bursts. Keep that boundary
+        // useful for parsers while preventing USERS log prompt spam.
+        if (mode.isSpectating && !providedIsSnoop && (looksLikePrompt || isBlankLine)) {
             return;
         }
 

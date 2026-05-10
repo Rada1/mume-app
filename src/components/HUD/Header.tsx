@@ -188,6 +188,8 @@ const Header: React.FC<HeaderProps> = ({
             {/* Middle: Flexible spacer */}
             <div style={{ flex: 1 }} />
 
+            <div className="header-right-cluster">
+
             {/* Theater Mode Banner */}
             {replayer.state.isVisible && replayer.log && (
                 <div style={{
@@ -682,6 +684,7 @@ const Header: React.FC<HeaderProps> = ({
                         document.body
                     )}
                 </div>
+            </div>
             </div>
         </header>
     );
