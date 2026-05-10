@@ -246,6 +246,28 @@ describe('Tokenizer — char inline button assignment (GMCP source-of-truth cont
             expect(ent?.metadata?.category).toBe('cat-worn-object');
         });
 
+        it('preserves single-letter who-list display markers', () => {
+            const tokens = Tokenizer.tokenize(
+                '*[ A] &lt;E&gt; Imago the Ainu of Win & Great Success',
+                makeContext([{ id: '12', name: 'Imago', type: 'ally' }])
+            );
+            const textOnly = tokens.map(t => t.content).join('');
+            const ent = findEntityFor(tokens, 'Imago');
+
+            expect(textOnly).toContain('<E>');
+            expect(ent?.metadata?.category).toBe('cat-ally');
+        });
+
+        it('preserves unknown non-presentation marker tags as text', () => {
+            const tokens = Tokenizer.tokenize(
+                '<C> Cirdan stands here.',
+                makeContext([])
+            );
+            const textOnly = tokens.map(t => t.content).join('');
+
+            expect(textOnly).toBe('<C> Cirdan stands here.');
+        });
+
         it('emits child entities inside XML room wrappers', () => {
             const tokens = Tokenizer.tokenize(
                 "<room id=8413777 area=&quot;Valinor&quot; terrain=city><name>The Shapers' Board</name>A large &lt;object&gt;bulletin board&lt;/object&gt; is here. A sturdy <character>pack horse</character> is standing here.</room>",

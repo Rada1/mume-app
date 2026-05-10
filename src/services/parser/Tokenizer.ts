@@ -154,9 +154,9 @@ export class Tokenizer {
                         }
                     }
                 } else {
-                    // MUME XML mode can include presentation-only tags such as
-                    // <wielded> and <worn on finger>. They should never leak into
-                    // the rendered log; keep their enclosed text flowing normally.
+                    if (!this.isPresentationOnlyTag(fullMatch)) {
+                        this.handleText(fullMatch, tokens, this.currentStyle, activeEntity, context);
+                    }
                 }
             }
         }
@@ -175,6 +175,10 @@ export class Tokenizer {
         return text
             .replace(/&lt;/gi, '<')
             .replace(/&gt;/gi, '>');
+    }
+
+    private isPresentationOnlyTag(tag: string): boolean {
+        return /^<\/?(?:wielded|worn\b[^>]*)>$/i.test(tag);
     }
 
     private decodeEntities(text: string): string {

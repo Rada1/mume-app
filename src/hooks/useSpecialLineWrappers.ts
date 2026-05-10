@@ -6,6 +6,23 @@ import { safeHighlight, ARRIVE_REGEX, LEAVE_REGEX } from '../utils/highlighterUt
 import { getMemberColor } from '../utils/groupUtils';
 import { getCategoryIdForKindLocation, getKindForCategory } from '../utils/inlineActionModel';
 
+const preserveDisplayMarkers = (html: string): string =>
+    html.replace(/<(\/?)([A-Z])>/g, (_match, slash: string, marker: string) => {
+        if (slash) return `&lt;/${marker}&gt;`;
+        return `&lt;${marker}&gt;`;
+    });
+
+const stripMarkupPreservingDisplayMarkers = (html: string): string =>
+    html
+        .replace(/<(\/?)([A-Z])>/g, (_match, slash: string, marker: string) => slash ? `__MUME_MARKER_SLASH_${marker}__` : `__MUME_MARKER_${marker}__`)
+        .replace(/<[^>]+>/g, '')
+        .replace(/__MUME_MARKER_SLASH_([A-Z])__/g, '</$1>')
+        .replace(/__MUME_MARKER_([A-Z])__/g, '<$1>')
+        .replace(/&lt;([A-Z])&gt;/g, '<$1>')
+        .replace(/&lt;\/([A-Z])&gt;/g, '</$1>')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>');
+
 export const useSpecialLineWrappers = (
     selectedObjectIds: Set<string> = new Set(),
     groupMembers: GroupMember[] = [],
@@ -77,7 +94,8 @@ export const useSpecialLineWrappers = (
 
         // --- 6. WHO/WHERE List Highlighting ---
         if (type === 'who-list' || type === 'where-list') {
-            const textOnly = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
+            const normalizedHtml = preserveDisplayMarkers(originalHtml);
+            const textOnly = stripMarkupPreservingDisplayMarkers(originalHtml).trim();
             let cleanText = textOnly.trim();
             let lastLength = 0;
             while (cleanText.length !== lastLength) {
@@ -94,7 +112,7 @@ export const useSpecialLineWrappers = (
             if (nameCandidate && nameCandidate.length > 2 && /^[A-Z\u00C0-\u00DE]/.test(nameCandidate) && !commonHeaders.includes(nameCandidate)) {
                 const htmlNameCandidate = nameCandidate.replace(/[^\x00-\x7F]/g, c => `&#x${c.codePointAt(0)!.toString(16).toUpperCase()};`);
                 let highlighted = false;
-                return safeHighlight(originalHtml, htmlNameCandidate, false, (m) => {
+                return safeHighlight(normalizedHtml, htmlNameCandidate, false, (m) => {
                     if (highlighted) return m;
                     highlighted = true;
                     const buttonId = `auto-${nameCandidate}`;

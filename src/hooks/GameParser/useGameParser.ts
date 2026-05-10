@@ -84,6 +84,7 @@ const isPromptBoundaryLine = (text: string): boolean => {
 const stripInlineMarkup = (text: string): string => text
     .replace(/\x1b\[[0-9;]*m/g, '')
     .replace(/<\/?[a-zA-Z][a-zA-Z0-9_-]*(?:\s+[^>]*)?\/?>|&lt;|&gt;|&amp;/g, (match: string) => {
+        if (/^<[A-Z]>$/.test(match)) return match;
         if (match === '&lt;') return '<';
         if (match === '&gt;') return '>';
         if (match === '&amp;') return '&';

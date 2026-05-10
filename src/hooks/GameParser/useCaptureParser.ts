@@ -113,7 +113,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         .replace(/&amp;/gi, '&');
 
     const stripXmlTags = (text: string) => decodeXmlEntities(text)
-        .replace(/<\/?[a-zA-Z][a-zA-Z0-9_-]*(?:\s+[^>]*)?>/g, '');
+        .replace(/<\/?[a-zA-Z][a-zA-Z0-9_-]*(?:\s+[^>]*)?>/g, (tag: string) => /^<[A-Z]>$/.test(tag) ? tag : '');
 
     const getObjectText = (line: string): string | null => {
         const decoded = decodeXmlEntities(line);
