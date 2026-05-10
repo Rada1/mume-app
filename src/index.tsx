@@ -181,9 +181,18 @@ const MudClient = () => {
         handleSend(e);
     }, [handleSend]);
 
+    const isTacticalTargetingActive = !!heldButton
+        && !heldButton.didFire
+        && typeof heldButton.id === 'string'
+        && heldButton.id.startsWith('tactical-');
+    const isDrawerTargetingActive = !!heldButton
+        && !heldButton.didFire
+        && typeof heldButton.id === 'string'
+        && heldButton.id.startsWith('drawer-');
+
     return (
         <div
-            className={`app-container state-${gameState} ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''}`}
+            className={`app-container state-${gameState} ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isTacticalTargetingActive ? 'tactical-targeting-active' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''}`}
             ref={containerRef}
             onDragOver={(e: React.DragEvent) => {
                 e.preventDefault();

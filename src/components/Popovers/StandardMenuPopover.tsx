@@ -194,7 +194,12 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
 
     // --- Special Cases ---
 
-    const isInlineMenu = ['object', 'npc', 'player', 'ally', 'enemy', 'neutral'].includes(kind) || ['inventorylist', 'equipmentlist', 'roomitems', 'roomnpcs', 'selection'].includes(safeSetId) || safeSetId.startsWith('object') || safeSetId.startsWith('npc');
+    const isInlineMenu = !isTacticalSet && (
+        ['object', 'npc', 'player', 'ally', 'enemy', 'neutral'].includes(kind) ||
+        ['inventorylist', 'equipmentlist', 'roomitems', 'roomnpcs', 'selection'].includes(safeSetId) ||
+        safeSetId.startsWith('object') ||
+        safeSetId.startsWith('npc')
+    );
     const isTargetable = !isTacticalSet && (['selection', 'inventorylist', 'equipmentlist', 'npc', 'player', 'object-corpse'].includes(safeSetId) || ['player', 'ally', 'npc', 'enemy', 'neutral'].includes(kind) || (kind === 'object' && location === 'room') || NPC_SUBCATEGORIES.includes(safeSetId));
     const headerContext = isCharacterKind ? targetContext : popoverState.context;
     const categoryLabel = isSetManager ? '' : (() => {

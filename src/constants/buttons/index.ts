@@ -1,15 +1,4 @@
 import { CustomButton, ButtonSetSettings } from '../../types';
-import { RANGER_BUTTONS } from './skills/ranger';
-import { THIEF_BUTTONS } from './skills/thief';
-import { WARRIOR_BUTTONS } from './skills/warrior';
-import { CLERIC_BUFF_BUTTONS } from './spells/cleric_buff';
-import { CLERIC_COMBAT_BUTTONS } from './spells/cleric_combat';
-import { CLERIC_HIGH_BUTTONS } from './spells/cleric_high';
-import { CLERIC_UTILITY_BUTTONS } from './spells/cleric_utility';
-import { MAGE_ATTACK_BUTTONS } from './spells/mage_attack';
-import { MAGE_INTEL_BUTTONS } from './spells/mage_intel';
-import { MAGE_UTILITY_BUTTONS } from './spells/mage_utility';
-import { MAGE_BUTTONS } from './spells/mage';
 import { TACTICAL_BUTTONS } from './tactical';
 import { COMMUNICATION_BUTTONS } from './communication';
 import { INLINE_CATEGORY_BUTTONS } from './inline';
@@ -20,17 +9,6 @@ import { META_BUTTONS } from './meta';
 
 export const ALL_BUTTONS: CustomButton[] = [
     ...TACTICAL_BUTTONS,
-    ...RANGER_BUTTONS,
-    ...THIEF_BUTTONS,
-    ...WARRIOR_BUTTONS,
-    ...CLERIC_BUFF_BUTTONS,
-    ...CLERIC_COMBAT_BUTTONS,
-    ...CLERIC_HIGH_BUTTONS,
-    ...CLERIC_UTILITY_BUTTONS,
-    ...MAGE_ATTACK_BUTTONS,
-    ...MAGE_INTEL_BUTTONS,
-    ...MAGE_UTILITY_BUTTONS,
-    ...MAGE_BUTTONS,
     ...INVENTORY_BUTTONS,
     ...COMMUNICATION_BUTTONS,
     ...SOCIAL_BUTTONS,

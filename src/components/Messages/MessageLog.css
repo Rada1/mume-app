@@ -1202,6 +1202,14 @@ span.inline-btn {
     z-index: 10;
 }
 
+.app-container.tactical-targeting-active .message-log .message-content .inline-btn:not(.comm-bubble):not(.reply-btn) {
+    background-color: #000 !important;
+    border-color: color-mix(in srgb, var(--glow-color, #ffffff), #ffffff 18%) !important;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22),
+        0 0 14px color-mix(in srgb, var(--glow-color, #ffffff), transparent 45%) !important;
+    color: var(--glow-color, #ffffff) !important;
+}
+
 @keyframes drop-pulse-strong {
     0% {
         box-shadow: 0 0 25px var(--glow-color, var(--accent)), inset 0 0 15px rgba(var(--accent-rgb), 0.3);

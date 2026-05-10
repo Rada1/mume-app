@@ -3,6 +3,78 @@ import { CustomButton, PracticeData } from '../types';
 import { MAGE_SPELLS, CLERIC_SPELLS, WARRIOR_SKILLS, RANGER_SKILLS, THIEF_SKILLS, CLASS_MAPPINGS } from '../utils/spellLists';
 import { applyPracticeSwipeDefaults } from '../utils/swipeAutoPopulate';
 
+const SPELL_CLASS_KEYS = new Set(['mage', 'cleric']);
+
+const normalizeAbilityKey = (value: string): string => value.trim().toLowerCase().replace(/\s+/g, ' ');
+
+const getAbilityAliases = (value: string): string[] => {
+    const normalized = normalizeAbilityKey(value);
+    const aliases = new Set([normalized]);
+    if (normalized.includes('armour')) aliases.add(normalized.replace(/\barmour\b/g, 'armor'));
+    if (normalized.includes('armor')) aliases.add(normalized.replace(/\barmor\b/g, 'armour'));
+    if (normalized === 'cure critical') aliases.add('cure critic');
+    if (normalized === 'cure critic') aliases.add('cure critical');
+    return Array.from(aliases);
+};
+
+const getCommandAbilityName = (button: CustomButton): string => {
+    const command = normalizeAbilityKey(button.command || '');
+    const spellMatch = command.match(/^(?:cast|commune)\s+'([^']+)'/);
+    if (spellMatch) return spellMatch[1];
+    const commandName = command.split(' ')[0] || '';
+    return commandName || button.label || '';
+};
+
+const getPracticeProficiency = (
+    abilityName: string,
+    practiceData: PracticeData | null,
+    classKey?: string
+): number => {
+    if (!practiceData) return 0;
+    const aliases = new Set(getAbilityAliases(abilityName));
+    const match = practiceData.skills.find(skill => {
+        const skillClass = skill.skillClass?.toLowerCase();
+        if (classKey && skillClass !== classKey) return false;
+        return getAbilityAliases(skill.name).some(alias => aliases.has(alias));
+    });
+    return match?.proficiency || 0;
+};
+
+const getAbilityProficiency = (
+    abilityName: string,
+    abilities: Record<string, number>,
+    practiceData: PracticeData | null,
+    classKey?: string
+): number => {
+    const aliases = getAbilityAliases(abilityName);
+    const abilityProf = Math.max(...aliases.map(alias => abilities[alias] || 0), 0);
+    return Math.max(abilityProf, getPracticeProficiency(abilityName, practiceData, classKey));
+};
+
+const toAbilityCommand = (classKey: string, abilityName: string): string => {
+    if (SPELL_CLASS_KEYS.has(classKey)) return `cast '${abilityName.toLowerCase()}'`;
+    if (normalizeAbilityKey(abilityName) === 'missile') return 'shoot';
+    return normalizeAbilityKey(abilityName);
+};
+
+const getClassKeyForSet = (setId?: string): string | undefined => {
+    const normalized = (setId || '').toLowerCase();
+    if (normalized.includes('mage')) return 'mage';
+    if (normalized.includes('cleric')) return 'cleric';
+    if (normalized.includes('warrior')) return 'warrior';
+    if (normalized.includes('ranger')) return 'ranger';
+    if (normalized.includes('thief')) return 'thief';
+    return undefined;
+};
+
+const isAbilityInClass = (abilityName: string, classKey?: string): boolean => {
+    if (!classKey) return true;
+    const aliases = new Set(getAbilityAliases(abilityName));
+    return (CLASS_MAPPINGS[classKey] || []).some(classAbility =>
+        getAbilityAliases(classAbility).some(alias => aliases.has(alias))
+    );
+};
+
 export const useButtonLogic = (deps: {
     rawButtons: CustomButton[],
     activeSet: string,
@@ -50,9 +122,15 @@ export const useButtonLogic = (deps: {
                     if (practiceData) return practicedClassSkill === true;
 
                     const skills = CLASS_MAPPINGS[classKey] || [];
-                    return skills.some(s => (safeAbilities[s.toLowerCase()] || 0) > 0);
+                    return skills.some(s => getAbilityProficiency(s, safeAbilities, practiceData, classKey) > 0);
                 }
                 return true;
+            }
+
+            const staticSetClassKey = getClassKeyForSet(b.setId);
+            if (staticSetClassKey) {
+                const commandAbility = getCommandAbilityName(b);
+                if (!isAbilityInClass(commandAbility, staticSetClassKey)) return false;
             }
 
             if (isSmartPopulateEnabled && b.hideIfUnknown && b.setId !== 'Xbox') {
@@ -61,6 +139,7 @@ export const useButtonLogic = (deps: {
 
                 const cmdLower = (b.command || '').toLowerCase();
                 const labelLower = (b.label || '').toLowerCase();
+                const setClassKey = getClassKeyForSet(b.setId);
                 let name = labelLower;
                 let isSpellOrSkill = false;
 
@@ -78,7 +157,12 @@ export const useButtonLogic = (deps: {
                 }
 
                 if (isSpellOrSkill) {
-                    const prof = safeAbilities[name] || safeAbilities[labelLower] || safeAbilities[cmdLower] || 0;
+                    if (!isAbilityInClass(name, setClassKey)) return false;
+                    const prof = Math.max(
+                        getAbilityProficiency(name, safeAbilities, practiceData, setClassKey),
+                        getAbilityProficiency(labelLower, safeAbilities, practiceData, setClassKey),
+                        getAbilityProficiency(cmdLower, safeAbilities, practiceData, setClassKey)
+                    );
                     if (prof <= 0) return false;
                 }
             }
@@ -88,7 +172,7 @@ export const useButtonLogic = (deps: {
                 if (characterClass !== 'none' && !b.requirement.characterClass.includes(characterClass)) return false;
             }
             if (b.requirement.ability) {
-                const prof = safeAbilities[b.requirement.ability.toLowerCase()] || 0;
+                const prof = getAbilityProficiency(b.requirement.ability, safeAbilities, practiceData);
                 if (prof < (b.requirement.minProficiency || 1)) return false;
             }
 
@@ -100,6 +184,7 @@ export const useButtonLogic = (deps: {
             if (!isSmartPopulateEnabled && b.hideIfUnknown && !isEditMode) {
                 const cmdLower = (b.command || '').toLowerCase();
                 const labelLower = (b.label || '').toLowerCase();
+                const setClassKey = getClassKeyForSet(b.setId);
                 let name = labelLower;
                 let isSpellOrSkill = false;
 
@@ -117,7 +202,12 @@ export const useButtonLogic = (deps: {
                 }
 
                 if (isSpellOrSkill) {
-                    const prof = safeAbilities[name] || safeAbilities[labelLower] || safeAbilities[cmdLower] || 0;
+                    if (!isAbilityInClass(name, setClassKey)) modified.isDimmed = true;
+                    const prof = Math.max(
+                        getAbilityProficiency(name, safeAbilities, practiceData, setClassKey),
+                        getAbilityProficiency(labelLower, safeAbilities, practiceData, setClassKey),
+                        getAbilityProficiency(cmdLower, safeAbilities, practiceData, setClassKey)
+                    );
                     if (prof <= 0) modified.isDimmed = true;
                 }
             }
@@ -134,15 +224,29 @@ export const useButtonLogic = (deps: {
         dynamicSetsToGenerate.forEach(setName => {
             const setNameLower = setName.toLowerCase();
             const mapKey = setNameLower.replace('skilllist', '').replace('spelllist', '');
-            let baseList: string[] = setNameLower === 'spellbook' ? [...MAGE_SPELLS, ...CLERIC_SPELLS] : (CLASS_MAPPINGS[mapKey] || []);
-
+            const learnedClassAbilities = practiceData?.skills
+                .filter(skill => skill.proficiency > 0 && (!CLASS_MAPPINGS[mapKey] || skill.skillClass?.toLowerCase() === mapKey))
+                .map(skill => skill.name) || [];
+            let baseList: string[] = setNameLower === 'spellbook'
+                ? [...learnedClassAbilities.filter(name => {
+                    const skillClass = practiceData?.skills.find(skill => skill.name === name)?.skillClass?.toLowerCase();
+                    return skillClass === 'mage' || skillClass === 'cleric';
+                }), ...MAGE_SPELLS, ...CLERIC_SPELLS]
+                : [...learnedClassAbilities, ...(CLASS_MAPPINGS[mapKey] || [])];
             const existingCommands = new Set(filtered.filter(b => (b.setId || '').toLowerCase() === setNameLower).map(b => (b.command || '').toLowerCase()));
+            const existingAbilityKeys = new Set(filtered
+                .filter(b => (b.setId || '').toLowerCase() === setNameLower)
+                .flatMap(b => getAbilityAliases(getCommandAbilityName(b))));
+            const seenBaseAbilities = new Set<string>();
 
-            baseList.map(name => ({ name, prof: (safeAbilities?.[name.toLowerCase()] || 0) })).forEach(({ name, prof }, idx) => {
+            baseList.map(name => ({ name, prof: getAbilityProficiency(name, safeAbilities, practiceData, mapKey) })).forEach(({ name, prof }, idx) => {
+                const abilityKey = normalizeAbilityKey(name);
+                if (seenBaseAbilities.has(abilityKey)) return;
+                seenBaseAbilities.add(abilityKey);
                 if (isSmartPopulateEnabled && prof <= 0) return;
 
-                const cmd = name.toLowerCase() === 'teleport' ? "cast 'teleport'" : name.toLowerCase();
-                if (existingCommands.has(cmd)) return;
+                const cmd = toAbilityCommand(mapKey, name);
+                if (existingCommands.has(cmd) || getAbilityAliases(name).some(alias => existingAbilityKeys.has(alias))) return;
 
                 const cols = 2;
                 const row = Math.floor(idx / cols);
@@ -154,7 +258,7 @@ export const useButtonLogic = (deps: {
                 allGenerated.push({
                     id: `dynamic-${setNameLower}-${name}`,
                     label: name.charAt(0).toUpperCase() + name.slice(1),
-                    command: name.toLowerCase() === 'teleport' ? "cast 'teleport'" : name.toLowerCase(),
+                    command: cmd,
                     setId: setName,
                     actionType: 'command',
                     display: 'floating',

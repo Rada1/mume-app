@@ -3,6 +3,18 @@ import { CustomButton } from '../types';
 import { DEFAULT_BUTTONS, DEFAULT_UI_POSITIONS } from '../constants/buttons';
 import MASTER_SETTINGS from '../constants/mastersettings.json';
 
+const CLASS_PICKER_SET_IDS = new Set([
+    'magespelllist',
+    'clericspelllist',
+    'warriorskilllist',
+    'rangerskilllist',
+    'thiefskilllist'
+]);
+
+const stripGeneratedClassPickerButtons = (buttons: CustomButton[]): CustomButton[] => (
+    buttons.filter(button => !CLASS_PICKER_SET_IDS.has((button.setId || '').toLowerCase()))
+);
+
 export const useButtonPersistence = (
     rawButtons: CustomButton[],
     setRawButtons: React.Dispatch<React.SetStateAction<CustomButton[]>>,
@@ -31,7 +43,7 @@ export const useButtonPersistence = (
     }, [uiPositions]);
 
     const resetToDefaults = useCallback((addMessage?: (t: string, m: string) => void) => {
-        const defaultButtons = (MASTER_SETTINGS as any).buttons || DEFAULT_BUTTONS;
+        const defaultButtons = stripGeneratedClassPickerButtons((MASTER_SETTINGS as any).buttons || DEFAULT_BUTTONS);
         const defaultUiPositions = (MASTER_SETTINGS as any).uiPositions || DEFAULT_UI_POSITIONS;
 
         setRawButtons(defaultButtons);

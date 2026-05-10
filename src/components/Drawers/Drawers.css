@@ -113,6 +113,20 @@
     font-weight: 800 !important;
 }
 
+.app-container.drawer-targeting-active .drawer-content .inline-btn,
+.app-container.drawer-targeting-active .gutter-drawer-content .inline-btn {
+    border: 1px solid #ffffff !important;
+    border-radius: 4px;
+    outline: 1px solid #ffffff;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.8),
+        0 0 14px rgba(255, 255, 255, 0.75) !important;
+    padding: 0 3px !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    text-shadow: none !important;
+}
+
 /* Desktop Side Tabs */
 .desktop-drawer-tabs {
     position: fixed;

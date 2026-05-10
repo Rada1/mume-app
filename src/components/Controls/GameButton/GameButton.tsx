@@ -129,7 +129,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 context: result.actionType === 'select-assign' ? result.modifiers : button.label,
                 assignSourceId: (result.actionType === 'assign' || result.actionType === 'select-assign') ? button.id : undefined,
                 assignSwipeDir: result.dir,
-                executeAndAssign: result.actionType === 'select-assign' || result.actionType === 'assign',
+                executeAndAssign: result.actionType === 'select-assign',
                 menuDisplay: button.menuDisplay,
                 accentColor: button.style.borderColor || button.style.backgroundColor,
                 type: result.actionType === 'select-recipient' ? 'give-recipient-select' : undefined,

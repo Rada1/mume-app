@@ -256,8 +256,8 @@ export const useButtonGestures = ({
             el._lastSnappedAngle = snappedAngle;
         }
 
-        const isMenuButton = ['menu', 'assign', 'select-assign'].includes(button.actionType || '')
-            || (isLong && ['menu', 'assign', 'select-assign'].includes(button.longActionType || ''));
+        const menuActionType = isLong ? button.longActionType : button.actionType;
+        const isMenuButton = ['menu', 'assign', 'select-assign'].includes(menuActionType || '');
         const menuSetId = isLong ? (button.longCommand || button.command) : button.command;
 
         if (isMenuButton && distVal > 25 && !el._didFire) {
@@ -271,8 +271,8 @@ export const useButtonGestures = ({
                 y: isDial ? window.innerHeight / 2 : e.clientY,
                 sourceHeight: rect.height, setId: menuSetId,
                 context: button.label,
-                assignSourceId: (button.actionType === 'assign' || button.actionType === 'select-assign') ? button.id : undefined,
-                executeAndAssign: button.actionType === 'select-assign',
+                assignSourceId: (menuActionType === 'assign' || menuActionType === 'select-assign') ? button.id : undefined,
+                executeAndAssign: menuActionType === 'select-assign',
                 menuDisplay: button.menuDisplay,
                 accentColor: button.style.borderColor || button.style.backgroundColor,
                 initialPointerX: isDial ? initialX : undefined,
@@ -365,7 +365,7 @@ export const useButtonGestures = ({
                     context: previewCmd.actionType === 'select-assign' ? previewCmd.modifiers : button.label,
                     assignSourceId: (previewCmd.actionType === 'assign' || previewCmd.actionType === 'select-assign') ? button.id : undefined,
                     assignSwipeDir: previewCmd.dir,
-                    executeAndAssign: previewCmd.actionType === 'select-assign' || previewCmd.actionType === 'assign',
+                    executeAndAssign: previewCmd.actionType === 'select-assign',
                     menuDisplay: button.menuDisplay,
                     accentColor: button.style.borderColor || button.style.backgroundColor,
                     type: previewCmd.actionType === 'select-recipient' ? 'give-recipient-select' : undefined,

@@ -444,6 +444,20 @@
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+@media (min-width: 1025px) {
+    .state-account .control-card-wrapper {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    .state-account .control-card-wrapper .input-area {
+        border-top: none !important;
+    }
+}
+
 /* On mobile portrait, we apply a refined, balanced floating card styling */
 @media (max-width: 1024px) and (orientation: portrait) {
     .control-card-wrapper {

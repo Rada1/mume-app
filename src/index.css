@@ -562,6 +562,15 @@
 }
 
 /* Command preview wind-up glow — slow build to constant charge, color matches button set */
+@media (min-width: 1025px) {
+    .app-container.state-account .content-layer > .input-container .input-main-container,
+    .app-container.state-account .content-layer > .input-container .input-main-container.focused {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+}
+
 @keyframes command-windup {
     from {
         border-color: rgba(255, 255, 255, 0.12);

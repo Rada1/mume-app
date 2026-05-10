@@ -9,12 +9,45 @@ interface ButtonState {
     setRawButtons: (buttons: CustomButton[] | ((prev: CustomButton[]) => CustomButton[])) => void;
 }
 
+const CLASS_PICKER_SET_IDS = new Set([
+    'magespelllist',
+    'clericspelllist',
+    'warriorskilllist',
+    'rangerskilllist',
+    'thiefskilllist'
+]);
+
+const isClassPickerButton = (button: Pick<CustomButton, 'setId'>): boolean => (
+    CLASS_PICKER_SET_IDS.has((button.setId || '').toLowerCase())
+);
+
+const normalizeTacticalAssignActions = (button: CustomButton): CustomButton => {
+    if (!button.id.startsWith('tactical-')) return button;
+
+    const longSwipeActionTypes = button.longSwipeActionTypes
+        ? Object.fromEntries(
+            Object.entries(button.longSwipeActionTypes).map(([dir, actionType]) => [
+                dir,
+                actionType === 'select-assign' ? 'assign' : actionType
+            ])
+        ) as CustomButton['longSwipeActionTypes']
+        : button.longSwipeActionTypes;
+
+    return {
+        ...button,
+        longActionType: button.longActionType === 'select-assign' ? 'assign' : button.longActionType,
+        longSwipeActionTypes
+    };
+};
+
 export const useButtonStore = create<ButtonState>((set) => ({
     rawButtons: (() => {
         if (typeof window === 'undefined') return [];
         const saved = localStorage.getItem('mud-buttons');
         const masterButtons = (MASTER_SETTINGS as any).buttons || [];
-        const defaultButtons = [...masterButtons, ...DEFAULT_BUTTONS.filter(d => !masterButtons.some((m: any) => m.id === d.id))];
+        const defaultButtons = [...masterButtons, ...DEFAULT_BUTTONS.filter(d => !masterButtons.some((m: any) => m.id === d.id))]
+            .filter((button: CustomButton) => !isClassPickerButton(button))
+            .map(normalizeTacticalAssignActions);
 
         const REMOVED_BUTTON_IDS = new Set([
             'kb-reply', 'trig-hungry', 'trig-thirsty',
@@ -56,21 +89,32 @@ export const useButtonStore = create<ButtonState>((set) => ({
             'btn-kill', 'btn-track',
             'btn-default-kill',
             // merged into btn-look / btn-get
-            'btn-exit-look', 'btn-room-get'
+            'btn-exit-look', 'btn-room-get',
+            // removed non-MUME class picker presets
+            'rng-nature-sense',
+            'thf-ambush', 'thf-palm',
+            'war-engage', 'war-flee',
+            'cle-armor', 'cle-cause-light', 'cle-cause-serious',
+            'cle-cause-critic', 'cle-dispel-good', 'cle-control-weather',
+            'cle-earthquake', 'cle-flamestrike', 'cle-sleep',
+            'mag-cone-of-cold', 'mag-sunray', 'mag-detect-invisible', 'mag-infravision',
+            'mag-word-of-command', 'mag-farsight', 'mag-watch',
+            'mag-sense-life', 'mag-detect-hidden', 'mag-clairvoyance', 'mag-wizard-eye',
+            'cleric-armour-0', 'cleric-hammer-of-faith-22'
         ]);
 
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
                 if (parsed && Array.isArray(parsed) && parsed.length > 0) {
-                    const loadedButtons = parsed.filter((b: any) => !REMOVED_BUTTON_IDS.has(b.id)).map((b: any) => {
+                    const loadedButtons = parsed.filter((b: any) => !REMOVED_BUTTON_IDS.has(b.id) && !isClassPickerButton(b)).map((b: any) => {
                         const def = defaultButtons.find((d: any) => d.id === b.id);
                         return {
                             ...(def || {}),
                             ...b,
                             isVisible: (b.isVisible !== undefined) ? b.isVisible : (def?.isVisible ?? (b.trigger?.enabled ? false : true))
                         };
-                    });
+                    }).map(normalizeTacticalAssignActions);
                     const loadedIds = new Set(parsed.map((b: any) => b.id));
                     const missingDefaults = defaultButtons.filter((b: any) => !loadedIds.has(b.id));
                     return [...loadedButtons, ...missingDefaults];
