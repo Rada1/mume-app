@@ -601,3 +601,21 @@
 .account-menu-btn.no-arrow::after {
     display: none;
 }
+
+.account-menu-btn.is-held {
+    background: rgba(139, 92, 246, 0.25);
+    border-color: rgba(139, 92, 246, 0.6);
+    color: #fff;
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+}
+
+.account-char-name {
+    color: #a5f3fc;
+    cursor: pointer;
+    border-bottom: 1px dotted rgba(165, 243, 252, 0.4);
+    transition: color 0.15s;
+}
+
+.account-char-name:active {
+    color: #fff;
+}

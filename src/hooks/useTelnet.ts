@@ -139,7 +139,10 @@ export function useTelnet(config: TelnetConfig) {
             const clean = line.replace(/\x1b\[[0-9;]*m/g, '').trim().toLowerCase();
             return clean.includes('by what name do you wish') ||
                 clean.includes('account password:') ||
-                clean === 'password:';
+                clean === 'password:' ||
+                clean.includes('do you have another account') ||
+                clean.includes('enter new account name:') ||
+                clean.includes('verify:');
         };
 
         const decodePromptText = (line: string) => line

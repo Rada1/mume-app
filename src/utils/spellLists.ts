@@ -46,19 +46,16 @@ export const CLERIC_SPELLS = [
 ];
 
 export const WARRIOR_SKILLS = [
-    "Bash", "Charge", "Cleaving Weapons", "Concussion Weapons",
-    "Endurance", "Kick", "Parry", "Rescue", "Slashing Weapons",
-    "Stabbing Weapons", "Two-handed Weapons", "Unarmed Combat"
+    "Bash", "Charge", "Kick", "Rescue"
 ];
 
 export const RANGER_SKILLS = [
-    "Awareness", "Bandage", "Climb", "Command", "Dark Oath",
-    "Leadership", "Ride", "Swim", "Track", "Wilderness"
+    "Bandage", "Climb", "Ride", "Swim", "Track"
 ];
 
 export const THIEF_SKILLS = [
-    "Attack", "Backstab", "Dodge", "Envenom", "Escape", "Hide",
-    "Missile", "Pick", "Piercing Weapons", "Search", "Sneak", "Steal"
+    "Backstab", "Envenom", "Escape", "Hide",
+    "Missile", "Pick", "Search", "Sneak", "Steal"
 ];
 
 export const CLASS_MAPPINGS: Record<string, string[]> = {

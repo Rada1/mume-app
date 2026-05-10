@@ -103,7 +103,7 @@
 }
 
 .message {
-    line-height: 1.4;              /* Improved readability */
+    line-height: 1.5;              /* Improved readability */
     max-width: 100%;
     flex-shrink: 0;                /* Prevent squashing in flex containers */
     word-wrap: break-word;
@@ -232,7 +232,7 @@
     /* Strictly fit 80 chars across (Space Mono width is 0.58*height) */
     /* Font size = (WidthPerChar) / 0.58 = (100cqw - 12px) / (80 * 0.58) = (100cqw - 12px) / 46.4 */
     font-size: var(--dynamic-log-size); 
-    line-height: 1.4;
+    line-height: 1.5;
     text-align: left;
     width: 100%;
     font-family: 'Space Mono', monospace;
@@ -519,7 +519,7 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 10px color-mix(in srgb, var(--bubble-color, transparent), transparent 70%);
     backdrop-filter: blur(6px);
     position: relative;
-    line-height: 1.4;
+    line-height: 1.5;
     word-break: break-word;
     font-family: var(--font-main);
     font-size: 0.95em;
@@ -562,6 +562,42 @@
     transform: none !important;
 }
 
+.message.recent-entry .message-content,
+.message.recent-entry .user-command-bubble,
+.message.recent-entry .snoop-command-bubble,
+.message.recent-entry .comm-bubble {
+    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 36%, rgba(0, 0, 0, 0.35) 52%, transparent 68%);
+    mask-image: linear-gradient(90deg, #000 0%, #000 36%, rgba(0, 0, 0, 0.35) 52%, transparent 68%);
+    -webkit-mask-size: 400% 100%;
+    mask-size: 400% 100%;
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+    animation: log-text-reveal 2000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes log-text-reveal {
+    from {
+        -webkit-mask-position: 100% 0;
+        mask-position: 100% 0;
+    }
+
+    to {
+        -webkit-mask-position: 0 0;
+        mask-position: 0 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .message.recent-entry .message-content,
+    .message.recent-entry .user-command-bubble,
+    .message.recent-entry .snoop-command-bubble,
+    .message.recent-entry .comm-bubble {
+        -webkit-mask-image: none;
+        mask-image: none;
+        animation: none !important;
+    }
+}
+
 @keyframes smooth-enter {
     from {
         opacity: 0;
@@ -600,7 +636,7 @@
 }
 
 .message.old-batch-dim {
-    opacity: 1;
+    opacity: 0.5;
     transition: opacity 0.5s ease;
 }
 
@@ -685,7 +721,7 @@
     flex-direction: column;
     align-items: flex-end;
     gap: 4px;
-    line-height: 1.4;
+    line-height: 1.5;
     margin-right: 8px;
     max-width: 85%;
 }
@@ -705,7 +741,7 @@
     flex-direction: column;
     align-items: flex-end;
     gap: 2px;
-    line-height: 1.4;
+    line-height: 1.5;
     margin-right: 8px;
     max-width: 85%;
     position: relative;
@@ -933,7 +969,7 @@
     user-select: text;
     -webkit-user-select: text;
     min-height: 1.4em;
-    line-height: 1.4;
+    line-height: 1.5;
     align-self: center;
     resize: none;
     /* Removed the dragger dot */
@@ -1203,7 +1239,7 @@ span.inline-btn {
 }
 
 .app-container.tactical-targeting-active .message-log .message-content .inline-btn:not(.comm-bubble):not(.reply-btn) {
-    background-color: #000 !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
     border-color: color-mix(in srgb, var(--glow-color, #ffffff), #ffffff 18%) !important;
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22),
         0 0 14px color-mix(in srgb, var(--glow-color, #ffffff), transparent 45%) !important;

@@ -15,6 +15,7 @@ interface SettingsState {
     autoConnect: boolean;
     loginName: string;
     loginPassword?: string;
+    rememberLogin: boolean;
     theme: 'dark' | 'light';
     accentColor: string;
     bgImage: string | null;
@@ -58,6 +59,7 @@ interface SettingsState {
     setConnectionUrl: (val: string) => void;
     setLoginName: (val: string) => void;
     setLoginPassword: (val: string) => void;
+    setRememberLogin: (val: boolean) => void;
     setAutoConnect: (val: boolean) => void;
     setTheme: (val: 'dark' | 'light') => void;
     setAccentColor: (val: string) => void;
@@ -175,6 +177,7 @@ export const useSettingsStore = create<SettingsState>()(
             autoConnect: true,
             loginName: '',
             loginPassword: '',
+            rememberLogin: true,
             
             theme: 'dark',
             accentColor: '#f48f3c',
@@ -224,6 +227,7 @@ export const useSettingsStore = create<SettingsState>()(
             setConnectionUrl: (connectionUrl) => set({ connectionUrl }),
             setLoginName: (loginName) => set({ loginName }),
             setLoginPassword: (loginPassword) => set({ loginPassword }),
+            setRememberLogin: (rememberLogin) => set({ rememberLogin }),
             setAutoConnect: (autoConnect) => set({ autoConnect }),
             setTheme: (theme) => set({ theme }),
             setAccentColor: (accentColor) => set({ accentColor }),

@@ -20,7 +20,7 @@ interface UseAccountParserProps {
     executeCommandRef: React.MutableRefObject<((cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void) | undefined>;
     isMobile?: boolean;
     addDiagnosticLog?: (msg: string) => void;
-    addMessage?: (type: import('../../types').MessageType, text: string, isCombat?: boolean, mid?: string) => void;
+    addMessage?: (type: import('../../types').MessageType, text: string, isCombat?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string; lower: string; html?: string }) => void;
     setMessages?: React.Dispatch<React.SetStateAction<import('../../types').Message[]>>;
     clearLog?: () => void;
     setIsPasswordMode: (val: boolean) => void;
@@ -136,22 +136,28 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
 
         // 1. Detect Login Prompts
         const lowerLine = trimmedLine.toLowerCase();
-        const isNamePrompt = lowerLine.includes('by what name do you wish');
-        const isPasswordPrompt = lowerLine.includes('account password:');
+        const isNamePrompt = lowerLine.includes('by what name do you wish') || lowerLine.includes('enter new account name:');
+        const isPasswordPrompt = lowerLine.includes('account password:') || lowerLine.includes('verify:');
 
         if (isNamePrompt || isPasswordPrompt || isPrompt) {
             // Check if the trimmed line matches known prompts even if isPrompt is false (e.g. text line that is a prompt)
-            const activePrompt = isNamePrompt || (isPrompt && lowerLine.includes('by what name'));
-            const activePassPrompt = isPasswordPrompt || (isPrompt && lowerLine.includes('password'));
+            const activePrompt = isNamePrompt || (isPrompt && (lowerLine.includes('by what name') || lowerLine.includes('enter new account name')));
+            const activePassPrompt = isPasswordPrompt || (isPrompt && (lowerLine.includes('password') || lowerLine.includes('verify')));
 
             if (activePrompt || activePassPrompt) {
                 if (activePrompt || gameStateRef.current !== 'playing') {
                     console.log(`[AccountParser] Detected prompt: ${activePrompt ? 'Name' : 'Password'}. Switching to account state.`);
                     setGameState('account');
+                    
+                    let promptText = "Account Password:";
+                    if (activePrompt) promptText = "By what name do you wish to be known?";
+                    if (lowerLine.includes('enter new account name')) promptText = "Enter new account name:";
+                    if (lowerLine.includes('verify:')) promptText = "Verify:";
+
                     setAccountState(prev => ({ 
                         ...prev, 
                         stage: 'login',
-                        currentPrompt: activePrompt ? "By what name do you wish to be known?" : "Account Password:"
+                        currentPrompt: promptText
                     }));
                     captureStage.current = 'none';
                     
@@ -221,6 +227,26 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                     title: 'Stat Editing',
                     description: trimmedLine,
                     options: statOptions
+                }
+            }));
+            captureStage.current = 'none';
+            setGameState('account');
+        }
+
+        // --- 0d. Detect Account Confirmation (New Account Flow) ---
+        if (trimmedLine.includes('Do you have another account on MUME')) {
+            accountStageRef.current = 'account-confirmation';
+            setAccountState(prev => ({ 
+                ...prev, 
+                stage: 'account-confirmation', 
+                currentPrompt: trimmedLine,
+                creationPrompt: {
+                    title: 'Account Confirmation',
+                    description: '',
+                    options: [
+                        { id: 'y', label: 'Yes' },
+                        { id: 'n', label: 'No' }
+                    ]
                 }
             }));
             captureStage.current = 'none';
@@ -393,11 +419,15 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             const newChar: CharacterEntry = { index: parseInt(index), name, level: parseInt(level), race, sublevel, logon, rent, area: '' };
             setAccountState(prev => ({ ...prev, characters: prev.characters.some(c => c.name === name) ? prev.characters : [...prev.characters, newChar] }));
             setGameState('account');
-            
+
             if (!shouldSuppress) {
-                // Let fall through
+                const nameIdx = cleanLine.indexOf(name);
+                const lineHtml = nameIdx >= 0
+                    ? cleanLine.substring(0, nameIdx) + `<span class="inline-btn account-char-name" data-context="${name}">${name}</span>` + cleanLine.substring(nameIdx + name.length)
+                    : cleanLine;
+                addMessage?.('account-character-list', cleanLine, false, undefined, false, { textOnly: cleanLine, lower: cleanLine.toLowerCase(), html: lineHtml });
             }
-            return shouldSuppress;
+            return true;
         }
 
         // Account Menu Format
@@ -411,10 +441,10 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             
             if (/^[a-zA-Z\u00C0-\u00FF\-]{2,15}$/.test(cleanName) && !exclusions.includes(lowerName)) {
                 const name = cleanLine.substring(0, 14).trim() || cleanName;
-                const newChar: CharacterEntry = { 
-                    name, 
-                    race: cleanLine.substring(14, 18).trim(), 
-                    sublevel: cleanLine.substring(18, 22).trim(), 
+                const newChar: CharacterEntry = {
+                    name,
+                    race: cleanLine.substring(14, 18).trim(),
+                    sublevel: cleanLine.substring(18, 22).trim(),
                     level: (logonMatchLine.index > 22) ? cleanLine.substring(22, logonMatchLine.index).trim() : '',
                     logon: logonMatchLine[1].trim(),
                     area: trimmedLine.substring(logonMatchLine.index + logonMatchLine[0].length).trim().split(/\s+/)[0] || '',
@@ -422,11 +452,15 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 };
                 setAccountState(prev => ({ ...prev, characters: prev.characters.some(c => c.name === name) ? prev.characters : [...prev.characters, newChar] }));
                 setGameState('account');
-                
+
                 if (!shouldSuppress) {
-                    // Let fall through
+                    const nameIdx = cleanLine.indexOf(cleanName);
+                    const lineHtml = nameIdx >= 0
+                        ? `<span class="inline-btn account-char-name" data-context="${cleanName}">${cleanLine.substring(nameIdx, nameIdx + cleanName.length)}</span>` + cleanLine.substring(nameIdx + cleanName.length)
+                        : cleanLine;
+                    addMessage?.('account-character-list', cleanLine, false, undefined, false, { textOnly: cleanLine, lower: cleanLine.toLowerCase(), html: lineHtml });
                 }
-                return shouldSuppress;
+                return true;
             }
         }
 

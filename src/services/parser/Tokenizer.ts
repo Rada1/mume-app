@@ -538,8 +538,8 @@ export class Tokenizer {
         }
         if (fullStack.includes('player')) return 'player';
         if (fullStack.includes('object')) return 'object';
-        if (lowerTag === 'name' && fullStack.includes('room')) return 'room';
-        if (fullStack.includes('exit')) return 'exit';
+        if (lowerTag === 'name' && fullStack.includes('room')) return 'none';
+        if (fullStack.includes('exit')) return 'none';
 
         return 'none';
     }

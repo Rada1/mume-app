@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { CustomButton, PracticeData } from '../types';
 import { MAGE_SPELLS, CLERIC_SPELLS, WARRIOR_SKILLS, RANGER_SKILLS, THIEF_SKILLS, CLASS_MAPPINGS } from '../utils/spellLists';
 import { applyPracticeSwipeDefaults } from '../utils/swipeAutoPopulate';
-
 const SPELL_CLASS_KEYS = new Set(['mage', 'cleric']);
 
 const normalizeAbilityKey = (value: string): string => value.trim().toLowerCase().replace(/\s+/g, ' ');
@@ -233,13 +232,29 @@ export const useButtonLogic = (deps: {
                     return skillClass === 'mage' || skillClass === 'cleric';
                 }), ...MAGE_SPELLS, ...CLERIC_SPELLS]
                 : [...learnedClassAbilities, ...(CLASS_MAPPINGS[mapKey] || [])];
+
+            if (mapKey === 'thief' && getAbilityProficiency('Missile', safeAbilities, practiceData, mapKey) > 0) {
+                const missileIndex = baseList.findIndex(name => normalizeAbilityKey(name) === 'missile');
+                const insertIndex = missileIndex >= 0 ? missileIndex + 1 : baseList.length;
+                baseList = [
+                    ...baseList.slice(0, insertIndex),
+                    'Recover',
+                    ...baseList.slice(insertIndex)
+                ];
+            }
+
             const existingCommands = new Set(filtered.filter(b => (b.setId || '').toLowerCase() === setNameLower).map(b => (b.command || '').toLowerCase()));
             const existingAbilityKeys = new Set(filtered
                 .filter(b => (b.setId || '').toLowerCase() === setNameLower)
                 .flatMap(b => getAbilityAliases(getCommandAbilityName(b))));
             const seenBaseAbilities = new Set<string>();
 
-            baseList.map(name => ({ name, prof: getAbilityProficiency(name, safeAbilities, practiceData, mapKey) })).forEach(({ name, prof }, idx) => {
+            baseList.map(name => ({
+                name,
+                prof: mapKey === 'thief' && normalizeAbilityKey(name) === 'recover'
+                    ? getAbilityProficiency('Missile', safeAbilities, practiceData, mapKey)
+                    : getAbilityProficiency(name, safeAbilities, practiceData, mapKey)
+            })).forEach(({ name, prof }, idx) => {
                 const abilityKey = normalizeAbilityKey(name);
                 if (seenBaseAbilities.has(abilityKey)) return;
                 seenBaseAbilities.add(abilityKey);

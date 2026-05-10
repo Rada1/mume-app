@@ -401,14 +401,6 @@
       },
       "longActionType": "assign",
       "longCommand": "thiefskilllist",
-      "swipeCommands": {
-        "up": "shoot",
-        "down": "recover"
-      },
-      "swipeActionTypes": {
-        "up": "command",
-        "down": "command"
-      },
       "longSwipeActionTypes": {
         "up": "assign",
         "down": "assign",
@@ -464,12 +456,11 @@
       "longCommand": "warriorskilllist",
       "swipeCommands": {
         "down": "flee",
-        "up": "bash",
         "right": "assist"
       },
       "swipeActionTypes": {
-        "up": "command",
-        "down": "command"
+        "down": "command",
+        "right": "command"
       },
       "longSwipeActionTypes": {
         "up": "assign",

@@ -227,6 +227,20 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             return;
         }
 
+        const textOnly = (precalculated?.textOnly || text || '').replace(/\x1b\[[0-9;]*m/g, '').trim();
+        const looksLikePrompt = textOnly.length <= 80 && (
+            type === 'prompt' ||
+            textOnly === '>' ||
+            (textOnly.endsWith('>') && /(?:^|[\s\[\]!(*>])(?:HP|MA|MV|SP):\w+/i.test(textOnly))
+        );
+
+        // Spectate snoop output is routed to the target log, but MUME also sends
+        // the observer's prompt between snoop bursts. Keep that boundary useful
+        // for parsers while preventing USERS log prompt spam.
+        if (mode.isSpectating && !providedIsSnoop && looksLikePrompt) {
+            return;
+        }
+
         // Bump activity for atmospheric effects
         s.bumpActivity();
 
@@ -236,7 +250,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         } else {
             (s.userSession.log.addMessage as any)(...args);
         }
-    }, [s.userSession.log, s.spectateSession.log, s.userSession.game.silenceUntilPrompt, s.bumpActivity]);
+    }, [s.userSession.log, s.spectateSession.log, s.userSession.game.silenceUntilPrompt, s.bumpActivity, mode.isSpectating]);
 
     const { messages, setMessages, addSystemMessage, flushMessages, clearLog } = activeLog;
     const addMessage = routedAddMessage; // Use the router for the parser
@@ -714,6 +728,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         captureSessionRef: s.active.game.captureSessionRef,
         silenceUntilPrompt: s.active.game.silenceUntilPrompt,
         setSilenceUntilPrompt: s.userSession.game.setSilenceUntilPrompt,
+
+        sendCommand: sendCommandProxy,
 
         // Others
         addDiagnosticLog: ui.addDiagnosticLog,

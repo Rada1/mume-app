@@ -378,7 +378,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         setIsPasswordMode: deps.setIsPasswordMode,
         accountState: deps.accountState, 
         executeCommandRef: deps.executeCommandRef,
-        sendCommand: session.game.sendCommand || ((cmd: string) => {}),
+        sendCommand: deps.sendCommand || session.game.sendCommand || ((cmd: string) => {}),
         addMessage: deps.addMessage,
         captureStage: deps.captureStage
     });

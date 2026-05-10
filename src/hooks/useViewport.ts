@@ -189,9 +189,15 @@ export function useViewport(
     useEffect(() => {
         if (!isMobile) return;
 
+        const bothTouchesInLog = (touches: TouchList): boolean => {
+            const log = document.querySelector('.message-log');
+            if (!log) return false;
+            return log.contains(touches[0].target as Node) && log.contains(touches[1].target as Node);
+        };
+
         const handleTouchStart = (e: TouchEvent) => {
             if (!(e.target as HTMLElement).closest('.message-log')) return;
-            if (e.touches.length === 2) {
+            if (e.touches.length === 2 && bothTouchesInLog(e.touches)) {
                 const dist = Math.hypot(
                     e.touches[0].pageX - e.touches[1].pageX,
                     e.touches[0].pageY - e.touches[1].pageY
@@ -203,6 +209,10 @@ export function useViewport(
         const handleTouchMove = (e: TouchEvent) => {
             if (!(e.target as HTMLElement).closest('.message-log')) return;
             if (e.touches.length === 2 && touchDistRef.current !== null) {
+                if (!bothTouchesInLog(e.touches)) {
+                    touchDistRef.current = null;
+                    return;
+                }
                 const distContext = Math.hypot(
                     e.touches[0].pageX - e.touches[1].pageX,
                     e.touches[0].pageY - e.touches[1].pageY

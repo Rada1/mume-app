@@ -5,6 +5,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { CustomButton, PracticeData } from '../../types';
+import { RANGER_SKILLS, THIEF_SKILLS, WARRIOR_SKILLS } from '../spellLists';
 import { applyPracticeSwipeDefaults } from '../swipeAutoPopulate';
 
 // --- Logic Section ---
@@ -70,5 +71,18 @@ describe('applyPracticeSwipeDefaults', () => {
 
         expect(Object.values(button.swipeCommands || {})).toEqual(['hide']);
     });
-});
 
+    it('excludes passive skills from tactical skill lists', () => {
+        const activeSkills = [...WARRIOR_SKILLS, ...RANGER_SKILLS, ...THIEF_SKILLS];
+        const passiveSkills = [
+            'Slashing Weapons', 'Cleaving Weapons', 'Concussion Weapons',
+            'Endurance', 'Parry', 'Stabbing Weapons', 'Two-handed Weapons',
+            'Unarmed Combat', 'Command', 'Awareness', 'Dark Oath',
+            'Leadership', 'Wilderness', 'Attack', 'Dodge', 'Piercing Weapons'
+        ];
+
+        passiveSkills.forEach(skill => {
+            expect(activeSkills).not.toContain(skill);
+        });
+    });
+});

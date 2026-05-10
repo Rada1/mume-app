@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Mapper } from '../../Mapper/Mapper';
 import { LineCluster } from './LineCluster';
 import { useGame, useUI, useVitals } from '../../../context/GameContext';
+import { useSettingsStore } from '../../../stores/useSettingsStore';
 import { GameContextType, UIContextType } from '../../../context/GameContext/types';
 import { CloudFog, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplets, Activity, Clock } from 'lucide-react';
 import { useMumeTime } from '../../../hooks/useMumeTime';
@@ -11,6 +12,8 @@ import { MapperRoomInfo } from '../../Mapper/MapperRoomInfo';
 import { UiPositions, SwipeDirection } from '../../../types';
 import { GutterDrawerPanel } from './GutterDrawerPanel';
 
+type CreationOption = { id: string; label: string };
+const EMPTY_CREATION_OPTIONS: CreationOption[] = [];
 
 interface MapperClusterProps {
     uiPositions: UiPositions;
@@ -52,6 +55,10 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     const { getLightingIcon, getWeatherIcon, lighting, weather } = env;
     const isExpanded = ui.mapExpanded;
     const { isKeyboardOpen } = viewport;
+    const rememberLogin = useSettingsStore(s => s.rememberLogin);
+    const setRememberLogin = useSettingsStore(s => s.setRememberLogin);
+    const setLoginName = useSettingsStore(s => s.setLoginName);
+    const setLoginPassword = useSettingsStore(s => s.setLoginPassword);
 
     // Mobile DOCKED (Gutter) Mode
     const isReplaying = (useGame() as GameContextType).sessionMode === 'replay';
@@ -59,12 +66,13 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     // --- Sticky options for smooth creation-screen transitions ---
     // Holds the last non-empty set of options so we never flash to an empty state
     // while waiting for the server's next set to arrive.
-    const stickyOptionsRef = useRef<{ id: string; label: string }[]>([]);
-    const [displayedOptions, setDisplayedOptions] = useState<{ id: string; label: string }[]>([]);
+    const stickyOptionsRef = useRef<CreationOption[]>([]);
+    const [displayedOptions, setDisplayedOptions] = useState<CreationOption[]>([]);
     const [isTransitioning, setIsTransitioning] = useState(false);
     const transitionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const liveOptions = accountState.creationPrompt?.options ?? [];
+    const liveOptions = accountState.creationPrompt?.options ?? EMPTY_CREATION_OPTIONS;
+    const liveOptionsKey = liveOptions.map(opt => `${opt.id}:${opt.label}`).join('|');
 
     useEffect(() => {
         if (liveOptions.length > 0) {
@@ -88,7 +96,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 setIsTransitioning(false);
             }, 800);
         }
-    }, [liveOptions.length, liveOptions]);
+    }, [liveOptions.length, liveOptionsKey]);
 
     // On mobile portrait, we show the gutter. On desktop/landscape, Mapper is in DrawerManager
     if (!isMobile || isLandscape || (gameState === 'disconnected' && !isReplaying)) {
@@ -99,21 +107,34 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     if (gameState === 'account') {
         const isLoginStage = accountState.stage === 'login';
         const isMenuStage = accountState.stage === 'account-menu';
-        const isCreationStage = accountState.stage === 'character-creation' || accountState.stage === 'stat-editing';
+        const isCreationStage = ['character-creation', 'stat-editing', 'account-confirmation'].includes(accountState.stage);
+
+        const isPasswordPrompt = isLoginStage && (
+            accountState.currentPrompt?.toLowerCase().includes('password') ||
+            accountState.currentPrompt?.toLowerCase().includes('verify')
+        );
+        const loginHandleSend = (e?: React.FormEvent) => {
+            if (isLoginStage && rememberLogin && input.trim()) {
+                if (isPasswordPrompt) setLoginPassword(input.trim());
+                else setLoginName(input.trim());
+            }
+            handleSend(e);
+        };
 
         const menuCommands = [
-            'create', 'play', 'time', 'list', 'move', 'password', 
+            'create', 'play', 'time', 'list', 'move', 'password',
             'add', 'info', 'practice', 'link', 'lag', 'help', 'menu', 'quit'
         ];
+        const holdTargetCmds = new Set(['play', 'info', 'practice']);
 
         return (
             <div className="mobile-bottom-gutter account-gutter">
-                <div 
-                    className="account-gutter-content" 
-                    style={{ 
-                        display: 'flex', 
-                        flexDirection: 'column', 
-                        flex: 1, 
+                <div
+                    className="account-gutter-content"
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        flex: 1,
                         justifyContent: isLoginStage ? 'center' : 'flex-start',
                         alignItems: 'center',
                         width: '100%',
@@ -121,39 +142,75 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     }}
                 >
                     {/* Character Select panel removed per user request */}
-                    
+
                     <div className="account-mobile-gutter-layout" style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        {isLoginStage && accountState.currentPrompt && (
+                        {(isLoginStage || accountState.stage === 'account-confirmation') && accountState.currentPrompt && (
                             <div className="account-prompt-display">
                                 {accountState.currentPrompt}
                             </div>
                         )}
 
+                        {isLoginStage && (
+                            <button
+                                className={`account-menu-btn no-arrow${rememberLogin ? ' is-held' : ''}`}
+                                style={{ marginBottom: '8px', justifyContent: 'center' }}
+                                onClick={() => setRememberLogin(!rememberLogin)}
+                            >
+                                {rememberLogin ? '🔒 Remember Login: On' : '🔓 Remember Login: Off'}
+                            </button>
+                        )}
+
                         {isMenuStage && (
                             <>
-                                <div style={{ 
-                                    color: 'rgba(255,255,255,0.4)', 
-                                    fontSize: '11px', 
-                                    fontWeight: 900, 
-                                    textTransform: 'uppercase', 
-                                    letterSpacing: '1.5px', 
-                                    marginBottom: '2px', 
-                                    width: '100%', 
+                                <div style={{
+                                    color: 'rgba(255,255,255,0.4)',
+                                    fontSize: '11px',
+                                    fontWeight: 900,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '1.5px',
+                                    marginBottom: '2px',
+                                    width: '100%',
                                     textAlign: 'center',
                                     marginTop: '2px'
                                 }}>
                                     Menu
                                 </div>
                                 <div className="account-menu-buttons-list">
-                                    {menuCommands.map(cmd => (
-                                        <button
-                                            key={cmd}
-                                            className="account-menu-btn"
-                                            onClick={() => executeCommand(cmd)}
-                                        >
-                                            {cmd}
-                                        </button>
-                                    ))}
+                                    {menuCommands.map(cmd => {
+                                        if (holdTargetCmds.has(cmd)) {
+                                            const isHeld = (heldButtonRef?.current ?? heldButton)?.id === `tactical-account-${cmd}`;
+                                            return (
+                                                <button
+                                                    key={cmd}
+                                                    className={`account-menu-btn${isHeld ? ' is-held' : ''}`}
+                                                    onPointerDown={(e) => {
+                                                        e.currentTarget.setPointerCapture(e.pointerId);
+                                                        setHeldButton({ id: `tactical-account-${cmd}`, baseCommand: `${cmd} %n`, didFire: false, label: cmd });
+                                                        triggerHaptic(20);
+                                                    }}
+                                                    onPointerUp={() => {
+                                                        const current = heldButtonRef?.current ?? heldButton;
+                                                        if (current?.id === `tactical-account-${cmd}` && !current?.didFire) {
+                                                            executeCommand(cmd);
+                                                        }
+                                                        setHeldButton(null);
+                                                    }}
+                                                    onPointerCancel={() => setHeldButton(null)}
+                                                >
+                                                    {cmd}
+                                                </button>
+                                            );
+                                        }
+                                        return (
+                                            <button
+                                                key={cmd}
+                                                className="account-menu-btn"
+                                                onClick={() => executeCommand(cmd)}
+                                            >
+                                                {cmd}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </>
                         )}
@@ -171,32 +228,57 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                     textAlign: 'center',
                                     marginTop: '2px'
                                 }}>
-                                    Create Character
+                                    {accountState.stage === 'account-confirmation' ? 'New Account' : (accountState.stage === 'stat-editing' ? 'Stat Editing' : 'Create Character')}
                                 </div>
-                                {accountState.stage === 'stat-editing' && accountState.pointsLeft !== undefined && (
-                                    <div className="creation-points-header" style={{ 
-                                        padding: '2px 12px', 
-                                        textAlign: 'center', 
-                                        borderBottom: '1px solid rgba(255,255,255,0.05)',
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        width: '100%'
-                                    }}>
-                                        <div style={{
-                                            color: '#00ff00',
-                                            fontSize: '11px',
-                                            fontWeight: 'bold',
-                                            textTransform: 'uppercase',
-                                            letterSpacing: '1px',
-                                            background: 'rgba(0, 255, 0, 0.1)',
-                                            padding: '2px 10px',
-                                            borderRadius: '10px',
-                                            border: '1px solid rgba(0, 255, 0, 0.2)'
-                                        }}>
-                                            {accountState.pointsLeft} {accountState.pointsLeft === 1 ? 'Point' : 'Points'} Left
-                                        </div>
-                                    </div>
-                                )}
+                                {(() => {
+                                    const isConfirmation = accountState.stage === 'account-confirmation';
+                                    const isStatStage = accountState.stage === 'stat-editing';
+
+                                    if (isConfirmation) {
+                                        return (
+                                            <div style={{ display: 'flex', width: '100%', gap: '8px', padding: '8px', justifyContent: 'center' }}>
+                                                {displayedOptions.map(opt => (
+                                                    <button
+                                                        key={opt.id}
+                                                        className="account-menu-btn"
+                                                        style={{ flex: 1, textAlign: 'center', padding: '12px', fontWeight: 'bold' }}
+                                                        onClick={() => executeCommand(opt.id)}
+                                                    >
+                                                        {opt.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        );
+                                    }
+
+                                    if (isStatStage && accountState.pointsLeft !== undefined) {
+                                        return (
+                                            <div className="creation-points-header" style={{ 
+                                                padding: '2px 12px', 
+                                                textAlign: 'center', 
+                                                borderBottom: '1px solid rgba(255,255,255,0.05)',
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                                width: '100%'
+                                            }}>
+                                                <div style={{
+                                                    color: '#00ff00',
+                                                    fontSize: '11px',
+                                                    fontWeight: 'bold',
+                                                    textTransform: 'uppercase',
+                                                    letterSpacing: '1px',
+                                                    background: 'rgba(0, 255, 0, 0.1)',
+                                                    padding: '2px 10px',
+                                                    borderRadius: '10px',
+                                                    border: '1px solid rgba(0, 255, 0, 0.2)'
+                                                }}>
+                                                    {accountState.pointsLeft} {accountState.pointsLeft === 1 ? 'Point' : 'Points'} Left
+                                                </div>
+                                            </div>
+                                        );
+                                    }
+                                    return null;
+                                })()}
                                 <div className="creation-options-list" style={{ 
                                     display: 'flex', 
                                     flexDirection: 'column',
@@ -216,6 +298,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                     transition: 'opacity 0.18s ease'
                                 }}>
                                     {(() => {
+                                        if (accountState.stage === 'account-confirmation') return null;
                                         const isStatStage = accountState.stage === 'stat-editing';
                                         const statOptions = displayedOptions.filter(opt => ['str', 'int', 'wis', 'dex', 'con', 'wil', 'per'].includes(opt.id));
                                         const actionOptions = displayedOptions.filter(opt => !['str', 'int', 'wis', 'dex', 'con', 'wil', 'per'].includes(opt.id));
@@ -355,55 +438,67 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                     })()}
                                 </div>
 
-                                <div className="creation-nav-buttons" style={{ 
-                                    display: 'flex', 
-                                    gap: '8px', 
-                                    justifyContent: 'center', 
-                                    padding: '2px 12px',
-                                    width: '100%',
-                                    borderTop: '1px solid rgba(255,255,255,0.05)',
-                                    background: 'rgba(0,0,0,0.1)',
-                                    opacity: isTransitioning ? 0 : 1,
-                                    pointerEvents: isTransitioning ? 'none' : undefined,
-                                    transition: 'opacity 0.18s ease'
-                                }}>
-                                    <button 
-                                        className="account-menu-btn"
-                                        style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
-                                        onClick={() => executeCommand('back')}
-                                    >
-                                        Back
-                                    </button>
-                                    <button 
-                                        className="account-menu-btn"
-                                        style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
-                                        onClick={() => {
-                                            executeCommand('');
-                                            executeCommand('');
-                                        }}
-                                    >
-                                        Main Menu
-                                    </button>
-                                    <button 
-                                        className="account-menu-btn"
-                                        style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
-                                        onClick={() => executeCommand('?')}
-                                    >
-                                        ?
-                                    </button>
-                                </div>
+                                {accountState.stage !== 'account-confirmation' && (
+                                    <div className="creation-nav-buttons" style={{ 
+                                        display: 'flex', 
+                                        gap: '8px', 
+                                        justifyContent: 'center', 
+                                        padding: '2px 12px',
+                                        width: '100%',
+                                        borderTop: '1px solid rgba(255,255,255,0.05)',
+                                        background: 'rgba(0,0,0,0.1)',
+                                        opacity: isTransitioning ? 0 : 1,
+                                        pointerEvents: isTransitioning ? 'none' : undefined,
+                                        transition: 'opacity 0.18s ease'
+                                    }}>
+                                        <button 
+                                            className="account-menu-btn"
+                                            style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
+                                            onClick={() => executeCommand('back')}
+                                        >
+                                            Back
+                                        </button>
+                                        <button 
+                                            className="account-menu-btn"
+                                            style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
+                                            onClick={() => {
+                                                executeCommand('');
+                                                executeCommand('');
+                                            }}
+                                        >
+                                            Main Menu
+                                        </button>
+                                        <button 
+                                            className="account-menu-btn"
+                                            style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
+                                            onClick={() => executeCommand('?')}
+                                        >
+                                            ?
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
 
                         {(!isCreationStage || (!displayedOptions.length && !isTransitioning)) && (
                             <div
                                 className="mobile-gutter-input-wrapper"
-                                style={{ position: 'relative', zIndex: 1, padding: '0', flexShrink: 0, marginBottom: (isLoginStage || isMenuStage || isCreationStage) ? '0' : '16px', width: '100%' }}
+                                style={{ 
+                                    position: 'relative', 
+                                    zIndex: 1, 
+                                    padding: '0', 
+                                    flexShrink: 0, 
+                                    marginBottom: (isLoginStage || isMenuStage || isCreationStage) ? '0' : '16px', 
+                                    width: '100%',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center'
+                                }}
                             >
                             <InputArea
                                 input={input}
                                 setInput={setInput}
-                                onSend={handleSend}
+                                onSend={loginHandleSend}
                                 onSwipe={handleInputSwipe}
                                 isMobile={isMobile}
                                 isKeyboardOpen={isKeyboardOpen}
@@ -419,6 +514,30 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                 gameState={gameState}
                                 terrain={currentTerrain}
                             />
+                            {isLoginStage && accountState.currentPrompt?.toLowerCase().includes('by what name') && (
+                                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '12px', width: '100%', padding: '0 20px' }}>
+                                    <button
+                                        className="account-menu-btn no-arrow"
+                                        style={{ 
+                                            width: 'auto', 
+                                            minWidth: '160px',
+                                            padding: '10px 24px', 
+                                            fontSize: '11px', 
+                                            fontWeight: 900, 
+                                            background: 'rgba(255,255,255,0.03)',
+                                            border: '1px solid rgba(255,255,255,0.1)',
+                                            borderRadius: '20px',
+                                            color: 'rgba(255,255,255,0.5)',
+                                            textTransform: 'uppercase',
+                                            letterSpacing: '1.5px',
+                                            justifyContent: 'center'
+                                        }}
+                                        onClick={() => executeCommand('new')}
+                                    >
+                                        New Account
+                                    </button>
+                                </div>
+                            )}
                             </div>
                         )}
                     </div>

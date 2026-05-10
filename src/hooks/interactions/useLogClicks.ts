@@ -182,11 +182,17 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         const activeHeldButton = heldButtonRef?.current || heldButton;
 
         if (activeHeldButton && !activeHeldButton.didFire && !activeHeldButton.id.startsWith('log-inline-')) {
+            const flashTargetEl = () => {
+                targetEl.classList.add('pressed');
+                setTimeout(() => targetEl.classList.remove('pressed'), 350);
+            };
+
             const sourceButton = btn.buttons.find(b => b.id === activeHeldButton.id);
             if (sourceButton) {
                 const resolved = getButtonCommand(sourceButton, activeHeldButton.dx || 0, activeHeldButton.dy || 0, contextStr, undefined, activeHeldButton.modifiers || [], joystick, target, isLong);
                 if (resolved?.cmd) {
                     lastCommandContextRef.current = { context: rawContextStr, displayText: targetEl.innerText.trim() };
+                    flashTargetEl();
                     executeCommand(resolved.cmd);
                     setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
                     triggerHaptic(60);
@@ -203,6 +209,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 }
 
                 lastCommandContextRef.current = { context: rawContextStr, displayText: targetEl.innerText.trim() };
+                flashTargetEl();
                 executeCommand(finalCmd);
                 setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
                 triggerHaptic(60);

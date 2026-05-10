@@ -152,6 +152,8 @@ export interface UseGameParserDeps {
     setWhoList: (list: string[]) => void;
     setWhereList: (list: import('../../types').WhereEntry[]) => void;
 
+    sendCommand?: (cmd: string) => void;
+
     // Others
     addDiagnosticLog: (msg: string) => void;
     isMobile?: boolean;

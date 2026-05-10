@@ -26,7 +26,10 @@
       "Bash(node -e \"const s=require\\('./src/constants/mastersettings.json'\\); const b=s.buttons||[]; const matches=b.filter\\(x=>/inlp-|innpc-|tgt-/.test\\(x.id\\)\\); console.log\\(JSON.stringify\\(matches.map\\(x=>x.id\\),null,2\\)\\)\")",
       "Bash(node -e \"const s=require\\('./src/constants/mastersettings.json'\\); const b=s.buttons||[]; const matches=b.filter\\(x=>/inlp-|innpc-|tgt-/.test\\(x.id\\)\\); console.log\\(JSON.stringify\\(matches,null,2\\)\\)\")",
       "Bash(del \"c:\\\\Users\\\\pwetz\\\\Downloads\\\\mume app\\\\src\\\\hooks\\\\interactions\\\\useLogDragAndDrop.ts\")",
-      "Bash(grep -v \"^$\")"
+      "Bash(grep -v \"^$\")",
+      "Bash(cat)",
+      "Read(//tmp/**)",
+      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")"
     ]
   }
 }

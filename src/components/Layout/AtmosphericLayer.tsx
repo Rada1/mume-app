@@ -30,8 +30,8 @@ export const AtmosphericLayer: React.FC = () => {
     const isSpectating = activeSession === 'spectate';
     const activeTerrain = isSpectating ? spectateTerrain : currentTerrain;
 
-    // Account Mode Overrides: Force sunlight and field background
-    const effectiveLighting = isAccountMode ? 'sun' : lighting;
+    // Account Mode Overrides: Force moon lighting and field background
+    const effectiveLighting = isAccountMode ? 'moon' : lighting;
     const resolvedBgImage = isAccountMode 
         ? '/assets/Pictures/account.png' 
         : (bgImage ?? resolveTerrainBackground(activeTerrain));

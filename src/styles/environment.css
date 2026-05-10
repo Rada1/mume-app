@@ -191,6 +191,17 @@
     transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.is-mobile:not(.is-landscape) .screen-vignette {
+    /* Stronger radial vignette + linear fade from bottom to help ground the log area */
+    background: 
+        radial-gradient(circle at 50% 35%, transparent 35%, rgba(0, 0, 0, 0.45) 100%),
+        linear-gradient(to top, 
+            rgba(0, 0, 0, 0.75) 0%, 
+            rgba(0, 0, 0, 0.5) var(--mobile-gutter-height), 
+            transparent calc(var(--mobile-gutter-height) + 25%)
+        );
+}
+
 /* Vignette removed for artificial and dark states */
 
 .dust-layer {

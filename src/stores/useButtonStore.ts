@@ -24,6 +24,29 @@ const isClassPickerButton = (button: Pick<CustomButton, 'setId'>): boolean => (
 const normalizeTacticalAssignActions = (button: CustomButton): CustomButton => {
     if (!button.id.startsWith('tactical-')) return button;
 
+    const swipeCommands = button.swipeCommands ? { ...button.swipeCommands } : button.swipeCommands;
+    const swipeActionTypes = button.swipeActionTypes ? { ...button.swipeActionTypes } : button.swipeActionTypes;
+
+    if (button.id === 'tactical-warrior' && swipeCommands) {
+        Object.entries(swipeCommands).forEach(([dir, command]) => {
+            const normalized = command?.trim().toLowerCase();
+            if (normalized && normalized !== 'flee' && normalized !== 'assist') {
+                delete swipeCommands[dir as keyof typeof swipeCommands];
+                delete swipeActionTypes?.[dir as keyof typeof swipeActionTypes];
+            }
+        });
+    }
+
+    if (button.id === 'tactical-thief' && swipeCommands) {
+        Object.entries(swipeCommands).forEach(([dir, command]) => {
+            const normalized = command?.trim().toLowerCase();
+            if (normalized === 'shoot' || normalized === 'recover') {
+                delete swipeCommands[dir as keyof typeof swipeCommands];
+                delete swipeActionTypes?.[dir as keyof typeof swipeActionTypes];
+            }
+        });
+    }
+
     const longSwipeActionTypes = button.longSwipeActionTypes
         ? Object.fromEntries(
             Object.entries(button.longSwipeActionTypes).map(([dir, actionType]) => [
@@ -35,6 +58,8 @@ const normalizeTacticalAssignActions = (button: CustomButton): CustomButton => {
 
     return {
         ...button,
+        swipeCommands,
+        swipeActionTypes,
         longActionType: button.longActionType === 'select-assign' ? 'assign' : button.longActionType,
         longSwipeActionTypes
     };

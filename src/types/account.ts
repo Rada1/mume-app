@@ -3,7 +3,7 @@
  * @description Account and character selection stages.
  */
 
-export type AccountStage = 'login' | 'account-menu' | 'character-creation' | 'stat-editing' | 'none';
+export type AccountStage = 'login' | 'account-menu' | 'character-creation' | 'stat-editing' | 'account-confirmation' | 'none';
 
 export interface CharacterEntry {
     index?: number;
