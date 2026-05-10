@@ -232,7 +232,7 @@ describe('Tokenizer — char inline button assignment (GMCP source-of-truth cont
             expect(ent?.metadata?.category).toBe('cat-room-object');
         });
 
-        it('strips presentation-only XML tags around equipment slots', () => {
+        it('preserves equipment slot markers as visible text', () => {
             const tokens = Tokenizer.tokenize(
                 '&lt;worn on finger&gt; a <object>brightly shining ring</object>',
                 makeContext([]),
@@ -241,8 +241,7 @@ describe('Tokenizer — char inline button assignment (GMCP source-of-truth cont
             const textOnly = tokens.map(t => t.content).join('');
             const ent = findEntityFor(tokens, 'brightly shining ring');
 
-            expect(textOnly).toBe(' a brightly shining ring');
-            expect(textOnly).not.toContain('<worn');
+            expect(textOnly).toBe('<worn on finger> a brightly shining ring');
             expect(ent?.metadata?.category).toBe('cat-worn-object');
         });
 

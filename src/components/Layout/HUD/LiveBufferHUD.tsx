@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Play, Pause, Zap } from 'lucide-react';
-import { useUI, useLog } from '../../../context/GameContext';
+import { useGame, useUI } from '../../../context/GameContext';
 import { useModeStore } from '../../../stores/useModeStore';
 
 const fmt = (ms: number) => {
@@ -21,7 +21,8 @@ const REWIND_OPTIONS = [
 
 export const LiveBufferHUD: React.FC = () => {
     const { spectateBuffer } = useUI();
-    const { messages } = useLog();
+    const { spectateSession } = useGame();
+    const messages = spectateSession.log.messages;
     const isSpectating = useModeStore(s => s.isSpectating);
     const scrubberRef = useRef<HTMLDivElement>(null);
 

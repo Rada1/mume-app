@@ -80,8 +80,17 @@ export const useGameProviderState = (audioTriggers?: {
     React.useEffect(() => { isAccountModeRef.current = gameState === 'account'; }, [gameState]);
 
     // --- Session Slots ---
+    const spectateAudioTriggers = useMemo(() => audioTriggers ? {
+        ...audioTriggers,
+        playCommMessageSound: () => {
+            if (mode.activeView === 'target') {
+                audioTriggers.playCommMessageSound();
+            }
+        }
+    } : undefined, [audioTriggers, mode.activeView]);
+
     const userSession = useSessionState(characterName, isNewbieMode, gameState, roomDescRef, isAccountModeRef, false, audioTriggers);
-    const spectateSession = useSessionState(characterName, isNewbieMode, gameState, roomDescRef, isAccountModeRef, true, audioTriggers);
+    const spectateSession = useSessionState(characterName, isNewbieMode, gameState, roomDescRef, isAccountModeRef, true, spectateAudioTriggers);
     const spectateLiveVitals = useSpectateLiveVitalsStore();
     const spectateLiveRoom = useSpectateLiveRoomStore();
     const spectateLiveCombat = useSpectateLiveCombatStore();

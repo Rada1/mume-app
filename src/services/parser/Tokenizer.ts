@@ -53,7 +53,9 @@ export class Tokenizer {
     }
 
     public static tokenize(textRaw: string, context: TokenizerContext, initialLoc?: string): Token[] {
-        return this.getInstance().tokenize(textRaw, context, initialLoc);
+        const tokenizer = this.getInstance();
+        tokenizer.reset(initialLoc || 'room');
+        return tokenizer.tokenize(textRaw, context, initialLoc);
     }
 
     public reset(loc: string = 'room') {
@@ -178,7 +180,7 @@ export class Tokenizer {
     }
 
     private isPresentationOnlyTag(tag: string): boolean {
-        return /^<\/?(?:wielded|worn\b[^>]*)>$/i.test(tag);
+        return false;
     }
 
     private decodeEntities(text: string): string {
@@ -538,7 +540,7 @@ export class Tokenizer {
         }
         if (fullStack.includes('player')) return 'player';
         if (fullStack.includes('object')) return 'object';
-        if (lowerTag === 'name' && fullStack.includes('room')) return 'none';
+        if (lowerTag === 'name' && fullStack.includes('room')) return 'room';
         if (fullStack.includes('exit')) return 'none';
 
         return 'none';
