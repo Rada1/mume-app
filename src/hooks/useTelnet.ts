@@ -48,7 +48,6 @@ export function useTelnet(config: TelnetConfig) {
     const configRef = React.useRef(config);
     const bufferRef = React.useRef("");
     const lastProcessedPromptRef = React.useRef("");
-    const lastQueuedPromptRef = React.useRef<{ key: string, time: number } | null>(null);
     const pendingTextLines = React.useRef<(string | { line: string, isPrompt: boolean })[]>([]);
     const processingTimeout = React.useRef<any>(null);
     const hasSentGameEntrySetupRef = React.useRef(false);
@@ -177,16 +176,9 @@ export function useTelnet(config: TelnetConfig) {
                 }
             }
 
-            // Queue normalized prompt text so XML-only variants don't render as
-            // duplicate prompts. Repeated prompts outside the same network burst still
-            // flow through so parser-driven capture sessions can finalize.
-            const now = Date.now();
-            const lastQueued = lastQueuedPromptRef.current;
-            const isBurstDuplicate = !!lastQueued && lastQueued.key === promptKey && now - lastQueued.time < 250;
-            if (!isBurstDuplicate) {
-                lastQueuedPromptRef.current = { key: promptKey, time: now };
-                processedLines.push({ line: displayPrompt, isPrompt: true });
-            }
+            // Every prompt is a meaningful output boundary. Even identical prompts
+            // can represent a later command response during fast input bursts.
+            processedLines.push({ line: displayPrompt, isPrompt: true });
         };
 
         // Splits a physical line that contains an XML <prompt>...</prompt> tag
