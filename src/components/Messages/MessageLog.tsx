@@ -186,15 +186,15 @@ const MessageItem = React.memo(({
                     {msg.isCombat && inCombat ? (
                         <div className="combat-bubble">
                             <div className="message-content hit-sheen-container">
-                                <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
+                                <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} target={targetName} inlineCategories={inlineCategories} colors={colors} />
                                 {msg.isHitImpact && sheenActive && (
                                     <div className="hit-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} target={targetName} inlineCategories={inlineCategories} colors={colors} />
                                     </div>
                                 )}
                                 {msg.isDamageImpact && sheenActive && (
                                     <div className="damage-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} target={targetName} inlineCategories={inlineCategories} colors={colors} />
                                     </div>
                                 )}
                             </div>
@@ -202,15 +202,15 @@ const MessageItem = React.memo(({
                     ) : (
                         <>
                             <div className="message-content hit-sheen-container">
-                                <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} />
+                                <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} target={targetName} inlineCategories={inlineCategories} colors={colors} />
                                 {msg.isHitImpact && sheenActive && (
                                     <div className="hit-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} />
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} target={targetName} inlineCategories={inlineCategories} colors={colors} />
                                     </div>
                                 )}
                                 {msg.isDamageImpact && sheenActive && (
                                     <div className="damage-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} />
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} target={targetName} inlineCategories={inlineCategories} colors={colors} />
                                     </div>
                                 )}
                                 {msg.isRoomName && msg.tokens && msg.html?.includes('room-desc-line') && (
