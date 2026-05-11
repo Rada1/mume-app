@@ -413,29 +413,26 @@
     z-index: 1;
 }
 
-/* Disable expensive filters and pseudo-elements on mobile */
-@media (min-width: 1025px) {
-    .weather-cloud::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 200%;
-        height: 100%;
-        background:
-            linear-gradient(to bottom, rgba(180, 180, 190, 0.3) 0%, transparent 100%),
-            radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 40%),
-            radial-gradient(circle at 50% 40%, rgba(255,255,255,0.15) 0%, transparent 50%),
-            radial-gradient(circle at 80% 60%, rgba(255,255,255,0.1) 0%, transparent 45%);
-        background-size: 200% 100%;
-        background-blend-mode: overlay;
-        mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 100%);
-        -webkit-mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 100%);
-        opacity: 0.3;
-        animation: cloud-pulse 10s ease-in-out infinite alternate, cloud-drift 80s linear infinite;
-        z-index: 2;
-        filter: blur(1px) brightness(0.9) grayscale(0.6) contrast(1.6);
-    }
+.weather-cloud::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background:
+        linear-gradient(to bottom, rgba(180, 180, 190, 0.3) 0%, transparent 100%),
+        radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 40%),
+        radial-gradient(circle at 50% 40%, rgba(255,255,255,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 60%, rgba(255,255,255,0.1) 0%, transparent 45%);
+    background-size: 200% 100%;
+    background-blend-mode: overlay;
+    mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 100%);
+    opacity: 0.3;
+    animation: cloud-pulse 10s ease-in-out infinite alternate, cloud-drift 80s linear infinite;
+    z-index: 2;
+    filter: blur(1px) brightness(0.9) grayscale(0.6) contrast(1.6);
 }
 
 .weather-cloud.storm-clouds {
@@ -447,17 +444,15 @@
     mix-blend-mode: multiply;
 }
 
-@media (min-width: 1025px) {
-    .weather-cloud.storm-clouds::after {
-        filter: blur(2px) brightness(0.4) grayscale(0.9) contrast(2);
-        opacity: 0.9;
-        transition: filter 0.05s ease-out;
-    }
+.weather-cloud.storm-clouds::after {
+    filter: blur(2px) brightness(0.4) grayscale(0.9) contrast(2);
+    opacity: 0.9;
+    transition: filter 0.05s ease-out;
+}
 
-    .weather-cloud.lightning-active::after {
-        filter: blur(2px) brightness(4) grayscale(0.5) contrast(1.5);
-        transition: filter 0.05s ease-out;
-    }
+.weather-cloud.lightning-active::after {
+    filter: blur(2px) brightness(4) grayscale(0.5) contrast(1.5);
+    transition: filter 0.05s ease-out;
 }
 
 .weather-cloud.lightning-active::before {
@@ -704,23 +699,17 @@
     mix-blend-mode: screen;
 }
 
-/* On mobile/tablets, disable the blurry pseudo-element to save fill rate */
-@media (max-width: 1024px) {
-    .ember-particle::after {
-        display: none;
-    }
-}
 
-@media (min-width: 1025px) {
-    .ember-particle::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: inherit;
-        background: inherit;
-        filter: blur(1px);
-        animation: ember-flicker 0.2s infinite alternate;
-    }
+
+
+.ember-particle::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: inherit;
+    filter: blur(1px);
+    animation: ember-flicker 0.2s infinite alternate;
 }
 
 

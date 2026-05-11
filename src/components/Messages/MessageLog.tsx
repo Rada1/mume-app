@@ -10,6 +10,7 @@ import PracticeClassHeaderCard from '../Practice/PracticeClassHeaderCard';
 import PracticeColumnHeaderCard from '../Practice/PracticeColumnHeaderCard';
 import { useBaseGame, useVitals, useLog, useUI } from '../../context/GameContext';
 import { useModeStore } from '../../stores/useModeStore';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 
 const formatTimestamp = (ts: number) => {
     const date = new Date(ts);
@@ -58,6 +59,9 @@ const MessageItem = React.memo(({
     setInput,
     viewport,
     batchOffset = 0,
+    targetName = null,
+    inlineCategories = [],
+    colors = {}
 }: {
     msg: Message,
     executeCommand: (cmd: string, silent?: boolean) => void,
@@ -171,11 +175,11 @@ const MessageItem = React.memo(({
                             {timestampEl}
                             {msg.type !== 'comm-continue' && (
                                 <>
-                                    <span className="comm-sender"><TokenRenderer tokens={msg.commSenderTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commSender || ''))} target={targetName} inlineCategories={inlineCategories} colors={colors} /></span>
+                                    <span className="comm-sender"><TokenRenderer tokens={msg.commSenderTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commSender || ''))} /></span>
                                     <span className="comm-action" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(` ${msg.commAction}: `)) }} />
                                 </>
                             )}
-                            <span className="comm-text"><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} target={targetName} inlineCategories={inlineCategories} colors={colors} /></span>
+                            <span className="comm-text"><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} /></span>
                         </div>
                         <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
                     </div>
@@ -186,15 +190,15 @@ const MessageItem = React.memo(({
                     {msg.isCombat && inCombat ? (
                         <div className="combat-bubble">
                             <div className="message-content hit-sheen-container">
-                                <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} target={targetName} inlineCategories={inlineCategories} colors={colors} />
+                                <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
                                 {msg.isHitImpact && sheenActive && (
                                     <div className="hit-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} target={targetName} inlineCategories={inlineCategories} colors={colors} />
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
                                     </div>
                                 )}
                                 {msg.isDamageImpact && sheenActive && (
                                     <div className="damage-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} target={targetName} inlineCategories={inlineCategories} colors={colors} />
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizeMumeHtml(content)} />
                                     </div>
                                 )}
                             </div>
@@ -202,15 +206,15 @@ const MessageItem = React.memo(({
                     ) : (
                         <>
                             <div className="message-content hit-sheen-container">
-                                <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} target={targetName} inlineCategories={inlineCategories} colors={colors} />
+                                <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} />
                                 {msg.isHitImpact && sheenActive && (
                                     <div className="hit-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} target={targetName} inlineCategories={inlineCategories} colors={colors} />
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} />
                                     </div>
                                 )}
                                 {msg.isDamageImpact && sheenActive && (
                                     <div className="damage-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} target={targetName} inlineCategories={inlineCategories} colors={colors} />
+                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} />
                                     </div>
                                 )}
                                 {msg.isRoomName && msg.tokens && msg.html?.includes('room-desc-line') && (
