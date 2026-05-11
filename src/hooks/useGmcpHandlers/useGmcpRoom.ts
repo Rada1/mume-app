@@ -95,13 +95,7 @@ export const useGmcpRoom = ({
         if (roomChanged) {
             console.groupCollapsed(`[GMCP Room.Entry] ${data.name || '(unnamed room)'} #${roomNum ?? '?'}`);
             // console.log('Room.Info raw:', data);
-            // console.log('Room.Info summary:', {
-                roomNum,
-                name: data.name,
-                zone: data.zone || data.area,
-                terrain: data.terrain || data.environment,
-                exits: data.exits ? Object.keys(data.exits) : []
-            });
+            // console.log('Room.Info summary:', { roomNum, name: data.name, zone: data.zone || data.area, terrain: data.terrain || data.environment, exits: data.exits ? Object.keys(data.exits) : [] });
             // console.log('Occupant GMCP watch: waiting for server-pushed Room.Chars/Add/Update/Remove packets.');
             console.groupEnd();
         }

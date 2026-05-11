@@ -10,6 +10,7 @@ import PracticeClassHeaderCard from '../Practice/PracticeClassHeaderCard';
 import PracticeColumnHeaderCard from '../Practice/PracticeColumnHeaderCard';
 import { useBaseGame, useVitals, useLog, useUI } from '../../context/GameContext';
 import { useModeStore } from '../../stores/useModeStore';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 
 const formatTimestamp = (ts: number) => {
     const date = new Date(ts);

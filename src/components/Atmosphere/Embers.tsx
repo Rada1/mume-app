@@ -26,19 +26,18 @@ export const Embers: React.FC<EmbersProps> = ({ count }) => {
     const activityMultiplier = 1 + (messageActivity * 4); // 1x to 5x speed
     const containerRef = React.useRef<HTMLDivElement>(null);
 
-    if (!isImmersionMode) return null;
-
     React.useEffect(() => {
-        if (!containerRef.current) return;
+        if (!isImmersionMode || !containerRef.current) return;
         const particles = containerRef.current.querySelectorAll('.ember-particle');
         particles.forEach((el) => {
             el.getAnimations().forEach((anim) => {
                 anim.playbackRate = activityMultiplier;
             });
         });
-    }, [activityMultiplier]);
+    }, [activityMultiplier, isImmersionMode]);
 
     const embers = useMemo(() => {
+        if (!isImmersionMode) return [];
         return Array.from({ length: emberCount }).map((_, i) => ({
             id: i,
             startX: `${Math.random() * 100}%`,
@@ -54,7 +53,9 @@ export const Embers: React.FC<EmbersProps> = ({ count }) => {
             swayX: `${(Math.random() - 0.5) * 40}px`,
             swayY: `${(Math.random() - 0.5) * 40}px`,
         }));
-    }, [count]);
+    }, [count, isImmersionMode]);
+
+    if (!isImmersionMode) return null;
 
     return (
         <div className="embers-container" ref={containerRef}>
