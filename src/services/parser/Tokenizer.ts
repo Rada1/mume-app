@@ -43,6 +43,11 @@ export class Tokenizer {
     private currentStyle: React.CSSProperties = {};
     private occupantMatchCounts: Record<string, number> = {};
 
+    // Cache for occupant regex
+    private cachedOccupants: any[] = [];
+    private cachedCandidates: { occupant: any; pattern: string }[] = [];
+    private cachedPattern: RegExp | null = null;
+
     private static instance: Tokenizer | null = null;
 
     public static getInstance(): Tokenizer {
@@ -284,26 +289,54 @@ export class Tokenizer {
         style: React.CSSProperties
     ): Token[] | null {
         const occupants = context?.currentOccupants || [];
-        const validTypes = new Set(['ally', 'enemy', 'neutral', 'npc']);
-        const candidates = occupants
-            .filter(o => o.type && validTypes.has(o.type.toLowerCase()))
-            .flatMap(o => this.getOccupantPatterns(o).map(pattern => ({ occupant: o, pattern })))
-            .sort((a, b) => b.pattern.length - a.pattern.length);
 
-        if (candidates.length === 0) return null;
+        // Use cache if occupants haven't changed (reference check should be sufficient for most cases
+        // given how context is created in useTelnet, but we'll do a shallow array check to be safe)
+        let isCacheValid = false;
+        if (this.cachedOccupants.length === occupants.length) {
+            isCacheValid = true;
+            for (let i = 0; i < occupants.length; i++) {
+                if (occupants[i] !== this.cachedOccupants[i]) {
+                    isCacheValid = false;
+                    break;
+                }
+            }
+        }
 
-        const escaped = candidates.map(c => this.escapeRegExp(c.pattern));
-        const pattern = new RegExp(`(^|[^a-zA-Z0-9\\u00C0-\\u00FF])(${escaped.join('|')})(?=$|[^a-zA-Z0-9\\u00C0-\\u00FF])`, 'gi');
+        if (!isCacheValid) {
+            this.cachedOccupants = [...occupants];
+            const validTypes = new Set(['ally', 'enemy', 'neutral', 'npc']);
+            this.cachedCandidates = occupants
+                .filter(o => o.type && validTypes.has(o.type.toLowerCase()))
+                .flatMap(o => this.getOccupantPatterns(o).map(pattern => ({ occupant: o, pattern })))
+                .sort((a, b) => b.pattern.length - a.pattern.length);
+
+            if (this.cachedCandidates.length === 0) {
+                this.cachedPattern = null;
+            } else {
+                const escaped = this.cachedCandidates.map(c => this.escapeRegExp(c.pattern));
+                this.cachedPattern = new RegExp(`(?:^|[^a-zA-Z0-9\\u00C0-\\u00FF])(${escaped.join('|')})(?=[^a-zA-Z0-9\\u00C0-\\u00FF]|$)`, 'gi');
+            }
+        }
+
+        if (!this.cachedPattern || this.cachedCandidates.length === 0) return null;
+
         const out: Token[] = [];
         let lastIdx = 0;
         let matched = false;
         let match;
 
-        while ((match = pattern.exec(decoded)) !== null) {
-            const boundary = match[1] || '';
-            const content = match[2];
-            const startIdx = match.index + boundary.length;
-            const candidate = this.resolveOccupantCandidate(candidates, content, occupants);
+        // Reset lastIndex because RegExp is cached and stateful
+        this.cachedPattern.lastIndex = 0;
+
+        while ((match = this.cachedPattern.exec(decoded)) !== null) {
+            const matchContent = match[0];
+            const content = match[1];
+
+            // Adjust start index if the match includes a preceding boundary character
+            const startIdx = match.index + (matchContent.length > content.length ? 1 : 0);
+
+            const candidate = this.resolveOccupantCandidate(this.cachedCandidates, content, occupants);
             if (!candidate) continue;
 
             if (startIdx > lastIdx) {
@@ -327,7 +360,8 @@ export class Tokenizer {
                 }
             } as EntityToken);
 
-            lastIdx = pattern.lastIndex;
+            lastIdx = startIdx + content.length;
+            this.cachedPattern.lastIndex = lastIdx; // Update lastIndex to continue after match
             matched = true;
         }
 

@@ -100,7 +100,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         // Use pointerId tracking instead of isPrimary so that a non-primary pointer
         // (e.g. second finger tapping the trackpad while holding an action button) works.
         activeJoystickPointerRef.current = e.pointerId;
-        console.log(`[useJoystick] handleJoystickStart: pointerId=${e.pointerId}, size=${activePointersRef.current.size}`);
+        // console.log(`[useJoystick] handleJoystickStart: pointerId=${e.pointerId}, size=${activePointersRef.current.size}`);
         if (executeCommand) executeCommandRef.current = executeCommand;
         setJoystickActive(true);
         setIsJoystickConsumed(false);
@@ -111,7 +111,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
 
         const startX = e.clientX;
         const startY = e.clientY;
-        console.log(`[Joystick] Start: x=${startX} y=${startY} (Pointer: ${e.pointerId})`);
+        // console.log(`[Joystick] Start: x=${startX} y=${startY} (Pointer: ${e.pointerId})`);
         
         joystickStartPos.current = { x: startX, y: startY };
         touchStartPos.current = { x: startX, y: startY };
@@ -143,7 +143,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         if (angleDeg < 0) angleDeg += 360;
 
         if (dist > 5) {
-            console.log(`[Joystick] Move: dx=${dx.toFixed(1)} dy=${dy.toFixed(1)} dist=${dist.toFixed(1)} angle=${angleDeg.toFixed(1)}`);
+            // console.log(`[Joystick] Move: dx=${dx.toFixed(1)} dy=${dy.toFixed(1)} dist=${dist.toFixed(1)} angle=${angleDeg.toFixed(1)}`);
         }
 
         const lastDir = lockedDirRef.current;
@@ -212,7 +212,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
 
         const steeredDir = dir ? getMagneticDir(dir) : null;
         if (dir && steeredDir !== dir) {
-            console.log(`[Joystick] Magnetic Steering: ${dir} -> ${steeredDir} (Available: ${availableExits.join(',')})`);
+            // console.log(`[Joystick] Magnetic Steering: ${dir} -> ${steeredDir} (Available: ${availableExits.join(',')})`);
         }
         dir = steeredDir;
 
@@ -268,7 +268,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
     const handleJoystickEnd = useCallback((e: React.PointerEvent, executeCommand: ExecuteCommand, triggerHaptic: (duration?: number) => void, suppressDefault?: boolean) => {
         activePointersRef.current.delete(e.pointerId);
         if (e.pointerId !== activeJoystickPointerRef.current) return false;
-        console.log(`[Joystick] End: x=${e.clientX} y=${e.clientY} (Consumed: ${isJoystickConsumed || isTargetModifierActive})`);
+        // console.log(`[Joystick] End: x=${e.clientX} y=${e.clientY} (Consumed: ${isJoystickConsumed || isTargetModifierActive})`);
         executeCommandRef.current = executeCommand;
         stopRepeatTimer();
 
@@ -375,7 +375,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         setIsJoystickConsumed(false);
         setIsSwipeWheelHidden(false);
         setIsTargetModifierActive(false);
-        console.log(`[useJoystick] handleJoystickCancel: pointerId=${e?.pointerId || 'all'}, size=${activePointersRef.current.size}`);
+        // console.log(`[useJoystick] handleJoystickCancel: pointerId=${e?.pointerId || 'all'}, size=${activePointersRef.current.size}`);
         setCurrentDir(null);
         setSwipeRay({ active: false, angle: 0, dist: 0 });
         lastHapticDirRef.current = null;

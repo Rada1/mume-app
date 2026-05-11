@@ -68,13 +68,13 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         else if (clean.match(/^.{0,5}Score for /)) type = 'score';
 
         if (type) {
-            console.log(`[Capture] Trigger matched: ${type} for line: "${clean.substring(0, 40)}"`);
+            // console.log(`[Capture] Trigger matched: ${type} for line: "${clean.substring(0, 40)}"`);
         }
         return type;
     }, []);
 
     const startSession = useCallback((type: CaptureType) => {
-        console.log(`[Capture] Starting ${type} session`);
+        // console.log(`[Capture] Starting ${type} session`);
         if (sessionRef.current?.type === type && (Date.now() - sessionRef.current.startTime < 100)) {
             return;
         }
@@ -197,7 +197,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
 
         // Synchronous update of the ref so it's available for the next line
         session.lines.push(newLine);
-        console.log(`[Capture] Accumulated line for ${session.type}: ${newLine.text.substring(0, 30)}... Total: ${session.lines.length}`);
+        // console.log(`[Capture] Accumulated line for ${session.type}: ${newLine.text.substring(0, 30)}... Total: ${session.lines.length}`);
     }, [registerEntity, ansiConvert, sessionRef]);
 
     const finalizeSession = useCallback(() => {
@@ -207,7 +207,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         }
 
         const lines = [...session.lines];
-        console.log(`[Capture] Finalizing ${session.type} session with ${lines.length} lines`);
+        // console.log(`[Capture] Finalizing ${session.type} session with ${lines.length} lines`);
 
         try {
             switch (session.type) {

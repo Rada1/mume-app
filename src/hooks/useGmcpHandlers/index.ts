@@ -154,7 +154,7 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
     }, []);
 
     const onCharRide = useCallback((data: any) => {
-        console.log('[GMCP] Char.Ride:', data);
+        // console.log('[GMCP] Char.Ride:', data);
         const riding = data && (data.mount || data.mount_name || data.riding);
         const targetSetter = props.isSpectateMode ? props.setPlayerPosition : props.setPlayerPosition; // Wait, setPlayerPosition is already mapped in GameContext
         

@@ -82,11 +82,11 @@ export const useGmcpVitals = ({
         }
 
         if (data.position) {
-            console.log('[GMCP] Position Update:', data.position);
+            // console.log('[GMCP] Position Update:', data.position);
             // Don't let 'standing' stomp 'riding' because MUME often says 'standing' while mounted.
             const isCurrentlyRiding = playerPositionRef.current === 'riding' || playerPositionRef.current === 'mounted';
             if (data.position === 'standing' && isCurrentlyRiding) {
-                console.log('[GMCP] Ignoring position:standing because we are riding');
+                // console.log('[GMCP] Ignoring position:standing because we are riding');
             } else {
                 setPlayerPosition(data.position);
                 playerPositionRef.current = data.position;
@@ -138,7 +138,7 @@ export const useGmcpVitals = ({
             setIsFoggy(data.fog === 'on' || data.fog === 'thick' || data.fog === 'yes' || !!data.fog);
         }
 
-        console.log('[GMCP] CharVitals:', data);
+        // console.log('[GMCP] CharVitals:', data);
 
         // --- Store Sync ---
         import('../../events/gmcpBus').then(({ gmcpBus }) => {
@@ -147,7 +147,7 @@ export const useGmcpVitals = ({
     }, [setCurrentTerrain, setCurrentWeather, setIsFoggy, setPlayerHealthStatus, setOpponentId, setOpponentName, setOpponentHealthStatus, setBufferName, setBufferHealthStatus, setPlayerPosition, setMood, sendCommand, findStatus, getCharNameFromId, isSpectateMode, detectLighting, playerPositionRef, setInCombat]);
 
     const onCharInfo = useCallback((data: GmcpCharInfo) => {
-        console.log('[GMCP] CharInfo:', data);
+        // console.log('[GMCP] CharInfo:', data);
         setCharacterInfo(prev => {
             const xp = data.xp !== undefined ? Number(data.xp) : prev.xp;
             const xpMax = data.xp_max !== undefined ? Number(data.xp_max) : (data['next-level-xp'] !== undefined ? Number(data['next-level-xp']) : prev.xpMax);

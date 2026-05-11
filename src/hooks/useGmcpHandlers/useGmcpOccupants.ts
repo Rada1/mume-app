@@ -94,7 +94,7 @@ export const useGmcpOccupants = ({
 
     const onRoomChars = useCallback((data: any) => {
         console.groupCollapsed('[GMCP Room.Chars] full-set payload');
-        console.log('raw:', data);
+        // console.log('raw:', data);
         let rawList = Array.isArray(data)
             ? data
             : (data.chars || data.char || data.members || data.list || data.npcs || data.players || [data]);
@@ -144,8 +144,8 @@ export const useGmcpOccupants = ({
             return newChars;
         };
 
-        console.log('parsed:', Object.values(parsedChars));
-        console.log(`resolved count: ${Object.keys(parsedChars).length}`);
+        // console.log('parsed:', Object.values(parsedChars));
+        // console.log(`resolved count: ${Object.keys(parsedChars).length}`);
         console.groupEnd();
         if (setRoomChars) setRoomChars(prev => mergeChars(prev));
         mapperRef.current?.triggerRender?.();
@@ -157,9 +157,9 @@ export const useGmcpOccupants = ({
 
     const onAddChar = useCallback((data: any) => {
         console.groupCollapsed('[GMCP Room.Chars.Add] payload');
-        console.log('raw:', data);
+        // console.log('raw:', data);
         const occupants = parseOccupants(data, characterName);
-        console.log('parsed:', occupants);
+        // console.log('parsed:', occupants);
         console.groupEnd();
         if (occupants.length === 0) return;
 
@@ -194,9 +194,9 @@ export const useGmcpOccupants = ({
 
     const onUpdateChar = useCallback((data: any) => {
         console.groupCollapsed('[GMCP Room.Chars.Update] payload');
-        console.log('raw:', data);
+        // console.log('raw:', data);
         const occupants = parseOccupants(data, characterName);
-        console.log('parsed:', occupants);
+        // console.log('parsed:', occupants);
         console.groupEnd();
         if (occupants.length === 0) return;
 
@@ -219,7 +219,7 @@ export const useGmcpOccupants = ({
 
     const onRemoveChar = useCallback((data: any) => {
         console.groupCollapsed('[GMCP Room.Chars.Remove] payload');
-        console.log('raw:', data);
+        // console.log('raw:', data);
         console.groupEnd();
         if (!data) return;
         const id = (data && typeof data === 'object') ? data.id : data;

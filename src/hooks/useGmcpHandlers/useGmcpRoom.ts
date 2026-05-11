@@ -94,15 +94,15 @@ export const useGmcpRoom = ({
 
         if (roomChanged) {
             console.groupCollapsed(`[GMCP Room.Entry] ${data.name || '(unnamed room)'} #${roomNum ?? '?'}`);
-            console.log('Room.Info raw:', data);
-            console.log('Room.Info summary:', {
+            // console.log('Room.Info raw:', data);
+            // console.log('Room.Info summary:', {
                 roomNum,
                 name: data.name,
                 zone: data.zone || data.area,
                 terrain: data.terrain || data.environment,
                 exits: data.exits ? Object.keys(data.exits) : []
             });
-            console.log('Occupant GMCP watch: waiting for server-pushed Room.Chars/Add/Update/Remove packets.');
+            // console.log('Occupant GMCP watch: waiting for server-pushed Room.Chars/Add/Update/Remove packets.');
             console.groupEnd();
         }
 
@@ -163,7 +163,7 @@ export const useGmcpRoom = ({
         gmcpBus.emit('Room.UpdateExits', { ...data, isSnooped: false });
 
         if (data.exits) {
-            console.log('[GMCP] Room.UpdateExits:', data.exits);
+            // console.log('[GMCP] Room.UpdateExits:', data.exits);
             // Door detection logic
             if (playDoorSound) {
                 const oldExits = lastExitsRef.current;
@@ -176,13 +176,13 @@ export const useGmcpRoom = ({
                 const oldVisibleCount = getVisibleCount(oldExits);
                 const newVisibleCount = getVisibleCount(newExits);
 
-                console.log('[GMCP] Door Detection:', { oldVisibleCount, newVisibleCount, oldExits: Object.keys(oldExits), newExits: Object.keys(newExits) });
+                // console.log('[GMCP] Door Detection:', { oldVisibleCount, newVisibleCount, oldExits: Object.keys(oldExits), newExits: Object.keys(newExits) });
 
                 if (newVisibleCount > oldVisibleCount) {
-                    console.log('[GMCP] Triggering Door Open');
+                    // console.log('[GMCP] Triggering Door Open');
                     playDoorSound(true);
                 } else if (newVisibleCount < oldVisibleCount) {
-                    console.log('[GMCP] Triggering Door Close');
+                    // console.log('[GMCP] Triggering Door Close');
                     playDoorSound(false);
                 }
             }

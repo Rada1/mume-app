@@ -74,6 +74,17 @@ const MessageItem = React.memo(({
     setInput?: (val: string) => void;
     viewport: any;
     batchOffset?: number;
+    targetName?: string | null;
+    inlineCategories?: any[];
+    colors?: {
+        targetColor?: string;
+        playerColor?: string;
+        enemyColor?: string;
+        neutralColor?: string;
+        npcColor?: string;
+        objectColor?: string;
+        roomColor?: string;
+    };
 }) => {
     const content = msg.html;
     const isRecent = Date.now() - msg.timestamp < 2000;
@@ -160,11 +171,11 @@ const MessageItem = React.memo(({
                             {timestampEl}
                             {msg.type !== 'comm-continue' && (
                                 <>
-                                    <span className="comm-sender"><TokenRenderer tokens={msg.commSenderTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commSender || ''))} /></span>
+                                    <span className="comm-sender"><TokenRenderer tokens={msg.commSenderTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commSender || ''))} target={targetName} inlineCategories={inlineCategories} colors={colors} /></span>
                                     <span className="comm-action" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(` ${msg.commAction}: `)) }} />
                                 </>
                             )}
-                            <span className="comm-text"><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} /></span>
+                            <span className="comm-text"><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} target={targetName} inlineCategories={inlineCategories} colors={colors} /></span>
                         </div>
                         <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
                     </div>
@@ -238,6 +249,16 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const { messages } = useLog();
     const { target, setTarget, opponentName, opponentHealthStatus } = useVitals();
     const { scrollContainerRef, messagesEndRef, scrollToBottom, isLockedToBottomRef } = viewport;
+
+    // Extracted colors and inlineCategories to pass down directly
+    const inlineCategories = useBaseGame().inlineCategories;
+    const {
+        targetColor, playerColor, enemyColor, neutralColor, npcColor, objectColor, roomColor
+    } = useSettingsStore();
+
+    const colors = useMemo(() => ({
+        targetColor, playerColor, enemyColor, neutralColor, npcColor, objectColor, roomColor
+    }), [targetColor, playerColor, enemyColor, neutralColor, npcColor, objectColor, roomColor]);
 
     // --- Replay Mode Mapping ---
     // rx entries: pre-processed message objects { type, text, html, tokens, ... } from useMessageLog
@@ -574,6 +595,9 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                     setInput={setInput}
                                     viewport={viewport}
                                     batchOffset={batchOffset}
+                                    targetName={target}
+                                    inlineCategories={inlineCategories}
+                                    colors={colors}
                                 />
                             </div>
                         );
