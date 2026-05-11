@@ -589,13 +589,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const openKeywordEdit = useCallback((context: string, displayText: string) => {
         ui.setKeywordEditState({ context, displayText });
     }, [ui]);
+    const parserExecuteCommandRef = useRef<null | ((command: string, echo?: boolean, fromMacro?: boolean, silent?: boolean, fromDrawer?: boolean) => void)>(null);
 
     const deps: UseGameParserDeps = useMemo(() => ({
         // Basic Actions
         addMessage,
         addSystemMessage,
         clearLog,
-        executeCommandRef: { current: null },
+        executeCommandRef: parserExecuteCommandRef,
         
         // Mapper/World
         mapperRef: mapperRef,
@@ -669,6 +670,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         gameTime: s.gameTime,
         accountState: s.accountState,
         inlineCategories: s.inlineCategories,
+        spectateQueue: s.spectateQueue,
+        setSpectateQueue: s.setSpectateQueue,
+        lastSnoopStartTime: s.lastSnoopStartTime,
+        setLastSnoopStartTime: s.setLastSnoopStartTime,
         objectColor: settingsStore.objectColor,
         npcColor: settingsStore.npcColor,
         playerColor: settingsStore.playerColor,
@@ -914,6 +919,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     useEffect(() => {
         executeCommandRef.current = controller.executeCommand;
+        parserExecuteCommandRef.current = controller.executeCommand;
     }, [controller.executeCommand]);
 
     const logValue: LogContextType = useMemo(() => ({
@@ -1000,7 +1006,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         duration: s.userSession.recorder.duration,
         mapperRef: mapperRef,
         sessionMode,
-        setSessionMode
+        setSessionMode,
+        addToQueue: parser.addToQueue,
+        rotateQueue: parser.rotateQueue,
+        removeFromQueue: parser.removeFromQueue
     }), [
         s, v, telnet, parser, controller, btn, joystick, editor, replayer,
         viewport, env, audioCtxRef, initAudio, spatButtons, ui.diagnosticLogs,

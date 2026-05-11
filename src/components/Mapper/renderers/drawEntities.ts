@@ -744,6 +744,16 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
         ctx.shadowColor = color.core;
         ctx.stroke();
 
+        // 3. Initials in member color
+        const initial = member.name ? member.name.charAt(0).toUpperCase() : '';
+        if (initial) {
+            ctx.font = `700 ${orbRadius * 1.4}px monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = color.core;
+            ctx.fillText(initial, px, py);
+        }
+
         const isSameRoom = prx !== undefined && prx === rx && pry === ry && prz === rz;
         if (!isSameRoom) {
             ctx.font = `bold ${8 / camera.zoom}px Inter`;

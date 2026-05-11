@@ -26,6 +26,28 @@ interface SpectateAutomatorDeps {
 
 const SNOOP_ROTATION_MS = 5 * 60 * 1000; // 5 minutes
 
+const namesMatch = (a: string | null | undefined, b: string | null | undefined) =>
+    !!a && !!b && a.toLowerCase() === b.toLowerCase();
+
+const appendUniqueName = (names: string[], name: string | null | undefined) => {
+    if (!name || name === 'None') return names;
+    return names.some(entry => namesMatch(entry, name)) ? names : [...names, name];
+};
+
+const getNextQueuedSpectatee = (queue: string[], current: string | null) => {
+    if (queue.length === 0) return null;
+    if (!current) return queue[0] || null;
+
+    const currentIndex = queue.findIndex(name => namesMatch(name, current));
+    if (currentIndex === -1) return queue[0] || null;
+
+    for (let offset = 1; offset <= queue.length; offset++) {
+        const candidate = queue[(currentIndex + offset) % queue.length];
+        if (!namesMatch(candidate, current)) return candidate;
+    }
+    return null;
+};
+
 export function useSpectateAutomator(deps: SpectateAutomatorDeps) {
     const {
         spectateQueue,
@@ -56,48 +78,43 @@ export function useSpectateAutomator(deps: SpectateAutomatorDeps) {
             deps.resetSpectateContext();
         }
         executeCommand(`/snoop -prompt -gmcp ${name}`, true, true);
-        executeCommand(`tell ${name} You are now being spectated`, true, true);
         setLastSnoopStartTime(Date.now());
         
         // Use useModeStore's startSpectate to ensure all state is synced
         useModeStore.getState().startSpectate(name);
+        setSpectateQueue(prev => appendUniqueName(prev, name));
         
         // Set name immediately so HUD updates before GMCP arrives
         if (deps.setSpectateCharacterName) {
             deps.setSpectateCharacterName(name);
         }
         addSystemMessage(`Automator: Switching snoop to ${name}.`);
-    }, [executeCommand, setLastSnoopStartTime, addSystemMessage, deps.setSpectateCharacterName, deps.resetSpectateContext]);
+    }, [executeCommand, setLastSnoopStartTime, setSpectateQueue, addSystemMessage, deps.setSpectateCharacterName, deps.resetSpectateContext]);
 
     const rotateQueue = useCallback((cycle = false) => {
         const currentPlayer = spectateCharacterName;
         
-        if (currentPlayer) {
-            executeCommand(`tell ${currentPlayer} You are no longer being spectated`, true, true);
-        }
         executeCommand(`/snoop`, true, true);
         setLastSnoopStartTime(null);
         
-        // Rotate if queue is not empty
         setSpectateQueue(prev => {
-            if (prev.length > 0) {
-                const nextPlayer = prev[0];
-                let newQueue = prev.slice(1);
-                
-                if (cycle && currentPlayer) {
-                    newQueue = [...newQueue, currentPlayer];
-                }
-                
+            const roster = appendUniqueName(prev, currentPlayer);
+            const nextPlayer = getNextQueuedSpectatee(roster, currentPlayer);
+            if (nextPlayer) {
                 // We use a small timeout to avoid triggering state updates during a render/effect loop
                 setTimeout(() => snoopPlayer(nextPlayer), 0);
-                return newQueue;
+                return roster;
             }
             
-            // If we are stopping and queue is empty, also clear current name + state
-            useModeStore.getState().stopSpectate();
+            // If nobody else is queued, stop the current snoop but keep the roster.
+            const mode = useModeStore.getState();
+            mode.setIsSpectating(false);
+            mode.setSpectateTarget(null);
+            mode.setLastSnoopStartTime(null);
+            mode.setActiveView('self');
             if (deps.setSpectateCharacterName) deps.setSpectateCharacterName(null);
             if (deps.resetSpectateContext) deps.resetSpectateContext();
-            return prev;
+            return roster;
         });
     }, [executeCommand, setLastSnoopStartTime, snoopPlayer, setSpectateQueue, spectateCharacterName, deps.setSpectateCharacterName, deps.resetSpectateContext]);
 
@@ -111,13 +128,6 @@ export function useSpectateAutomator(deps: SpectateAutomatorDeps) {
     const addToQueue = useCallback((name: string) => {
         const lowerName = name.toLowerCase();
         
-        // Don't add if already being snooped
-        if (spectateCharacterName?.toLowerCase() === lowerName) {
-            return;
-        }
-
-        addSystemMessage(`Automator: ${name} added to spectate queue.`);
-
         // Auto-enable spectate mode if it's currently OFF
         if (!isSpectateMode) {
             useModeStore.getState().setIsSpectating(true);
@@ -128,10 +138,12 @@ export function useSpectateAutomator(deps: SpectateAutomatorDeps) {
                 return prev;
             }
 
+            addSystemMessage(`Automator: ${name} added to spectate queue.`);
+
             // If not currently snooping anything, start immediately
             if (!spectateCharacterName && prev.length === 0) {
                 setTimeout(() => snoopPlayer(name), 0);
-                return prev;
+                return [name];
             } else {
                 // Calculate wait time based on the latest 'prev' list
                 const elapsed = lastSnoopStartTime ? (Date.now() - lastSnoopStartTime) : 0;
@@ -170,7 +182,7 @@ export function useSpectateAutomator(deps: SpectateAutomatorDeps) {
         if (timerRef.current) clearTimeout(timerRef.current);
 
         timerRef.current = setTimeout(() => {
-            if (spectateQueue.length > 0) {
+            if (getNextQueuedSpectatee(spectateQueue, spectateCharacterName)) {
                 addSystemMessage(`Automator: 5 minutes elapsed. Rotating to next player.`);
                 rotateQueue(true);
             } else {
@@ -191,5 +203,37 @@ export function useSpectateAutomator(deps: SpectateAutomatorDeps) {
         addSystemMessage(`Automator: ${name} removed from spectate queue.`);
     }, [setSpectateQueue, addSystemMessage]);
 
-    return { addToQueue, stopSnoop, rotateQueue, removeFromQueue };
+    const stopSpectatingName = useCallback((name: string) => {
+        const lowerName = name.toLowerCase();
+        const isCurrent = namesMatch(spectateCharacterName, name);
+
+        setSpectateQueue(prev => {
+            const roster = prev.filter(p => p.toLowerCase() !== lowerName);
+            addSystemMessage(`Automator: ${name} requested spectate stop.`);
+
+            if (!isCurrent) {
+                return roster;
+            }
+
+            executeCommand(`/snoop`, true, true);
+            setLastSnoopStartTime(null);
+            const nextPlayer = getNextQueuedSpectatee(roster, name);
+
+            if (nextPlayer) {
+                setTimeout(() => snoopPlayer(nextPlayer), 0);
+            } else {
+                const mode = useModeStore.getState();
+                mode.setIsSpectating(false);
+                mode.setSpectateTarget(null);
+                mode.setLastSnoopStartTime(null);
+                mode.setActiveView('self');
+                if (deps.setSpectateCharacterName) deps.setSpectateCharacterName(null);
+                if (deps.resetSpectateContext) deps.resetSpectateContext();
+            }
+
+            return roster;
+        });
+    }, [spectateCharacterName, setSpectateQueue, addSystemMessage, executeCommand, setLastSnoopStartTime, snoopPlayer, deps.setSpectateCharacterName, deps.resetSpectateContext]);
+
+    return { addToQueue, stopSnoop, rotateQueue, removeFromQueue, stopSpectatingName };
 }

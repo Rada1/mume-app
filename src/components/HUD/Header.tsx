@@ -45,6 +45,9 @@ const Header: React.FC<HeaderProps> = ({
     const [isEnteringTarget, setIsEnteringTarget] = useState(false);
     const [manualTargetInput, setManualTargetInput] = useState('');
     const targetInputRef = useRef<HTMLInputElement>(null);
+    const displayedSpectateName = isSpectating
+        ? (activeView === 'target' ? (characterInfo.name || spectateTarget) : spectateTarget)
+        : null;
 
     // Auto-focus the input when it appears
     useEffect(() => {
@@ -217,7 +220,7 @@ const Header: React.FC<HeaderProps> = ({
             )}
 
             {/* Snoop Target Banner */}
-            {isSpectating && spectateTarget && (
+            {isSpectating && displayedSpectateName && (
                 <div style={{
                     display: 'flex', alignItems: 'center', gap: 5,
                     padding: '3px 10px', borderRadius: 6,
@@ -230,7 +233,7 @@ const Header: React.FC<HeaderProps> = ({
                     userSelect: 'none',
                 }}>
                     <Eye size={11} />
-                    {spectateTarget}
+                    {displayedSpectateName}
                 </div>
             )}
 
@@ -257,7 +260,7 @@ const Header: React.FC<HeaderProps> = ({
                         title={`Switch to ${spectateTarget}'s View`}
                     >
                         <Eye size={14} />
-                        <span>{spectateTarget ? spectateTarget.toUpperCase() : 'TARGET'}</span>
+                        <span>SPECTATEE</span>
                     </button>
                 </div>
             )}

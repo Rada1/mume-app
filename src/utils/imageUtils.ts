@@ -1,5 +1,6 @@
 /**
- * Utility for client-side image processing.
+ * @file imageUtils.ts
+ * @description Utility helpers for client-side image processing.
  */
 
 /**
@@ -92,5 +93,66 @@ export const makeBackgroundTransparent = (base64: string, maxDim: number = 256):
         };
         img.onerror = () => resolve(base64);
         img.src = base64;
+    });
+};
+
+/**
+ * Chroma-keys the bottom avatar background image used behind the message log.
+ * Near-white pixels become transparent; non-glowing pixels become a black silhouette.
+ */
+export const chromaKeyBottomBackground = (source: string): Promise<string> => {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    resolve(source);
+                    return;
+                }
+
+                ctx.drawImage(img, 0, 0);
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+                const whiteThreshold = 220;
+
+                for (let i = 0; i < data.length; i += 4) {
+                    if (data[i + 3] < 128) continue;
+
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+
+                    if (r > whiteThreshold && g > whiteThreshold && b > whiteThreshold) {
+                        data[i + 3] = 0;
+                        continue;
+                    }
+
+                    const max = Math.max(r, g, b);
+                    const min = Math.min(r, g, b);
+                    const saturation = max > 0 ? (max - min) / max : 0;
+                    const isGlowing = saturation > 0.4 && max > 80;
+
+                    if (!isGlowing) {
+                        data[i] = 0;
+                        data[i + 1] = 0;
+                        data[i + 2] = 0;
+                        data[i + 3] = 255;
+                    }
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+                resolve(canvas.toDataURL('image/png'));
+            } catch (error) {
+                console.error('Error chroma-keying bottom background:', error);
+                resolve(source);
+            }
+        };
+        img.onerror = () => resolve(source);
+        img.src = source;
     });
 };

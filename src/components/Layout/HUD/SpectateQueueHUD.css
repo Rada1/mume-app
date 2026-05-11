@@ -36,6 +36,12 @@
     gap: 5px;
 }
 
+.spectate-hud-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
 .spectate-hud-title {
     color: rgba(255, 255, 255, 0.66);
     font-size: 0.66rem;
@@ -50,6 +56,55 @@
     color: var(--accent, #8b5cf6);
     text-shadow: 0 0 8px rgba(139, 92, 246, 0.35);
     line-height: 1;
+}
+
+.spectate-minimize-btn {
+    width: 24px;
+    height: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.62);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.2s ease;
+}
+
+.spectate-minimize-btn:hover {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.spectate-queue-hud.is-minimized {
+    width: 230px;
+    gap: 5px;
+}
+
+.spectate-queue-hud.is-minimized .spectate-hud-header {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.spectate-hud-minimized-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: lowercase;
+    overflow: hidden;
+}
+
+.spectate-hud-minimized-summary span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .spectate-hud-current {

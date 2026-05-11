@@ -3,6 +3,7 @@ import { LightingType, WeatherType } from '../../types';
 import Rain from './Rain';
 import { Embers } from './Embers';
 import { useAtmosphereStore } from '../../stores/useAtmosphereStore';
+import { chromaKeyBottomBackground } from '../../utils/imageUtils';
 
 interface EnvironmentEffectsProps {
     lighting: LightingType;
@@ -14,6 +15,7 @@ interface EnvironmentEffectsProps {
     isMobile: boolean;
     bgImage?: string | null;
     bgImageBottom?: string | null;
+    bgImageBottomScale?: number;
     terrain?: string | null;
 }
 
@@ -27,6 +29,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     isMobile,
     bgImage,
     bgImageBottom,
+    bgImageBottomScale = 1,
     terrain
 }) => {
     // --- Command pulse: flash the active light source on each command ---
@@ -85,6 +88,27 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
         }
     }, [bgImage, activeLayer, layerA, layerB]);
 
+    // --- Bottom Background Processing ---
+    const [processedBottomImage, setProcessedBottomImage] = React.useState<string | null>(null);
+    React.useEffect(() => {
+        let cancelled = false;
+
+        if (!bgImageBottom) {
+            setProcessedBottomImage(null);
+            return () => {
+                cancelled = true;
+            };
+        }
+
+        chromaKeyBottomBackground(bgImageBottom).then(result => {
+            if (!cancelled) setProcessedBottomImage(result);
+        });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [bgImageBottom]);
+
     return (
         <div style={{ '--lightning-x': `${lightningX}%` } as React.CSSProperties}>
             {/* --- BACK LAYER: Ambient & Lighting [z-index: 1] --- */}
@@ -103,7 +127,10 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         />
                         <div
                             className="log-background-mask bottom"
-                            style={{ '--bg-image': bgImageBottom ? `url(${bgImageBottom})` : 'none' } as React.CSSProperties}
+                            style={{
+                                '--bg-image': processedBottomImage ? `url(${processedBottomImage})` : 'none',
+                                '--bottom-bg-scale': bgImageBottomScale
+                            } as React.CSSProperties}
                         />
                     </>
                 )}

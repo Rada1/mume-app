@@ -635,7 +635,7 @@
 }
 
 .message.old-batch-dim {
-    opacity: 0.5;
+    opacity: 0.7;
     transition: opacity 0.5s ease;
 }
 
@@ -835,7 +835,7 @@
 }
 
 .message.prompt.old-batch-dim {
-    opacity: 0.5;
+    opacity: 0.7;
 }
 
 .state-account .message.prompt.old-batch-dim {

@@ -7,6 +7,14 @@ import { CommandMiddleware } from '../types';
 import { extractNoun } from '../../../utils/gameUtils';
 import { useModeStore } from '../../../stores/useModeStore';
 
+const namesMatch = (a: string | null | undefined, b: string | null | undefined) =>
+    !!a && !!b && a.toLowerCase() === b.toLowerCase();
+
+const appendUniqueName = (names: string[], name: string | null | undefined) => {
+    if (!name || name === 'None') return names;
+    return names.some(entry => namesMatch(entry, name)) ? names : [...names, name];
+};
+
 export const SystemCommandMiddleware: CommandMiddleware = (cmd, context) => {
     const { 
         setTarget, setSettingsTab, setIsSettingsOpen, handleTabClick, addMessage, setUI
@@ -30,10 +38,15 @@ export const SystemCommandMiddleware: CommandMiddleware = (cmd, context) => {
         const argStr = snoopMatch[1] || '';
         const nameParts = argStr.split(/\s+/).filter(p => !p.startsWith('-') && p.length > 0);
         const snoopTarget = nameParts[0] || null;
+        const mode = useModeStore.getState();
         if (snoopTarget) {
-            useModeStore.getState().startSpectate(snoopTarget);
+            mode.setSpectateQueue(prev => appendUniqueName(appendUniqueName(prev, mode.spectateTarget), snoopTarget));
+            mode.startSpectate(snoopTarget);
         } else {
-            useModeStore.getState().stopSpectate();
+            mode.setIsSpectating(false);
+            mode.setSpectateTarget(null);
+            mode.setLastSnoopStartTime(null);
+            mode.setActiveView('self');
         }
     }
 

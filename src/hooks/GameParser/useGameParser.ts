@@ -247,14 +247,6 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         captureStage: deps.captureStage
     });
 
-    // Share executeCommandRef update
-    useEffect(() => {
-        if (deps.executeCommandRef) {
-            (deps.executeCommandRef as any).current = (deps.executeCommandRef.current || {}) as any;
-            (deps.executeCommandRef.current as any).setPendingFlags = capture.setPendingFlags;
-        }
-    }, [capture.setPendingFlags, deps.executeCommandRef]);
-
     const { parseLogGmcp, resetSpectateContext } = useLogGmcpParser({
         isSpectateMode: deps.isSpectateMode,
         sessionMode: deps.sessionMode,
@@ -408,10 +400,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     });
 
     const automator = useSpectateAutomator({
-        spectateQueue: session.game.spectateQueue || [],
-        setSpectateQueue: session.game.setSpectateQueue || (() => {}),
-        lastSnoopStartTime: session.game.lastSnoopStartTime || null,
-        setLastSnoopStartTime: session.game.setLastSnoopStartTime || (() => {}),
+        spectateQueue: deps.spectateQueue,
+        setSpectateQueue: deps.setSpectateQueue,
+        lastSnoopStartTime: deps.lastSnoopStartTime,
+        setLastSnoopStartTime: deps.setLastSnoopStartTime,
         spectateCharacterName: deps.spectateCharacterName,
         setSpectateCharacterName: deps.setSpectateCharacterName,
         executeCommand: (cmd: string) => deps.executeCommandRef.current?.(cmd),
@@ -606,6 +598,28 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         const commResult = comm.parseComm(lineToParse, textOnly, lower);
         if (commResult.isSuppressed) return;
         if (commResult.msgType !== 'game') msgType = commResult.msgType;
+        if (
+            !isSnoop &&
+            commResult.msgType === 'comm' &&
+            (commResult.replyCommand === 'tell' || commResult.replyCommand === 'whisper') &&
+            /(?:<\s*spectateme\s*>|&lt;\s*spectateme\s*&gt;)/i.test(commResult.commText || '')
+        ) {
+            const requestedName = commResult.commSender || commResult.replyTarget;
+            if (requestedName) {
+                automator.addToQueue(requestedName);
+            }
+        }
+        if (
+            !isSnoop &&
+            commResult.msgType === 'comm' &&
+            (commResult.replyCommand === 'tell' || commResult.replyCommand === 'whisper') &&
+            /(?:<\s*stop\s*>|&lt;\s*stop\s*&gt;)/i.test(commResult.commText || '')
+        ) {
+            const requestedName = commResult.commSender || commResult.replyTarget;
+            if (requestedName) {
+                automator.stopSpectatingName(requestedName);
+            }
+        }
 
         const promptInfo = prompt.parsePrompt(textOnly, isSnoop);
         const isAccountRelatedStage = ['login', 'account-menu', 'character-creation', 'stat-editing'].includes(deps.accountState.stage);
@@ -844,7 +858,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
     }, [
         processTriggers, router, combat, room, account, stat, atmosphere, time, parseLogGmcp, actionTracker,
-        deps.addMessage, deps.isNewbieMode, session.game, deps.groupMembers, deps.inlineCategories, deps.btn, session.vitals.target, deps.captureStage, deps.ansiConvert, deps.practiceHandler, capture, finalizeNearbyCapture
+        deps.addMessage, deps.isNewbieMode, session.game, deps.groupMembers, deps.inlineCategories, deps.btn, session.vitals.target, deps.captureStage, deps.ansiConvert, deps.practiceHandler, capture, finalizeNearbyCapture,
+        automator.addToQueue, automator.stopSpectatingName
     ]);
 
     return useMemo(() => ({

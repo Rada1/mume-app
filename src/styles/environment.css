@@ -45,9 +45,9 @@
 }
 
 .log-background-mask.bottom {
-    top: 50dvh;
-    height: 50dvh;
-    background-size: auto 100%;
+    top: 0;
+    height: 100dvh;
+    background-size: auto calc(50% * var(--bottom-bg-scale, 1));
     background-position: center bottom;
     z-index: 0;
     mix-blend-mode: luminosity;
@@ -76,10 +76,9 @@
     
     .log-background-mask.bottom {
         display: block;
-        /* Only occupy the bottom 50% of the log area vertically */
         bottom: var(--mobile-gutter-height, 140px);
-        height: calc((100dvh - (env(safe-area-inset-top, 0px) + 42px) - var(--mobile-gutter-height, 140px)) / 2);
-        top: auto;
+        top: calc(env(safe-area-inset-top, 0px) + 42px);
+        height: auto;
         left: 0;
         right: 0;
         background-position: center bottom;
@@ -87,7 +86,7 @@
         mask-image: linear-gradient(to top, black 70%, transparent 100%);
         -webkit-mask-image: linear-gradient(to top, black 70%, transparent 100%);
         opacity: 0.35;
-        filter: blur(4px) brightness(0.8) contrast(1.1);
+        filter: blur(2px) brightness(0.8) contrast(1.1);
         z-index: 0;
     }
 }

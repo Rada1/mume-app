@@ -171,6 +171,10 @@ export interface UseGameParserDeps {
     activePrompt: any;
     characterName: string | null;
     spectateCharacterName: string | null;
+    spectateQueue: string[];
+    setSpectateQueue: (queue: string[] | ((prev: string[]) => string[])) => void;
+    lastSnoopStartTime: number | null;
+    setLastSnoopStartTime: (time: number | null) => void;
     actionsRef: RefObject<GameAction[]>;
     gameTime: MumeTime | null;
 }

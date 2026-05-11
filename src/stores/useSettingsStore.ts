@@ -216,7 +216,7 @@ export const useSettingsStore = create<SettingsState>()(
             favorites: [],
             zoneMusic: [],
             masterVolume: 1.0,
-            sfxVolume: 0.7,
+            sfxVolume: 0.5,
             musicVolume: 0.5,
 
             allowMapPersistence: true,

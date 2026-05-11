@@ -50,7 +50,7 @@ const MessageItem = React.memo(({
     setParley,
     triggerHaptic,
     playClickSound,
-    latestBatchId,
+    brightBatchFloor,
     isTimestampEnabled,
     isNewbieMode,
     currentRoomName,
@@ -66,7 +66,7 @@ const MessageItem = React.memo(({
     setParley?: (p: any) => void;
     triggerHaptic?: (ms: number) => void;
     playClickSound?: () => void;
-    latestBatchId?: number;
+    brightBatchFloor?: number;
     isTimestampEnabled?: boolean;
     isNewbieMode?: boolean;
     currentRoomName?: string | null,
@@ -77,7 +77,7 @@ const MessageItem = React.memo(({
 }) => {
     const content = msg.html;
     const isRecent = Date.now() - msg.timestamp < 2000;
-    const isOldBatchDim = latestBatchId !== undefined && (msg.batchId === undefined || msg.batchId < latestBatchId);
+    const isOldBatchDim = brightBatchFloor !== undefined && (msg.batchId === undefined || msg.batchId < brightBatchFloor);
     
     // local state to handle the cleanup of the hit sheen animation
     const [sheenActive, setSheenActive] = React.useState(!!(msg.isHitImpact || msg.isDamageImpact));
@@ -334,10 +334,13 @@ const MessageLog: React.FC<MessageLogProps> = ({
         return -1;
     }, [displayMessages]);
 
-    const latestBatchId = useMemo(() => {
+    const brightBatchFloor = useMemo(() => {
+        const seenBatchIds = new Set<number>();
         for (let i = displayMessages.length - 1; i >= 0; i--) {
-            const b = (displayMessages[i] as any).batchId;
-            if (b !== undefined) return b as number;
+            const batchId = displayMessages[i].batchId;
+            if (batchId === undefined) continue;
+            seenBatchIds.add(batchId);
+            if (seenBatchIds.size === 2) return batchId;
         }
         return undefined;
     }, [displayMessages]);
@@ -563,7 +566,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                     setParley={setParley}
                                     triggerHaptic={triggerHaptic}
                                     playClickSound={playClickSound}
-                                    latestBatchId={latestBatchId}
+                                    brightBatchFloor={brightBatchFloor}
                                     isTimestampEnabled={isTimestampEnabled}
                                     isNewbieMode={isNewbieMode}
                                     currentRoomName={roomName}

@@ -8,6 +8,8 @@ import React from 'react';
 import { useGame } from '../../context/GameContext';
 import { EnvironmentEffects } from '../Atmosphere/EnvironmentEffects';
 import { resolveTerrainBackground } from '../../utils/terrainBackgrounds';
+import { resolveRaceBackground, resolveRaceBackgroundScale } from '../../utils/raceBackgrounds';
+import { useModeStore } from '../../stores/useModeStore';
 
 export const AtmosphericLayer: React.FC = () => {
     const {
@@ -20,6 +22,7 @@ export const AtmosphericLayer: React.FC = () => {
         bgImage,
         bgImageBottom,
         activeSession,
+        userSession,
         currentTerrain,
         spectateTerrain,
         accountState,
@@ -27,7 +30,8 @@ export const AtmosphericLayer: React.FC = () => {
 
     // --- Terrain Resolution ---
     const isAccountMode = accountState.stage !== 'none';
-    const isSpectating = activeSession === 'spectate';
+    const activeView = useModeStore(state => state.activeView);
+    const isSpectating = activeSession === 'spectate' || activeView === 'target';
     const activeTerrain = isSpectating ? spectateTerrain : currentTerrain;
 
     // Account Mode Overrides: Stage-aware lighting and background
@@ -40,6 +44,14 @@ export const AtmosphericLayer: React.FC = () => {
     const resolvedBgImage = isAccountMode 
         ? '/assets/Pictures/account.png' 
         : (bgImage ?? resolveTerrainBackground(activeTerrain));
+    const race = userSession.vitals.characterInfo.race;
+    const resolvedBottomBgImage = bgImageBottom
+        ?? (!isAccountMode && !isSpectating
+            ? resolveRaceBackground(race)
+            : null);
+    const resolvedBottomBgScale = bgImageBottom || isAccountMode || isSpectating
+        ? 1
+        : resolveRaceBackgroundScale(race);
 
     return (
         <EnvironmentEffects
@@ -50,7 +62,8 @@ export const AtmosphericLayer: React.FC = () => {
             isImmersionMode={isImmersionMode}
             isMobile={viewport.isMobile}
             bgImage={resolvedBgImage}
-            bgImageBottom={bgImageBottom}
+            bgImageBottom={resolvedBottomBgImage}
+            bgImageBottomScale={resolvedBottomBgScale}
             terrain={activeTerrain}
         />
     );

@@ -5,7 +5,8 @@ import { useSpectateCombatStore } from '../stores/spectate/useSpectateCombatStor
 import { useSpectateLiveVitalsStore } from '../stores/spectate/useSpectateLiveVitalsStore';
 import { useSpectateLiveRoomStore } from '../stores/spectate/useSpectateLiveRoomStore';
 import { useSpectateLiveCombatStore } from '../stores/spectate/useSpectateLiveCombatStore';
-import { CombatHealthStatus, GmcpOccupant, GroupMember } from '../types';
+import type { CombatHealthStatus, GmcpOccupant, GroupMember, LightingType, WeatherType } from '../types';
+import type { CharacterInfo } from '../stores/slices/vitalsSlice';
 
 type AudioModifier = { pitch?: number; volume?: number } | string;
 
@@ -27,10 +28,11 @@ interface VitalsSnapshot {
     ob?: number; db?: number; pb?: number; armour?: number;
     hpStatus: CombatHealthStatus | null; manaStatus: string | null; moveStatus: string | null;
     inCombat: boolean;
-    lighting: string; weather: string; isFoggy: boolean;
+    lighting: LightingType; weather: WeatherType; isFoggy: boolean;
     currentTerrain: string;
     activePrompt: unknown;
     wimpy: number;
+    characterInfo: CharacterInfo;
 }
 
 interface RoomSnapshot {
@@ -115,6 +117,7 @@ export function useSpectateBufferSync({
             currentTerrain: v.currentTerrain,
             activePrompt: v.activePrompt,
             wimpy: v.wimpy ?? 0,
+            characterInfo: { ...v.characterInfo },
         };
     }, []);
 

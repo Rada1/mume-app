@@ -76,8 +76,8 @@
     min-height: 0; /* Critical for flex scrolling */
     overflow: hidden; /* Default to hidden to ensure log bottom respects boundaries */
     
-    /* Desktop narrow log constraint */
-    max-width: 80ch;
+    /* Align the readable log lane with the header and prompt/control card. */
+    max-width: var(--log-max-width);
     margin: 0 auto;
     width: 100%;
 }
@@ -167,7 +167,6 @@
 /* Map drawer push (left side) */
 @media (min-width: 1024px) and (max-width: 1850px) {
     body.map-drawer-open .app-content-shaker {
-        /* 420px drawer + 20px left offset + 12px gap */
         padding-left: calc(var(--drawer-width) + var(--drawer-margin) + var(--drawer-gap));
     }
 }
@@ -175,7 +174,6 @@
 /* Utility drawer push (right side) — matches map drawer push exactly */
 @media (min-width: 1024px) and (max-width: 1850px) {
     body.utility-drawer-open .app-content-shaker {
-        /* 420px drawer + 20px right offset + 12px gap (mirrors map-drawer padding-left) */
         padding-right: calc(var(--drawer-width) + var(--drawer-margin) + var(--drawer-gap));
     }
 }
@@ -884,4 +882,3 @@
     border: none;
     padding: 0;
 }
-

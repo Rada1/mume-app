@@ -145,19 +145,21 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
 
                     const isRoom = e.metadata?.kind === 'room';
                     const props: any = {
-                        className: `inline-btn ${isRoom ? 'room-name-static' : ''} ${extraClasses.join(' ')}`.trim(),
+                        className: `${isRoom ? 'room-name-static' : `inline-btn`} ${extraClasses.join(' ')}`.trim(),
                     };
 
-                    if (isTargetMatch && currentTarget) {
-                        Object.assign(props, getInlineTargetProps(propMetadata?.id || e.entityId || `entity-target-${currentTarget}`, currentTarget));
-                    } else {
-                        props['data-id'] = propMetadata?.id || e.entityId;
-                        props['data-cmd'] = propMetadata?.cmd || propMetadata?.category || e.metadata?.category || (isAuto ? (e.metadata?.kind || e.content) : e.content);
-                        props['data-context'] = propMetadata?.context || defaultContext;
-                        if (propMetadata?.kind || e.metadata?.kind) props['data-kind'] = propMetadata?.kind || e.metadata?.kind;
-                        if (propMetadata?.location || e.metadata?.location) props['data-location'] = propMetadata?.location || e.metadata?.location;
-                        props['data-category'] = propMetadata?.category || e.metadata?.category || (isRoom ? 'room' : undefined);
-                        if (propMetadata?.action || e.metadata?.action) props['data-action'] = propMetadata?.action || e.metadata?.action;
+                    if (!isRoom) {
+                        if (isTargetMatch && currentTarget) {
+                            Object.assign(props, getInlineTargetProps(propMetadata?.id || e.entityId || `entity-target-${currentTarget}`, currentTarget));
+                        } else {
+                            props['data-id'] = propMetadata?.id || e.entityId;
+                            props['data-cmd'] = propMetadata?.cmd || propMetadata?.category || e.metadata?.category || (isAuto ? (e.metadata?.kind || e.content) : e.content);
+                            props['data-context'] = propMetadata?.context || defaultContext;
+                            if (propMetadata?.kind || e.metadata?.kind) props['data-kind'] = propMetadata?.kind || e.metadata?.kind;
+                            if (propMetadata?.location || e.metadata?.location) props['data-location'] = propMetadata?.location || e.metadata?.location;
+                            props['data-category'] = propMetadata?.category || e.metadata?.category;
+                            if (propMetadata?.action || e.metadata?.action) props['data-action'] = propMetadata?.action || e.metadata?.action;
+                        }
                     }
 
                     // Apply category colors from settings - per-category override > global kind color > token metadata.

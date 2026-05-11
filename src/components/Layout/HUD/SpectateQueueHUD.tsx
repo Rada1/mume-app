@@ -6,15 +6,17 @@
 import React from 'react';
 import { useGame } from '../../../context/GameContext';
 import { useModeStore } from '../../../stores/useModeStore';
-import { ChevronRight, List, Timer, User, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, ChevronUp, List, Timer, User, X } from 'lucide-react';
 import './SpectateQueueHUD.css';
 
 const SNOOP_ROTATION_MS = 5 * 60 * 1000;
+const MINIMIZED_KEY = 'mume-spectate-queue-minimized';
 
 export const SpectateQueueHUD: React.FC = () => {
     const { removeFromQueue, rotateQueue } = useGame();
     const { isSpectating, spectateTarget, spectateQueue, lastSnoopStartTime } = useModeStore();
     const [now, setNow] = React.useState(() => Date.now());
+    const [isMinimized, setIsMinimized] = React.useState(() => localStorage.getItem(MINIMIZED_KEY) === 'true');
 
     React.useEffect(() => {
         if (!isSpectating || !lastSnoopStartTime) return;
@@ -22,6 +24,10 @@ export const SpectateQueueHUD: React.FC = () => {
         const interval = window.setInterval(() => setNow(Date.now()), 1000);
         return () => window.clearInterval(interval);
     }, [isSpectating, lastSnoopStartTime]);
+
+    React.useEffect(() => {
+        localStorage.setItem(MINIMIZED_KEY, String(isMinimized));
+    }, [isMinimized]);
 
     if (!isSpectating) return null;
 
@@ -42,17 +48,39 @@ export const SpectateQueueHUD: React.FC = () => {
     };
 
     return (
-        <div className="spectate-queue-hud">
+        <div className={`spectate-queue-hud${isMinimized ? ' is-minimized' : ''}`}>
             <div className="spectate-hud-header">
                 <div className="spectate-hud-title">
                     <List size={13} className="hud-icon" />
                     <span>Spectate Queue</span>
                 </div>
-                <div className="spectate-hud-timer">
-                    <Timer size={13} className="hud-icon" />
-                    <span className="hud-timer">{timerStr}</span>
+                <div className="spectate-hud-header-actions">
+                    <div className="spectate-hud-timer">
+                        <Timer size={13} className="hud-icon" />
+                        <span className="hud-timer">{timerStr}</span>
+                    </div>
+                    <button
+                        className="spectate-minimize-btn"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsMinimized(prev => !prev);
+                        }}
+                        title={isMinimized ? 'Show spectate queue' : 'Hide spectate queue'}
+                    >
+                        {isMinimized ? <ChevronDown size={15} /> : <ChevronUp size={15} />}
+                    </button>
                 </div>
             </div>
+
+            {isMinimized && (
+                <div className="spectate-hud-minimized-summary">
+                    <span>{spectateCharacterName || 'None'}</span>
+                    {queue.length > 0 && <span>{queue.length} queued</span>}
+                </div>
+            )}
+
+            {!isMinimized && (
+                <>
             
             <div className="spectate-hud-current">
                 <div className="hud-current-info">
@@ -108,6 +136,8 @@ export const SpectateQueueHUD: React.FC = () => {
                         </div>
                     ))}
                 </div>
+            )}
+                </>
             )}
         </div>
     );
