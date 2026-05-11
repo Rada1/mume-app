@@ -153,6 +153,7 @@ export interface UseGameParserDeps {
     setWhereList: (list: import('../../types').WhereEntry[]) => void;
 
     sendCommand?: (cmd: string) => void;
+    clearLog?: () => void;
 
     // Others
     addDiagnosticLog: (msg: string) => void;

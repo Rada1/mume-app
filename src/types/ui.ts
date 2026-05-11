@@ -50,6 +50,7 @@ export interface PopoverState {
     direction?: string;
     anchorId?: string;
     menuDisplay?: 'list' | 'dial';
+    preferSide?: 'top' | 'right';
     isChoosingCategory?: boolean;
     containerItems?: any[];
     // Gesture/Pointer support

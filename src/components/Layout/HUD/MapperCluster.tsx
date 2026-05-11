@@ -5,6 +5,8 @@ import { useGame, useUI, useVitals } from '../../../context/GameContext';
 import { useSettingsStore } from '../../../stores/useSettingsStore';
 import { GameContextType, UIContextType } from '../../../context/GameContext/types';
 import { CloudFog, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplets, Activity, Clock } from 'lucide-react';
+
+
 import { useMumeTime } from '../../../hooks/useMumeTime';
 import InputArea from '../../Controls/InputArea';
 import CombatStatsPanel from '../../Combat/CombatStatsPanel';
@@ -98,6 +100,93 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         }
     }, [liveOptions.length, liveOptionsKey]);
 
+    // Highlight the selected character line in the log via a dynamic <style> rule.
+    // Using CSS (not classList) means React re-renders can never cause a flash.
+    const selectedCharName = accountState.selectedCharacter?.name ?? null;
+    useEffect(() => {
+        const id = 'account-char-select-style';
+        let styleEl = document.getElementById(id) as HTMLStyleElement | null;
+        if (!styleEl) {
+            styleEl = document.createElement('style');
+            styleEl.id = id;
+            document.head.appendChild(styleEl);
+        }
+        styleEl.textContent = selectedCharName
+            ? `.account-char-name[data-context="${CSS.escape(selectedCharName)}"] { outline: 1px solid rgba(var(--accent-rgb,139,92,246),0.75); background: rgba(var(--accent-rgb,139,92,246),0.12); border-radius: 3px; color: #fff; }`
+            : '';
+        return () => { if (styleEl) styleEl.textContent = ''; };
+    }, [selectedCharName]);
+
+    // Long-press drag-to-select on character lines:
+    // - Normal swipe → cancels timer, scrolls as usual
+    // - Hold still ~400ms → enters selection mode; subsequent drag changes selection and prevents scroll
+    useEffect(() => {
+        let longPressTimer: ReturnType<typeof setTimeout> | null = null;
+        let isDragSelecting = false;
+        let startX = 0;
+        let startY = 0;
+        const LONG_PRESS_MS = 400;
+        const CANCEL_THRESHOLD = 10;
+
+        const cancel = () => {
+            if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
+            isDragSelecting = false;
+        };
+
+        const onTouchStart = (e: TouchEvent) => {
+            const target = e.target as HTMLElement;
+            if (!target.closest('.account-char-name')) { cancel(); return; }
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            isDragSelecting = false;
+            longPressTimer = setTimeout(() => {
+                isDragSelecting = true;
+                triggerHaptic(20);
+            }, LONG_PRESS_MS);
+        };
+
+        const onTouchMove = (e: TouchEvent) => {
+            const touch = e.touches[0];
+            if (!isDragSelecting) {
+                // Cancel long press if finger moved too much before timer fired
+                if (longPressTimer && (
+                    Math.abs(touch.clientX - startX) > CANCEL_THRESHOLD ||
+                    Math.abs(touch.clientY - startY) > CANCEL_THRESHOLD
+                )) {
+                    cancel();
+                }
+                return;
+            }
+            // Selection drag mode: block scroll, update selection under finger
+            e.preventDefault();
+            const el = document.elementFromPoint(touch.clientX, touch.clientY);
+            const charEl = el?.closest<HTMLElement>('.account-char-name');
+            if (!charEl) return;
+            const name = charEl.getAttribute('data-context');
+            if (!name) return;
+            setAccountState(prev => {
+                if (prev.selectedCharacter?.name === name) return prev;
+                const char = prev.characters.find(c => c.name === name);
+                return char
+                    ? { ...prev, selectedCharacter: char, charSelectTab: null, charInfoLines: [], charPracticeLines: [] }
+                    : prev;
+            });
+            triggerHaptic(8);
+        };
+
+        document.addEventListener('touchstart', onTouchStart, { passive: true });
+        document.addEventListener('touchmove', onTouchMove, { passive: false });
+        document.addEventListener('touchend', cancel, { passive: true });
+        document.addEventListener('touchcancel', cancel, { passive: true });
+        return () => {
+            cancel();
+            document.removeEventListener('touchstart', onTouchStart);
+            document.removeEventListener('touchmove', onTouchMove);
+            document.removeEventListener('touchend', cancel);
+            document.removeEventListener('touchcancel', cancel);
+        };
+    }, [setAccountState, triggerHaptic]);
+
     // On mobile portrait, we show the gutter. On desktop/landscape, Mapper is in DrawerManager
     if (!isMobile || isLandscape || (gameState === 'disconnected' && !isReplaying)) {
         return null;
@@ -121,11 +210,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
             handleSend(e);
         };
 
-        const menuCommands = [
-            'create', 'play', 'time', 'list', 'move', 'password',
-            'add', 'info', 'practice', 'link', 'lag', 'help', 'menu', 'quit'
-        ];
-        const holdTargetCmds = new Set(['play', 'info', 'practice']);
 
         return (
             <div className="mobile-bottom-gutter account-gutter">
@@ -135,88 +219,133 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         display: 'flex',
                         flexDirection: 'column',
                         flex: 1,
-                        justifyContent: isLoginStage ? 'center' : 'flex-start',
+                        justifyContent: 'center', // Consistently center for balance
                         alignItems: 'center',
                         width: '100%',
-                        padding: '0 8px'
+                        padding: '0 8px',
+                        position: 'relative' // Allow absolute anchoring if needed
                     }}
                 >
                     {/* Character Select panel removed per user request */}
 
-                    <div className="account-mobile-gutter-layout" style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        {(isLoginStage || accountState.stage === 'account-confirmation') && accountState.currentPrompt && (
-                            <div className="account-prompt-display">
-                                {accountState.currentPrompt}
+                    <div className="account-gutter-content">
+                        <div className="account-centered-interactive-zone">
+                            {(isLoginStage || accountState.stage === 'account-confirmation') && accountState.currentPrompt && !isKeyboardOpen && (
+                                <div className="account-prompt-display">
+                                    {accountState.currentPrompt}
+                                </div>
+                            )}
+
+
+
+
+
+
+
+
+
+
+                        {isMenuStage && (
+                            <div className="char-select-panel">
+                                {!accountState.selectedCharacter ? (
+                                    <div className="char-select-hint">
+                                        <span className="char-select-label">Characters</span>
+                                        <span className="char-select-sublabel">Tap a name in the log to select</span>
+                                    </div>
+                                ) : (
+                                    <div className="char-detail-panel">
+                                        <div className="char-detail-header">
+                                            <button
+                                                className="char-back-btn"
+                                                onClick={() => {
+                                                    triggerHaptic(10);
+                                                    setAccountState(prev => ({ ...prev, selectedCharacter: null }));
+                                                }}
+                                            >
+                                                ←
+                                            </button>
+                                            <span className="char-detail-name">{accountState.selectedCharacter.name}</span>
+                                        </div>
+
+                                        <div className="char-detail-tabs">
+                                            <button
+                                                className={`char-tab-btn${accountState.charSelectTab === 'info' ? ' active' : ''}`}
+                                                onClick={() => {
+                                                    triggerHaptic(10);
+                                                    const name = accountState.selectedCharacter!.name;
+                                                    setAccountState(prev => ({ ...prev, charSelectTab: 'info', charCapture: { type: 'info' }, charInfoLines: [] }));
+                                                    executeCommand('info ' + name, true);
+                                                }}
+                                            >
+                                                Info
+                                            </button>
+                                            <button
+                                                className={`char-tab-btn${accountState.charSelectTab === 'practice' ? ' active' : ''}`}
+                                                onClick={() => {
+                                                    triggerHaptic(10);
+                                                    const name = accountState.selectedCharacter!.name;
+                                                    setAccountState(prev => ({ ...prev, charSelectTab: 'practice', charCapture: { type: 'practice' }, charPracticeLines: [] }));
+                                                    executeCommand('practice ' + name, true);
+                                                }}
+                                            >
+                                                Practice
+                                            </button>
+                                        </div>
+
+                                        <div className="char-detail-content">
+                                            {accountState.charSelectTab === 'info' ? (
+                                                <div className="char-data-lines">
+                                                    {(accountState.charInfoLines ?? []).length > 0
+                                                        ? (accountState.charInfoLines ?? []).map((line, i) => (
+                                                            <div key={i} className="char-data-line">{line}</div>
+                                                        ))
+                                                        : accountState.charCapture?.type === 'info'
+                                                            ? <div className="char-data-loading">Loading…</div>
+                                                            : null
+                                                    }
+                                                </div>
+                                            ) : accountState.charSelectTab === 'practice' ? (
+                                                <div className="char-data-lines">
+                                                    {(accountState.charPracticeLines ?? []).length > 0
+                                                        ? (accountState.charPracticeLines ?? []).map((line, i) => (
+                                                            <div key={i} className="char-data-line">{line}</div>
+                                                        ))
+                                                        : accountState.charCapture?.type === 'practice'
+                                                            ? <div className="char-data-loading">Loading…</div>
+                                                            : null
+                                                    }
+                                                </div>
+                                            ) : (
+                                                <div className="char-detail-hint">Select Info or Practice to view details</div>
+                                            )}
+                                        </div>
+
+                                        <div className="char-detail-play">
+                                            <button
+                                                className="char-play-btn"
+                                                onClick={() => {
+                                                    triggerHaptic(30);
+                                                    executeCommand('play ' + accountState.selectedCharacter!.name);
+                                                }}
+                                            >
+                                                Play {accountState.selectedCharacter.name}
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
 
-                        {isLoginStage && (
-                            <button
-                                className={`account-menu-btn no-arrow${rememberLogin ? ' is-held' : ''}`}
-                                style={{ marginBottom: '8px', justifyContent: 'center' }}
-                                onClick={() => setRememberLogin(!rememberLogin)}
-                            >
-                                {rememberLogin ? '🔒 Remember Login: On' : '🔓 Remember Login: Off'}
-                            </button>
-                        )}
-
-                        {isMenuStage && (
-                            <>
-                                <div style={{
-                                    color: 'rgba(255,255,255,0.4)',
-                                    fontSize: '11px',
-                                    fontWeight: 900,
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '1.5px',
-                                    marginBottom: '2px',
-                                    width: '100%',
-                                    textAlign: 'center',
-                                    marginTop: '2px'
-                                }}>
-                                    Menu
-                                </div>
-                                <div className="account-menu-buttons-list">
-                                    {menuCommands.map(cmd => {
-                                        if (holdTargetCmds.has(cmd)) {
-                                            const isHeld = (heldButtonRef?.current ?? heldButton)?.id === `tactical-account-${cmd}`;
-                                            return (
-                                                <button
-                                                    key={cmd}
-                                                    className={`account-menu-btn${isHeld ? ' is-held' : ''}`}
-                                                    onPointerDown={(e) => {
-                                                        e.currentTarget.setPointerCapture(e.pointerId);
-                                                        setHeldButton({ id: `tactical-account-${cmd}`, baseCommand: `${cmd} %n`, didFire: false, label: cmd });
-                                                        triggerHaptic(20);
-                                                    }}
-                                                    onPointerUp={() => {
-                                                        const current = heldButtonRef?.current ?? heldButton;
-                                                        if (current?.id === `tactical-account-${cmd}` && !current?.didFire) {
-                                                            executeCommand(cmd);
-                                                        }
-                                                        setHeldButton(null);
-                                                    }}
-                                                    onPointerCancel={() => setHeldButton(null)}
-                                                >
-                                                    {cmd}
-                                                </button>
-                                            );
-                                        }
-                                        return (
-                                            <button
-                                                key={cmd}
-                                                className="account-menu-btn"
-                                                onClick={() => executeCommand(cmd)}
-                                            >
-                                                {cmd}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </>
-                        )}
-
                         {isCreationStage && (
-                            <div className="creation-flow-container" style={{ display: 'flex', flexDirection: 'column', flex: 1, width: '100%', minHeight: 0, overflow: 'hidden' }}>
+                            <div className="creation-flow-container" style={{ 
+                                display: 'flex', 
+                                flexDirection: 'column', 
+                                flex: 1, 
+                                width: '100%', 
+                                minHeight: 0, 
+                                overflow: 'hidden',
+                                justifyContent: 'center'
+                            }}>
                                 <div style={{ 
                                     color: 'rgba(255,255,255,0.4)', 
                                     fontSize: '11px', 
@@ -226,7 +355,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                     marginBottom: '2px', 
                                     width: '100%', 
                                     textAlign: 'center',
-                                    marginTop: '2px'
+                                    marginTop: '8px'
                                 }}>
                                     {accountState.stage === 'account-confirmation' ? 'New Account' : (accountState.stage === 'stat-editing' ? 'Stat Editing' : 'Create Character')}
                                 </div>
@@ -285,8 +414,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                     flexWrap: 'nowrap',
                                     gap: '0px', 
                                     alignItems: 'center',
-                                    justifyContent: 'flex-start',
-                                    flex: 1,
+                                    justifyContent: 'center',
+                                    flex: '1 1 auto',
                                     width: '100%',
                                     padding: '0px',
                                     overflowY: 'auto',
@@ -324,18 +453,18 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                                 }}>
                                                                     <span style={{ color: 'var(--text-faded)', fontSize: '10px', fontWeight: 800, width: '28px', letterSpacing: '0.04em' }}>{opt.id.toUpperCase()}</span>
                                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                                        <button 
+                                                                        <button
                                                                             onClick={(e) => {
                                                                                 e.stopPropagation();
                                                                                 executeCommand(`${opt.id} ${currentValue! - 1}`);
                                                                             }}
                                                                             style={{
-                                                                                background: 'rgba(255, 50, 50, 0.15)',
-                                                                                border: '1px solid rgba(255, 50, 50, 0.25)',
+                                                                                background: 'rgba(255, 255, 255, 0.07)',
+                                                                                border: '1px solid rgba(255, 255, 255, 0.2)',
                                                                                 borderRadius: '4px',
                                                                                 width: '24px',
                                                                                 height: '24px',
-                                                                                color: '#ff8888',
+                                                                                color: 'rgba(255, 255, 255, 0.6)',
                                                                                 display: 'flex',
                                                                                 alignItems: 'center',
                                                                                 justifyContent: 'center',
@@ -347,21 +476,21 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                                                         >
                                                                             −
                                                                         </button>
-                                                                        <span style={{ color: '#fff', fontSize: '13px', fontWeight: 'bold', minWidth: '18px', textAlign: 'center' }}>
+                                                                        <span style={{ color: 'var(--ansi-green, #55ff55)', fontSize: '13px', fontWeight: 'bold', minWidth: '18px', textAlign: 'center' }}>
                                                                             {currentValue}
                                                                         </span>
-                                                                        <button 
+                                                                        <button
                                                                             onClick={(e) => {
                                                                                 e.stopPropagation();
                                                                                 executeCommand(`${opt.id} ${currentValue! + 1}`);
                                                                             }}
                                                                             style={{
-                                                                                background: 'rgba(50, 255, 50, 0.15)',
-                                                                                border: '1px solid rgba(50, 255, 255, 0.25)',
+                                                                                background: 'rgba(255, 255, 255, 0.07)',
+                                                                                border: '1px solid rgba(255, 255, 255, 0.2)',
                                                                                 borderRadius: '4px',
                                                                                 width: '24px',
                                                                                 height: '24px',
-                                                                                color: '#88ff88',
+                                                                                color: 'rgba(255, 255, 255, 0.6)',
                                                                                 display: 'flex',
                                                                                 alignItems: 'center',
                                                                                 justifyContent: 'center',
@@ -438,57 +567,20 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                     })()}
                                 </div>
 
-                                {accountState.stage !== 'account-confirmation' && (
-                                    <div className="creation-nav-buttons" style={{ 
-                                        display: 'flex', 
-                                        gap: '8px', 
-                                        justifyContent: 'center', 
-                                        padding: '2px 12px',
-                                        width: '100%',
-                                        borderTop: '1px solid rgba(255,255,255,0.05)',
-                                        background: 'rgba(0,0,0,0.1)',
-                                        opacity: isTransitioning ? 0 : 1,
-                                        pointerEvents: isTransitioning ? 'none' : undefined,
-                                        transition: 'opacity 0.18s ease'
-                                    }}>
-                                        <button 
-                                            className="account-menu-btn"
-                                            style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
-                                            onClick={() => executeCommand('back')}
-                                        >
-                                            Back
-                                        </button>
-                                        <button 
-                                            className="account-menu-btn"
-                                            style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
-                                            onClick={() => {
-                                                executeCommand('');
-                                                executeCommand('');
-                                            }}
-                                        >
-                                            Main Menu
-                                        </button>
-                                        <button 
-                                            className="account-menu-btn"
-                                            style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
-                                            onClick={() => executeCommand('?')}
-                                        >
-                                            ?
-                                        </button>
-                                    </div>
-                                )}
+
                             </div>
                         )}
+                        </div> {/* End account-centered-interactive-zone */}
 
-                        {(!isCreationStage || (!displayedOptions.length && !isTransitioning)) && (
+                        {!isMenuStage && (!isCreationStage || (!displayedOptions.length && !isTransitioning)) && (
                             <div
-                                className="mobile-gutter-input-wrapper"
+                                className={`mobile-gutter-input-wrapper account-bar-anchor${isLoginStage ? ' account-login-glow' : ''}`}
                                 style={{ 
                                     position: 'relative', 
                                     zIndex: 1, 
                                     padding: '0', 
                                     flexShrink: 0, 
-                                    marginBottom: (isLoginStage || isMenuStage || isCreationStage) ? '0' : '16px', 
+                                    marginBottom: (isLoginStage || isMenuStage || isCreationStage) ? '12px' : '16px', 
                                     width: '100%',
                                     display: 'flex',
                                     flexDirection: 'column',
@@ -514,6 +606,17 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                 gameState={gameState}
                                 terrain={currentTerrain}
                             />
+                            {isLoginStage && (
+                                <label className="remember-login-toggle" style={{ display: 'flex', alignItems: 'center', gap: '7px', marginTop: '10px', cursor: 'pointer', userSelect: 'none' }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={rememberLogin}
+                                        onChange={e => setRememberLogin(e.target.checked)}
+                                        style={{ width: '15px', height: '15px', accentColor: 'var(--accent)', cursor: 'pointer', flexShrink: 0 }}
+                                    />
+                                    <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', fontWeight: 500 }}>Remember login</span>
+                                </label>
+                            )}
                             {isLoginStage && accountState.currentPrompt?.toLowerCase().includes('by what name') && (
                                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '12px', width: '100%', padding: '0 20px' }}>
                                     <button
@@ -540,6 +643,51 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                             )}
                             </div>
                         )}
+
+                        {isCreationStage && accountState.stage !== 'account-confirmation' && (
+                            <div className="creation-nav-buttons" style={{ 
+                                display: 'flex', 
+                                gap: '8px', 
+                                justifyContent: 'center', 
+                                padding: '12px 12px 24px 12px',
+                                width: '100%',
+                                borderTop: '1px solid rgba(255,255,255,0.08)',
+                                background: 'rgba(0,0,0,0.3)',
+                                opacity: isTransitioning ? 0 : 1,
+                                pointerEvents: isTransitioning ? 'none' : undefined,
+                                transition: 'opacity 0.18s ease',
+                                flexShrink: 0,
+                                marginTop: 'auto',
+                                position: 'relative',
+                                bottom: 0
+                            }}>
+                                <button 
+                                    className="account-menu-btn"
+                                    style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
+                                    onClick={() => executeCommand('back')}
+                                >
+                                    Back
+                                </button>
+                                <button 
+                                    className="account-menu-btn"
+                                    style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
+                                    onClick={() => {
+                                        executeCommand('');
+                                        executeCommand('');
+                                    }}
+                                >
+                                    Main Menu
+                                </button>
+                                <button 
+                                    className="account-menu-btn"
+                                    style={{ width: 'auto', padding: '8px 12px', flex: 1, fontSize: '11px', fontWeight: 'bold' }}
+                                    onClick={() => executeCommand('?')}
+                                >
+                                    ?
+                                </button>
+                            </div>
+                        )}
+
                     </div>
                 </div>
             </div>

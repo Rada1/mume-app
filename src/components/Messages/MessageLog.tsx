@@ -57,6 +57,7 @@ const MessageItem = React.memo(({
     input,
     setInput,
     viewport,
+    batchOffset = 0,
 }: {
     msg: Message,
     executeCommand: (cmd: string, silent?: boolean) => void,
@@ -72,6 +73,7 @@ const MessageItem = React.memo(({
     input?: string,
     setInput?: (val: string) => void;
     viewport: any;
+    batchOffset?: number;
 }) => {
     const content = msg.html;
     const isRecent = Date.now() - msg.timestamp < 2000;
@@ -128,6 +130,7 @@ const MessageItem = React.memo(({
     return (
         <div
             className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
+            style={{ '--reveal-delay': `${batchOffset * 30}ms` } as React.CSSProperties}
         >
             {msg.type === 'user' || msg.type === 'snoop-command' ? (
                 <div 
@@ -529,8 +532,15 @@ const MessageLog: React.FC<MessageLogProps> = ({
                         pointerEvents: 'auto',
                     }}
                 >
-                    {virtualItems.map((virtualItem) => {
+                    {(() => {
+                        const nowMs = Date.now();
+                        const minRecentVIndex = virtualItems.reduce((min, vi) => {
+                            const m = displayMessages[vi.index];
+                            return m && (nowMs - m.timestamp < 600) ? Math.min(min, vi.index) : min;
+                        }, Infinity);
+                        return virtualItems.map((virtualItem) => {
                         const msg = displayMessages[virtualItem.index];
+                        const batchOffset = msg && (nowMs - msg.timestamp < 600) ? virtualItem.index - minRecentVIndex : 0;
                         return (
                             <div
                                 key={virtualItem.key}
@@ -560,10 +570,12 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                     input={input}
                                     setInput={setInput}
                                     viewport={viewport}
+                                    batchOffset={batchOffset}
                                 />
                             </div>
                         );
-                    })}
+                    });
+                    })()}
                 </div>
                 <div className="log-bottom-spacer" ref={messagesEndRef} style={{ height: '12px', flexShrink: 0 }} />
             </div>

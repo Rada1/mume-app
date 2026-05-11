@@ -7,6 +7,7 @@
 import { useCallback, useRef } from 'react';
 import { gmcpBus } from '../../events/gmcpBus';
 import { CharacterEntry } from '../../types';
+import { useUIStore } from '../../stores/useUIStore';
 
 // --- Logic Section: Types ---
 
@@ -25,11 +26,14 @@ interface UseAccountParserProps {
     clearLog?: () => void;
     setIsPasswordMode: (val: boolean) => void;
     captureStage: React.MutableRefObject<string>;
+    rememberLogin?: boolean;
+    loginName?: string;
+    loginPassword?: string;
 }
 
 // --- Logic Section: Hook Implementation ---
 
-export function useAccountParser({ accountState, setAccountState, accountStageRef, gameState, setGameState, sendCommand, executeCommandRef, isMobile, addDiagnosticLog, addMessage, setMessages, clearLog, setIsPasswordMode, captureStage }: UseAccountParserProps) {
+export function useAccountParser({ accountState, setAccountState, accountStageRef, gameState, setGameState, sendCommand, executeCommandRef, isMobile, addDiagnosticLog, addMessage, setMessages, clearLog, setIsPasswordMode, captureStage, rememberLogin, loginName, loginPassword }: UseAccountParserProps) {
     // Use Refs to keep parseAccountLine stable and avoid re-render loops
     const gameStateRef = useRef(gameState);
     gameStateRef.current = gameState;
@@ -37,11 +41,32 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
     charsRef.current = accountState.characters;
     const isMobileRef = useRef(isMobile);
     isMobileRef.current = isMobile;
+    const rememberLoginRef = useRef(rememberLogin);
+    rememberLoginRef.current = rememberLogin;
+    const loginNameRef = useRef(loginName);
+    loginNameRef.current = loginName;
+    const loginPasswordRef = useRef(loginPassword);
+    loginPasswordRef.current = loginPassword;
 
     // --- State for Automated Gathering ---
     const hasAutomatedListRef = useRef(false);
     const isSilentListingRef = useRef(false);
     const hasSentGameEntrySetupRef = useRef(false);
+
+    // --- Char Data Capture (info/practice in account mode) ---
+    const charCaptureModeRef = useRef<'info' | 'practice' | null>(null);
+    const charCaptureLinesRef = useRef<string[]>([]);
+    const prevCharCaptureModeRef = useRef<'info' | 'practice' | null>(null);
+
+    // Sync charCapture from accountState prop → ref (runs every render, stable)
+    charCaptureModeRef.current = accountState.charCapture?.type ?? null;
+    // When the capture type changes, reset the line buffer so old lines don't bleed in
+    if (prevCharCaptureModeRef.current !== charCaptureModeRef.current) {
+        if (charCaptureModeRef.current !== null) {
+            charCaptureLinesRef.current = [];
+        }
+        prevCharCaptureModeRef.current = charCaptureModeRef.current;
+    }
 
     const parseAccountLine = useCallback((line: string, isPrompt: boolean = false): boolean => {
         const cleanLine = line.replace(/\x1b\[[0-9;]*m/g, '');
@@ -53,6 +78,11 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             return accountStageRef.current === 'stat-editing';
         }
 
+        // Suppress server confirmations for silent setup commands sent on login
+        if (/^xml mode is now (on|off)\./i.test(trimmedLine) ||
+            /^page (width )?is now/i.test(trimmedLine)) {
+            return true;
+        }
 
         // Sync silent listing ref with state
         if (accountState.isGathering) {
@@ -65,35 +95,68 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         if (trimmedLine.endsWith('Account>') || trimmedLine === 'Account>') {
             console.log('[AccountParser] Main Account Menu detected');
             accountStageRef.current = 'account-menu';
-            setGameState('account');
-            setAccountState(prev => ({ 
-                ...prev, 
-                stage: 'account-menu', 
-                currentPrompt: undefined,
-                creationPrompt: undefined, // Clear creation buttons
-                isGathering: false,
-                // Clear creation specific data to avoid stale UI when restarting creation
-                pointsLeft: undefined,
-                stats: undefined 
-            }));
+
+            // Commit any active char data capture (info/practice response finished)
+            if (charCaptureModeRef.current) {
+                const captureType = charCaptureModeRef.current;
+                const capturedLines = [...charCaptureLinesRef.current];
+                charCaptureLinesRef.current = [];
+                setAccountState(prev => ({
+                    ...prev,
+                    stage: 'account-menu',
+                    currentPrompt: undefined,
+                    creationPrompt: undefined,
+                    isGathering: false,
+                    pointsLeft: undefined,
+                    stats: undefined,
+                    charCapture: null,
+                    ...(captureType === 'info' ? { charInfoLines: capturedLines } : { charPracticeLines: capturedLines })
+                }));
+            } else {
+                setAccountState(prev => ({
+                    ...prev,
+                    stage: 'account-menu',
+                    currentPrompt: undefined,
+                    creationPrompt: undefined,
+                    isGathering: false,
+                    pointsLeft: undefined,
+                    stats: undefined
+                }));
+            }
+
             captureStage.current = 'none';
             isSilentListingRef.current = false;
             setIsPasswordMode(false);
+            setGameState('account');
+
+            // Auto-send list on first Account> each session so characters appear in the log
+            if (!hasAutomatedListRef.current) {
+                hasAutomatedListRef.current = true;
+                queueMicrotask(() => {
+                    setAccountState(prev => ({ ...prev, characters: [], selectedCharacter: null, charSelectTab: null }));
+                    sendCommand('list');
+                });
+            }
+
             return true;
         }
 
         // Fire login setup commands regardless of current game state (handles reconnects too)
-        if (trimmedLine.includes('Welcome to the land of Middle-earth')) {
+        if (trimmedLine.includes('Welcome to the land of Middle-earth') || trimmedLine.toLowerCase().includes('reconnecting')) {
             console.log('[AccountParser] Login detected via welcome line');
+            clearLog?.();
             setGameState('playing');
             setAccountState(prev => ({ ...prev, stage: 'none', currentPrompt: undefined }));
+            useUIStore.getState().setUI({ mapExpanded: true });
             setIsPasswordMode(false);
+            // Reset so returning to account-menu will auto-refresh the character list
+            hasAutomatedListRef.current = false;
             gmcpBus.emit('Session.Start', { characterName: 'Player' });
 
             if (!hasSentGameEntrySetupRef.current) {
                 hasSentGameEntrySetupRef.current = true;
-                sendCommand('change xml on');
-                sendCommand('change page off');
+                executeCommandRef.current?.('change xml on', true, true, true, true);
+                executeCommandRef.current?.('change page off', true, true, true, true);
             }
 
             setTimeout(() => {
@@ -134,6 +197,13 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             return false;
         }
 
+        // --- Char Data Capture: intercept info/practice response lines ---
+        // Active between sending `info <name>`/`practice <name>` and the next Account> prompt.
+        if (charCaptureModeRef.current && !isPrompt) {
+            charCaptureLinesRef.current.push(cleanLine);
+            return true;
+        }
+
         // 1. Detect Login Prompts
         const lowerLine = trimmedLine.toLowerCase();
         const isNamePrompt = lowerLine.includes('by what name do you wish') || lowerLine.includes('enter new account name:');
@@ -148,22 +218,31 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 if (activePrompt || gameStateRef.current !== 'playing') {
                     console.log(`[AccountParser] Detected prompt: ${activePrompt ? 'Name' : 'Password'}. Switching to account state.`);
                     setGameState('account');
-                    
+
                     let promptText = "Account Password:";
                     if (activePrompt) promptText = "By what name do you wish to be known?";
                     if (lowerLine.includes('enter new account name')) promptText = "Enter new account name:";
                     if (lowerLine.includes('verify:')) promptText = "Verify:";
 
-                    setAccountState(prev => ({ 
-                        ...prev, 
+                    setAccountState(prev => ({
+                        ...prev,
                         stage: 'login',
                         currentPrompt: promptText
                     }));
                     captureStage.current = 'none';
-                    
-                    if (activePassPrompt) setIsPasswordMode(true);
-                    else if (activePrompt) setIsPasswordMode(false);
-                    
+
+                    if (activePassPrompt) {
+                        setIsPasswordMode(true);
+                        if (rememberLoginRef.current && loginPasswordRef.current) {
+                            queueMicrotask(() => sendCommand(loginPasswordRef.current!));
+                        }
+                    } else if (activePrompt) {
+                        setIsPasswordMode(false);
+                        if (rememberLoginRef.current && loginNameRef.current) {
+                            queueMicrotask(() => sendCommand(loginNameRef.current!));
+                        }
+                    }
+
                     // Do not inject a specialized account-prompt message here.
                     // Instead, let the original line fall through so it appears
                     // exactly where the game sends it in the terminal stream.
@@ -284,11 +363,22 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 trimmedLine.includes('Are you sure you want to be a') ||
                 trimmedLine.includes('You will be a') ||
                 trimmedLine.includes('Enter a name for your character')) {
-                // Clear existing options when a NEW major question starts
-                setAccountState(prev => ({ 
-                    ...prev, 
-                    creationPrompt: { title: trimmedLine, description: '', options: [] } 
-                }));
+                // If coming back from stat-editing, switch stage so options aren't suppressed
+                if (accountStageRef.current === 'stat-editing') {
+                    accountStageRef.current = 'character-creation';
+                    setAccountState(prev => ({
+                        ...prev,
+                        stage: 'character-creation',
+                        pointsLeft: undefined,
+                        creationPrompt: { title: trimmedLine, description: '', options: [] }
+                    }));
+                } else {
+                    // Clear existing options when a NEW major question starts
+                    setAccountState(prev => ({
+                        ...prev,
+                        creationPrompt: { title: trimmedLine, description: '', options: [] }
+                    }));
+                }
             }
 
             if (trimmedLine.match(/(Str|Int|Wis|Wisdom|Dex|Con|Wil|Will|Per)\s*[:=]\s*(\d+)/i)) {
@@ -421,10 +511,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             setGameState('account');
 
             if (!shouldSuppress) {
-                const nameIdx = cleanLine.indexOf(name);
-                const lineHtml = nameIdx >= 0
-                    ? cleanLine.substring(0, nameIdx) + `<span class="inline-btn account-char-name" data-context="${name}">${name}</span>` + cleanLine.substring(nameIdx + name.length)
-                    : cleanLine;
+                const lineHtml = `<span class="inline-btn account-char-name" data-context="${name}">${cleanLine}</span>`;
                 addMessage?.('account-character-list', cleanLine, false, undefined, false, { textOnly: cleanLine, lower: cleanLine.toLowerCase(), html: lineHtml });
             }
             return true;
@@ -454,10 +541,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                 setGameState('account');
 
                 if (!shouldSuppress) {
-                    const nameIdx = cleanLine.indexOf(cleanName);
-                    const lineHtml = nameIdx >= 0
-                        ? `<span class="inline-btn account-char-name" data-context="${cleanName}">${cleanLine.substring(nameIdx, nameIdx + cleanName.length)}</span>` + cleanLine.substring(nameIdx + cleanName.length)
-                        : cleanLine;
+                    const lineHtml = `<span class="inline-btn account-char-name" data-context="${name}">${cleanLine}</span>`;
                     addMessage?.('account-character-list', cleanLine, false, undefined, false, { textOnly: cleanLine, lower: cleanLine.toLowerCase(), html: lineHtml });
                 }
                 return true;

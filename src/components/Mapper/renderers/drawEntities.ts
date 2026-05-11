@@ -117,26 +117,45 @@ export const drawRoomOccupants = (
     const zoomFactor = (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
     const pulse = (Math.sin(now / 400) + 1) / 2;
 
-    const drawDot = (orbX: number, orbY: number, color: string, alpha: number, name?: string, radius = GRID_SIZE * 0.09) => {
+    const drawDot = (orbX: number, orbY: number, color: string, alpha: number, name?: string, radius = GRID_SIZE * 0.09, anim?: import('../occupantAnimStore').OccupantAnimEntry) => {
         const initial = getOccupantInitial(name);
+        let finalRadius = radius;
+        let extraGlow = 0;
+
+        if (anim && anim.type === 'tap') {
+            const t = Math.min((now - anim.startTime) / 250, 1.0);
+            const pop = Math.sin(t * Math.PI);
+            finalRadius *= (1 + pop * 0.4);
+            extraGlow = pop * radius * 1.2;
+            if (t < 1.0) triggerRender?.();
+        }
 
         ctx.save();
         ctx.globalAlpha = alpha;
-        ctx.fillStyle = color;
-        ctx.shadowBlur = radius * 1.2;
-        ctx.shadowColor = color;
+        
+        // 1. Grey background (command bar style)
+        ctx.fillStyle = 'rgba(25, 25, 35, 0.95)';
         ctx.beginPath();
-        ctx.arc(orbX, orbY, radius, 0, Math.PI * 2);
+        ctx.arc(orbX, orbY, finalRadius, 0, Math.PI * 2);
         ctx.fill();
+
+        // 2. Colored border with subtle glow
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 0.5;
+        ctx.shadowBlur = (finalRadius * 0.8) + extraGlow;
+        ctx.shadowColor = color;
+        ctx.stroke();
+
         ctx.restore();
 
         if (initial) {
             ctx.save();
             ctx.globalAlpha = alpha;
-            ctx.font = `700 ${radius * 1.4}px monospace`;
+            ctx.font = `700 ${finalRadius * 1.4}px monospace`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillStyle = getMarkerTextColor(color);
+            // 3. Initials in category color
+            ctx.fillStyle = color;
             ctx.fillText(initial, orbX, orbY);
             ctx.restore();
         }
@@ -166,7 +185,7 @@ export const drawRoomOccupants = (
                 if (t < 1.0) triggerRender?.();
             }
 
-            drawDot(orbX, orbY, occ.color, alpha, occ.name, occ.radius);
+            drawDot(orbX, orbY, occ.color, alpha, occ.name, occ.radius, anim);
 
             // Opponent tether. Name fallback is allowed only when it resolves to
             // exactly one visible occupant; duplicate names require GMCP ID.
@@ -255,7 +274,7 @@ export const drawRoomOccupants = (
         const orbX = startX + (targetX - startX) * eased;
         const orbY = startY + (targetY - startY) * eased;
         const alpha = 0.85 * (1 - t);
-        drawDot(orbX, orbY, color, alpha, anim.name);
+        drawDot(orbX, orbY, color, alpha, anim.name, undefined, anim);
         triggerRender?.();
     }
 };
@@ -698,13 +717,32 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
             ctx.restore();
         });
 
-        const orbRadius = ORB_RADIUS;
+        let orbRadius = ORB_RADIUS * 0.75;
+        let extraGlow = 0;
+        const anim = occupantAnims.get(memberKey);
+        if (anim && anim.type === 'tap') {
+            const t = Math.min((now - anim.startTime) / 250, 1.0);
+            const pop = Math.sin(t * Math.PI);
+            orbRadius *= (1 + pop * 0.4);
+            extraGlow = pop * orbRadius * 1.2;
+            if (t < 1.0) triggerRender?.();
+        }
+
         ctx.save();
         ctx.globalAlpha = alpha * 0.92;
-        ctx.fillStyle = color.core;
+        
+        // 1. Grey background
+        ctx.fillStyle = 'rgba(25, 25, 35, 0.95)';
         ctx.beginPath();
-        ctx.arc(px, py, orbRadius * 0.75, 0, Math.PI * 2);
+        ctx.arc(px, py, orbRadius, 0, Math.PI * 2);
         ctx.fill();
+
+        // 2. Colored border
+        ctx.strokeStyle = color.core;
+        ctx.lineWidth = 0.5;
+        ctx.shadowBlur = (orbRadius * 0.8) + extraGlow;
+        ctx.shadowColor = color.core;
+        ctx.stroke();
 
         const isSameRoom = prx !== undefined && prx === rx && pry === ry && prz === rz;
         if (!isSameRoom) {

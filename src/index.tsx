@@ -116,7 +116,14 @@ const MudClient = () => {
         };
     }, [isMobile]);
 
-    const { objectColor, playerColor, npcColor, targetColor } = useSettingsStore();
+    const { objectColor, playerColor, npcColor, targetColor, fontFamily } = useSettingsStore();
+
+    useEffect(() => {
+        if (fontFamily) {
+            document.documentElement.style.setProperty('--font-main', fontFamily);
+            document.documentElement.style.setProperty('--font-mono', fontFamily);
+        }
+    }, [fontFamily]);
 
     // Sync popover state to body for CSS selector support across portals
     useEffect(() => {

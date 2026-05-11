@@ -4,7 +4,7 @@ export function useViewport(
     uiMode: import('../types').UiMode = 'auto',
     disableSmoothScroll: boolean = false,
     isImmersionMode: boolean = true,
-    fontFamily: string = "'Space Mono', monospace",
+    fontFamily: string = "'Anonymous Pro', monospace",
     isTimestampEnabled: boolean = false,
     isNewbieMode: boolean = false
 ) {
@@ -277,8 +277,8 @@ export function useViewport(
                 totalPadding += 20; 
             }
 
-            // Sub-pixel buffer: use a slightly larger buffer on mobile to prevent rounding-induced wrapping
-            const safetyBuffer = 0; 
+            // Sub-pixel buffer: use a small buffer to prevent rounding-induced wrapping across different browsers
+            const safetyBuffer = 2; 
             const usableWidth = Math.max(0, width - totalPadding - safetyBuffer); 
 
             // Calculate font size for perfect 80-column fit using the actual measured ratio.
@@ -289,8 +289,9 @@ export function useViewport(
 
             // Safety clamps: 
             // On mobile portrait, we allow it to go down to 6px to satisfy the "fit 80" requirement.
-            // On desktop/landscape, we prefer readability (min 13.5px) even if it causes some wrapping on narrow windows.
-            const minSize = (isMobile && !isLandscape) ? 6 : 13.5;
+            // On desktop/landscape, we now allow it to shrink further (down to 10px) to better honor 
+            // the 80-column requirement on smaller windows/split-screens, while still preventing illegibility.
+            const minSize = (isMobile && !isLandscape) ? 6 : 10;
             const safeSize = Math.min(48, Math.max(minSize, calculatedFontSize));
             document.documentElement.style.setProperty('--dynamic-log-size', `${safeSize}px`);
             setLogFontSizePx(safeSize);

@@ -161,6 +161,21 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         e.stopPropagation();
         e.preventDefault();
 
+        // Account mode: tapping a character name inline button selects that character in the gutter
+        if (targetEl.classList.contains('account-char-name') && setAccountState) {
+            const name = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
+            if (name) {
+                setAccountState(prev => {
+                    const char = prev.characters.find(c => c.name === name);
+                    return char
+                        ? { ...prev, selectedCharacter: char, charSelectTab: null, charInfoLines: [], charPracticeLines: [] }
+                        : prev;
+                });
+                triggerHaptic(30);
+                return;
+            }
+        }
+
         const cmd = targetEl.getAttribute('data-cmd');
         const kind = targetEl.getAttribute('data-kind');
         const location = targetEl.getAttribute('data-location');
@@ -240,27 +255,10 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             }
 
             // Coordinate acquisition with safety fallbacks
-            let x = e.clientX;
-            let y = e.clientY;
-
-            // If coordinates are 0 (can happen on some mobile interactions), 
-            // fallback to the element's position or the native event.
-            if (!x && !y) {
-                const native = e.nativeEvent as MouseEvent;
-                x = native.clientX;
-                y = native.clientY;
-            }
-
-            // Absolute fallback: button center
-            if (!x && !y) {
-                const rect = targetEl.getBoundingClientRect();
-                x = rect.left + rect.width / 2;
-                y = rect.top + rect.height / 2;
-            }
-
+            const rect = targetEl.getBoundingClientRect();
             setPopoverState({
-                x,
-                y,
+                x: rect.right,
+                y: rect.top + rect.height / 2,
                 setId: cmd || 'selection',
                 kind: kind || undefined,
                 location: location || undefined,
@@ -268,7 +266,8 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 context: context || undefined,
                 entityId: entityId || undefined,
                 menuDisplay,
-                accentColor
+                accentColor,
+                preferSide: 'right'
             });
             targetEl.classList.add('menu-active');
             triggerHaptic(20);

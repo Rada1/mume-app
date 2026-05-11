@@ -92,12 +92,12 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'space-between',
-                paddingLeft: `${16 + (depth * 16)}px`,
+                paddingLeft: `${12 + (depth * 12)}px`,
                 '--set-accent': 'var(--accent)'
             } as any}
         >
-            <span style={{ pointerEvents: 'none', display: 'flex', alignItems: 'center' }}>
-                {depth > 0 && <span style={{ opacity: 0.3, marginRight: '8px', fontSize: '0.8rem' }}>﹂</span>}
+            <span style={{ pointerEvents: 'none', display: 'flex', alignItems: 'center', fontSize: '0.82rem' }}>
+                {depth > 0 && <span style={{ opacity: 0.3, marginRight: '6px', fontSize: '0.75rem' }}>﹂</span>}
                 {button.label.replace(/%n/g, popoverState.context || '').replace(/%p/g, popoverState.parentNoun || '')}
             </span>
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -112,7 +112,7 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
                             setPopoverState(null);
                         }}
                         style={{ 
-                            padding: '8px', 
+                            padding: '6px', 
                             opacity: 0.4, 
                             cursor: 'pointer',
                             display: 'flex',
@@ -124,7 +124,7 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
                         onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
                         onMouseLeave={(e) => e.currentTarget.style.opacity = '0.4'}
                     >
-                        <CircleHelp size={14} />
+                        <CircleHelp size={13} />
                     </div>
                 )}
                 <div 
@@ -136,10 +136,10 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
                         justifyContent: 'center',
                         opacity: isFav ? 1 : 0.3, 
                         color: isFav ? '#ffd700' : 'inherit',
-                        fontSize: '1.2rem',
+                        fontSize: '1.1rem',
                         transition: 'all 0.2s ease',
-                        padding: '16px 14px', 
-                        margin: '-16px -16px -16px auto', 
+                        padding: '10px 10px', 
+                        margin: '-10px -12px -10px auto', 
                         cursor: 'pointer',
                         userSelect: 'none',
                         WebkitTapHighlightColor: 'transparent',

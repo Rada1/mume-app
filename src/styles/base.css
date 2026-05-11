@@ -4,7 +4,8 @@
     --accent-rgb: 184, 134, 11;
     --accent-glow: rgba(var(--accent-rgb), 0.5);
     --map-accent: #fcd34d;
-    --font-main: 'Roboto Mono', monospace;
+    --font-main: 'Anonymous Pro', monospace;
+    --font-mono: 'Anonymous Pro', monospace;
     --radius-card: 12px;
 
     /* Dark Mode (Default) */

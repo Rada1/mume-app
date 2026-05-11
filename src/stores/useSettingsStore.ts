@@ -183,7 +183,7 @@ export const useSettingsStore = create<SettingsState>()(
             accentColor: '#f48f3c',
             bgImage: null,
             bgImageBottom: null,
-            fontFamily: "'Space Mono', monospace",
+            fontFamily: "'Anonymous Pro', monospace",
             uiMode: 'auto',
             isBloomEnabled: true,
             isHighlighterEnabled: true,

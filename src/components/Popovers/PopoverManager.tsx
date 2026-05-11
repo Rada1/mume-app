@@ -90,8 +90,13 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                 top = (winH / 2) - (rect.height / 2);
                 left = (winW / 2) - (rect.width / 2);
             } else if (popoverState.menuDisplay !== 'dial') {
-                top = popoverState.y - rect.height - 8;
-                left = popoverState.x - rect.width / 2;
+                if (popoverState.preferSide === 'right') {
+                    top = popoverState.y - rect.height / 2;
+                    left = popoverState.x + 8;
+                } else {
+                    top = popoverState.y - rect.height - 8;
+                    left = popoverState.x - rect.width / 2;
+                }
             }
             if (top < 10) top = 10;
             if (top + rect.height > winH - 10) top = Math.max(10, winH - rect.height - 10);

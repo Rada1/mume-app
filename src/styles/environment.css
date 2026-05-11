@@ -67,6 +67,7 @@
         height: auto;
         left: 0;
         right: 0;
+        background-position: center top;
         /* Fade out as it reaches the bottom half */
         mask-image: linear-gradient(to bottom, black 0%, black 25%, transparent 60%);
         -webkit-mask-image: linear-gradient(to bottom, black 0%, black 25%, transparent 60%);
@@ -202,7 +203,29 @@
         );
 }
 
-/* Vignette removed for artificial and dark states */
+/* --- Enhanced Vignette for Artificial & Dark States --- */
+.lighting-state-artificial .screen-vignette {
+    /* Dramatically increase bottom vignette to frame the torch/artificial light source */
+    background: 
+        radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.45) 100%),
+        linear-gradient(to top, 
+            rgba(0, 0, 0, 0.85) 0%, 
+            rgba(0, 0, 0, 0.4) 25%, 
+            transparent 60%
+        );
+}
+
+.is-mobile:not(.is-landscape) .lighting-state-artificial .screen-vignette {
+    /* Mobile portrait: Anchor the linear gradient to the mobile gutter and increase density */
+    background: 
+        radial-gradient(circle at 50% 35%, transparent 30%, rgba(0, 0, 0, 0.5) 100%),
+        linear-gradient(to top, 
+            rgba(0, 0, 0, 0.95) 0%, 
+            rgba(0, 0, 0, 0.6) var(--mobile-gutter-height), 
+            transparent calc(var(--mobile-gutter-height) + 35%)
+        );
+}
+
 
 .dust-layer {
     position: absolute;
@@ -238,6 +261,61 @@
     /* SUBTLE color saturation boost */
 }
 
+/* Command pulse: flash from the light source when the player sends a command */
+@keyframes command-light-pulse {
+    0%   { opacity: 0; }
+    25%  { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.lighting-container::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    will-change: opacity;
+}
+
+.lighting-container.command-pulse::after {
+    animation: command-light-pulse 6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.lighting-sun::after {
+    background: radial-gradient(
+        ellipse 80% 130% at 92% -30%,
+        rgba(255, 255, 240, 0.22) 0%,
+        rgba(255, 240, 200, 0.08) 45%,
+        transparent 80%
+    );
+}
+
+.lighting-moon::after {
+    background: radial-gradient(
+        circle at 50% 15%,
+        rgba(130, 170, 255, 0.18) 0%,
+        rgba(90, 130, 255, 0.06) 38%,
+        transparent 75%
+    );
+}
+
+.lighting-artificial::after {
+    background: radial-gradient(
+        circle at 50% 95%,
+        rgba(255, 160, 60, 0.18) 0%,
+        rgba(255, 100, 20, 0.07) 45%,
+        transparent 88%
+    );
+}
+
+.lighting-dark::after {
+    background: radial-gradient(
+        circle at 50% 50%,
+        rgba(220, 220, 220, 0.03) 0%,
+        transparent 85%
+    );
+}
+
 .lighting-moon {
     filter: saturate(1.4) contrast(1.1) brightness(0.75);
 }
@@ -270,22 +348,22 @@
 }
 
 .lighting-moon .lighting-inner {
-    background: radial-gradient(circle at 50% 15%, rgba(100, 150, 255, 0.12), rgba(70, 100, 255, 0.04) 35%, transparent 80%),
-        radial-gradient(circle at 50% 55%, rgba(60, 90, 255, 0.08), transparent 62%),
-        linear-gradient(to bottom, rgba(50, 80, 255, 0.04), transparent);
+    background: radial-gradient(circle at 50% 15%, rgba(100, 150, 255, 0.07), rgba(70, 100, 255, 0.02) 35%, transparent 80%),
+        radial-gradient(circle at 50% 55%, rgba(60, 90, 255, 0.04), transparent 62%),
+        linear-gradient(to bottom, rgba(50, 80, 255, 0.02), transparent);
     animation: light-drift-moon 50s linear infinite alternate;
 }
 
 .lighting-artificial .lighting-inner {
     /* Positioned at the bottom center to glow from behind the input bar - intensified */
-    background: radial-gradient(circle at 50% 95%, rgba(255, 140, 40, 0.28) 0%, rgba(255, 80, 0, 0.12) 50%, transparent 90%);
+    background: radial-gradient(circle at 50% 95%, rgba(255, 140, 40, 0.14) 0%, rgba(255, 80, 0, 0.06) 50%, transparent 90%);
     animation: torch-flicker 3s infinite alternate cubic-bezier(0.4, 0, 0.2, 1), light-drift-torch 8s ease-in-out infinite alternate;
 }
 
 .is-mobile .lighting-artificial .lighting-inner {
     /* Positioned at the bottom center in portrait - intensified */
     --torch-y: 100%;
-    background: radial-gradient(ellipse 140% 70% at 50% var(--torch-y), rgba(255, 100, 20, 0.3) 0%, rgba(255, 50, 0, 0.15) 55%, transparent 85%);
+    background: radial-gradient(ellipse 140% 70% at 50% var(--torch-y), rgba(255, 100, 20, 0.15) 0%, rgba(255, 50, 0, 0.07) 55%, transparent 85%);
 }
 
 .is-mobile:not(.is-landscape) .lighting-artificial .lighting-inner {
@@ -296,7 +374,7 @@
 .is-mobile.is-landscape .lighting-artificial .lighting-inner {
     /* Shifted horizontally to align with the main content column in landscape (offset by 25vw mapper) - balanced */
     --torch-y: 100%;
-    background: radial-gradient(ellipse 100% 65% at 65% var(--torch-y), rgba(255, 70, 10, 0.28) 0%, rgba(255, 40, 0, 0.1) 50%, transparent 80%);
+    background: radial-gradient(ellipse 100% 65% at 65% var(--torch-y), rgba(255, 70, 10, 0.14) 0%, rgba(255, 40, 0, 0.05) 50%, transparent 80%);
 }
 
 .lighting-dark .lighting-inner {

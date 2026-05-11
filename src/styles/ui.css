@@ -482,7 +482,7 @@
 }
 
 .player-name {
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-mono);
     font-weight: 800;
     font-size: 0.85rem;
     color: var(--text-primary, #ffffff);

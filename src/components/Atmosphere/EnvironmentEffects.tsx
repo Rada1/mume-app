@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { LightingType, WeatherType } from '../../types';
 import Rain from './Rain';
 import { Embers } from './Embers';
+import { useAtmosphereStore } from '../../stores/useAtmosphereStore';
 
 interface EnvironmentEffectsProps {
     lighting: LightingType;
@@ -28,6 +29,43 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     bgImageBottom,
     terrain
 }) => {
+    // --- Command pulse: flash the active light source on each command ---
+    const sunRef = useRef<HTMLDivElement>(null);
+    const moonRef = useRef<HTMLDivElement>(null);
+    const artificialRef = useRef<HTMLDivElement>(null);
+    const darkRef = useRef<HTMLDivElement>(null);
+    const pulseRafRef = useRef<number | null>(null);
+    const lastPulseStartRef = useRef<number>(0);
+    const lightingRef = useRef(lighting);
+    useEffect(() => {
+        lightingRef.current = lighting;
+        // Clear any in-flight pulse when lighting changes so it doesn't bleed into the crossfade
+        [sunRef, moonRef, artificialRef, darkRef].forEach(r => r.current?.classList.remove('command-pulse'));
+    }, [lighting]);
+
+    // How long after a pulse starts to suppress restarts (keeps the light steady during rapid commands)
+    const PULSE_BRIGHT_WINDOW_MS = 1600;
+
+    const commandPulseKey = useAtmosphereStore((s) => s.commandPulseKey);
+    useEffect(() => {
+        if (commandPulseKey === 0) return;
+        const refMap: Partial<Record<LightingType, React.RefObject<HTMLDivElement>>> = {
+            sun: sunRef, moon: moonRef, artificial: artificialRef, dark: darkRef,
+        };
+        const el = refMap[lightingRef.current]?.current;
+        if (!el) return;
+        const now = Date.now();
+        // If we're still in the bright phase, don't restart — just let it play through
+        if (now - lastPulseStartRef.current < PULSE_BRIGHT_WINDOW_MS) return;
+        lastPulseStartRef.current = now;
+        if (pulseRafRef.current !== null) cancelAnimationFrame(pulseRafRef.current);
+        el.classList.remove('command-pulse');
+        pulseRafRef.current = requestAnimationFrame(() => {
+            el.classList.add('command-pulse');
+            pulseRafRef.current = null;
+        });
+    }, [commandPulseKey]);
+
     // --- Background Cross-fade Logic ---
     const [layerA, setLayerA] = React.useState<string | null>(bgImage || null);
     const [layerB, setLayerB] = React.useState<string | null>(null);
@@ -71,10 +109,10 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                 )}
                 {isImmersionMode && (
                     <>
-                        <div className="lighting-container lighting-sun" style={{ opacity: lighting === 'sun' ? 1 : 0 }}><div className="lighting-inner" /></div>
-                        <div className="lighting-container lighting-moon" style={{ opacity: lighting === 'moon' ? 1 : 0 }}><div className="lighting-inner" /></div>
-                        <div className="lighting-container lighting-artificial" style={{ opacity: lighting === 'artificial' ? 1 : 0 }}><div className="lighting-inner" /></div>
-                        <div className="lighting-container lighting-dark" style={{ opacity: lighting === 'dark' ? 1 : 0 }}><div className="lighting-inner" /></div>
+                        <div ref={sunRef} className="lighting-container lighting-sun" style={{ opacity: lighting === 'sun' ? 1 : 0 }}><div className="lighting-inner" /></div>
+                        <div ref={moonRef} className="lighting-container lighting-moon" style={{ opacity: lighting === 'moon' ? 1 : 0 }}><div className="lighting-inner" /></div>
+                        <div ref={artificialRef} className="lighting-container lighting-artificial" style={{ opacity: lighting === 'artificial' ? 1 : 0 }}><div className="lighting-inner" /></div>
+                        <div ref={darkRef} className="lighting-container lighting-dark" style={{ opacity: lighting === 'dark' ? 1 : 0 }}><div className="lighting-inner" /></div>
 
                         <div className="dust-layer" />
                         <div className="overlay-layer" />

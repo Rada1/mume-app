@@ -50,6 +50,7 @@
     scrollbar-width: thin;
     scrollbar-color: var(--text-faded) transparent;
     font-size: var(--dynamic-log-size, 16px);
+    font-family: var(--font-mono, var(--font-main));
     position: relative;
     user-select: text;
     -webkit-user-select: text;
@@ -229,13 +230,12 @@
     display: block;
     margin-top: 4px;
     white-space: pre-wrap;
-    /* Strictly fit 80 chars across (Space Mono width is 0.58*height) */
-    /* Font size = (WidthPerChar) / 0.58 = (100cqw - 12px) / (80 * 0.58) = (100cqw - 12px) / 46.4 */
+    /* Dynamically sized to fit 80 chars across via useViewport.ts layout engine */
     font-size: var(--dynamic-log-size); 
     line-height: 1.5;
     text-align: left;
     width: 100%;
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-mono, monospace);
 }
 
 /* Intelligent Dimming Base */
@@ -521,7 +521,7 @@
     position: relative;
     line-height: 1.5;
     word-break: break-word;
-    font-family: var(--font-main);
+    font-family: var(--font-mono, var(--font-main));
     font-size: 0.95em;
     display: inline-flex;
     align-items: baseline;
@@ -565,13 +565,14 @@
 .message.recent-entry .message-content,
 .message.recent-entry .user-command-bubble,
 .message.recent-entry .snoop-command-bubble {
-    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 36%, rgba(0, 0, 0, 0.35) 52%, transparent 68%);
-    mask-image: linear-gradient(90deg, #000 0%, #000 36%, rgba(0, 0, 0, 0.35) 52%, transparent 68%);
+    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 67%, rgba(0, 0, 0, 0) 75%);
+    mask-image: linear-gradient(90deg, #000 0%, #000 67%, rgba(0, 0, 0, 0) 75%);
     -webkit-mask-size: 400% 100%;
     mask-size: 400% 100%;
     -webkit-mask-position: 100% 0;
     mask-position: 100% 0;
     animation: log-text-reveal 2000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: var(--reveal-delay, 0ms);
 }
 
 @keyframes log-text-reveal {
@@ -636,6 +637,11 @@
 .message.old-batch-dim {
     opacity: 0.5;
     transition: opacity 0.5s ease;
+}
+
+.state-account .message.old-batch-dim {
+    opacity: 1;
+    transition: none;
 }
 
 /* Simplify combat bubbles into clean rows with participant indicators */
@@ -713,7 +719,7 @@
     color: rgba(255, 255, 255, 0.95);
     font-weight: 500;
     font-size: 0.95em;
-    font-family: var(--font-main);
+    font-family: var(--font-mono, var(--font-main));
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
@@ -733,7 +739,7 @@
     color: rgba(167, 243, 208, 0.95); /* emerald-200 */
     font-weight: 500;
     font-size: 0.95em;
-    font-family: var(--font-main);
+    font-family: var(--font-mono, var(--font-main));
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
@@ -830,6 +836,10 @@
 
 .message.prompt.old-batch-dim {
     opacity: 0.5;
+}
+
+.state-account .message.prompt.old-batch-dim {
+    opacity: 1;
 }
 
 .sticky-room-header {
@@ -963,7 +973,7 @@
     background: transparent;
     border: none;
     color: var(--text-primary);
-    font-family: var(--font-main);
+    font-family: var(--font-mono, var(--font-main));
     font-size: var(--dynamic-log-size, 16px);
     outline: none;
     padding: 0;
@@ -998,7 +1008,7 @@
     }
 
     .mobile-gutter-input-wrapper .input-main-container {
-        min-height: 38px;
+        min-height: 46px;
         padding: 0 12px;
         border-radius: 16px;
     }
@@ -1017,10 +1027,23 @@
         align-items: center;
     }
 
+    .mobile-gutter-input-wrapper .parley-pill {
+        background: transparent;
+        border: none;
+        padding: 0;
+    }
+
+    .mobile-gutter-input-wrapper .cmd-prompt-btn {
+        width: 34px;
+        height: 34px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
     .mobile-gutter-input-wrapper .msg-repeat-btn,
     .mobile-gutter-input-wrapper .msg-cancel-btn {
-        width: 30px;
-        height: 30px;
+        width: 34px;
+        height: 34px;
     }
 }
 

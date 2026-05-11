@@ -38,6 +38,8 @@ const InputArea: React.FC<InputAreaProps> = ({
     const { inCombat, triggerHaptic, playClickSound, isSoundEnabled, initAudio, isPasswordMode } = useGame();
     const terrainClass = terrain ? `terrain-${normalizeTerrain(terrain)}` : '';
     const inputRef = useRef<HTMLTextAreaElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const glowRafRef = useRef<number | null>(null);
     const startPos = useRef<{ x: number, y: number } | null>(null);
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const isSwiping = useRef(false);
@@ -226,7 +228,7 @@ const InputArea: React.FC<InputAreaProps> = ({
 
     return (
         <div className={`input-area ${terrainClass} input-container`}>
-            <div className="input-main-container">
+            <div className="input-main-container" ref={containerRef}>
                 <form className="input-form" onSubmit={onSend}>
                     {(() => {
                         const isTargetless = TARGETLESS_COMMANDS.includes(parley.command);
@@ -313,6 +315,16 @@ const InputArea: React.FC<InputAreaProps> = ({
                                 const target = e.target as HTMLTextAreaElement;
                                 target.style.height = 'auto';
                                 target.style.height = `${target.scrollHeight}px`;
+                                // Keystroke glow: cancel pending frame, remove class, reflow, re-add
+                                const el = containerRef.current;
+                                if (el) {
+                                    if (glowRafRef.current !== null) cancelAnimationFrame(glowRafRef.current);
+                                    el.classList.remove('keystroke-glow');
+                                    glowRafRef.current = requestAnimationFrame(() => {
+                                        el.classList.add('keystroke-glow');
+                                        glowRafRef.current = null;
+                                    });
+                                }
                             }}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' && !e.shiftKey) {

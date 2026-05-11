@@ -397,6 +397,10 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             fontSize: '0.9rem'
                         }}
                     >
+                        <option value="'Iosevka', monospace">Iosevka</option>
+                        <option value="'Input Mono', monospace">Input Mono</option>
+                        <option value="'Input Mono Condensed', monospace">Input Mono Condensed</option>
+                        <option value="'Input Mono Compressed', monospace">Input Mono Compressed</option>
                         <option value="'Menlo', monospace">Menlo</option>
                         <option value="'Space Mono', monospace">Space Mono</option>
                         <option value="'Fira Code', monospace">Fira Code</option>
@@ -407,6 +411,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                         <option value="'Ubuntu Mono', monospace">Ubuntu Mono</option>
                         <option value="'Courier Prime', monospace">Courier Prime</option>
                         <option value="'IBM Plex Mono', monospace">IBM Plex Mono</option>
+                        <option value="'Anonymous Pro', monospace">Anonymous Pro</option>
+                        <option value="'Aniron', serif">Aniron (Elven)</option>
                     </select>
                 </div>
             </div>

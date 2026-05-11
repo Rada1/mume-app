@@ -221,39 +221,42 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                 {/* Mobile portrait LineCluster is rendered inside MapperCluster (near the map gutter) */}
             </div>
 
-            <div className="control-card-wrapper">
-                {gameState !== 'account' && (
-                    <PromptBox
-                        processMessageHtml={processMessageHtml}
-                        processMessageTokens={processMessageTokens}
-                        onWimpyChange={!isSpectateMode ? handleWimpyChange : undefined}
-                    />
-                )}
+            {/* Only render the wrapper if it will contain either the PromptBox or the InputArea */}
+            {((gameState !== 'account') || (gameState === 'account' && (isLandscape || !isMobile)) || (!isMobile && !(viewport as any).isForcePortrait) || isLandscape) && (
+                <div className="control-card-wrapper">
+                    {gameState !== 'account' && (
+                        <PromptBox
+                            processMessageHtml={processMessageHtml}
+                            processMessageTokens={processMessageTokens}
+                            onWimpyChange={!isSpectateMode ? handleWimpyChange : undefined}
+                        />
+                    )}
 
-                {/* Render InputArea only on desktop, landscape mobile, or during account phase on those platforms. 
-                    On mobile portrait, InputArea is rendered within MapperCluster to occupy the gutter. */}
-                {((gameState === 'account' && (isLandscape || !isMobile)) || (!isMobile && !(viewport as any).isForcePortrait) || isLandscape) && (
-                    <InputArea
-                        input={input}
-                        setInput={setInput}
-                        onSend={handleSend}
-                        onSwipe={handleInputSwipe}
-                        isMobile={isMobile}
-                        isKeyboardOpen={viewport.isKeyboardOpen}
-                        commandPreview={commandPreview}
-                        terrain={currentTerrain}
-                        spatButtons={spatButtons}
-                        setActiveSet={btn.setActiveSet}
-                        executeCommand={executeCommand}
-                        setSpatButtons={setSpatButtons}
-                        setPopoverState={setPopoverState}
-                        parley={parley}
-                        setParley={setParley}
-                        whoList={whoList}
-                        gameState={gameState}
-                    />
-                )}
-            </div>
+                    {/* Render InputArea only on desktop, landscape mobile, or during account phase on those platforms. 
+                        On mobile portrait, InputArea is rendered within MapperCluster to occupy the gutter. */}
+                    {((gameState === 'account' && (isLandscape || !isMobile)) || (!isMobile && !(viewport as any).isForcePortrait) || isLandscape) && (
+                        <InputArea
+                            input={input}
+                            setInput={setInput}
+                            onSend={handleSend}
+                            onSwipe={handleInputSwipe}
+                            isMobile={isMobile}
+                            isKeyboardOpen={viewport.isKeyboardOpen}
+                            commandPreview={commandPreview}
+                            terrain={currentTerrain}
+                            spatButtons={spatButtons}
+                            setActiveSet={btn.setActiveSet}
+                            executeCommand={executeCommand}
+                            setSpatButtons={setSpatButtons}
+                            setPopoverState={setPopoverState}
+                            parley={parley}
+                            setParley={setParley}
+                            whoList={whoList}
+                            gameState={gameState}
+                        />
+                    )}
+                </div>
+            )}
         </div>
     );
 };

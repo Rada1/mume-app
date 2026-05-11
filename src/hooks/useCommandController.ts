@@ -4,6 +4,7 @@ import { useCommandExecutor } from './useCommandExecutor';
 import { useInteractionHandlers } from './useInteractionHandlers';
 import { useNumpadControls } from './useNumpadControls';
 import { CaptureStage } from '../types';
+// import { useAtmosphereStore } from '../stores/useAtmosphereStore';
 
 export interface CommandControllerDeps {
     telnet: { sendCommand: (cmd: string) => void };
@@ -230,6 +231,10 @@ export function useCommandController(deps: CommandControllerDeps) {
         }
 
         executor.executeCommand(cmd, effectiveSilent, isSystem, isHistorical, fromDrawer);
+
+        // if (!effectiveSilent && !isSystem) {
+        //     useAtmosphereStore.getState().notifyCommandPulse();
+        // }
 
         if (!effectiveSilent && !isSystem && recordEntry) {
             recordEntry('ui', { event: 'executeCommand', cmd }, { mask: d.isPasswordMode });

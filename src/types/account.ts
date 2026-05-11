@@ -41,4 +41,8 @@ export interface AccountState {
     isGathering?: boolean;
     stats?: Record<string, number>;
     pointsLeft?: number;
+    charSelectTab?: 'info' | 'practice' | null;
+    charCapture?: { type: 'info' | 'practice' } | null;
+    charInfoLines?: string[];
+    charPracticeLines?: string[];
 }

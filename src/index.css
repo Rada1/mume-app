@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Inconsolata:wght@200..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=IBM+Plex+Mono:ital,wght@0,100..700;1,100..700&family=Anonymous+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import url('https://fonts.cdnfonts.com/css/aniron');
+@import url('https://fonts.cdnfonts.com/css/iosevka');
 @import './styles/base.css';
 @import './styles/animations.css';
 @import './styles/environment.css';
@@ -39,7 +40,8 @@
     background: #000000 !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-top: none !important;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1) !important;
     z-index: var(--z-hud-interactive);
     touch-action: none;
     transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
@@ -48,7 +50,7 @@
     flex-direction: column;
     justify-content: flex-end; /* Anchors buttons at the bottom so they don't jump when gutter expands */
     pointer-events: none; /* Let clicks pass through to the log if not on a child */
-    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    border-radius: 32px 32px 0 0;
 }
 
 .modals-layer-wrapper {
@@ -96,7 +98,7 @@
 
 @media (max-width: 1024px) {
     .mobile-bottom-gutter {
-        border-radius: var(--radius-card) var(--radius-card) 0 0;
+        border-radius: 32px 32px 0 0;
         overflow: hidden;
         transition: none !important;
     }
@@ -553,6 +555,17 @@
 
 
 
+
+@keyframes keystroke-glow-pulse {
+    0%   { filter: drop-shadow(0 0 3px rgba(17, 50, 160, 0.6)) drop-shadow(0 0 7px rgba(17, 50, 160, 0.3)); }
+    15%  { filter: drop-shadow(0 0 5px rgba(22, 62, 180, 0.7)) drop-shadow(0 0 12px rgba(17, 50, 160, 0.35)); }
+    100% { filter: drop-shadow(0 0 0px rgba(29, 78, 216, 0)); }
+}
+
+.input-main-container.keystroke-glow,
+.mobile-gutter-input-wrapper .input-main-container.keystroke-glow {
+    animation: keystroke-glow-pulse 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
 
 /* Focused state for the command bar pod */
 .input-main-container.focused {

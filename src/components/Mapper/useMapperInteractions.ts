@@ -7,6 +7,7 @@ import { useMapHitTest } from './hooks/useMapHitTest';
 import { getButtonCommand } from '../../utils/buttonUtils';
 import { fireHeldCommandAtMapOccupant } from './mapperHeldCommandTarget';
 import type { GmcpOccupant, GroupMember, InlineCategoryConfig } from '../../types';
+import { registerOccupantTap } from './occupantAnimStore';
 
 export interface InteractionDeps {
     canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -470,8 +471,13 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                             }
 
                             if (fireHeldCommandAtMapOccupant(depsRef.current, occupantHit)) {
+                                registerOccupantTap(occupantHit.id, occupantHit.name, occupantHit.kind === 'player');
+                                depsRef.current.triggerRender();
                                 return;
                             }
+
+                            registerOccupantTap(occupantHit.id, occupantHit.name, occupantHit.kind === 'player');
+                            depsRef.current.triggerRender();
 
                             const entityId = occupantHit.id !== undefined
                                 ? `roomchars:${occupantHit.id}`

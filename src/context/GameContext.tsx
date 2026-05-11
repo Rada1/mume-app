@@ -594,7 +594,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // Basic Actions
         addMessage,
         addSystemMessage,
-        executeCommandRef: { current: null }, 
+        clearLog,
+        executeCommandRef: { current: null },
         
         // Mapper/World
         mapperRef: mapperRef,
@@ -742,7 +743,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         quests: s.quests,
         practice: practice,
         help: help
-    }), [s, v, ui, settingsStore, mode, addMessage, addSystemMessage, playHitImpactSound, playOofSound, playHitImpactSoundSpectate, playOofSoundSpectate, playClickSoundSpectate, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
+    }), [s, v, ui, settingsStore, mode, addMessage, addSystemMessage, clearLog, playHitImpactSound, playOofSound, playHitImpactSoundSpectate, playOofSoundSpectate, playClickSoundSpectate, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
 
 
     const parser = useGameParser(deps, s.userSession);

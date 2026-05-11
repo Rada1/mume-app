@@ -5,6 +5,7 @@
  */
 
 import React, { useCallback, useRef, useMemo, useEffect } from 'react';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 import { gmcpBus } from '../../events/gmcpBus';
 import { DrawerLine, EntityCapability, MessageType } from '../../types';
 import { useQuestsHandler } from '../useQuestsHandler';
@@ -184,6 +185,10 @@ const addSnoopedPlainLine = (
 };
 
 export const useGameParser = (deps: UseGameParserDeps, session: any) => {
+    const rememberLogin = useSettingsStore(s => s.rememberLogin);
+    const loginName = useSettingsStore(s => s.loginName);
+    const loginPassword = useSettingsStore(s => s.loginPassword);
+
     // 1. Session Destructuring
     const { setStats, setTarget, setPlayerHealthStatus, setOpponentHealthStatus, setOpponentName, setBufferHealthStatus, setBufferName, setCharacterInfo } = session.vitals as any;
     const { 
@@ -381,16 +386,20 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
     });
 
     const account = useAccountParser({
-        gameState: deps.gameState as any, 
-        setGameState: deps.setGameState, 
-        accountStageRef: deps.accountStageRef, 
-        setAccountState: deps.setAccountState, 
+        gameState: deps.gameState as any,
+        setGameState: deps.setGameState,
+        accountStageRef: deps.accountStageRef,
+        setAccountState: deps.setAccountState,
         setIsPasswordMode: deps.setIsPasswordMode,
-        accountState: deps.accountState, 
+        accountState: deps.accountState,
         executeCommandRef: deps.executeCommandRef,
         sendCommand: deps.sendCommand || session.game.sendCommand || ((cmd: string) => {}),
         addMessage: deps.addMessage,
-        captureStage: deps.captureStage
+        clearLog: deps.clearLog,
+        captureStage: deps.captureStage,
+        rememberLogin,
+        loginName,
+        loginPassword,
     });
 
     const time = useTimeParser({
