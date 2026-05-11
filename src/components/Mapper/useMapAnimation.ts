@@ -94,7 +94,7 @@ export const useMapAnimation = ({
         if ((autoCenter || walkTargetId) && playerPosRef.current && (!effectiveIsDragging || isJoystickActiveRef.current)) {
             // Log once when auto-centering is active if it wasn't before
             if (!(tickRef as any)._autoCenterActive) {
-                console.log('[MapAnimation] Auto-centering ACTIVE');
+                // console.log('[MapAnimation] Auto-centering ACTIVE');
                 (tickRef as any)._autoCenterActive = true;
             }
             const zoom = camera.current.zoom || 1;
@@ -116,7 +116,7 @@ export const useMapAnimation = ({
             }
         } else {
             if ((tickRef as any)._autoCenterActive) {
-                console.log('[MapAnimation] Auto-centering SUPPRESSED (isDragging:', effectiveIsDragging, 'isJoystickActive:', isJoystickActiveRef.current, ')');
+                // console.log('[MapAnimation] Auto-centering SUPPRESSED (isDragging:', effectiveIsDragging, 'isJoystickActive:', isJoystickActiveRef.current, ')');
                 (tickRef as any)._autoCenterActive = false;
             }
         }

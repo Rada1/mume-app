@@ -96,7 +96,7 @@ export function useTelnet(config: TelnetConfig) {
     const sendGameEntrySetup = React.useCallback((source: string) => {
         if (hasSentGameEntrySetupRef.current) return;
         hasSentGameEntrySetupRef.current = true;
-        console.log(`[Telnet] Sending game-entry setup from ${source}: change xml on, change page off, info %O %D %k %A`);
+        // console.log(`[Telnet] Sending game-entry setup from ${source}: change xml on, change page off, info %O %D %k %A`);
         sendBytes(new TextEncoder().encode('change xml on\n'));
         sendBytes(new TextEncoder().encode('change page off\n'));
         sendBytes(new TextEncoder().encode('info %O %D %k %A\n'));
@@ -329,7 +329,7 @@ export function useTelnet(config: TelnetConfig) {
             pendingTextLines.current.push(...processedLines);
             
             if (!processingTimeout.current) {
-                processingTimeout.current = setTimeout(() => {
+                processingTimeout.current = requestAnimationFrame(() => {
                     processingTimeout.current = null;
                     const chunk = [...pendingTextLines.current];
                     pendingTextLines.current = [];
@@ -468,7 +468,7 @@ export function useTelnet(config: TelnetConfig) {
             const pkg = splitIdx > -1 ? raw.substring(0, splitIdx).trim() : raw;
             const json = splitIdx > -1 ? raw.substring(splitIdx).trim() : '';
             if (pkg.toLowerCase().startsWith('room.chars')) {
-                console.log('[GMCP RAW Room.Chars]', raw);
+                // console.log('[GMCP RAW Room.Chars]', raw);
             }
             
             if (configRef.current.recordEntry) {

@@ -274,7 +274,7 @@ export function useMessageLog(
                 };
                 lastMessageRef.current = buffer[lastRoomIdx];
                 if (!flushTimeoutRef.current) {
-                    flushTimeoutRef.current = setTimeout(flushMessages, 50);
+                    flushTimeoutRef.current = requestAnimationFrame(flushMessages) as unknown as NodeJS.Timeout;
                 }
             } else {
                 // Case 2: Room name has already been flushed to the messages state
@@ -375,7 +375,7 @@ export function useMessageLog(
             // output always precedes the new user command, and future server responses
             // (which haven't arrived yet) will be batched and rendered below it.
             if (flushTimeoutRef.current) {
-                clearTimeout(flushTimeoutRef.current);
+                cancelAnimationFrame(flushTimeoutRef.current as unknown as number);
                 flushTimeoutRef.current = null;
             }
             const drained = messageBufferRef.current.splice(0);
@@ -401,9 +401,11 @@ export function useMessageLog(
             lastMessageRef.current = msg;
             if (mid) addedMidSetRef.current.add(mid);
             messageBufferRef.current.push(msg);
-            // Batch at ~20fps (50ms) to reduce React render thrashing on the main thread
+
             if (!flushTimeoutRef.current) {
-                flushTimeoutRef.current = setTimeout(flushMessages, 50);
+                // Adaptive delay instead of a fixed 50ms, relying on requestAnimationFrame
+                // to give the browser time to paint, but processing sooner.
+                flushTimeoutRef.current = requestAnimationFrame(flushMessages) as unknown as NodeJS.Timeout;
             }
         }
     }, [inCombatRef, setMessages, flushMessages, roomContext, isAccountModeRef, playCommMessageSound, messageLimit]);
@@ -412,7 +414,7 @@ export function useMessageLog(
         messageBufferRef.current = [];
         addedMidSetRef.current.clear();
         if (flushTimeoutRef.current) {
-            clearTimeout(flushTimeoutRef.current);
+            cancelAnimationFrame(flushTimeoutRef.current as unknown as number);
             flushTimeoutRef.current = null;
         }
         setMessages([]);

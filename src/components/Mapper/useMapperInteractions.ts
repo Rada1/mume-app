@@ -157,7 +157,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
         }
 
         // --- Standard Zooming ---
-        console.log(`[MapperInteractions] Wheel: deltaX=${e.deltaX} deltaY=${e.deltaY}`);
+        // console.log(`[MapperInteractions] Wheel: deltaX=${e.deltaX} deltaY=${e.deltaY}`);
         const cam = cameraRef.current;
         const oldZoom = cam.zoom;
         const delta = -e.deltaY;
@@ -204,7 +204,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             
             const pointers = Array.from(activePointersRef.current.keys()).sort((a, b) => a - b).map(id => ({ id, ...activePointersRef.current.get(id)! }));
             lastPointersRef.current = pointers;
-            console.log(`[useMapperInteractions] onDown: id=${e.pointerId}, size=${activePointersRef.current.size}, target=${(e.target as HTMLElement).className}`);
+            // console.log(`[useMapperInteractions] onDown: id=${e.pointerId}, size=${activePointersRef.current.size}, target=${(e.target as HTMLElement).className}`);
 
             if (activePointersRef.current.size === 1) {
                 const { mode, setSelectedRoomIds } = depsRef.current;
@@ -214,7 +214,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 hasDraggedRef.current = false;
                 dragTypeRef.current = 'room';
                 contextMenuTriggeredRef.current = false;
-                console.log(`[MapperInteractions] PointerDown: ${e.pointerType} x=${e.clientX} y=${e.clientY}`);
+                // console.log(`[MapperInteractions] PointerDown: ${e.pointerType} x=${e.clientX} y=${e.clientY}`);
 
                 const { screenToWorld, getRoomAt, getMarkerAt } = hitTestRef.current;
                 const world = screenToWorld(e.clientX, e.clientY);
@@ -324,7 +324,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                 joystick.stopRepeatTimer();
                             }
                             const dir = joystick.handleJoystickMove(e, executeCommand, !!heldButton);
-                            if (dir) console.log(`[MapperInteractions] Joystick Dir: ${dir}`);
+                            // if (dir) console.log(`[MapperInteractions] Joystick Dir: ${dir}`);
                         }
                     } else if (dragTypeRef.current === 'pan' || dragTypeRef.current === 'room') {
                         const cam = cameraRef.current;
@@ -443,7 +443,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                         ne: 'northeast', nw: 'northwest', se: 'southeast', sw: 'southwest'
                                     };
                                     finalDirName = dirMap[localDir] || localDir;
-                                    console.log(`[MapperInteractions] Corrected direction: ${dirName} -> ${finalDirName} (via ${exitHit.roomId})`);
+                                    // console.log(`[MapperInteractions] Corrected direction: ${dirName} -> ${finalDirName} (via ${exitHit.roomId})`);
                                 }
                             }
                         }

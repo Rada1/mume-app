@@ -40,7 +40,7 @@ export const useGmcpGroup = ({
         if (mapid === undefined && raw.room !== undefined && raw.room !== null && !isNaN(Number(raw.room))) {
             mapid = Number(raw.room);
         }
-        console.log('[Group Member] raw keys:', Object.keys(raw), '| id:', id, '| resolved mapid:', mapid, '| fighting:', raw.fighting, '| raw:', JSON.stringify(raw));
+        // console.log('[Group Member] raw keys:', Object.keys(raw), '| id:', id, '| resolved mapid:', mapid, '| fighting:', raw.fighting, '| raw:', JSON.stringify(raw));
         return { ...raw, id, mapid: (mapid !== undefined && !isNaN(mapid)) ? mapid : undefined };
     };
 
@@ -74,7 +74,7 @@ export const useGmcpGroup = ({
         setGroupMembers(prev => {
             const existingIndex = prev.findIndex(existing => getMemberKey(existing) === memberKey);
             if (existingIndex === -1) {
-                console.log(`[GMCP] ${source} created group member:`, JSON.stringify(member));
+                // console.log(`[GMCP] ${source} created group member:`, JSON.stringify(member));
                 return [...prev, member];
             }
 
@@ -91,25 +91,25 @@ export const useGmcpGroup = ({
     }, [isSelfMember, setGroupMembers]);
 
     const onGroupAdd = useCallback((data: GroupMember) => {
-        console.log('[GMCP] onGroupAdd raw:', JSON.stringify(data));
+        // console.log('[GMCP] onGroupAdd raw:', JSON.stringify(data));
         const member = normalizeGroupMember(data);
         mergeGroupMember(member, 'Group.Add');
     }, [mergeGroupMember]);
 
     const onGroupUpdate = useCallback((data: any) => {
-        console.log('[GMCP] onGroupUpdate raw:', JSON.stringify(data));
+        // console.log('[GMCP] onGroupUpdate raw:', JSON.stringify(data));
         const updates = normalizeGroupMember(data);
         mergeGroupMember(updates, 'Group.Update');
     }, [mergeGroupMember]);
 
 
     const onGroupRemove = useCallback((id: number) => {
-        console.log('[GMCP] onGroupRemove id:', id);
+        // console.log('[GMCP] onGroupRemove id:', id);
         setGroupMembers(prev => prev.filter(m => String(m.id) !== String(id)));
     }, [setGroupMembers]);
 
     const onGroupSet = useCallback((data: GroupMember[]) => {
-        console.log('[GMCP] onGroupSet raw:', JSON.stringify(data));
+        // console.log('[GMCP] onGroupSet raw:', JSON.stringify(data));
         if (!Array.isArray(data)) {
             const member = normalizeGroupMember(data);
             mergeGroupMember(member, 'Group.Set object');

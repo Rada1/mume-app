@@ -306,7 +306,7 @@ export function useViewport(
 
             setColumns(actualCols);
             setRows(actualRows);
-            console.log(`[Layout] mobile=${isMobile} width=${width} pad=${totalPadding} target=${targetCols} font=${safeSize.toFixed(1)}px → ${actualCols}x${actualRows} (ratio=${charWidthRatio.toFixed(3)})`);
+            // console.log(`[Layout] mobile=${isMobile} width=${width} pad=${totalPadding} target=${targetCols} font=${safeSize.toFixed(1)}px → ${actualCols}x${actualRows} (ratio=${charWidthRatio.toFixed(3)})`);
 
         };
 
