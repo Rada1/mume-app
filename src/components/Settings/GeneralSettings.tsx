@@ -45,6 +45,8 @@ interface GeneralSettingsProps {
     setAutoSaveSessions: (val: boolean) => void;
     showSpectatePromptInLog: boolean;
     setShowSpectatePromptInLog: (val: boolean) => void;
+    isTextRevealEnabled: boolean;
+    setIsTextRevealEnabled: (val: boolean) => void;
 }
 
 const GeneralSettings: React.FC<GeneralSettingsProps> = ({
@@ -88,6 +90,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setAutoSaveSessions,
     showSpectatePromptInLog,
     setShowSpectatePromptInLog,
+    isTextRevealEnabled,
+    setIsTextRevealEnabled,
 }) => {
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const setIsSpectateMode = useModeStore(s => s.setIsSpectating);
@@ -572,6 +576,23 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                                 fontSize: '0.8rem', fontWeight: 'bold'
                             }}
                         >Light</button>
+                    </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
+                    <div style={{ flex: '1 1 200px' }}>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', margin: 0 }}>Message Log Animations</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Enable the text reveal fade-in animation for new messages.</div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '0.8rem', color: isTextRevealEnabled ? '#ec4899' : '#64748b' }}>{isTextRevealEnabled ? 'ON' : 'OFF'}</span>
+                        <button
+                            className={`setting-toggle ${isTextRevealEnabled ? 'active' : ''}`}
+                            onClick={() => setIsTextRevealEnabled(!isTextRevealEnabled)}
+                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isTextRevealEnabled ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                        >
+                            <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: isTextRevealEnabled ? '22px' : '2px', transition: 'all 0.3s' }} />
+                        </button>
                     </div>
                 </div>
 

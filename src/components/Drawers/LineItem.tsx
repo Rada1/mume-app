@@ -18,15 +18,12 @@ interface LineItemProps {
     line: DrawerLine;
     fontSize?: string;
     style?: React.CSSProperties;
-    location?: 'carried' | 'inv' | 'worn' | 'room';
     category?: string;
 }
 
 interface TokenMetadata {
     id?: string;
     context?: string;
-    kind?: string;
-    location?: string;
     category?: string;
     cmd?: string;
     action?: string;
@@ -51,7 +48,6 @@ export const LineItem: React.FC<LineItemProps> = ({
     line, 
     fontSize, 
     style,
-    location,
     category
 }) => {
     const objectColor = useSettingsStore(s => s.objectColor) || COLOR_OBJ;
@@ -63,10 +59,8 @@ export const LineItem: React.FC<LineItemProps> = ({
         ? {
             id: line.entityId || line.stableId || line.id,
             context: lineContext,
-            kind: 'object',
-            location,
             category,
-            cmd: line.cmd,
+            cmd: line.cmd || category,
             action: isCommandLine ? 'command' : 'menu'
         }
         : {
@@ -118,9 +112,7 @@ export const LineItem: React.FC<LineItemProps> = ({
                     data-id={line.entityId || line.stableId || line.id}
                     data-cmd={line.cmd || category || 'inline-inventory'}
                     data-context={objectContext}
-                    data-kind="object"
-                    data-location={location}
-                    data-category="object"
+                    data-category={category}
                     data-action={isCommandLine ? 'command' : 'menu'}
                     data-from-drawer={isCommandLine ? 'true' : undefined}
                     style={{
@@ -166,8 +158,6 @@ export const LineItem: React.FC<LineItemProps> = ({
                         data-id={line.entityId || line.stableId || line.id}
                         data-cmd="practice %n"
                         data-context={skillName}
-                        data-kind="skill"
-                        data-location="practice"
                         data-category="cat-practice-skill"
                         data-action="command"
                         data-from-drawer="true"
@@ -232,9 +222,7 @@ export const LineItem: React.FC<LineItemProps> = ({
                             data-id={line.entityId || line.stableId || line.id}
                             data-cmd={line.cmd || category || 'inline-inventory'}
                             data-context={lineContext}
-                            data-kind="object"
-                            data-location={location}
-                            data-category="object"
+                            data-category={category}
                             data-action={isCommandLine ? 'command' : 'menu'}
                             data-from-drawer={isCommandLine ? 'true' : undefined}
                             style={{

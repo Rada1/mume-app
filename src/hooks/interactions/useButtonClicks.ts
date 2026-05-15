@@ -3,7 +3,7 @@ import { InteractionDeps } from '../useInteractionHandlers';
 import { CustomButton } from '../../types';
 import { formatMumeTarget, sanitizeGameTarget } from '../../utils/gameUtils';
 import { triggerRingAnimation, getPressedColor } from './pointerUtils';
-import { toCategoryId } from '../../utils/inlineActionModel';
+import { getInlineCategoryAxes } from '../../utils/inlineCategoryAxes';
 
 export const useButtonClicks = (deps: InteractionDeps) => {
     const {
@@ -77,9 +77,8 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         }
 
         const effectiveContext = (context && keywordOverrides[context]) ? keywordOverrides[context] : context;
-        const isNpcContext = ['npc', 'enemy', 'neutral', 'ally', 'player'].includes(popoverState?.kind || '') ||
-            ['cat-npc', 'cat-enemy', 'cat-neutral', 'cat-ally'].includes(toCategoryId(popoverState?.category) || '') ||
-            !!popoverState?.setId?.startsWith('npc');
+        const popoverAxes = getInlineCategoryAxes(popoverState?.category || popoverState?.setId);
+        const isNpcContext = popoverAxes.isCharacter || !!popoverState?.setId?.startsWith('npc');
         console.log('[useButtonClicks] context resolution:', { context, effectiveContext, keywordOverride: context ? keywordOverrides[context] : undefined });
         let finalContext = formatMumeTarget(effectiveContext) || effectiveContext || '';
         console.log('[useButtonClicks] finalContext:', finalContext);

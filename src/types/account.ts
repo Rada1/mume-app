@@ -17,6 +17,7 @@ export interface CharacterEntry {
     rent: string;
     status?: string;
     host?: string;
+    rawLine?: string;
 }
 
 export interface CreationOption {
@@ -42,7 +43,11 @@ export interface AccountState {
     stats?: Record<string, number>;
     pointsLeft?: number;
     charSelectTab?: 'info' | 'practice' | null;
-    charCapture?: { type: 'info' | 'practice' } | null;
+    charCapture?: { type: 'info' | 'practice' | 'link' | 'lag' | 'time' } | null;
     charInfoLines?: string[];
     charPracticeLines?: string[];
+    linkLines?: string[];
+    lagLines?: string[];
+    timeLines?: string[];
+    selectedMenuCommand?: string | null;
 }

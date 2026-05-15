@@ -5,24 +5,37 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 
+const RECONNECT_DELAY_MS = 800;
+
 export function useTelnetSocket() {
     const [isConnected, setIsConnected] = useState(false);
     const [lastError, setLastError] = useState<string | null>(null);
     const socketRef = useRef<WebSocket | null>(null);
     const onDataRef = useRef<((data: ArrayBuffer) => void) | null>(null);
+    const urlRef = useRef<string | null>(null);
+    const wantsConnectionRef = useRef(false);
+    const reconnectTimerRef = useRef<number | null>(null);
 
-    const disconnect = useCallback(() => {
+    const clearReconnectTimer = useCallback(() => {
+        if (reconnectTimerRef.current === null) return;
+        window.clearTimeout(reconnectTimerRef.current);
+        reconnectTimerRef.current = null;
+    }, []);
+
+    const closeSocket = useCallback((manual: boolean) => {
+        if (manual) {
+            wantsConnectionRef.current = false;
+            clearReconnectTimer();
+        }
+
         if (socketRef.current) {
             socketRef.current.close();
             socketRef.current = null;
         }
         setIsConnected(false);
-    }, []);
+    }, [clearReconnectTimer]);
 
-    const connect = useCallback((url: string, onData: (data: ArrayBuffer) => void) => {
-        disconnect();
-        onDataRef.current = onData;
-        
+    const openSocket = useCallback((url: string, onData: (data: ArrayBuffer) => void) => {
         try {
             const ws = new WebSocket(url);
             ws.binaryType = 'arraybuffer';
@@ -48,14 +61,34 @@ export function useTelnetSocket() {
             };
 
             ws.onclose = () => {
+                if (socketRef.current === ws) socketRef.current = null;
                 setIsConnected(false);
+                if (!wantsConnectionRef.current) return;
+                if (document.visibilityState !== 'visible') return;
+                clearReconnectTimer();
+                reconnectTimerRef.current = window.setTimeout(() => {
+                    if (urlRef.current && onDataRef.current && wantsConnectionRef.current) {
+                        openSocket(urlRef.current, onDataRef.current);
+                    }
+                }, RECONNECT_DELAY_MS);
             };
 
         } catch (err) {
             setLastError(err instanceof Error ? err.message : String(err));
             setIsConnected(false);
         }
-    }, [disconnect]);
+    }, [clearReconnectTimer]);
+
+    const disconnect = useCallback(() => closeSocket(true), [closeSocket]);
+
+    const connect = useCallback((url: string, onData: (data: ArrayBuffer) => void) => {
+        closeSocket(false);
+        clearReconnectTimer();
+        urlRef.current = url;
+        onDataRef.current = onData;
+        wantsConnectionRef.current = true;
+        openSocket(url, onData);
+    }, [clearReconnectTimer, closeSocket, openSocket]);
 
     const sendBytes = useCallback((bytes: Uint8Array | number[]) => {
         if (socketRef.current?.readyState === WebSocket.OPEN) {
@@ -65,8 +98,21 @@ export function useTelnetSocket() {
     }, []);
 
     useEffect(() => {
-        return () => disconnect();
-    }, [disconnect]);
+        const handleVisibilityChange = () => {
+            if (document.visibilityState !== 'visible') return;
+            if (!wantsConnectionRef.current || socketRef.current || !urlRef.current || !onDataRef.current) return;
+            openSocket(urlRef.current, onDataRef.current);
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        window.addEventListener('focus', handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            window.removeEventListener('focus', handleVisibilityChange);
+            closeSocket(true);
+        };
+    }, [closeSocket, openSocket]);
 
     return {
         isConnected,

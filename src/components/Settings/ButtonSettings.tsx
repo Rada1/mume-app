@@ -207,8 +207,8 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <input type="color" value={roomColor} onChange={(e) => setRoomColor(e.target.value)} style={{ width: '28px', height: '28px', border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                         <div>
-                            <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Room Items</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Static items &amp; names</div>
+                            <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Room Names</div>
+                            <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>Watch/camp actions, never tactical targets</div>
                             <CategoryTraitCards categoryId="cat-room" kind="room" categoryOverrides={categoryOverrides} setCategoryOverrides={setCategoryOverrides} customTraits={customTraits} setCustomTraits={setCustomTraits} />
                         </div>
                     </div>

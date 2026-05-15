@@ -22,6 +22,23 @@ interface SpatButtonsProps {
     isSoundEnabled?: boolean;
 }
 
+const colorToRgb = (colorVal: string | undefined, defaultVal: string) => {
+    if (!colorVal || colorVal.startsWith('var(')) return defaultVal;
+    const rgbMatch = colorVal.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+    if (rgbMatch) return `${rgbMatch[1]}, ${rgbMatch[2]}, ${rgbMatch[3]}`;
+
+    const hex = colorVal.replace('#', '').trim();
+    const fullHex = hex.length === 3
+        ? hex.split('').map(ch => ch + ch).join('')
+        : hex;
+    if (fullHex.length < 6) return defaultVal;
+
+    const r = parseInt(fullHex.substring(0, 2), 16);
+    const g = parseInt(fullHex.substring(2, 4), 16);
+    const b = parseInt(fullHex.substring(4, 6), 16);
+    return !isNaN(r) && !isNaN(g) && !isNaN(b) ? `${r}, ${g}, ${b}` : defaultVal;
+};
+
 // --- SpatButtonItem ---
 const SpatButtonItem = React.memo(({ sb, activeDir, onPointerDown, onPointerMove, onPointerUp, onPointerCancel }: {
     sb: SpatButton;
@@ -70,7 +87,14 @@ const SpatButtonItem = React.memo(({ sb, activeDir, onPointerDown, onPointerMove
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
         >
             {activeDir && createPortal(
-                <div className="swipe-wheel-container" style={{ zIndex: 50000 }}>
+                <div
+                    className="swipe-wheel-container"
+                    style={{
+                        zIndex: 50000,
+                        '--set-accent': sb.color || 'var(--accent)',
+                        '--set-accent-rgb': colorToRgb(sb.color, 'var(--accent-rgb)')
+                    } as React.CSSProperties}
+                >
                     {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map((d, i) => {
                         const swipeCmd = sb.swipeCommands?.[d as any];
                         const label = swipeCmd || (d === 'up' ? sb.label : d.toUpperCase());
@@ -78,8 +102,9 @@ const SpatButtonItem = React.memo(({ sb, activeDir, onPointerDown, onPointerMove
                             <div
                                 key={d}
                                 className={`swipe-slice ${activeDir === d ? 'active' : ''}`}
-                                style={{ transform: `rotate(${i * 45}deg)`, opacity: (swipeCmd || activeDir === d) ? 1 : 0.35 }}
+                                style={{ transform: `rotate(${i * 45}deg)`, opacity: 1 }}
                             >
+                                <div className="slice-separator" />
                                 <span className="swipe-slice-label" style={{ '--self-rotation': `${-i * 45}deg` } as any}>
                                     {label}
                                 </span>

@@ -4,7 +4,7 @@ import { GRID_SIZE, getTerrainColor, WALL_COLOR, getTerrainName } from '../mappe
 export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: number, s: number, terrain: any, isDarkMode: boolean, processedIconsRef: React.MutableRefObject<Record<string, HTMLCanvasElement>>, imagesRef: React.MutableRefObject<Record<string, HTMLImageElement>>, variant: number = 0) => {
     const tName = getTerrainName(terrain);
     const variantSpecificTerrains = ['Hills', 'Forest', 'Brush', 'Mountains', 'Field', 'Cavern', 'Tunnel', 'Water', 'Shallows', 'Rapids', 'City', 'Underwater', 'Building'];
-    const key = variantSpecificTerrains.includes(tName) ? `${tName}_v${variant}_${isDarkMode}_v8` : `${tName}_${isDarkMode}_v8`;
+    const key = variantSpecificTerrains.includes(tName) ? `${tName}_v${variant}_${isDarkMode}_v10` : `${tName}_${isDarkMode}_v10`;
     
     if (!processedIconsRef.current[key]) {
         const iconCanvas = document.createElement('canvas');
@@ -22,11 +22,11 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
         if (tName === 'Mountains') {
             ictx.font = `bold ${Math.round(s * 0.3)}px monospace`;
             const mountainColors = isDarkMode ? [
-                "rgba(100, 100, 100, 0.45)", // Dark Grey
-                "rgba(80, 80, 80, 0.45)"     // Even Darker
+                "rgba(220, 220, 220, 0.95)", // Bright Silver
+                "rgba(180, 180, 180, 0.95)"  // Bright Grey
             ] : [
-                "rgba(100, 100, 100, 0.4)",  // Medium Grey
-                "rgba(70, 70, 70, 0.4)"      // Darker Grey
+                "rgba(40, 40, 40, 1.0)",     // Opaque Charcoal
+                "rgba(20, 20, 20, 1.0)"      // Opaque Black
             ];
             ictx.fillStyle = mountainColors[variant % 2];
             ictx.textAlign = 'center';
@@ -36,8 +36,8 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
         } else if (tName === 'Hills') {
             ictx.font = `bold ${Math.round(s * 0.5)}px monospace`;
             const hillColor = (variant % 2) === 0 
-                ? (isDarkMode ? "rgba(110, 95, 75, 0.4)" : "rgba(80, 65, 50, 0.5)") // muted brown
-                : (isDarkMode ? "rgba(90, 110, 30, 0.4)" : "rgba(70, 90, 40, 0.5)"); // muted green
+                ? (isDarkMode ? "rgba(210, 180, 140, 0.95)" : "rgba(101, 67, 33, 1.0)") // bolder tan/brown
+                : (isDarkMode ? "rgba(166, 227, 161, 0.95)" : "rgba(40, 120, 30, 1.0)"); // bolder green
             ictx.fillStyle = hillColor;
             ictx.textAlign = 'center';
             ictx.textBaseline = 'middle';
@@ -49,11 +49,11 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
         } else if (tName === 'Forest') {
             ictx.font = `bold ${Math.round(s * 0.45)}px monospace`;
             const forestColors = isDarkMode ? [
-                "rgba(80, 100, 20, 0.45)", // Darker Olive
-                "rgba(0, 70, 0, 0.45)"      // Darker Green
+                "rgba(180, 255, 100, 1.0)",  // Bright Lime
+                "rgba(100, 255, 100, 1.0)"   // Bright Pure Green
             ] : [
-                "rgba(70, 80, 30, 0.45)",   // Muted Olive
-                "rgba(0, 60, 0, 0.45)"      // Muted Green
+                "rgba(20, 100, 20, 1.0)",    // Bold Deep Green
+                "rgba(40, 140, 40, 1.0)"     // Bold Olive Green
             ];
             ictx.textAlign = 'center';
             ictx.textBaseline = 'middle';
@@ -68,9 +68,9 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
         } else if (tName === 'Field') {
             ictx.font = `${Math.round(s * 0.3)}px monospace`;
             const fieldColors = isDarkMode ? [
-                "rgba(154, 205, 50, 0.5)", "rgba(85, 107, 47, 0.5)"
+                "rgba(180, 255, 120, 0.95)", "rgba(220, 240, 150, 0.95)"
             ] : [
-                "rgba(100, 120, 100, 0.6)", "rgba(120, 140, 80, 0.6)"
+                "rgba(60, 160, 60, 1.0)", "rgba(120, 140, 40, 1.0)"
             ];
             ictx.textAlign = 'center';
             ictx.textBaseline = 'middle';
@@ -83,9 +83,9 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
         } else if (tName === 'Brush') {
             ictx.font = `${Math.round(s * 0.35)}px monospace`;
             const brushColors = isDarkMode ? [
-                "rgba(139, 69, 19, 0.7)", "rgba(210, 180, 140, 0.7)"
+                "rgba(255, 140, 0, 1.0)", "rgba(255, 215, 0, 1.0)" // Bright Orange and Gold
             ] : [
-                "rgba(101, 67, 33, 0.8)", "rgba(189, 153, 114, 0.8)"
+                "rgba(139, 69, 19, 1.0)", "rgba(160, 82, 45, 1.0)" // Bold Brown/Sienna
             ];
             ictx.textAlign = 'center';
             ictx.textBaseline = 'middle';
@@ -96,67 +96,56 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
                 ictx.fillText('*', pos.x * s, pos.y * s);
             }
         } else if (tName === 'City') {
-            ictx.font = `bold ${Math.round(s * 0.5)}px monospace`;
-            const cityColors = isDarkMode ? [
-                "rgba(90, 90, 90, 0.6)", "rgba(90, 90, 90, 0.6)"
-            ] : [
-                "rgba(50, 50, 50, 0.6)", "rgba(50, 50, 50, 0.6)"
-            ];
+            const charColor = isDarkMode ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.15)";
+            ictx.fillStyle = charColor;
+            ictx.font = `bold ${Math.round(s * 0.22)}px monospace`;
             ictx.textAlign = 'center';
             ictx.textBaseline = 'middle';
-            ictx.fillStyle = cityColors[variant % 2];
-            ictx.fillText('#', cX, cY);
-        } else if (tName === 'Building') {
-            const buildingColors = isDarkMode ? [
-                "rgba(60, 60, 60, 0.4)", "rgba(50, 50, 50, 0.4)", "rgba(40, 40, 40, 0.4)"
-            ] : [
-                "rgba(60, 60, 60, 0.3)", "rgba(80, 80, 80, 0.3)", "rgba(100, 100, 100, 0.3)"
-            ];
-            ictx.strokeStyle = buildingColors[variant % buildingColors.length];
-            ictx.lineWidth = Math.max(1, s * 0.05);
-            ictx.lineCap = 'round';
-            ictx.lineJoin = 'round';
             
-            const padding = s * 0.15;
+            // Uniform 2x2 grid of small # characters
+            ictx.fillText('#', s * 0.3, s * 0.3);
+            ictx.fillText('#', s * 0.7, s * 0.3);
+            ictx.fillText('#', s * 0.3, s * 0.7);
+            ictx.fillText('#', s * 0.7, s * 0.7);
+        } else if (tName === 'Building') {
+            ictx.save();
+            ictx.strokeStyle = isDarkMode ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.15)";
+            ictx.beginPath();
+            const m = s * 0.2;
             const len = s * 0.2;
-
+            
             // Top-Left
-            ictx.beginPath();
-            ictx.moveTo(padding + len, padding);
-            ictx.lineTo(padding, padding);
-            ictx.lineTo(padding, padding + len);
-            ictx.stroke();
-
+            ictx.moveTo(m, m + len);
+            ictx.lineTo(m, m);
+            ictx.lineTo(m + len, m);
+            
             // Top-Right
-            ictx.beginPath();
-            ictx.moveTo(s - padding - len, padding);
-            ictx.lineTo(s - padding, padding);
-            ictx.lineTo(s - padding, padding + len);
-            ictx.stroke();
-
+            ictx.moveTo(s - m, m + len);
+            ictx.lineTo(s - m, m);
+            ictx.lineTo(s - m - len, m);
+            
             // Bottom-Left
-            ictx.beginPath();
-            ictx.moveTo(padding + len, s - padding);
-            ictx.lineTo(padding, s - padding);
-            ictx.lineTo(padding, s - padding - len);
-            ictx.stroke();
-
+            ictx.moveTo(m, s - m - len);
+            ictx.lineTo(m, s - m);
+            ictx.lineTo(m + len, s - m);
+            
             // Bottom-Right
-            ictx.beginPath();
-            ictx.moveTo(s - padding - len, s - padding);
-            ictx.lineTo(s - padding, s - padding);
-            ictx.lineTo(s - padding, s - padding - len);
+            ictx.moveTo(s - m, s - m - len);
+            ictx.lineTo(s - m, s - m);
+            ictx.lineTo(s - m - len, s - m);
+            
             ictx.stroke();
+            ictx.restore();
         } else if (tName === 'Water' || tName === 'Shallows' || tName === 'Rapids' || tName === 'Underwater') {
             ictx.font = `${Math.round(s * 0.45)}px monospace`;
             
             let waterColors: string[];
             if (tName === 'Shallows' || tName === 'Rapids') {
-                waterColors = isDarkMode ? ["rgba(116, 199, 236, 0.6)", "rgba(137, 220, 235, 0.6)"] : ["rgba(174, 214, 241, 0.7)", "rgba(133, 193, 233, 0.7)"];
+                waterColors = isDarkMode ? ["rgba(0, 255, 255, 1.0)", "rgba(137, 220, 235, 1.0)"] : ["rgba(0, 150, 200, 1.0)", "rgba(0, 120, 180, 1.0)"];
             } else if (tName === 'Underwater') {
-                waterColors = isDarkMode ? ["rgba(30, 30, 46, 0.6)", "rgba(49, 50, 68, 0.6)"] : ["rgba(40, 116, 166, 0.7)", "rgba(33, 97, 140, 0.7)"];
+                waterColors = isDarkMode ? ["rgba(100, 149, 237, 1.0)", "rgba(30, 144, 255, 1.0)"] : ["rgba(0, 70, 150, 1.0)", "rgba(0, 50, 120, 1.0)"];
             } else {
-                waterColors = isDarkMode ? ["rgba(0, 191, 255, 0.6)", "rgba(135, 206, 250, 0.6)"] : ["rgba(70, 130, 180, 0.7)", "rgba(100, 149, 237, 0.7)"];
+                waterColors = isDarkMode ? ["rgba(0, 191, 255, 1.0)", "rgba(30, 144, 255, 1.0)"] : ["rgba(31, 97, 141, 1.0)", "rgba(41, 128, 185, 1.0)"];
             }
 
             ictx.textAlign = 'center';
@@ -164,29 +153,37 @@ export const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: num
             ictx.fillStyle = waterColors[variant % 2];
             ictx.fillText('~', cX, cY);
         } else if (tName === 'Cavern') {
-            ictx.font = `${Math.round(s * 0.3)}px monospace`;
             const caveColors = isDarkMode ? [
-                "rgba(80, 80, 90, 0.3)", "rgba(60, 60, 70, 0.3)"
+                "rgba(120, 120, 130, 0.75)", "rgba(100, 100, 110, 0.65)"
             ] : [
-                "rgba(100, 100, 100, 0.25)", "rgba(150, 150, 150, 0.25)"
+                "rgba(80, 80, 80, 0.75)", "rgba(50, 50, 50, 0.65)"
             ];
             ictx.textAlign = 'center';
             ictx.textBaseline = 'middle';
-            const positions = [{ x: 0.3, y: 0.3, char: '.' }, { x: 0.7, y: 0.4, char: 'o' }, { x: 0.5, y: 0.7, char: '.' }];
-            for (let i = 0; i < positions.length; i++) {
-                const pos = positions[i];
-                ictx.fillStyle = caveColors[(variant + i) % 2];
-                ictx.fillText(pos.char, pos.x * s, pos.y * s);
-            }
+            
+            // Hanging stalactites (V) of different sizes
+            ictx.fillStyle = caveColors[0];
+            ictx.font = `${Math.round(s * 0.3)}px monospace`;
+            ictx.fillText('V', s * 0.3, s * 0.2);
+            
+            ictx.fillStyle = caveColors[1];
+            ictx.font = `${Math.round(s * 0.2)}px monospace`;
+            ictx.fillText('V', s * 0.7, s * 0.18);
+            
+            // Rising stalagmite (^) further south
+            ictx.fillStyle = caveColors[0];
+            ictx.font = `${Math.round(s * 0.35)}px monospace`;
+            ictx.fillText('^', s * 0.5, s * 0.9);
+            
             ictx.strokeStyle = isDarkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)";
             ictx.lineWidth = 1;
             ictx.strokeRect(0, 0, s, s);
         } else if (tName === 'Tunnel') {
             ictx.font = `${Math.round(s * 0.4)}px monospace`;
             const tunnelColors = isDarkMode ? [
-                "rgba(90, 80, 70, 0.3)", "rgba(70, 60, 50, 0.3)"
+                "rgba(255, 200, 150, 1.0)", "rgba(255, 180, 120, 1.0)"
             ] : [
-                "rgba(139, 115, 85, 0.25)", "rgba(101, 84, 62, 0.25)"
+                "rgba(101, 84, 62, 1.0)", "rgba(80, 60, 40, 1.0)"
             ];
             ictx.textAlign = 'center';
             ictx.textBaseline = 'middle';

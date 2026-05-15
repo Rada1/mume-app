@@ -239,9 +239,22 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     // Play mode: Start long-press timer for "Look Modifier"
                     if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
                     longPressTimerRef.current = setTimeout(() => {
-                        const { triggerHaptic, setIsTrackpadModifierActive } = depsRef.current;
+                        const { triggerHaptic, setIsTrackpadModifierActive, executeCommand } = depsRef.current;
                         triggerHaptic(40);
                         contextMenuTriggeredRef.current = true;
+
+                        // --- Long-Press Targeting ---
+                        // If we are long-pressing over an occupant, target it immediately
+                        const { screenToWorld, getOccupantAt } = hitTestRef.current;
+                        const world = screenToWorld(startMouseRef.current.x, startMouseRef.current.y);
+                        const occupant = getOccupantAt?.(world.x, world.y);
+                        if (occupant) {
+                            const targetName = occupant.commandTarget || occupant.name;
+                            if (targetName) {
+                                executeCommand(`target ${targetName}`, false, false, false, false, { fromUi: true });
+                            }
+                        }
+
                         if (setIsTrackpadModifierActive) {
                             setIsTrackpadModifierActive(true);
                         }
@@ -492,7 +505,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                 category: occupantHit.category,
                                 context: occupantHit.commandTarget || occupantHit.name,
                                 entityId,
-                                menuDisplay: 'dial',
+                                menuDisplay: 'list',
                                 accentColor: occupantHit.color
                             });
                             depsRef.current.playClickSound?.();

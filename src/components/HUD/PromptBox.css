@@ -18,7 +18,7 @@
 }
 
 .prompt-box-content {
-    background: transparent !important;
+    background: #000000 !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     border-top: none !important;
@@ -72,11 +72,16 @@
     opacity: 1;
 }
 
-.name-label .inline-btn {
+.player-name .inline-btn {
     padding: 0;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
+}
+
+.opponent-name .prompt-opponent-inline {
+    padding: 0 3px !important;
+    text-align: right;
 }
 
 .player-name {
@@ -106,6 +111,53 @@
     gap: 2px;
     flex: 1;
     min-width: 0;
+}
+
+.prompt-top-stats-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 18px;
+    width: 100%;
+    min-width: 0;
+}
+
+.prompt-top-stats-row .prompt-combat-stats-line {
+    flex: 0 1 auto;
+    min-width: 0;
+    padding: 0;
+    gap: 6px;
+}
+
+.prompt-inline-name {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 34%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 11px;
+    line-height: 1;
+}
+
+.prompt-inline-name .inline-btn {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.opponent-top-stats-row {
+    justify-content: flex-end;
+}
+
+.opponent-top-stats-row .prompt-inline-name {
+    flex: 1 1 auto;
+    max-width: 100%;
+}
+
+.opponent-top-stats-row .prompt-inline-name .inline-btn {
+    display: block;
 }
 
 .prompt-combat-stats-line {
@@ -314,7 +366,7 @@
     bottom: 100%;
     left: var(--wimpy-x, 0); /* Positioned by JS or leftover from prev implementation */
     margin-bottom: 12px;
-    background: rgba(10, 13, 21, 0.95);
+    background: rgba(0, 0, 0, 0.95);
     color: #fff;
     padding: 6px 10px;
     border-radius: 8px;
@@ -432,6 +484,108 @@
     border-color: var(--accent, #3b82f6);
 }
 
+.disposition-square-btn {
+    color: #4ade80;
+}
+
+.disposition-popout-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 3500;
+    background: transparent;
+}
+
+.disposition-popout {
+    position: fixed;
+    transform: translateX(-50%);
+    width: min(270px, calc(100vw - 24px));
+    height: 236px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    padding: 24px 12px 12px;
+    background: rgba(0, 0, 0, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75);
+    z-index: 3501;
+    pointer-events: auto;
+}
+
+.disposition-popout-title {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent, #3b82f6);
+    color: #000;
+    font-size: 11px;
+    line-height: 1;
+    font-weight: 900;
+    padding: 6px 14px;
+    border-radius: 18px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    white-space: nowrap;
+}
+
+.disposition-slider-column {
+    min-width: 0;
+    display: grid;
+    grid-template-rows: 18px 1fr;
+    grid-template-columns: 28px 1fr;
+    gap: 6px;
+}
+
+.disposition-slider-label {
+    grid-column: 1 / -1;
+    color: rgba(255, 255, 255, 0.82);
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    font-weight: 900;
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.disposition-slider {
+    writing-mode: vertical-lr;
+    direction: rtl;
+    width: 28px;
+    height: 100%;
+    margin: 0;
+    cursor: grab;
+    accent-color: var(--accent, #3b82f6);
+}
+
+.disposition-slider-options {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+}
+
+.disposition-option {
+    border: 0;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.48);
+    font-family: var(--font-mono, monospace);
+    font-size: 9px;
+    font-weight: 900;
+    line-height: 1;
+    padding: 2px 0;
+    text-align: left;
+    cursor: pointer;
+}
+
+.disposition-option.active {
+    color: #4ade80;
+    text-shadow: 0 0 8px rgba(74, 222, 128, 0.35);
+}
+
 .pos-combat-square-btn.is-fighting {
     border-color: #ef4444; /* Force red border in combat */
     box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
@@ -464,7 +618,14 @@
     justify-content: flex-end;
     flex: 1;
     width: 100%;
-    margin-top: 14px;
+}
+
+.opponent-vitals-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
 }
 
 @keyframes combat-pulse {

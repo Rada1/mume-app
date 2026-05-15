@@ -42,7 +42,7 @@ export interface ExecutorDeps {
     setEqLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setTarget: (val: string | null) => void;
     finalizeCapture: (targetStage?: CaptureStage) => void;
-    setPendingFlags: (isSilent: boolean, fromDrawer: boolean) => void;
+    setPendingFlags: (isSilent: boolean, fromDrawer: boolean, command?: string) => void;
     target: string | null;
     setPopoverState: (val: any) => void;
     status: 'connected' | 'disconnected' | 'connecting';

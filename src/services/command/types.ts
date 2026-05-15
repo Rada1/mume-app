@@ -14,7 +14,7 @@ export interface CommandContext {
     mapperRef: React.RefObject<MapperRef>;
     teleportTargets: TeleportTarget[];
     captureStage: React.MutableRefObject<CaptureStage>;
-    setPendingFlags: (isSilent: boolean, fromDrawer: boolean) => void;
+    setPendingFlags: (isSilent: boolean, fromDrawer: boolean, command?: string) => void;
     setInventoryLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setStatsLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setInfoLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;

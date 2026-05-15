@@ -9,7 +9,6 @@ import { CloudFog, Map as MapIcon, User, Shield, Users, UtensilsCrossed, Droplet
 
 import { useMumeTime } from '../../../hooks/useMumeTime';
 import InputArea from '../../Controls/InputArea';
-import CombatStatsPanel from '../../Combat/CombatStatsPanel';
 import { MapperRoomInfo } from '../../Mapper/MapperRoomInfo';
 import { UiPositions, SwipeDirection } from '../../../types';
 import { GutterDrawerPanel } from './GutterDrawerPanel';
@@ -40,13 +39,13 @@ interface MapperClusterProps {
 
 export const MapperCluster: React.FC<MapperClusterProps> = ({
     uiPositions, isEditMode, handleDragStart, characterName, isMmapperMode, isMobile, mapperRef,
-    dragState, isLandscape, wasDraggingRef, heldButton, heldButtonRef, setHeldButton, setCommandPreview,
+    dragState, isLandscape, wasDraggingRef, heldButton, setHeldButton, setCommandPreview,
     input, setInput, handleSend, handleInputSwipe
 }) => {
     const {
         triggerHaptic, viewport, btn, handleButtonClick, executeCommand, joystick,
         spatButtons, setSpatButtons, parley, setParley, whoList,
-        inlineCategories, env, isFoggy, gameState, currentTerrain, gameTime, accountState, setAccountState
+        inlineCategories, env, isFoggy, gameState, currentTerrain, gameTime, accountState, setAccountState,
     } = useGame() as GameContextType;
     const { target, activePrompt, stats } = useVitals();
     const currentTime = useMumeTime(gameTime);
@@ -58,12 +57,14 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     const isExpanded = ui.mapExpanded;
     const { isKeyboardOpen } = viewport;
     const rememberLogin = useSettingsStore(s => s.rememberLogin);
+    const isDarkMode = useSettingsStore(s => s.theme) === 'dark';
     const setRememberLogin = useSettingsStore(s => s.setRememberLogin);
     const setLoginName = useSettingsStore(s => s.setLoginName);
     const setLoginPassword = useSettingsStore(s => s.setLoginPassword);
 
     // Mobile DOCKED (Gutter) Mode
     const isReplaying = (useGame() as GameContextType).sessionMode === 'replay';
+
 
     // --- Sticky options for smooth creation-screen transitions ---
     // Holds the last non-empty set of options so we never flash to an empty state
@@ -116,6 +117,25 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
             : '';
         return () => { if (styleEl) styleEl.textContent = ''; };
     }, [selectedCharName]);
+
+    // Highlight the selected menu command line in the log via a dynamic <style> rule.
+    const selectedMenuCommand = accountState.selectedMenuCommand ?? null;
+    useEffect(() => {
+        const id = 'account-menu-cmd-style';
+        let styleEl = document.getElementById(id) as HTMLStyleElement | null;
+        if (!styleEl) {
+            styleEl = document.createElement('style');
+            styleEl.id = id;
+            document.head.appendChild(styleEl);
+        }
+        styleEl.textContent = selectedMenuCommand
+            ? `.account-menu-cmd[data-context="${CSS.escape(selectedMenuCommand)}"] { outline: 1px solid rgba(var(--accent-rgb,139,92,246),0.75); background: rgba(var(--accent-rgb,139,92,246),0.12); border-radius: 3px; color: #fff; }`
+            : '';
+        return () => { if (styleEl) styleEl.textContent = ''; };
+    }, [selectedMenuCommand]);
+
+    const [playNameInput, setPlayNameInput] = useState('');
+    const [passwordInput, setPasswordInput] = useState('');
 
     // Long-press drag-to-select on character lines:
     // - Normal swipe → cancels timer, scrolls as usual
@@ -229,13 +249,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     {/* Character Select panel removed per user request */}
 
                     <div className="account-gutter-content">
-                        <div className="account-centered-interactive-zone">
-                            {(isLoginStage || accountState.stage === 'account-confirmation') && accountState.currentPrompt && !isKeyboardOpen && (
-                                <div className="account-prompt-display">
-                                    {accountState.currentPrompt}
-                                </div>
-                            )}
-
+                        {(isMenuStage || isCreationStage) && <div className="account-centered-interactive-zone">
+    
 
 
 
@@ -248,10 +263,152 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         {isMenuStage && (
                             <div className="char-select-panel">
                                 {!accountState.selectedCharacter ? (
-                                    <div className="char-select-hint">
-                                        <span className="char-select-label">Characters</span>
-                                        <span className="char-select-sublabel">Tap a name in the log to select</span>
-                                    </div>
+                                    selectedMenuCommand === 'create' ? (
+                                        <div className="cmd-action-panel">
+                                            <div className="cmd-action-header">
+                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}>←</button>
+                                                <span className="cmd-action-title">New Character</span>
+                                            </div>
+                                            <div className="cmd-action-body">
+                                                <button className="char-play-btn" onClick={() => { triggerHaptic(30); executeCommand('create'); }}>
+                                                    Create Character
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : selectedMenuCommand === 'play' ? (
+                                        <div className="cmd-action-panel">
+                                            <div className="cmd-action-header">
+                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setPlayNameInput(''); setAccountState(prev => ({ ...prev, selectedMenuCommand: null, characters: [] })); executeCommand('menu'); }}>←</button>
+                                                <span className="cmd-action-title">Play Character</span>
+                                            </div>
+                                            <div className="cmd-play-char-list">
+                                                {accountState.characters.length === 0 ? (
+                                                    <div className="char-data-loading">Loading…</div>
+                                                ) : (
+                                                    accountState.characters.map(char => (
+                                                        <button
+                                                            key={char.name}
+                                                            className={`cmd-play-char-item${playNameInput === char.name ? ' selected' : ''}`}
+                                                            onClick={() => { triggerHaptic(15); setPlayNameInput(char.name); }}
+                                                        >
+                                                            {char.rawLine || char.name}
+                                                        </button>
+                                                    ))
+                                                )}
+                                            </div>
+                                            <div className="cmd-action-body">
+                                                <input
+                                                    className="cmd-name-input"
+                                                    type="text"
+                                                    placeholder="Character name…"
+                                                    value={playNameInput}
+                                                    onChange={e => setPlayNameInput(e.target.value)}
+                                                    onKeyDown={e => { if (e.key === 'Enter' && playNameInput.trim()) { triggerHaptic(30); executeCommand('play ' + playNameInput.trim()); setPlayNameInput(''); } }}
+                                                    autoCapitalize="words"
+                                                    spellCheck={false}
+                                                />
+                                                <button
+                                                    className="char-play-btn"
+                                                    disabled={!playNameInput.trim()}
+                                                    onClick={() => { if (!playNameInput.trim()) return; triggerHaptic(30); executeCommand('play ' + playNameInput.trim()); setPlayNameInput(''); }}
+                                                >
+                                                    Play {playNameInput.trim() || '…'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : selectedMenuCommand === 'time' ? (
+                                        <div className="cmd-action-panel">
+                                            <div className="cmd-action-header">
+                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}>←</button>
+                                                <span className="cmd-action-title">Game Time</span>
+                                            </div>
+                                            <div className="char-detail-content">
+                                                {(accountState.timeLines ?? []).length > 0
+                                                    ? <div className="char-data-lines">{(accountState.timeLines ?? []).map((line, i) => <div key={i} className="char-data-line">{line}</div>)}</div>
+                                                    : accountState.charCapture?.type === 'time'
+                                                        ? <div className="char-data-loading">Loading…</div>
+                                                        : null}
+                                            </div>
+                                            <div className="char-detail-play">
+                                                <button className="char-play-btn" onClick={() => { triggerHaptic(20); setAccountState(prev => ({ ...prev, charCapture: { type: 'time' }, timeLines: [] })); executeCommand('time'); }}>Refresh</button>
+                                            </div>
+                                        </div>
+                                    ) : selectedMenuCommand === 'link' ? (
+                                        <div className="cmd-action-panel">
+                                            <div className="cmd-action-header">
+                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}>←</button>
+                                                <span className="cmd-action-title">Link Status</span>
+                                            </div>
+                                            <div className="char-detail-content">
+                                                {(accountState.linkLines ?? []).length > 0
+                                                    ? <div className="char-data-lines">{(accountState.linkLines ?? []).map((line, i) => <div key={i} className="char-data-line">{line}</div>)}</div>
+                                                    : accountState.charCapture?.type === 'link'
+                                                        ? <div className="char-data-loading">Loading…</div>
+                                                        : null}
+                                            </div>
+                                            <div className="char-detail-play">
+                                                <button className="char-play-btn" onClick={() => { triggerHaptic(20); setAccountState(prev => ({ ...prev, charCapture: { type: 'link' }, linkLines: [] })); executeCommand('link'); }}>Refresh</button>
+                                            </div>
+                                        </div>
+                                    ) : selectedMenuCommand === 'lag' ? (
+                                        <div className="cmd-action-panel">
+                                            <div className="cmd-action-header">
+                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}>←</button>
+                                                <span className="cmd-action-title">Lag Report</span>
+                                            </div>
+                                            <div className="char-detail-content">
+                                                {(accountState.lagLines ?? []).length > 0
+                                                    ? <div className="char-data-lines">{(accountState.lagLines ?? []).map((line, i) => <div key={i} className="char-data-line">{line}</div>)}</div>
+                                                    : accountState.charCapture?.type === 'lag'
+                                                        ? <div className="char-data-loading">Loading…</div>
+                                                        : null}
+                                            </div>
+                                            <div className="char-detail-play">
+                                                <button className="char-play-btn" onClick={() => { triggerHaptic(20); setAccountState(prev => ({ ...prev, charCapture: { type: 'lag' }, lagLines: [] })); executeCommand('lag'); }}>Refresh</button>
+                                            </div>
+                                        </div>
+                                    ) : selectedMenuCommand === 'password' ? (
+                                        <div className="cmd-action-panel">
+                                            <div className="cmd-action-header">
+                                                <button className="char-back-btn" onClick={() => { triggerHaptic(10); setPasswordInput(''); setAccountState(prev => ({ ...prev, selectedMenuCommand: null })); executeCommand('menu'); }}>←</button>
+                                                <span className="cmd-action-title">Change Password</span>
+                                            </div>
+                                            <div className="cmd-action-body">
+                                                <input
+                                                    className="cmd-name-input"
+                                                    type="password"
+                                                    placeholder="New password…"
+                                                    value={passwordInput}
+                                                    onChange={e => setPasswordInput(e.target.value)}
+                                                    onKeyDown={e => { if (e.key === 'Enter' && passwordInput.trim()) { triggerHaptic(30); executeCommand('password ' + passwordInput.trim()); setPasswordInput(''); } }}
+                                                    autoCapitalize="none"
+                                                    autoComplete="new-password"
+                                                    spellCheck={false}
+                                                />
+                                                <button
+                                                    className="char-play-btn"
+                                                    disabled={!passwordInput.trim()}
+                                                    onClick={() => { if (!passwordInput.trim()) return; triggerHaptic(30); executeCommand('password ' + passwordInput.trim()); setPasswordInput(''); }}
+                                                >
+                                                    Change Password
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="char-select-hint">
+                                            {accountState.characters.length === 0 ? (
+                                                <>
+                                                    <span className="char-select-label">Commands</span>
+                                                    <span className="char-select-sublabel">Tap a command in the log to run it</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <span className="char-select-label">Characters</span>
+                                                    <span className="char-select-sublabel">Tap a name in the log to select</span>
+                                                </>
+                                            )}
+                                        </div>
+                                    )
                                 ) : (
                                     <div className="char-detail-panel">
                                         <div className="char-detail-header">
@@ -570,23 +727,36 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
 
                             </div>
                         )}
-                        </div> {/* End account-centered-interactive-zone */}
+                        </div>} {/* End account-centered-interactive-zone */}
 
                         {!isMenuStage && (!isCreationStage || (!displayedOptions.length && !isTransitioning)) && (
                             <div
                                 className={`mobile-gutter-input-wrapper account-bar-anchor${isLoginStage ? ' account-login-glow' : ''}`}
-                                style={{ 
-                                    position: 'relative', 
-                                    zIndex: 1, 
-                                    padding: '0', 
-                                    flexShrink: 0, 
-                                    marginBottom: (isLoginStage || isMenuStage || isCreationStage) ? '12px' : '16px', 
+                                style={{
+                                    position: 'relative',
+                                    zIndex: 1,
+                                    padding: '0',
+                                    flexShrink: 0,
                                     width: '100%',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center'
                                 }}
                             >
+                            {isLoginStage && (
+                                <div style={{ 
+                                    color: 'rgba(255,255,255,0.4)', 
+                                    fontSize: '11px', 
+                                    fontWeight: 900, 
+                                    textTransform: 'uppercase', 
+                                    letterSpacing: '1.5px', 
+                                    marginBottom: '8px', 
+                                    width: '100%', 
+                                    textAlign: 'center'
+                                }}>
+                                    {isPasswordPrompt ? 'Enter Password' : 'Log In'}
+                                </div>
+                            )}
                             <InputArea
                                 input={input}
                                 setInput={setInput}
@@ -617,16 +787,23 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                     <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', fontWeight: 500 }}>Remember login</span>
                                 </label>
                             )}
-                            {isLoginStage && accountState.currentPrompt?.toLowerCase().includes('by what name') && (
-                                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '12px', width: '100%', padding: '0 20px' }}>
+                            {isLoginStage && (
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    marginTop: '12px',
+                                    width: '100%',
+                                    padding: '0 20px',
+                                    visibility: accountState.currentPrompt?.toLowerCase().includes('by what name') ? 'visible' : 'hidden'
+                                }}>
                                     <button
                                         className="account-menu-btn no-arrow"
-                                        style={{ 
-                                            width: 'auto', 
+                                        style={{
+                                            width: 'auto',
                                             minWidth: '160px',
-                                            padding: '10px 24px', 
-                                            fontSize: '11px', 
-                                            fontWeight: 900, 
+                                            padding: '10px 24px',
+                                            fontSize: '11px',
+                                            fontWeight: 900,
                                             background: 'rgba(255,255,255,0.03)',
                                             border: '1px solid rgba(255,255,255,0.1)',
                                             borderRadius: '20px',
@@ -674,6 +851,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                                     onClick={() => {
                                         executeCommand('');
                                         executeCommand('');
+                                        executeCommand('menu');
                                     }}
                                 >
                                     Main Menu
@@ -733,7 +911,9 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     zIndex: 2800,
                     pointerEvents: 'none'
                 }}>
-                    <MapperRoomInfo />
+                    <div style={{ width: '100%' }}>
+                        <MapperRoomInfo />
+                    </div>
                     
                     {/* Persistent Tactical Buttons - now below the room card */}
                     <div
@@ -762,7 +942,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                             executeCommand={executeCommand}
                             setCommandPreview={setCommandPreview}
                             heldButton={heldButton}
-                            heldButtonRef={heldButtonRef}
                             setHeldButton={setHeldButton}
                             joystick={joystick}
                             target={target}
@@ -773,10 +952,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                             isMobile={isMobile}
                         />
                     </div>
-                </div>
-
-                <div className="mobile-mapper-combat-overlay">
-                    <CombatStatsPanel />
                 </div>
 
                 <Mapper
@@ -793,6 +968,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     setHeldButton={setHeldButton}
                     setCommandPreview={setCommandPreview}
                 />
+
+
             </div>
 
             {/* Drawer Area */}
@@ -812,7 +989,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                 }}
             >
                 {/* Mobile Portrait Env Indicator - Bottom Left above command bar */}
-                {(lighting !== 'none' || weather !== 'none' || isFoggy || stats.conditions?.hungry || stats.conditions?.thirsty || currentTime) && (
+                {isShown && (lighting !== 'none' || weather !== 'none' || isFoggy || stats.conditions?.hungry || stats.conditions?.thirsty || currentTime) && (
                     <div className="mobile-portrait-env-indicator" style={{
                         position: 'absolute',
                         bottom: 'calc(100% + 4px)',
@@ -821,10 +998,10 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         alignItems: 'center',
                         gap: '4px',
                         padding: '2px 6px',
-                        background: 'rgba(0, 0, 0, 0.4)',
+                        background: isDarkMode ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.75)',
                         backdropFilter: 'blur(4px)',
                         borderRadius: '4px',
-                        border: '1px solid rgba(255, 255, 255, 0.05)',
+                        border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid rgba(0, 0, 0, 0.12)',
                         zIndex: 2,
                         pointerEvents: 'none',
                         color: 'var(--text-faded)',
@@ -832,7 +1009,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         transformOrigin: 'bottom left'
                     }}>
                         {currentTime && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', marginRight: '2px', borderRight: '1px solid rgba(255,255,255,0.1)', paddingRight: '4px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', marginRight: '2px', borderRight: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.12)', paddingRight: '4px' }}>
                                 <Clock size={11} style={{ opacity: 0.7 }} />
                                 <span style={{ fontSize: '0.55rem', fontWeight: 800 }}>
                                     {currentTime.hour === 0 ? '12' : (currentTime.hour > 12 ? currentTime.hour - 12 : currentTime.hour)}

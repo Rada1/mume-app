@@ -17,6 +17,7 @@ import { useMapperController } from './useMapperController';
 import { useSmartWalk } from './hooks/useSmartWalk';
 import { useMapperPlayerTracking } from './hooks/useMapperPlayerTracking';
 import { DpadCluster } from './DpadCluster';
+import { GRID_SIZE } from './mapperUtils';
 import './Mapper.css';
 
 interface MapperProps {
@@ -61,11 +62,12 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
 
     const {
         triggerHaptic, executeCommand, theme, btn, joystick, playClickSound,
-        setIsTrackpadModifierActive, lighting, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, isFoggy, isImmersionMode
+        setIsTrackpadModifierActive, lighting, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, isFoggy, isImmersionMode,
+        selectedObjectIds
     } = useGame();
     const { target, groupMembers, opponentName, opponentId, deathRoomId } = useVitals();
     const { addMessage } = useLog();
-    const { setPopoverState, ui } = useUI();
+    const { setPopoverState, popoverState, ui } = useUI();
     const { playerColor, npcColor, enemyColor, objectColor } = useSettingsStore();
     const isDarkMode = theme === 'dark';
     const treatMapAsExplored = useModeStore(state => state.isSpectating && state.activeView === 'target');
@@ -108,7 +110,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
 
     useEffect(() => {
         triggerRender();
-    }, [roomEntitySignature, triggerRender]);
+    }, [roomEntitySignature, popoverState?.entityId, selectedObjectIds, triggerRender]);
 
     const controllerOptions = useMemo(() => ({
         onRecenter: handleCenterOnPlayer,
@@ -122,6 +124,44 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         window.addEventListener('mume-mapper-center-on-player', onCenter);
         return () => window.removeEventListener('mume-mapper-center-on-player', onCenter);
     }, [handleCenterOnPlayer]);
+
+    // Zoom-in while the swipe wheel is active (heldButton set on mobile only)
+    const savedZoomRef = useRef<number | null>(null);
+    const holdZoomTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const snapCameraToPlayer = useCallback((zoom: number) => {
+        if (!playerPosRef.current || !canvasRef.current) return;
+        // Use clientWidth/Height — identical to canvas.width/getDPR() used by the animation loop
+        const w = canvasRef.current.clientWidth;
+        const h = canvasRef.current.clientHeight;
+        cameraRef.current.x = (playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2) - (w / (2 * zoom));
+        cameraRef.current.y = (playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2) - (h / (2 * zoom));
+        cameraRef.current.zoom = zoom;
+    }, [playerPosRef, canvasRef, cameraRef]);
+
+    useEffect(() => {
+        if (!isMobile) return;
+        if (heldButton) {
+            if (savedZoomRef.current !== null || holdZoomTimerRef.current) return;
+            holdZoomTimerRef.current = setTimeout(() => {
+                holdZoomTimerRef.current = null;
+                savedZoomRef.current = cameraRef.current.zoom;
+                snapCameraToPlayer(5);
+                triggerRender();
+            }, 100);
+        } else {
+            if (holdZoomTimerRef.current) {
+                clearTimeout(holdZoomTimerRef.current);
+                holdZoomTimerRef.current = null;
+            }
+            if (savedZoomRef.current !== null) {
+                const target = savedZoomRef.current;
+                savedZoomRef.current = null;
+                snapCameraToPlayer(target);
+                triggerRender();
+            }
+        }
+    }, [heldButton, isMobile, cameraRef, triggerRender, snapCameraToPlayer]);
 
     const { marquee } = useMapperInteractions({
         rooms, setRooms, markers, setMarkers,
@@ -231,6 +271,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 objectColor={objectColor}
                 opponentName={opponentName}
                 opponentId={opponentId}
+                activeInlineEntityId={popoverState?.entityId || null}
+                selectedObjectIds={selectedObjectIds}
                 deathRoomId={deathRoomId}
             />
 
@@ -271,18 +313,18 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             )}
 
             {!effectiveIsMinimized && (
-                <div style={{ 
-                    position: 'absolute', 
-                    bottom: '10px', 
-                    left: '10px', 
-                    color: '#9ca3af', 
-                    background: 'rgba(0,0,0,0.4)', 
-                    padding: '4px 8px', 
-                    zIndex: 9999, 
-                    fontSize: '10px', 
-                    pointerEvents: 'none', 
-                    borderRadius: '4px', 
-                    border: '1px solid rgba(255,255,255,0.1)', 
+                <div style={{
+                    position: 'absolute',
+                    bottom: '10px',
+                    left: '10px',
+                    color: isDarkMode ? '#9ca3af' : '#6b7280',
+                    background: isDarkMode ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.75)',
+                    padding: '4px 8px',
+                    zIndex: 9999,
+                    fontSize: '10px',
+                    pointerEvents: 'none',
+                    borderRadius: '4px',
+                    border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.12)',
                     fontFamily: 'monospace',
                     opacity: 0.8
                 }}>

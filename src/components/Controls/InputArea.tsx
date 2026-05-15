@@ -35,7 +35,7 @@ const InputArea: React.FC<InputAreaProps> = ({
     const { ui, setUI } = useUI();
     const { viewport } = useBaseGame();
     const { stats } = useVitals();
-    const { inCombat, triggerHaptic, playClickSound, isSoundEnabled, initAudio, isPasswordMode } = useGame();
+    const { inCombat, triggerHaptic, playClickSound, isSoundEnabled, initAudio, isPasswordMode, accountState } = useGame() as any;
     const terrainClass = terrain ? `terrain-${normalizeTerrain(terrain)}` : '';
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -349,6 +349,17 @@ const InputArea: React.FC<InputAreaProps> = ({
 
                     <button type="submit" style={{ display: 'none' }}>Send</button>
                 </form>
+
+                    {gameState === 'account' && accountState?.stage === 'login' && (
+                        <button
+                            type="button"
+                            className="login-btn"
+                            onClick={() => onSend()}
+                            onPointerDown={(e) => e.stopPropagation()}
+                        >
+                            Login
+                        </button>
+                    )}
 
                     {(gameState === 'playing' || gameState === 'account') && (
                         <div className="input-actions-container">

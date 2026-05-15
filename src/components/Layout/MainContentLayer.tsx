@@ -196,7 +196,18 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         <div className={`sticky-room-header terrain-${String(currentTerrain || 'field').toLowerCase()}`} key="newbie-room-header">
                             <div className="room-info-text">
                                 <div className="message-content room-name">
-                                    {processMessageTokens ? <TokenRenderer tokens={processMessageTokens(`\x1b[1;32m${roomName}\x1b[0m`)} /> : <span dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(`\x1b[1;32m${roomName}\x1b[0m`), 'roomname', true, 'room-name' as any)) }} />}
+                                    {processMessageTokens ? (
+                                        <TokenRenderer
+                                            tokens={processMessageTokens(`\x1b[1;32m${roomName}\x1b[0m`)}
+                                            metadata={{
+                                                id: `room:${String(roomName).toLowerCase()}`,
+                                                context: roomName,
+                                                category: 'cat-room',
+                                                cmd: 'cat-room',
+                                                action: 'menu'
+                                            }}
+                                        />
+                                    ) : <span dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(processMessageHtml(ansiConvert.toHtml(`\x1b[1;32m${roomName}\x1b[0m`), 'roomname', true, 'room-name' as any)) }} />}
                                 </div>
                                 {roomDesc && (
                                     <div className="message-content room-desc">

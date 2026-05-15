@@ -11,6 +11,23 @@ interface ButtonSwipeOverlayProps {
     onSwap?: () => void;
 }
 
+const colorToRgb = (colorVal: string | undefined, defaultVal: string) => {
+    if (!colorVal || colorVal.startsWith('var(')) return defaultVal;
+    const rgbMatch = colorVal.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+    if (rgbMatch) return `${rgbMatch[1]}, ${rgbMatch[2]}, ${rgbMatch[3]}`;
+
+    const hex = colorVal.replace('#', '').trim();
+    const fullHex = hex.length === 3
+        ? hex.split('').map(ch => ch + ch).join('')
+        : hex;
+    if (fullHex.length < 6) return defaultVal;
+
+    const r = parseInt(fullHex.substring(0, 2), 16);
+    const g = parseInt(fullHex.substring(2, 4), 16);
+    const b = parseInt(fullHex.substring(4, 6), 16);
+    return !isNaN(r) && !isNaN(g) && !isNaN(b) ? `${r}, ${g}, ${b}` : defaultVal;
+};
+
 export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, activeDir, isCancelling, buttonRect, rayParams, onSwap }) => {
     if (!activeDir && !isCancelling) return null;
 
@@ -20,6 +37,8 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
 
     const centerX = buttonRect ? (buttonRect.left + buttonRect.width / 2) : 0;
     const centerY = buttonRect ? (buttonRect.top + buttonRect.height / 2) : 0;
+    const wheelAccent = rayParams.color || button.style.borderColor || button.style.backgroundColor || 'var(--set-accent, var(--accent))';
+    const wheelAccentRgb = colorToRgb(wheelAccent, colorToRgb(button.style.borderColor || button.style.backgroundColor, 'var(--set-accent-rgb, var(--accent-rgb))'));
 
     return createPortal(
         <div style={{
@@ -34,15 +53,9 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
             '--ray-angle': `${rayParams.angle}deg`,
             '--ray-length': `${rayParams.length}px`,
             '--ray-opacity': rayParams.opacity,
-            '--ray-color': rayParams.color || 'var(--set-accent, var(--accent))',
-            '--set-accent': button.style.borderColor || 'var(--set-accent, var(--accent))',
-            '--set-accent-rgb': button.style.borderColor ? (() => {
-                const hex = button.style.borderColor.replace('#', '');
-                const r = parseInt(hex.substring(0, 2), 16);
-                const g = parseInt(hex.substring(2, 4), 16);
-                const b = parseInt(hex.substring(4, 6), 16);
-                return !isNaN(r) ? `${r}, ${g}, ${b}` : 'var(--set-accent-rgb, var(--accent-rgb))';
-            })() : 'var(--set-accent-rgb, var(--accent-rgb))'
+            '--ray-color': wheelAccent,
+            '--set-accent': wheelAccent,
+            '--set-accent-rgb': wheelAccentRgb
         } as any}>
             <div className="swipe-wheel-container">
                 {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map((d, i) => {
@@ -57,7 +70,7 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                             className={`swipe-slice ${isActive ? 'active' : ''}`}
                             style={{
                                 transform: `rotate(${angle}deg)`,
-                                opacity: (cmdVal || isActive) ? 1 : 0,
+                                opacity: 1,
                                 pointerEvents: 'auto',
                             } as any}
                         >

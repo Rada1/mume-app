@@ -32,8 +32,9 @@ export const useLogPointerDown = (
 
         // --- 1. Overlay Button Handling ---
         const activeHeldButton = heldButtonRef?.current || heldButton;
+        const isTargetableInline = targetEl?.getAttribute('data-targetable') !== 'false';
 
-        if (targetEl && activeHeldButton && !activeHeldButton.didFire && !activeHeldButton.id.startsWith('log-inline-')) {
+        if (targetEl && isTargetableInline && activeHeldButton && !activeHeldButton.didFire && !activeHeldButton.id.startsWith('log-inline-')) {
             const sourceButton = btn.buttons.find(b => b.id === activeHeldButton.id);
             if (sourceButton) {
                 const resolved = getButtonCommand(sourceButton, activeHeldButton.dx || 0, activeHeldButton.dy || 0, contextStr, undefined, activeHeldButton.modifiers || [], joystick, target, isLong);
@@ -78,7 +79,7 @@ export const useLogPointerDown = (
         }
 
         // --- 2. Modifier Hotkeys (Look) ---
-        else if (targetEl && (joystick.isTargetModifierActive || isTrackpadModifierActive)) {
+        else if (targetEl && isTargetableInline && (joystick.isTargetModifierActive || isTrackpadModifierActive)) {
              if (contextStr) {
                  executeCommand(`look ${contextStr}`);
                  joystick.setIsJoystickConsumed(true);

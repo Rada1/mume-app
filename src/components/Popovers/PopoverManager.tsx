@@ -60,16 +60,12 @@ import { TeleportSavePopover, TeleportSelectPopover, TeleportManagePopover } fro
 import { ContainerPopover } from './ContainerPopover';
 import { ContainerSelectPopover } from './ContainerSelectPopover';
 import { HelpCard } from '../Utility/HelpCard';
-import { canonicalizeCategoryId, resolveKindAndLocation } from '../../utils/categorizationUtils';
 import { getButtonIdsForTraits, getInlineGlowColor, getResolvedTraitSections, toCategoryId } from '../../utils/inlineActionModel';
+import { getInlineCategoryLabel, normalizeInlineCategoryId } from '../../utils/inlineCategoryAxes';
 
-const formatDialCategoryLabel = (kind?: string, category?: string | null, setId?: string): string => {
-    // Prefer the canonical category over the raw kind so we show "ALLY"/"ENEMY"/"NEUTRAL"
-    // instead of the legacy "PLAYER" label, and pick up custom traits when present.
-    const source = (category || setId || kind || '').replace(/^inline-/, '');
-    if (!source || source === 'none') return '';
-    if (source === 'player') return 'ALLY';
-    return source.replace(/-/g, ' ').toUpperCase();
+const formatDialCategoryLabel = (category?: string | null): string => {
+    if (!category) return '';
+    return getInlineCategoryLabel(category).toUpperCase();
 };
 
 export const PopoverManager: React.FC<PopoverManagerProps> = ({
@@ -78,6 +74,28 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     entities, registerEntity, selectedObjectIds, clearObjectSelection, keywordOverrides, accountCharacters, accountState, setAccountState,
     playerColor, npcColor, objectColor, roomColor
 }) => {
+    useLayoutEffect(() => {
+        document.querySelectorAll('.inline-btn.menu-active').forEach(el => el.classList.remove('menu-active'));
+        const entityId = popoverState?.entityId;
+        if (!entityId) return undefined;
+
+        const leaf = entityId.split(':').pop() || entityId;
+        document.querySelectorAll<HTMLElement>('.inline-btn[data-id]').forEach(el => {
+            const id = el.getAttribute('data-id') || '';
+            const idLeaf = id.split(':').pop() || id;
+            const matches =
+                id === entityId ||
+                id === leaf ||
+                idLeaf === leaf ||
+                id.endsWith(':' + entityId) ||
+                entityId.endsWith(':' + id);
+            if (matches) el.classList.add('menu-active');
+        });
+
+        return () => {
+            document.querySelectorAll('.inline-btn.menu-active').forEach(el => el.classList.remove('menu-active'));
+        };
+    }, [popoverState?.entityId]);
 
     useLayoutEffect(() => {
         if (popoverState && popoverRef.current) {
@@ -86,17 +104,9 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             const winH = window.innerHeight, winW = window.innerWidth;
             let top = popoverState.y, left = popoverState.x;
 
-            if (popoverState.initialPointerX !== undefined) {
+            if (popoverState.menuDisplay !== 'dial') {
                 top = (winH / 2) - (rect.height / 2);
                 left = (winW / 2) - (rect.width / 2);
-            } else if (popoverState.menuDisplay !== 'dial') {
-                if (popoverState.preferSide === 'right') {
-                    top = popoverState.y - rect.height / 2;
-                    left = popoverState.x + 8;
-                } else {
-                    top = popoverState.y - rect.height - 8;
-                    left = popoverState.x - rect.width / 2;
-                }
             }
             if (top < 10) top = 10;
             if (top + rect.height > winH - 10) top = Math.max(10, winH - rect.height - 10);
@@ -245,27 +255,30 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     if (!popoverState) return null;
     console.log('[PopoverManager] Current state:', { type: popoverState.type, setId: popoverState.setId, context: popoverState.context, direction: popoverState.direction });
 
-    // Resolve themeColor: Always prioritize base Category colors (NPC, Player, etc) over Trait colors.
-    const detectedCatId = popoverState.category || popoverState.setId || popoverState.kind || null;
-    let themeColor = getInlineGlowColor(
-        detectedCatId, 
-        inlineCategories || [], 
-        { player: playerColor, npc: npcColor, object: objectColor, room: roomColor }
+    const detectedCatId = normalizeInlineCategoryId(popoverState.category || popoverState.setId);
+    const themeColor = getInlineGlowColor(
+        detectedCatId,
+        inlineCategories || [],
+        {
+            player: playerColor || undefined,
+            all:    playerColor || undefined,
+            npc:    npcColor   || undefined,
+            object: objectColor || undefined,
+            room:   roomColor  || undefined,
+        }
     ) || popoverState.accentColor || undefined;
 
     if (popoverState.menuDisplay === 'dial') {
-        const detectedCatId = popoverState.category || popoverState.setId || popoverState.kind || null;
-        const { kind, location } = resolveKindAndLocation(popoverState.kind, popoverState.location, popoverState.setId);
-        const categorySet = detectedCatId ? (toCategoryId(detectedCatId) || canonicalizeCategoryId(detectedCatId)) : null;
+        const categorySet = toCategoryId(detectedCatId) || detectedCatId;
         const traitSections = getResolvedTraitSections(
-            categorySet || popoverState.setId || kind,
+            categorySet || popoverState.setId,
             popoverState.context || null,
             inlineCategories || []
         );
         const actionButtonIds = getButtonIdsForTraits(traitSections.map(section => section.trait));
         const setIdsChain = Array.from(new Set([
             popoverState.setId,
-            categorySet || kind
+            categorySet
         ].filter(Boolean) as string[]));
         
         return (
@@ -296,7 +309,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                 themeColor={themeColor}
                 instruction={popoverState.executeAndAssign ? 'fire and remap' : 'select to fire'}
                 targetName={popoverState.context}
-                categoryLabel={formatDialCategoryLabel(kind, categorySet, popoverState.setId)}
+                categoryLabel={formatDialCategoryLabel(categorySet)}
                 onHelp={popoverState.context ? () => {
                     triggerHaptic?.(20);
                     executeCommand(`help ${popoverState.context}`, false);

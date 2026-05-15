@@ -191,10 +191,16 @@ export const drawFeatures = (
                             else ctx.globalAlpha = exploredAlphaMul;
 
                             if (hasRoadFlag) {
+                                ctx.save();
+                                ctx.globalAlpha = 1.0; // Enforce 100% opacity for roads/trails
                                 const roadWidth = 12;
                                 const pathWidth = 6;
-                                if (isCurrentRoad && normalizeTerrain(targetData[3] as any) === 'Road') drawLine(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? ROAD_COLOR_DARK : ROAD_COLOR_LIGHT, roadWidth, dpr, invZoom);
-                                else drawLine(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? PATH_COLOR_DARK : PATH_COLOR_LIGHT, pathWidth, dpr, invZoom);
+                                if (isCurrentRoad && normalizeTerrain(targetData[3] as any) === 'Road') {
+                                    drawLine(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? ROAD_COLOR_DARK : ROAD_COLOR_LIGHT, roadWidth, dpr, invZoom);
+                                } else {
+                                    drawLine(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? PATH_COLOR_DARK : PATH_COLOR_LIGHT, pathWidth, dpr, invZoom);
+                                }
+                                ctx.restore();
                             }
 
                             // --- 1.1 Vertical Arrow Connections (Bidirectional Only) ---
@@ -205,7 +211,7 @@ export const drawFeatures = (
                                     String(targetExits[oppDir].target).replace(/^m_/, '') === String(vnum).replace(/^m_/, '');
 
                                 if (pointsBack) {
-                                    const iconColor = isDarkMode ? '#fab387' : '#e67e22';
+                                    const iconColor = 'rgba(148, 163, 184, 0.8)'; // Tactical grey connection line
                                     const cOff = 12; // Corner offset
                                     const startX = anchorX + (dir === 'u' ? -cOff : cOff);
                                     const startY = anchorY + (dir === 'u' ? -cOff : cOff);
@@ -213,7 +219,7 @@ export const drawFeatures = (
                                     const endY = tpy + (dir === 'u' ? cOff : -cOff);
                                     
                                     ctx.save();
-                                    ctx.globalAlpha = isExplored ? exploredAlphaMul * 0.6 : 0.3;
+                                    ctx.globalAlpha = isExplored ? exploredAlphaMul * 0.5 : 0.25;
                                     drawLine(ctx, startX, startY, endX, endY, iconColor, 1.5, dpr, invZoom, true);
                                     ctx.restore();
                                 }
@@ -295,7 +301,7 @@ export const drawFeatures = (
                     }
 
                     if (ghostExits && (ghostExits.u || ghostExits.d)) {
-                        const iconColor = isDarkMode ? '#fab387' : '#e67e22';
+                        const iconColor = 'rgba(148, 163, 184, 0.8)'; // Tactical grey for vertical exits
                         const cOff = 12; // NW/SE Corner displacement
                         const arrowSize = 18;
                         
@@ -308,14 +314,20 @@ export const drawFeatures = (
                             const finalColor = hasDoor ? "#ffcc00" : iconColor;
                             const isOutline = hasDoor && !isClosed;
                             const icon = getIndicatorIcon('▲', finalColor, isOutline);
+                            ctx.save();
+                            ctx.globalAlpha = isExplored ? exploredAlphaMul * 0.5 : 0.25;
                             ctx.drawImage(icon, anchorX - cOff - arrowSize/2, anchorY - cOff - arrowSize/2, arrowSize, arrowSize);
+                            ctx.restore();
                         }
                         if (ghostExits.d) {
                             const { hasDoor, isClosed } = getGateState(localRoom, ghostExits, 'd', allRooms, preloaded);
                             const finalColor = hasDoor ? "#ffcc00" : iconColor;
                             const isOutline = hasDoor && !isClosed;
                             const icon = getIndicatorIcon('▼', finalColor, isOutline);
+                            ctx.save();
+                            ctx.globalAlpha = isExplored ? exploredAlphaMul * 0.5 : 0.25;
                             ctx.drawImage(icon, anchorX + cOff - arrowSize/2, anchorY + cOff - arrowSize/2, arrowSize, arrowSize);
+                            ctx.restore();
                         }
 
                         // --- Internal Dotted Connection (Bidirectional Validation) ---
@@ -327,7 +339,7 @@ export const drawFeatures = (
 
                             if (uPointsBack && dPointsBack) {
                                 ctx.save();
-                                ctx.globalAlpha = isExplored ? exploredAlphaMul * 0.6 : 0.3;
+                                ctx.globalAlpha = isExplored ? exploredAlphaMul * 0.5 : 0.25;
                                 drawLine(ctx, anchorX - cOff, anchorY - cOff, anchorX + cOff, anchorY + cOff, iconColor, 1.5, dpr, invZoom, true);
                                 ctx.restore();
                             }
@@ -400,7 +412,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                                 String(n.exits[oD].target || n.exits[oD].gmcpDestId || "").replace(/^m_/, '') === String(room.id).replace(/^m_/, '');
 
                             if (pointsBack) {
-                                const iconColor = isDarkMode ? '#fab387' : '#e67e22';
+                                const iconColor = 'rgba(148, 163, 184, 0.8)'; // Tactical grey connection line
                                 const cOff = 12;
                                 const startX = cX + (d === 'u' ? -cOff : cOff);
                                 const startY = cY + (d === 'u' ? -cOff : cOff);
@@ -408,7 +420,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                                 const endY = tpy + (d === 'u' ? cOff : -cOff);
                                 
                                 ctx.save();
-                                ctx.globalAlpha = 0.6;
+                                ctx.globalAlpha = 0.5;
                                 drawLine(ctx, startX, startY, endX, endY, iconColor, 1.5, dpr, invZoom, true);
                                 ctx.restore();
                             }
@@ -424,17 +436,23 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
             const arrowSize = 18;
             if (room.exits.u) {
                 const { hasDoor, isClosed } = getGateState(room, null, 'u', allRooms, preloaded);
-                const finalColor = hasDoor ? "#ffcc00" : (isDarkMode ? '#fab387' : '#e67e22');
+                const finalColor = hasDoor ? "#ffcc00" : 'rgba(148, 163, 184, 0.8)';
                 const isOutline = hasDoor && !isClosed;
                 const icon = getIndicatorIcon('▲', finalColor, isOutline);
+                ctx.save();
+                ctx.globalAlpha = 0.5;
                 ctx.drawImage(icon, cX - 12 - arrowSize/2, cY - 12 - arrowSize/2, arrowSize, arrowSize);
+                ctx.restore();
             }
             if (room.exits.d) {
                 const { hasDoor, isClosed } = getGateState(room, null, 'd', allRooms, preloaded);
-                const finalColor = hasDoor ? "#ffcc00" : (isDarkMode ? '#fab387' : '#e67e22');
+                const finalColor = hasDoor ? "#ffcc00" : 'rgba(148, 163, 184, 0.8)';
                 const isOutline = hasDoor && !isClosed;
                 const icon = getIndicatorIcon('▼', finalColor, isOutline);
+                ctx.save();
+                ctx.globalAlpha = 0.5;
                 ctx.drawImage(icon, cX + 12 - arrowSize/2, cY + 12 - arrowSize/2, arrowSize, arrowSize);
+                ctx.restore();
             }
 
             // --- Local Internal Dotted Connection (Bidirectional Validation) ---
@@ -448,9 +466,9 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                 const dPointsBack = dN?.exits?.u && String(dN.exits.u.target || dN.exits.u.gmcpDestId || "").replace(/^m_/, '') === String(room.id).replace(/^m_/, '');
 
                 if (uPointsBack && dPointsBack) {
-                    const iconColor = isDarkMode ? '#fab387' : '#e67e22';
+                    const iconColor = 'rgba(148, 163, 184, 0.8)'; // Tactical grey connection line
                     ctx.save();
-                    ctx.globalAlpha = 0.6;
+                    ctx.globalAlpha = 0.5;
                     drawLine(ctx, cX - 12, cY - 12, cX + 12, cY + 12, iconColor, 1.5, dpr, invZoom, true);
                     ctx.restore();
                 }

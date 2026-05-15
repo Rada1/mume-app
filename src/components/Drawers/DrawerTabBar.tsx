@@ -21,8 +21,8 @@ interface DrawerTabBarProps {
 export const DrawerTabBar: React.FC<DrawerTabBarProps> = ({ tabs, active, onChange }) => (
     <div style={{
         display: 'flex',
-        borderBottom: '1px solid rgba(255,255,255,0.08)',
-        background: 'rgba(255,255,255,0.02)',
+        borderBottom: '1px solid var(--border-color)',
+        background: 'transparent',
         padding: '0 8px',
         flexShrink: 0
     }}>
@@ -36,7 +36,7 @@ export const DrawerTabBar: React.FC<DrawerTabBarProps> = ({ tabs, active, onChan
                     background: 'none',
                     border: 'none',
                     borderBottom: `2px solid ${active === tab.id ? 'var(--accent)' : 'transparent'}`,
-                    color: active === tab.id ? 'var(--accent)' : 'rgba(255,255,255,0.4)',
+                    color: active === tab.id ? 'var(--accent)' : 'var(--text-faded)',
                     fontSize: '0.65em',
                     fontWeight: 700,
                     textTransform: 'uppercase',

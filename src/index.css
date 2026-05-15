@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Inconsolata:wght@200..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=IBM+Plex+Mono:ital,wght@0,100..700;1,100..700&family=Anonymous+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import url('https://fonts.cdnfonts.com/css/aniron');
-@import url('https://fonts.cdnfonts.com/css/iosevka');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/iosevka@5/400.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/iosevka@5/700.css');
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/iosevka@5/400-italic.css');
 @import './styles/base.css';
 @import './styles/animations.css';
 @import './styles/environment.css';
@@ -28,6 +30,12 @@
     --drawer-width: 420px;
     --drawer-margin: 20px;
     --drawer-gap: 20px;
+    --mobile-bottom-browser-buffer: 0px;
+    --mobile-bottom-reserved-space: max(env(safe-area-inset-bottom, 0px), var(--mobile-bottom-browser-buffer));
+}
+
+.app-container.is-mobile.display-browser:not(.kb-open) {
+    --mobile-bottom-browser-buffer: 34px;
 }
 
 /* Mobile Bottom Gutter */
@@ -36,21 +44,47 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: var(--mobile-gutter-height);
-    background: #000000 !important;
+    height: calc(var(--mobile-gutter-height) + var(--mobile-bottom-reserved-space));
+    background: rgb(5, 7, 14) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     border-top: none !important;
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1) !important;
+    box-shadow: none !important;
     z-index: var(--z-hud-interactive);
     touch-action: none;
     transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
-    overflow: hidden; 
+    overflow: visible;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end; /* Anchors buttons at the bottom so they don't jump when gutter expands */
-    pointer-events: none; /* Let clicks pass through to the log if not on a child */
+    justify-content: flex-end;
+    pointer-events: none;
     border-radius: 32px 32px 0 0;
+}
+
+.mobile-bottom-gutter::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-top: 1px solid rgba(var(--accent-rgb, 244, 143, 60), 0.5);
+    border-radius: 32px 32px 0 0;
+    pointer-events: none;
+    z-index: 2;
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+    .app-container.is-mobile:not(.is-landscape) .content-layer {
+        padding-bottom: calc(var(--mobile-gutter-height) + var(--mobile-bottom-reserved-space)) !important;
+    }
+
+    .app-container.kb-open .content-layer {
+        padding-bottom: 70px !important;
+    }
+}
+
+.light-mode .mobile-bottom-gutter {
+    background: #ffffff !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 -16px 32px rgba(0, 0, 0, 0.12), 0 0 20px rgba(0, 0, 0, 0.08) !important;
 }
 
 .modals-layer-wrapper {
@@ -201,6 +235,18 @@
     gap: 4px;
     container-type: inline-size;
     transition: border-color 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+}
+
+.light-mode .sticky-room-header {
+    background: rgba(220, 220, 220, 0.75) !important;
+    backdrop-filter: blur(24px) saturate(1.8) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(1.8) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+}
+
+.light-mode .sticky-room-header .room-desc {
+    color: var(--text-dim) !important;
 }
 
 .room-card-env-indicators {
@@ -458,6 +504,11 @@
     min-height: 44px;
 }
 
+.light-mode .mobile-gutter-input-wrapper .input-main-container {
+    background: #ffffff !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.14), 0 1px 6px rgba(0, 0, 0, 0.08) !important;
+}
+
 /* Restore Drawer internal card styling for portrait mode */
 /* Legacy drawer overrides removed for modern Pocketed Hardware look */
 
@@ -553,6 +604,30 @@
     transform: scale(0.92);
 }
 
+.login-btn {
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    padding: 0 18px;
+    height: 34px;
+    color: #000;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-right: 10px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.login-btn:hover {
+    filter: brightness(1.15);
+    transform: translateY(-1px);
+}
+
+.login-btn:active {
+    transform: scale(0.95);
+}
+
 
 
 
@@ -569,7 +644,7 @@
 
 /* Focused state for the command bar pod */
 .input-main-container.focused {
-    background: rgba(10, 13, 21, 0.2);
+    background: rgba(0, 0, 0, 0.2);
     border-color: rgba(var(--accent-rgb), 0.4);
     box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.1), 0 6px 24px rgba(0, 0, 0, 0.4);
 }

@@ -9,6 +9,7 @@ import { GameEntity, EntityCapability, EntityLocation } from '../types';
 import { extractNoun as smartExtractNoun } from '../utils/keywordUtils';
 import {
     getCategoryConfig,
+    getKindForCategory,
     getTraitConfig,
     getTraitsForName,
     toCategoryId,
@@ -44,7 +45,7 @@ export const useEntityRegistry = () => {
         for (const traitId of uniqueTraits) {
             const categoryConfig = getCategoryConfig(traitId);
             const traitConfig = getTraitConfig(traitId);
-            const catType = categoryConfig?.kind || traitConfig?.kind || null;
+            const catType = getKindForCategory(categoryConfig?.id) || traitConfig?.kind || null;
             const baseId = (traitConfig?.id || categoryConfig?.id || traitId)
                 .replace(/^(trait|cat|inline)-/, '')
                 .replace(/^object-/, '');

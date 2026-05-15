@@ -3,6 +3,8 @@ import { useVitalsStore } from '../../stores/useVitalsStore';
 import { useVitals, useGame } from '../../context/GameContext';
 import { formatCompactNumber } from '../../utils/gameUtils';
 import { CombatHealthStatus } from '../../types';
+import { DrawerTabBar } from './DrawerTabBar';
+import { TimerDrawerTab } from '../Timers/TimerDrawerTab';
 
 // ── Primitives ────────────────────────────────────────────────────────────────
 
@@ -155,6 +157,7 @@ const positionLabel = (pos: string): string => {
 // ── Main Drawer ───────────────────────────────────────────────────────────────
 
 export const StatusDrawer: React.FC = () => {
+    const [statusTab, setStatusTab] = React.useState<'vitals' | 'timers'>('vitals');
     const store = useVitalsStore();
     const { mood } = useGame();
     const { opponentName, opponentHealthStatus, bufferName, bufferHealthStatus } = useVitals();
@@ -170,10 +173,15 @@ export const StatusDrawer: React.FC = () => {
     const hasCombat = !!opponentName;
 
     return (
-        <div style={{
-            flex: 1, overflowY: 'auto', padding: '10px 10px 16px',
-            display: 'flex', flexDirection: 'column', gap: 8,
-            scrollbarWidth: 'thin',
+        <>
+        <DrawerTabBar
+            tabs={[{ id: 'vitals', label: 'Vitals' }, { id: 'timers', label: 'Timers' }]}
+            active={statusTab}
+            onChange={(id) => setStatusTab(id as 'vitals' | 'timers')}
+        />
+        {statusTab === 'timers' ? <TimerDrawerTab /> : <div style={{
+            flex: 1, overflowY: 'auto', padding: '10px 10px 16px', display: 'flex',
+            flexDirection: 'column', gap: 8, scrollbarWidth: 'thin',
             fontSize: 'var(--dynamic-log-size, 16px)'
         }}>
             {/* ── Identity ── */}
@@ -283,5 +291,7 @@ export const StatusDrawer: React.FC = () => {
                 </Card>
             )}
         </div>
+        }
+        </>
     );
 };

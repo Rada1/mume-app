@@ -1,8 +1,8 @@
 export const GRID_SIZE = 50;
-export const ROAD_COLOR_DARK = '#fab387'; 
+export const ROAD_COLOR_DARK = '#e6c384'; // Yellow-tan for roads
 export const ROAD_COLOR_LIGHT = '#e67e22';
-export const PATH_COLOR_DARK = '#f9e2af';
-export const PATH_COLOR_LIGHT = '#f39c12';
+export const PATH_COLOR_DARK = '#e8a87c'; // Peach-tan for paths
+export const PATH_COLOR_LIGHT = '#d35400';
 export const WALL_COLOR = '#3e2723'; // Much darker brown for walls
 export const LONG_CONNECTION_COLOR = 'rgba(120, 120, 120, 0.45)'; // Subtle gray for long exits/stairs
 
@@ -83,29 +83,29 @@ export const getTerrainColor = (terrain: string | number, isDarkMode: boolean): 
 
     if (isDarkMode) {
         switch (t) {
-            case 'City': return '#6b4f35'; 
-            case 'Building': return '#585b70';
-            case 'Forest': return '#2d5a27';
+            case 'City': return '#3b4252'; // Dark tactical grey for city
+            case 'Building': return '#3b4252'; // Dark tactical grey for building
+            case 'Forest': return '#224b1a'; // More vivid deep green
             case 'Field':
-            case 'Grasslands': return '#415e34';
-            case 'Hills': return '#5a462d';
+            case 'Grasslands': return '#4c6e3d'; // Richer grass
+            case 'Hills': return '#6d5437';
             case 'Mountains': return '#313244';
-            case 'Water': return '#1e66f5';
-            case 'Shallows': return '#74c7ec';
-            case 'Rapids': return '#89dceb';
-            case 'Underwater': return '#112b4a'; 
-            case 'Road': return '#3b4b3b'; 
-            case 'Tunnel': return '#4e342e'; 
-            case 'Cavern': return '#1a1a24'; 
-            case 'Brush': return '#3a4a3a';
-            case 'Base': return '#243324'; 
+            case 'Water': return '#2196f3'; // Brighter blue
+            case 'Shallows': return '#00bcd4'; // Brighter cyan
+            case 'Rapids': return '#4dd0e1';
+            case 'Underwater': return '#1a3a5a'; 
+            case 'Road': return '#455a45'; 
+            case 'Tunnel': return '#5d4037'; 
+            case 'Cavern': return '#313244'; 
+            case 'Brush': return '#4a5a4a';
+            case 'Base': return '#2d3f2d'; 
             default: return '#2a2a35'; 
         }
     } else {
         switch (t) {
-            case 'City': return '#8b5e3c'; // Brown for city blobs in light mode
-            case 'Building': return '#dce0e8';
-            case 'Forest': return '#d4ead4';
+            case 'City': return '#dce0e8'; // Light grey for city in light mode
+            case 'Building': return '#66442c'; // Darker brown for buildings in light mode
+            case 'Forest': return '#8fb58f'; // Darker green for forest in light mode
             case 'Field':
             case 'Grasslands': return '#e9edc9';
             case 'Hills': return '#faedcd';
@@ -116,7 +116,7 @@ export const getTerrainColor = (terrain: string | number, isDarkMode: boolean): 
             case 'Underwater': return '#a9cce3';
             case 'Road': return '#e1e9d5'; // Grassy base color
             case 'Tunnel': return '#5d4037';
-            case 'Cavern': return '#d0d0d0';
+            case 'Cavern': return '#e0e0e0';
             case 'Base': return '#e1e9d5'; // Grassy green base
             default: return '#ffffff';
         }

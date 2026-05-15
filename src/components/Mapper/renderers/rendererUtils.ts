@@ -34,6 +34,8 @@ export interface RenderContext {
     objectColor?: string;
     opponentName?: string | null;
     opponentId?: string | null;
+    activeInlineEntityId?: string | null;
+    selectedObjectIds?: Set<string>;
     preloaded: Record<string, any>;
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
     selectedRoomIds: Set<string>;

@@ -28,6 +28,7 @@ export const useGameProviderState = (audioTriggers?: {
         isNewbieMode, isSoundEnabled, setIsSoundEnabled, theme, setTheme, autoConnect, setAutoConnect,
         showDebugEchoes, setShowDebugEchoes, uiMode, setUiMode, disableSmoothScroll, setDisableSmoothScroll, isImmersionMode, setIsImmersionMode, isHighlighterEnabled, setIsHighlighterEnabled,
         isBloomEnabled, setIsBloomEnabled, isTimestampEnabled, setIsTimestampEnabled,
+        isTextRevealEnabled, setIsTextRevealEnabled,
         fontFamily, setFontFamily,
         connectionUrl, setConnectionUrl,
     } = settings;

@@ -57,7 +57,7 @@ export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.Muta
         window.addEventListener('pointerup', handleGlobalUp);
         window.addEventListener('pointercancel', handleGlobalUp);
 
-        if (viewport.isMobile && targetEl) {
+        if (viewport.isMobile && targetEl && targetEl.getAttribute('data-targetable') !== 'false') {
             if (heldButton && heldButton.id !== ('log-inline-' + (targetEl.getAttribute('data-id') || '')) && (Math.abs(heldButton.dx || 0) > 15 || Math.abs(heldButton.dy || 0) > 15)) {
                 return;
             }

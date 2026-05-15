@@ -54,6 +54,7 @@ const MessageItem = React.memo(({
     brightBatchFloor,
     isTimestampEnabled,
     isNewbieMode,
+    isTextRevealEnabled,
     currentRoomName,
     input,
     setInput,
@@ -70,6 +71,7 @@ const MessageItem = React.memo(({
     brightBatchFloor?: number;
     isTimestampEnabled?: boolean;
     isNewbieMode?: boolean;
+    isTextRevealEnabled?: boolean;
     currentRoomName?: string | null,
     input?: string,
     setInput?: (val: string) => void;
@@ -141,7 +143,7 @@ const MessageItem = React.memo(({
 
     return (
         <div
-            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
+            className={`message ${msg.type}${msg.isSnoop ? ' is-snoop' : ''}${msg.isRoomName ? ' is-room-name' : ''}${msg.isRoomBlock ? ' is-room-block' : ''}${msg.isRoomBlockStart ? ' room-block-start' : ''}${msg.isRoomBlockEnd ? ' room-block-end' : ''}${msg.isCombat && inCombat ? ' is-combat' : ''}${msg.isComm ? ' is-comm' : ''}${msg.isNarrate ? ' is-narrate' : ''}${msg.isEmpty ? ' is-empty' : ''}${msg.isSpacer ? ' is-spacer' : ''}${msg.isBatchEnd ? ' batch-end' : ''}${isOldBatchDim ? ' old-batch-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isTextRevealEnabled && isRecent && (msg.timestamp > Date.now() - 600) && !isOldBatchDim ? ' recent-entry' : ''}${showTimestamp ? ' has-timestamp' : ' no-timestamp'}`}
             style={{ '--reveal-delay': `${batchOffset * 30}ms` } as React.CSSProperties}
         >
             {msg.type === 'user' || msg.type === 'snoop-command' ? (
@@ -172,11 +174,11 @@ const MessageItem = React.memo(({
                             {timestampEl}
                             {msg.type !== 'comm-continue' && (
                                 <>
-                                    <span className="comm-sender"><TokenRenderer tokens={msg.commSenderTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commSender || ''))} target={targetName} inlineCategories={inlineCategories} colors={colors} /></span>
+                                    <span className="comm-sender"><TokenRenderer tokens={msg.commSenderTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commSender || ''))} /></span>
                                     <span className="comm-action" dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(` ${msg.commAction}: `)) }} />
                                 </>
                             )}
-                            <span className="comm-text"><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} target={targetName} inlineCategories={inlineCategories} colors={colors} /></span>
+                            <span className="comm-text"><TokenRenderer tokens={msg.commTextTokens} fallbackHtml={sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || ''))} /></span>
                         </div>
                         <ReplyButton msg={msg} setParley={setParley || (() => {})} onReply={triggerParley} />
                     </div>
@@ -203,10 +205,30 @@ const MessageItem = React.memo(({
                     ) : (
                         <>
                             <div className="message-content hit-sheen-container">
-                                <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} />
+                                <TokenRenderer
+                                    tokens={msg.tokens}
+                                    fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)}
+                                    metadata={msg.isRoomName ? {
+                                        id: `room:${(currentRoomName || msg.textRaw || '').toLowerCase()}`,
+                                        context: currentRoomName || msg.textRaw || '',
+                                        category: 'cat-room',
+                                        cmd: 'cat-room',
+                                        action: 'menu'
+                                    } : undefined}
+                                />
                                 {msg.isHitImpact && sheenActive && (
                                     <div className="hit-sheen-overlay" aria-hidden="true">
-                                        <TokenRenderer tokens={msg.tokens} fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)} />
+                                        <TokenRenderer
+                                            tokens={msg.tokens}
+                                            fallbackHtml={msg.isRoomName && msg.tokens ? undefined : sanitizeMumeHtml(content)}
+                                            metadata={msg.isRoomName ? {
+                                                id: `room:${(currentRoomName || msg.textRaw || '').toLowerCase()}`,
+                                                context: currentRoomName || msg.textRaw || '',
+                                                category: 'cat-room',
+                                                cmd: 'cat-room',
+                                                action: 'menu'
+                                            } : undefined}
+                                        />
                                     </div>
                                 )}
                                 {msg.isDamageImpact && sheenActive && (
@@ -242,7 +264,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const { 
         inCombat, inCombatRef, roomName, viewport, executeCommand, setParley, 
         triggerHaptic, playClickSound, playCommMessageSound, isTimestampEnabled, 
-        isNewbieMode, showSpectatePromptInLog, input, setInput, sessionMode
+        isNewbieMode, isTextRevealEnabled, showSpectatePromptInLog, input, setInput, sessionMode
     } = useBaseGame() as any;
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const activeView = useModeStore(s => s.activeView);
@@ -591,6 +613,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                     brightBatchFloor={brightBatchFloor}
                                     isTimestampEnabled={isTimestampEnabled}
                                     isNewbieMode={isNewbieMode}
+                                    isTextRevealEnabled={isTextRevealEnabled}
                                     currentRoomName={roomName}
                                     input={input}
                                     setInput={setInput}

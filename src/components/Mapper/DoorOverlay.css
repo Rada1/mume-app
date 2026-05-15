@@ -7,12 +7,13 @@
 
 .door-map-btn {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5) !important;
-    transition: transform 0.2s ease-out, background-color 0.2s ease-out;
+    transition: background-color 0.2s ease-out, border-color 0.2s ease-out, box-shadow 0.2s ease-out;
     border-radius: 50% !important;
+    transform: none !important;
 }
 
 .door-map-btn:active {
-    transform: scale(0.9);
+    transform: none !important;
 }
 
 .door-button-wrapper {

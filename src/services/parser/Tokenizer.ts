@@ -252,7 +252,7 @@ export class Tokenizer {
                     }
                     
                     const metadata: any = {
-                        kind: 'player',
+                        kind: 'all',
                         category: 'cat-ally',
                         context: playerName,
                         location: 'none',
@@ -496,22 +496,10 @@ export class Tokenizer {
             category = 'cat-room';
         }
 
-        // --- COLOR LOOKUP: Prioritize user settings ---
-        let glowColor = undefined;
-        
-        // 1. Check kind-based overrides (User settings from "Button Settings" -> npcColor, playerColor, etc) - PRIORITY
-        if (kind === 'player' && context.playerColor) glowColor = context.playerColor;
-        else if (kind === 'npc' && context.npcColor) glowColor = context.npcColor;
-        else if (kind === 'object' && context.objectColor) glowColor = context.objectColor;
-        else if (kind === 'room' && context.roomColor) glowColor = context.roomColor;
-        
-        // 2. Check if there's a SPECIFIC custom category color (Only if Kind color is not set)
-        if (!glowColor && context.inlineCategories) {
-            const config = context.inlineCategories.find(c => c.id === category);
-            if (config?.color) {
-                glowColor = config.color;
-            }
-        }
+        // Colors are resolved at render time by TokenRenderer via getInlineGlowColor,
+        // so we do not embed a glowColor here. The exception is who-list entities,
+        // which are handled in their own branch above with an explicit glowColor.
+        const glowColor = undefined;
 
         // For character entities, resolve the command keyword from GMCP occupant data.
         // MUME's XML may tag a race/title word (e.g. "Noldo") rather than the actual

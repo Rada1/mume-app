@@ -4,24 +4,25 @@
     --accent-rgb: 184, 134, 11;
     --accent-glow: rgba(var(--accent-rgb), 0.5);
     --map-accent: #fcd34d;
-    --font-main: 'Anonymous Pro', monospace;
-    --font-mono: 'Anonymous Pro', monospace;
+    --font-main: 'Iosevka', monospace;
+    --font-mono: 'Iosevka', monospace;
     --radius-card: 12px;
 
     /* Dark Mode (Default) */
-    --bg-app: rgb(10, 13, 21);
-    --bg-panel: rgba(10, 13, 21, 0.65);
-    --bg-overlay: rgba(4, 5, 15, 0.85);
+    --bg-app-rgb: 0, 0, 0;
+    --bg-app: rgb(var(--bg-app-rgb));
+    --bg-panel: rgba(var(--bg-app-rgb), 0.65);
+    --bg-overlay: rgba(0, 0, 0, 0.85);
     --text-primary: #d1d5db;   /* Cool Gray 300 - Softer than pure white */
     --text-dim: #9ca3af;       /* Gray 400 */
     --text-faded: #6b7280;     /* Gray 500 */
     --border-color: rgba(255, 255, 255, 0.1);
-    --input-bg: rgb(35, 35, 40);
+    --input-bg: rgb(20, 20, 20);
     --header-bg: rgba(0, 0, 0, 0.75);
-    --bg-modal: rgb(10, 13, 21);
+    --bg-modal: rgb(var(--bg-app-rgb));
     --border-modal: rgba(255, 255, 255, 0.15);
     --color-exit: rgba(255, 255, 255, 0.9);
-    --mapper-bg: rgba(10, 15, 28, 0.4);
+    --mapper-bg: rgba(var(--bg-app-rgb), 0.4);
     --mapper-border: rgba(255, 255, 255, 0.1);
     
     /* Inline Button Colors */
@@ -61,8 +62,8 @@
     --text-dim: #424245;
     --text-faded: #86868b;
     --border-color: rgba(0, 0, 0, 0.1);
-    --input-bg: rgba(255, 255, 255, 0.8);
-    --header-bg: rgba(255, 255, 255, 0.7);
+    --input-bg: #ffffff;
+    --header-bg: #e8e8ed;
     --bg-modal: #ffffff;
     --border-modal: rgba(0, 0, 0, 0.1);
     --accent: #007aff;

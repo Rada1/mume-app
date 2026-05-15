@@ -8,6 +8,7 @@ import { useCallback, useRef } from 'react';
 import { gmcpBus } from '../../events/gmcpBus';
 import { CharacterEntry } from '../../types';
 import { useUIStore } from '../../stores/useUIStore';
+import { escapeHtml } from '../../utils/securityUtils';
 
 // --- Logic Section: Types ---
 
@@ -29,11 +30,12 @@ interface UseAccountParserProps {
     rememberLogin?: boolean;
     loginName?: string;
     loginPassword?: string;
+    setInput?: (val: string) => void;
 }
 
 // --- Logic Section: Hook Implementation ---
 
-export function useAccountParser({ accountState, setAccountState, accountStageRef, gameState, setGameState, sendCommand, executeCommandRef, isMobile, addDiagnosticLog, addMessage, setMessages, clearLog, setIsPasswordMode, captureStage, rememberLogin, loginName, loginPassword }: UseAccountParserProps) {
+export function useAccountParser({ accountState, setAccountState, accountStageRef, gameState, setGameState, sendCommand, executeCommandRef, isMobile, addDiagnosticLog, addMessage, setMessages, clearLog, setIsPasswordMode, captureStage, rememberLogin, loginName, loginPassword, setInput }: UseAccountParserProps) {
     // Use Refs to keep parseAccountLine stable and avoid re-render loops
     const gameStateRef = useRef(gameState);
     gameStateRef.current = gameState;
@@ -47,16 +49,17 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
     loginNameRef.current = loginName;
     const loginPasswordRef = useRef(loginPassword);
     loginPasswordRef.current = loginPassword;
+    const setInputRef = useRef(setInput);
+    setInputRef.current = setInput;
 
     // --- State for Automated Gathering ---
-    const hasAutomatedListRef = useRef(false);
     const isSilentListingRef = useRef(false);
     const hasSentGameEntrySetupRef = useRef(false);
 
-    // --- Char Data Capture (info/practice in account mode) ---
-    const charCaptureModeRef = useRef<'info' | 'practice' | null>(null);
+    // --- Char Data Capture (info/practice/link/lag/time in account mode) ---
+    const charCaptureModeRef = useRef<'info' | 'practice' | 'link' | 'lag' | 'time' | null>(null);
     const charCaptureLinesRef = useRef<string[]>([]);
-    const prevCharCaptureModeRef = useRef<'info' | 'practice' | null>(null);
+    const prevCharCaptureModeRef = useRef<'info' | 'practice' | 'link' | 'lag' | 'time' | null>(null);
 
     // Sync charCapture from accountState prop → ref (runs every render, stable)
     charCaptureModeRef.current = accountState.charCapture?.type ?? null;
@@ -76,12 +79,6 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             // Surgically suppress empty lines ONLY during stat editing to prevent layout 'shifting'.
             // For all other account stages, preserve them to maintain intended terminal spacing.
             return accountStageRef.current === 'stat-editing';
-        }
-
-        // Suppress server confirmations for silent setup commands sent on login
-        if (/^xml mode is now (on|off)\./i.test(trimmedLine) ||
-            /^page (width )?is now/i.test(trimmedLine)) {
-            return true;
         }
 
         // Sync silent listing ref with state
@@ -110,7 +107,11 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                     pointsLeft: undefined,
                     stats: undefined,
                     charCapture: null,
-                    ...(captureType === 'info' ? { charInfoLines: capturedLines } : { charPracticeLines: capturedLines })
+                    ...(captureType === 'info' ? { charInfoLines: capturedLines }
+                        : captureType === 'link' ? { linkLines: capturedLines }
+                        : captureType === 'lag' ? { lagLines: capturedLines }
+                        : captureType === 'time' ? { timeLines: capturedLines }
+                        : { charPracticeLines: capturedLines })
                 }));
             } else {
                 setAccountState(prev => ({
@@ -125,17 +126,15 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             }
 
             captureStage.current = 'none';
-            isSilentListingRef.current = false;
             setIsPasswordMode(false);
             setGameState('account');
 
-            // Auto-send list on first Account> each session so characters appear in the log
-            if (!hasAutomatedListRef.current) {
-                hasAutomatedListRef.current = true;
-                queueMicrotask(() => {
-                    setAccountState(prev => ({ ...prev, characters: [], selectedCharacter: null, charSelectTab: null }));
-                    sendCommand('list');
-                });
+            if (isMobileRef.current && charsRef.current.length === 0) {
+                isSilentListingRef.current = true;
+                setAccountState(prev => ({ ...prev, selectedMenuCommand: 'play', characters: [], selectedCharacter: null, charSelectTab: null, isGathering: true }));
+                setTimeout(() => executeCommandRef.current?.('list', true), 50);
+            } else {
+                isSilentListingRef.current = false;
             }
 
             return true;
@@ -144,36 +143,22 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         // Fire login setup commands regardless of current game state (handles reconnects too)
         if (trimmedLine.includes('Welcome to the land of Middle-earth') || trimmedLine.toLowerCase().includes('reconnecting')) {
             console.log('[AccountParser] Login detected via welcome line');
-            clearLog?.();
             setGameState('playing');
             setAccountState(prev => ({ ...prev, stage: 'none', currentPrompt: undefined }));
             useUIStore.getState().setUI({ mapExpanded: true });
             setIsPasswordMode(false);
-            // Reset so returning to account-menu will auto-refresh the character list
-            hasAutomatedListRef.current = false;
             gmcpBus.emit('Session.Start', { characterName: 'Player' });
 
             if (!hasSentGameEntrySetupRef.current) {
                 hasSentGameEntrySetupRef.current = true;
-                executeCommandRef.current?.('change xml on', true, true, true, true);
-                executeCommandRef.current?.('change page off', true, true, true, true);
+                executeCommandRef.current?.('change xml on', false, true, true, false);
+                executeCommandRef.current?.('change page off', false, true, true, false);
+                executeCommandRef.current?.('info %O %D %k %A', false, true, true, false);
+                setTimeout(() => {
+                    executeCommandRef.current?.('practice', true, true, true, false);
+                }, 250);
             }
 
-            setTimeout(() => {
-                if (executeCommandRef.current) {
-                    executeCommandRef.current('info %O %D %k %A', true, true, true, true);
-                    setTimeout(() => executeCommandRef.current?.('score', true, true, true, true), 100);
-                    setTimeout(() => executeCommandRef.current?.('info %m', true, true, true, true), 200);
-                    setTimeout(() => executeCommandRef.current?.('time', true, true, true, true), 300);
-                    setTimeout(() => executeCommandRef.current?.('info', true, true, true, true), 400);
-                    setTimeout(() => executeCommandRef.current?.('eq', true, true, true, true), 500);
-                    setTimeout(() => executeCommandRef.current?.('inv', true, true, true, true), 600);
-                    setTimeout(() => executeCommandRef.current?.('practice', true, true, true, true), 700);
-                    setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 800);
-                    setTimeout(() => executeCommandRef.current?.('who', true, true, true, true), 900);
-                    setTimeout(() => executeCommandRef.current?.('where', true, true, true, true), 1000);
-                }
-            }, 150);
             return false;
         }
 
@@ -230,16 +215,17 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                         currentPrompt: promptText
                     }));
                     captureStage.current = 'none';
+                    hasSentGameEntrySetupRef.current = false;
 
                     if (activePassPrompt) {
                         setIsPasswordMode(true);
                         if (rememberLoginRef.current && loginPasswordRef.current) {
-                            queueMicrotask(() => sendCommand(loginPasswordRef.current!));
+                            queueMicrotask(() => setInputRef.current?.(loginPasswordRef.current!));
                         }
                     } else if (activePrompt) {
                         setIsPasswordMode(false);
                         if (rememberLoginRef.current && loginNameRef.current) {
-                            queueMicrotask(() => sendCommand(loginNameRef.current!));
+                            queueMicrotask(() => setInputRef.current?.(loginNameRef.current!));
                         }
                     }
 
@@ -501,17 +487,26 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             return shouldSuppress;
         }
 
+        // "Characters in account "name"" header and "Name  Rce  Sub  Lvl..." column header
+        const lowerTrimmed = trimmedLine.toLowerCase();
+        if (lowerTrimmed.startsWith('characters in account') ||
+            (trimmedLine.startsWith('Name') && /\bRce\b/.test(trimmedLine) && /\bLvl\b/.test(trimmedLine))) {
+            return shouldSuppress;
+        }
+
         // 3. Detect Character Entries
         const isSelectStage = accountStageRef.current === 'account-menu';
         const charMatch = trimmedLine.match(/^\s*(\d+)\)\s+([a-zA-Z]+)\s+(\d+)\s+([a-zA-Z\-]+)\s+(.*?)\s+(Yesterday|Today|[\d\w\s]+ago|Never)\s+(.*)$/i);
         if (isSelectStage && charMatch) {
             const [_, index, name, level, race, sublevel, logon, rent] = charMatch;
-            const newChar: CharacterEntry = { index: parseInt(index), name, level: parseInt(level), race, sublevel, logon, rent, area: '' };
+            const newChar: CharacterEntry = { index: parseInt(index), name, level: parseInt(level), race, sublevel, logon, rent, area: '', rawLine: cleanLine };
             setAccountState(prev => ({ ...prev, characters: prev.characters.some(c => c.name === name) ? prev.characters : [...prev.characters, newChar] }));
             setGameState('account');
 
             if (!shouldSuppress) {
-                const lineHtml = `<span class="inline-btn account-char-name" data-context="${name}">${cleanLine}</span>`;
+                const lineHtml = isMobileRef.current
+                    ? `<span class="inline-btn account-char-name" data-context="${name}">${cleanLine}</span>`
+                    : undefined;
                 addMessage?.('account-character-list', cleanLine, false, undefined, false, { textOnly: cleanLine, lower: cleanLine.toLowerCase(), html: lineHtml });
             }
             return true;
@@ -536,12 +531,15 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
                     logon: logonMatchLine[1].trim(),
                     area: trimmedLine.substring(logonMatchLine.index + logonMatchLine[0].length).trim().split(/\s+/)[0] || '',
                     rent: trimmedLine.substring(logonMatchLine.index + logonMatchLine[0].length).trim().split(/\s+/)[1] || '',
+                    rawLine: cleanLine,
                 };
                 setAccountState(prev => ({ ...prev, characters: prev.characters.some(c => c.name === name) ? prev.characters : [...prev.characters, newChar] }));
                 setGameState('account');
 
                 if (!shouldSuppress) {
-                    const lineHtml = `<span class="inline-btn account-char-name" data-context="${name}">${cleanLine}</span>`;
+                    const lineHtml = isMobileRef.current
+                        ? `<span class="inline-btn account-char-name" data-context="${name}">${cleanLine}</span>`
+                        : undefined;
                     addMessage?.('account-character-list', cleanLine, false, undefined, false, { textOnly: cleanLine, lower: cleanLine.toLowerCase(), html: lineHtml });
                 }
                 return true;
@@ -582,9 +580,20 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         const menuKeywords = ['create', 'play', 'time', 'list', 'move', 'password', 'add', 'info', 'practice', 'link', 'lag', 'help', 'menu', 'quit'];
         const lowerClean = trimmedLine.toLowerCase();
         
-        const isMenuLine = isMenuStage && (menuKeywords.some(kw => lowerClean.startsWith(kw)) || trimmedLine.startsWith('Where <sort>'));
+        const matchedKeyword = isMenuStage ? menuKeywords.find(kw => lowerClean.startsWith(kw)) : undefined;
+        const isMenuLine = !!matchedKeyword || (isMenuStage && trimmedLine.startsWith('Where <sort>'));
         const isIntroLine = lowerClean.includes('type new to create') || lowerClean.includes('? for help');
-        
+
+        if (isMenuStage && matchedKeyword) {
+            const mobileHidden = ['move', 'add', 'info', 'practice'];
+            if (isMobileRef.current && mobileHidden.includes(matchedKeyword)) return true;
+            const lineHtml = isMobileRef.current
+                ? `<span class="inline-btn account-menu-cmd" data-context="${matchedKeyword}">${escapeHtml(trimmedLine)}</span>`
+                : undefined;
+            addMessage?.('account-menu-item', trimmedLine, false, undefined, false, { textOnly: trimmedLine, lower: lowerClean, html: lineHtml });
+            return true;
+        }
+
         if (isMenuLine || isIntroLine || isSelectionLine) {
             // Let fall through
         }

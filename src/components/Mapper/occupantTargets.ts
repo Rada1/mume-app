@@ -13,9 +13,9 @@ import type { GmcpOccupant, GroupMember, InlineCategoryConfig } from '../../type
 type OccupantSource = GmcpOccupant | string;
 type OccupantKind = 'player' | 'npc' | 'self' | 'enemy' | 'neutral';
 
-const OUTER_RING_RADIUS = GRID_SIZE * 0.30; // 15 world units — scales with zoom
-const INNER_RING_RADIUS = GRID_SIZE * 0.15; // 7.5 world units
-const DOT_RADIUS        = GRID_SIZE * 0.09; // 4.5 world units
+const OUTER_RING_RADIUS = GRID_SIZE * 0.34; // 17px  — ~3.5px gap to tile edge
+const INNER_RING_RADIUS = GRID_SIZE * 0.13; // 6.5px — ~1.5px gap to outer ring at same angle
+const DOT_RADIUS        = GRID_SIZE * 0.09; // 4.5px — unchanged
 
 export interface RoomAnchor {
     x: number;
@@ -228,8 +228,11 @@ export const getMapOccupantTargets = (options: MapOccupantTargetOptions): MapOcc
         const count = targets.length;
         targets.forEach((target, index) => {
             const angle = (index / count) * Math.PI * 2;
-            target.x = px + Math.cos(angle) * orbitRadius;
-            target.y = py + Math.sin(angle) * orbitRadius;
+            const cx = Math.cos(angle);
+            const cy = Math.sin(angle);
+            const maxComp = Math.max(Math.abs(cx), Math.abs(cy)) || 1;
+            target.x = px + (cx / maxComp) * orbitRadius;
+            target.y = py + (cy / maxComp) * orbitRadius;
             target.radius = DOT_RADIUS;
         });
     };

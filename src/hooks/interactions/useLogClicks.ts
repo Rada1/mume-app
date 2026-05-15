@@ -3,7 +3,7 @@ import { InteractionDeps } from '../useInteractionHandlers';
 import { EntityCapability } from '../../types';
 import { getButtonCommand } from '../../utils/buttonUtils';
 import { formatNpcKeywordTarget, sanitizeGameTarget } from '../../utils/gameUtils';
-import { toCategoryId } from '../../utils/inlineActionModel';
+import { getInlineCategoryAxes } from '../../utils/inlineCategoryAxes';
 import { useUIStore } from '../../stores/useUIStore';
 
 export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>, longPressJustFiredRef?: React.MutableRefObject<boolean>) => {
@@ -161,6 +161,33 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         e.stopPropagation();
         e.preventDefault();
 
+        // Account mode: tapping an account menu command selects it in the gutter
+        if (targetEl.classList.contains('account-menu-cmd') && setAccountState) {
+            const cmd = targetEl.getAttribute('data-context');
+            if (cmd) {
+                if (cmd === 'time') {
+                    setAccountState(prev => ({ ...prev, selectedMenuCommand: 'time', charCapture: { type: 'time' }, timeLines: [] }));
+                    executeCommand(cmd);
+                } else if (cmd === 'link') {
+                    setAccountState(prev => ({ ...prev, selectedMenuCommand: 'link', charCapture: { type: 'link' }, linkLines: [] }));
+                    executeCommand(cmd);
+                } else if (cmd === 'lag') {
+                    setAccountState(prev => ({ ...prev, selectedMenuCommand: 'lag', charCapture: { type: 'lag' }, lagLines: [] }));
+                    executeCommand(cmd);
+                } else if (cmd === 'list') {
+                    setAccountState(prev => ({ ...prev, selectedMenuCommand: null, characters: [], selectedCharacter: null, charSelectTab: null }));
+                    executeCommand(cmd);
+                } else if (cmd === 'play') {
+                    setAccountState(prev => ({ ...prev, selectedMenuCommand: 'play', characters: [], selectedCharacter: null, charSelectTab: null, isGathering: true }));
+                    executeCommand('list', true);
+                } else {
+                    setAccountState(prev => ({ ...prev, selectedMenuCommand: cmd }));
+                }
+                triggerHaptic(30);
+                return;
+            }
+        }
+
         // Account mode: tapping a character name inline button selects that character in the gutter
         if (targetEl.classList.contains('account-char-name') && setAccountState) {
             const name = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
@@ -177,26 +204,24 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         }
 
         const cmd = targetEl.getAttribute('data-cmd');
-        const kind = targetEl.getAttribute('data-kind');
-        const location = targetEl.getAttribute('data-location');
         const context = targetEl.getAttribute('data-context');
         const action = targetEl.getAttribute('data-action');
         const fromDrawerStr = targetEl.getAttribute('data-from-drawer');
         const fromDrawer = fromDrawerStr === 'true';
         const category = targetEl.getAttribute('data-category');
+        const categoryAxes = getInlineCategoryAxes(category || cmd);
         const menuDisplay = targetEl.getAttribute('data-menu-display') as 'dial' | 'list' || undefined;
         const rawContextStr = context || targetEl.innerText.trim();
         const effectiveContextStr = rawContextStr && keywordOverridesRef.current[rawContextStr] ? keywordOverridesRef.current[rawContextStr] : rawContextStr;
-        const isCharacterContext = ['npc', 'enemy', 'neutral', 'ally', 'player'].includes(kind || '') ||
-            ['cat-npc', 'cat-enemy', 'cat-neutral', 'cat-ally'].includes(toCategoryId(category) || '') ||
-            !!cmd?.startsWith('npc');
+        const isCharacterContext = categoryAxes.isCharacter || !!cmd?.startsWith('npc');
         const contextStr = (isCharacterContext ? formatNpcKeywordTarget(effectiveContextStr) : sanitizeGameTarget(effectiveContextStr)) || effectiveContextStr;
 
         const entityId = targetEl.getAttribute('data-id') || '';
 
         const activeHeldButton = heldButtonRef?.current || heldButton;
+        const isTargetableInline = targetEl.getAttribute('data-targetable') !== 'false';
 
-        if (activeHeldButton && !activeHeldButton.didFire && !activeHeldButton.id.startsWith('log-inline-')) {
+        if (isTargetableInline && activeHeldButton && !activeHeldButton.didFire && !activeHeldButton.id.startsWith('log-inline-')) {
             const flashTargetEl = () => {
                 targetEl.classList.add('pressed');
                 setTimeout(() => targetEl.classList.remove('pressed'), 350);
@@ -230,7 +255,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 triggerHaptic(60);
                 return;
             }
-        } else if (isLong || isTrackpadModifierActiveRef.current) {
+        } else if (isTargetableInline && (isLong || isTrackpadModifierActiveRef.current)) {
             if (lookModFiredRef.current) {
                 lookModFiredRef.current = false;
                 return;
@@ -260,8 +285,6 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 x: rect.right,
                 y: rect.top + rect.height / 2,
                 setId: cmd || 'selection',
-                kind: kind || undefined,
-                location: location || undefined,
                 category: category || undefined,
                 context: context || undefined,
                 entityId: entityId || undefined,

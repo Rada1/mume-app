@@ -106,8 +106,6 @@ export class PipelineOrchestrator {
                     mid: '', // Will be filled by useMessageLog
                     cmd: metadata.category || 'none',
                     context: metadata.context || entity.content,
-                    kind: metadata.kind,
-                    location: metadata.location,
                     category: metadata.category,
                     action: metadata.action || 'menu',
                     glowColor: metadata.glowColor,

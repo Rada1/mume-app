@@ -97,6 +97,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setShowSpectatePromptInLog,
         isTimestampEnabled,
         setIsTimestampEnabled,
+        isTextRevealEnabled,
+        setIsTextRevealEnabled,
         autoSaveSessions,
         setAutoSaveSessions,
         parley,
@@ -216,6 +218,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setIsBloomEnabled={setIsBloomEnabled}
                     isTimestampEnabled={isTimestampEnabled}
                     setIsTimestampEnabled={setIsTimestampEnabled}
+                    isTextRevealEnabled={isTextRevealEnabled}
+                    setIsTextRevealEnabled={setIsTextRevealEnabled}
                     autoSaveSessions={autoSaveSessions}
                     setAutoSaveSessions={setAutoSaveSessions}
                     fontFamily={fontFamily}

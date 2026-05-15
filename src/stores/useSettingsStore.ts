@@ -7,7 +7,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { UiMode, TeleportTarget, InlineCategoryConfig, ZoneMusicMapping, CategoryOverride, CustomTraitConfig } from '../types';
 import { canonicalizeCategoryId } from '../utils/categorizationUtils';
-import { getCategoryConfig, getTraitConfig, toCategoryId, toTraitId } from '../utils/inlineActionModel';
+import { getKindForCategory, getTraitConfig, toCategoryId, toTraitId } from '../utils/inlineActionModel';
 import { DEFAULT_URL } from '../constants';
 
 interface SettingsState {
@@ -56,6 +56,7 @@ interface SettingsState {
     allowMapPersistence: boolean;
     unveilMap: boolean;
     showMapperToolbar: boolean;
+    isTextRevealEnabled: boolean;
     setConnectionUrl: (val: string) => void;
     setLoginName: (val: string) => void;
     setLoginPassword: (val: string) => void;
@@ -101,6 +102,7 @@ interface SettingsState {
     setAllowMapPersistence: (val: boolean) => void;
     setUnveilMap: (val: boolean) => void;
     setShowMapperToolbar: (val: boolean) => void;
+    setIsTextRevealEnabled: (val: boolean) => void;
 }
 
 interface InlineActionBuckets {
@@ -150,7 +152,7 @@ const combineInlineActionConfigs = (
 ): InlineCategoryConfig[] => [
     ...categoryOverrides.map(override => ({
         id: toCategoryId(override.id) || override.id,
-        kind: override.kind || getCategoryConfig(override.id)?.kind || 'object',
+        kind: override.kind || getKindForCategory(override.id) || 'object',
         keywords: [],
         color: override.color,
         defaultTraitIds: override.defaultTraitIds
@@ -183,7 +185,7 @@ export const useSettingsStore = create<SettingsState>()(
             accentColor: '#f48f3c',
             bgImage: null,
             bgImageBottom: null,
-            fontFamily: "'Anonymous Pro', monospace",
+            fontFamily: "'Iosevka', monospace",
             uiMode: 'auto',
             isBloomEnabled: true,
             isHighlighterEnabled: true,
@@ -222,6 +224,7 @@ export const useSettingsStore = create<SettingsState>()(
             allowMapPersistence: true,
             unveilMap: false,
             showMapperToolbar: false,
+            isTextRevealEnabled: true,
 
             // Setters
             setConnectionUrl: (connectionUrl) => set({ connectionUrl }),
@@ -291,6 +294,7 @@ export const useSettingsStore = create<SettingsState>()(
             setAllowMapPersistence: (allowMapPersistence) => set({ allowMapPersistence }),
             setUnveilMap: (unveilMap) => set({ unveilMap }),
             setShowMapperToolbar: (showMapperToolbar) => set({ showMapperToolbar }),
+            setIsTextRevealEnabled: (isTextRevealEnabled) => set({ isTextRevealEnabled }),
         }),
         {
             name: 'mume-settings-storage',

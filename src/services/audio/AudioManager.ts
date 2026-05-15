@@ -42,6 +42,7 @@ export class AudioManager {
     private _isSoundEnabled: boolean = true;
     private silenceTimeout: NodeJS.Timeout | null = null;
     private zoneEndedListeners: Set<(key: string) => void> = new Set();
+    private pageAudioPaused: boolean = false;
 
     // Atmosphere state
     private atmosphereState = {
@@ -69,6 +70,7 @@ export class AudioManager {
         this._isSoundEnabled = initialSettings.isSoundEnabled;
         this.atmosphereState.masterVolume = initialSettings.masterVolume;
         this.atmosphereState.musicVolume = initialSettings.musicVolume;
+        this.bindPageAudioLifecycle();
     }
 
     public static getInstance(): AudioManager {
@@ -88,7 +90,7 @@ export class AudioManager {
         if (!enabled) {
             this.stopAllAmbients();
             this.stopAtmosphere();
-        } else if (this.audioCtx?.state === 'suspended') {
+        } else if (this.isPageAudioActive() && this.audioCtx?.state === 'suspended') {
             this.audioCtx.resume().catch(console.error);
         }
     }
@@ -107,12 +109,47 @@ export class AudioManager {
 
     public init() {
         if (!this.audioCtx) {
-            this.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const audioWindow = window as Window & { webkitAudioContext?: typeof AudioContext };
+            this.audioCtx = new (window.AudioContext || audioWindow.webkitAudioContext)();
         }
-        if (this.audioCtx.state === 'suspended') {
+        if (this.audioCtx.state === 'suspended' && this._isSoundEnabled && this.isPageAudioActive()) {
             this.audioCtx.resume().catch(console.error);
         }
     }
+
+    private bindPageAudioLifecycle() {
+        if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+        document.addEventListener('visibilitychange', this.handlePageAudioLifecycle);
+        window.addEventListener('focus', this.handlePageAudioLifecycle);
+        window.addEventListener('blur', this.handlePageAudioLifecycle);
+        window.addEventListener('pageshow', this.handlePageAudioLifecycle);
+        window.addEventListener('pagehide', this.handlePageAudioLifecycle);
+        this.handlePageAudioLifecycle();
+    }
+
+    private isPageAudioActive(): boolean {
+        if (typeof document === 'undefined') return true;
+        if (document.visibilityState !== 'visible') return false;
+        return typeof document.hasFocus !== 'function' || document.hasFocus();
+    }
+
+    private handlePageAudioLifecycle = (event?: Event) => {
+        const shouldPause = event?.type === 'pagehide' || !this.isPageAudioActive();
+        this.pageAudioPaused = shouldPause;
+        if (!this.audioCtx) return;
+
+        if (shouldPause) {
+            if (this.audioCtx.state === 'running') {
+                this.audioCtx.suspend().catch(console.error);
+            }
+            return;
+        }
+
+        if (this._isSoundEnabled && this.audioCtx.state === 'suspended') {
+            this.audioCtx.resume().catch(console.error);
+        }
+    };
 
     public async loadBuffer(url: string): Promise<AudioBuffer | null> {
         if (!this.audioCtx) return null;
@@ -176,7 +213,7 @@ export class AudioManager {
     }
 
     public async playEffect(key: string, options?: PlayOptions) {
-        if (!this._isSoundEnabled) return;
+        if (!this._isSoundEnabled || this.pageAudioPaused) return;
         this.init();
         if (!this.audioCtx) return;
 
@@ -563,7 +600,7 @@ export class AudioManager {
         const FX_THRESHOLD = 0.35;
 
         const playHeartbeat = () => {
-            if (!this._isSoundEnabled || !this.audioCtx || this.atmosphereState.hpRatio > FX_THRESHOLD) {
+            if (!this._isSoundEnabled || this.pageAudioPaused || !this.audioCtx || this.atmosphereState.hpRatio > FX_THRESHOLD) {
                 this.atmosphereTimeouts.heartbeat = setTimeout(playHeartbeat, 1000);
                 return;
             }
@@ -590,7 +627,7 @@ export class AudioManager {
             // Dub
             const dubDelay = duration * 0.3 * 1000;
             setTimeout(() => {
-                if (!this.audioCtx || !this._isSoundEnabled) return;
+                if (!this.audioCtx || !this._isSoundEnabled || this.pageAudioPaused) return;
                 const ctx2 = this.audioCtx;
                 const osc2 = ctx2.createOscillator();
                 const gain2 = ctx2.createGain();
@@ -616,7 +653,7 @@ export class AudioManager {
         const FX_THRESHOLD = 0.35;
 
         const playBreath = () => {
-            if (!this._isSoundEnabled || !this.audioCtx || this.atmosphereState.moveRatio > FX_THRESHOLD) {
+            if (!this._isSoundEnabled || this.pageAudioPaused || !this.audioCtx || this.atmosphereState.moveRatio > FX_THRESHOLD) {
                 this.atmosphereTimeouts.breath = setTimeout(playBreath, 2000);
                 return;
             }
@@ -691,7 +728,7 @@ export class AudioManager {
         playBreath();
     }
     public playSound(buffer: AudioBuffer, options?: PlayOptions) {
-        if (!this._isSoundEnabled || !this.audioCtx) return;
+        if (!this._isSoundEnabled || this.pageAudioPaused || !this.audioCtx) return;
         const ctx = this.audioCtx;
         const source = ctx.createBufferSource();
         source.buffer = buffer;

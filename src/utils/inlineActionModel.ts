@@ -10,13 +10,31 @@ import { CategoryOverride, CustomTraitConfig, EntityKind, InlineCategoryConfig }
 export interface CategoryConfig {
     id: string;
     label: string;
-    kind: EntityKind;
     defaultTraitIds: string[];
     legacyIds?: string[];
     color?: string;
     isGmcpCategory?: boolean;
     isLocationCategory?: boolean;
 }
+
+/** Maps a canonical category id to its actual EntityKind. Replaces CategoryConfig.kind. */
+export const CATEGORY_KIND_MAP: Readonly<Record<string, EntityKind>> = {
+    'cat-target':           'none',
+    'cat-ally':             'ally',
+    'cat-enemy':            'enemy',
+    'cat-neutral':          'neutral',
+    'cat-ally-remote':      'ally',
+    'cat-npc':              'npc',
+    'cat-room-object':      'object',
+    'cat-inventory-object': 'object',
+    'cat-worn-object':      'object',
+    'cat-object':           'object',
+    'cat-room':             'room',
+    'cat-exit':             'exit',
+};
+
+/** Per-kind color overrides passed to getInlineGlowColor from caller settings. */
+export type EntityColorMap = Partial<Record<EntityKind, string>>;
 
 export interface TraitConfig {
     id: string;
@@ -37,18 +55,18 @@ export type InlineActionConfigRecord = InlineCategoryConfig | CategoryOverride |
 // --- Default Model ---
 
 export const DEFAULT_CATEGORY_CONFIGS: CategoryConfig[] = [
-    { id: 'cat-target', label: 'Target', kind: 'none', legacyIds: ['target'], defaultTraitIds: ['trait-target'] },
-    { id: 'cat-ally', label: 'Ally', kind: 'player', color: '#22c55e', isGmcpCategory: true, legacyIds: ['inline-ally', 'player', 'ally'], defaultTraitIds: ['trait-group', 'trait-social', 'trait-identify', 'trait-examine', 'trait-consider'] },
-    { id: 'cat-enemy', label: 'Enemy', kind: 'player', color: '#ef4444', isGmcpCategory: true, legacyIds: ['inline-enemy', 'enemy'], defaultTraitIds: ['trait-identify', 'trait-examine', 'trait-consider'] },
-    { id: 'cat-neutral', label: 'Neutral', kind: 'player', color: '#eab308', isGmcpCategory: true, legacyIds: ['inline-neutral', 'neutral'], defaultTraitIds: ['trait-social', 'trait-identify', 'trait-examine', 'trait-consider'] },
-    { id: 'cat-ally-remote', label: 'Remote Ally', kind: 'player', color: '#22c55e', isLocationCategory: true, legacyIds: ['inline-ally-remote', 'ally-remote'], defaultTraitIds: ['trait-identify', 'trait-converse'] },
-    { id: 'cat-npc', label: 'NPC', kind: 'npc', isGmcpCategory: true, legacyIds: ['inline-npc', 'npc'], defaultTraitIds: ['trait-group', 'trait-examine', 'trait-consider'] },
-    { id: 'cat-room-object', label: 'Room Object', kind: 'object', isLocationCategory: true, legacyIds: ['inline-in-room-obj', 'object-room', 'obj-room'], defaultTraitIds: ['trait-room-object'] },
-    { id: 'cat-inventory-object', label: 'Inventory Object', kind: 'object', isLocationCategory: true, legacyIds: ['inline-inventory', 'inventory', 'obj-char'], defaultTraitIds: ['trait-inventory-object'] },
-    { id: 'cat-worn-object', label: 'Worn Object', kind: 'object', isLocationCategory: true, legacyIds: ['inline-worn', 'worn', 'obj-worn'], defaultTraitIds: ['trait-worn-object'] },
-    { id: 'cat-object', label: 'Object', kind: 'object', legacyIds: ['inline-object', 'object', 'default'], defaultTraitIds: ['trait-observable'] },
-    { id: 'cat-room', label: 'Room', kind: 'room', legacyIds: ['room'], defaultTraitIds: [] },
-    { id: 'cat-exit', label: 'Exit', kind: 'exit', legacyIds: ['exit', 'inline-exit'], defaultTraitIds: ['trait-exit'] }
+    { id: 'cat-target',           label: 'Target',           color: '#facc15',                   legacyIds: ['target'],                                    defaultTraitIds: ['trait-target'] },
+    { id: 'cat-ally',             label: 'Ally',             color: '#22c55e', isGmcpCategory: true,     legacyIds: ['inline-ally', 'player', 'ally'],             defaultTraitIds: ['trait-group', 'trait-social', 'trait-identify', 'trait-examine', 'trait-consider'] },
+    { id: 'cat-enemy',            label: 'Enemy',            color: '#ef4444', isGmcpCategory: true,     legacyIds: ['inline-enemy', 'enemy'],                     defaultTraitIds: ['trait-identify', 'trait-examine', 'trait-consider'] },
+    { id: 'cat-neutral',          label: 'Neutral',          color: '#eab308', isGmcpCategory: true,     legacyIds: ['inline-neutral', 'neutral'],                 defaultTraitIds: ['trait-social', 'trait-identify', 'trait-examine', 'trait-consider'] },
+    { id: 'cat-ally-remote',      label: 'Remote Ally',      color: '#22c55e', isLocationCategory: true, legacyIds: ['inline-ally-remote', 'ally-remote'],         defaultTraitIds: ['trait-identify', 'trait-converse'] },
+    { id: 'cat-npc',              label: 'NPC',                                isGmcpCategory: true,     legacyIds: ['inline-npc', 'npc'],                         defaultTraitIds: ['trait-group', 'trait-examine', 'trait-consider'] },
+    { id: 'cat-room-object',      label: 'Room Object',                        isLocationCategory: true, legacyIds: ['inline-in-room-obj', 'object-room', 'obj-room'], defaultTraitIds: ['trait-room-object'] },
+    { id: 'cat-inventory-object', label: 'Inventory Object',                   isLocationCategory: true, legacyIds: ['inline-inventory', 'inventory', 'obj-char'], defaultTraitIds: ['trait-inventory-object'] },
+    { id: 'cat-worn-object',      label: 'Worn Object',                        isLocationCategory: true, legacyIds: ['inline-worn', 'worn', 'obj-worn'],           defaultTraitIds: ['trait-worn-object'] },
+    { id: 'cat-object',           label: 'Object',                                                       legacyIds: ['inline-object', 'object', 'default'],        defaultTraitIds: ['trait-observable'] },
+    { id: 'cat-room',             label: 'Room Name',                                                     legacyIds: ['room', 'roomname', 'room-name'],             defaultTraitIds: ['trait-watchtower', 'trait-campable'] },
+    { id: 'cat-exit',             label: 'Exit',                                                          legacyIds: ['exit', 'inline-exit'],                       defaultTraitIds: ['trait-exit'] },
 ];
 
 export const DEFAULT_TRAIT_CONFIGS: TraitConfig[] = [
@@ -76,6 +94,9 @@ export const DEFAULT_TRAIT_CONFIGS: TraitConfig[] = [
     { id: 'trait-whetstone', label: 'Whetstone', kind: 'object', keywords: ['a stone'], buttonIds: ['btn-whet'] },
     { id: 'trait-reciteable', label: 'Reciteable', kind: 'object', keywords: ['scroll'], buttonIds: ['btn-recite'] },
     { id: 'trait-drawable', label: 'Drawable', kind: 'object', keywords: ['bow', 'crossbow', 'scabbard', 'sheath', 'harness'], buttonIds: ['btn-draw'] },
+    { id: 'trait-coverable', label: 'Coverable', kind: 'object', legacySetIds: ['inline-lightsource'], keywords: ['lantern', 'lamp', 'torch', 'lightsource', 'globe'], buttonIds: ['btn-lightsource-cover', 'btn-lightsource-uncover'] },
+    { id: 'trait-watchtower', label: 'Watch Tower', kind: 'room', keywords: ['watch tower', 'watchtower', 'tower'], buttonIds: ['btn-watch'] },
+    { id: 'trait-campable', label: 'Campable', kind: 'room', keywords: ['camp', 'clearing', 'campsite', 'forest', 'garden'], buttonIds: ['btn-camp'] },
     { id: 'trait-exit', label: 'Exit', kind: 'exit', legacySetIds: ['inline-exit'], keywords: ['north', 'south', 'east', 'west', 'up', 'down'], buttonIds: ['btn-exit-go', 'btn-look'] }
 ];
 
@@ -151,9 +172,10 @@ export const getCategoryIdForKindLocation = (
     return 'cat-object';
 };
 
-export const getKindForCategory = (id: string | null | undefined): EntityKind | null => (
-    getCategoryConfig(id)?.kind || null
-);
+export const getKindForCategory = (id: string | null | undefined): EntityKind | null => {
+    const canonicalId = toCategoryId(id) || id;
+    return (canonicalId ? CATEGORY_KIND_MAP[canonicalId] : undefined) ?? null;
+};
 
 export const getTraitsForName = (
     name: string,
@@ -205,44 +227,51 @@ export const findCategoryOverride = (
     ))
 );
 
-export const getCategoryColorWithOverrides = (
-    id: string | null | undefined,
-    configs: InlineActionConfigRecord[] = [],
-    fallback: string
-): string => {
-    const category = getCategoryConfig(id);
-    const categoryId = category?.id || toCategoryId(id) || id;
-    const override = configs.find(config => (
-        (toCategoryId(config.id) || config.id) === categoryId &&
-        'color' in config &&
-        !!config.color
-    ));
-    return override && 'color' in override && override.color ? override.color : category?.color || fallback;
-};
-
+/**
+ * Resolves the display color for a category or trait, in priority order:
+ *   1. Per-category user override stored in inlineCategories
+ *   2. Caller-supplied per-kind color (user's global settings: npcColor, objectColor, etc.)
+ *   3. Category's own hardcoded default color (e.g. #22c55e for allies)
+ */
 export const getInlineGlowColor = (
     id: string | null | undefined,
     configs: InlineActionConfigRecord[] = [],
-    kindColors: { npc?: string, player?: string, object?: string, room?: string } = {}
+    entityColors: EntityColorMap = {}
 ): string | null => {
     if (!id) return null;
     const category = getCategoryConfig(id);
     const trait = getTraitConfig(id);
     const canonicalId = category?.id || trait?.id || toCategoryId(id) || toTraitId(id) || id;
+
+    // 1. Per-category user override
     const override = configs.find(config => {
         const configId = toCategoryId(config.id) || toTraitId(config.id) || config.id;
         return configId === canonicalId && !!toCategoryId(config.id) && 'color' in config && !!config.color;
     });
     if (override && 'color' in override && override.color) return override.color;
 
-    const kind = category?.kind || trait?.kind || inferKindFromId(canonicalId);
-    if (kind === 'player' && kindColors.player) return kindColors.player;
-    if (kind === 'npc' && kindColors.npc) return kindColors.npc;
-    if (kind === 'object' && kindColors.object) return kindColors.object;
-    if (kind === 'room' && kindColors.room) return kindColors.room;
+    if (canonicalId === 'cat-ally' && entityColors.player) return entityColors.player;
 
-    return category?.color || null;
+    // 2. User's global kind-level setting (enemyColor, npcColor, objectColor, etc.)
+    const entityKind: EntityKind | undefined = CATEGORY_KIND_MAP[canonicalId] ?? trait?.kind ?? undefined;
+    if (entityKind) {
+        const kindColor = entityColors[entityKind];
+        if (kindColor) return kindColor;
+    }
+
+    // 3. Category's hardcoded default color
+    if (category?.color) return category.color;
+
+    return null;
 };
+
+/** Thin wrapper around getInlineGlowColor that always returns a string. */
+export const getCategoryColorWithOverrides = (
+    id: string | null | undefined,
+    configs: InlineActionConfigRecord[] = [],
+    fallback: string,
+    entityColors: EntityColorMap = {}
+): string => getInlineGlowColor(id, configs, entityColors) || fallback;
 
 export const upsertCategoryColorOverride = (
     id: string,
@@ -312,13 +341,4 @@ const matchesKeyword = (lowerName: string, keyword: string): boolean => {
     const lowKey = keyword.toLowerCase();
     const escaped = lowKey.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     return new RegExp(`(^|[^a-z])${escaped}([^a-z]|$)`, 'i').test(lowerName);
-};
-
-const inferKindFromId = (id: string): EntityKind | null => {
-    if (['cat-ally', 'cat-enemy', 'cat-neutral', 'cat-ally-remote'].includes(id)) return 'player';
-    if (id.includes('npc') || id.includes('shopkeeper') || id.includes('innkeeper') || id.includes('mount') || id.includes('guildmaster')) return 'npc';
-    if (id.includes('object') || id.includes('observable') || id.includes('weapon') || id.includes('container') || id.includes('food') || id.includes('corpse')) return 'object';
-    if (id.includes('room')) return 'room';
-    if (id.includes('exit')) return 'exit';
-    return null;
 };

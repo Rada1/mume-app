@@ -45,6 +45,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
     // is looping through lines. This avoids stale closures and state timing issues.
     const sessionRef = useRef<CaptureSession | null>(null);
     const pendingFlagsRef = useRef<{ isSilent: boolean, fromDrawer: boolean }>({ isSilent: false, fromDrawer: false });
+    const pendingSilentCommandsRef = useRef<string[]>([]);
 
     const checkTriggers = useCallback((line: string, attachedText?: string): CaptureType | null => {
         const clean = (attachedText || line).trim();
@@ -260,10 +261,42 @@ export function useCaptureParser(deps: CaptureParserDeps) {
     const isSilent = useCallback(() => sessionRef.current?.isSilent || false, [sessionRef]);
     const isFromDrawer = useCallback(() => sessionRef.current?.fromDrawer || false, [sessionRef]);
     const getActiveType = useCallback(() => sessionRef.current?.type || 'none', [sessionRef]);
+    const isPendingSilent = useCallback(() => pendingFlagsRef.current.isSilent, []);
     
-    const setPendingFlags = useCallback((isSilent: boolean, fromDrawer: boolean) => {
+    const normalizeCommandEcho = useCallback((value: string) => value
+        .replace(/\x1b\[[0-9;]*m/g, '')
+        .replace(/<\/?prompt[^>]*>/gi, '')
+        .replace(/&gt;/gi, '>')
+        .replace(/&lt;/gi, '<')
+        .replace(/&amp;/gi, '&')
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, ' '), []);
+
+    const setPendingFlags = useCallback((isSilent: boolean, fromDrawer: boolean, command?: string) => {
         pendingFlagsRef.current = { isSilent, fromDrawer };
-    }, []);
+        if (!isSilent || !command?.trim()) return;
+
+        pendingSilentCommandsRef.current.push(normalizeCommandEcho(command));
+        if (pendingSilentCommandsRef.current.length > 20) {
+            pendingSilentCommandsRef.current.shift();
+        }
+    }, [normalizeCommandEcho]);
+
+    const shouldSuppressCommandEcho = useCallback((line: string, attachedText?: string) => {
+        const pending = pendingSilentCommandsRef.current;
+        if (pending.length === 0) return false;
+
+        const candidates = [attachedText, line]
+            .filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+            .map(normalizeCommandEcho);
+
+        const matchIndex = pending.findIndex(command => candidates.includes(command));
+        if (matchIndex === -1) return false;
+
+        pending.splice(matchIndex, 1);
+        return true;
+    }, [normalizeCommandEcho]);
 
     return {
         checkTriggers,
@@ -274,6 +307,8 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         isSilent,
         isFromDrawer,
         getActiveType,
-        setPendingFlags
+        setPendingFlags,
+        isPendingSilent,
+        shouldSuppressCommandEcho
     };
 }

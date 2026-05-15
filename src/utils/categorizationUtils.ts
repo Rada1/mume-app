@@ -7,6 +7,7 @@ import { EntityKind, InlineCategoryConfig } from '../types';
 import {
     DEFAULT_CATEGORY_CONFIGS,
     DEFAULT_TRAIT_CONFIGS,
+    EntityColorMap,
     getCategoryColorWithOverrides,
     getCategoryConfig,
     getInlineGlowColor,
@@ -69,28 +70,27 @@ export function getCategoryForName(name: string, customCategories?: InlineCatego
 
 // --- Category Adapters ---
 
-export function getCategoryType(category: string | null, customCategories?: InlineCategoryConfig[]): string | null {
+export function getCategoryType(category: string | null, customCategories?: InlineCategoryConfig[]): EntityKind | null {
     if (!category) return null;
-    const categoryConfig = getCategoryConfig(category);
-    if (categoryConfig) return categoryConfig.kind;
+    const kind = getKindForCategory(category);
+    if (kind) return kind;
 
     const traitConfig = getTraitConfig(category);
     if (traitConfig?.kind) return traitConfig.kind;
 
     const configs = customCategories || [];
     const config = configs.find(candidate => canonicalizeCategoryId(candidate.id) === canonicalizeCategoryId(category));
-    return config?.categoryType || config?.kind || null;
+    return config?.kind || null;
 }
 
 export function getGlowColorForCategory(
     category: string | null,
     customCategories?: InlineCategoryConfig[],
-    kindColors?: { npc?: string, player?: string, object?: string, room?: string }
+    entityColors?: EntityColorMap
 ): string | null {
     if (!category) return null;
     const fallback = getFallbackColor(getCategoryType(category, customCategories));
-    return getInlineGlowColor(category, customCategories || [], kindColors) ||
-        getCategoryColorWithOverrides(category, customCategories || [], fallback);
+    return getCategoryColorWithOverrides(category, customCategories || [], fallback, entityColors);
 }
 
 export const resolveKindAndLocation = (
@@ -126,8 +126,11 @@ function traitToInlineConfig(trait: TraitConfig): InlineCategoryConfig {
     };
 }
 
-function getFallbackColor(kind: string | EntityKind | null): string {
-    if (kind === 'player') return COLOR_PLAYER;
+function getFallbackColor(kind: EntityKind | string | null): string {
+    if (kind === 'ally' || kind === 'player') return COLOR_ALLY;
+    if (kind === 'enemy') return COLOR_ENEMY;
+    if (kind === 'neutral') return COLOR_NEUTRAL;
+    if (kind === 'all') return COLOR_PLAYER;
     if (kind === 'npc') return COLOR_NPC;
     if (kind === 'object') return COLOR_OBJ;
     if (kind === 'room') return COLOR_ROOM;

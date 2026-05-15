@@ -29,6 +29,7 @@ import SwipeFeedbackOverlay from './components/Overlay/SwipeFeedbackOverlay';
 import { MultiSelectToolbar } from './components/Popovers/MultiSelectToolbar';
 import { AgentHUD } from './components/Utility/AgentHUD';
 import { useSettingsStore } from './stores/useSettingsStore';
+import { useDisplayMode } from './hooks/useDisplayMode';
 
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
@@ -70,6 +71,7 @@ const MudClient = () => {
     const { messages, addMessage } = useLog();
 
     const { isMobile, isKeyboardOpen, isLandscape, scrollContainerRef } = viewport;
+    const displayMode = useDisplayMode();
 
     const [btnGlow, setBtnGlow] = useState({ up: false, down: false });
     const [returnToManager, setReturnToManager] = useState(false);
@@ -137,6 +139,14 @@ const MudClient = () => {
 
     useEffect(() => {
         document.documentElement.style.setProperty('--accent', accentColor);
+        const hex = accentColor.replace('#', '');
+        const full = hex.length === 3 ? hex.split('').map(c => c + c).join('') : hex;
+        const r = parseInt(full.substring(0, 2), 16);
+        const g = parseInt(full.substring(2, 4), 16);
+        const b = parseInt(full.substring(4, 6), 16);
+        if (!isNaN(r) && !isNaN(g) && !isNaN(b)) {
+            document.documentElement.style.setProperty('--accent-rgb', `${r}, ${g}, ${b}`);
+        }
     }, [accentColor]);
 
     useEffect(() => {
@@ -199,7 +209,7 @@ const MudClient = () => {
 
     return (
         <div
-            className={`app-container state-${gameState} ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isTacticalTargetingActive ? 'tactical-targeting-active' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''}`}
+            className={`app-container state-${gameState} ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isTacticalTargetingActive ? 'tactical-targeting-active' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''}`}
             ref={containerRef}
             onDragOver={(e: React.DragEvent) => {
                 e.preventDefault();

@@ -26,7 +26,11 @@ export const WORLD_BUTTONS = [
 
     // --- EXITS ---
     createButton({ id: 'btn-exit-go', label: 'Go', command: '%n', setId: 'inline-exit', color: 'rgba(255, 255, 255, 0.25)' }),
-    createButton({ id: 'btn-look', label: 'Look', command: 'look %n', setId: 'inline-exit', color: '#3b82f6' })
+    createButton({ id: 'btn-look', label: 'Look', command: 'look %n', setId: 'inline-exit', color: '#3b82f6' }),
+
+    // --- ROOM NAMES ---
+    createButton({ id: 'btn-watch', label: 'Watch', command: 'watch', setId: 'cat-room', color: '#38bdf8' }),
+    createButton({ id: 'btn-camp', label: 'Camp', command: 'camp', setId: 'cat-room', color: '#22c55e' })
 ];
 
 

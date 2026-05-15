@@ -222,17 +222,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // regardless of which view is currently active. This prevents "leaking" snoop 
     // data into the main log or losing our own tells while viewing the target.
     const routedAddMessage = React.useCallback((type: MessageType, text: string, extra?: any, mid?: string, isRoomName?: boolean, precalculated?: any, shopItem?: any, practiceSkill?: any, practiceHeader?: any, isSystem?: boolean, replyTarget?: string, replyCommand?: string, commSender?: string, commAction?: string, commText?: string, commColor?: string, commSenderTokens?: any, commTextTokens?: any, providedCombatSide?: any, providedIsHitImpact?: boolean, providedIsDamageImpact?: boolean, providedIsHitterImpact?: boolean, providedIsSnoop?: boolean, providedIsSnoopInput?: boolean) => {
-        // Silencing logic for OOC captures
-        if (s.userSession.game.silenceUntilPrompt && !providedIsSnoop) {
-            return;
-        }
-
         const textOnly = (precalculated?.textOnly || text || '').replace(/\x1b\[[0-9;]*m/g, '').trim();
         const looksLikePrompt = textOnly.length <= 80 && (
             type === 'prompt' ||
             textOnly === '>' ||
             (textOnly.endsWith('>') && /(?:^|[\s\[\]!(*>])(?:HP|MA|MV|SP):\w+/i.test(textOnly))
         );
+
         const isBlankLine = textOnly.length === 0;
 
         // Spectate snoop output is routed to the target log, but MUME also sends
@@ -251,7 +247,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         } else {
             (s.userSession.log.addMessage as any)(...args);
         }
-    }, [s.userSession.log, s.spectateSession.log, s.userSession.game.silenceUntilPrompt, s.bumpActivity, mode.isSpectating]);
+    }, [s.userSession.log, s.spectateSession.log, s.bumpActivity, mode.isSpectating]);
 
     const { messages, setMessages, addSystemMessage, flushMessages, clearLog } = activeLog;
     const addMessage = routedAddMessage; // Use the router for the parser
@@ -432,6 +428,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, [telnet]);
 
     // --- Always-on recording: auto-start on connect, auto-save on disconnect ---
+    const previousStatusRef = useRef(s.status);
     useEffect(() => {
         if (s.status === 'connected') {
             s.userSession.recorder.startRecording(s.characterName || undefined, 'user');
@@ -439,7 +436,24 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             if (s.userSession.recorder.isRecording) {
                 s.userSession.recorder.stopAndSave(s.characterName || undefined);
             }
+
+            if (previousStatusRef.current !== 'disconnected') {
+                s.setGameState('account');
+                s.setAccountState(prev => ({
+                    ...prev,
+                    stage: 'none',
+                    currentPrompt: undefined,
+                    creationPrompt: undefined,
+                    selectedCharacter: null,
+                    charCapture: null
+                }));
+                s.setIsPasswordMode(false);
+                v.setActivePrompt(null);
+                captureStage.current = 'none' as any;
+            }
         }
+
+        previousStatusRef.current = s.status;
     }, [s.status]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const spectateBuffer = useSpectateBuffer();
@@ -651,6 +665,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         actionsRef: s.actionsRef,
 
         // UI/Visibility
+        isMobile: viewport.isMobile,
         isNewbieMode: s.isNewbieMode,
         drawer: ui.drawer,
 
@@ -733,10 +748,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         captureSession: s.active.game.captureSession,
         setCaptureSession: s.active.game.setCaptureSession,
         captureSessionRef: s.active.game.captureSessionRef,
-        silenceUntilPrompt: s.active.game.silenceUntilPrompt,
-        setSilenceUntilPrompt: s.userSession.game.setSilenceUntilPrompt,
 
         sendCommand: sendCommandProxy,
+        setInput: s.setInput,
 
         // Others
         addDiagnosticLog: ui.addDiagnosticLog,
@@ -748,7 +762,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         quests: s.quests,
         practice: practice,
         help: help
-    }), [s, v, ui, settingsStore, mode, addMessage, addSystemMessage, clearLog, playHitImpactSound, playOofSound, playHitImpactSoundSpectate, playOofSoundSpectate, playClickSoundSpectate, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
+    }), [s, v, ui, viewport, settingsStore, mode, addMessage, addSystemMessage, clearLog, playHitImpactSound, playOofSound, playHitImpactSoundSpectate, playOofSoundSpectate, playClickSoundSpectate, playSlashSound, playCleaveSound, playSmiteSound, playPierceSound, playStabSound, playArrowHitSound, playCommMessageSound, playBuySellSound, playBashSound, playIncantationSound, stopIncantationSound, playMagicExplosionSound, playDoorSound, playMovementSound, triggerHaptic, playEffect, playKillSound, playLevelSound, practice, quests, help, keywordOverrides, btn, session.sessionMode, mapperRef]);
 
 
     const parser = useGameParser(deps, s.userSession);
@@ -761,8 +775,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         addSystemMessage,
         telnetSendCommand: telnet.send,
         telnetConnect: telnet.connect,
-        characterName: s.characterName,
-        executeCommand: (cmd, echo, fromMacro) => controller.executeCommand(cmd, echo, fromMacro),
         groupMembers: v.groupMembers,
         spatButtons,
         triggerSpitManual,

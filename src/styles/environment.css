@@ -337,7 +337,7 @@
 
 .is-mobile .lighting-sun .lighting-inner {
     /* WEAKENED sun origin for mobile with subtle blue sky accent - Narrowed to keep bottom-left darker */
-    background: 
+    background:
         radial-gradient(circle at 95% -10%, rgba(0, 160, 255, 0.06) 0%, transparent 60%),
         radial-gradient(ellipse 110% 150% at 92% -30%,
             rgba(255, 255, 252, 0.52) 0%,

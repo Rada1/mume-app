@@ -168,7 +168,6 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
                     <>
                         <UnifiedView
                             lines={displayEqLines}
-                            location="worn"
                             category="cat-worn-object"
                             emptyMessage="No equipment data. Tap refresh to update."
                             onRefresh={() => { triggerHaptic(15); executeCommand('eq', true, true, false, true); }}
@@ -180,7 +179,6 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
                     <>
                         <UnifiedView
                             lines={displayInventoryLines}
-                            location="carried"
                             category="cat-inventory-object"
                             emptyMessage="No inventory data. Tap refresh to update."
                             onRefresh={() => { triggerHaptic(15); executeCommand('inv', true, true, false, true); }}
@@ -195,7 +193,6 @@ export const UnifiedDrawerContent: React.FC<UnifiedDrawerContentProps> = ({
                     <>
                         <UnifiedView
                             lines={roomObjectLines}
-                            location="room"
                             category="cat-room-object"
                             emptyMessage="No room objects detected. Tap refresh to look around."
                             onRefresh={() => { triggerHaptic(15); executeCommand('look', true, true, false, true); }}

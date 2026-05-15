@@ -368,6 +368,8 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     setShowSpectatePromptInLog: (val: boolean) => void;
     isTimestampEnabled: boolean;
     setIsTimestampEnabled: (val: boolean) => void;
+    isTextRevealEnabled: boolean;
+    setIsTextRevealEnabled: (val: boolean) => void;
     showControls: boolean;
     setShowControls: (val: boolean) => void;
     isPasswordMode: boolean;
@@ -383,12 +385,14 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     setFavorites: Dispatch<SetStateAction<string[]>>;
     parley: import('../../types').ParleyState;
     setParley: Dispatch<SetStateAction<import('../../types').ParleyState>>;
+
     whoList: string[];
     whereList: import('../../types').WhereEntry[];
     setWhereList: Dispatch<SetStateAction<import('../../types').WhereEntry[]>>;
     zoneMusic: import('../../types').ZoneMusicMapping[];
     setZoneMusic: Dispatch<SetStateAction<import('../../types').ZoneMusicMapping[]>>;
     spectateQueue: string[];
+
     lastSnoopStartTime: number | null;
     setLastSnoopStartTime: Dispatch<SetStateAction<number | null>>;
     addToQueue: (name: string) => void;

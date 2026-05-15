@@ -14,15 +14,13 @@ interface UnifiedViewProps {
     onRefresh?: () => void;
     emptyMessage?: string;
     category?: string;
-    location?: 'carried' | 'inv' | 'worn' | 'room';
 }
 
 export const UnifiedView: React.FC<UnifiedViewProps> = ({
     lines,
     onRefresh,
     emptyMessage = "No information captured yet.",
-    category,
-    location
+    category
 }) => {
     return (
         <div style={{ 
@@ -46,7 +44,6 @@ export const UnifiedView: React.FC<UnifiedViewProps> = ({
                             key={line.id} 
                             line={line} 
                             category={category}
-                            location={location}
                         />
                     ))
                 ) : (

@@ -3,9 +3,10 @@
     grid-template-columns: minmax(180px, auto) 1fr auto;
     align-items: center;
     width: 100%;
-    background: #0d0d0d;
+    background: #000000;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    box-shadow: none;
     z-index: 9500; /* Above shop panel (--z-drawer: 9200) */
     position: relative;
     padding: 4px 12px;
@@ -23,12 +24,12 @@
     background: #0d0d0d !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border: none !important;
     position: absolute !important;
     top: 0;
     left: 0;
     right: 0;
-    z-index: var(--z-header); 
+    z-index: var(--z-header);
     pointer-events: none;
     margin-bottom: 0 !important;
     padding: calc(env(safe-area-inset-top, 0px) + 4px) 12px 4px 12px !important;
@@ -37,6 +38,21 @@
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
     overflow: visible !important;
+    box-shadow: none !important;
+}
+
+.mobile-header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-bottom: 1px solid rgba(var(--accent-rgb, 244, 143, 60), 0.55);
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    pointer-events: none;
+    z-index: 2;
 }
 
 .mobile-header>* {
@@ -558,5 +574,25 @@
     .player-name {
         font-size: 0.75rem;
     }
+}
+
+.light-mode .header {
+    background: rgba(220, 220, 220, 0.75);
+    backdrop-filter: blur(24px) saturate(1.8);
+    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    border-color: rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.light-mode .mobile-header {
+    background: rgba(220, 220, 220, 0.75) !important;
+    backdrop-filter: blur(24px) saturate(1.8) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(1.8) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Immersion mode: restore depth shadow on header */
+.immersion-mode .header {
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
 }
 

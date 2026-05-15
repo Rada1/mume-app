@@ -12,12 +12,16 @@ export type EntityLocation =
     | 'none';     // UI controls/meta-actions with no world location
 
 /** Entity kind axis. */
-export type EntityKind = 
-    | 'npc' 
-    | 'player' 
-    | 'object' 
+export type EntityKind =
+    | 'npc'
+    | 'player'   // legacy — prefer 'all' for who-list context
+    | 'all'      // who-list / online players
+    | 'ally'     // in-room ally character
+    | 'enemy'    // in-room enemy character
+    | 'neutral'  // in-room neutral character
+    | 'object'
     | 'room'
-    | 'exit' 
+    | 'exit'
     | 'control'  // UI/meta-elements like account buttons or quests
     | 'none';
 

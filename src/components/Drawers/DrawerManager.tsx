@@ -34,9 +34,9 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     setHeldButton,
     setCommandPreview
 }) => {
-    const { 
+    const {
         characterName, viewport, triggerHaptic, gameState, executeCommand,
-        btn, joystick, handleButtonClick, editor, env, isFoggy, gameTime, roomItems
+        btn, joystick, handleButtonClick, editor, env, isFoggy, gameTime, roomItems,
     } = useGame();
     const currentTime = useMumeTime(gameTime);
     const {
@@ -50,7 +50,6 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         gearTab, setGearTab, playersTab, setPlayersTab, charTab, setCharTab
     } = useUI();
     const { groupMembers, target, activePrompt, stats } = useVitals();
-
     // Body classes for desktop layout
     React.useEffect(() => {
         if (!viewport.isMobile) {
@@ -75,7 +74,9 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                 <div className={`map-drawer-desktop ${ui.mapExpanded ? 'open' : ''}`}>
                     <div className="drawer-content" style={{ flex: 1, padding: 0, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                         <div className="mapper-header-desktop">
-                            <MapperRoomInfo />
+                            <div>
+                                <MapperRoomInfo />
+                            </div>
                             
                             {/* Persistent Tactical Buttons - now horizontal under the room card on desktop */}
                             <div className="desktop-tactical-buttons-persistent">

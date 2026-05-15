@@ -154,6 +154,7 @@ export interface UseGameParserDeps {
 
     sendCommand?: (cmd: string) => void;
     clearLog?: () => void;
+    setInput?: (val: string) => void;
 
     // Others
     addDiagnosticLog: (msg: string) => void;

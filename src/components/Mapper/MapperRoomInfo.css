@@ -43,6 +43,23 @@
     }
 }
 
+/* Light mode */
+.light-mode .mri-content {
+    background: rgba(220, 220, 220, 0.75) !important;
+    backdrop-filter: blur(24px) saturate(1.8) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(1.8) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+}
+
+.light-mode .mri-desc {
+    color: var(--text-dim);
+}
+
+.light-mode .mri-name {
+    text-shadow: none;
+}
+
 .mri-name {
     font-size: 1rem;
     font-weight: 800;

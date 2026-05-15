@@ -4,6 +4,7 @@ import { useCommandExecutor } from './useCommandExecutor';
 import { useInteractionHandlers } from './useInteractionHandlers';
 import { useNumpadControls } from './useNumpadControls';
 import { CaptureStage } from '../types';
+import { recordEffectTimerCommand } from '../services/timers/effectTimerParser';
 // import { useAtmosphereStore } from '../stores/useAtmosphereStore';
 
 export interface CommandControllerDeps {
@@ -30,7 +31,7 @@ export interface CommandControllerDeps {
     setPendingMove: (val: { dir: string; timestamp: number } | null) => void;
     activePrompt: string;
     finalizeCapture: (targetStage?: CaptureStage) => void;
-    setPendingFlags: (isSilent: boolean, fromDrawer: boolean) => void;
+    setPendingFlags: (isSilent: boolean, fromDrawer: boolean, command?: string) => void;
     popoverState: any;
     setPopoverState: (val: any) => void;
     handleTabClick: (drawer: 'character' | 'players' | 'equipment') => void;
@@ -230,6 +231,7 @@ export function useCommandController(deps: CommandControllerDeps) {
             return;
         }
 
+        if (!effectiveSilent && !isSystem) recordEffectTimerCommand(cmd);
         executor.executeCommand(cmd, effectiveSilent, isSystem, isHistorical, fromDrawer);
 
         // if (!effectiveSilent && !isSystem) {

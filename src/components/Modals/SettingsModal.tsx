@@ -55,6 +55,8 @@ interface SettingsModalProps {
     setAutoSaveSessions?: (val: boolean) => void;
     showSpectatePromptInLog?: boolean;
     setShowSpectatePromptInLog?: (val: boolean) => void;
+    isTextRevealEnabled: boolean;
+    setIsTextRevealEnabled: (val: boolean) => void;
 
     // Button specific props
     isEditMode: boolean;
@@ -75,6 +77,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     isBloomEnabled, setIsBloomEnabled,
     isTimestampEnabled, setIsTimestampEnabled, fontFamily, setFontFamily,
     autoSaveSessions, setAutoSaveSessions, showSpectatePromptInLog, setShowSpectatePromptInLog,
+    isTextRevealEnabled, setIsTextRevealEnabled,
     isEditMode, setIsEditMode, isGridEnabled, setIsGridEnabled, createButton,
     setIsSetManagerOpen,
 }) => {
@@ -171,6 +174,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setAutoSaveSessions={setAutoSaveSessions ?? (() => {})}
                                 showSpectatePromptInLog={showSpectatePromptInLog ?? false}
                                 setShowSpectatePromptInLog={setShowSpectatePromptInLog ?? (() => {})}
+                                isTextRevealEnabled={isTextRevealEnabled}
+                                setIsTextRevealEnabled={setIsTextRevealEnabled}
                             />
                             <DataManagement
                                 exportSettings={exportSettings}

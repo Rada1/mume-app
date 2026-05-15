@@ -8,9 +8,7 @@ export interface InlineSpanProps {
   mid: string;
   cmd: string;
   context: string;
-  kind?: string;            // e.g. 'npc', 'player', 'object' (T6)
-  location?: string;        // e.g. 'room', 'inv', 'worn', 'shop' (T6)
-  category?: string;        // e.g. 'npc', 'player', 'object'
+  category?: string;        // canonical inline category, e.g. cat-room-object
   action?: string;          // default 'menu'
   menuDisplay?: 'list' | 'dial';
   extraClasses?: string[];  // e.g. ['auto-occupant', 'pc-highlighter']
@@ -49,8 +47,6 @@ export const renderInlineSpan = (p: InlineSpanProps): string => {
   
   let dataStr = `data-id="${esc(p.id)}" data-mid="${esc(p.mid)}" data-cmd="${esc(p.cmd)}" data-context="${esc(p.context)}"`;
   
-  if (p.kind) dataStr += ` data-kind="${esc(p.kind)}"`;
-  if (p.location) dataStr += ` data-location="${esc(p.location)}"`;
   if (p.action) dataStr += ` data-action="${esc(p.action)}"`;
   if (p.menuDisplay) dataStr += ` data-menu-display="${esc(p.menuDisplay)}"`;
   if (p.category) dataStr += ` data-category="${esc(p.category)}"`;

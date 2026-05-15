@@ -29,6 +29,7 @@ import { Tokenizer } from '../../services/parser/Tokenizer';
 import { useActionTracker } from './useActionTracker';
 import { buildPlayerLineTokens } from './playerLineTokens';
 import { useUIStore } from '../../stores/useUIStore';
+import { parseEffectTimerLine } from '../../services/timers/effectTimerParser';
 
 const decodeTextEntities = (text: string) => text
     .replace(/&gt;/gi, '>')
@@ -392,6 +393,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         rememberLogin,
         loginName,
         loginPassword,
+        setInput: deps.setInput,
+        isMobile: deps.isMobile,
     });
 
     const time = useTimeParser({
@@ -622,6 +625,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         const promptInfo = prompt.parsePrompt(textOnly, isSnoop);
+        if (!isSnoop && capture.shouldSuppressCommandEcho(textOnly, promptInfo.attachedText)) {
+            return;
+        }
+
         const isAccountRelatedStage = ['login', 'account-menu', 'character-creation', 'stat-editing'].includes(deps.accountState.stage);
 
         if (!isSnoop && deps.gameState === 'account' && promptInfo.isMatch) {
@@ -632,6 +639,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
         const expectedCaptureType = normalizeStageToCaptureType(deps.captureStage.current) as any;
         const isCaptureBoundary = isPromptResolved || promptInfo.isMatch || isPromptBoundaryLine(textOnly);
+        const shouldHidePendingSilentCapture = !isSnoop &&
+            !isCaptureBoundary &&
+            capture.isPendingSilent() &&
+            expectedCaptureType !== 'none';
 
         // Nearby is intentionally separate from the generic capture machine.
         // It records only the tiny `where` table and never touches entity
@@ -741,7 +752,17 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
             !isCaptureBoundary &&
             !capture.hasSession() &&
             !incomingCaptureType &&
-            ['who', 'achievement'].includes(expectedCaptureType)
+            [
+                'who',
+                'achievement',
+                'equipment',
+                'inventory',
+                'stats',
+                'score',
+                'info',
+                'practice',
+                'quests'
+            ].includes(expectedCaptureType)
         );
         if (canStartExpectedCapture) {
             capture.startSession(expectedCaptureType);
@@ -778,6 +799,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         atmosphere.parseAtmosphere(lower, isSnoop);
+        if (!isSnoop) parseEffectTimerLine(textOnly);
         if (time.parseTimeLine(lower)) msgType = 'info' as any;
 
         // --- Magic Sound Effects ---
@@ -805,6 +827,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
 
         // Suppress response lines from silent capture sessions (e.g. drawer auto-commands like eq/who)
         if (!isSnoop && capture.hasSession() && capture.isSilent()) {
+            isVisible = false;
+        }
+        if (shouldHidePendingSilentCapture) {
             isVisible = false;
         }
 

@@ -7,8 +7,6 @@ export interface SessionManagerDeps {
     addSystemMessage: (msg: string) => void;
     telnetSendCommand: (cmd: string) => void;
     telnetConnect: () => void;
-    characterName: string | null;
-    executeCommand: (cmd: string, echo?: boolean, fromMacro?: boolean) => void;
     groupMembers: any[];
     spatButtons: any[];
     triggerSpitManual: (btn: any) => void;
@@ -23,8 +21,6 @@ export const useSessionManager = ({
     addSystemMessage,
     telnetSendCommand,
     telnetConnect,
-    characterName,
-    executeCommand,
     groupMembers,
     spatButtons,
     triggerSpitManual,
@@ -67,26 +63,8 @@ export const useSessionManager = ({
         const isPasswordPrompt = /password\s*:/i.test(lower) || (gameState === 'account' && accountStage === 'login' && isPasswordMode);
         const isIllegalName = /illegal name/i.test(lower);
 
-        // Handle Name Prompt
-        if (isNamePrompt && !isIllegalName) {
-            // Only reset passwordSent on a CLEAN name prompt (not after a rejection)
-            autoLoginSessionRef.current.passwordSent = false;
-
-            if (loginName && !autoLoginSessionRef.current.nameSent) {
-                autoLoginSessionRef.current.nameSent = true;
-                addSystemMessage(`Auto-login: Sending name: ${loginName}`);
-                telnetSendCommandRef.current(loginName);
-            }
-        }
-
-        // Handle Password Prompt
-        if (loginPassword && !autoLoginSessionRef.current.passwordSent) {
-            if (isPasswordPrompt) {
-                autoLoginSessionRef.current.passwordSent = true;
-                addSystemMessage(`Auto-login: Sending password...`);
-                telnetSendCommandRef.current(loginPassword);
-            }
-        }
+        // Auto-login is handled via input pre-fill in useAccountParser.
+        // useSessionManager no longer sends credentials automatically.
     }, [activePrompt, status, addSystemMessage, gameState, loginName, loginPassword, accountStage, isPasswordMode]);
 
     // Exposed so LoginView can signal a manual login attempt is starting.
@@ -96,20 +74,6 @@ export const useSessionManager = ({
         autoLoginSessionRef.current.nameSent = true;
         autoLoginSessionRef.current.passwordSent = false;
     }, []);
-
-    // --- Practice sync on character detection ---
-    const lastSyncedCharRef = React.useRef<string | null>(null);
-    React.useEffect(() => {
-        if (characterName && characterName !== lastSyncedCharRef.current && status === 'connected') {
-            lastSyncedCharRef.current = characterName;
-            // Delay slightly to ensure login sequence is fully finished
-            setTimeout(() => {
-                executeCommand('practice', true, true);
-            }, 2000);
-        } else if (!characterName) {
-            lastSyncedCharRef.current = null;
-        }
-    }, [characterName, status, executeCommand]);
 
     // --- Only on mount / Auto Connect ---
     React.useEffect(() => {

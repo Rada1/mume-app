@@ -58,6 +58,8 @@ interface MapCanvasProps {
     objectColor?: string;
     opponentName?: string | null;
     opponentId?: string | null;
+    activeInlineEntityId?: string | null;
+    selectedObjectIds?: Set<string>;
     deathRoomId?: string | null;
 }
 
@@ -75,7 +77,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
         roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor,
-        opponentName, opponentId, deathRoomId
+        opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId
     } = props;
 
     const { drawMap } = useMapperRenderer({
@@ -86,7 +88,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
         roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor,
-        opponentName, opponentId, deathRoomId
+        opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId
     });
 
     useMapAnimation({

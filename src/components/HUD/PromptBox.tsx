@@ -14,6 +14,8 @@ import { useActiveVitals, useActiveCombat, useActiveCharacter } from '../../stor
 import { useModeStore } from '../../stores/useModeStore';
 import { TokenRenderer } from '../Messages/TokenRenderer';
 import PromptCombatStatsLine from './PromptCombatStatsLine';
+import { useSettingsStore } from '../../stores/useSettingsStore';
+import { DispositionSliderPopout, DispositionSliderConfig } from './DispositionSliderPopout';
 
 interface PromptBoxProps {
     processMessageHtml?: (html: string, mid: string, isRoomName: boolean, type?: string, isCombat?: boolean, side?: string) => string;
@@ -27,6 +29,12 @@ const MOVE_TIERS = ['Unwearied', 'Steadfast', 'Rested', 'Tired', 'Slow', 'Weak',
 const HEALTH_SEGMENTS = HEALTH_TIERS.length - 1;
 const MANA_SEGMENTS = MANA_TIERS.length - 1;
 const MOVE_SEGMENTS = MOVE_TIERS.length - 1;
+const MOOD_OPTIONS = ['wimpy', 'prudent', 'normal', 'brave', 'aggressive', 'berserk'];
+const MOOD_LABELS = ['WIM', 'PRU', 'NOR', 'BRA', 'AGG', 'BER'];
+const SPEED_OPTIONS = ['slow', 'normal', 'fast'];
+const SPEED_LABELS = ['SLOW', 'NORM', 'FAST'];
+const ALERT_OPTIONS = ['off', 'normal', 'active'];
+const ALERT_LABELS = ['OFF', 'NORM', 'ACT'];
 
 const HEALTH_MAP: Record<string, { percent: number; color: string }> = {
     'Healthy': { percent: 100, color: '#22c55e' },
@@ -251,8 +259,22 @@ const PromptBox: FC<PromptBoxProps> = ({
     processMessageTokens,
     onWimpyChange
 }) => {
-    const { triggerHaptic, executeCommand, setPlayerPosition, inlineCategories, isNewbieMode, viewport } = useGame();
-    const { handleTabClick } = useUI();
+    const {
+        triggerHaptic,
+        executeCommand,
+        setPlayerPosition,
+        inlineCategories,
+        isNewbieMode,
+        viewport,
+        mood,
+        setMood,
+        spellSpeed,
+        setSpellSpeed,
+        alertness,
+        setAlertness
+    } = useGame();
+    const { handleTabClick, setPopoverState, popoverState } = useUI();
+    const enemyColor = useSettingsStore(state => state.enemyColor);
     
     // --- Active View State Selectors ---
     const activeVitals = useActiveVitals();
@@ -274,11 +296,12 @@ const PromptBox: FC<PromptBoxProps> = ({
 
     const activeCombat = useActiveCombat();
     const opponentName = activeCombat.opponentName;
+    const opponentId = activeCombat.opponentId;
     const opponentHealthStatus = activeCombat.opponentHealthStatus;
     const characterName = useActiveCharacter();
     const isSpectateMode = useModeStore(state => state.isSpectating);
 
-    const [activeSlider, setActiveSlider] = useState<'pos' | null>(null);
+    const [activeSlider, setActiveSlider] = useState<'pos' | 'disposition' | null>(null);
     const [activeButtonRect, setActiveButtonRect] = useState<DOMRect | null>(null);
     const [showNumbers, setShowNumbers] = useState(false);
     const numbersTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -355,8 +378,8 @@ const PromptBox: FC<PromptBoxProps> = ({
     // Dynamic color for opponent (NPC/Player/etc) to match log higlighter
     const opponentColor = React.useMemo(() => {
         if (!opponentName) return undefined;
-        return getInlineGlowColor('cat-npc', inlineCategories, { npc: '#facc15' }) || undefined;
-    }, [opponentName, inlineCategories]);
+        return getInlineGlowColor('cat-enemy', inlineCategories, { enemy: enemyColor }) || undefined;
+    }, [opponentName, inlineCategories, enemyColor]);
 
     const triggerNumbers = useCallback(() => {
         triggerHaptic(15);
@@ -374,6 +397,35 @@ const PromptBox: FC<PromptBoxProps> = ({
         setActiveButtonRect(rect);
         setActiveSlider(activeSlider === 'pos' ? null : 'pos');
     }, [activeSlider, triggerHaptic]);
+
+    const handleDispositionClick = useCallback((e: React.MouseEvent) => {
+        triggerHaptic(10);
+        const rect = e.currentTarget.getBoundingClientRect();
+        setActiveButtonRect(rect);
+        setActiveSlider(activeSlider === 'disposition' ? null : 'disposition');
+    }, [activeSlider, triggerHaptic]);
+
+    const dispositionSliders: DispositionSliderConfig[] = React.useMemo(() => ([
+        { id: 'mood', label: 'Mood', value: mood || 'normal', options: MOOD_OPTIONS, displayLabels: MOOD_LABELS },
+        { id: 'speed', label: 'Spell Speed', value: spellSpeed || 'normal', options: SPEED_OPTIONS, displayLabels: SPEED_LABELS },
+        { id: 'alert', label: 'Alertness', value: alertness || 'normal', options: ALERT_OPTIONS, displayLabels: ALERT_LABELS }
+    ]), [alertness, mood, spellSpeed]);
+
+    const handleDispositionSelect = useCallback((id: DispositionSliderConfig['id'], val: string) => {
+        if (id === 'mood') {
+            setMood(val);
+            executeCommand(`cha mood ${val}`);
+        }
+        if (id === 'speed') {
+            setSpellSpeed(val);
+            executeCommand(`cha speed ${val}`);
+        }
+        if (id === 'alert') {
+            setAlertness(val);
+            executeCommand(`alert ${val}`);
+        }
+        triggerHaptic(15);
+    }, [executeCommand, setAlertness, setMood, setSpellSpeed, triggerHaptic]);
 
     const manaStatusFromGmcp = normalizeTierStatus(manaStatus, MANA_TIERS) ?? (maxMana <= 0 && mana > 0 ? 'Full' : null);
     const moveStatusFromGmcp = normalizeTierStatus(moveStatus, MOVE_TIERS) ?? (maxMove <= 0 && move > 0 ? 'Unwearied' : null);
@@ -407,28 +459,82 @@ const PromptBox: FC<PromptBoxProps> = ({
         return <span dangerouslySetInnerHTML={{ __html: html }} />;
     };
 
+    const opponentEntityId = opponentId != null
+        ? `roomchars:${opponentId}`
+        : opponentName
+            ? `prompt-opponent:${opponentName.toLowerCase()}`
+            : undefined;
+
+    const handleOpponentClick = useCallback((e: React.MouseEvent<HTMLSpanElement>) => {
+        if (!opponentName || !opponentEntityId) return;
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (popoverState?.entityId === opponentEntityId) {
+            setPopoverState(null);
+            triggerHaptic(10);
+            return;
+        }
+
+        const rect = e.currentTarget.getBoundingClientRect();
+        setPopoverState({
+            x: rect.right,
+            y: rect.top + rect.height / 2,
+            setId: 'cat-enemy',
+            category: 'cat-enemy',
+            context: opponentName,
+            entityId: opponentEntityId,
+            menuDisplay: 'list',
+            accentColor: opponentColor || enemyColor,
+            preferSide: 'right'
+        });
+        triggerHaptic(20);
+    }, [enemyColor, opponentColor, opponentEntityId, opponentName, popoverState?.entityId, setPopoverState, triggerHaptic]);
+
+    const renderOpponentInlineButton = () => {
+        if (!opponentName || !opponentEntityId) return null;
+        const isActive = popoverState?.entityId === opponentEntityId;
+        return (
+            <span
+                className={`inline-btn prompt-opponent-inline${isActive ? ' menu-active' : ''}`}
+                data-action="menu"
+                data-category="cat-enemy"
+                data-cmd="cat-enemy"
+                data-context={opponentName}
+                data-id={opponentEntityId}
+                data-menu-display="list"
+                style={{ '--glow-color': opponentColor || enemyColor } as React.CSSProperties}
+                onClick={handleOpponentClick}
+            >
+                {opponentName}
+            </span>
+        );
+    };
+
     return (
         <div className="prompt-box-container" id="prompt-box" style={{ '--prompt-name-font-size': nameFontSize } as any}>
             <div className="prompt-box-content">
                 {/* Names Row — only shown in combat */}
-                {inCombat && (
-                    <div className="vitals-names-row">
-                        <div className="name-label player-name">
-                            {renderStyledName(characterName || 'YOU')}
-                        </div>
-                        {opponentName && (
-                            <div className="name-label opponent-name animate-combat-mini">
-                                {renderStyledName(opponentName, true)}
-                            </div>
-                        )}
-                    </div>
-                )}
-
                 <div className="prompt-vitals-row-ascii">
                     {/* Player Side */}
                     <div className="vitals-side-container side-left">
                         <div className="player-vitals-stack">
-                            <PromptCombatStatsLine />
+                            <div className="prompt-top-stats-row">
+                                {inCombat && (
+                                    <div className="name-label player-name prompt-inline-name">
+                                        {renderStyledName(characterName || 'YOU')}
+                                    </div>
+                                )}
+                                <PromptCombatStatsLine />
+                                <button
+                                    className={`pos-combat-square-btn disposition-square-btn ${activeSlider === 'disposition' ? 'active' : ''}`}
+                                    onClick={!isSpectateMode ? handleDispositionClick : undefined}
+                                    style={{ cursor: isSpectateMode ? 'default' : 'pointer' }}
+                                    title={`Disposition: ${mood || 'normal'} / ${spellSpeed || 'normal'} / ${alertness || 'normal'}`}
+                                >
+                                    <Sliders size={13} strokeWidth={2.6} />
+                                </button>
+                            </div>
                             <div className="player-stats-group">
                                 <Heart size={11} className="vitals-icon hp-icon" strokeWidth={3} />
                                 <div ref={hpBarRef} style={{ flex: 1, display: 'flex', minWidth: 0 }}>
@@ -494,7 +600,13 @@ const PromptBox: FC<PromptBoxProps> = ({
                     {/* Opponent Side */}
                     <div className="vitals-side-container side-right">
                         {opponentName && (
-                            <div className="opponent-stats-group animate-combat-mini">
+                            <div className="opponent-vitals-stack animate-combat-mini">
+                                <div className="prompt-top-stats-row opponent-top-stats-row">
+                                    <div className="name-label opponent-name prompt-inline-name">
+                                        {renderOpponentInlineButton()}
+                                    </div>
+                                </div>
+                                <div className="opponent-stats-group">
                                 <ConditionBadge 
                                     status="Unknown" 
                                     percent={100} 
@@ -526,7 +638,8 @@ const PromptBox: FC<PromptBoxProps> = ({
                                     mirrored
                                     isFighting={inCombat}
                                 />
-                                <Heart size={11} className="vitals-icon hp-icon is-mirrored" strokeWidth={3} />
+                                    <Heart size={11} className="vitals-icon hp-icon is-mirrored" strokeWidth={3} />
+                                </div>
                             </div>
                         )}
                     </div>
@@ -549,6 +662,14 @@ const PromptBox: FC<PromptBoxProps> = ({
                         }}
                         onClose={() => setActiveSlider(null)}
                         triggerHaptic={triggerHaptic}
+                    />
+                )}
+                {activeSlider === 'disposition' && activeButtonRect && (
+                    <DispositionSliderPopout
+                        sliders={dispositionSliders}
+                        anchorRect={activeButtonRect}
+                        onSelect={handleDispositionSelect}
+                        onClose={() => setActiveSlider(null)}
                     />
                 )}
             </div>

@@ -6,7 +6,7 @@
 import { RefObject } from 'react';
 import { CustomButton, InlineCategoryConfig, MessageType } from '../types';
 import { pluralizeMumeSubject } from './gameUtils';
-import { getCategoryIdForKindLocation, getKindForCategory } from './inlineActionModel';
+import { getCategoryIdForKindLocation } from './inlineActionModel';
 import { getEffectiveKeyword } from './keywordUtils';
 import { getMemberColor } from './groupUtils';
 import {
@@ -16,7 +16,7 @@ import {
     magicKeywords
 } from '../constants/highlighterItems';
 import { isObjectSelected } from './selectionUtils';
-import { renderInlineSpan, esc } from './inlineSpanRenderer';
+import { renderInlineSpan } from './inlineSpanRenderer';
 
 /**
  * Regex constants for movement detection.
@@ -203,7 +203,6 @@ export const applyColorTaggedObjects = (
         }
         
         const category = getCategoryIdForKindLocation(kind, location);
-        const catType = getKindForCategory(category) || kind;
         const { glow, classExtra } = getTargetAwareStyles(displayName, finalContext, groupColor || '', target);
         
         const buttonId = `auto-obj-${keyword}`;
@@ -212,11 +211,9 @@ export const applyColorTaggedObjects = (
         return renderInlineSpan({
             id: buttonId,
             mid,
-            cmd: kind,
-            kind: catType,
-            location,
+            cmd: category,
             context: finalContext,
-            category: category || catType,
+            category,
             action: 'menu',
             extraClasses: ['auto-obj', 'color-tagged-obj', ...classExtra.trim().split(' ').filter(Boolean)],
             draggable: true,

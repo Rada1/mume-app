@@ -130,14 +130,15 @@
     animation: swipe-wheel-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     border-radius: 50%;
     /* Frosted Glass - Highly Transparent & Subtle Blur */
-    background: rgba(255, 255, 255, 0.03); 
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #000000; 
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid color-mix(in srgb, var(--set-accent, var(--accent)) 38%, rgba(255, 255, 255, 0.12));
     box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.4),
-        0 0 15px rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.3),
-        inset 0 0 1px 1px rgba(255, 255, 255, 0.05);
+        0 0 32px rgba(0, 0, 0, 0.5),
+        0 0 5px var(--set-accent, var(--accent)),
+        0 0 16px color-mix(in srgb, var(--set-accent, var(--accent)) 46%, transparent),
+        0 0 46px color-mix(in srgb, var(--set-accent, var(--accent)) 24%, transparent);
     /* Overflow hidden removed to allow selected slice to grow outward */
 }
 
@@ -195,16 +196,18 @@
 
 .swipe-slice.active {
     z-index: 20;
-    /* Soft glow allowed to bleed across dividers — only the fill is masked as donut */
-    filter: drop-shadow(0 0 15px rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.6));
+    /* Match the tighter tactical button glow instead of blooming across the whole wheel. */
+    filter: drop-shadow(0 0 6px var(--set-accent, var(--accent)));
 }
 
 .swipe-slice.active::before {
     /* Linear gradient ensures the color doesn't fade out as it approaches the center */
     background: linear-gradient(to left,
-            rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.6) 0%,
-            rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.3) 100%);
-    box-shadow: inset -15px 0 25px rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.5);
+            color-mix(in srgb, var(--set-accent, var(--accent)) 78%, transparent) 0%,
+            color-mix(in srgb, var(--set-accent, var(--accent)) 28%, transparent) 100%);
+    box-shadow:
+        inset -10px 0 16px color-mix(in srgb, var(--set-accent, var(--accent)) 42%, transparent),
+        0 0 20px var(--set-accent, var(--accent));
 }
 
 .slice-separator {
@@ -213,7 +216,7 @@
     left: 50%;
     width: 50%;
     height: 2px;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.4) 100%);
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.34) 100%);
     transform-origin: left center;
     transform: rotate(-22.5deg);
     pointer-events: none;

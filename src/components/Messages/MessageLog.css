@@ -109,7 +109,7 @@
     flex-shrink: 0;                /* Prevent squashing in flex containers */
     word-wrap: break-word;
     white-space: pre-wrap;
-    padding: 0 6px;
+    padding: 0;
     margin: 0;                     /* Removed -1px to prevent overlap */
     min-height: 0;                 /* Dense terminal logic */
     background: transparent;       /* Standard game text is now high-contrast transparent */
@@ -166,7 +166,7 @@
     background: transparent !important;
     border-left: none !important;
     border-radius: 0 !important;
-    padding: 0 6px !important;
+    padding: 0 4px !important;
     margin: 0 !important;
     line-height: 1.4 !important;
 }
@@ -175,7 +175,7 @@
     background: transparent !important;
     border-left: none !important;
     border-radius: 0 !important;
-    padding: 0 6px !important;
+    padding: 0 4px !important;
     margin: 0 !important;
     box-shadow: none !important;
     line-height: 1.4 !important;
@@ -309,7 +309,7 @@
     background: rgba(250, 204, 21, 0.25) !important;
     border-bottom: 2px solid var(--color-target) !important;
     border-radius: 3px;
-    padding: 0 2px;
+    padding: 0;
     margin: 0 -1px;
     font-weight: bold !important;
     color: #fff !important;
@@ -711,7 +711,7 @@
 }
 
 .user-command-bubble {
-    background: rgb(25, 30, 45); /* Brightened from (10, 13, 21) for visibility */
+    background: rgb(25, 30, 45); /* Brightened from (0, 0, 0) for visibility */
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px 20px 6px 20px;
     padding: 6px 14px; /* Increased padding slightly */
@@ -1049,7 +1049,7 @@
 
 .inline-btn:not(.comm-bubble):not(.reply-btn) {
     border-radius: 4px;
-    padding: 0 2px;
+    padding: 0;
 }
 /* Objects/Items and Beings (NPCs/Players) */
 .auto-obj, .auto-item, .npc-highlighter, .pc-highlighter, .auto-npc, .auto-occupant {
@@ -1076,7 +1076,8 @@
     display: inline-block;
     cursor: pointer;
     margin: 0;
-    transition: all 0.2s ease;
+    transition: background-color 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease, color 0.12s ease;
+    transform: none;
 }
 
 /* Fix: Align inline buttons at the start of a line with the rest of the log text */
@@ -1217,19 +1218,15 @@ span.inline-btn {
 .inline-btn.drop-hover-active {
     background-color: rgba(255, 255, 255, 0.1) !important;
     border-color: var(--glow-color, rgba(255, 255, 255, 0.3));
-    transform: translateY(-1px);
+    transform: none !important;
 }
 
 .inline-btn:active {
-    transform: scale(0.9) translateY(1px);
-    filter: brightness(1.5) contrast(1.1);
-    background-color: rgba(255, 255, 255, 0.3) !important;
-    box-shadow: 0 0 12px var(--glow-color, var(--accent)),
-        inset 0 0 4px rgba(255, 255, 255, 0.3);
-    text-shadow: 0 0 8px var(--glow-color, var(--accent));
-    transition: transform 0.04s cubic-bezier(0.2, 0, 0.2, 1),
-        filter 0.04s ease-out,
-        box-shadow 0.04s ease-out;
+    transform: none !important;
+    background-color: rgba(0, 0, 0, 0.85) !important;
+    border-color: color-mix(in srgb, var(--glow-color, var(--accent)) 50%, transparent) !important;
+    box-shadow: 0 0 12px color-mix(in srgb, var(--glow-color, var(--accent)) 30%, transparent);
+    transition: box-shadow 0.04s ease-out;
     z-index: 100;
 }
 
@@ -1238,11 +1235,9 @@ span.inline-btn {
    confuses mobile hit-testing and causes the click to miss the button. */
 .inline-btn.pressed,
 .inline-btn.menu-active {
-    filter: brightness(2.0) contrast(1.15);
-    background-color: rgba(255, 255, 255, 0.35) !important;
-    box-shadow: 0 0 20px var(--glow-color, var(--accent)),
-        inset 0 0 5px rgba(255, 255, 255, 0.3);
-    text-shadow: 0 0 14px var(--glow-color, var(--accent));
+    background-color: rgba(0, 0, 0, 0.85) !important;
+    border-color: color-mix(in srgb, var(--glow-color, var(--accent)) 50%, transparent) !important;
+    box-shadow: 0 0 18px color-mix(in srgb, var(--glow-color, var(--accent)) 30%, transparent);
     transition: none !important;
     z-index: 100;
 }
@@ -1259,16 +1254,20 @@ span.inline-btn {
     background: rgba(250, 204, 21, 0.2) !important;
     border-color: #facc15 !important;
     color: #fff !important;
-    transform: scale(1.05) translateY(-1px);
+    transform: none !important;
     z-index: 10;
 }
 
-.app-container.tactical-targeting-active .message-log .message-content .inline-btn:not(.comm-bubble):not(.reply-btn) {
+.app-container.tactical-targeting-active .message-log .message-content .inline-btn:not(.comm-bubble):not(.reply-btn):not([data-targetable="false"]) {
     background-color: rgba(255, 255, 255, 0.1) !important;
     border-color: color-mix(in srgb, var(--glow-color, #ffffff), #ffffff 18%) !important;
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22),
         0 0 14px color-mix(in srgb, var(--glow-color, #ffffff), transparent 45%) !important;
     color: var(--glow-color, #ffffff) !important;
+}
+
+.room-name-inline[data-targetable="false"] {
+    cursor: pointer;
 }
 
 @keyframes drop-pulse-strong {
@@ -1755,4 +1754,30 @@ span.inline-btn {
     margin-top: 4px;
     display: block;
     width: 100%;
+}
+
+
+/* Light mode: no text shadows */
+.light-mode .message-content span {
+    text-shadow: none;
+}
+
+/* Light mode: no drop shadows on inline buttons */
+.light-mode .keyword-highlight,
+.light-mode .inline-btn,
+.light-mode .pc-highlighter,
+.light-mode .npc-highlighter,
+.light-mode .message-content span[style*="color"] {
+    text-shadow: none !important;
+}
+
+.light-mode .message-content {
+    text-shadow: none;
+}
+
+.light-mode .inline-btn:active,
+.light-mode .inline-btn.pressed,
+.light-mode .inline-btn.menu-active {
+    background-color: rgba(255, 255, 255, 0.85) !important;
+    box-shadow: none !important;
 }

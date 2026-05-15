@@ -8,6 +8,7 @@ import { COLOR_NPC, COLOR_PLAYER, COLOR_OBJ } from '../../../utils/categorizatio
 import { occupantAnims, OCCUPANT_ANIM_DURATION, getOccupantKey } from '../occupantAnimStore';
 import { getMapOccupantTargets } from '../occupantTargets';
 import { isOpponentOccupant } from '../mapperOpponentUtils';
+import { isObjectSelected } from '../../../utils/selectionUtils';
 
 type RoomAnchor = { x: number, y: number, z: number };
 type RoomLike = { x: number, y: number, z?: number, gmcpId?: string | number };
@@ -41,17 +42,33 @@ const getOccupantInitial = (name?: string) => {
 
 const getMarkerTextColor = (color: string) => {
     const rgbMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
-    if (!rgbMatch) return 'rgba(6, 8, 14, 0.92)';
+    if (!rgbMatch) return 'rgba(15, 15, 15, 0.92)';
 
     const r = Number(rgbMatch[1]);
     const g = Number(rgbMatch[2]);
     const b = Number(rgbMatch[3]);
     const luminance = (0.2126 * r) + (0.7152 * g) + (0.0722 * b);
-    return luminance > 130 ? 'rgba(6, 8, 14, 0.92)' : 'rgba(248, 250, 252, 0.95)';
+    return luminance > 130 ? 'rgba(15, 15, 15, 0.92)' : 'rgba(248, 250, 252, 0.95)';
 };
 
 export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: number, gY2: number) => {
-    return; // Gridlines disabled for a cleaner look
+    const { ctx } = rCtx;
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.35)'; // More pronounced black ink grid
+    ctx.lineWidth = 1.1;
+    ctx.beginPath();
+
+    // Vertical lines
+    for (let x = gX1; x <= gX2; x++) {
+        ctx.moveTo(x * GRID_SIZE, gY1 * GRID_SIZE);
+        ctx.lineTo(x * GRID_SIZE, gY2 * GRID_SIZE);
+    }
+
+    // Horizontal lines
+    for (let y = gY1; y <= gY2; y++) {
+        ctx.moveTo(gX1 * GRID_SIZE, y * GRID_SIZE);
+        ctx.lineTo(gX2 * GRID_SIZE, y * GRID_SIZE);
+    }
+    ctx.stroke();
 };
 
 // --- Room Occupants (NPCs / Non-group Players) ---
@@ -116,8 +133,19 @@ export const drawRoomOccupants = (
 
     const zoomFactor = (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
     const pulse = (Math.sin(now / 400) + 1) / 2;
+    const activeEntityIds = new Set(rCtx.selectedObjectIds || []);
+    if (rCtx.activeInlineEntityId) activeEntityIds.add(rCtx.activeInlineEntityId);
 
-    const drawDot = (orbX: number, orbY: number, color: string, alpha: number, name?: string, radius = GRID_SIZE * 0.09, anim?: import('../occupantAnimStore').OccupantAnimEntry) => {
+    const isOccupantActive = (occ: (typeof occupantTargets)[number]) => {
+        const ids = [
+            occ.id !== undefined ? String(occ.id) : '',
+            occ.id !== undefined ? `roomchars:${occ.id}` : '',
+            `map-${occ.kind}:${occ.name.toLowerCase()}`
+        ].filter(Boolean);
+        return ids.some(id => isObjectSelected(activeEntityIds, id, occ.category));
+    };
+
+    const drawDot = (orbX: number, orbY: number, color: string, alpha: number, name?: string, radius = GRID_SIZE * 0.09, anim?: import('../occupantAnimStore').OccupantAnimEntry, isTarget = false, isActive = false) => {
         const initial = getOccupantInitial(name);
         let finalRadius = radius;
         let extraGlow = 0;
@@ -125,7 +153,6 @@ export const drawRoomOccupants = (
         if (anim && anim.type === 'tap') {
             const t = Math.min((now - anim.startTime) / 250, 1.0);
             const pop = Math.sin(t * Math.PI);
-            finalRadius *= (1 + pop * 0.4);
             extraGlow = pop * radius * 1.2;
             if (t < 1.0) triggerRender?.();
         }
@@ -133,17 +160,24 @@ export const drawRoomOccupants = (
         ctx.save();
         ctx.globalAlpha = alpha;
         
-        // 1. Grey background (command bar style)
-        ctx.fillStyle = 'rgba(25, 25, 35, 0.95)';
+        // 1. Soft-cornered square matching inline buttons
+        const size = finalRadius * 2;
+        const corner = Math.max(1.5, finalRadius * 0.35);
+        ctx.fillStyle = 'rgba(15, 15, 15, 0.95)';
         ctx.beginPath();
-        ctx.arc(orbX, orbY, finalRadius, 0, Math.PI * 2);
+        if (typeof (ctx as any).roundRect === 'function') {
+            (ctx as any).roundRect(orbX - finalRadius, orbY - finalRadius, size, size, corner);
+        } else {
+            ctx.rect(orbX - finalRadius, orbY - finalRadius, size, size);
+        }
         ctx.fill();
 
-        // 2. Colored border with subtle glow
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 0.5;
-        ctx.shadowBlur = (finalRadius * 0.8) + extraGlow;
-        ctx.shadowColor = color;
+        const borderColor = isTarget ? '#eab308' : isActive ? color : 'rgba(255, 255, 255, 0.2)';
+        ctx.globalAlpha = isTarget ? alpha : isActive ? alpha * 0.55 : alpha;
+        ctx.strokeStyle = borderColor;
+        ctx.lineWidth = isTarget ? Math.max(0.8, 1.2 / camera.zoom) : isActive ? Math.max(0.55, 0.9 / camera.zoom) : 0.5;
+        ctx.shadowBlur = isTarget ? (finalRadius * 0.8) + extraGlow : isActive ? (finalRadius * 0.45) + extraGlow : 0;
+        ctx.shadowColor = borderColor;
         ctx.stroke();
 
         ctx.restore();
@@ -185,11 +219,11 @@ export const drawRoomOccupants = (
                 if (t < 1.0) triggerRender?.();
             }
 
-            drawDot(orbX, orbY, occ.color, alpha, occ.name, occ.radius, anim);
+            const isOpponent = isOpponentOccupant(occ, allOccupants, opponentId, opponentName);
+            drawDot(orbX, orbY, occ.color, alpha, occ.name, occ.radius, anim, isOpponent, isOccupantActive(occ));
 
             // Opponent tether. Name fallback is allowed only when it resolves to
             // exactly one visible occupant; duplicate names require GMCP ID.
-            const isOpponent = isOpponentOccupant(occ, allOccupants, opponentId, opponentName);
             if (isOpponent) {
                 ctx.save();
                 ctx.beginPath();
@@ -235,7 +269,7 @@ export const drawRoomOccupants = (
         const itemGap = 2 / camera.zoom;
         const totalWidth = roomItems.length * (itemSize + itemGap) - itemGap;
         let startX = px - totalWidth / 2;
-        const itemY = py + (GRID_SIZE / 2) - 6;
+        const itemY = py + (GRID_SIZE / 2) - 2;
 
         roomItems.forEach(item => {
             ctx.save();
@@ -339,9 +373,25 @@ export const drawEntities = (
     if (anchor && Math.abs(anchor.z - currentZ) < 1.0) {
         const px = anchor.x * GRID_SIZE + GRID_SIZE / 2, py = anchor.y * GRID_SIZE + GRID_SIZE / 2;
         const alpha = Math.max(0, 1 - Math.abs(anchor.z - currentZ));
+
+        // 1. Current Room Glow (White highlight)
+        ctx.save();
+        ctx.globalAlpha = alpha * 0.45;
+        ctx.shadowBlur = 20 * (rCtx.camera.zoom > 1 ? 1 : rCtx.camera.zoom);
+        ctx.shadowColor = '#ffffff';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
         
-        const pulse = (Math.sin(rCtx.now / 300) + 1) / 2; // 0 to 1 pulse
-        const orbRadius = 5.5 + (pulse * 1.5);
+        const inset = 1;
+        ctx.beginPath();
+        if (typeof (ctx as any).roundRect === 'function') {
+            (ctx as any).roundRect(px - GRID_SIZE/2 + inset, py - GRID_SIZE/2 + inset, GRID_SIZE - inset*2, GRID_SIZE - inset*2, 4);
+        } else {
+            ctx.rect(px - GRID_SIZE/2 + inset, py - GRID_SIZE/2 + inset, GRID_SIZE - inset*2, GRID_SIZE - inset*2);
+        }
+        ctx.fill();
+        ctx.restore();
+        
+        const orbRadius = GRID_SIZE * 0.03; // ~1.5px — tiny center-of-room indicator
         
         ctx.save();
         ctx.globalAlpha = alpha;
@@ -368,71 +418,58 @@ export const drawEntities = (
             }
         }
 
-        // Solid core for better visibility
-        ctx.fillStyle = '#ffffff';
-        ctx.globalAlpha = alpha * 0.9;
+        // Soft-cornered square player icon
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        
+        // 1. Solid command-bar grey body
+        const size = orbRadius * 2;
+        const corner = Math.max(1.5, orbRadius * 0.35);
+        ctx.fillStyle = 'rgba(15, 15, 15, 0.95)';
         ctx.beginPath();
-        ctx.arc(px, py, orbRadius * 0.8, 0, Math.PI * 2);
+        if (typeof (ctx as any).roundRect === 'function') {
+            (ctx as any).roundRect(px - orbRadius, py - orbRadius, size, size, corner);
+        } else {
+            ctx.rect(px - orbRadius, py - orbRadius, size, size);
+        }
         ctx.fill();
 
-        // Glowing transparent orb: radial gradient
-        const orbGradient = ctx.createRadialGradient(px, py, 0, px, py, orbRadius * 1.3);
-        orbGradient.addColorStop(0,   `rgba(255, 255, 255, ${0.7 + pulse * 0.25})`);
-        orbGradient.addColorStop(0.35, `rgba(255, 255, 255, ${0.45 + pulse * 0.15})`);
-        orbGradient.addColorStop(0.7,  `rgba(255, 255, 255, ${0.2 + pulse * 0.1})`);
-        orbGradient.addColorStop(1,    'rgba(255, 255, 255, 0)');
-        ctx.globalAlpha = alpha;
-        ctx.fillStyle = orbGradient;
-        ctx.beginPath();
-        ctx.arc(px, py, orbRadius * 1.3, 0, Math.PI * 2);
-        ctx.fill();
+        // 2. Subtle light border to pop against the white room glow
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
         
         ctx.restore();
+        
+        ctx.restore(); // Final restore for the main block
 
-        // 3. Client-side movement predictions (red dots + tether lines)
+        // 3. Client-side movement predictions (Target Room Glow)
         const predictions = rCtx.clientPredictionsRef?.current;
         if (predictions && predictions.length > 0) {
-            let fromX = px, fromY = py;
             for (let i = 0; i < predictions.length; i++) {
                 const pred = predictions[i];
-                if (Math.abs(pred.toZ - currentZ) >= 1.0) { fromX = pred.toX * GRID_SIZE + GRID_SIZE / 2; fromY = pred.toY * GRID_SIZE + GRID_SIZE / 2; continue; }
+                if (Math.abs(pred.toZ - currentZ) >= 1.0) continue;
                 const toX = pred.toX * GRID_SIZE + GRID_SIZE / 2;
                 const toY = pred.toY * GRID_SIZE + GRID_SIZE / 2;
                 const alpha = Math.max(0.25, 0.85 - i * 0.18);
 
-                // Dashed tether line
+                // 1. Target Room Glow (White highlight)
                 ctx.save();
-                ctx.globalAlpha = alpha * 0.7;
-                ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 1.5 / rCtx.camera.zoom;
-                ctx.setLineDash([4 / rCtx.camera.zoom, 4 / rCtx.camera.zoom]);
-                ctx.beginPath();
-                ctx.moveTo(fromX, fromY);
-                ctx.lineTo(toX, toY);
-                ctx.stroke();
-                ctx.setLineDash([]);
-                ctx.restore();
-
-                // White prediction arrow pointing in the direction of travel
-                ctx.save();
-                ctx.globalAlpha = alpha;
-                ctx.fillStyle = '#ffffff';
-                ctx.translate(toX, toY);
-                const angle = Math.atan2(toY - fromY, toX - fromX);
-                ctx.rotate(angle);
+                ctx.globalAlpha = alpha * 0.45;
+                ctx.shadowBlur = 20 * (rCtx.camera.zoom > 1 ? 1 : rCtx.camera.zoom);
+                ctx.shadowColor = '#ffffff';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
                 
-                const arrowSize = 6;
+                // Draw a slightly inset rectangle for the room glow
+                const inset = 1;
                 ctx.beginPath();
-                ctx.moveTo(arrowSize * 1.5, 0);
-                ctx.lineTo(-arrowSize, -arrowSize);
-                ctx.lineTo(-arrowSize * 0.4, 0);
-                ctx.lineTo(-arrowSize, arrowSize);
-                ctx.closePath();
+                if (typeof (ctx as any).roundRect === 'function') {
+                    (ctx as any).roundRect(toX - GRID_SIZE/2 + inset, toY - GRID_SIZE/2 + inset, GRID_SIZE - inset*2, GRID_SIZE - inset*2, 4);
+                } else {
+                    ctx.rect(toX - GRID_SIZE/2 + inset, toY - GRID_SIZE/2 + inset, GRID_SIZE - inset*2, GRID_SIZE - inset*2);
+                }
                 ctx.fill();
                 ctx.restore();
-
-                fromX = toX;
-                fromY = toY;
             }
         }
 
@@ -510,7 +547,7 @@ export const drawEntities = (
  * Includes teardrop trail animation identical to the player orb (but green).
  */
 export const drawGroupMembers = (rCtx: RenderContext) => {
-    const { ctx, currentZ, allRooms, preloaded, now, groupMembers, camera, serverIdIndexRef } = rCtx;
+    const { ctx, currentZ, allRooms, preloaded, now, groupMembers, camera, serverIdIndexRef, triggerRender } = rCtx;
     if (!groupMembers || groupMembers.length === 0) return;
 
     // --- Persistent trail state per group member (same 450ms as player trail) ---
@@ -601,6 +638,9 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
 
         if (Math.abs(rz - currentZ) >= 1.0) return;
 
+        // Skip — drawRoomOccupants handles group members in the player's current room
+        if (prx !== undefined && rx === prx && ry === pry && rz === prz) return;
+
         // --- Calculate Petal Offset ---
         const index = occupants.indexOf(memberKey);
         const count = occupants.length;
@@ -608,8 +648,11 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
         const zoomFactor = (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
         const PETAL_RADIUS = 9.0 / zoomFactor;
         const angle = (index / count) * Math.PI * 2;
-        offsetX = Math.cos(angle) * PETAL_RADIUS;
-        offsetY = Math.sin(angle) * PETAL_RADIUS;
+        const cx = Math.cos(angle);
+        const cy = Math.sin(angle);
+        const maxComp = Math.max(Math.abs(cx), Math.abs(cy)) || 1;
+        offsetX = (cx / maxComp) * PETAL_RADIUS;
+        offsetY = (cy / maxComp) * PETAL_RADIUS;
 
         const px = rx * GRID_SIZE + GRID_SIZE / 2 + offsetX;
         const py = ry * GRID_SIZE + GRID_SIZE / 2 + offsetY;
@@ -728,20 +771,28 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
             if (t < 1.0) triggerRender?.();
         }
 
+        const isTarget = isOpponentOccupant(member, groupMembers, rCtx.opponentId, rCtx.opponentName);
+
         ctx.save();
         ctx.globalAlpha = alpha * 0.92;
         
-        // 1. Grey background
-        ctx.fillStyle = 'rgba(25, 25, 35, 0.95)';
+        // 1. Soft-cornered square body
+        const size = orbRadius * 2;
+        const corner = Math.max(1.5, orbRadius * 0.35);
+        ctx.fillStyle = 'rgba(15, 15, 15, 0.95)';
         ctx.beginPath();
-        ctx.arc(px, py, orbRadius, 0, Math.PI * 2);
+        if (typeof (ctx as any).roundRect === 'function') {
+            (ctx as any).roundRect(px - orbRadius, py - orbRadius, size, size, corner);
+        } else {
+            ctx.rect(px - orbRadius, py - orbRadius, size, size);
+        }
         ctx.fill();
 
-        // 2. Colored border
-        ctx.strokeStyle = color.core;
+        // 2. Transparent border by default, yellow if target
+        ctx.strokeStyle = isTarget ? '#eab308' : 'transparent';
         ctx.lineWidth = 0.5;
-        ctx.shadowBlur = (orbRadius * 0.8) + extraGlow;
-        ctx.shadowColor = color.core;
+        ctx.shadowBlur = isTarget ? (orbRadius * 0.8) + extraGlow : 0;
+        ctx.shadowColor = isTarget ? '#eab308' : 'transparent';
         ctx.stroke();
 
         // 3. Initials in member color
@@ -805,7 +856,7 @@ export const drawMarkers = (
             ctx.translate((getSeed(mSeed, now * 0.01) - 0.5) * 2 * (1 - mP), (getSeed(mSeed + 1, now * 0.012) - 0.5) * 2 * (1 - mP));
         }
 
-        ctx.fillStyle = isSelected ? '#ef4444' : '#000000'; 
+        ctx.fillStyle = isSelected ? '#ef4444' : 'rgba(15, 15, 15, 1.0)'; 
         ctx.beginPath();
         if (mP < 1) {
             for (let i = 0; i < 8; i++) {

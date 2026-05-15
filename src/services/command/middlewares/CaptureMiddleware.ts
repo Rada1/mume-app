@@ -6,6 +6,27 @@
 
 import { CommandMiddleware } from '../types';
 
+const COMMAND_CAPTURE_TYPES: Record<string, import('../../../types/capture').CaptureType> = {
+    eq: 'equipment',
+    equipment: 'equipment',
+    inv: 'inventory',
+    inventory: 'inventory',
+    stat: 'stats',
+    stats: 'stats',
+    status: 'stats',
+    st: 'stats',
+    score: 'score',
+    sc: 'score',
+    info: 'info',
+    practice: 'practice',
+    quest: 'quests',
+    quests: 'quests',
+    who: 'who',
+    where: 'where',
+    achievement: 'achievement',
+    achievements: 'achievement'
+};
+
 export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isSystem, fromDrawer }) => {
     const {
         captureStage, setStatsLines, setInfoLines, setAchievementLines, setScoreLines, finalizeCapture,
@@ -17,13 +38,13 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
     // This tells the parser that the NEXT output matching a trigger should be captured
     // using the specified silence and UI-origin flags.
     if (setPendingFlags) {
-        setPendingFlags(silent, fromDrawer);
+        setPendingFlags(silent, fromDrawer, cmd);
     }
 
     if (captureStage) {
-        if (lowerCmd === 'where') captureStage.current = 'where';
-        else if (lowerCmd === 'who') captureStage.current = 'who';
-        else if (lowerCmd === 'achievement' || lowerCmd === 'achievements') captureStage.current = 'achievement';
+        const baseCommand = lowerCmd.split(/\s+/)[0];
+        const captureType = COMMAND_CAPTURE_TYPES[baseCommand];
+        if (captureType) captureStage.current = captureType;
     }
 
     if (!isSystem && !fromDrawer) {

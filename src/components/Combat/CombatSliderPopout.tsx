@@ -41,7 +41,7 @@ export const CombatSliderPopout: React.FC<CombatSliderPopoutProps> = ({
                     bottom: (window.innerHeight - anchorRect.top) + 12, 
                     left: anchorRect.left + (anchorRect.width / 2), 
                     transform: 'translateX(-50%)', 
-                    background: 'rgba(10, 13, 21, 0.75)', 
+                    background: 'rgba(0, 0, 0, 0.75)', 
                     border: '1px solid rgba(255,255,255,0.1)', 
                     padding: '24px 16px 16px 16px', 
                     borderRadius: '24px', 
