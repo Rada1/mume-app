@@ -11,6 +11,7 @@ import { sanitizeMumeHtml } from '../../utils/securityUtils';
 import { TokenRenderer } from '../Messages/TokenRenderer';
 import { Embers } from '../Atmosphere/Embers';
 import { ShopPanel } from '../Shop/ShopPanel';
+import { TimerExpiryToast } from '../Timers/TimerExpiryToast';
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -223,6 +224,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         onPointerDown={handleLogPointerDown}
                         onPointerUp={handleLogPointerUp}
                     />
+                    <TimerExpiryToast />
                 </div>
 
 

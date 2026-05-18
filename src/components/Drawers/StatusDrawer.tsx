@@ -5,6 +5,7 @@ import { formatCompactNumber } from '../../utils/gameUtils';
 import { CombatHealthStatus } from '../../types';
 import { DrawerTabBar } from './DrawerTabBar';
 import { TimerDrawerTab } from '../Timers/TimerDrawerTab';
+import { MagicKeysTab } from '../Timers/MagicKeysTab';
 
 // ── Primitives ────────────────────────────────────────────────────────────────
 
@@ -157,7 +158,7 @@ const positionLabel = (pos: string): string => {
 // ── Main Drawer ───────────────────────────────────────────────────────────────
 
 export const StatusDrawer: React.FC = () => {
-    const [statusTab, setStatusTab] = React.useState<'vitals' | 'timers'>('vitals');
+    const [statusTab, setStatusTab] = React.useState<'vitals' | 'timers' | 'keys'>('vitals');
     const store = useVitalsStore();
     const { mood } = useGame();
     const { opponentName, opponentHealthStatus, bufferName, bufferHealthStatus } = useVitals();
@@ -175,11 +176,11 @@ export const StatusDrawer: React.FC = () => {
     return (
         <>
         <DrawerTabBar
-            tabs={[{ id: 'vitals', label: 'Vitals' }, { id: 'timers', label: 'Timers' }]}
+            tabs={[{ id: 'vitals', label: 'Vitals' }, { id: 'timers', label: 'Timers' }, { id: 'keys', label: 'Magic Keys' }]}
             active={statusTab}
-            onChange={(id) => setStatusTab(id as 'vitals' | 'timers')}
+            onChange={(id) => setStatusTab(id as 'vitals' | 'timers' | 'keys')}
         />
-        {statusTab === 'timers' ? <TimerDrawerTab /> : <div style={{
+        {statusTab === 'keys' ? <MagicKeysTab /> : statusTab === 'timers' ? <TimerDrawerTab /> : <div style={{
             flex: 1, overflowY: 'auto', padding: '10px 10px 16px', display: 'flex',
             flexDirection: 'column', gap: 8, scrollbarWidth: 'thin',
             fontSize: 'var(--dynamic-log-size, 16px)'

@@ -164,6 +164,11 @@ export interface TeleportTarget {
     vnum?: number;
     category?: string;
     expiresAt?: number;
+    createdAt?: number;
+    sourceSpell?: 'locate' | 'locate life' | 'manual';
+    sourceLine?: string;
+    customName?: string;
+    gatheredZone?: string;
 }
 
 export interface SpatButton {

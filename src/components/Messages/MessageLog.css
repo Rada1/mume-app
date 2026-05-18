@@ -711,7 +711,7 @@
 }
 
 .user-command-bubble {
-    background: rgb(25, 30, 45); /* Brightened from (0, 0, 0) for visibility */
+    background: var(--input-bg, rgb(35, 35, 40));
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px 20px 6px 20px;
     padding: 6px 14px; /* Increased padding slightly */

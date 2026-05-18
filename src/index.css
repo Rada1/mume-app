@@ -49,10 +49,10 @@
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     border-top: none !important;
-    box-shadow: none !important;
+    box-shadow: 0 0 15px rgba(var(--terrain-glow-rgb, 255, 255, 255), 0.35) !important;
     z-index: var(--z-hud-interactive);
     touch-action: none;
-    transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, box-shadow 0.8s ease;
     overflow: visible;
     display: flex;
     flex-direction: column;
@@ -65,7 +65,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    border-top: 1px solid rgba(var(--accent-rgb, 244, 143, 60), 0.5);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 32px 32px 0 0;
     pointer-events: none;
     z-index: 2;
@@ -228,7 +228,8 @@
     margin: 6px 24px 0 24px;
     padding: 8px 12px;
     border-radius: var(--radius-card);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), 0 0 18px rgba(var(--terrain-glow-rgb, 255, 255, 255), 0.14) !important;
+    transition: box-shadow 0.8s ease, border-color 0.8s ease, background 0.4s ease;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -495,7 +496,7 @@
 
 /* Standalone Command Bar pod (Pocket) */
 .mobile-gutter-input-wrapper .input-main-container {
-    background: rgb(35, 35, 40) !important;
+    background: var(--input-bg) !important;
     border: none !important;
     box-shadow: none !important;
     border-radius: var(--radius-card);
@@ -675,68 +676,28 @@
     animation: command-windup 0.5s ease-out forwards;
 }
 
-/* Default keystroke glow color (dark blue), overridden per terrain below */
-.input-area { --keystroke-glow-rgb: 17, 50, 160; }
-.input-area.terrain-forest     { --keystroke-glow-rgb: 20, 118, 56; }
-.input-area.terrain-water      { --keystroke-glow-rgb: 34, 113, 180; }
-.input-area.terrain-field      { --keystroke-glow-rgb: 152, 134, 43; }
-.input-area.terrain-brush      { --keystroke-glow-rgb: 79, 122, 13; }
-.input-area.terrain-road       { --keystroke-glow-rgb: 89, 98, 110; }
-.input-area.terrain-mountain   { --keystroke-glow-rgb: 136, 139, 144; }
-.input-area.terrain-hills      { --keystroke-glow-rgb: 149, 69, 13; }
-.input-area.terrain-underground { --keystroke-glow-rgb: 68, 68, 73; }
-.input-area.terrain-city       { --keystroke-glow-rgb: 94, 98, 105; }
-.input-area.terrain-building   { --keystroke-glow-rgb: 94, 98, 105; }
+/* Default tactical glow color (white), overridden per terrain below */
+.app-container { --terrain-glow-rgb: 255, 255, 255; --keystroke-glow-rgb: 17, 50, 160; }
+.app-container.terrain-forest     { --terrain-glow-rgb: 20, 118, 56; --keystroke-glow-rgb: 20, 118, 56; }
+.app-container.terrain-water      { --terrain-glow-rgb: 34, 113, 180; --keystroke-glow-rgb: 34, 113, 180; }
+.app-container.terrain-field      { --terrain-glow-rgb: 152, 134, 43; --keystroke-glow-rgb: 152, 134, 43; }
+.app-container.terrain-brush      { --terrain-glow-rgb: 79, 122, 13; --keystroke-glow-rgb: 79, 122, 13; }
+.app-container.terrain-road       { --terrain-glow-rgb: 89, 98, 110; --keystroke-glow-rgb: 89, 98, 110; }
+.app-container.terrain-mountain   { --terrain-glow-rgb: 136, 139, 144; --keystroke-glow-rgb: 136, 139, 144; }
+.app-container.terrain-hills      { --terrain-glow-rgb: 149, 69, 13; --keystroke-glow-rgb: 149, 69, 13; }
+.app-container.terrain-underground { --terrain-glow-rgb: 68, 68, 73; --keystroke-glow-rgb: 68, 68, 73; }
+.app-container.terrain-city       { --terrain-glow-rgb: 94, 98, 105; --keystroke-glow-rgb: 94, 98, 105; }
+.app-container.terrain-building   { --terrain-glow-rgb: 94, 98, 105; --keystroke-glow-rgb: 94, 98, 105; }
 
-/* Terrain Specific Glows Applied to Pods */
-.input-area.terrain-forest .input-main-container {
-    border-color: rgba(20, 118, 56, 0.22) !important;
-    box-shadow: 0 0 25px rgba(20, 118, 56, 0.08), inset 0 0 40px rgba(20, 118, 56, 0.08), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
+/* Terrain Specific Glows Applied to Pods - Centralized via CSS variables */
+.app-container:not(.terrain-none):not(.terrain-underground) .input-main-container {
+    border-color: rgba(var(--terrain-glow-rgb), 0.22) !important;
+    box-shadow: 0 0 25px rgba(var(--terrain-glow-rgb), 0.08), inset 0 0 40px rgba(var(--terrain-glow-rgb), 0.08), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
 }
 
-.input-area.terrain-water .input-main-container {
-    border-color: rgba(34, 113, 180, 0.22) !important;
-    box-shadow: 0 0 25px rgba(34, 113, 180, 0.08), inset 0 0 40px rgba(34, 113, 180, 0.08), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
-}
-
-.input-area.terrain-field .input-main-container {
-    border-color: rgba(152, 134, 43, 0.2) !important;
-    box-shadow: 0 0 25px rgba(152, 134, 43, 0.07), inset 0 0 40px rgba(152, 134, 43, 0.07), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
-}
-
-.input-area.terrain-brush .input-main-container {
-    border-color: rgba(79, 122, 13, 0.2) !important;
-    box-shadow: 0 0 25px rgba(79, 122, 13, 0.07), inset 0 0 40px rgba(79, 122, 13, 0.07), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
-}
-
-.input-area.terrain-road .input-main-container {
-    border-color: rgba(89, 98, 110, 0.2) !important;
-    box-shadow: 0 0 25px rgba(89, 98, 110, 0.07), inset 0 0 40px rgba(89, 98, 110, 0.06), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
-}
-
-.input-area.terrain-mountain .input-main-container {
-    border-color: rgba(136, 139, 144, 0.15) !important;
-    box-shadow: 0 0 25px rgba(136, 139, 144, 0.07), inset 0 0 40px rgba(136, 139, 144, 0.05), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
-}
-
-.input-area.terrain-hills .input-main-container {
-    border-color: rgba(149, 69, 13, 0.2) !important;
-    box-shadow: 0 0 25px rgba(149, 69, 13, 0.07), inset 0 0 40px rgba(149, 69, 13, 0.07), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
-}
-
-.input-area.terrain-underground .input-main-container {
-    border-color: rgba(68, 68, 73, 0.25) !important;
-    box-shadow: 0 0 25px rgba(0, 0, 0, 0.4), inset 0 0 40px rgba(68, 68, 73, 0.08), 0 0 10px rgba(255, 255, 255, 0.03) !important;
-}
-
-.input-area.terrain-city .input-main-container {
-    border-color: rgba(94, 98, 105, 0.2) !important;
-    box-shadow: 0 0 25px rgba(94, 98, 105, 0.08), inset 0 0 40px rgba(94, 98, 105, 0.06), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
-}
-
-.input-area.terrain-building .input-main-container {
-    border-color: rgba(94, 98, 105, 0.2) !important;
-    box-shadow: 0 0 25px rgba(94, 98, 105, 0.08), inset 0 0 40px rgba(94, 98, 105, 0.06), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
+.app-container.terrain-underground .input-main-container {
+    border-color: rgba(var(--terrain-glow-rgb), 0.25) !important;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.4), inset 0 0 40px rgba(var(--terrain-glow-rgb), 0.08), 0 0 10px rgba(255, 255, 255, 0.03) !important;
 }
 
 /* Prompt and field styling */

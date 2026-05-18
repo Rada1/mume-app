@@ -31,10 +31,10 @@ const MANA_SEGMENTS = MANA_TIERS.length - 1;
 const MOVE_SEGMENTS = MOVE_TIERS.length - 1;
 const MOOD_OPTIONS = ['wimpy', 'prudent', 'normal', 'brave', 'aggressive', 'berserk'];
 const MOOD_LABELS = ['WIM', 'PRU', 'NOR', 'BRA', 'AGG', 'BER'];
-const SPEED_OPTIONS = ['slow', 'normal', 'fast'];
-const SPEED_LABELS = ['SLOW', 'NORM', 'FAST'];
-const ALERT_OPTIONS = ['off', 'normal', 'active'];
-const ALERT_LABELS = ['OFF', 'NORM', 'ACT'];
+const SPEED_OPTIONS = ['quick', 'fast', 'normal', 'careful', 'thorough'];
+const SPEED_LABELS = ['QUIC', 'FAST', 'NORM', 'CARE', 'THOR'];
+const ALERT_OPTIONS = ['normal', 'careful', 'attentive', 'vigilant', 'paranoid'];
+const ALERT_LABELS = ['NORM', 'CARE', 'ATTE', 'VIGI', 'PARA'];
 
 const HEALTH_MAP: Record<string, { percent: number; color: string }> = {
     'Healthy': { percent: 100, color: '#22c55e' },
@@ -422,7 +422,7 @@ const PromptBox: FC<PromptBoxProps> = ({
         }
         if (id === 'alert') {
             setAlertness(val);
-            executeCommand(`alert ${val}`);
+            executeCommand(`cha alert ${val}`);
         }
         triggerHaptic(15);
     }, [executeCommand, setAlertness, setMood, setSpellSpeed, triggerHaptic]);

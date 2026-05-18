@@ -29,7 +29,9 @@ import { Tokenizer } from '../../services/parser/Tokenizer';
 import { useActionTracker } from './useActionTracker';
 import { buildPlayerLineTokens } from './playerLineTokens';
 import { useUIStore } from '../../stores/useUIStore';
+import { useRoomStore } from '../../stores/useRoomStore';
 import { parseEffectTimerLine } from '../../services/timers/effectTimerParser';
+import { parseMagicKeyLine, upsertMagicKeyTarget } from '../../utils/magicKeyUtils';
 
 const decodeTextEntities = (text: string) => text
     .replace(/&gt;/gi, '>')
@@ -577,6 +579,14 @@ export const useGameParser = (deps: UseGameParserDeps, session: any) => {
         }
 
         if (isSnoop && textOnly.trim().length === 0) return;
+
+        if (!isSnoop) {
+            const magicTarget = parseMagicKeyLine(textOnly, deps.roomNameRef.current, useRoomStore.getState().roomZone);
+            if (magicTarget) {
+                const settings = useSettingsStore.getState();
+                settings.setTeleportTargets(upsertMagicKeyTarget(settings.teleportTargets, magicTarget));
+            }
+        }
 
         // 1. System/Trigger Processing
         processTriggers(lineToParse);

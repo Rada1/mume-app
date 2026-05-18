@@ -4,9 +4,10 @@
  */
 
 import React from 'react';
-import { TimerReset, Trash2 } from 'lucide-react';
+import { ChevronDown, TimerReset, Trash2 } from 'lucide-react';
 import { EFFECT_TIMER_CATALOG } from '../../data/effectTimerCatalog';
 import { getTimerPhase, useEffectTimerStore } from '../../stores/useEffectTimerStore';
+import './TimerDrawerTab.css';
 
 const formatTime = (ms?: number) => {
     if (!ms) return 'active';
@@ -22,6 +23,8 @@ const formatTime = (ms?: number) => {
 export const TimerDrawerTab: React.FC = () => {
     const { timers, addTimer, removeTimer, clearAll, clearExpired } = useEffectTimerStore();
     const [now, setNow] = React.useState(Date.now());
+    const [isPickerOpen, setIsPickerOpen] = React.useState(false);
+    const pickerRef = React.useRef<HTMLDivElement>(null);
     const sortedTimers = React.useMemo(() => [...timers].sort((a, b) => (a.expiresAt || Infinity) - (b.expiresAt || Infinity)), [timers]);
 
     React.useEffect(() => {
@@ -32,23 +35,53 @@ export const TimerDrawerTab: React.FC = () => {
         return () => window.clearInterval(timer);
     }, [clearExpired]);
 
+    React.useEffect(() => {
+        if (!isPickerOpen) return;
+        const handlePointerDown = (event: PointerEvent) => {
+            if (!pickerRef.current?.contains(event.target as Node)) setIsPickerOpen(false);
+        };
+        window.addEventListener('pointerdown', handlePointerDown);
+        return () => window.removeEventListener('pointerdown', handlePointerDown);
+    }, [isPickerOpen]);
+
+    const addKnownTimer = (entryId: string) => {
+        const entry = EFFECT_TIMER_CATALOG.find(item => item.id === entryId);
+        if (entry) addTimer(entry, 'manual');
+        setIsPickerOpen(false);
+    };
+
     return (
-        <div style={{ flex: 1, overflowY: 'auto', padding: '10px', display: 'flex', flexDirection: 'column', gap: 8, fontSize: 'var(--dynamic-log-size, 16px)' }}>
-            <div style={{ display: 'flex', gap: 8 }}>
-                <select
-                    aria-label="Add timer"
-                    onChange={(e) => {
-                        const entry = EFFECT_TIMER_CATALOG.find(item => item.id === e.target.value);
-                        if (entry) addTimer(entry, 'manual');
-                        e.currentTarget.value = '';
-                    }}
-                    defaultValue=""
-                    style={{ flex: 1, minWidth: 0, background: 'rgba(255,255,255,0.04)', color: 'var(--text-primary)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, padding: '8px' }}
-                >
-                    <option value="" disabled>Add known timer...</option>
-                    {EFFECT_TIMER_CATALOG.map(entry => <option key={entry.id} value={entry.id}>{entry.name}</option>)}
-                </select>
-                <button title="Clear all timers" onClick={clearAll} style={{ width: 38, borderRadius: 6, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', color: 'var(--text-primary)' }}>
+        <div className="timer-drawer-tab">
+            <div className="timer-drawer-toolbar">
+                <div className="timer-picker" ref={pickerRef}>
+                    <button
+                        type="button"
+                        className={`timer-picker-trigger${isPickerOpen ? ' open' : ''}`}
+                        aria-expanded={isPickerOpen}
+                        aria-haspopup="listbox"
+                        onClick={() => setIsPickerOpen(open => !open)}
+                    >
+                        <span>Add known timer...</span>
+                        <ChevronDown size={16} />
+                    </button>
+                    {isPickerOpen && (
+                        <div className="timer-picker-menu" role="listbox">
+                            {EFFECT_TIMER_CATALOG.map(entry => (
+                                <button
+                                    key={entry.id}
+                                    type="button"
+                                    className="timer-picker-option"
+                                    role="option"
+                                    onClick={() => addKnownTimer(entry.id)}
+                                >
+                                    <span>{entry.name}</span>
+                                    <small>{entry.kind}</small>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+                <button className="timer-clear-btn" title="Clear all timers" onClick={clearAll}>
                     <Trash2 size={15} />
                 </button>
             </div>

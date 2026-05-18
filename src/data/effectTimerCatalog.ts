@@ -96,6 +96,74 @@ export const EFFECT_TIMER_CATALOG: EffectTimerCatalogEntry[] = [
         ]
     },
     {
+        id: 'herb-clear-thought',
+        name: 'Clear Thought',
+        kind: 'herblore',
+        aliases: ['clear thought', 'clear-thought', 'pungent brew'],
+        phases: [
+            { label: 'strong', durationMs: mumeHours(2), effects: ['Mana regen +15', 'Mana +15'] },
+            { label: 'fading', durationMs: mumeHours(4), effects: ['Mana regen +7', 'Mana +7'] },
+            { label: 'exhausted', durationMs: mumeHours(6), effects: ['Mana regen -3', 'Mana -5'] }
+        ]
+    },
+    {
+        id: 'herb-antidote-found',
+        name: 'Antidote Bottle (Found)',
+        kind: 'herblore',
+        aliases: ['brown bottle', 'found antidote'],
+        durationMs: min(70)
+    },
+    {
+        id: 'herb-antidote-mixed',
+        name: 'Antidote Bottle (Mixed)',
+        kind: 'herblore',
+        aliases: ['antidote', 'mixed antidote'],
+        durationMs: min(144)
+    },
+    {
+        id: 'herb-healing',
+        name: 'Healing',
+        kind: 'herblore',
+        aliases: ['healing', 'philtre'],
+        phases: [
+            { label: 'mending', durationMs: mumeHours(63), effects: ['HP regen +15', 'Constitution +2'] },
+            { label: 'tired', durationMs: mumeHours(63), effects: ['HP regen +5', 'Move -2'] }
+        ]
+    },
+    {
+        id: 'herb-orc-balm',
+        name: 'Orc Balm',
+        kind: 'herblore',
+        aliases: ['orc balm', 'orc-balm', 'putrid dark balm'],
+        phases: [
+            { label: 'strong', durationMs: mumeHours(3), effects: ['HP regen +16', 'Mana regen -6'] },
+            { label: 'fading', durationMs: mumeHours(6), effects: ['HP regen +8', 'Mana regen -3'] },
+            { label: 'weak', durationMs: mumeHours(3), effects: ['HP regen +4', 'Mana regen -1'] }
+        ]
+    },
+    {
+        id: 'herb-seeing',
+        name: 'Seeing',
+        kind: 'herblore',
+        aliases: ['seeing', 'phosphorescent bottle'],
+        phases: [
+            { label: 'bright', durationMs: mumeHours(10), effects: ['Night vision', 'Perception +3', 'Constitution -1'] },
+            { label: 'dim', durationMs: mumeHours(15), effects: ['Night vision', 'Perception +2', 'Constitution -1'] },
+            { label: 'faint', durationMs: mumeHours(40), effects: ['Night vision', 'Perception +1'] }
+        ]
+    },
+    {
+        id: 'herb-shadows',
+        name: 'Shadows',
+        kind: 'herblore',
+        aliases: ['shadows', 'sombre bottle', 'shadow world'],
+        phases: [
+            { label: 'shadow', durationMs: mumeHours(10), effects: ['Shadow world', 'Perception -3', 'Willpower -1'] },
+            { label: 'fading', durationMs: mumeHours(60), effects: ['Dodge +2', 'Perception -2'] },
+            { label: 'faint', durationMs: mumeHours(30), effects: ['Dodge +1', 'Perception -1'] }
+        ]
+    },
+    {
         id: 'herb-strength',
         name: 'Strength Herblore',
         kind: 'herblore',
@@ -128,8 +196,18 @@ export const EFFECT_TIMER_CATALOG: EffectTimerCatalogEntry[] = [
         kind: 'herblore',
         aliases: ['heightened senses'],
         phases: [
-            { label: 'sharp', durationMs: mumeHours(2.5), effects: ['Awareness +30%', 'Track +50%'] },
-            { label: 'faded', durationMs: mumeHours(2), effects: ['Slower track'] }
+            { label: 'sharp', durationMs: mumeHours(4.5), effects: ['Awareness +30%', 'Track +50%'] },
+            { label: 'faded', durationMs: mumeHours(25), effects: ['Cannot refresh normally'] }
+        ]
+    },
+    {
+        id: 'herb-thistle-tea',
+        name: 'Thistle Tea',
+        kind: 'herblore',
+        aliases: ['thistle tea', 'cup of thistle tea'],
+        phases: [
+            { label: 'active', durationMs: mumeHours(6), effects: ['Haste'] },
+            { label: 'recover', durationMs: mumeHours(18), effects: ['Haste recovery'] }
         ]
     },
     {
@@ -141,6 +219,48 @@ export const EFFECT_TIMER_CATALOG: EffectTimerCatalogEntry[] = [
             { label: 'dark aura', durationMs: mumeHours(3.5), effects: ['Sun malus removed'] },
             { label: 'faded', durationMs: mumeHours(60), effects: ['Cannot refresh normally'] }
         ]
+    },
+    {
+        id: 'poison-arachnia',
+        name: 'Arachnia Poison',
+        kind: 'poison',
+        aliases: ['arachnia', 'dirty reddish vial'],
+        durationMs: min(60)
+    },
+    {
+        id: 'poison-belladonna',
+        name: 'Belladonna Poison',
+        kind: 'poison',
+        aliases: ['belladonna', 'dark violet vial'],
+        durationMs: min(60)
+    },
+    {
+        id: 'poison-drake-slumber',
+        name: 'Drake-Slumber Poison',
+        kind: 'poison',
+        aliases: ['drake-slumber', 'drake slumber', 'glass flask'],
+        durationMs: min(20)
+    },
+    {
+        id: 'poison-hemlock',
+        name: 'Hemlock Poison',
+        kind: 'poison',
+        aliases: ['hemlock poison', 'green stinking vial'],
+        durationMs: min(60)
+    },
+    {
+        id: 'poison-psylonia',
+        name: 'Psylonia Poison',
+        kind: 'poison',
+        aliases: ['psylonia', 'mildew covered vial'],
+        durationMs: min(60)
+    },
+    {
+        id: 'poison-venom',
+        name: 'Venom Poison',
+        kind: 'poison',
+        aliases: ['venom poison', 'foetid green vial'],
+        durationMs: min(60)
     }
 ];
 

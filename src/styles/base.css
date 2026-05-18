@@ -17,7 +17,7 @@
     --text-dim: #9ca3af;       /* Gray 400 */
     --text-faded: #6b7280;     /* Gray 500 */
     --border-color: rgba(255, 255, 255, 0.1);
-    --input-bg: rgb(20, 20, 20);
+    --input-bg: rgb(35, 35, 40);
     --header-bg: rgba(0, 0, 0, 0.75);
     --bg-modal: rgb(var(--bg-app-rgb));
     --border-modal: rgba(255, 255, 255, 0.15);
@@ -74,6 +74,13 @@
     --color-exit: #000000;
     --mapper-bg: #fcfaf2;
     --mapper-border: rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 1025px) {
+    :root {
+        --font-main: 'Roboto Mono', monospace;
+        --font-mono: 'Roboto Mono', monospace;
+    }
 }
 
 * {

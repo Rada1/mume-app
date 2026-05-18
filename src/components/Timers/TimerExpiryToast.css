@@ -1,0 +1,137 @@
+/**
+ * @file TimerExpiryToast.css
+ * @description Styles for the urgent main-screen timer indicator.
+ */
+
+.timer-expiry-toast {
+    position: absolute;
+    top: 24px;
+    right: 8px;
+    z-index: calc(var(--z-log) + 10);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 122px;
+    max-width: min(210px, calc(100% - 24px));
+    padding: 7px 10px 7px 7px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-right-color: rgba(255, 146, 43, 0.7);
+    border-radius: 999px 0 0 999px;
+    background: rgba(6, 8, 13, 0.86);
+    box-shadow: 0 0 16px rgba(255, 146, 43, 0.22), 0 10px 24px rgba(0, 0, 0, 0.42);
+    backdrop-filter: blur(10px) saturate(1.2);
+    -webkit-backdrop-filter: blur(10px) saturate(1.2);
+    pointer-events: none;
+    animation: timer-expiry-slide-in 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.timer-expiry-toast.is-started {
+    border-right-color: rgba(74, 222, 128, 0.72);
+    box-shadow: 0 0 16px rgba(74, 222, 128, 0.2), 0 10px 24px rgba(0, 0, 0, 0.42);
+}
+
+.timer-expiry-toast.is-exiting {
+    animation: timer-expiry-slide-out 220ms cubic-bezier(0.7, 0, 0.84, 0) forwards;
+}
+
+.timer-expiry-ring {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+}
+
+.timer-expiry-ring svg {
+    width: 32px;
+    height: 32px;
+    transform: rotate(-90deg);
+}
+
+.timer-expiry-ring-bg,
+.timer-expiry-ring-fill {
+    fill: none;
+    stroke-width: 4;
+}
+
+.timer-expiry-ring-bg {
+    stroke: rgba(255, 255, 255, 0.11);
+}
+
+.timer-expiry-ring-fill {
+    stroke: #ff922b;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear;
+    filter: drop-shadow(0 0 4px rgba(255, 146, 43, 0.6));
+}
+
+.timer-expiry-toast.is-started .timer-expiry-ring-fill {
+    stroke: #4ade80;
+    filter: drop-shadow(0 0 4px rgba(74, 222, 128, 0.55));
+}
+
+.timer-expiry-icon {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    color: #ffb86b;
+}
+
+.timer-expiry-toast.is-started .timer-expiry-icon,
+.timer-expiry-toast.is-started .timer-expiry-seconds {
+    color: #4ade80;
+}
+
+.timer-expiry-copy {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+.timer-expiry-name,
+.timer-expiry-seconds {
+    font-family: var(--font-mono, monospace);
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.timer-expiry-toast.is-started .timer-expiry-seconds {
+    text-shadow: 0 0 8px rgba(74, 222, 128, 0.35);
+}
+
+.timer-expiry-name {
+    overflow: hidden;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 10px;
+    font-weight: 800;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+}
+
+.timer-expiry-seconds {
+    color: #ff922b;
+    font-size: 13px;
+    font-weight: 900;
+    text-shadow: 0 0 8px rgba(255, 146, 43, 0.35);
+}
+
+@keyframes timer-expiry-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(26px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes timer-expiry-slide-out {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(34px);
+    }
+}

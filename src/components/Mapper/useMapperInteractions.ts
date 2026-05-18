@@ -48,6 +48,7 @@ export interface InteractionDeps {
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
     spatialIndexRef: React.MutableRefObject<any>;
     setIsTrackpadModifierActive?: (val: boolean) => void;
+    popoverState?: any;
     setPopoverState: (val: any) => void;
     setActiveSet: (setId: string) => void;
     playClickSound?: () => void;
@@ -415,6 +416,17 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
 
                 if (dragTypeRef.current === 'joystick' || dragTypeRef.current === 'room' || dragTypeRef.current === 'pan') {
                     const isTap = !hasDraggedRef.current;
+
+                    if (isTap && depsRef.current.popoverState) {
+                        depsRef.current.setPopoverState(null);
+                        if (dragTypeRef.current === 'joystick' && depsRef.current.joystick?.handleJoystickCancel) {
+                            depsRef.current.joystick.handleJoystickCancel(e as any);
+                        }
+                        if (depsRef.current.setIsTrackpadModifierActive) depsRef.current.setIsTrackpadModifierActive(false);
+                        isDraggingInternalRef.current = false; dragTypeRef.current = null; setIsDragging(false);
+                        return;
+                    }
+
                     const { screenToWorld, getRoomAt, getExitAt, getOccupantAt } = hitTestRef.current;
                     const world = screenToWorld(e.clientX, e.clientY);
 

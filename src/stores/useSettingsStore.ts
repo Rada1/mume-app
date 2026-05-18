@@ -90,7 +90,7 @@ interface SettingsState {
     setIsMmapperMode: (val: boolean) => void;
     setAutoSaveSessions: (val: boolean) => void;
     setSoundTriggers: (val: import('../types').SoundTrigger[]) => void;
-    setTeleportTargets: (val: TeleportTarget[]) => void;
+    setTeleportTargets: (val: TeleportTarget[] | ((prev: TeleportTarget[]) => TeleportTarget[])) => void;
     setCategoryOverrides: (val: CategoryOverride[] | ((prev: CategoryOverride[]) => CategoryOverride[])) => void;
     setCustomTraits: (val: CustomTraitConfig[] | ((prev: CustomTraitConfig[]) => CustomTraitConfig[])) => void;
     setInlineCategories: (val: InlineCategoryConfig[] | ((prev: InlineCategoryConfig[]) => InlineCategoryConfig[])) => void;
@@ -260,7 +260,9 @@ export const useSettingsStore = create<SettingsState>()(
             setIsMmapperMode: (isMmapperMode) => set({ isMmapperMode }),
             setAutoSaveSessions: (autoSaveSessions) => set({ autoSaveSessions }),
             setSoundTriggers: (soundTriggers) => set({ soundTriggers }),
-            setTeleportTargets: (teleportTargets) => set({ teleportTargets }),
+            setTeleportTargets: (val) => set((state) => ({
+                teleportTargets: typeof val === 'function' ? val(state.teleportTargets) : val
+            })),
             setCategoryOverrides: (val) => set((state) => {
                 const categoryOverrides = typeof val === 'function' ? val(state.categoryOverrides) : val;
                 return {

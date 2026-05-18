@@ -4,13 +4,32 @@
  */
 
 import { CommandMiddleware } from '../types';
+import { buildKeyedSpellCommand, findMagicKeyTarget, parseKeyedSpellCommand, pruneExpiredMagicKeys } from '../../../utils/magicKeyUtils';
 
 export const TeleportMiddleware: CommandMiddleware = (cmd, { teleportTargets, setPopoverState }) => {
     const lowerCmd = cmd.toLowerCase().trim();
+    const activeTargets = pruneExpiredMagicKeys(teleportTargets);
+    const keyedSpell = parseKeyedSpellCommand(cmd);
+
+    if (keyedSpell) {
+        if (!keyedSpell.target && activeTargets.length > 0) {
+            setPopoverState({
+                x: window.innerWidth / 2 - 100,
+                y: window.innerHeight / 2 - 100,
+                type: 'teleport-select',
+                setId: 'teleport',
+                spellCommand: keyedSpell.prefix
+            });
+            return null;
+        }
+
+        const target = findMagicKeyTarget(activeTargets, keyedSpell.target);
+        if (target) return buildKeyedSpellCommand(keyedSpell.prefix, target);
+    }
 
     // Teleport Interception
-    if (teleportTargets.length > 0) {
-        const teleportMatch = lowerCmd.match(/^(cast\s+['"]?(teleport|portal|scry)['"]?)$/i);
+    if (activeTargets.length > 0) {
+        const teleportMatch = lowerCmd.match(/^(cast\s+['"]?(teleport|portal|scry|watch room)['"]?)$/i);
         if (teleportMatch) {
             setPopoverState({ 
                 x: window.innerWidth / 2 - 100, 

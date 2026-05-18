@@ -180,6 +180,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         startWalking, stopWalking,
         executeCommand, joystick, btn, heldButton, heldButtonRef, setHeldButton, target,
         setIsTrackpadModifierActive,
+        popoverState,
         setPopoverState,
         setActiveSet: btn.setActiveSet,
         playClickSound,

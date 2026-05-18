@@ -15,15 +15,19 @@ const MOODS = [
 
 
 const SPEEDS = [
-    { label: 'SLOW', val: 'slow' },
+    { label: 'THOR', val: 'thorough' },
+    { label: 'CARE', val: 'careful' },
     { label: 'NORM', val: 'normal' },
     { label: 'FAST', val: 'fast' },
+    { label: 'QUIC', val: 'quick' },
 ];
 
 const ALERTS = [
-    { label: 'OFF', val: 'off' },
+    { label: 'PARA', val: 'paranoid' },
+    { label: 'VIGI', val: 'vigilant' },
+    { label: 'ATTE', val: 'attentive' },
+    { label: 'CARE', val: 'careful' },
     { label: 'NORM', val: 'normal' },
-    { label: 'ACT', val: 'active' },
 ];
 
 const CombatStatsPanel: React.FC = () => {
@@ -58,7 +62,7 @@ const CombatStatsPanel: React.FC = () => {
         if (selected && openMenu) {
             if (openMenu === 'mood') executeCommand(`cha mood ${selected}`);
             if (openMenu === 'speed') executeCommand(`cha speed ${selected}`);
-            if (openMenu === 'alert') executeCommand(`alert ${selected}`);
+            if (openMenu === 'alert') executeCommand(`cha alert ${selected}`);
             setOpenMenu(null);
         }
         setHoveredOption(null);

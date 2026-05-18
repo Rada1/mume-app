@@ -27,6 +27,11 @@ export const DrawerHoldCommandButton: React.FC<DrawerHoldCommandButtonProps> = (
     const startHold = (e: React.PointerEvent<HTMLButtonElement>) => {
         e.preventDefault();
         e.stopPropagation();
+        if (isHeld) {
+            setCommandPreview(null);
+            setHeldButton((prev: any) => prev?.id === id ? null : prev);
+            return;
+        }
         const rect = e.currentTarget.getBoundingClientRect();
         triggerHaptic(15);
         setCommandPreview(label.toLowerCase());
@@ -45,8 +50,6 @@ export const DrawerHoldCommandButton: React.FC<DrawerHoldCommandButtonProps> = (
     const endHold = (e: React.PointerEvent<HTMLButtonElement>) => {
         e.preventDefault();
         e.stopPropagation();
-        setCommandPreview(null);
-        setHeldButton((prev: any) => prev?.id === id ? null : prev);
     };
 
     return (

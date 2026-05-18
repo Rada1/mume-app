@@ -30,6 +30,7 @@ import { MultiSelectToolbar } from './components/Popovers/MultiSelectToolbar';
 import { AgentHUD } from './components/Utility/AgentHUD';
 import { useSettingsStore } from './stores/useSettingsStore';
 import { useDisplayMode } from './hooks/useDisplayMode';
+import { normalizeTerrain } from './utils/terrainUtils';
 
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
@@ -63,7 +64,8 @@ const MudClient = () => {
         setInput,
         commandPreview,
         setCommandPreview,
-        gameState
+        gameState,
+        currentTerrain
     } = useGame();
 
     const { rumble, setTarget, heldButton, heldButtonRef, setHeldButton } = useVitals();
@@ -167,6 +169,24 @@ const MudClient = () => {
     }, [targetColor]);
 
     useEffect(() => {
+        const terrainGlowMap: Record<string, string> = {
+            forest:      '20, 118, 56',
+            water:       '34, 113, 180',
+            field:       '152, 134, 43',
+            brush:       '79, 122, 13',
+            road:        '89, 98, 110',
+            mountain:    '136, 139, 144',
+            hills:       '149, 69, 13',
+            underground: '68, 68, 73',
+            city:        '94, 98, 105',
+            building:    '94, 98, 105',
+        };
+        const normalized = currentTerrain ? normalizeTerrain(currentTerrain) : null;
+        const rgb = (normalized && terrainGlowMap[normalized]) ?? '255, 255, 255';
+        document.documentElement.style.setProperty('--terrain-glow-rgb', rgb);
+    }, [currentTerrain]);
+
+    useEffect(() => {
         if (btn.editingButtonId === null && returnToManager) {
             setIsSetManagerOpen(true);
             setReturnToManager(false);
@@ -205,11 +225,11 @@ const MudClient = () => {
     const isDrawerTargetingActive = !!heldButton
         && !heldButton.didFire
         && typeof heldButton.id === 'string'
-        && heldButton.id.startsWith('drawer-');
+        && (heldButton.id.startsWith('drawer-') || heldButton.id.startsWith('shop-'));
 
     return (
         <div
-            className={`app-container state-${gameState} ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isTacticalTargetingActive ? 'tactical-targeting-active' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''}`}
+            className={`app-container state-${gameState} ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isTacticalTargetingActive ? 'tactical-targeting-active' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''} ${env?.room_terrain ? `terrain-${normalizeTerrain(env.room_terrain)}` : 'terrain-none'}`}
             ref={containerRef}
             onDragOver={(e: React.DragEvent) => {
                 e.preventDefault();

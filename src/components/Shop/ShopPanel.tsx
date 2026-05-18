@@ -32,7 +32,7 @@ export const ShopPanel: React.FC = () => {
     const compareFirst     = useUIStore(s => s.compareFirstTarget);
     const setCompareFirst  = useUIStore(s => s.setCompareFirstTarget);
 
-    const { triggerHaptic, executeCommand, setHeldButton, setCommandPreview } = useGame() as any;
+    const { triggerHaptic, executeCommand, heldButton, setHeldButton, setCommandPreview } = useGame() as any;
     const { handleTabClick, setGearTab } = useUI() as any;
     const [search, setSearch] = useState('');
     const [heldInvAction, setHeldInvAction] = useState<InvAction | null>(null);
@@ -71,22 +71,31 @@ export const ShopPanel: React.FC = () => {
     // Stable refs so item pointerdown handlers never go stale
     const heldActionRef    = useRef(heldAction);
     const compareFirstRef  = useRef(compareFirst);
+    const lastProcessedInvFireRef = useRef(0);
     useEffect(() => { heldActionRef.current = heldAction; }, [heldAction]);
     useEffect(() => { compareFirstRef.current = compareFirst; }, [compareFirst]);
 
     const handleActionDown = useCallback((action: ShopAction) => {
         triggerHaptic(20);
-        setHeldAction(action);
-        if (action !== 'compare') setCompareFirst(null);
-    }, [triggerHaptic, setHeldAction, setCompareFirst]);
-
-    const handleActionUp = useCallback(() => {
-        // Small delay so item pointerdown fires first on simultaneous touch
-        setTimeout(() => {
+        if (heldAction === action) {
+            heldActionRef.current = null;
+            compareFirstRef.current = null;
             setHeldAction(null);
             setCompareFirst(null);
-        }, 80);
-    }, [setHeldAction, setCompareFirst]);
+            return;
+        }
+        heldActionRef.current = action;
+        setHeldAction(action);
+        if (action !== 'compare') {
+            compareFirstRef.current = null;
+            setCompareFirst(null);
+        }
+    }, [heldAction, triggerHaptic, setHeldAction, setCompareFirst]);
+
+    const handleActionUp = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+    }, []);
 
     const handleItemPress = useCallback((item: ShopItem) => {
         const action = heldActionRef.current;
@@ -96,10 +105,13 @@ export const ShopPanel: React.FC = () => {
             const first = compareFirstRef.current;
             if (first === null) {
                 triggerHaptic(15);
+                compareFirstRef.current = item.num;
                 setCompareFirst(item.num);
             } else {
                 triggerHaptic(30);
                 executeCommand(`compare ${first} ${item.num}`);
+                heldActionRef.current = null;
+                compareFirstRef.current = null;
                 setHeldAction(null);
                 setCompareFirst(null);
             }
@@ -112,16 +124,26 @@ export const ShopPanel: React.FC = () => {
                     executeCommand('i', true, true);
                 }, 400);
             }
+            heldActionRef.current = null;
             setHeldAction(null);
         }
     }, [triggerHaptic, executeCommand, setHeldAction, setCompareFirst]);
 
     const handleInvActionDown = useCallback((action: InvAction, e: React.PointerEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const id = `shop-${action}`;
+        if (heldButton?.id === id && !heldButton.didFire) {
+            setHeldInvAction(null);
+            setHeldButton(null);
+            setCommandPreview(null);
+            return;
+        }
         triggerHaptic(20);
         setHeldInvAction(action);
         const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
         setHeldButton({
-            id: `shop-${action}`,
+            id,
             baseCommand: `${action} %n`,
             modifiers: [],
             dx: 0, dy: 0, didFire: false,
@@ -129,24 +151,27 @@ export const ShopPanel: React.FC = () => {
             initialY: rect.top + rect.height / 2,
         });
         setCommandPreview(action);
-    }, [triggerHaptic, setHeldButton, setCommandPreview]);
+    }, [heldButton, triggerHaptic, setHeldButton, setCommandPreview]);
 
-    const handleInvActionUp = useCallback((action: InvAction) => {
+    const handleInvActionUp = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+    }, []);
+
+    useEffect(() => {
+        if (!heldInvAction) return;
+        const id = `shop-${heldInvAction}`;
+        const firedAt = heldButton?.id === id ? heldButton.lastTargetFireAt : null;
+        if (!firedAt || firedAt === lastProcessedInvFireRef.current) return;
+        lastProcessedInvFireRef.current = firedAt;
+        setHeldInvAction(null);
+        setHeldButton((prev: any) => prev?.id === id ? null : prev);
+        setCommandPreview(null);
         setTimeout(() => {
-            setHeldInvAction(null);
-            setHeldButton((prev: any) => {
-                const fired = prev?.id === `shop-${action}` && prev?.lastTargetFireAt;
-                if (fired) {
-                    setTimeout(() => {
-                        refreshBalance();
-                        executeCommand('i', true, true);
-                    }, 500);
-                }
-                return prev?.id === `shop-${action}` ? null : prev;
-            });
-            setCommandPreview(null);
-        }, 80);
-    }, [setHeldButton, setCommandPreview, executeCommand]);
+            refreshBalance();
+            executeCommand('i', true, true);
+        }, 500);
+    }, [heldButton, heldInvAction, refreshBalance, executeCommand, setHeldButton, setCommandPreview]);
 
     const handleClose = () => {
         triggerHaptic(15);
@@ -246,15 +271,15 @@ export const ShopPanel: React.FC = () => {
                 <div className="shop-action-divider" />
 
                 {INV_ACTIONS.map(action => {
-                    const isHeld = heldInvAction === action.id;
+                    const isHeld = heldInvAction === action.id && heldButton?.id === `shop-${action.id}` && !heldButton.didFire;
                     return (
                         <button
                             key={action.id}
                             type="button"
                             className={`shop-action-btn${isHeld ? ' held' : ''}`}
                             onPointerDown={e => handleInvActionDown(action.id, e)}
-                            onPointerUp={() => handleInvActionUp(action.id)}
-                            onPointerCancel={() => handleInvActionUp(action.id)}
+                            onPointerUp={handleInvActionUp}
+                            onPointerCancel={handleInvActionUp}
                             onClick={e => { e.preventDefault(); e.stopPropagation(); }}
                         >
                             {action.label}

@@ -3,7 +3,7 @@
  * @description Timer types for spells, herblores, affects, and target effects.
  */
 
-export type EffectTimerKind = 'spell' | 'herblore' | 'blind' | 'sanctuary' | 'charm' | 'stored-spell' | 'cooldown' | 'affect';
+export type EffectTimerKind = 'spell' | 'herblore' | 'poison' | 'blind' | 'sanctuary' | 'charm' | 'stored-spell' | 'cooldown' | 'affect';
 
 export type EffectTimerSource = 'command' | 'parser' | 'gmcp' | 'manual';
 
