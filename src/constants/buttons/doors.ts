@@ -1,4 +1,4 @@
-﻿import { createButton } from '../../utils/buttonFactory';
+import { createButton } from '../../utils/buttonFactory';
 
 /**
  * @file doors.ts
@@ -18,12 +18,12 @@ const createDoorButton = (id: string, label: string, command: string) =>
     });
 
 export const DOOR_BUTTONS = [
-    createDoorButton('open', 'Open', 'open exit %d'),
-    createDoorButton('close', 'Close', 'close exit %d'),
-    createDoorButton('lock', 'Lock', 'lock exit %d'),
-    createDoorButton('unlock', 'Unlock', 'unlock exit %d'),
-    createDoorButton('pick', 'Pick', 'pick exit %d'),
-    createDoorButton('scout', 'Scout', 'scout %d')
+    createDoorButton('open', 'Open', 'open %n|exit'),
+    createDoorButton('close', 'Close', 'close %n|exit'),
+    createDoorButton('lock', 'Lock', 'lock %n|exit'),
+    createDoorButton('unlock', 'Unlock', 'unlock %n|exit'),
+    createDoorButton('knock', 'Knock', 'knock %n|exit'),
+    createDoorButton('scout', 'Scout', 'scout %n|exit')
 ];
 
 

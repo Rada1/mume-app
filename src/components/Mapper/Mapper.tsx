@@ -146,7 +146,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             holdZoomTimerRef.current = setTimeout(() => {
                 holdZoomTimerRef.current = null;
                 savedZoomRef.current = cameraRef.current.zoom;
-                snapCameraToPlayer(5);
+                snapCameraToPlayer(2.8);
                 triggerRender();
             }, 100);
         } else {

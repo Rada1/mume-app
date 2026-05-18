@@ -11,6 +11,12 @@
     z-index: 1;
 }
 
+/* Light and dark modes: immersion effects are always off (only immersion-mode enables them) */
+:is(.light-mode, .dark-mode:not(.immersion-mode)) .environment-root.back,
+:is(.light-mode, .dark-mode:not(.immersion-mode)) .environment-root.front > *:not(.fog-layer) {
+    display: none;
+}
+
 .log-background-mask {
     position: absolute;
     width: 100%;

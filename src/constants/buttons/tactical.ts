@@ -21,6 +21,14 @@ const withAssignLongActions = (button: CustomButton): CustomButton => ({
     longSwipeActionTypes: ASSIGN_LONG_SWIPE_ACTIONS
 });
 
+const DOOR_SWIPE_COMMANDS: CustomButton['swipeCommands'] = {
+    up: 'open',
+    down: 'close',
+    left: 'lock',
+    right: 'unlock',
+    sw: 'knock'
+};
+
 export const TACTICAL_BUTTONS: CustomButton[] = [
     {
         id: "tactical-charmie",
@@ -112,6 +120,7 @@ export const TACTICAL_BUTTONS: CustomButton[] = [
         isVisible: true,
         style: { x: 475, y: 0, w: 90, h: 40, backgroundColor: "rgba(8, 145, 178, 0.8)", borderColor: "#06b6d4", borderRadius: 8, fontSize: 13, shape: "pill", iconScale: 1.2 },
         position: { x: 475, y: 0, w: 90, h: 40 },
+        swipeCommands: DOOR_SWIPE_COMMANDS,
         trigger: { enabled: false, pattern: "", isRegex: false, autoHide: false, duration: 0, type: "show" }
     })
 ];

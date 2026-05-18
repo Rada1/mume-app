@@ -106,9 +106,17 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         // messed with it, but here we prioritize the keyword if available.
 
         let cmd = button.command;
-        if (finalContext) { cmd = cmd.includes('%n') ? cmd.replace(/%n/g, finalContext) : cmd; }
+        let consumedTarget = false;
+        if (finalContext) {
+            if (cmd.match(/%n\|/)) cmd = cmd.replace(/%n\|[^\s]+/g, finalContext);
+            else cmd = cmd.includes('%n') ? cmd.replace(/%n/g, finalContext) : cmd;
+        }
         else if (cmd.includes('%n') && target) {
-            cmd = cmd.replace(/%n/g, target);
+            if (cmd.match(/%n\|/)) cmd = cmd.replace(/%n\|[^\s]+/g, target);
+            else cmd = cmd.replace(/%n/g, target);
+            consumedTarget = true;
+        } else if (cmd.match(/%n\|/)) {
+            cmd = cmd.replace(/%n\|([^\s]+)/g, '$1');
         }
         if (detectedParent) { cmd = cmd.includes('%p') ? cmd.replace(/%p/g, detectedParent) : cmd; }
         
@@ -144,7 +152,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             joystick.setIsJoystickConsumed(true);
             console.log(`[useButtonClicks] Combo fired: hiding swipe wheel`);
             joystick.setIsSwipeWheelHidden(true);
-        } else if (joystick.isTargetModifierActive && target && !(button as any)._skipJoystick) {
+        } else if (joystick.isTargetModifierActive && target && !consumedTarget && !(button as any)._skipJoystick) {
             finalCmd = `${finalCmd} ${target}`; 
             joystick.setIsJoystickConsumed(true);
             console.log(`[useButtonClicks] Target combo fired: hiding swipe wheel`);

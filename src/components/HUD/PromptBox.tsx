@@ -662,6 +662,17 @@ const PromptBox: FC<PromptBoxProps> = ({
                         }}
                         onClose={() => setActiveSlider(null)}
                         triggerHaptic={triggerHaptic}
+                        race={activeVitals.characterInfo?.race}
+                        subrace={activeVitals.characterInfo?.subrace}
+                        onFormSelect={(newForm) => {
+                            if (newForm === 'bear') {
+                                executeCommand('metamorph');
+                            } else {
+                                executeCommand('return');
+                            }
+                            triggerHaptic(20);
+                            setActiveSlider(null);
+                        }}
                     />
                 )}
                 {activeSlider === 'disposition' && activeButtonRect && (

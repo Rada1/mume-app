@@ -484,6 +484,22 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                             });
                         } else {
                             // Short Tap -> Open or Close
+                            const activeHeldButton = depsRef.current.heldButtonRef?.current || depsRef.current.heldButton;
+                            if (activeHeldButton && !activeHeldButton.didFire && !activeHeldButton.id?.startsWith('log-inline-')) {
+                                const doorTarget = {
+                                    commandTarget: `exit ${finalDirName}`,
+                                    name: `exit ${finalDirName}`,
+                                    kind: 'door',
+                                    category: 'doors'
+                                } as any;
+
+                                if (fireHeldCommandAtMapOccupant(depsRef.current, doorTarget)) {
+                                    depsRef.current.triggerRender();
+                                    return;
+                                }
+                            }
+
+                            // Short Tap -> Open or Close
                             depsRef.current.executeCommand(`${finalAction} exit ${finalDirName}`, false, false, false, false, { fromUi: true });
                             depsRef.current.playClickSound?.();
                         }

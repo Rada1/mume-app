@@ -14,6 +14,9 @@ interface CombatSliderPopoutProps {
     onSelect: (val: string, index: number) => void;
     onClose: () => void;
     triggerHaptic: (intensity: number) => void;
+    race?: string;
+    subrace?: string;
+    onFormSelect?: (newForm: 'human' | 'bear') => void;
 }
 
 export const CombatSliderPopout: React.FC<CombatSliderPopoutProps> = ({
@@ -23,124 +26,100 @@ export const CombatSliderPopout: React.FC<CombatSliderPopoutProps> = ({
     anchorRect,
     onSelect,
     onClose,
-    triggerHaptic
+    triggerHaptic,
+    race,
+    subrace,
+    onFormSelect
 }) => {
     const currentIndex = options.indexOf(value.toLowerCase());
+    const isBeorningOrBear = ['beorning', 'bear'].includes(race?.toLowerCase() || '') || ['beorning', 'bear'].includes(subrace?.toLowerCase() || '');
+    const currentForm = (race?.toLowerCase() === 'bear' || subrace?.toLowerCase() === 'bear') ? 'bear' : 'human';
+    const formValue = currentForm === 'bear' ? 1 : 0;
 
     return ReactDOM.createPortal(
         <>
-            {/* Transparent backdrop to close when clicking outside */}
-            <div 
-                style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 3500, background: 'transparent' }}
-                onClick={(e) => { e.stopPropagation(); onClose(); }}
-            />
-            
-            <div 
-                style={{ 
-                    position: 'fixed', 
-                    bottom: (window.innerHeight - anchorRect.top) + 12, 
-                    left: anchorRect.left + (anchorRect.width / 2), 
-                    transform: 'translateX(-50%)', 
-                    background: 'rgba(0, 0, 0, 0.75)', 
-                    border: '1px solid rgba(255,255,255,0.1)', 
-                    padding: '24px 16px 16px 16px', 
-                    borderRadius: '24px', 
-                    backdropFilter: 'blur(20px) saturate(160%)', 
-                    WebkitBackdropFilter: 'blur(20px) saturate(160%)',
-                    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.7)', 
-                    zIndex: 3501, 
-                    display: 'flex', 
-                    flexDirection: 'row', 
-                    alignItems: 'stretch', 
-                    height: '240px',
-                    width: '160px',
-                    gap: '12px',
-                    pointerEvents: 'auto'
+            <div className="disposition-popout-backdrop" onClick={(e) => { e.stopPropagation(); onClose(); }} />
+            <div
+                className="disposition-popout"
+                style={{
+                    bottom: (window.innerHeight - anchorRect.top) + 12,
+                    left: anchorRect.left + (anchorRect.width / 2),
+                    width: isBeorningOrBear ? '180px' : '90px',
+                    gridTemplateColumns: isBeorningOrBear ? 'repeat(2, minmax(0, 1fr))' : '1fr',
                 }}
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* Vertical Slider */}
-                <div style={{ position: 'relative', width: '26px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <input 
+                <div className="disposition-popout-title">{isBeorningOrBear ? 'POSITION / FORM' : label}</div>
+                
+                <div className="disposition-slider-column">
+                    <div className="disposition-slider-label">POS</div>
+                    <input
+                        className="disposition-slider"
                         type="range"
-                        min="0" max={options.length - 1} step="1"
+                        min="0"
+                        max={options.length - 1}
+                        step="1"
                         value={currentIndex}
                         onChange={(e) => {
-                            const idx = parseInt(e.target.value);
+                            const idx = Number(e.target.value);
                             onSelect(options[idx], idx);
                         }}
-                        style={{ 
-                            writingMode: 'vertical-lr' as any, 
-                            direction: 'rtl', 
-                            height: '100%', 
-                            width: '28px', 
-                            cursor: 'grab',
-                            margin: 0
-                        }}
+                        aria-label="Position"
                     />
+                    <div className="disposition-slider-options">
+                        {[...options].reverse().map((opt, reverseIndex) => {
+                            const realIndex = options.length - 1 - reverseIndex;
+                            const isActive = realIndex === currentIndex;
+                            return (
+                                <button
+                                    key={opt}
+                                    className={`disposition-option${isActive ? ' active' : ''}`}
+                                    onClick={() => onSelect(opt, realIndex)}
+                                >
+                                    {opt}
+                                </button>
+                            );
+                        })}
+                    </div>
                 </div>
 
-                {/* Labels Column */}
-                <div style={{ 
-                    flex: 1, 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    justifyContent: 'space-between', 
-                    padding: '4px 0',
-                    pointerEvents: 'auto'
-                }}>
-                    {[...options].reverse().map((opt, idx) => {
-                        const realIdx = options.length - 1 - idx;
-                        const isActive = realIdx === currentIndex;
-                        return (
-                            <div 
-                                key={opt}
-                                onClick={() => onSelect(opt, realIdx)}
-                                style={{ 
-                                    fontSize: 'var(--dynamic-log-size, 16px)', 
-                                    color: isActive ? 'var(--accent)' : 'rgba(255,255,255,0.5)', 
-                                    fontWeight: isActive ? 900 : 800,
-                                    textTransform: 'uppercase',
-                                    cursor: 'pointer',
-                                    whiteSpace: 'nowrap',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                    transition: 'all 0.15s ease'
-                                }}
-                            >
-                                <div style={{ 
-                                    width: '6px', 
-                                    height: '6px', 
-                                    borderRadius: '50%', 
-                                    background: isActive ? 'var(--accent)' : 'rgba(255,255,255,0.2)' 
-                                }} />
-                                {opt}
-                            </div>
-                        );
-                    })}
-                </div>
-
-                {/* Header Label at top */}
-                <div style={{
-                    position: 'absolute',
-                    top: '-12px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    background: 'var(--accent)',
-                    color: '#000',
-                    fontSize: '11px',
-                    lineHeight: '1',
-                    fontWeight: 900,
-                    padding: '6px 14px',
-                    borderRadius: '20px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '1.2px',
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.4)',
-                    whiteSpace: 'nowrap'
-                }}>
-                    {label}
-                </div>
+                {isBeorningOrBear && (
+                    <div className="disposition-slider-column">
+                        <div className="disposition-slider-label">FORM</div>
+                        <input
+                            className="disposition-slider"
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="1"
+                            value={formValue}
+                            onChange={(e) => {
+                                const idx = Number(e.target.value);
+                                const newForm = idx === 1 ? 'bear' : 'human';
+                                onFormSelect?.(newForm);
+                            }}
+                            style={{ accentColor: currentForm === 'bear' ? '#fb923c' : '#38bdf8' }}
+                            aria-label="Form"
+                        />
+                        <div className="disposition-slider-options">
+                            {['bear', 'human'].map((opt) => {
+                                const isBearOpt = opt === 'bear';
+                                const isActive = currentForm === opt;
+                                const accentColor = isBearOpt ? '#fb923c' : '#38bdf8';
+                                return (
+                                    <button
+                                        key={opt}
+                                        className={`disposition-option${isActive ? ' active' : ''}`}
+                                        style={isActive ? { color: accentColor, textShadow: `0 0 8px ${accentColor}59` } : {}}
+                                        onClick={() => onFormSelect?.(opt as 'human' | 'bear')}
+                                    >
+                                        {isBearOpt ? '🐾 BEAR' : '👤 HUMAN'}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
             </div>
         </>,
         document.body

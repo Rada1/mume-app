@@ -85,4 +85,27 @@ describe('useButtonLogic', () => {
         expect(withoutCharm.result.current.map(button => button.id)).not.toContain('tactical-charmie');
         expect(withCharm.result.current.map(button => button.id)).toContain('tactical-charmie');
     });
+
+    it('adds exit fallback targets to generated door abilities', () => {
+        const { result } = renderHook(() => useButtonLogic({
+            rawButtons: [],
+            activeSet: 'spellbook',
+            abilities: {},
+            characterClass: 'Mage',
+            characterName: 'Ellessar',
+            isEditMode: false,
+            target: null,
+            inlineCategories: [],
+            practiceData: makePractice([
+                { name: 'Block Door', sessions: '', knowledge: 'good', proficiency: 80, difficulty: '', advice: '', skillClass: 'Mage' },
+                { name: 'Break Door', sessions: '', knowledge: 'good', proficiency: 80, difficulty: '', advice: '', skillClass: 'Cleric' },
+                { name: 'Pick', sessions: '', knowledge: 'good', proficiency: 80, difficulty: '', advice: '', skillClass: 'Thief' }
+            ])
+        }));
+
+        const commands = result.current.map(button => button.command);
+        expect(commands).toContain("cast 'block door' %n|exit");
+        expect(commands).toContain("cast 'break door' %n|exit");
+        expect(commands).toContain('pick %n|exit');
+    });
 });

@@ -21,6 +21,14 @@ const isClassPickerButton = (button: Pick<CustomButton, 'setId'>): boolean => (
     CLASS_PICKER_SET_IDS.has((button.setId || '').toLowerCase())
 );
 
+const DOOR_SWIPE_COMMANDS: CustomButton['swipeCommands'] = {
+    up: 'open',
+    down: 'close',
+    left: 'lock',
+    right: 'unlock',
+    sw: 'knock'
+};
+
 const normalizeTacticalAssignActions = (button: CustomButton): CustomButton => {
     if (!button.id.startsWith('tactical-')) return button;
 
@@ -37,7 +45,7 @@ const normalizeTacticalAssignActions = (button: CustomButton): CustomButton => {
         shape: 'circle',
         iconScale: 1
     };
-    const swipeCommands = button.swipeCommands ? { ...button.swipeCommands } : button.swipeCommands;
+    let swipeCommands = button.swipeCommands ? { ...button.swipeCommands } : button.swipeCommands;
     const swipeActionTypes = button.swipeActionTypes ? { ...button.swipeActionTypes } : button.swipeActionTypes;
 
     if (button.id === 'tactical-warrior' && swipeCommands) {
@@ -58,6 +66,10 @@ const normalizeTacticalAssignActions = (button: CustomButton): CustomButton => {
                 delete swipeActionTypes?.[dir as keyof typeof swipeActionTypes];
             }
         });
+    }
+
+    if (button.id === 'tactical-doors') {
+        swipeCommands = { ...(swipeCommands || {}), ...DOOR_SWIPE_COMMANDS };
     }
 
     const longSwipeActionTypes = button.longSwipeActionTypes

@@ -58,7 +58,7 @@ wss.on('connection', (ws) => {
             
             // Send initial Room & Vitals via GMCP
             ws.send(createGmcpBuffer('Char.Name', { name: characterName }));
-            ws.send(createGmcpBuffer('Char.Vitals', { hp: 450, maxhp: 450, mana: 120, maxmana: 120, move: 100, maxmove: 100 }));
+            ws.send(createGmcpBuffer('Char.Vitals', { hp: 450, maxhp: 450, mana: 120, maxmana: 120, move: 100, maxmove: 100, race: 'Beorning' }));
             ws.send(createGmcpBuffer('Room.Info', { 
                 name: 'The Simulator Void', 
                 desc: 'You are standing in a digital construct designed for testing.', 
@@ -99,6 +99,12 @@ wss.on('connection', (ws) => {
                 ws.send('[ 5] a heavy sword is lying on the ground.\n\n> ');
             } else if (input.toLowerCase() === 'look') {
                 ws.send('\x1b[32mThe Simulator Void\x1b[0m\nYou see a console output floating in the air.\n> ');
+            } else if (input.toLowerCase() === 'metamorph') {
+                ws.send('\x1b[33mYou grow claws and morph into a giant bear!\x1b[0m\n> ');
+                ws.send(createGmcpBuffer('Char.Vitals', { hp: 550, maxhp: 550, mana: 120, maxmana: 120, move: 120, maxmove: 120, race: 'Bear' }));
+            } else if (input.toLowerCase() === 'return') {
+                ws.send('\x1b[33mYou return to your human form.\x1b[0m\n> ');
+                ws.send(createGmcpBuffer('Char.Vitals', { hp: 450, maxhp: 450, mana: 120, maxmana: 120, move: 100, maxmove: 100, race: 'Beorning' }));
             } else {
                 ws.send(`Unknown command: ${input}\n> `);
             }

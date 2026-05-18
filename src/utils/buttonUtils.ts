@@ -1,6 +1,8 @@
 import { CustomButton, SwipeDirection } from '../types';
 import { sanitizeGameTarget } from './gameUtils';
 
+const DOOR_ACTION_COMMANDS = new Set(['open', 'close', 'lock', 'unlock', 'knock']);
+
 /**
  * Calculates the command to execute based on swipe delta and modifiers.
  */
@@ -53,10 +55,29 @@ export const getButtonCommand = (
         }
     }
 
+    let consumedTarget = false;
     if (context) {
         const cleanContext = sanitizeGameTarget(context) || context;
-        if (cmd.includes('%n')) cmd = cmd.replace(/%n/g, cleanContext);
+        if (cmd.match(/%n\|/)) cmd = cmd.replace(/%n\|[^\s]+/g, cleanContext);
+        else if (cmd.includes('%n')) cmd = cmd.replace(/%n/g, cleanContext);
         else cmd = cmd ? `${cmd} ${cleanContext}` : cleanContext;
+    } else {
+        if (cmd.match(/%n\|/)) {
+            cmd = cmd.replace(/%n\|([^\s]+)/g, (_match, fallback) => {
+                if (target) {
+                    consumedTarget = true;
+                    return target;
+                }
+                return fallback;
+            });
+        } else if (cmd.includes('%n')) {
+            if (target) {
+                cmd = cmd.replace(/%n/g, target);
+                consumedTarget = true;
+            } else {
+                cmd = cmd.replace(/ %n/g, '').replace(/%n/g, '');
+            }
+        }
     }
 
     if (!cmd && (!joystickState || !joystickState.currentDir) && !isSwiped) {
@@ -68,9 +89,13 @@ export const getButtonCommand = (
         if (joystickState.currentDir) {
             const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' };
             finalMods.push(dirMap[joystickState.currentDir] || joystickState.currentDir);
-        } else if (joystickState.isTargetModifierActive && target) {
+        } else if (joystickState.isTargetModifierActive && target && !consumedTarget) {
             finalMods.push(target);
         }
+    }
+
+    if (button.id === 'tactical-doors' && DOOR_ACTION_COMMANDS.has(cmd.trim().toLowerCase()) && !finalMods.length && !modifiers.length) {
+        cmd = `${cmd} ${target || 'exit'}`;
     }
 
     const finalCmd = (actionType === 'command') ? [...commandPrefixes, cmd, ...finalMods, ...modifiers].filter(Boolean).join(' ') : cmd;

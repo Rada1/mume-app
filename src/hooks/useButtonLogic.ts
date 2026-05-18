@@ -1,6 +1,5 @@
 /**
  * @file useButtonLogic.ts
- * @description Filters and generates available buttons from character state.
  */
 
 import { useMemo } from 'react';
@@ -8,7 +7,7 @@ import { CharacterInfo, CustomButton, PracticeData } from '../types';
 import { MAGE_SPELLS, CLERIC_SPELLS, WARRIOR_SKILLS, RANGER_SKILLS, THIEF_SKILLS, CLASS_MAPPINGS } from '../utils/spellLists';
 import { applyPracticeSwipeDefaults } from '../utils/swipeAutoPopulate';
 import { isButtonEligibleForCharacter } from '../utils/characterEligibility';
-const SPELL_CLASS_KEYS = new Set(['mage', 'cleric']);
+import { toAbilityCommand } from '../utils/abilityCommandUtils';
 
 const normalizeAbilityKey = (value: string): string => value.trim().toLowerCase().replace(/\s+/g, ' ');
 
@@ -54,12 +53,6 @@ const getAbilityProficiency = (
     const aliases = getAbilityAliases(abilityName);
     const abilityProf = Math.max(...aliases.map(alias => abilities[alias] || 0), 0);
     return Math.max(abilityProf, getPracticeProficiency(abilityName, practiceData, classKey));
-};
-
-const toAbilityCommand = (classKey: string, abilityName: string): string => {
-    if (SPELL_CLASS_KEYS.has(classKey)) return `cast '${abilityName.toLowerCase()}'`;
-    if (normalizeAbilityKey(abilityName) === 'missile') return 'shoot';
-    return normalizeAbilityKey(abilityName);
 };
 
 const getClassKeyForSet = (setId?: string): string | undefined => {
