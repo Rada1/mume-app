@@ -45,6 +45,8 @@ interface SettingsModalProps {
     setDisableSmoothScroll: (val: boolean) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
+    isImmersionMode: boolean;
+    setIsImmersionMode: (val: boolean) => void;
     isTimestampEnabled: boolean;
     setIsTimestampEnabled: (val: boolean) => void;
     fontFamily: string;
@@ -73,6 +75,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     autoConnect, setAutoConnect, showDebugEchoes, setShowDebugEchoes, uiMode, setUiMode,
     disableSmoothScroll, setDisableSmoothScroll,
     isBloomEnabled, setIsBloomEnabled,
+    isImmersionMode, setIsImmersionMode,
     isTimestampEnabled, setIsTimestampEnabled, fontFamily, setFontFamily,
     autoSaveSessions, setAutoSaveSessions, showSpectatePromptInLog, setShowSpectatePromptInLog,
     isTextRevealEnabled, setIsTextRevealEnabled,
@@ -147,6 +150,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setIsMmapperMode={setIsMmapperMode}
                                 theme={theme}
                                 setTheme={setTheme}
+                                isImmersionMode={isImmersionMode}
+                                setIsImmersionMode={setIsImmersionMode}
                                 showDebugEchoes={showDebugEchoes}
                                 setShowDebugEchoes={setShowDebugEchoes}
                                 bgImage={bgImage}

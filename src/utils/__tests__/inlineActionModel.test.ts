@@ -23,4 +23,9 @@ describe('getInlineGlowColor', () => {
 
         expect(getInlineGlowColor('cat-ally', overrides, { player: '#89CFF0' })).toBe('#123456');
     });
+
+    it('derives a darker display color for light mode without changing dark mode defaults', () => {
+        expect(getInlineGlowColor('cat-target', [], {}, 'dark')).toBe('#facc15');
+        expect(getInlineGlowColor('cat-target', [], {}, 'light')).toBe('#9b7d03');
+    });
 });

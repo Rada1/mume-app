@@ -16,6 +16,7 @@ export const fireHeldCommandAtMapOccupant = (
     if (!activeHeldButton || activeHeldButton.didFire || activeHeldButton.id?.startsWith('log-inline-')) {
         return false;
     }
+    const shouldTriggerHaptic = activeHeldButton.id !== 'map-long-press';
 
     const context = occupantHit.commandTarget || occupantHit.name;
     const sourceButton = deps.btn?.buttons?.find((button: any) => button.id === activeHeldButton.id);
@@ -38,7 +39,7 @@ export const fireHeldCommandAtMapOccupant = (
         if (resolved?.cmd) {
             deps.executeCommand(resolved.cmd, false, false, false, false, { fromUi: true });
             deps.setHeldButton?.((prev: any) => prev ? { ...prev, lastTargetFireAt: Date.now() } : null);
-            deps.triggerHaptic?.(60);
+            if (shouldTriggerHaptic) deps.triggerHaptic?.(60);
             deps.playClickSound?.();
             return true;
         }
@@ -51,7 +52,7 @@ export const fireHeldCommandAtMapOccupant = (
     finalCmd = [...(activeHeldButton.commandPrefixes || []), finalCmd].filter(Boolean).join(' ');
     deps.executeCommand(finalCmd, false, false, false, false, { fromUi: true });
     deps.setHeldButton?.((prev: any) => prev ? { ...prev, lastTargetFireAt: Date.now() } : null);
-    deps.triggerHaptic?.(60);
+    if (shouldTriggerHaptic) deps.triggerHaptic?.(60);
     deps.playClickSound?.();
     return true;
 };

@@ -12,12 +12,13 @@
     --bg-app-rgb: 0, 0, 0;
     --bg-app: rgb(var(--bg-app-rgb));
     --bg-panel: rgba(var(--bg-app-rgb), 0.65);
-    --bg-overlay: rgba(0, 0, 0, 0.85);
+    --bg-overlay: rgba(0, 0, 0, 0.70);
     --text-primary: #d1d5db;   /* Cool Gray 300 - Softer than pure white */
     --text-dim: #9ca3af;       /* Gray 400 */
     --text-faded: #6b7280;     /* Gray 500 */
     --border-color: rgba(255, 255, 255, 0.1);
     --input-bg: rgb(35, 35, 40);
+    --command-surface-bg: rgb(45, 39, 43);
     --header-bg: rgba(0, 0, 0, 0.75);
     --bg-modal: rgb(var(--bg-app-rgb));
     --border-modal: rgba(255, 255, 255, 0.15);
@@ -55,7 +56,7 @@
 }
 
 .light-mode {
-    --bg-app: #ffffff;
+    --bg-app: #f2f2f7;
     --bg-panel: rgba(255, 255, 255, 0.9);
     --bg-overlay: rgba(255, 255, 255, 0.6);
     --text-primary: #1d1d1f;
@@ -63,6 +64,7 @@
     --text-faded: #86868b;
     --border-color: rgba(0, 0, 0, 0.1);
     --input-bg: #ffffff;
+    --command-surface-bg: #e5e5ea;
     --header-bg: #e8e8ed;
     --bg-modal: #ffffff;
     --border-modal: rgba(0, 0, 0, 0.1);
@@ -72,7 +74,7 @@
     --ansi-white: #444444;
     --ansi-bright-white: #000000;
     --color-exit: #000000;
-    --mapper-bg: #fcfaf2;
+    --mapper-bg: #f2f2f7;
     --mapper-border: rgba(0, 0, 0, 0.1);
 }
 

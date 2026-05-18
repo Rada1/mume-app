@@ -81,45 +81,26 @@ export const getTerrainColor = (terrain: string | number, isDarkMode: boolean): 
     let t = typeof terrain === 'number' ? TERRAIN_MAP[String(terrain)] : terrain;
     t = normalizeTerrain(t);
 
-    if (isDarkMode) {
-        switch (t) {
-            case 'City': return '#3b4252'; // Dark tactical grey for city
-            case 'Building': return '#3b4252'; // Dark tactical grey for building
-            case 'Forest': return '#224b1a'; // More vivid deep green
-            case 'Field':
-            case 'Grasslands': return '#4c6e3d'; // Richer grass
-            case 'Hills': return '#6d5437';
-            case 'Mountains': return '#313244';
-            case 'Water': return '#2196f3'; // Brighter blue
-            case 'Shallows': return '#00bcd4'; // Brighter cyan
-            case 'Rapids': return '#4dd0e1';
-            case 'Underwater': return '#1a3a5a'; 
-            case 'Road': return '#455a45'; 
-            case 'Tunnel': return '#5d4037'; 
-            case 'Cavern': return '#313244'; 
-            case 'Brush': return '#4a5a4a';
-            case 'Base': return '#2d3f2d'; 
-            default: return '#2a2a35'; 
-        }
-    } else {
-        switch (t) {
-            case 'City': return '#dce0e8'; // Light grey for city in light mode
-            case 'Building': return '#66442c'; // Darker brown for buildings in light mode
-            case 'Forest': return '#8fb58f'; // Darker green for forest in light mode
-            case 'Field':
-            case 'Grasslands': return '#e9edc9';
-            case 'Hills': return '#faedcd';
-            case 'Mountains': return '#e5e5e5';
-            case 'Water': return '#d4e6f1';
-            case 'Shallows': return '#e3f2fd';
-            case 'Rapids': return '#e0f7fa';
-            case 'Underwater': return '#a9cce3';
-            case 'Road': return '#e1e9d5'; // Grassy base color
-            case 'Tunnel': return '#5d4037';
-            case 'Cavern': return '#e0e0e0';
-            case 'Base': return '#e1e9d5'; // Grassy green base
-            default: return '#ffffff';
-        }
+    // Use the same rich, vivid colors in both dark and light modes to maintain
+    // absolute parity, readability, and high contrast against both backgrounds.
+    switch (t) {
+        case 'City': return '#3b4252'; // Dark tactical grey for city
+        case 'Building': return '#3b4252'; // Dark tactical grey for building
+        case 'Forest': return '#224b1a'; // More vivid deep green
+        case 'Field':
+        case 'Grasslands': return '#4c6e3d'; // Richer grass
+        case 'Hills': return '#6d5437';
+        case 'Mountains': return '#313244';
+        case 'Water': return '#2196f3'; // Brighter blue
+        case 'Shallows': return '#00bcd4'; // Brighter cyan
+        case 'Rapids': return '#4dd0e1';
+        case 'Underwater': return '#1a3a5a'; 
+        case 'Road': return '#455a45'; 
+        case 'Tunnel': return '#5d4037'; 
+        case 'Cavern': return '#313244'; 
+        case 'Brush': return '#4a5a4a';
+        case 'Base': return '#2d3f2d'; 
+        default: return '#2a2a35'; 
     }
 };
 

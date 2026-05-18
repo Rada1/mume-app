@@ -50,6 +50,7 @@ export interface RenderContext {
     /** Group members received from GMCP — used to render green friend-orbs on the map */
     groupMembers?: import('../../../types').GroupMember[];
     deathRoomId?: string | null;
+    heldButton?: any | null;
 }
 
 export const getSeed = (x: number, y: number) => Math.abs((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1);

@@ -104,12 +104,54 @@ describe('isButtonValidForEntity', () => {
             location: 'room',
             capabilities: []
         };
-        const numenorean = character('Man', 'Numenorean');
+        const numenorean = character('Numenorean');
         expect(isButtonValidForEntity(
             makeButton('btn-camp-rent', 'camp rent'),
             room.id,
             'cat-room',
             { buttons: [], entities: { [room.id]: room }, characterInfo: numenorean },
+            undefined,
+            'room'
+        )).toBe(true);
+    });
+
+    it('allows Camp Rent for Black Numenoreans in rooms', () => {
+        const room: GameEntity = {
+            id: 'room-1',
+            name: 'room',
+            noun: 'room',
+            category: 'cat-room',
+            kind: 'room',
+            location: 'room',
+            capabilities: []
+        };
+        const blackNumenorean = character('Black Numenorean');
+        expect(isButtonValidForEntity(
+            makeButton('btn-camp-rent', 'camp rent'),
+            room.id,
+            'cat-room',
+            { buttons: [], entities: { [room.id]: room }, characterInfo: blackNumenorean },
+            undefined,
+            'room'
+        )).toBe(true);
+    });
+
+    it('allows Camp Rent for Black Númenóreans (with accents) in rooms', () => {
+        const room: GameEntity = {
+            id: 'room-1',
+            name: 'room',
+            noun: 'room',
+            category: 'cat-room',
+            kind: 'room',
+            location: 'room',
+            capabilities: []
+        };
+        const blackNumenoreanAccent = character('Black Númenórean');
+        expect(isButtonValidForEntity(
+            makeButton('btn-camp-rent', 'camp rent'),
+            room.id,
+            'cat-room',
+            { buttons: [], entities: { [room.id]: room }, characterInfo: blackNumenoreanAccent },
             undefined,
             'room'
         )).toBe(true);
@@ -136,3 +178,4 @@ describe('isButtonValidForEntity', () => {
         )).toBe(false);
     });
 });
+

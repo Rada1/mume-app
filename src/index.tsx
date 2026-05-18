@@ -31,6 +31,7 @@ import { AgentHUD } from './components/Utility/AgentHUD';
 import { useSettingsStore } from './stores/useSettingsStore';
 import { useDisplayMode } from './hooks/useDisplayMode';
 import { normalizeTerrain } from './utils/terrainUtils';
+import { toThemeLinkedColor } from './utils/themeLinkedColors';
 
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
@@ -58,6 +59,7 @@ const MudClient = () => {
         mumeEditState,
         setMumeEditState,
         isBloomEnabled,
+        isImmersionMode,
         inCombat,
         isNewbieMode,
         input,
@@ -120,7 +122,7 @@ const MudClient = () => {
         };
     }, [isMobile]);
 
-    const { objectColor, playerColor, npcColor, targetColor, fontFamily } = useSettingsStore();
+    const { objectColor, playerColor, npcColor, targetColor, theme: settingsTheme, fontFamily } = useSettingsStore();
 
     useEffect(() => {
         if (fontFamily) {
@@ -152,21 +154,22 @@ const MudClient = () => {
     }, [accentColor]);
 
     useEffect(() => {
-        document.documentElement.style.setProperty('--color-obj', objectColor);
-    }, [objectColor]);
+        document.documentElement.style.setProperty('--color-obj', toThemeLinkedColor(objectColor, settingsTheme) || objectColor);
+    }, [objectColor, settingsTheme]);
 
     useEffect(() => {
-        document.documentElement.style.setProperty('--color-player', playerColor);
-    }, [playerColor]);
+        document.documentElement.style.setProperty('--color-player', toThemeLinkedColor(playerColor, settingsTheme) || playerColor);
+    }, [playerColor, settingsTheme]);
 
     useEffect(() => {
-        document.documentElement.style.setProperty('--color-npc', npcColor);
-    }, [npcColor]);
+        document.documentElement.style.setProperty('--color-npc', toThemeLinkedColor(npcColor, settingsTheme) || npcColor);
+    }, [npcColor, settingsTheme]);
 
     useEffect(() => {
-        document.documentElement.style.setProperty('--color-target', targetColor);
-        document.documentElement.style.setProperty('--target-color', targetColor);
-    }, [targetColor]);
+        const themedTargetColor = toThemeLinkedColor(targetColor, settingsTheme) || targetColor;
+        document.documentElement.style.setProperty('--color-target', themedTargetColor);
+        document.documentElement.style.setProperty('--target-color', themedTargetColor);
+    }, [targetColor, settingsTheme]);
 
 
     useEffect(() => {
@@ -207,7 +210,7 @@ const MudClient = () => {
     const isTacticalTargetingActive = !!heldButton
         && !heldButton.didFire
         && typeof heldButton.id === 'string'
-        && heldButton.id.startsWith('tactical-')
+        && (heldButton.id.startsWith('tactical-') || heldButton.id === 'map-long-press')
         && heldButtonActionType !== 'modifier';
     const isDrawerTargetingActive = !!heldButton
         && !heldButton.didFire
@@ -216,7 +219,7 @@ const MudClient = () => {
 
     return (
         <div
-            className={`app-container state-${gameState} ${theme === 'immersion' ? 'dark-mode immersion-mode' : `${theme}-mode`} ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isTacticalTargetingActive ? 'tactical-targeting-active' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''} terrain-${normalizeTerrain(env?.room_terrain || currentTerrain || 'building')} lighting-${env?.lighting || 'none'}`}
+            className={`app-container state-${gameState} ${theme}-mode ${isImmersionMode ? 'immersion-mode' : ''} ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${isBloomEnabled ? 'bloom-enabled' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isTacticalTargetingActive ? 'tactical-targeting-active' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''} terrain-${normalizeTerrain(env?.room_terrain || currentTerrain || 'building')} lighting-${env?.lighting || 'none'}`}
             ref={containerRef}
             onDragOver={(e: React.DragEvent) => {
                 e.preventDefault();

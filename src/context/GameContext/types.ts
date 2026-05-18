@@ -346,8 +346,8 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     setIsMmapperMode: (val: boolean) => void;
     isSoundEnabled: boolean;
     setIsSoundEnabled: (val: boolean) => void;
-    theme: 'light' | 'dark' | 'immersion';
-    setTheme: (val: 'light' | 'dark' | 'immersion') => void;
+    theme: 'light' | 'dark';
+    setTheme: (val: 'light' | 'dark') => void;
     autoConnect: boolean;
     setAutoConnect: (val: boolean) => void;
     showDebugEchoes: boolean;
@@ -359,6 +359,7 @@ export interface GameContextType extends Omit<SessionContextType['vitals'], 'sta
     disableSmoothScroll: boolean;
     setDisableSmoothScroll: (val: boolean) => void;
     isImmersionMode: boolean;
+    setIsImmersionMode: (val: boolean) => void;
     isBloomEnabled: boolean;
     setIsBloomEnabled: (val: boolean) => void;
     isSpectateMode: boolean;

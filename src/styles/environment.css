@@ -11,9 +11,9 @@
     z-index: 1;
 }
 
-/* Light and dark modes: immersion effects are always off (only immersion-mode enables them) */
-:is(.light-mode, .dark-mode:not(.immersion-mode)) .environment-root.back,
-:is(.light-mode, .dark-mode:not(.immersion-mode)) .environment-root.front > *:not(.fog-layer) {
+/* Light and dark themes stay clean unless the independent immersion toggle is enabled. */
+:is(.light-mode, .dark-mode):not(.immersion-mode) .environment-root.back,
+:is(.light-mode, .dark-mode):not(.immersion-mode) .environment-root.front > * {
     display: none;
 }
 
@@ -31,7 +31,7 @@
     /* Advanced Blending */
     mix-blend-mode: luminosity;
     opacity: 0.6;
-    filter: brightness(0.8) contrast(1.1);
+    filter: blur(3px) brightness(0.8) contrast(1.1);
 }
 
 .log-background-mask.top {
@@ -39,7 +39,7 @@
     height: 100dvh;
     mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 75%);
     -webkit-mask-image: linear-gradient(to bottom, black 0%, black 50%, transparent 75%);
-    transition: opacity 0.5s ease-in-out;
+    transition: opacity 0.2s ease-in-out;
 }
 
 .log-background-mask.top.hidden {
@@ -323,7 +323,7 @@
     );
 }
 
-.lighting-moon {
+.lighting-container.lighting-moon {
     filter: saturate(1.5) contrast(1.1) brightness(0.85);
 }
 

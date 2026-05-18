@@ -18,6 +18,7 @@ import {
     toTraitId,
     TraitConfig
 } from './inlineActionModel';
+import { LinkedColorTheme } from './themeLinkedColors';
 
 // --- Color Fallbacks ---
 
@@ -86,11 +87,12 @@ export function getCategoryType(category: string | null, customCategories?: Inli
 export function getGlowColorForCategory(
     category: string | null,
     customCategories?: InlineCategoryConfig[],
-    entityColors?: EntityColorMap
+    entityColors?: EntityColorMap,
+    theme: LinkedColorTheme = 'dark'
 ): string | null {
     if (!category) return null;
     const fallback = getFallbackColor(getCategoryType(category, customCategories));
-    return getCategoryColorWithOverrides(category, customCategories || [], fallback, entityColors);
+    return getCategoryColorWithOverrides(category, customCategories || [], fallback, entityColors, theme);
 }
 
 export const resolveKindAndLocation = (

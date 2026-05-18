@@ -2,7 +2,7 @@
  * @file Draws player, NPC, object, and trail entities on the mapper canvas.
  */
 import { RenderContext, getSeed } from './rendererUtils';
-import { GRID_SIZE, DIRS, WALL_COLOR } from '../mapperUtils';
+import { GRID_SIZE, DIRS, WALL_COLOR, getGateState } from '../mapperUtils';
 import { getMemberColor } from '../../../utils/groupUtils';
 import { COLOR_NPC, COLOR_PLAYER, COLOR_OBJ } from '../../../utils/categorizationUtils';
 import { occupantAnims, OCCUPANT_ANIM_DURATION, getOccupantKey } from '../occupantAnimStore';
@@ -52,8 +52,8 @@ const getMarkerTextColor = (color: string) => {
 };
 
 export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: number, gY2: number) => {
-    const { ctx } = rCtx;
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.35)'; // More pronounced black ink grid
+    const { ctx, isDarkMode } = rCtx;
+    ctx.strokeStyle = isDarkMode ? 'rgba(0, 0, 0, 0.35)' : 'rgba(255, 255, 255, 1.0)'; // More pronounced black ink grid in dark mode, white gridlines in light mode
     ctx.lineWidth = 1.1;
     ctx.beginPath();
 
@@ -145,6 +145,8 @@ export const drawRoomOccupants = (
         return ids.some(id => isObjectSelected(activeEntityIds, id, occ.category));
     };
 
+    const isHeldActive = !!(rCtx.heldButton && !rCtx.heldButton.didFire && !rCtx.heldButton.id?.startsWith('log-inline-'));
+
     const drawDot = (orbX: number, orbY: number, color: string, alpha: number, name?: string, radius = GRID_SIZE * 0.09, anim?: import('../occupantAnimStore').OccupantAnimEntry, isTarget = false, isActive = false) => {
         const initial = getOccupantInitial(name);
         let finalRadius = radius;
@@ -172,11 +174,11 @@ export const drawRoomOccupants = (
         }
         ctx.fill();
 
-        const borderColor = isTarget ? '#eab308' : isActive ? color : 'rgba(255, 255, 255, 0.2)';
-        ctx.globalAlpha = isTarget ? alpha : isActive ? alpha * 0.55 : alpha;
+        const borderColor = isTarget ? '#eab308' : (isHeldActive || isActive) ? color : 'rgba(255, 255, 255, 0.2)';
+        ctx.globalAlpha = isTarget ? alpha : isHeldActive ? alpha * 0.7 : isActive ? alpha * 0.55 : alpha;
         ctx.strokeStyle = borderColor;
-        ctx.lineWidth = isTarget ? Math.max(0.8, 1.2 / camera.zoom) : isActive ? Math.max(0.55, 0.9 / camera.zoom) : 0.5;
-        ctx.shadowBlur = isTarget ? (finalRadius * 0.8) + extraGlow : isActive ? (finalRadius * 0.45) + extraGlow : 0;
+        ctx.lineWidth = isTarget ? Math.max(0.8, 1.2 / camera.zoom) : (isHeldActive || isActive) ? Math.max(0.55, 0.9 / camera.zoom) : 0.5;
+        ctx.shadowBlur = isTarget ? (finalRadius * 0.8) + extraGlow : isHeldActive ? (finalRadius * 0.6) + extraGlow : isActive ? (finalRadius * 0.45) + extraGlow : 0;
         ctx.shadowColor = borderColor;
         ctx.stroke();
 
@@ -319,14 +321,14 @@ export const drawEntities = (
     playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>,
     characterName: string | null
 ) => {
-    const { ctx, currentZ, activeId, allRooms, preloaded } = rCtx;
+    const { ctx, currentZ, activeId, allRooms, preloaded, now, triggerRender } = rCtx;
     
     const anchor = resolveActiveRoomAnchor(rCtx, playerPosRef);
     const trail = playerTrailRef.current;
 
     // 1. Player Trail — teardrop streak that retracts tail-first toward the player
     const TRAIL_DURATION = 450; // ms, must match useMapAnimation
-    const wallNow = rCtx.now;
+    const wallNow = now;
     if (trail.length > 0 && anchor && Math.abs(anchor.z - currentZ) < 1.0) {
         const px = anchor.x * GRID_SIZE + GRID_SIZE / 2;
         const py = anchor.y * GRID_SIZE + GRID_SIZE / 2;
@@ -376,8 +378,10 @@ export const drawEntities = (
 
         // 1. Current Room Glow (White highlight)
         ctx.save();
-        ctx.globalAlpha = alpha * 0.45;
-        ctx.shadowBlur = 20 * (rCtx.camera.zoom > 1 ? 1 : rCtx.camera.zoom);
+        const pulse = (Math.sin(now / 350) + 1) / 2; // Smooth sine pulse [0, 1] over ~2.2 seconds cycle
+        
+        ctx.globalAlpha = alpha * (0.28 + pulse * 0.22); // Pulse backdrop opacity between 0.28 and 0.50
+        ctx.shadowBlur = (15 + pulse * 15) * (rCtx.camera.zoom > 1 ? 1 : rCtx.camera.zoom);
         ctx.shadowColor = '#ffffff';
         ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
         
@@ -389,6 +393,11 @@ export const drawEntities = (
             ctx.rect(px - GRID_SIZE/2 + inset, py - GRID_SIZE/2 + inset, GRID_SIZE - inset*2, GRID_SIZE - inset*2);
         }
         ctx.fill();
+
+        // Sleek pulsing white outer border for crisp definition
+        ctx.strokeStyle = `rgba(255, 255, 255, ${0.45 + pulse * 0.35})`;
+        ctx.lineWidth = Math.max(0.6, 1.0 / rCtx.camera.zoom);
+        ctx.stroke();
         ctx.restore();
         
         const orbRadius = GRID_SIZE * 0.03; // ~1.5px — tiny center-of-room indicator
@@ -788,11 +797,12 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
         }
         ctx.fill();
 
-        // 2. Transparent border by default, yellow if target
-        ctx.strokeStyle = isTarget ? '#eab308' : 'transparent';
-        ctx.lineWidth = 0.5;
-        ctx.shadowBlur = isTarget ? (orbRadius * 0.8) + extraGlow : 0;
-        ctx.shadowColor = isTarget ? '#eab308' : 'transparent';
+        // 2. Transparent border by default, yellow if target, colored glow if held-button active
+        const isGroupHeldActive = !!(rCtx.heldButton && !rCtx.heldButton.didFire && !rCtx.heldButton.id?.startsWith('log-inline-'));
+        ctx.strokeStyle = isTarget ? '#eab308' : isGroupHeldActive ? color.core : 'transparent';
+        ctx.lineWidth = (isTarget || isGroupHeldActive) ? Math.max(0.55, 0.9 / camera.zoom) : 0.5;
+        ctx.shadowBlur = isTarget ? (orbRadius * 0.8) + extraGlow : isGroupHeldActive ? (orbRadius * 0.6) + extraGlow : 0;
+        ctx.shadowColor = isTarget ? '#eab308' : isGroupHeldActive ? color.core : 'transparent';
         ctx.stroke();
 
         // 3. Initials in member color
@@ -1009,7 +1019,7 @@ export const drawDeathIndicator = (rCtx: RenderContext) => {
         ctx.save();
         ctx.globalAlpha = alpha * (0.3 + pulse * 0.4);
         ctx.fillStyle = '#ef4444';
-        
+
         ctx.beginPath();
         ctx.arc(px, py, GRID_SIZE * 0.45 + (pulse * 4), 0, Math.PI * 2);
         ctx.fill();
@@ -1019,9 +1029,69 @@ export const drawDeathIndicator = (rCtx: RenderContext) => {
         ctx.beginPath();
         ctx.arc(px, py, 4, 0, Math.PI * 2);
         ctx.fill();
-        
+
         ctx.restore();
     }
+};
+
+export const drawDoorHighlights = (
+    rCtx: RenderContext,
+    playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>
+) => {
+    if (!rCtx.heldButton || rCtx.heldButton.didFire || rCtx.heldButton.id?.startsWith('log-inline-')) return;
+
+    const { ctx, activeId, allRooms, preloaded, camera, currentZ, triggerRender } = rCtx;
+
+    const anchor = resolveActiveRoomAnchor(rCtx, playerPosRef);
+    if (!anchor || Math.abs(anchor.z - currentZ) >= 1.0) return;
+
+    const room = activeId ? (allRooms[activeId] || allRooms[`m_${activeId}`]) : null;
+    if (!room) return;
+
+    const rawId = activeId ? (activeId.startsWith('m_') ? activeId.substring(2) : activeId) : '';
+    const s = GRID_SIZE;
+    const wx = Math.round(anchor.x) * s;
+    const wy = Math.round(anchor.y) * s;
+    const cOff = 12;
+    // vPad: half-width of border rect perpendicular to the wall (encompasses the 4px bar + gap)
+    const vPad = 4.5;
+    // hPad: extra padding along the wall beyond the bar's 25%/75% endpoints
+    const hPad = 2;
+    const corner = Math.max(2, 4 / camera.zoom);
+    const DOOR_COLOR = '#ffcc00';
+
+    // [dir, rectX, rectY, rectW, rectH] in world space — each rect wraps around the door bar
+    const doorRects: [string, number, number, number, number][] = [
+        ['n', wx + s * 0.25 - hPad,  wy - vPad,               s * 0.5 + hPad * 2, vPad * 2],
+        ['s', wx + s * 0.25 - hPad,  wy + s - vPad,           s * 0.5 + hPad * 2, vPad * 2],
+        ['e', wx + s - vPad,         wy + s * 0.25 - hPad,    vPad * 2, s * 0.5 + hPad * 2],
+        ['w', wx - vPad,             wy + s * 0.25 - hPad,    vPad * 2, s * 0.5 + hPad * 2],
+        ['u', wx + s / 2 - cOff - vPad, wy + s / 2 - cOff - vPad, vPad * 2, vPad * 2],
+        ['d', wx + s / 2 + cOff - vPad, wy + s / 2 + cOff - vPad, vPad * 2, vPad * 2],
+    ];
+
+    for (const [dir, rx, ry, rw, rh] of doorRects) {
+        const wEx = preloaded[rawId]?.[4]?.[dir];
+        const { hasDoor } = getGateState(room, wEx, dir, allRooms, preloaded);
+        if (!hasDoor) continue;
+
+        ctx.save();
+        ctx.globalAlpha = 0.85;
+        ctx.strokeStyle = DOOR_COLOR;
+        ctx.lineWidth = Math.max(0.6, 1.0 / camera.zoom);
+        ctx.shadowBlur = vPad * 1.2;
+        ctx.shadowColor = DOOR_COLOR;
+        ctx.beginPath();
+        if (typeof (ctx as any).roundRect === 'function') {
+            (ctx as any).roundRect(rx, ry, rw, rh, corner);
+        } else {
+            ctx.rect(rx, ry, rw, rh);
+        }
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    triggerRender?.();
 };
 
 export const drawMarquee = (rCtx: RenderContext, marquee: { start: { x: number, y: number }, end: { x: number, y: number } } | null) => {

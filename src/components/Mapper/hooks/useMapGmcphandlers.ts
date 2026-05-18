@@ -18,7 +18,7 @@ interface UseMapGmcphandlersProps {
     lastDetectedTerrainRef: React.MutableRefObject<string | null>;
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
     triggerRender?: () => void;
-    onRoomInfoProcessed?: () => void;
+    onRoomInfoProcessed?: (confirmedRoomId?: string | null) => void;
     addMessage?: (type: string, msg: string) => void;
     showDebugEchoes?: boolean;
     preMoveRef?: React.MutableRefObject<{ dir: string; targetId: string; time: number } | null>;

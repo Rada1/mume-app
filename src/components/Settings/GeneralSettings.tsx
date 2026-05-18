@@ -17,8 +17,10 @@ interface GeneralSettingsProps {
     setLoginPassword: (val: string) => void;
     isMmapperMode: boolean;
     setIsMmapperMode: (val: boolean) => void;
-    theme: 'light' | 'dark' | 'immersion';
-    setTheme: (val: 'light' | 'dark' | 'immersion') => void;
+    theme: 'light' | 'dark';
+    setTheme: (val: 'light' | 'dark') => void;
+    isImmersionMode: boolean;
+    setIsImmersionMode: (val: boolean) => void;
     bgImage: string | null;
     bgImageBottom?: string | null;
     setBgImage: (val: string | null) => void;
@@ -62,6 +64,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setIsMmapperMode,
     theme,
     setTheme,
+    isImmersionMode,
+    setIsImmersionMode,
     bgImage,
     setBgImage,
     bgImageBottom,
@@ -519,10 +523,10 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
                     <div style={{ flex: '1 1 200px' }}>
                         <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Client Theme</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Switch between Dark, Light, and Immersion visual modes.</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Switch between clean dark and light palettes.</div>
                     </div>
                     <div style={{ display: 'flex', backgroundColor: 'var(--input-bg)', borderRadius: '20px', padding: '2px', border: '1px solid var(--border-modal)' }}>
-                        {(['dark', 'light', 'immersion'] as const).map(t => (
+                        {(['dark', 'light'] as const).map(t => (
                             <button
                                 key={t}
                                 onClick={() => setTheme(t)}
@@ -535,6 +539,23 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                                 }}
                             >{t}</button>
                         ))}
+                    </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
+                    <div style={{ flex: '1 1 200px' }}>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', margin: 0 }}>Immersion Mode</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Enable lighting, weather, fog, embers, and scene backgrounds.</div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '0.8rem', color: isImmersionMode ? '#ec4899' : '#64748b' }}>{isImmersionMode ? 'ON' : 'OFF'}</span>
+                        <button
+                            className={`setting-toggle ${isImmersionMode ? 'active' : ''}`}
+                            onClick={() => setIsImmersionMode(!isImmersionMode)}
+                            style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isImmersionMode ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                        >
+                            <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: isImmersionMode ? '22px' : '2px', transition: 'all 0.3s' }} />
+                        </button>
                     </div>
                 </div>
 

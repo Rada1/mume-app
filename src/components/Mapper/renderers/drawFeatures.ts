@@ -1,6 +1,13 @@
 import { RenderContext, drawLine, drawInkyLine } from './rendererUtils';
 import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT, getGateState, WALL_COLOR, LONG_CONNECTION_COLOR } from '../mapperUtils';
 
+const hexToRgba = (hex: string, alpha: number): string => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+};
+
 // Pre-render common indicators for performance
 const indicatorIcons: Record<string, HTMLCanvasElement> = {};
 export const getIndicatorIcon = (sym: string, color: string, outline: boolean = false) => {
@@ -192,13 +199,30 @@ export const drawFeatures = (
 
                             if (hasRoadFlag) {
                                 ctx.save();
-                                ctx.globalAlpha = 1.0; // Enforce 100% opacity for roads/trails
-                                const roadWidth = 12;
-                                const pathWidth = 6;
-                                if (isCurrentRoad && normalizeTerrain(targetData[3] as any) === 'Road') {
-                                    drawLine(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? ROAD_COLOR_DARK : ROAD_COLOR_LIGHT, roadWidth, dpr, invZoom);
+                                const isRoad = isCurrentRoad && normalizeTerrain(targetData[3] as any) === 'Road';
+                                const roadColor = isDarkMode
+                                    ? (isRoad ? ROAD_COLOR_DARK : PATH_COLOR_DARK)
+                                    : (isRoad ? ROAD_COLOR_LIGHT : PATH_COLOR_LIGHT);
+                                const lineWidth = isRoad ? 12 : 6;
+
+                                if (!isExplored) {
+                                    // Peeked room → explored room: skip, the explored room draws with gradient toward us
+                                } else if (!isTargetExplored) {
+                                    // Explored room → peeked/unknown room: fade from full at this room to transparent at target
+                                    const grad = ctx.createLinearGradient(anchorX, anchorY, tpx, tpy);
+                                    grad.addColorStop(0, roadColor);
+                                    grad.addColorStop(1, hexToRgba(roadColor, 0));
+                                    ctx.strokeStyle = grad;
+                                    ctx.lineWidth = lineWidth;
+                                    ctx.globalAlpha = exploredAlphaMul;
+                                    ctx.beginPath();
+                                    ctx.moveTo(anchorX, anchorY);
+                                    ctx.lineTo(tpx, tpy);
+                                    ctx.stroke();
                                 } else {
-                                    drawLine(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? PATH_COLOR_DARK : PATH_COLOR_LIGHT, pathWidth, dpr, invZoom);
+                                    // Both explored: draw normally
+                                    ctx.globalAlpha = 1.0;
+                                    drawLine(ctx, anchorX, anchorY, tpx, tpy, roadColor, lineWidth, dpr, invZoom);
                                 }
                                 ctx.restore();
                             }
@@ -232,8 +256,20 @@ export const drawFeatures = (
                 // 2. High-Detail Walls and Doors (Zoom > 0.15)
                 if (camera.zoom > 0.15) {
                     ctx.save();
-                    if (isPeeked) ctx.globalAlpha = 0.4;
-                    else if (isExplored) ctx.globalAlpha = exploredAlphaMul;
+                    if (isPeeked) {
+                        // Clip wall drawing to the gradient-visible area so walls don't bleed
+                        // into the transparent edge of the peeked terrain tile
+                        const clipExtent = s * 0.7;
+                        ctx.beginPath();
+                        for (const pd of peekDirs) {
+                            if (pd === 'n') ctx.rect(wx, wy, s, clipExtent);
+                            else if (pd === 's') ctx.rect(wx, wy + s - clipExtent, s, clipExtent);
+                            else if (pd === 'e') ctx.rect(wx + s - clipExtent, wy, clipExtent, s);
+                            else if (pd === 'w') ctx.rect(wx, wy, clipExtent, s);
+                        }
+                        ctx.clip();
+                        ctx.globalAlpha = 0.4;
+                    } else if (isExplored) ctx.globalAlpha = exploredAlphaMul;
 
                     for (const d of ['n', 's', 'e', 'w']) {
                         const { hasExit, hasDoor, isClosed } = getGateState(localRoom, ghostExits, d, allRooms, preloaded);

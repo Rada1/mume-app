@@ -64,6 +64,7 @@ import { HelpCard } from '../Utility/HelpCard';
 import { getButtonIdsForTraits, getInlineGlowColor, getResolvedTraitSections, toCategoryId } from '../../utils/inlineActionModel';
 import { getInlineCategoryLabel, normalizeInlineCategoryId } from '../../utils/inlineCategoryAxes';
 import { isButtonValidForEntity } from '../../utils/actionUtils';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 
 const formatDialCategoryLabel = (category?: string | null): string => {
     if (!category) return '';
@@ -76,6 +77,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     entities, registerEntity, selectedObjectIds, clearObjectSelection, keywordOverrides, accountCharacters, accountState, setAccountState,
     playerColor, npcColor, objectColor, roomColor, characterInfo
 }) => {
+    const theme = useSettingsStore(state => state.theme);
     useLayoutEffect(() => {
         document.querySelectorAll('.inline-btn.menu-active').forEach(el => el.classList.remove('menu-active'));
         const entityId = popoverState?.entityId;
@@ -267,7 +269,8 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             npc:    npcColor   || undefined,
             object: objectColor || undefined,
             room:   roomColor  || undefined,
-        }
+        },
+        theme
     ) || popoverState.accentColor || undefined;
 
     if (popoverState.menuDisplay === 'dial') {

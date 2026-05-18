@@ -4,7 +4,7 @@ import { RenderContext } from './renderers/rendererUtils';
 import { MapperPrediction } from './mapperTypes';
 import { drawTerrains, drawLocalTerrains } from './renderers/drawTerrains';
 import { drawFeatures, drawLocalFeatures } from './renderers/drawFeatures';
-import { drawGrid, drawEntities, drawGroupMembers, drawDeathIndicator, drawMarkers, drawMarquee } from './renderers/drawEntities';
+import { drawGrid, drawEntities, drawGroupMembers, drawDeathIndicator, drawMarkers, drawMarquee, drawDoorHighlights } from './renderers/drawEntities';
 
 interface RendererProps {
     rooms: Record<string, any>;
@@ -55,17 +55,18 @@ interface RendererProps {
     activeInlineEntityId?: string | null;
     selectedObjectIds?: Set<string>;
     deathRoomId?: string | null;
+    heldButton?: any | null;
 }
 
 export const useMapperRenderer = ({
     rooms, markers, currentRoomId, selectedRoomIds, selectedMarkerId,
     cameraRef, isDarkMode, isMobile, imagesRef, characterName,
     playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
-    preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, exploredRef, exploredMarkers, renderVersion,
+    preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, exploredRef, exploredMarkers,
     unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, walkTargetId, walkPath,
     triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
     roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor,
-    opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId,
+    opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton,
     showOrganicTerrain = true
 }: RendererProps) => {
 
@@ -73,22 +74,9 @@ export const useMapperRenderer = ({
     const localSpatialIndexRef = useRef<Record<number, Record<string, string[]>>>({});
     const lastRoomsRef = useRef<Record<string, any>>({});
     const processedIconsRef = useRef<Record<string, HTMLCanvasElement>>({});
-    const cacheParamsRef = useRef({ exploredCount: 0 });
+    const roomsVersionRef = useRef(0);
     const fullExploredRef = useRef<{ count: number, set: Set<string> }>({ count: 0, set: new Set() });
     const emptyExploredAtRef = useRef<Record<string, number>>({});
-    
-    // Cache for visible items to avoid recalculating room lookups every frame
-    const visibleCacheRef = useRef<{
-        roomAtCoord: Record<string, any>,
-        visitedAtCoord: Record<string, boolean>,
-        localRooms: any[],
-        viewBounds: { x1: number, y1: number, x2: number, y2: number, z: number }
-    }>({
-        roomAtCoord: {},
-        visitedAtCoord: {},
-        localRooms: [],
-        viewBounds: { x1: 0, y1: 0, x2: 0, y2: 0, z: -999 }
-    });
 
     const drawMap = useCallback((ctx: CanvasRenderingContext2D, dpr: number, canvasWidth: number, canvasHeight: number, marquee: { start: { x: number, y: number }, end: { x: number, y: number } } | null) => {
         const now = Date.now();
@@ -127,6 +115,7 @@ export const useMapperRenderer = ({
         // 1. Update Local Spatial Index if rooms changed
         if (allRooms !== lastRoomsRef.current) {
             lastRoomsRef.current = allRooms;
+            roomsVersionRef.current += 1;
             const newIndex: Record<number, Record<string, string[]>> = {};
             Object.values(allRooms).forEach((room: any) => {
                 if (room.id.startsWith('m_')) return;
@@ -178,14 +167,16 @@ export const useMapperRenderer = ({
         const lastExplored = effectiveFirstExploredAtRef.current['_latest'] || 0;
         const isExplorationAnimating = (now - lastExplored) < 1000;
 
-        const baseParams = `${curZInt}_${isDarkMode}_${allRooms === lastRoomsRef.current}_${explored.size}_${unveilMap}_${treatMapAsExplored}_${renderVersion}_${activeId}`;
+        const baseParams = `${curZInt}_${isDarkMode}_${roomsVersionRef.current}_${explored.size}_${unveilMap}_${treatMapAsExplored}`;
         const needsRebuild = cache.lastParams !== baseParams || zoomDiff > 0.25 || moveDist > moveThreshold || isExplorationAnimating;
 
         if (needsRebuild) {
             const offCtx = cache.ctx;
             offCtx.setTransform(1, 0, 0, 1, 0, 0);
             offCtx.clearRect(0, 0, cacheW, cacheH);
-            
+            offCtx.fillStyle = isDarkMode ? 'rgba(0,0,0,0)' : '#f2f2f7';
+            offCtx.fillRect(0, 0, cacheW, cacheH);
+
             offCtx.save();
             offCtx.imageSmoothingEnabled = false; 
             offCtx.scale(dpr * camera.zoom, dpr * camera.zoom);
@@ -259,9 +250,9 @@ export const useMapperRenderer = ({
                 activeInlineEntityId, selectedObjectIds
             };
 
-            drawGrid(rCtx, gX1, gY1, gX2, gY2);
             if (floorIndex) drawTerrains(rCtx, bX1, bY1, bX2, bY2, floorIndex);
             drawLocalTerrains(rCtx, localVisible);
+            drawGrid(rCtx, gX1, gY1, gX2, gY2);
 
             if (camera.zoom > 0.05) {
                 if (floorIndex) drawFeatures(rCtx, bX1, bY1, bX2, bY2, floorIndex);
@@ -306,21 +297,22 @@ export const useMapperRenderer = ({
         const rCtx: RenderContext = {
             ctx, dpr, canvasWidth: baseW, canvasHeight: baseH, camera, isDarkMode, isMobile,
             imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers: effectiveExploredMarkers, unveilMap, treatMapAsExplored,
-            allRooms, roomAtCoord: (cache as any).roomAtCoord, visitedAtCoord: (cache as any).visitedAtCoord, 
+            allRooms, roomAtCoord: (cache as any).roomAtCoord, visitedAtCoord: (cache as any).visitedAtCoord,
             preloaded: preloadedCoordsRef.current, firstExploredAtRef: effectiveFirstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef, clientPredictionsRef,
             groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, opponentName,
-            opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId
+            opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton
         };
 
         drawGroupMembers(rCtx);
         drawDeathIndicator(rCtx);
         drawEntities(rCtx, playerTrailRef, playerPosRef, characterName);
+        drawDoorHighlights(rCtx, playerPosRef);
         drawMarkers(rCtx, stableMarkersRef, selectedMarkerId, camera.x, camera.y, camera.x + baseW/camera.zoom, camera.y + baseH/camera.zoom);
 
         ctx.restore();
         drawMarquee(rCtx, marquee);
 
-    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, renderVersion, firstExploredAtRef, groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId]);
+    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, treatMapAsExplored, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, firstExploredAtRef, groupMembers, serverIdIndexRef, roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor, opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton]);
 
     return { drawMap };
 };

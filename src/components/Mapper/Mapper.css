@@ -166,6 +166,47 @@ canvas.map-canvas {
     background: transparent !important;
 }
 
+.map-look-hold-indicator {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 30;
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    background: rgba(15, 15, 15, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.38);
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12),
+        0 0 24px rgba(255, 255, 255, 0.26);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.82);
+    animation: map-look-hold-pop 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards,
+        map-look-hold-pulse 1.2s ease-in-out 180ms infinite;
+}
+
+@keyframes map-look-hold-pop {
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes map-look-hold-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12),
+            0 0 22px rgba(255, 255, 255, 0.22);
+    }
+
+    50% {
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.18),
+            0 0 34px rgba(255, 255, 255, 0.34);
+    }
+}
+
 .mapper-cluster,
 .mobile-mini-map {
     border: none !important;

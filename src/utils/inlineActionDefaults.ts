@@ -52,6 +52,6 @@ export const DEFAULT_TRAIT_CONFIGS: TraitConfig[] = [
     { id: 'trait-coverable', label: 'Coverable', kind: 'object', legacySetIds: ['inline-lightsource'], keywords: ['lantern', 'lamp', 'torch', 'lightsource', 'globe'], buttonIds: ['btn-lightsource-cover', 'btn-lightsource-uncover'] },
     { id: 'trait-watchtower', label: 'Watch Tower', kind: 'room', keywords: ['watch tower', 'watchtower', 'tower'], buttonIds: ['btn-watch'] },
     { id: 'trait-campable', label: 'Campable', kind: 'room', keywords: ['camp', 'clearing', 'campsite', 'forest', 'garden'], buttonIds: ['btn-camp'] },
-    { id: 'trait-numenorean-camp', label: 'Camp Rent', kind: 'room', keywords: [], requirement: { subrace: ['Numenorean'] }, buttonIds: ['btn-camp-rent'] },
+    { id: 'trait-numenorean-camp', label: 'Camp Rent', kind: 'room', keywords: [], requirement: { race: ['Numenorean', 'Black Numenorean', 'Black Númenórean'] }, buttonIds: ['btn-camp-rent'] },
     { id: 'trait-exit', label: 'Exit', kind: 'exit', legacySetIds: ['inline-exit'], keywords: ['north', 'south', 'east', 'west', 'up', 'down'], buttonIds: ['btn-exit-go', 'btn-look'] }
 ];

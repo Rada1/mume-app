@@ -16,7 +16,8 @@ interface SettingsState {
     loginName: string;
     loginPassword?: string;
     rememberLogin: boolean;
-    theme: 'dark' | 'light' | 'immersion';
+    theme: 'dark' | 'light';
+    isImmersionMode: boolean;
     accentColor: string;
     bgImage: string | null;
     bgImageBottom: string | null;
@@ -61,7 +62,8 @@ interface SettingsState {
     setLoginPassword: (val: string) => void;
     setRememberLogin: (val: boolean) => void;
     setAutoConnect: (val: boolean) => void;
-    setTheme: (val: 'dark' | 'light' | 'immersion') => void;
+    setTheme: (val: 'dark' | 'light') => void;
+    setIsImmersionMode: (val: boolean) => void;
     setAccentColor: (val: string) => void;
     setBgImage: (val: string | null) => void;
     setBgImageBottom: (val: string | null) => void;
@@ -179,7 +181,8 @@ export const useSettingsStore = create<SettingsState>()(
             loginPassword: '',
             rememberLogin: true,
             
-            theme: 'immersion',
+            theme: 'dark',
+            isImmersionMode: true,
             accentColor: '#f48f3c',
             bgImage: null,
             bgImageBottom: null,
@@ -206,7 +209,7 @@ export const useSettingsStore = create<SettingsState>()(
             isSoundEnabled: true,
             isNewbieMode: false,
             isMmapperMode: false,
-            autoSaveSessions: false,
+            autoSaveSessions: true,
             soundTriggers: [],
             teleportTargets: [],
             categoryOverrides: [],
@@ -230,6 +233,7 @@ export const useSettingsStore = create<SettingsState>()(
             setRememberLogin: (rememberLogin) => set({ rememberLogin }),
             setAutoConnect: (autoConnect) => set({ autoConnect }),
             setTheme: (theme) => set({ theme }),
+            setIsImmersionMode: (isImmersionMode) => set({ isImmersionMode }),
             setAccentColor: (accentColor) => set({ accentColor }),
             setBgImage: (bgImage) => set({ bgImage }),
             setBgImageBottom: (bgImageBottom) => set({ bgImageBottom }),
@@ -296,7 +300,7 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 5,
+            version: 6,
             migrate: (persistedState: any, version: number) => {
                 if (version < 1) {
                     // Update category IDs to canonical format
@@ -343,7 +347,15 @@ export const useSettingsStore = create<SettingsState>()(
                     if (persistedState.isImmersionMode !== false && (!persistedState.theme || persistedState.theme === 'dark')) {
                         persistedState.theme = 'immersion';
                     }
-                    delete persistedState.isImmersionMode;
+                }
+
+                if (version < 6) {
+                    const legacyTheme = persistedState.theme;
+                    const legacyImmersionMode = persistedState.isImmersionMode;
+                    persistedState.isImmersionMode = legacyTheme === 'immersion'
+                        ? true
+                        : legacyImmersionMode ?? false;
+                    persistedState.theme = legacyTheme === 'light' ? 'light' : 'dark';
                 }
 
                 if (version < 4 || !persistedState.categoryOverrides || !persistedState.customTraits) {

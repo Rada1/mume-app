@@ -40,11 +40,11 @@ export const CombatSliderPopout: React.FC<CombatSliderPopoutProps> = ({
         <>
             <div className="disposition-popout-backdrop" onClick={(e) => { e.stopPropagation(); onClose(); }} />
             <div
-                className="disposition-popout"
+                className={`disposition-popout ${isBeorningOrBear ? 'combat-form-popout' : 'combat-position-popout'}`}
                 style={{
                     bottom: (window.innerHeight - anchorRect.top) + 12,
                     left: anchorRect.left + (anchorRect.width / 2),
-                    width: isBeorningOrBear ? '180px' : '90px',
+                    width: isBeorningOrBear ? '180px' : '128px',
                     gridTemplateColumns: isBeorningOrBear ? 'repeat(2, minmax(0, 1fr))' : '1fr',
                 }}
                 onClick={(e) => e.stopPropagation()}

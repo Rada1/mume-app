@@ -3,6 +3,8 @@ import { GmcpOccupant, GmcpRoomInfo, GmcpUpdateExits } from '../../types';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
 import { gmcpBus } from '../../events/gmcpBus';
 import { normalizeGmcpWeather } from '../../utils/weatherUtils';
+import { mergeGmcpExitUpdate } from '../../utils/gmcpExitUtils';
+import type { GmcpExitMap } from '../../utils/gmcpExitUtils';
 
 interface UseGmcpRoomProps {
     mapperRef: React.RefObject<MapperRef>;
@@ -170,17 +172,17 @@ export const useGmcpRoom = ({
 
         if (data.exits) {
             // console.log('[GMCP] Room.UpdateExits:', data.exits);
+            const mergedExits = mergeGmcpExitUpdate(lastExitsRef.current, data.exits as GmcpExitMap);
             // Door detection logic
             if (playDoorSound) {
                 const oldExits = lastExitsRef.current;
-                const newExits = data.exits;
 
                 // Track total visible/open exits
                 const getVisibleCount = (ex: Record<string, any>) =>
                     Object.values(ex).filter(v => v !== false && (typeof v !== 'object' || !v.flags?.includes('closed'))).length;
 
                 const oldVisibleCount = getVisibleCount(oldExits);
-                const newVisibleCount = getVisibleCount(newExits);
+                const newVisibleCount = getVisibleCount(mergedExits);
 
                 // console.log('[GMCP] Door Detection:', { oldVisibleCount, newVisibleCount, oldExits: Object.keys(oldExits), newExits: Object.keys(newExits) });
 
@@ -193,8 +195,8 @@ export const useGmcpRoom = ({
                 }
             }
 
-            lastExitsRef.current = data.exits;
-            setRoomExits(Object.keys(data.exits));
+            lastExitsRef.current = mergedExits;
+            setRoomExits(Object.keys(mergedExits));
         }
     }, [setRoomExits, playDoorSound, isSpectateMode, lastExitsRef]);
 

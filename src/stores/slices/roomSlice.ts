@@ -7,6 +7,8 @@
 import { GmcpRoomInfo, GmcpUpdateExits, GmcpOccupant, WhereEntry } from '../../types';
 import { normalizeOccupantType } from '../../services/classification/normalizeOccupantType';
 import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
+import { mergeGmcpExitUpdate } from '../../utils/gmcpExitUtils';
+import type { GmcpExitMap } from '../../utils/gmcpExitUtils';
 
 export interface RoomState {
     roomName: string;
@@ -141,12 +143,15 @@ export const createRoomActions = (set: (fn: (state: RoomState) => any) => void, 
     },
 
     applyExitsUpdate: (data: GmcpUpdateExits | any) => {
-        const exitsData = data.exits || data;
-        set((state) => ({
-            ...state,
-            exits: Object.keys(exitsData),
-            rawExits: exitsData
-        }));
+        const exitsData: GmcpExitMap = data.exits || data;
+        set((state) => {
+            const rawExits = mergeGmcpExitUpdate(state.rawExits, exitsData);
+            return {
+                ...state,
+                exits: Object.keys(rawExits),
+                rawExits
+            };
+        });
     },
 
     addChar: (data: any) => {

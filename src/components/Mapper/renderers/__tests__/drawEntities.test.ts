@@ -5,6 +5,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { isOpponentOccupant } from '../../mapperOpponentUtils';
+import { drawGrid } from '../drawEntities';
 
 describe('isOpponentOccupant', () => {
     it('matches by GMCP id even when multiple occupants share a name', () => {
@@ -37,3 +38,44 @@ describe('isOpponentOccupant', () => {
         expect(isOpponentOccupant(occupants[1], occupants, null, 'orc')).toBe(true);
     });
 });
+
+describe('drawGrid', () => {
+    it('sets strokeStyle to black/gray in dark mode', () => {
+        const mockCtx = {
+            strokeStyle: '',
+            lineWidth: 0,
+            beginPath: () => {},
+            moveTo: () => {},
+            lineTo: () => {},
+            stroke: () => {},
+        } as unknown as CanvasRenderingContext2D;
+
+        const mockRenderCtx = {
+            ctx: mockCtx,
+            isDarkMode: true,
+        } as unknown as any;
+
+        drawGrid(mockRenderCtx, 0, 0, 1, 1);
+        expect(mockCtx.strokeStyle).toBe('rgba(0, 0, 0, 0.35)');
+    });
+
+    it('sets strokeStyle to white in light mode', () => {
+        const mockCtx = {
+            strokeStyle: '',
+            lineWidth: 0,
+            beginPath: () => {},
+            moveTo: () => {},
+            lineTo: () => {},
+            stroke: () => {},
+        } as unknown as CanvasRenderingContext2D;
+
+        const mockRenderCtx = {
+            ctx: mockCtx,
+            isDarkMode: false,
+        } as unknown as any;
+
+        drawGrid(mockRenderCtx, 0, 0, 1, 1);
+        expect(mockCtx.strokeStyle).toBe('rgba(255, 255, 255, 1.0)');
+    });
+});
+

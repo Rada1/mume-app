@@ -166,8 +166,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         {!isMobile && <Embers count={lighting === 'artificial' ? 60 : 30} />}
                     </>
                 )}
-                {/* Fog renders regardless of immersion mode — it's a gameplay-relevant state */}
-                <div className={`fog-layer ${isFoggy ? 'fog-active' : ''}`} />
+                {isImmersionMode && <div className={`fog-layer ${isFoggy ? 'fog-active' : ''}`} />}
 
                 {/* Full-screen lightning disabled in favor of cloud-only lightning */}
                 {/* <div className={`lightning-layer ${lightning ? 'lightning-active' : ''}`} /> */}

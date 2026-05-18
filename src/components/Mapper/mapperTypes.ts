@@ -47,6 +47,7 @@ export interface MapperMarker {
 }
 
 export interface MapperPrediction {
+    dir: string;
     toId: string;
     toX: number;
     toY: number;

@@ -18,6 +18,7 @@ describe('MUME Store Integration Tests', () => {
             roomZone: null,
             terrain: null,
             exits: [],
+            rawExits: {},
             chars: {},
             items: []
         });
@@ -97,6 +98,48 @@ describe('MUME Store Integration Tests', () => {
             const state = useCombatStore.getState();
             expect(state.opponentId).toBe(9);
             expect(state.opponentName).toBe('an orc');
+        });
+    });
+
+    describe('Room Exit Updates', () => {
+        it('merges partial exit updates without dropping unchanged exits', () => {
+            gmcpBus.emit('Room.Info', {
+                num: 1234,
+                name: 'Crossroads',
+                exits: {
+                    n: { name: 'north gate', flags: ['door'], id: 10 },
+                    s: 11,
+                    e: 12,
+                    w: 13
+                }
+            });
+
+            gmcpBus.emit('Room.UpdateExits', {
+                exits: {
+                    n: { name: 'north gate', flags: [], id: 10 }
+                }
+            });
+
+            expect(useRoomStore.getState().exits.sort()).toEqual(['e', 'n', 's', 'w']);
+        });
+
+        it('removes only the exit marked false in a partial update', () => {
+            useRoomStore.setState({
+                exits: ['n', 's', 'e'],
+                rawExits: {
+                    n: 10,
+                    s: 11,
+                    e: 12
+                }
+            });
+
+            gmcpBus.emit('Room.UpdateExits', {
+                exits: {
+                    n: false
+                }
+            });
+
+            expect(useRoomStore.getState().exits.sort()).toEqual(['e', 's']);
         });
     });
 

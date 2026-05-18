@@ -17,7 +17,7 @@ interface RoomInfoProps {
     lastDetectedTerrainRef: React.MutableRefObject<string | null>;
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
     triggerRender?: () => void;
-    onRoomInfoProcessed?: () => void;
+    onRoomInfoProcessed?: (confirmedRoomId?: string | null) => void;
     addMessage?: (type: string, msg: string) => void;
     showDebugEchoes?: boolean;
     preMoveRef?: React.MutableRefObject<{ dir: string; targetId: string; time: number } | null>;
@@ -545,7 +545,7 @@ export const useRoomInfoHandler = ({
 
         // Clear the pre-move that was set by handleMoveConfirmed
         if (!isSpectateUpdate) {
-            onRoomInfoProcessed?.();
+            onRoomInfoProcessed?.(targetId);
         }
 
         // Look-ahead: if there are still pending moves after this confirmation, immediately

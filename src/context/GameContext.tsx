@@ -209,7 +209,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const captureOwnerDrawer = useRef<any>('none');
     const nextCommandIsSilent = useRef(false);
 
-    const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.theme === 'immersion', s.fontFamily, s.isTimestampEnabled, s.isNewbieMode);
+    const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.isImmersionMode, s.fontFamily, s.isTimestampEnabled, s.isNewbieMode);
     const mode = useModeStore();
     const session = useSessionStore();
     const { sessionMode, setSessionMode, replayHUDState, setReplayHUDState, isSilentReplay } = session;
@@ -916,7 +916,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         sessionMode, replayer, isSpectateMode: s.isSpectateMode, setIsSpectateMode: mode.setIsSpectating,
         showSpectatePromptInLog: settingsStore.showSpectatePromptInLog,
         setShowSpectatePromptInLog: settingsStore.setShowSpectatePromptInLog,
-        isImmersionMode: settingsStore.theme === 'immersion',
+        isImmersionMode: settingsStore.isImmersionMode,
         isBloomEnabled: settingsStore.isBloomEnabled, setIsBloomEnabled: settingsStore.setIsBloomEnabled,
         isHighlighterEnabled: true, setIsHighlighterEnabled: (v) => {}, // Placeholder
         isTimestampEnabled: settingsStore.isTimestampEnabled, setIsTimestampEnabled: settingsStore.setIsTimestampEnabled,

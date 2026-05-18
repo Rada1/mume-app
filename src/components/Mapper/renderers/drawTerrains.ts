@@ -311,6 +311,7 @@ export const drawTerrains = (
     floorIndex: Record<string, string[]>
 ) => {
     const { ctx, isDarkMode, explored, unveilMap, allRooms, preloaded, imagesRef } = rCtx;
+    const tileBacking = isDarkMode ? '#000000' : '#f2f2f7';
     const s = GRID_SIZE;
 
     const exploredBatches: Record<string, { x: number, y: number, terrain: string, vnum: string, light?: number, sundeath?: number }[]> = {};
@@ -370,7 +371,6 @@ export const drawTerrains = (
     // 1. Draw Explored Rooms
     ctx.save();
     for (const color in exploredBatches) {
-        ctx.fillStyle = color;
         const rooms = exploredBatches[color];
         for (let i = 0; i < rooms.length; i++) {
             const r = rooms[i];
@@ -386,10 +386,24 @@ export const drawTerrains = (
                     const sourceDir = getSourceDirection(r.vnum, rCtx);
                     if (sourceDir) {
                         ctx.save();
-                        ctx.globalAlpha = 0.5;
                         if (sourceDir === 'n' || sourceDir === 's' || sourceDir === 'w' || sourceDir === 'e') {
+                            // 1. Tile backing
+                            ctx.fillStyle = tileBacking;
+                            ctx.globalAlpha = 1.0;
+                            fillAnimatedTerrainTile(ctx, r.x, r.y, s, sourceDir, alphaMul);
+
+                            // 2. Terrain color
+                            ctx.fillStyle = color;
+                            ctx.globalAlpha = 0.5;
                             fillAnimatedTerrainTile(ctx, r.x, r.y, s, sourceDir, alphaMul);
                         } else {
+                            // 1. Tile backing
+                            ctx.fillStyle = tileBacking;
+                            ctx.globalAlpha = alphaMul;
+                            fillTerrainTile(ctx, r.x, r.y, s);
+
+                            // 2. Terrain color
+                            ctx.fillStyle = color;
                             ctx.globalAlpha = 0.5 * alphaMul;
                             fillTerrainTile(ctx, r.x, r.y, s);
                         }
@@ -401,8 +415,18 @@ export const drawTerrains = (
             }
             
             // Draw base terrain
+            ctx.save();
+            // 1. Tile backing
+            ctx.fillStyle = tileBacking;
+            ctx.globalAlpha = alphaMul;
+            fillTerrainTile(ctx, r.x, r.y, s);
+
+            // 2. Terrain color
+            ctx.fillStyle = color;
             ctx.globalAlpha = 0.5 * alphaMul;
             fillTerrainTile(ctx, r.x, r.y, s);
+            ctx.restore();
+            
             applyRoomShading(ctx, r, s, alphaMul, rCtx);
         }
     }
@@ -443,7 +467,23 @@ export const drawTerrains = (
                 else if (dir === 'e') grad = ctx.createLinearGradient(r.x + s, r.y, r.x + s * 0.3, r.y);
                 else if (dir === 'w') grad = ctx.createLinearGradient(r.x, r.y, r.x + s * 0.7, r.y);
 
-                if (grad) {
+                let blackGrad;
+                if (dir === 'n') blackGrad = ctx.createLinearGradient(r.x, r.y, r.x, r.y + s * 0.7);
+                else if (dir === 's') blackGrad = ctx.createLinearGradient(r.x, r.y + s, r.x, r.y + s * 0.3);
+                else if (dir === 'e') blackGrad = ctx.createLinearGradient(r.x + s, r.y, r.x + s * 0.3, r.y);
+                else if (dir === 'w') blackGrad = ctx.createLinearGradient(r.x, r.y, r.x + s * 0.7, r.y);
+
+                if (grad && blackGrad) {
+                    // 1. Tile backing gradient
+                    ctx.save();
+                    blackGrad.addColorStop(0, tileBacking);
+                    blackGrad.addColorStop(1, 'rgba(0,0,0,0)');
+                    ctx.fillStyle = blackGrad;
+                    ctx.globalAlpha = 1.0;
+                    fillTerrainTile(ctx, r.x, r.y, s);
+                    ctx.restore();
+
+                    // 2. Terrain color gradient
                     ctx.save();
                     grad.addColorStop(0, color);
                     grad.addColorStop(1, 'rgba(0,0,0,0)');
@@ -494,18 +534,27 @@ export const drawTerrains = (
 
     // 4. Handle unveilMap (GM mode / Debug)
     if (unveilMap) {
-        ctx.save();
-        ctx.globalAlpha = 0.25;
         for (const color in revealedBatches) {
             const rooms = revealedBatches[color];
-            ctx.fillStyle = color;
             for (let i = 0; i < rooms.length; i++) {
                 const r = rooms[i];
+                
+                // Paint backing to prevent blending with background
+                ctx.save();
+                ctx.fillStyle = tileBacking;
+                ctx.globalAlpha = 1.0;
                 fillTerrainTile(ctx, r.x, r.y, s);
+                ctx.restore();
+
+                ctx.save();
+                ctx.fillStyle = color;
+                ctx.globalAlpha = 0.25;
+                fillTerrainTile(ctx, r.x, r.y, s);
+                ctx.restore();
+
                 applyRoomShading(ctx, r, s, 1.0, rCtx);
             }
         }
-        ctx.restore();
 
         for (const color in revealedBatches) {
             const rooms = revealedBatches[color];

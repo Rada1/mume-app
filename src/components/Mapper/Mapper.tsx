@@ -5,6 +5,7 @@
  */
 
 import React, { useRef, useMemo, useState, useEffect, useCallback, forwardRef } from 'react';
+import { Eye } from 'lucide-react';
 import { useGame, useLog, useVitals, useUI } from '../../context/GameContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useModeStore } from '../../stores/useModeStore';
@@ -18,6 +19,7 @@ import { useSmartWalk } from './hooks/useSmartWalk';
 import { useMapperPlayerTracking } from './hooks/useMapperPlayerTracking';
 import { DpadCluster } from './DpadCluster';
 import { GRID_SIZE } from './mapperUtils';
+import { toThemeLinkedColor } from '../../utils/themeLinkedColors';
 import './Mapper.css';
 
 interface MapperProps {
@@ -70,7 +72,12 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const { setPopoverState, popoverState, ui } = useUI();
     const { playerColor, npcColor, enemyColor, objectColor } = useSettingsStore();
     const isDarkMode = theme === 'dark';
+    const displayPlayerColor = toThemeLinkedColor(playerColor, theme) || playerColor;
+    const displayNpcColor = toThemeLinkedColor(npcColor, theme) || npcColor;
+    const displayEnemyColor = toThemeLinkedColor(enemyColor, theme) || enemyColor;
+    const displayObjectColor = toThemeLinkedColor(objectColor, theme) || objectColor;
     const treatMapAsExplored = useModeStore(state => state.isSpectating && state.activeView === 'target');
+    const isMapLookHeld = heldButton?.id === 'map-long-press' && !heldButton.didFire;
 
     // Use shared state from MapperContext
     const context = useMapper();
@@ -190,8 +197,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         roomNpcs,
         groupMembers,
         inlineCategories,
-        playerColor,
-        npcColor
+        playerColor: displayPlayerColor,
+        npcColor: displayNpcColor
     });
 
     // We still keep the context menu local to the instance for better UX (each window has its own context menu)
@@ -209,7 +216,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     }, [setMarkers]);
 
     return (
-        <div className={`mapper-container lighting-state-${isImmersionMode ? (lighting || 'none') : 'none'} ${isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ 
+        <div className={`mapper-container lighting-state-none ${isImmersionMode && isFoggy ? 'foggy' : ''} ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ 
             position: 'relative', 
             width: '100%', 
             height: '100%', 
@@ -217,10 +224,6 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             backgroundColor: 'transparent', 
             touchAction: 'none' 
         }}>
-            <div className="mapper-overlay mapper-sun-overlay" />
-            <div className="mapper-overlay mapper-moon-overlay" />
-            <div className="mapper-overlay mapper-artificial-overlay" />
-            <div className="mapper-overlay mapper-dark-overlay" />
             <div className="mapper-overlay mapper-fog-overlay" />
             <MapCanvas
                 ref={canvasRef}
@@ -266,16 +269,23 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 roomNpcs={roomNpcs}
                 roomItems={roomItems}
                 inlineCategories={inlineCategories}
-                playerColor={playerColor}
-                npcColor={npcColor}
-                enemyColor={enemyColor}
-                objectColor={objectColor}
+                playerColor={displayPlayerColor}
+                npcColor={displayNpcColor}
+                enemyColor={displayEnemyColor}
+                objectColor={displayObjectColor}
                 opponentName={opponentName}
                 opponentId={opponentId}
                 activeInlineEntityId={popoverState?.entityId || null}
                 selectedObjectIds={selectedObjectIds}
                 deathRoomId={deathRoomId}
+                heldButton={heldButton}
             />
+
+            {isMapLookHeld && (
+                <div className="map-look-hold-indicator" aria-hidden="true">
+                    <Eye size={28} strokeWidth={2.25} />
+                </div>
+            )}
 
             {isMobile && currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`] || preloadedCoordsRef.current[String(currentRoomId).replace(/^m_/, '')]) && (
                 <DpadCluster heldButton={heldButton} setHeldButton={setHeldButton} />

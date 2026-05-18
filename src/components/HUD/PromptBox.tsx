@@ -275,6 +275,7 @@ const PromptBox: FC<PromptBoxProps> = ({
     } = useGame();
     const { handleTabClick, setPopoverState, popoverState } = useUI();
     const enemyColor = useSettingsStore(state => state.enemyColor);
+    const theme = useSettingsStore(state => state.theme);
     
     // --- Active View State Selectors ---
     const activeVitals = useActiveVitals();
@@ -378,8 +379,8 @@ const PromptBox: FC<PromptBoxProps> = ({
     // Dynamic color for opponent (NPC/Player/etc) to match log higlighter
     const opponentColor = React.useMemo(() => {
         if (!opponentName) return undefined;
-        return getInlineGlowColor('cat-enemy', inlineCategories, { enemy: enemyColor }) || undefined;
-    }, [opponentName, inlineCategories, enemyColor]);
+        return getInlineGlowColor('cat-enemy', inlineCategories, { enemy: enemyColor }, theme) || undefined;
+    }, [opponentName, inlineCategories, enemyColor, theme]);
 
     const triggerNumbers = useCallback(() => {
         triggerHaptic(15);

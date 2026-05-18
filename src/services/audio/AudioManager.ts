@@ -39,6 +39,7 @@ export class AudioManager {
     private loadingState: Map<string, Promise<AudioBuffer | null>> = new Map();
 
     private activeAmbients: Map<AmbientType, ActiveAmbient> = new Map();
+    private ambientRequestTokens: Map<AmbientType, number> = new Map();
     private _isSoundEnabled: boolean = true;
     private silenceTimeout: NodeJS.Timeout | null = null;
     private zoneEndedListeners: Set<(key: string) => void> = new Set();
@@ -273,6 +274,9 @@ export class AudioManager {
         this.init();
         if (!this.audioCtx) return;
 
+        const myToken = (this.ambientRequestTokens.get(type) ?? 0) + 1;
+        this.ambientRequestTokens.set(type, myToken);
+
         if (key === null) {
             this.stopAmbient(type);
             if (type === 'zone') this.stopAmbient('drum');
@@ -361,6 +365,7 @@ export class AudioManager {
 
         const buffer = await this.loadBuffer(urlToPlay);
         if (!buffer) return;
+        if (this.ambientRequestTokens.get(type) !== myToken) return;
 
         // Crossfade logic
         this.crossFadeAmbient(type, urlToPlay, key, buffer, targetVolume, isLoop, inCombat ? 500 : 20000);

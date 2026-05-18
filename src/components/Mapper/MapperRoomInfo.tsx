@@ -52,8 +52,7 @@ export const MapperRoomInfo: React.FC = () => {
     };
 
     // --- Logic Section: Tokenization ---
-    // We use the same colors as the main room card (Green for name)
-    const nameTokens = processMessageTokens ? processMessageTokens(`\x1b[1;32m${roomName}\x1b[0m`) : [];
+    const nameTokens = processMessageTokens ? processMessageTokens(roomName) : [];
     const descTokens = (processMessageTokens && roomDesc) ? processMessageTokens(`\x1b[0m${roomDesc}`) : [];
 
     return (

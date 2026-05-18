@@ -61,6 +61,7 @@ interface MapCanvasProps {
     activeInlineEntityId?: string | null;
     selectedObjectIds?: Set<string>;
     deathRoomId?: string | null;
+    heldButton?: any | null;
 }
 
 export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
@@ -77,7 +78,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
         roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor,
-        opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId
+        opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton
     } = props;
 
     const { drawMap } = useMapperRenderer({
@@ -88,7 +89,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         unveilMap, treatMapAsExplored, viewZ, firstExploredAtRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
         roomChars, roomPlayers, roomNpcs, roomItems, inlineCategories, playerColor, npcColor, enemyColor, objectColor,
-        opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId
+        opponentName, opponentId, activeInlineEntityId, selectedObjectIds, deathRoomId, heldButton
     });
 
     useMapAnimation({
@@ -124,15 +125,22 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         let animationFrameId: number | null = null;
 
         const handleResize = () => {
-            const width = parent.clientWidth;
-            const height = parent.clientHeight;
+            const width = Math.round(parent.clientWidth);
+            const height = Math.round(parent.clientHeight);
             if (width === 0 || height === 0) return;
             
             const dpr = getDPR();
-            if (cvs.width === width * dpr && cvs.height === height * dpr) return;
+            const nextWidth = Math.round(width * dpr);
+            const nextHeight = Math.round(height * dpr);
+            const widthDelta = Math.abs(cvs.width - nextWidth);
+            const heightDelta = Math.abs(cvs.height - nextHeight);
+            if (widthDelta === 0 && heightDelta === 0) return;
+            if (cvs.width > 0 && cvs.height > 0 && widthDelta < 2 && heightDelta < 2) return;
 
-            cvs.width = width * dpr;
-            cvs.height = height * dpr;
+            cvs.width = nextWidth;
+            cvs.height = nextHeight;
+            const ctx = cvs.getContext('2d', { alpha: true });
+            if (ctx) drawMap(ctx, dpr, width, height, null);
             props.triggerRender?.();
         };
 
@@ -151,7 +159,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
             }
             ro.disconnect();
         };
-    }, [getDPR, canvasRef, props.triggerRender]);
+    }, [drawMap, getDPR, canvasRef, props.triggerRender]);
 
     return (
         <canvas

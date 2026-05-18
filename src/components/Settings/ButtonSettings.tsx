@@ -5,6 +5,7 @@ import { CategoryOverride, EntityKind } from '../../types';
 import CategoryTraitCards from './CategoryTraitCards';
 import TraitSettings from './TraitSettings';
 import { getCategoryColorWithOverrides, toCategoryId } from '../../utils/inlineActionModel';
+import { fromThemeLinkedColorInput, LinkedColorTheme, toColorInputHex, toThemeLinkedColor } from '../../utils/themeLinkedColors';
 
 interface ButtonSettingsProps {
     isEditMode: boolean;
@@ -18,22 +19,24 @@ interface ButtonSettingsProps {
     setActiveSet: (set: string) => void;
 }
 
-const getCategoryColor = (id: string, configs: CategoryOverride[], fallback: string): string =>
-    getCategoryColorWithOverrides(id, configs, fallback);
+const getCategoryColor = (id: string, configs: CategoryOverride[], fallback: string, theme: LinkedColorTheme): string =>
+    getCategoryColorWithOverrides(id, configs, fallback, {}, theme);
 
 const setCategoryColor = (
     id: string,
     kind: EntityKind,
     color: string,
-    setCategoryOverrides: (val: CategoryOverride[] | ((prev: CategoryOverride[]) => CategoryOverride[])) => void
+    setCategoryOverrides: (val: CategoryOverride[] | ((prev: CategoryOverride[]) => CategoryOverride[])) => void,
+    theme: LinkedColorTheme
 ) => {
+    const storedColor = fromThemeLinkedColorInput(color, theme);
     setCategoryOverrides(prev => {
         const overrides = Array.isArray(prev) ? prev : [];
         const categoryId = toCategoryId(id) || id;
         const existing = overrides.find(config => (toCategoryId(config.id) || config.id) === categoryId);
         const override: CategoryOverride = {
             ...(existing || { id: categoryId, kind }),
-            color
+            color: storedColor
         };
 
         return existing
@@ -61,6 +64,7 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
         neutralColor, setNeutralColor,
         targetColor, setTargetColor,
         roomColor, setRoomColor,
+        theme,
         categoryOverrides, setCategoryOverrides,
         customTraits, setCustomTraits,
     } = useSettingsStore();
@@ -77,6 +81,11 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
         if (isSetDropdownOpen) document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [isSetDropdownOpen]);
+
+    const displayColor = (color: string, fallback = '#ffffff') => (
+        toColorInputHex(toThemeLinkedColor(color, theme), fallback)
+    );
+    const storeInputColor = (color: string) => fromThemeLinkedColorInput(color, theme);
 
     return (
         <div className="settings-section">
@@ -206,7 +215,7 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                            <input type="color" value={playerColor} onChange={(e) => setPlayerColor(e.target.value)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
+                            <input type="color" value={displayColor(playerColor)} onChange={(e) => setPlayerColor(storeInputColor(e.target.value))} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Ally (Room)</div>
                         </div>
                         <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>GMCP room players</div>
@@ -214,7 +223,7 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
                     </div>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                            <input type="color" value={getCategoryColor('cat-ally-remote', categoryOverrides, playerColor)} onChange={(e) => setCategoryColor('cat-ally-remote', 'player', e.target.value, setCategoryOverrides)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
+                            <input type="color" value={toColorInputHex(getCategoryColor('cat-ally-remote', categoryOverrides, playerColor, theme))} onChange={(e) => setCategoryColor('cat-ally-remote', 'player', e.target.value, setCategoryOverrides, theme)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Ally (Who)</div>
                         </div>
                         <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Who-list players</div>
@@ -222,7 +231,7 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
                     </div>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                            <input type="color" value={enemyColor} onChange={(e) => setEnemyColor(e.target.value)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
+                            <input type="color" value={displayColor(enemyColor)} onChange={(e) => setEnemyColor(storeInputColor(e.target.value))} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Enemy</div>
                         </div>
                         <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Inline menus &amp; logs</div>
@@ -230,7 +239,7 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
                     </div>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                            <input type="color" value={neutralColor} onChange={(e) => setNeutralColor(e.target.value)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
+                            <input type="color" value={displayColor(neutralColor)} onChange={(e) => setNeutralColor(storeInputColor(e.target.value))} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Neutral</div>
                         </div>
                         <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Inline menus &amp; logs</div>
@@ -238,7 +247,7 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
                     </div>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                            <input type="color" value={targetColor} onChange={(e) => setTargetColor(e.target.value)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
+                            <input type="color" value={displayColor(targetColor)} onChange={(e) => setTargetColor(storeInputColor(e.target.value))} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Target</div>
                         </div>
                         <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Double-click menu</div>
@@ -246,7 +255,7 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
                     </div>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                            <input type="color" value={npcColor} onChange={(e) => setNpcColor(e.target.value)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
+                            <input type="color" value={displayColor(npcColor)} onChange={(e) => setNpcColor(storeInputColor(e.target.value))} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>NPCs</div>
                         </div>
                         <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Inline menus &amp; logs</div>
@@ -254,7 +263,7 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
                     </div>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                            <input type="color" value={getCategoryColor('cat-room-object', categoryOverrides, objectColor.startsWith('rgba') ? '#fb923c' : objectColor)} onChange={(e) => setCategoryColor('cat-room-object', 'object', e.target.value, setCategoryOverrides)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
+                            <input type="color" value={toColorInputHex(getCategoryColor('cat-room-object', categoryOverrides, objectColor.startsWith('rgba') ? '#fb923c' : objectColor, theme))} onChange={(e) => setCategoryColor('cat-room-object', 'object', e.target.value, setCategoryOverrides, theme)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Object (Room)</div>
                         </div>
                         <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Items on the ground</div>
@@ -262,7 +271,7 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
                     </div>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                            <input type="color" value={getCategoryColor('cat-inventory-object', categoryOverrides, objectColor.startsWith('rgba') ? '#fb923c' : objectColor)} onChange={(e) => setCategoryColor('cat-inventory-object', 'object', e.target.value, setCategoryOverrides)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
+                            <input type="color" value={toColorInputHex(getCategoryColor('cat-inventory-object', categoryOverrides, objectColor.startsWith('rgba') ? '#fb923c' : objectColor, theme))} onChange={(e) => setCategoryColor('cat-inventory-object', 'object', e.target.value, setCategoryOverrides, theme)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Object (Carried)</div>
                         </div>
                         <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Inventory items</div>
@@ -270,7 +279,7 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
                     </div>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                            <input type="color" value={getCategoryColor('cat-worn-object', categoryOverrides, objectColor.startsWith('rgba') ? '#fb923c' : objectColor)} onChange={(e) => setCategoryColor('cat-worn-object', 'object', e.target.value, setCategoryOverrides)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
+                            <input type="color" value={toColorInputHex(getCategoryColor('cat-worn-object', categoryOverrides, objectColor.startsWith('rgba') ? '#fb923c' : objectColor, theme))} onChange={(e) => setCategoryColor('cat-worn-object', 'object', e.target.value, setCategoryOverrides, theme)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Object (Worn)</div>
                         </div>
                         <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Equipped items</div>
@@ -278,7 +287,7 @@ const ButtonSettings: React.FC<ButtonSettingsProps> = ({
                     </div>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                            <input type="color" value={roomColor} onChange={(e) => setRoomColor(e.target.value)} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
+                            <input type="color" value={displayColor(roomColor)} onChange={(e) => setRoomColor(storeInputColor(e.target.value))} style={{ width: '20px', height: '20px', flexShrink: 0, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }} />
                             <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Room Names</div>
                         </div>
                         <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '4px' }}>Watch/camp actions, never tactical targets</div>

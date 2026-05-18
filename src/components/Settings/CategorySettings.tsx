@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Tag } from 'lucide-react';
 import { InlineCategoryConfig } from '../../types';
+import { useSettingsStore } from '../../stores/useSettingsStore';
+import { fromThemeLinkedColorInput, toColorInputHex, toThemeLinkedColor } from '../../utils/themeLinkedColors';
 
 interface CategorySettingsProps {
     categories: InlineCategoryConfig[];
@@ -9,6 +11,7 @@ interface CategorySettingsProps {
 
 const CategorySettings: React.FC<CategorySettingsProps> = ({ categories, setCategories }) => {
     const [newId, setNewId] = useState('');
+    const theme = useSettingsStore(state => state.theme);
     // Track local string values to allow typing commas/spaces without immediate "collapsing"
     const [localValueMap, setLocalValueMap] = useState<Record<string, string>>({});
 
@@ -67,7 +70,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ categories, setCate
     };
 
     const handleUpdateColor = (id: string, color: string) => {
-        setCategories(categories.map(c => c.id === id ? { ...c, color } : c));
+        setCategories(categories.map(c => c.id === id ? { ...c, color: fromThemeLinkedColorInput(color, theme) } : c));
     };
 
     return (
@@ -81,7 +84,9 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ categories, setCate
             </p>
 
             <div className="categories-list" style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '10px' }}>
-                {categories.map(cat => (
+                {categories.map(cat => {
+                    const themedColor = toThemeLinkedColor(cat.color, theme) || cat.color || '';
+                    return (
                     <div key={cat.id} className="category-item" style={{
                         background: 'rgba(255, 255, 255, 0.03)',
                         padding: '12px',
@@ -128,7 +133,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ categories, setCate
                                         type="color"
                                         id={`cat-color-picker-${cat.id}`}
                                         name={`cat-color-picker-${cat.id}`}
-                                        value={cat.color?.startsWith('rgba') ? '#ffffff' : (cat.color || '#4ade80')}
+                                        value={toColorInputHex(themedColor, '#4ade80')}
                                         onChange={(e) => handleUpdateColor(cat.id, e.target.value)}
                                         style={{ width: '40px', height: '24px', padding: 0, border: 'none', background: 'none' }}
                                     />
@@ -137,7 +142,7 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ categories, setCate
                                         id={`cat-color-${cat.id}`}
                                         name={`cat-color-${cat.id}`}
                                         className="setting-input"
-                                        value={cat.color || ''}
+                                        value={themedColor}
                                         onChange={(e) => handleUpdateColor(cat.id, e.target.value)}
                                         placeholder="rgba(0,0,0,0.5)"
                                         style={{ flex: 1, fontSize: '0.8rem' }}
@@ -148,13 +153,14 @@ const CategorySettings: React.FC<CategorySettingsProps> = ({ categories, setCate
                                 width: '30px',
                                 height: '30px',
                                 borderRadius: '50%',
-                                background: cat.color || 'transparent',
-                                boxShadow: cat.color ? `0 0 10px ${cat.color}` : 'none',
+                                background: themedColor || 'transparent',
+                                boxShadow: themedColor ? `0 0 10px ${themedColor}` : 'none',
                                 marginTop: '20px'
                             }} />
                         </div>
                     </div>
-                ))}
+                    );
+                })}
 
                 <div className="add-category" style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                     <input

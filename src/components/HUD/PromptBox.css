@@ -541,6 +541,10 @@
     gap: 6px;
 }
 
+.combat-position-popout .disposition-slider-column {
+    grid-template-columns: 28px minmax(58px, 1fr);
+}
+
 .disposition-slider-label {
     grid-column: 1 / -1;
     color: rgba(255, 255, 255, 0.82);
@@ -580,6 +584,7 @@
     padding: 2px 0;
     text-align: left;
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .disposition-option.active {

@@ -138,15 +138,13 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         const rendered = (
             <>
                 {isInlineMenu ? (
-                    <>
-                        {favoritedButtons.length > 0 && (
-                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', padding: '4px 8px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                <div style={{ minWidth: '52px', fontSize: '0.58rem', opacity: 0.6, textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, color: '#ffd700', paddingTop: '5px', flexShrink: 0 }}>★ Favs</div>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', flex: 1 }}>
-                                    {favoritedButtons.map(b => <PopoverActionButton key={b.id} button={b} {...props} toggleFavorite={toggleFavorite} compact />)}
-                                </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'max-content 1fr', padding: '2px 0' }}>
+                        {favoritedButtons.length > 0 && (<>
+                            <div style={{ fontSize: '0.58rem', opacity: 0.6, textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, color: '#ffd700', padding: '5px 8px 5px 8px', textAlign: 'right', borderRight: '1px solid rgba(255,255,255,0.12)', alignSelf: 'flex-start' }}>★ Favs</div>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', padding: '4px 8px', alignSelf: 'flex-start' }}>
+                                {favoritedButtons.map(b => <PopoverActionButton key={b.id} button={b} {...props} toggleFavorite={toggleFavorite} compact />)}
                             </div>
-                        )}
+                        </>)}
                         {sectionDefs.map((section) => {
                             const sectionButtons = buttons.filter(b => {
                                 if (!section.buttonIds.includes(b.id) || favorites.includes(b.command) || seenCommands.has(b.command)) return false;
@@ -155,20 +153,16 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                                 return isValid;
                             });
                             if (sectionButtons.length === 0) return null;
-                            return (
-                                <div key={section.key} style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', padding: '4px 8px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                    {section.label && (
-                                        <div style={{ minWidth: '52px', fontSize: '0.58rem', opacity: 0.4, textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, color: 'var(--accent)', paddingTop: '5px', flexShrink: 0 }}>
-                                            {section.label}
-                                        </div>
-                                    )}
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', flex: 1 }}>
-                                        {sectionButtons.map(b => <PopoverActionButton key={b.id} button={b} {...props} toggleFavorite={toggleFavorite} handleTabClick={handleTabClick} setGearTab={setGearTab} compact />)}
-                                    </div>
+                            return (<React.Fragment key={section.key}>
+                                <div style={{ fontSize: '0.58rem', opacity: 0.4, textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, color: 'var(--accent)', padding: '5px 8px 5px 8px', textAlign: 'right', borderRight: '1px solid rgba(255,255,255,0.12)', alignSelf: 'flex-start' }}>
+                                    {section.label}
                                 </div>
-                            );
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', padding: '4px 8px', alignSelf: 'flex-start' }}>
+                                    {sectionButtons.map(b => <PopoverActionButton key={b.id} button={b} {...props} toggleFavorite={toggleFavorite} handleTabClick={handleTabClick} setGearTab={setGearTab} compact />)}
+                                </div>
+                            </React.Fragment>);
                         })}
-                    </>
+                    </div>
                 ) : (
                     buttons.filter(b => b.setId === safeSetId && !favorites.includes(b.command)).map(b => {
                         seenCommands.add(b.command);

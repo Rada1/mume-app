@@ -5,6 +5,7 @@
 
 import { CategoryOverride, CustomButton, CustomTraitConfig, EntityKind, InlineCategoryConfig } from '../types';
 import { DEFAULT_CATEGORY_CONFIGS, DEFAULT_TRAIT_CONFIGS } from './inlineActionDefaults';
+import { LinkedColorTheme, toThemeLinkedColor } from './themeLinkedColors';
 
 export { DEFAULT_CATEGORY_CONFIGS, DEFAULT_TRAIT_CONFIGS } from './inlineActionDefaults';
 
@@ -192,8 +193,10 @@ export const findCategoryOverride = (
 export const getInlineGlowColor = (
     id: string | null | undefined,
     configs: InlineActionConfigRecord[] = [],
-    entityColors: EntityColorMap = {}
+    entityColors: EntityColorMap = {},
+    theme: LinkedColorTheme = 'dark'
 ): string | null => {
+    const themeColor = (color: string | null | undefined): string | null => toThemeLinkedColor(color, theme);
     if (!id) return null;
     const category = getCategoryConfig(id);
     const trait = getTraitConfig(id);
@@ -204,19 +207,19 @@ export const getInlineGlowColor = (
         const configId = toCategoryId(config.id) || toTraitId(config.id) || config.id;
         return configId === canonicalId && !!toCategoryId(config.id) && 'color' in config && !!config.color;
     });
-    if (override && 'color' in override && override.color) return override.color;
+    if (override && 'color' in override && override.color) return themeColor(override.color);
 
-    if (canonicalId === 'cat-ally' && entityColors.player) return entityColors.player;
+    if (canonicalId === 'cat-ally' && entityColors.player) return themeColor(entityColors.player);
 
     // 2. User's global kind-level setting (enemyColor, npcColor, objectColor, etc.)
     const entityKind: EntityKind | undefined = CATEGORY_KIND_MAP[canonicalId] ?? trait?.kind ?? undefined;
     if (entityKind) {
         const kindColor = entityColors[entityKind];
-        if (kindColor) return kindColor;
+        if (kindColor) return themeColor(kindColor);
     }
 
     // 3. Category's hardcoded default color
-    if (category?.color) return category.color;
+    if (category?.color) return themeColor(category.color);
 
     return null;
 };
@@ -226,8 +229,9 @@ export const getCategoryColorWithOverrides = (
     id: string | null | undefined,
     configs: InlineActionConfigRecord[] = [],
     fallback: string,
-    entityColors: EntityColorMap = {}
-): string => getInlineGlowColor(id, configs, entityColors) || fallback;
+    entityColors: EntityColorMap = {},
+    theme: LinkedColorTheme = 'dark'
+): string => getInlineGlowColor(id, configs, entityColors, theme) || (toThemeLinkedColor(fallback, theme) || fallback);
 
 export const upsertCategoryColorOverride = (
     id: string,

@@ -711,7 +711,7 @@
 }
 
 .user-command-bubble {
-    background: var(--input-bg, rgb(35, 35, 40));
+    background: var(--command-surface-bg, var(--input-bg, rgb(35, 35, 40)));
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px 20px 6px 20px;
     padding: 6px 14px; /* Increased padding slightly */
@@ -1757,7 +1757,25 @@ span.inline-btn {
 }
 
 
+/* Light mode: command bubbles */
+.light-mode .user-command-bubble {
+    background: #e5e5ea;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #1d1d1f;
+    text-shadow: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.light-mode .snoop-command-bubble {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.35);
+    color: #065f46;
+    text-shadow: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
 /* Light mode: no text shadows */
+.light-mode .message,
 .light-mode .message-content span {
     text-shadow: none;
 }

@@ -179,7 +179,6 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
                         const internalTargetId = serverIdIndex?.[targetKey] || targetKey;
                         const finalTargetId = String(internalTargetId).startsWith('m_') ? String(internalTargetId) : `m_${internalTargetId}`;
                         debugMapperPrediction(`${dir}: target=${targetId} resolved=${finalTargetId}`);
-                        if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-push-pre-move', { detail: { dir, targetId: finalTargetId } }));
                     } else {
                         debugMapperPrediction(`${dir}: no target id on exit`);
                     }

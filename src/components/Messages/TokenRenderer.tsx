@@ -57,7 +57,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
         const context = propMetadata?.context || tokens.map(token => token.content).join('').trim();
         const categoryColor = getInlineGlowColor(propCategoryAxes.categoryId, inlineCategories, {
             room: settings.roomColor || undefined,
-        }) || settings.roomColor || undefined;
+        }, settings.theme) || settings.roomColor || undefined;
         const wrapperProps: any = {
             className: 'inline-btn room-name-inline',
             'data-id': propMetadata?.id || `room:${context.toLowerCase()}`,
@@ -207,7 +207,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                             npc:     settings.npcColor     || undefined,
                             object:  settings.objectColor  || undefined,
                             room:    settings.roomColor    || undefined,
-                        }) || e.metadata?.color || null;
+                        }, settings.theme) || e.metadata?.color || null;
                     
                     if (categoryColor) {
                         style['--glow-color'] = categoryColor;

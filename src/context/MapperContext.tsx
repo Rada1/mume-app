@@ -127,7 +127,6 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const preMoveRef = useRef<{ dir: string, targetId: string, time: number } | null>(null);
     const clientPredictionsRef = useRef<MapperPrediction[]>([]);
     const predictionSeqRef = useRef(0);
-    const predictionClearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const lastDetectedTerrainRef = useRef<string | null>(null);
     const discoverySourceRef = useRef<string | null>(null);
     const firstExploredAtRef = useRef<Record<string, number>>({});
@@ -223,35 +222,42 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, addMessage, lastDetectedTerrainRef, loadMasterMap
     });
 
-    const clearPrediction = useCallback((seq?: number) => {
-        if (seq !== undefined && clientPredictionsRef.current[0]?.seq !== seq) return;
-        preMoveRef.current = null;
-        if (clientPredictionsRef.current.length > 0) {
-            clientPredictionsRef.current = clientPredictionsRef.current.slice(1);
-            triggerRender();
-        }
-    }, [triggerRender]);
+    const resolvePredictionCoords = useCallback((targetId: string) => {
+        const targetRoom = roomsRef.current[targetId];
+        if (targetRoom) return { x: targetRoom.x, y: targetRoom.y, z: targetRoom.z || 0 };
 
-    const onRoomInfoProcessed = useCallback(() => {
+        const rawVnum = targetId.startsWith('m_') ? targetId.substring(2) : targetId;
+        const coords = preloadedCoordsRef.current[rawVnum];
+        return coords ? { x: coords[0], y: coords[1], z: coords[2] || 0 } : null;
+    }, [preloadedCoordsRef, roomsRef]);
+
+    const clearPrediction = useCallback((confirmedRoomId?: string | null) => {
         const prediction = clientPredictionsRef.current[0];
         if (!prediction) {
             preMoveRef.current = null;
             return;
         }
 
-        const remainingMs = Math.max(0, 450 - (Date.now() - prediction.createdAt));
-        if (predictionClearTimerRef.current) clearTimeout(predictionClearTimerRef.current);
-
-        if (remainingMs > 0) {
-            const seq = prediction.seq;
-            predictionClearTimerRef.current = setTimeout(() => {
-                predictionClearTimerRef.current = null;
-                clearPrediction(seq);
-            }, remainingMs);
-            return;
+        if (confirmedRoomId) {
+            const normalizedConfirmed = confirmedRoomId.replace(/^m_/, '');
+            const normalizedPrediction = prediction.toId.replace(/^m_/, '');
+            if (normalizedConfirmed !== normalizedPrediction) return;
         }
 
-        clearPrediction(prediction.seq);
+        if (clientPredictionsRef.current.length > 0) {
+            clientPredictionsRef.current = clientPredictionsRef.current.slice(1);
+            const nextPrediction = clientPredictionsRef.current[0];
+            preMoveRef.current = nextPrediction
+                ? { dir: nextPrediction.dir, targetId: nextPrediction.toId, time: nextPrediction.createdAt }
+                : null;
+            triggerRender();
+        } else {
+            preMoveRef.current = null;
+        }
+    }, [triggerRender]);
+
+    const onRoomInfoProcessed = useCallback((confirmedRoomId?: string | null) => {
+        clearPrediction(confirmedRoomId);
     }, [clearPrediction]);
 
     const { activeView } = useModeStore();
@@ -276,10 +282,6 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const handleMoveFailure = useCallback(() => {
         pendingMovesRef.current.shift();
         preMoveRef.current = null;
-        if (predictionClearTimerRef.current) {
-            clearTimeout(predictionClearTimerRef.current);
-            predictionClearTimerRef.current = null;
-        }
         clientPredictionsRef.current = [];
         triggerRender();
     }, [triggerRender]);
@@ -295,7 +297,8 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             const dir = e.detail;
             pushPendingMove(dir);
 
-            const currentRoomId = currentRoomIdRef.current;
+            const predictionTail = clientPredictionsRef.current[clientPredictionsRef.current.length - 1];
+            const currentRoomId = predictionTail?.toId || currentRoomIdRef.current;
             const rooms = roomsRef.current;
             const preloaded = preloadedCoordsRef.current;
             if (!currentRoomId || !rooms || !preloaded) return;
@@ -325,33 +328,26 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             const createdAt = Date.now();
             const seq = predictionSeqRef.current + 1;
             predictionSeqRef.current = seq;
-            if (predictionClearTimerRef.current) {
-                clearTimeout(predictionClearTimerRef.current);
-                predictionClearTimerRef.current = null;
+            const wasQueueEmpty = clientPredictionsRef.current.length === 0;
+            if (wasQueueEmpty) {
+                preMoveRef.current = { dir, targetId, time: createdAt };
             }
-            preMoveRef.current = { dir, targetId, time: createdAt };
             if (showDebugEchoesRef.current) {
                 addMessageRef.current?.('system', `[MapperPredict] received ${dir} -> ${targetId}`);
             }
 
-            // Populate clientPredictionsRef with target room coords for the dotted-line preview
-            const targetRoom = roomsRef.current[targetId];
-            if (targetRoom) {
-                clientPredictionsRef.current = [{ toId: targetId, toX: targetRoom.x, toY: targetRoom.y, toZ: targetRoom.z, createdAt, seq }];
+            const coords = resolvePredictionCoords(targetId);
+            if (coords) {
+                const prediction = { dir, toId: targetId, toX: coords.x, toY: coords.y, toZ: coords.z, createdAt, seq };
+                const existingTail = clientPredictionsRef.current[clientPredictionsRef.current.length - 1];
+                clientPredictionsRef.current = existingTail?.toId === targetId
+                    ? [...clientPredictionsRef.current.slice(0, -1), prediction]
+                    : [...clientPredictionsRef.current, prediction];
                 if (showDebugEchoesRef.current) {
-                    addMessageRef.current?.('system', `[MapperPredict] stored live coords ${targetRoom.x},${targetRoom.y},${targetRoom.z || 0}`);
+                    addMessageRef.current?.('system', `[MapperPredict] stored queued coords ${coords.x},${coords.y},${coords.z || 0}`);
                 }
-            } else {
-                const rawVnum = targetId.startsWith('m_') ? targetId.substring(2) : targetId;
-                const coords = preloadedCoordsRef.current[rawVnum];
-                if (coords) {
-                    clientPredictionsRef.current = [{ toId: targetId, toX: coords[0], toY: coords[1], toZ: coords[2], createdAt, seq }];
-                    if (showDebugEchoesRef.current) {
-                        addMessageRef.current?.('system', `[MapperPredict] stored map coords ${coords[0]},${coords[1]},${coords[2] || 0}`);
-                    }
-                } else if (showDebugEchoesRef.current) {
-                    addMessageRef.current?.('system', `[MapperPredict] no coords for ${targetId}`);
-                }
+            } else if (showDebugEchoesRef.current) {
+                addMessageRef.current?.('system', `[MapperPredict] no coords for ${targetId}`);
             }
 
             triggerRender();
@@ -374,11 +370,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             window.removeEventListener('mume-mapper-move-failed', onFail);
             window.removeEventListener('mume-mapper-push-pre-move', onPre);
         };
-    }, [masterHandlers, pushPendingMove, handleMoveConfirmed, handleMoveFailure, triggerRender]);
-
-    useEffect(() => () => {
-        if (predictionClearTimerRef.current) clearTimeout(predictionClearTimerRef.current);
-    }, []);
+    }, [masterHandlers, pushPendingMove, handleMoveConfirmed, handleMoveFailure, resolvePredictionCoords, triggerRender]);
 
     const applyActiveMapId = useCallback((mapid: string | number, isSnooped: boolean) => {
         const shouldApply = (isSnooped && activeView === 'target') || (!isSnooped && activeView === 'self');

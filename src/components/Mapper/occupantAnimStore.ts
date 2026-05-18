@@ -13,7 +13,7 @@ export interface OccupantAnimEntry {
     startOffset?: { dx: number, dy: number }; // Relative to room center
 }
 
-export const OCCUPANT_ANIM_DURATION = 450; // ms
+export const OCCUPANT_ANIM_DURATION = 300; // ms
 
 /** Keyed by occupant identity — id takes priority over name */
 export const occupantAnims = new Map<string, OccupantAnimEntry>();

@@ -49,7 +49,7 @@
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     border-top: none !important;
-    box-shadow: 0 0 15px rgba(var(--terrain-glow-rgb, 94, 98, 105), 0.18) !important;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.35) !important;
     z-index: var(--z-hud-interactive);
     touch-action: none;
     transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, box-shadow 0.8s ease;
@@ -82,7 +82,7 @@
 }
 
 .light-mode .mobile-bottom-gutter {
-    background: #ffffff !important;
+    background: #f2f2f7 !important;
     border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
     box-shadow: 0 -16px 32px rgba(0, 0, 0, 0.12), 0 0 20px rgba(0, 0, 0, 0.08) !important;
 }
@@ -228,7 +228,7 @@
     margin: 6px 24px 0 24px;
     padding: 8px 12px;
     border-radius: var(--radius-card);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), 0 0 18px rgba(var(--terrain-glow-rgb, 94, 98, 105), 0.14) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), 0 4px 12px rgba(0, 0, 0, 0.28) !important;
     transition: box-shadow 0.8s ease, border-color 0.8s ease, background 0.4s ease;
     display: flex;
     justify-content: space-between;
@@ -486,7 +486,7 @@
     padding: 0 20px;
     display: flex;
     align-items: center;
-    background: var(--input-bg);
+    background: var(--command-surface-bg, var(--input-bg));
     border-radius: 28px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
@@ -812,5 +812,92 @@
     pointer-events: none !important;
     z-index: 6000;
 }
+
+/* --- Light Mode Prompt Box Enhancements --- */
+.light-mode .input-main-container {
+    background: rgba(255, 255, 255, 0.92) !important;
+    backdrop-filter: blur(16px) saturate(1.8) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(1.8) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04), inset 0 0 0 1px rgba(255, 255, 255, 0.6) !important;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Light mode focused state */
+.light-mode .input-main-container.focused {
+    background: #ffffff !important;
+    border-color: rgba(var(--accent-rgb, 0, 122, 255), 0.45) !important;
+    box-shadow: 0 0 0 1px rgba(var(--accent-rgb, 0, 122, 255), 0.15), 0 0 15px rgba(var(--accent-rgb, 0, 122, 255), 0.2), 0 6px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Light mode terrain specific borders/glows - track with soft opacities and lighter shadow */
+.light-mode.app-container:not(.terrain-none):not(.terrain-underground) .input-main-container {
+    border-color: rgba(var(--terrain-glow-rgb), 0.18) !important;
+    box-shadow: 0 0 20px rgba(var(--terrain-glow-rgb), 0.06), inset 0 0 30px rgba(var(--terrain-glow-rgb), 0.05), 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+.light-mode.app-container.terrain-underground .input-main-container {
+    border-color: rgba(var(--terrain-glow-rgb), 0.2) !important;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.04), inset 0 0 30px rgba(var(--terrain-glow-rgb), 0.05), 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Light mode input field placeholder */
+.light-mode .input-field::placeholder {
+    color: rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Light mode parley indicators */
+.light-mode .parley-pill {
+    background: rgba(0, 0, 0, 0.05) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.light-mode .parley-pill.parley-pill-active {
+    background: rgba(var(--accent-rgb, 0, 122, 255), 0.08) !important;
+    border-color: rgba(var(--accent-rgb, 0, 122, 255), 0.18) !important;
+}
+
+.light-mode .parley-target {
+    background: rgba(0, 0, 0, 0.04) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    color: var(--text-primary) !important;
+}
+
+.light-mode .parley-target:hover {
+    background: rgba(0, 0, 0, 0.08) !important;
+}
+
+.light-mode .parley-clear-btn {
+    background: rgba(0, 0, 0, 0.05) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    color: var(--text-dim) !important;
+}
+
+.light-mode .parley-clear-btn:hover {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+    color: #ef4444 !important;
+}
+
+.light-mode .cmd-prompt-btn {
+    color: var(--text-dim) !important;
+}
+
+.light-mode .cmd-prompt-btn.parley-active {
+    color: var(--accent) !important;
+}
+
+/* Keystroke animation glow override for light mode */
+@keyframes keystroke-glow-pulse-light {
+    0%   { filter: drop-shadow(0 0 3px rgba(var(--keystroke-glow-rgb), 0.5)) drop-shadow(0 0 6px rgba(var(--keystroke-glow-rgb), 0.25)); }
+    15%  { filter: drop-shadow(0 0 5px rgba(var(--keystroke-glow-rgb), 0.6)) drop-shadow(0 0 10px rgba(var(--keystroke-glow-rgb), 0.3)); }
+    100% { filter: drop-shadow(0 0 0px rgba(var(--keystroke-glow-rgb), 0)); }
+}
+
+.light-mode .input-main-container.keystroke-glow,
+.light-mode .mobile-gutter-input-wrapper .input-main-container.keystroke-glow {
+    animation: keystroke-glow-pulse-light 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
 
 
